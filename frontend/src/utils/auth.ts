@@ -1,3 +1,4 @@
+import { connectSocket } from "./socket";
 const BASE_URL = '/api/users/';
 
 export  function getToken() {
@@ -36,7 +37,7 @@ export function isLoggedIn() {
 export async function login(creds: any) {
     return fetch(BASE_URL + 'login', {
         method: 'POST',
-        headers: new Headers({'Content-Type': 'application/json'}),
+        headers: new Headers({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(creds)
     }).then(async res => {
         if (res.ok) return res.json();
@@ -47,4 +48,16 @@ export async function login(creds: any) {
 
 export function logout() {
     removeToken();
+};
+
+export async function signup(user: any) {
+    return fetch(BASE_URL + 'signup', {
+        method: 'POST',
+        body: user
+    }).then(async res => {
+        if (res.ok) return res.json();
+        return res.json().then(response => {
+            throw new Error(response.err)
+        })
+    }).then(({token}) => setToken(token));
 };

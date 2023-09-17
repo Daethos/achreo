@@ -34,6 +34,7 @@ playerSchema.pre('save', async function(next) {
 
 playerSchema.methods.comparePassword = function(tryPassword: StringOrBuffer, cb: (arg0: null, arg1: Promise<boolean>) => void) {
     const isMatch = Bun.password.verify(tryPassword, this.password);
+    console.log(isMatch, "isMatch")
     cb(null, isMatch);
 };
 

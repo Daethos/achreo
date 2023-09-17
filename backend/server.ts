@@ -6,35 +6,33 @@ type WebSocketData = {
     token: string;
 };
 
-const server = Bun.serve<WebSocketData>({
+Bun.serve({
     port: 3000,
-    fetch(req, server) {
+    fetch() {
+        const htmlFile = Bun.file("frontend/public/index.html");
+        const root = Bun.file("frontend/public/root.tsx");
+        console.log(root, "Root")
+        console.log('3000 Server being Served')
+        return new Response(htmlFile);
+    },
+});
+// const server = 
+Bun.serve<WebSocketData>({
+    port: 3001,
+    fetch(req, server): Response | undefined {
         const socketId = Math.random().toString(36).substring(7);
-        // const success = server.upgrade(req, { 
-        //     data: {
-        //         createdAt: Date.now(),
-        //         socketId: socketId,
-        //     },
-        // });
-        // if (success) return undefined;
-
-        
         const url = new URL(req.url);
-        console.log(url, 'URL?')
-            const success = server.upgrade(req, { data: {
-                createdAt: Date.now(), 
-                socketId,
-                token: url.searchParams.get('token') || '',
-            } });
-            console.log(success, "Success")
-            if (success) return undefined;
-        // : new Response("WebSocket upgrade error", { status: 400 });
+        const success = server.upgrade(req, { data: {
+            createdAt: Date.now(), 
+            socketId,
+            token: url.searchParams.get('token') || '',
+        } });
 
-        return new Response(
-            // `Hello, world! ${socketId}, you are at ${req.url}`
-            // Need to have the index.html file referenced here ? 
-            // Or is it just a matter of having the index.html file in the same directory as the server.ts file?
-        );
+        console.log(success, "Success")
+        console.log('Websocket Server being Served')
+        return success
+            ? undefined
+            : new Response('Upgrade Failed', { status: 500 });   
     },
     websocket: {
         perMessageDeflate: true,
@@ -44,7 +42,7 @@ const server = Bun.serve<WebSocketData>({
             ws.send(msg, true);
         },
         message(ws, msg) {
-            console.log(`Received ${msg} from ${ws.data.socketId}`)
+            console.log(`Received ${msg} from ${ws.data.socketId}, unsure how`)
             ws.publish('chat', msg, true);
         },
         close(ws, code, reason) {
@@ -58,27 +56,7 @@ const server = Bun.serve<WebSocketData>({
     },
 });
 
-console.log(`Listening on ${server.hostname}:${server.port}: Welcom to Bun, sir!`);
-
-const socket = new WebSocket('ws://localhost:3000');
-// message is received
-socket.addEventListener("message", event => {});
-
-// socket opened
-socket.addEventListener("open", event => {});
-
-// socket closed
-socket.addEventListener("close", event => {});
-
-// error handler
-socket.addEventListener("error", event => {});
-
-
-// This demonstrates how to hash and verify passwords. no external dependencies required
-// const password = 'super-secure-password';
-// const hash = await Bun.password.hash(password);
-// const isMatch = await Bun.password.verify(password, hash);
-// console.log(`Password matches: ${isMatch}`);
+// console.log(`Listening on ${server.hostname}:${server.port}: Welcom to Bun, sir!`);
 
 // ws.send('Hello, world!');
 // ws.send(response.arrayBuffer());

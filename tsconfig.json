@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "lib": ["esnext", "dom", "dom.iterable"],
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "bundler",
@@ -11,13 +11,14 @@
     "strict": true,
     "downlevelIteration": true,
     "skipLibCheck": true,
-    "jsx": "preserve",
-    "jsxImportSource": "solid-js",
+    "jsx": "react",
+    "jsxFactory": "elements.createElement",
+    // "jsxImportSource": "solid-js",
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
     "types": [
-      "bun-types" // add Bun global
+      "bun-types"
     ]
   }
 }

@@ -21,13 +21,9 @@ playerSchema.set('toObject', {
 });
 
 playerSchema.pre('save', async function(next) {
-    // 'this' will be set to the current document
     const user = this;
-    // only hash the password if it has been modified (or is new)
     if (!user.isModified('password')) return next();
-    // password has been changed - salt and hash it
     const hash = await Bun.password.hash(user.password);
-    // override the cleartext password with the hashed one
     user.password = hash;
     next();
 });

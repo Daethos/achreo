@@ -3,70 +3,78 @@ import { Elysia, t } from 'elysia';
 import { html } from '@elysiajs/html';
 import * as elements from "typed-html";
 
-type WebSocketData = {
-    createdAt: number;
-    socketId: string;
-    token: string;
-};
+const tailwind = Bun.file("/dist/output.css");
+console.log(tailwind, "Tailwind")
 
 const app = new Elysia()
     .use(html())
     .get('/', ({ html }) => html(
         <BaseHtml>
-            <body
-                class="flex w-full h-screen justify-center items-center"
-                hx-get="/auth"
+            <body // font-cinzel flex w-full h-screen justify-center items-center bg-black
+                class="bg-black"
+                hx-get="/authorization"
                 hx-swap="innerHTML"
                 hx-trigger="load"
-            />Can I find anything?
+            />
         </BaseHtml>
         )
     )
-    .get('/auth', () => Authorization())
-    .post("/clicked", () => "Clicked")
-	.listen(4000, (server) => {
-		console.log(`Live and listening on http://${server.hostname}:${server.port}`)
+    .get('/authorization', () => {
+            return (
+                <Authorization />
+            )
+        }
+    )
+    // .use(static('dist'))
+    .get("./styles.css", () => Bun.file("dist/output.css"))
+	.listen(3000, (server) => {
+		console.log(`Live and listening on ${server.hostname}:${server.port}`)
 	})
 
+// <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+{/* <script src="https://cdn.tailwindcss.com"></script> */}
+// <link href='https://fonts.googleapis.com/css2?family=Cinzel&display=swap' rel='stylesheet'>
 
 const BaseHtml = ({ children }: elements.Children) => `
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Ascean</title>
-    <script src="https://unpkg.com/htmx.org@1.9.3"></script>
-    <script src="https://unpkg.com/hyperscript.org@0.9.9"></script>
-    <link href="./styles.css" rel="stylesheet">
-</head>
-
-${children}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>The Ascean</title>
+        <link href="#" rel="icon">
+        <link href="/dist/output.css" rel="stylesheet">
+        <link href='https://fonts.googleapis.com/css2?family=Cinzel&display=swap' rel='stylesheet'>
+        <script src="https://unpkg.com/htmx.org@1.9.3"></script>
+        <script src="https://unpkg.com/hyperscript.org@0.9.9"></script>
+    </head>
+    ${children}
 `;
 
 function Authorization() {
+    console.log("Authorization");
     return (
-    <div>
-        <div class="flex flex-row space-x-3">
-            <Login />
+        <div>
+            <div class="flex flex-row space-x-5 p-5">
+                <Login />
+            </div>
+            <div class="flex w-full items-center p-5">
+                <Signup />
+            </div>
         </div>
-        <div class="flex w-full items-center">
-            <Signup />
-        </div>
-    </div>
     );
 };
 
 function Login() {
     return (
         <form
-            class="flex flex-row space-x-3"
+            class="flex flex-row space-x-5"
             hx-post="/login"
             hx-swap="beforebegin"
-            // _="on submit target.reset()"
+            _="on submit target.reset()"
         >
-            <input type="text" name="content" class="border border-black p-4" />
+            <input type="text" name="content" value="Name" class="border border-black p-4" />
+            <input type="text" name="content" value="Password" class="border border-black p-4" />
             <button type="submit">Login</button>
         </form>
     );
@@ -75,10 +83,10 @@ function Login() {
 function Signup() {
     return (
     <form
-        class="flex flex-row space-x-3"
+        class="flex flex-row space-x-5"
         hx-post="/signup"
         hx-swap="beforebegin"
-        // _="on submit target.reset()"
+        _="on submit target.reset()"
     >
         <input type="text" name="content" value="Name" class="border border-black p-4" />
         <input type="text" name="content" value="Password" class="border border-black p-4" />
@@ -86,34 +94,7 @@ function Signup() {
         <button type="submit">Signup</button>
     </form>
     );
-}
-
-// const build = await Bun.build({
-//     entrypoints: ['frontend/src/root.tsx'],
-//     outdir: 'frontend/public',
-//     external: ['solid-js', 'solid-js/web', 'solid-js/store'],
-//     naming: '[name].[ext]',
-// });
-// console.log(build, "Build")
-// for (const output of build.outputs) {
-//     console.log(await output.arrayBuffer());
-//     console.log(await output.text());
-// };
-
-// Bun.serve({
-//     port: 3000,
-//     async fetch(req) {
-//         const htmlFile = Bun.file("frontend/public/index.html");
-//         const root = Bun.file("frontend/src/root.tsx");
-//         console.log(await root.text(), "Root")
-//         console.log(req, "Req")
-//         const url = new URL(req.url);
-//         console.log(url, '3000 Server being Served')
-//         return new Response(htmlFile, {
-//             headers: { 'Content-Type': 'text/html' },
-//         });
-//     },
-// });
+};
 
 // // const server = 
 // Bun.serve<WebSocketData>({
@@ -155,7 +136,6 @@ function Signup() {
 //         },
 //     },
 // });
-
 
 // ws.send('Hello, world!');
 // ws.send(response.arrayBuffer());

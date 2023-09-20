@@ -1,16 +1,17 @@
 {
   "name": "achreo",
-  "module": "backend/server.tsx",
+  "module": "src/index.tsx",
   "type": "module",
   "scripts": {
-    "dev": "bun run --watch backend/server.tsx",
-    "tw": "bunx tailwindcss -i backend/styles.css -o ./tailwind-gen/styles.css",
-    "tw:dev": "bunx tailwindcss -i backend/styles.css -o ./tailwind-gen/styles.css --watch",
+    "dev": "concurrently \"bun run --watch src/index.tsx\" \"bun run tw:dev\"",
+    "tw": "bunx tailwindcss -i src/styles.css -o dist/output.css",
+    "tw:dev": "bunx tailwindcss -i src/styles.css -o dist/output.css --watch",
     "build": "bun build",
-    "start": "bun run --watch backend/server.tsx"
+    "start": "bun run --watch src/index.tsx"
   },
   "devDependencies": {
     "bun-types": "latest",
+    "concurrently": "^8.2.1",
     "tailwindcss": "^3.3.3",
     "typed-html": "^3.0.1"
   },
@@ -22,7 +23,6 @@
     "dotenv": "^16.3.1",
     "elysia": "^0.6.23",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^7.5.1",
-    "solid-js": "^1.7.11"
+    "mongoose": "^7.5.1"
   }
 }

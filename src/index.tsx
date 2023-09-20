@@ -26,7 +26,7 @@ const app = new Elysia()
         }
     )
     // .use(static('dist'))
-    .get("./styles.css", () => Bun.file("dist/output.css"))
+    .get("./styles.css", () => Bun.file("/dist/output.css"))
 	.listen(3000, (server) => {
 		console.log(`Live and listening on ${server.hostname}:${server.port}`)
 	})

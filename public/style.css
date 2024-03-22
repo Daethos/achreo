@@ -437,7 +437,7 @@ body {
     color: #fdf6d8;
     font-style: italic;
     font-size: 1em;
-    line-height: 1.2em;
+    /* line-height: 1.2em; */
     /* margin: 0 0 10px; */
 }
 .creature-heading p{
@@ -450,7 +450,7 @@ body {
     margin: 0;
     color: #fdf6d8;
     font-size: 1em;
-    line-height: 1.2em;
+    /* line-height: 1.2em; */
 }
 .property-line h4 {
     color: #5a0043;
@@ -459,7 +459,7 @@ body {
 .property-line {
     text-indent: -1em;
     padding-left: 1.1em;
-    line-height: 1.4em;
+    /* line-height: 1.4em; */
 }
 .property-line.first {
     margin: 8px 0 0
@@ -475,25 +475,25 @@ body {
     display: inline-block;
     vertical-align: middle;
     width: 15.5%;
-        font-size: 0.9em;
-    line-height: 1em;
+    font-size: 0.9em;
+    /* line-height: 1em; */
 }
 .abilities h4 {
     margin: 10px 0 2px;
     font-size: 1em;
-    line-height: 1.2em;
+    /* line-height: 1.2em; */
     text-transform: uppercase;
     /* color: #7A200D; */
     color: #fdf6d8;
 }
 .abilities p{
     margin: 0 0 10px;
-    line-height: 1.2em;
+    /* line-height: 1.2em; */
 }
 .property-block h4,
 .property-block p {
     font-size: 1em;
-    line-height: 1.2em;
+    /* line-height: 1.2em; */
     display: inline;
     margin: 0;
 }

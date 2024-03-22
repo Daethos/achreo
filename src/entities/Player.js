@@ -15,7 +15,7 @@ export const PLAYER = {
         WIDTH: 20,
     },
     SPEED: {
-        INITIAL: 1.25, // 1.75
+        INITIAL: 1.5, // 1.75
         ACCELERATION: 0.1,
         DECELERATION: 0.05,
         CAERENIC: 0.5,

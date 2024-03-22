@@ -18,7 +18,6 @@ const config: Phaser.Types.Core.GameConfig = {
     height: window.innerHeight,
     parent: 'game-container',
     backgroundColor: '#000',
-    fps: { target: 60 },
     scene: [
         Boot,
         Preloader,
@@ -33,6 +32,7 @@ const config: Phaser.Types.Core.GameConfig = {
             gravity: { x: 0, y: 0 },
         }
     },
+    fps: { limit: 60 },
     plugins: {
         global: [{
             key: 'rexVirtualJoystick',

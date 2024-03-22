@@ -243,7 +243,6 @@ export class Game extends Scene {
 
         this.fpsText = this.add.text(window.innerWidth / 2 - 32, window.innerHeight + 20, 'FPS: ', { font: '16px Cinzel', color: '#fdf6d8' });
         this.fpsText.setScrollFactor(0);
-        this.physics.world.setFPS(60);
 
         this.equipListener();
         this.unequipListener();

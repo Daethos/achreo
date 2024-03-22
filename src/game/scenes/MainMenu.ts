@@ -5,24 +5,33 @@ export class MainMenu extends Scene {
     background: GameObjects.Image;
     logo: GameObjects.Image;
     title: GameObjects.Text;
+    text: GameObjects.Text;
     logoTween: Phaser.Tweens.Tween | null;
+    centerX: number;
+    centerY: number;
 
     constructor () {
         super('MainMenu');
+        this.centerX = window.innerWidth / 2;
+        this.centerY = window.innerHeight / 2;
     };
 
     create () {
-        this.background = this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'background');
+        // this.background = this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'background');
 
         // this.logo = this.add.image(window.innerWidth / 2, window.innerHeight / 3, 'logo').setDepth(100);
-
-        this.title = this.add.text(window.innerWidth / 2, window.innerHeight / 1.5, 'Main Menu', {
+        this.title = this.add.text(this.centerX, this.centerY / 1.5, 'The Ascean', {
+                fontFamily: 'Cinzel Regular', fontSize: 76, color: '#fdf6d8',
+                stroke: '#000000', strokeThickness: 8,
+                align: 'center'
+        }).setOrigin(0.5).setDepth(100);
+        this.text = this.add.text(window.innerWidth / 2, window.innerHeight / 1.5, 'Enter Game', {
             fontFamily: 'Cinzel Regular', fontSize: 38, color: '#fdf6d8',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5).setDepth(100);
-        this.title.setInteractive();
-        this.title.on('pointerup', this.changeScene, this);
+        this.text.setInteractive();
+        this.text.on('pointerup', this.changeScene, this);
 
         EventBus.emit('current-scene-ready', this);
     };

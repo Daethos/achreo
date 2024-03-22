@@ -22,6 +22,8 @@ export class Preloader extends Scene {
         super('Preloader');
         this.centerX = window.innerWidth / 2;
         this.centerY = window.innerHeight / 2;
+        this.height = 36;
+        this.width = this.centerX * 1.5;
     };
 
     init () {
@@ -40,48 +42,16 @@ export class Preloader extends Scene {
         //     //  Update the progress bar (our bar is 464px wide, so 100% = 464px)
         //     bar.width = 4 + (460 * progress);
 
-        // });
-        this.title = new NewText(
-            this,
-            this.centerX,
-            this.centerY / 2,
-            'Loading Game',
-            'preload',
-            0.5
-        );
-
-        this.txt_progress = new NewText(
-            this,
-            this.centerX,
-            this.centerY - 5,
-            'Loading...',
-            'preload',
-            { x: 0.5, y: 1 }
-        );
-        this.txt_file = new NewText(
-            this,
-            this.centerX,
-            this.centerY / 0.67,
-            '',
-            'play',
-            { x: 0.5, y: 1 }
-        );
-        let x = this.centerX - (this.width / 2);
-        let y = this.centerY / 0.9;
-        this.progress = this.add.graphics({ x: x, y: y });
-        this.border = this.add.graphics({ x: x, y: y });
-        this.borderBorder = this.add.graphics({ x: x, y: y });
-        this.load.on('progress', this.onProgress, this);
-        this.load.on('fileprogress', this.onFileProgress, this);
+        // }); 
     };
 
     preload () {
         // this.load.setPath('assets/images');
         // this.load.image('logo', 'logo.png');
         // this.load.image('star', 'star.png');
-        this.bg = this.add.graphics({ x: 0, y: 0 });
-        this.bg.fillStyle(0x000000, 1);
-        this.bg.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        // this.bg = this.add.graphics({ x: 0, y: 0 });
+        // this.bg.fillStyle(0x000000, 1);
+        // this.bg.fillRect(0, 0, window.innerWidth, window.innerHeight);
         ParticleManager.preload(this);
         Entity.preload(this);
         // Treasure.preload(this);
@@ -131,7 +101,7 @@ export class Preloader extends Scene {
         this.load.image('AncientForestDecorative', '../assets/gui/AncientForestDecorative.png');
         this.load.image('Camp_Graves', '../assets/gui/Camp_Graves.png');
 
-        // this.createLoadingBar();
+        this.createLoadingBar();
     };
 
     create () {
@@ -154,6 +124,41 @@ export class Preloader extends Scene {
             callbackScope: this
         }); 
     }; 
+
+    createLoadingBar() {
+        this.title = new NewText(
+            this,
+            this.centerX,
+            this.centerY / 2,
+            'Loading Game',
+            'preload',
+            0.5
+        );
+
+        this.txt_progress = new NewText(
+            this,
+            this.centerX,
+            this.centerY - 5,
+            'Loading...',
+            'preload',
+            { x: 0.5, y: 1 }
+        );
+        this.txt_file = new NewText(
+            this,
+            this.centerX,
+            this.centerY / 0.67,
+            '',
+            'play',
+            { x: 0.5, y: 1 }
+        );
+        let x = this.centerX - (this.width / 2);
+        let y = this.centerY / 0.9;
+        this.progress = this.add.graphics({ x: x, y: y });
+        this.border = this.add.graphics({ x: x, y: y });
+        this.borderBorder = this.add.graphics({ x: x, y: y });
+        this.load.on('progress', this.onProgress, this);
+        this.load.on('fileprogress', this.onFileProgress, this);
+    };
 
     onProgress(val: number) {
         this.progress.clear();

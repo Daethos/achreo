@@ -6,8 +6,6 @@ import Player from '../../entities/Player';
 import Enemy from '../../entities/Enemy';
 import NPC from '../../entities/NPC';
 import NewText from '../../phaser/NewText';
-import stick from '../../assets/gui/stick.png';
-import base from '../../assets/gui/base.png';
 import ParticleManager from '../../phaser/ParticleManager';
 import LootDrop from '../../matter/LootDrop';
 import EventEmitter from '../../phaser/EventEmitter';
@@ -117,6 +115,10 @@ export class Game extends Scene {
             this.settings = settings;
         });
         // this.setup();
+
+        // ================== Add Multiple Inputs ================== \\
+        this.input.addPointer(3);
+
 
         // ================== Ascean Test Map ================== \\
         const map = this.make.tilemap({ key: 'ascean_test' });
@@ -247,6 +249,10 @@ export class Game extends Scene {
         this.purchaseListener();
         this.weaponListener();
         this.actionButtonListener();
+
+        // =========================== FULLSCREEN =========================== \\
+        this.scale.fullscreenTarget = document.getElementById('game-container');
+        this.scale.startFullscreen();
     };
 
     equipListener = () => EventEmitter.on('equip-sound', () => {

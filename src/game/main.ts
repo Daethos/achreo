@@ -18,6 +18,7 @@ const config: Phaser.Types.Core.GameConfig = {
     height: window.innerHeight,
     parent: 'game-container',
     backgroundColor: '#000',
+    fps: { target: 60 },
     scene: [
         Boot,
         Preloader,

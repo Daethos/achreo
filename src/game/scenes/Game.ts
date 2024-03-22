@@ -251,8 +251,8 @@ export class Game extends Scene {
         this.actionButtonListener();
 
         // =========================== FULLSCREEN =========================== \\
-        this.scale.fullscreenTarget = document.getElementById('game-container');
-        this.scale.startFullscreen();
+        // this.scale.fullscreenTarget = document.getElementById('game-container');
+        // this.scale.startFullscreen();
     };
 
     equipListener = () => EventEmitter.on('equip-sound', () => {

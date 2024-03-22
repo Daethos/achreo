@@ -1,5 +1,4 @@
 import Equipment from "../models/equipment";
-import EventEmitter from "eventemitter3";
 import { asceanCompiler } from "./ascean";
 
 export type NPC = {

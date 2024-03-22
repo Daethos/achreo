@@ -18,10 +18,10 @@ export default function AttributesCreate({ newAscean, setNewAscean, prevMastery,
     };
 
     const ceiling = (name: string): boolean => {
-        return pool() < 25 && newAscean?.[name as keyof typeof newAscean] as number < 18;
+        return pool() < 25 && newAscean()?.[name as keyof typeof newAscean] as number < 18;
     };
     const floor = (name: string): boolean => {
-        return newAscean?.[name as keyof typeof newAscean] as number > 8;
+        return newAscean()?.[name as keyof typeof newAscean] as number > 8;
     };
 
     createMemo(() => {
@@ -37,15 +37,15 @@ export default function AttributesCreate({ newAscean, setNewAscean, prevMastery,
 
     return (
         <div class='center creature-heading' style={{ width: '100%' }}>
-            <h1 class='gold mb-3'>Attribute Pool: {pool()} / 25</h1>
+            <h1 class='gold' style={{ 'margin-bottom' : '5%' }}>Attribute Pool: {pool()} / 25</h1>
             <For each={Attributes}>
                 {(attribute) => (
-                    <InputGroup  style={{ width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block' }}>
+                    <InputGroup style={{ width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block', padding: '0.5em' }}>
                         <p class='tighten'>{attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)}</p>
                         <span class='gold'>{newAscean()[attribute.name as keyof typeof newAscean]} ({Math.floor((newAscean()[attribute.name as keyof typeof newAscean] as number - 10) / 2) > 0 ? '+' : ''}{Math.floor((newAscean()[attribute.name as keyof typeof newAscean] as number - 10) / 2)})</span>
                         <br />
-                        <button class='button p-1' onClick={(e) => handleChange(e, attribute.name, -1)} style={{ display: floor(attribute.name) ? 'inline-block' : 'none', width: '20%', height: '50%' }}>-</button>
-                        <button class='button p-1' onClick={(e) => handleChange(e, attribute.name, 1)} style={{ display: ceiling(attribute.name) ? 'inline-block' : 'none', width: '20%', height: '50%' }}>+</button>
+                        <button class='button' onClick={(e) => handleChange(e, attribute.name, -1)} style={{ display: floor(attribute.name) ? 'inline-block' : 'none', width: 'auto', height: 'auto' }}>-</button>
+                        <button class='button' onClick={(e) => handleChange(e, attribute.name, 1)} style={{ display: ceiling(attribute.name) ? 'inline-block' : 'none', width: 'auto', height: 'auto' }}>+</button>
                     </InputGroup>
                 )}
             </For>

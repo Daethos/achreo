@@ -34,7 +34,8 @@ export function Preview({ newAscean }: { newAscean: Accessor<CharacterSheet> }) 
         return false;
     };
     return (
-        <div class={dimensions().ORIENTATION === 'landscape' ? 'creature-heading cornerTL ml-5' : 'creature-heading center'}>
+        <div class={dimensions().ORIENTATION === 'landscape' ? 'creature-heading cornerTL' : 'creature-heading center'}
+            style={dimensions().ORIENTATION === 'landscape' ? { 'margin': '0 1%' } : {}}>
             <h1>{newAscean().name}</h1>
             <h2>
                 <For each={description().split('\n')}>
@@ -43,13 +44,13 @@ export function Preview({ newAscean }: { newAscean: Accessor<CharacterSheet> }) 
                     )}
                 </For>
             </h2>
-            <p class='mb-5' style={{ color: 'gold', 'font-size': '1.05em' }}>
+            <p style={{ color: 'gold', 'font-size': '1.05em' }}>
                 {newAscean().faith.charAt(0).toUpperCase() + newAscean().faith.slice(1)} [Faith] | {newAscean().mastery.charAt(0).toUpperCase() + newAscean().mastery.slice(1)} [Mastery]
-            <img src={asceanPic()} alt={`${newAscean().origin} ${newAscean().sex}`} class='borderCircle'
+            <img src={asceanPic()} alt={`${newAscean().origin} ${newAscean().sex}`} id={dimensions().ORIENTATION === 'landscape' ? '' :'origin-pic'} class='borderCircle'
                 style={{ 
                     height: dimensions().ORIENTATION === 'landscape' ? '20%' : '20%', 
                     width: dimensions().ORIENTATION === 'landscape' ? '7.5%' : '20%', 
-                    margin: dimensions().ORIENTATION === 'landscape' ? '-7.5% 0 0 25%' : '0 auto',
+                    margin: dimensions().ORIENTATION === 'landscape' ? '-7.5% 0 0 2.5%' : '',
                     border: '0.15em solid gold', 
             }} /> 
             </p>

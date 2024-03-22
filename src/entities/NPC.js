@@ -2,9 +2,8 @@ import * as Phaser from "phaser";
 import Entity from "./Entity"; 
 import StateMachine, { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";  
-import { v4 as uuidv4 } from 'uuid';
 import EventEmitter from "../phaser/EventEmitter";
-
+import { getRandomNumStr } from '../models/equipment';
 let idCount = 0;
 
 export default class NPC extends Entity { 
@@ -16,7 +15,7 @@ export default class NPC extends Entity {
         if (idCount >= 8) idCount = 0;
         this.id = idCount++;
         this.scene.add.existing(this);
-        this.enemyID = uuidv4();
+        this.enemyID = getRandomNumStr(16);
         const types = ['Merchant-Alchemy', 'Merchant-Armor', 'Merchant-Smith', 'Merchant-Jewelry', 'Merchant-General', 'Merchant-Tailor', 'Merchant-Mystic', 'Merchant-Weapon'];
         this.npcType = types[this.id];
         this.npcTarget = null;

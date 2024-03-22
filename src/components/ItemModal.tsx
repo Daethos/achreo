@@ -29,7 +29,7 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                 </div>
                 <Show when={!empty}> 
                 <svg height="5" width="100%" class="tapered-rule mt-2">
-                    <polyline points="0,0 550,2.5 0,5"></polyline>
+                    <polyline points="0,0 400,2.5 0,5"></polyline>
                 </svg>
                 <div class='center'>
                     <Show when={item?.type && item?.grip}>

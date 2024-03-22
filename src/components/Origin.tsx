@@ -98,7 +98,7 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
                     <h2 class='m-3 super' style={{ 'text-align': 'center' }}>
                         {origin.bio}<br /><br />{origin.bioTwo}
                     </h2>
-                    <p class="gold small mb-3 mx-3" style={{ 'font-size': '0.5em' }}>Bonuses: {origin.bonus}</p>
+                    <p class="gold small mb-3 mx-3">Bonuses: {origin.bonus}</p>
                 </div>
             </div>
             </div>

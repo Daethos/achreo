@@ -21,10 +21,10 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                 <h1>{ascean().name}</h1>
                 <h2 class='mb-3'>{ascean().description}</h2>
                 <img src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} id='origin-pic' />
-                <p class='gold' style={{ 'font-size': '1.25em'}}>Level: {ascean().level}</p>
-                <p class='gold' style={{ 'font-size': '1.25em'}}>Experience: {ascean().experience}</p>
-                <p class='gold' style={{ 'font-size': '1.25em'}}>Mastery: {ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</p>
-                <p class='gold' style={{ 'font-size': '1.25em'}}>Health: {ascean().health.current} / {ascean().health.max}</p>
+                <p class='gold'>Level: {ascean().level}</p>
+                <p class='gold'>Experience: {ascean().experience}</p>
+                <p class='gold'>Mastery: {ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</p>
+                <p class='gold'>Health: {ascean().health.current} / {ascean().health.max}</p>
                 <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
                 <AsceanImageCard ascean={ascean} weaponOne={ascean().weaponOne} weaponTwo={ascean().weaponTwo} weaponThree={ascean().weaponThree} show={show} setShow={setShow} setEquipment={setEquipment} />
                 <br />
@@ -46,12 +46,12 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                 <div class='drop-25 left' style={{ width: '50%' }}>
                     <div class='center creature-heading' style={{ width: '100%', height: '100%' }}>
                         <h1>{ascean().name}</h1>
-                        <h2 class='mb-3'>{ascean().description}</h2>
+                        <h2>{ascean().description}</h2>
                         <img src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} id='origin-pic' />
-                        <p class='gold' style={{ 'font-size': '1.25em'}}>Level: {ascean().level}</p>
-                        <p class='gold' style={{ 'font-size': '1.25em'}}>Experience: {ascean().experience}</p>
-                        <p class='gold' style={{ 'font-size': '1.25em'}}>Mastery: {ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</p>
-                        <p class='gold' style={{ 'font-size': '1.25em'}}>Health: {ascean().health.current} / {ascean().health.max}</p>
+                        <p class='gold'>Level: {ascean().level}</p>
+                        <p class='gold'>Experience: {ascean().experience}</p>
+                        <p class='gold'>Mastery: {ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</p>
+                        <p class='gold'>Health: {ascean().health.current} / {ascean().health.max}</p>
                     </div>
                 </div>
 

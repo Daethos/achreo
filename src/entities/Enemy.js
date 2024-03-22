@@ -1,11 +1,11 @@
-import * as Phaser from "phaser";
+import Phaser from "phaser";
 import Entity, { FRAME_COUNT } from "./Entity"; 
 import { screenShake } from "../phaser/ScreenShake";
 import StateMachine, { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
-import { v4 as uuidv4 } from 'uuid';
 import EventEmitter from "../phaser/EventEmitter";
+import { getRandomNumStr } from "../models/equipment";
 
 const DISTANCE = {
     MIN: 0,
@@ -36,7 +36,7 @@ export default class Enemy extends Entity {
     constructor(data) {
         super({ ...data, name: "enemy", ascean: null, health: 1 }); 
         this.scene.add.existing(this);
-        this.enemyID = uuidv4();
+        this.enemyID = getRandomNumStr(16);
         this.createEnemy(); 
         this.stateMachine = new StateMachine(this, 'enemy');
         this.stateMachine

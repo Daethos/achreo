@@ -1,5 +1,5 @@
 import Entity from "../entities/Entity";
-import * as Phaser from "phaser";
+import Phaser from "phaser";
 import TreasureChest from '../images/treasure-chest.png';
 // import TreasureChestJson from '../images/treasure-chest_atlas.json';
 

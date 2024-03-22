@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import Entity, { FRAME_COUNT, SWING_TIME } from "./Entity";  
+import Entity, { FRAME_COUNT } from "./Entity";  
 import { screenShake, walk } from "../phaser/ScreenShake";
 import StateMachine, { States } from "../phaser/StateMachine";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";

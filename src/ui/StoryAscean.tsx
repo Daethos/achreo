@@ -374,7 +374,7 @@ const StoryAscean = ({ settings, setSettings, ascean, actions, specials, asceanV
                         <div>Physical Defense: <span class='gold'>{combatState()?.playerDefense?.physicalDefenseModifier}% / [{combatState()?.playerDefense?.physicalPosture}%]</span>{'\n'}</div>
                         <div>Initiative: <span class='gold'>{combatState()?.playerAttributes?.initiative}</span></div>
                     </div>
-                    <AttributeCompiler ascean={combatState().player} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
+                    <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
                 </div>
             ) : asceanViews === VIEWS.INVENTORY ? (
                 highlighted().comparing && (

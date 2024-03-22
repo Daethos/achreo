@@ -40,7 +40,7 @@ function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: A
                 <div style={{ 'margin-bottom': '10%' }}>
                     <HealthBar totalPlayerHealth={state().computerHealth} newPlayerHealth={state().newComputerHealth} />
                 </div>
-                <AttributeCompiler ascean={state().computer} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} />
+                <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} />
                 <div>
                     <AsceanImageCard ascean={enemy as Accessor<Ascean>} weaponOne={state().computerWeapons[0]} weaponTwo={state().computerWeapons[1]} weaponThree={state().computerWeapons[2]} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
                 </div>
@@ -60,7 +60,7 @@ function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: A
     );
 };
 
-export default function EnemyUI({ state, pauseState, enemies }: { state: Accessor<Combat>, pauseState: boolean, enemies: any[] }) {
+export default function EnemyUI({ state, pauseState, enemies }: { state: Accessor<Combat>, pauseState: boolean, enemies: Accessor<any[]> }) {
     const [playerEnemyPercentage, setEnemyHealthPercentage] = createSignal(0); 
     const [showModal, setShowModal] = createSignal(false);
     const [itemShow, setItemShow] = createSignal(false);
@@ -95,18 +95,18 @@ export default function EnemyUI({ state, pauseState, enemies }: { state: Accesso
                 </div>
             </Show> 
             <div class='enemyPreview' style={{ transform: 'scale(0.5)' }}>
-            <For each={enemies}>{((enemy, index) => {
-                const prevIdx = Number(index) - 1 === -1 ? enemies.length - 1 : Number(index) - 1;
-                const prevIdxMore = prevIdx - 1 === -1 ? enemies.length - 1 : prevIdx - 1;
-                const truePrev = enemies[prevIdxMore].id !== state().enemyID && enemy.id !== enemies[prevIdxMore].id;
-                if (enemies[prevIdx].id !== state().enemyID || enemies.length < 2) return;
+            <For each={enemies()}>{((enemy, index) => {
+                const prevIdx = Number(index) - 1 === -1 ? enemies().length - 1 : Number(index) - 1;
+                const prevIdxMore = prevIdx - 1 === -1 ? enemies().length - 1 : prevIdx - 1;
+                const truePrev = enemies()[prevIdxMore].id !== state().enemyID && enemy.id !== enemies()[prevIdxMore].id;
+                if (enemies()[prevIdx].id !== state().enemyID || enemies().length < 2) return;
                 return ( 
                     <div>
                     <Show when={truePrev}>
-                        <button class='center' style={{ width: '50%', display: 'inline-block' }} onClick={() => fetchEnemy(enemies[prevIdxMore])}>
+                        <button class='center' style={{ width: '50%', display: 'inline-block' }} onClick={() => fetchEnemy(enemies()[prevIdxMore])}>
                             <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`<< Prev`}</div>
-                            <img src={`../assets/images/${enemies[prevIdxMore].game.origin}-${enemies[prevIdxMore].game.sex}.jpg`} alt={enemies[prevIdxMore].game.name} id='origin-pic' />
-                            <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{enemies[prevIdxMore].game.name}</div>
+                            <img src={`../assets/images/${enemies()[prevIdxMore].game.origin}-${enemies()[prevIdxMore].game.sex}.jpg`} alt={enemies()[prevIdxMore].game.name} id='origin-pic' />
+                            <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{enemies()[prevIdxMore].game.name}</div>
                         </button>
                     </Show>
                     <button class='center' style={{ width: '50%', display: 'inline-block', 'margin-left': truePrev ? '' : '50%' }} onClick={() => fetchEnemy(enemy)}>

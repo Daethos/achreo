@@ -30,7 +30,7 @@ interface Props {
 export default function BaseUI({ ascean, combat, game, settings, setSettings, stamina }: Props) {
     const [staminaPercentage, setStaminaPercentage] = createSignal(0);
     const [gameTimer, setGameTimer] = createSignal(0);
-    const [enemies, setEnemies] = createSignal([]);
+    const [enemies, setEnemies] = createSignal<any[]>([]);
     const [asceanState, setAsceanState] = createSignal({
         ascean: ascean(),
         experience: ascean().experience,

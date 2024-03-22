@@ -1,0 +1,209 @@
+import { Shields, Helmets, Legs, Chests } from "../assets/db/equipment";
+import { Weapons } from "../assets/db/weaponry";
+import Equipment, { getRandomNumStr, mutate } from "./equipment";
+import { Amulets, Rings, Trinkets } from "../assets/db/jewelry";
+import { Statistics, initStatistics } from "../utility/statistics";
+import { initCharacter } from "../utility/ascean";
+
+export default class Ascean {
+    _id: string = getRandomNumStr(16);
+    origin: string = 'Ashtre';
+    sex: string = 'Man';
+    mastery: string = 'achre';
+    level: number = 1;
+    experience: number = 0;
+    faith: string = 'Adherent';
+    inventory: any[] = [];
+    currency: { silver: number; gold: number; } = { silver: 0, gold: 0 };
+    firewater: { current: number; max: number; } = { current: 5, max: 5 };
+    health: { current: number; max: number; } = { current: 0, max: 0 };
+    name: string = 'Kreceus';
+    description: string = 'Apostle of Astra';
+    constitution: number = 12;
+    strength: number = 10;
+    agility: number = 12;
+    achre: number = 16;
+    caeren: number = 10;
+    kyosir: number = 13;
+    imgUrl: string = '../assets/images/Asthre-Man.jpg';
+    helmet: Equipment;
+    chest: Equipment;
+    legs: Equipment;
+    weaponOne: Equipment;
+    weaponTwo: Equipment;
+    weaponThree: Equipment;
+    shield: Equipment;
+    amulet: Equipment;
+    ringOne: Equipment;
+    ringTwo: Equipment;
+    trinket: Equipment;
+    statistics: Statistics;
+
+    constructor(ascean: Ascean) {
+        this._id = ascean._id;
+        this.experience = ascean.experience;
+        this.faith = ascean.faith;
+        this.inventory = ascean.inventory;
+        this.level = ascean.level;
+        this.mastery = ascean.mastery;
+        this.sex = ascean.sex;
+        this.origin = ascean.origin;
+        this.currency = { silver: ascean?.currency.silver, gold: 0 };
+        this.firewater = { current: ascean?.firewater?.current || 5, max: ascean?.firewater?.max || 5 };
+        this.health = { current: ascean?.health?.current || 0, max: ascean?.health?.max || 0 };
+        this.level = ascean.level || 1;
+        this.inventory = ascean.inventory || [];
+        this.name = ascean.name;
+        this.description = ascean.description;
+        this.constitution = ascean.constitution;
+        this.strength = ascean.strength;
+        this.agility = ascean.agility;
+        this.achre = ascean.achre;
+        this.caeren = ascean.caeren;
+        this.kyosir = ascean.kyosir;
+        this.imgUrl = ascean.imgUrl;
+        this.helmet = ascean.helmet;
+        this.chest = ascean.chest;
+        this.legs = ascean.legs;
+        this.weaponOne = ascean.weaponOne;
+        this.weaponTwo = ascean.weaponTwo;
+        this.weaponThree = ascean.weaponThree;
+        this.shield = ascean.shield;
+        this.amulet = ascean.amulet;
+        this.ringOne = ascean.ringOne;
+        this.ringTwo = ascean.ringTwo;
+        this.trinket = ascean.trinket;
+        this.statistics = initStatistics;
+    };
+};
+
+function createAscean(data: any): Ascean {
+    const pref = data.preference;
+    const faith = data.faith;
+    switch (pref) {
+        case 'Plate-Mail':
+            data.helmet = Helmets.find(item => item.name === 'Plate Helm (Starter)');
+            data.chest = Chests.find(item => item.name === 'Plate Cuirass (Starter)');
+            data.legs = Legs.find(item => item.name === 'Plate Greaves (Starter)');
+            data.shield = Shields.find(item => item.name === 'Pavise' && item.rarity === 'Common');
+            break;
+        case 'Chain-Mail':
+            data.helmet = Helmets.find(item => item.name === 'Chain Helm (Starter)');
+            data.chest = Chests.find(item => item.name === 'Chain Armor (Starter)');
+            data.legs = Legs.find(item => item.name === 'Chain Greaves (Starter)');
+            data.shield = Shields.find(item => item.name === 'Scutum' && item.rarity === 'Common');
+            break;
+        case 'Leather-Mail':
+            data.helmet = Helmets.find(item => item.name === 'Leather Helm (Starter)');
+            data.chest = Chests.find(item => item.name === 'Leather Brigandine (Starter)');
+            data.legs = Legs.find(item => item.name === 'Leather Sandals (Starter)');
+            data.shield = Shields.find(item => item.name === 'Heater' && item.rarity === 'Common');
+            break;
+        case 'Leather-Cloth':
+            data.helmet = Helmets.find(item => item.name === 'Cloth Helm (Starter)');
+            data.chest = Chests.find(item => item.name === 'Cloth Robes (Starter)');
+            data.legs = Legs.find(item => item.name === 'Cloth Skirt (Starter)');
+            data.shield = Shields.find(item => item.name === 'Parma' && item.rarity === 'Common');
+            break;
+        default:
+            break;
+    };
+
+    const strength = parseInt(data.strength);
+    const agility = parseInt(data.agility);
+    const achre = parseInt(data.achre);
+    const caeren = parseInt(data.caeren);
+    const physical = strength + agility;
+    const magical = achre + caeren;
+
+    if (faith === 'Adherent') {
+        if (physical > magical) {
+            if (strength > agility) {
+                data.weaponOne = 'War Hammer';
+                data.weaponTwo = 'Sunshatter';
+            } else if (strength < agility) {
+                data.weaponOne = 'Longsword';
+                data.weaponTwo = 'Sevashyr';
+            } else {
+                data.weaponOne = 'Claymore';
+                data.weaponTwo = 'Longbow';
+            };
+        } else {
+            if (achre > caeren) {
+                data.weaponOne = 'Astral Spear';
+                data.weaponTwo = "Quor'eite Crush";
+            } else if (achre < caeren) {
+                data.weaponOne = 'Ashfyre';
+                data.weaponTwo = 'Nyrolean Wave';
+            } else {
+                data.weaponOne = 'Wildstrike';
+                data.weaponTwo = 'Nightmare';
+            };
+        };
+    } else {
+        if (physical > magical) {
+            if (strength > agility) {
+                data.weaponOne = 'Daethic Halberd';
+                data.weaponTwo = 'Hush of Daethos';
+            } else if (strength < agility) {
+                data.weaponOne = 'Hush';
+                data.weaponTwo = 'Daethic Bow';
+            } else {
+                data.weaponOne = 'Daethic Halberd';
+                data.weaponTwo = 'Daethic Bow';
+            };
+        } else {
+            if (achre > caeren) {
+                data.weaponOne = 'Tendril';
+                data.weaponTwo = 'Daethic Bow';
+            } else if (achre < caeren) {
+                data.weaponOne = 'Hush of Daethos';
+                data.weaponTwo = 'Tendril of Daethos';
+            } else {
+                data.weaponOne = 'Blessed Dagger';
+                data.weaponTwo = 'Cursed Dagger';
+            };
+        };
+    };
+
+    const weaponOne = Weapons.find(item => (item.name === data.weaponOne && item.rarity === 'Common'));
+    const weaponTwo = Weapons.find(item => (item.name === data.weaponTwo && item.rarity === 'Common'));
+    const helmet = data.helmet;
+    const chest = data.chest;
+    const legs = data.legs;
+    const shield = data.shield;
+
+    const weaponThree = Weapons.find(item => item.rarity === 'Default');
+    const ringOne = Rings.find(ring => ring.rarity === 'Default');
+    const ringTwo = Rings.find(ring => ring.rarity === 'Default');
+    const amulet = Amulets.find(amulet => amulet.rarity === 'Default');
+    const trinket = Trinkets.find(trinket => trinket.rarity === 'Default');
+
+    mutate([weaponOne, weaponTwo, shield, weaponThree, helmet, chest, legs, ringOne, ringTwo, amulet, trinket] as any[], 'Common')
+    const ascean = new Ascean({
+        ...data,
+        _id: getRandomNumStr(16),
+        weaponOne: weaponOne,
+        weaponTwo: weaponTwo,
+        weaponThree: weaponThree,
+        shield: shield,
+        helmet: helmet,
+        chest: chest,
+        legs: legs,
+        ringOne: ringOne,
+        ringTwo: ringTwo,
+        amulet: amulet,
+        trinket: trinket,
+        currency: {
+            silver: data.kyosir * 3,
+            gold: 0
+        },
+        experience: 0,
+        imgUrl: `../assets/images/${data.origin}-${data.sex}.jpg`
+    });
+    return ascean;
+};
+
+const initAscean: Ascean = createAscean(initCharacter);;
+
+export { createAscean, initAscean };

@@ -1,0 +1,216 @@
+{
+    "frames": [
+        {
+            "filename": "rabbit_move_0",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 0,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_1",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 32,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_2",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 0,
+                "y": 36
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_3",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 32,
+                "y": 36
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_4",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 64,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_5",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 64,
+                "y": 36
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_6",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 0,
+                "y": 72
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_7",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 32,
+                "y": 72
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_8",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 64,
+                "y": 72
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_9",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 96,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_10",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 96,
+                "y": 36
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_11",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 96,
+                "y": 72
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_12",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 0,
+                "y": 108
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_13",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 32,
+                "y": 108
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_14",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 64,
+                "y": 108
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "rabbit_move_15",
+            "frame": {
+                "w": 32,
+                "h": 36,
+                "x": 96,
+                "y": 108
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        }
+    ],
+    "meta": {
+        "description": "Atlas generado con Atlas Packer Gamma V2",
+        "web": "https://gammafp.github.io/atlas-packer-phaser/"
+    }
+}

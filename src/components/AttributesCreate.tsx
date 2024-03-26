@@ -36,16 +36,16 @@ export default function AttributesCreate({ newAscean, setNewAscean, prevMastery,
     });
 
     return (
-        <div class='center creature-heading' style={{ width: '100%' }}>
+        <div class='center creature-heading' style={{ 'margin-bottom': '3%', width: '100%' }}>
             <h1 class='gold' style={{ 'margin-bottom' : '5%' }}>Attribute Pool: {pool()} / 25</h1>
             <For each={Attributes}>
                 {(attribute) => (
-                    <InputGroup style={{ width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block', padding: '0.5em' }}>
+                    <InputGroup style={{ width: dimensions().ORIENTATION === 'landscape' ? `33%` : `40%`, display: 'inline-block' }}>
                         <p class='tighten'>{attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)}</p>
                         <span class='gold'>{newAscean()[attribute.name as keyof typeof newAscean]} ({Math.floor((newAscean()[attribute.name as keyof typeof newAscean] as number - 10) / 2) > 0 ? '+' : ''}{Math.floor((newAscean()[attribute.name as keyof typeof newAscean] as number - 10) / 2)})</span>
                         <br />
-                        <button class='button' onClick={(e) => handleChange(e, attribute.name, -1)} style={{ display: floor(attribute.name) ? 'inline-block' : 'none', width: 'auto', height: 'auto' }}>-</button>
-                        <button class='button' onClick={(e) => handleChange(e, attribute.name, 1)} style={{ display: ceiling(attribute.name) ? 'inline-block' : 'none', width: 'auto', height: 'auto' }}>+</button>
+                        <button class='highlight' onClick={(e) => handleChange(e, attribute.name, -1)} style={{ display: floor(attribute.name) ? 'inline-block' : 'none', width: 'auto', height: 'auto' }}>-</button>
+                        <button class='highlight' onClick={(e) => handleChange(e, attribute.name, 1)} style={{ display: ceiling(attribute.name) ? 'inline-block' : 'none', width: 'auto', height: 'auto' }}>+</button>
                     </InputGroup>
                 )}
             </For>

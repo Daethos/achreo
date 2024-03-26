@@ -3,7 +3,6 @@ import { CharacterSheet } from "../utility/ascean";
  
 const ArmorCard = ({ preference, newAscean, setNewAscean, show, setShow, setArmor }: { preference: any; newAscean: Accessor<CharacterSheet>; setNewAscean: Setter<CharacterSheet>; show: Accessor<boolean>; setShow: Setter<boolean>; setArmor: any }) => {
     const handleArmor = () => {
-        console.log('Armor', preference);
         setNewAscean({ ...newAscean(), preference: preference.name });
         setArmor(preference);
         setShow(!show());
@@ -20,13 +19,13 @@ export default function Sex({ newAscean, setNewAscean }: { newAscean: Accessor<C
     const handleShow = () => setShow(!show());
     const preferenceState = [
         { name: 'Plate-Mail', description: 'Heavier armor inhibiting move speed, offset with higher absolute defense.' },
-        { name: 'Chain-Mail', description: 'Malleable and defensible.' },
-        { name: 'Leather-Mail', description: 'Light armor allowing for unrestricted move speed.' },
+        { name: 'Chain-Mail', description: 'Malleable and defensible, though still weighted.' },
+        { name: 'Leather-Mail', description: 'Light armor allowing for unrestricted movement at the cost of exposure.' },
         { name: 'Leather-Cloth', description: 'Little physical value translates into greater mobility.' },
     ];
 
     return (
-        <div class='center creature-heading'>
+        <div class='center creature-heading' style={{ 'margin-bottom': '3%' }}>
             <h1 class='gold'>
                 Armor
             </h1> 
@@ -37,10 +36,13 @@ export default function Sex({ newAscean, setNewAscean }: { newAscean: Accessor<C
             </For>
             <Show when={show()}>
                 <div class='modal' onClick={handleShow}>
-                <div class='border superCenter'>
-                    <div class='border p-5'>
+                <div class='border superCenter' style={{ 'text-wrap': 'balance' }}>
+                    <h2 class='p-5' style={{ 'margin': '5%' }}>
                         {armor().description}
-                    </div>
+                    </h2>
+                    <p class='gold small'>
+                        Note: Magic carries a quality all its own, with its own concerns.
+                    </p>
                 </div>
                 </div>
             </Show> 

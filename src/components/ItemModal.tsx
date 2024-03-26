@@ -13,18 +13,25 @@ interface Props {
     caerenic: boolean;
 };
 
+
 export default function ItemModal({ item, stalwart, caerenic }: Props) {
     if (!item) return undefined;
+    const attribute = item?.constitution + item?.strength + item?.agility + item?.achre + item?.caeren + item?.kyosir;
     const dimensions = useResizeListener();
     const empty = item.name.includes('Empty');
     const name = item.name.includes('Starter') ? ( item.name.split(' ')[0] + ' ' + item.name.split(' ')[1] ) : ( item.name );
+    const centerImage = dimensions()?.ORIENTATION === 'landscape' ? (name.length > 10 ? '7.5%' : '15%') : (name.length > 13 ? '40%' : name.length > 10 ? '5%' : '10%');
     return (
-        <div class="border superCenter" style={{ width: dimensions()?.ORIENTATION === 'landscape' ? '50%' : '70%' }}> 
+        <div class="border superCenter" style={{ width: dimensions()?.ORIENTATION === 'landscape' ? '50%' : '75%' }}> 
             <div class='border' style={{ height: '100%' }}>
                 <div class='creature-heading' style={{ width: '100%'}}>
-                    <h1 style={ empty ? { 'text-align': 'center' } : { display: 'inline-flex' }}>
-                        {name} <span class='ml-3' style={{ transform: 'scale(1.2)' }}><Show when={!empty}>
-                            <img src={item.imgUrl} /></Show></span>
+                    <h1 style={ empty ? { 'text-align': 'center' } : { 'justify-content': 'space-evenly' }}>
+                        {name} 
+                            <Show when={!empty}>
+                            <span style={{ transform: 'scale(1.2)', float: 'right', 'margin-right': centerImage }}>
+                                <img src={item.imgUrl} />
+                            </span>
+                            </Show>
                     </h1>
                 </div>
                 <Show when={!empty}> 
@@ -33,20 +40,21 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                 </svg>
                 <div class='center'>
                     <Show when={item?.type && item?.grip}>
-                        <h2 class='my-2' style={font('1.25em', 'gold')}>
-                            {item?.type} [{item?.grip}] <br />
-                            {item?.attackType} [{item?.damageType?.[0]}{item?.damageType?.[1] ? ' / ' + item.damageType[1] : '' }{item?.damageType?.[2] ? ' / ' + item?.damageType?.[2] : '' }] <br />
-                        </h2>
+                        <p class='my-2' style={font('1.25em')}>
+                            {item?.type} [<span style={{ 'font-style': 'italic', color: 'gold' }}>{item?.grip}</span>] <br />
+                            {item?.attackType} [<span style={{ 'font-style': 'italic', color: 'gold' }}>{item?.damageType?.[0]}{item?.damageType?.[1] ? ' / ' + item.damageType[1] : '' }{item?.damageType?.[2] ? ' / ' + item?.damageType?.[2] : '' }</span>] <br />
+                        </p>
                     </Show>
                     <Show when={item?.type && !item?.grip}>
-                        <h2 class='my-2' style={font('1.25em', 'gold')}>{item.type}</h2>
+                        <p class='my-2' style={font('1.25em')}>{item.type}</p>
                     </Show>
                     { item?.constitution > 0 ? attrSplitter('CON', item?.constitution) : '' }
                     { item?.strength > 0 ? attrSplitter('STR', item?.strength) : '' }
                     { item?.agility > 0 ? attrSplitter('AGI', item?.agility) : '' }
                     { item?.achre > 0 ? attrSplitter('ACH', item?.achre) : '' }
                     { item?.caeren > 0 ? attrSplitter('CAER', item?.caeren) : '' }
-                    { item?.kyosir > 0 ? attrSplitter('KYO', item?.kyosir) : '' }<br />
+                    { item?.kyosir > 0 ? attrSplitter('KYO', item?.kyosir) : '' }
+                    { attribute ? <br /> : '' }
                     Damage: <span class='gold'>{item?.physicalDamage}</span> Phys | <span class='gold'>{item?.magicalDamage}</span> Magi <br />
                     <Show when={item?.physicalResistance || item?.magicalResistance}>
                         Defense: <span class='gold'>{item?.physicalResistance}</span> Phys | <span class='gold'>{item?.magicalResistance}</span> Magi <br />
@@ -60,11 +68,11 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                     <Show when={item?.influences && item?.influences?.length > 0}>
                         Influence: <span class='gold'>{item?.influences?.[0]}</span>
                     </Show>
-                    <p class='my-4' style={{ color: getRarityColor(item?.rarity as string), 'font-size': '1.5em' }}>
+                    <div style={{ color: getRarityColor(item?.rarity as string), 'font-size': '1.5em', 'margin-top': '3%' }}>
                         {item?.rarity}
-                    </p>
+                    </div>
                     <Show when={stalwart}>
-                        <p class='gold' >
+                        <p class='gold' style={{ 'font-size': '0.75em' }}>
                             Stalwart - You are engaged in combat with your shield raised, adding it to your passive defense. 
                             You receive 50% less poise damage. 
                             You receive 10% less damage. 
@@ -73,7 +81,7 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                         </p>
                     </Show>
                     <Show when={caerenic}>
-                        <p class='gold' >
+                        <p class='gold' style={{ 'font-size': '0.75em' }}>
                             Caerenic - You attempt to harnass your caer with your achre, increasing your damage by 15%. 
                             You move 15% faster. 
                             You receive 25% more damage. 

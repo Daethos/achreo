@@ -4,12 +4,9 @@ import { CharacterSheet } from "../utility/ascean";
 
 export function Preview({ newAscean }: { newAscean: Accessor<CharacterSheet> }) {
     const dimensions = useResizeListener();
-    const [asceanPic, setAsceanPic] = createSignal('');
     const [description, setDescription] = createSignal('');
 
     createEffect(() => {
-        const newPic = `../assets/images/${newAscean().origin}-${newAscean().sex}.jpg`
-        setAsceanPic(newPic);
         createDescription(newAscean().description);
     });
     
@@ -34,20 +31,19 @@ export function Preview({ newAscean }: { newAscean: Accessor<CharacterSheet> }) 
         return false;
     };
     return (
-        <div class={dimensions().ORIENTATION === 'landscape' ? 'creature-heading cornerTL' : 'creature-heading center'}
-            style={dimensions().ORIENTATION === 'landscape' ? { 'margin': '0 1%' } : {}}>
+        <div class={dimensions().ORIENTATION === 'landscape' ? 'creature-heading cornerTL' : 'creature-heading center'} style={dimensions().ORIENTATION === 'landscape' ? { 'margin': '-0.5% 1%' } : {}}>
             <h1>{newAscean().name}</h1>
-            <h2 style={{ margin:  dimensions().ORIENTATION === 'landscape' ? '-1% 0' : '' }}>
+            <h2 style={{ margin:  dimensions().ORIENTATION === 'landscape' ? '-1.25% 0' : '' }}>
                 <For each={description().split('\n')}>
                     {(line) => (
                         <p>{line}</p>
                     )}
                 </For>
             </h2>
-            <p style={{ color: 'gold', 'font-size': '1.05em' }}>
+            <p style={{ color: 'gold', 'font-size': '1em' }}>
                 {newAscean().faith.charAt(0).toUpperCase() + newAscean().faith.slice(1)} [Faith] | {newAscean().mastery.charAt(0).toUpperCase() + newAscean().mastery.slice(1)} [Mastery]
             </p>
-            <img src={asceanPic()} alt={`${newAscean().origin} ${newAscean().sex}`} id={dimensions().ORIENTATION === 'landscape' ? 'origin-pic' :'origin-pic'} class='borderCircle'
+            <img src={`../assets/images/${newAscean().origin}-${newAscean().sex}.jpg`} alt={`${newAscean().origin} ${newAscean().sex}`} id='origin-pic'
                 style={{ 
                     height: dimensions().ORIENTATION === 'landscape' ? '20%' : '20%', 
                     width: dimensions().ORIENTATION === 'landscape' ? '7.5%' : '20%', 

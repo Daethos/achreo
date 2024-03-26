@@ -16,8 +16,8 @@ export default function HealthBar({ totalPlayerHealth, newPlayerHealth }: Props)
 
     return ( 
         <div class='healthbar center'>
-            <p class='playerPortrait center' style={{ color: 'purple', 'font-family': 'Cinzel Regular' }}>{`${Math.round(newPlayerHealth)} / ${totalPlayerHealth} [${playerHealthPercentage}%]`}</p>
-            <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, width: `${playerHealthPercentage}%`, 'background-color': 'gold' }}></div>
+            <p class='playerPortrait center' style={{ color: 'purple', 'font-family': 'Cinzel Regular' }}>{`${Math.round(newPlayerHealth)} / ${totalPlayerHealth} [${playerHealthPercentage()}%]`}</p>
+            <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, width: `${playerHealthPercentage()}%`, 'background-color': 'gold' }}></div>
         </div>
     );
 };

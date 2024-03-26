@@ -51,11 +51,7 @@ const masteryColor = (mastery: string): string => {
 }
 
 
-const border = (color: string, width: number): Object => {
-    return {
-        border: `${width}em solid ${color}`
-    };
-};
+const border = (color: string, width: number): string => `${width}em solid ${color}`;
 
 const borderColor = (prayer: string): string => {
     switch (prayer) {
@@ -83,7 +79,7 @@ const itemStyle = (rarity: string) => {
 
 const shadow = (color: string, intensity: number): Object => {
     return {
-        textShadowcolor: color,
+        textShadowColor: color,
         textShadowOffset: { width: intensity, height: intensity },
         textShadowRadius: intensity,
         elevation: 2,

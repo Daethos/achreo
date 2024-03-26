@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { Show, createSignal } from 'solid-js';
+import { Show, createEffect, createSignal } from 'solid-js';
 import AsceanBuilder from './components/AsceanBuilder';
 import { AsceanView } from './components/AsceanView';
 import { MenuAscean } from './components/MenuAscean';
@@ -13,6 +13,7 @@ import Ascean, { createAscean, initAscean } from './models/ascean';
 import { CharacterSheet, asceanCompiler } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
 import type { IRefPhaserGame } from './game/PhaserGame';
+import { EventBus } from './game/EventBus';
 
 export default function App() {
     const [ascean, setAscean] = createSignal<Ascean>(initAscean);
@@ -25,7 +26,7 @@ export default function App() {
         gameRunning: false,
         loading: true,
         picture: undefined,
-        screen: SCREENS.CHARACTER.KEY,
+        screen: SCREENS.COMPLETE.KEY,
     });
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>({
         name: 'Dorien Caderyn',
@@ -45,6 +46,7 @@ export default function App() {
     const dimensions = useResizeListener();
     // References to the PhaserGame component (game and scene are exposed)
     let phaserRef: IRefPhaserGame;
+
 
     // The sprite can only be moved in the MainMenu Scene
     // const [canMoveSprite, setCanMoveSprite] = createSignal(true);
@@ -145,11 +147,13 @@ export default function App() {
             setMenu({ ...menu(), choosingCharacter: false, gameRunning: true });
         } catch (err: any) {
             console.error('Error loading Ascean:', err);
-        }
+        };
     }; 
 
     function togglePause(pause: boolean) {
+        console.log('Pause:', pause);
         const scene = phaserRef.scene as MainMenu;
+        console.log('Scene:', scene);
         if (scene) {
             if (pause) {
                 scene.scene.pause();
@@ -157,6 +161,7 @@ export default function App() {
                 scene.scene.resume();
             };
         };
+        EventBus.emit('toggle-pause');
     };
 
     function viewAscean(id: string) {
@@ -180,17 +185,17 @@ export default function App() {
                     <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
                         <>
                         { (SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV !== SCREENS.COMPLETE.KEY) && 
-                            <button class='button cornerBL' onClick={() => setMenu({ ...menu(), screen: SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV})}>
+                            <button class='highlight cornerBL' onClick={() => setMenu({ ...menu(), screen: SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV})}>
                                 <div>Back ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV as keyof typeof SCREENS]?.TEXT})</div>
                             </button>
                         }
                         { (SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT !== SCREENS.CHARACTER.KEY) && 
-                            <button class='button cornerBR' onClick={() => setMenu({ ...menu(), screen: SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT})}>
+                            <button class='highlight cornerBR' onClick={() => setMenu({ ...menu(), screen: SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT})}>
                                 <div>Next ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT as keyof typeof SCREENS]?.TEXT})</div>
                             </button>
                         }
                         { SCREENS[menu()?.screen as keyof typeof SCREENS]?.KEY === SCREENS.COMPLETE.KEY && 
-                            <button class='button cornerBR' onClick={() => createCharacter(newAscean())}>
+                            <button class='highlight cornerBR' onClick={() => createCharacter(newAscean())}>
                                 <div>Create {newAscean()?.name?.split(' ')[0]}</div>
                             </button>
                         }
@@ -198,17 +203,17 @@ export default function App() {
                     }>
                         <>
                         { (LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV !== LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                            <button class='button cornerBL' onClick={() => setMenu({ ...menu(), screen: LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV})}>
+                            <button class='highlight cornerBL' onClick={() => setMenu({ ...menu(), screen: LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV})}>
                                 <div>Back ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
                             </button>
                         }
                         { (LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT !== LANDSCAPE_SCREENS.CHARACTER.KEY) && 
-                            <button class='button cornerBR' onClick={() => setMenu({ ...menu(), screen: LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT})}>
+                            <button class='highlight cornerBR' onClick={() => setMenu({ ...menu(), screen: LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT})}>
                                 <div>Next ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
                             </button>
                         }
                         { (LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                            <button class='button cornerBR' onClick={() => createCharacter(newAscean())}>
+                            <button class='highlight cornerBR' onClick={() => createCharacter(newAscean())}>
                                 <div>Create {newAscean()?.name?.split(' ')[0]}</div>
                             </button>
                         }
@@ -220,17 +225,17 @@ export default function App() {
                         <Show when={menu()?.choosingCharacter} fallback={<>
                             <AsceanView ascean={ascean} />
                             <Show when={menu()?.asceans?.length > 1}>
-                                <button class='button cornerTL' onClick={() => setMenu({ ...menu(), choosingCharacter: true })} style={{ 'background-color': 'purple' }}>Main Menu</button>
+                                <button class='highlight cornerTL' onClick={() => setMenu({ ...menu(), choosingCharacter: true })} style={{ 'background-color': 'purple' }}>Main Menu</button>
                             </Show>
                             <Show when={menu()?.asceans?.length < 3}>
-                                <button class='button cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'green' }}>Create Character</button>
+                                <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'green' }}>Create Character</button>
                             </Show>
-                            <button class="button cornerBL" style={{ 'background-color': 'red' }} onClick={() => deleteCharacter(ascean()?._id)}>Delete {ascean()?.name.split(' ')[0]}</button>
-                            <button class='button cornerBR' style={{ 'background-color': 'blue' }} onClick={() => loadAscean(ascean()?._id as string)}>Enter Game</button>
+                            <button class="highlight cornerBL" style={{ 'background-color': 'red' }} onClick={() => deleteCharacter(ascean()?._id)}>Delete {ascean()?.name.split(' ')[0]}</button>
+                            <button class='highlight cornerBR' style={{ 'background-color': 'blue' }} onClick={() => loadAscean(ascean()?._id as string)}>Enter Game</button>
                         </>}>
                             <MenuAscean menu={menu()} viewAscean={viewAscean} />
                             <Show when={menu()?.asceans?.length < 3}>
-                                <button class='button cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'green' }}>Create Character</button>
+                                <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'green' }}>Create Character</button>
                             </Show>
                         </Show>
                     </div>
@@ -246,9 +251,9 @@ export default function App() {
 //     The Ascean v0.0.1
 // </div>  */}
 // {/* <div>
-//     <button disabled={canMoveSprite()} class="button middleB" onClick={moveSprite}>Toggle Movement</button>
+//     <button disabled={canMoveSprite()} class="highlight middleB" onClick={moveSprite}>Toggle Movement</button>
 //     </div>
 //     <div class="spritePosition cornerTL">Sprite Position:
 //     <pre>{`{\n  x: ${spritePosition().x}\n  y: ${spritePosition().y}\n}`}</pre>
 // </div> */}
-// {/* <button class="button cornerBR" onClick={addSprite}>Create Character</button> */}
+// {/* <button class="highlight cornerBR" onClick={addSprite}>Create Character</button> */}

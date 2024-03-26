@@ -5,26 +5,29 @@ import { Attributes } from '../utility/attributes';
 import { CombatAttributes } from '../utility/combat';
 import Ascean from '../models/ascean';
 
+const font = {
+    'font-size': '1em',
+    margin: '0'
+};
+
 export default function AttributeModal({ attribute }: { attribute: any }) {
     const dimensions = useResizeListener();
     return (
-        <div class="border superCenter" style={dimensions()?.ORIENTATION === 'landscape' ? 
-        { width: '50%' } : 
-        { width: '70%' }}>
-            <div class="creature-heading border p-5">
-                <h1 class="gold">{attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)}</h1>
-                <br />
-                <svg height="5" width="100%" class="tapered-rule mt-2">
-                    <polyline points="0,0 400,2.5 0,5"></polyline>
-                </svg>
-                <div>
-                    <h2>{attribute.title}</h2>
-                </div>
-                <h2 class="center">{attribute.description}</h2>
-                <br />
-                <p class="gold wrap" style={{ 'font-size': '1em' }}>{attribute.gameplay}</p>
-                <br />
+        <div class="border superCenter" style={dimensions()?.ORIENTATION === 'landscape' ? { width: '50%' } : { width: '75%' }}>
+        <div class="creature-heading border center p-5" style={{ 'text-wrap': 'balance' }}>
+            <h1>{attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)}</h1>
+            <br />
+            <svg height="5" width="100%" class="tapered-rule mt-2">
+                <polyline points="0,0 400,2.5 0,5"></polyline>
+            </svg>
+            <div>
+                <h2 style={{ color: 'gold' }}>{attribute.title}</h2>
             </div>
+            <h2 class="center">{attribute.description}</h2>
+            <br />
+            <p class="gold" style={font}>{attribute.gameplay}</p>
+            <br />
+        </div>
         </div>            
     );
 };
@@ -47,43 +50,46 @@ export function AttributeCompiler({ ascean, setAttribute, show, setShow }: { asc
     createEffect(() => {
         compiler();    
     });
-
+    const inline = {
+        width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`,
+        display: 'inline-block',
+    };
     return (
-        <div class='my-2' style={{ width: '100%', display: 'inline-flex' }}>
-            <div style={{ width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block' }}>
-                <button class='buttonBorderless' onClick={() => toggle('constitution')} style={{ 'font-size': '1em' }}>Con</button>
-                <p class='gold' style={{ 'font-size': '1em' }}>{abilities()?.totalConstitution}</p>
+        <div style={{ width: '100%', display: 'inline-flex' }}>
+            <div style={inline}>
+                <button class='buttonBorderless' onClick={() => toggle('constitution')} style={font}>Con</button>
+                <p class='gold' style={font}>{abilities()?.totalConstitution}</p>
                 {/* <div style={styles.abilitiesP]}>({abilities()?.rawConstitution} + {abilities()?.equipConstitution})</div> */}
             </div>
             <div>{'\n'}</div>
-            <div style={{ width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block' }}>
-                <button class='buttonBorderless' onClick={() => toggle('strength')} style={{ 'font-size': '1em' }}>Str</button>
-                <p class='gold' style={{ 'font-size': '1em' }}>{abilities()?.totalStrength}</p>
+            <div style={inline}>
+                <button class='buttonBorderless' onClick={() => toggle('strength')} style={font}>Str</button>
+                <p class='gold' style={font}>{abilities()?.totalStrength}</p>
                 {/* <div style={styles.abilitiesP]}>({abilities()?.rawStrength} + {abilities()?.equipStrength})</div> */}
             </div>
             <div>{'\n'}</div>
 
-            <div style={{ width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block' }}>
-                <button class='buttonBorderless' onClick={() => toggle('agility')} style={{ 'font-size': '1em' }}>Agi</button>
-                <p class='gold' style={{ 'font-size': '1em' }}> {abilities()?.totalAgility}</p>
+            <div style={inline}>
+                <button class='buttonBorderless' onClick={() => toggle('agility')} style={font}>Agi</button>
+                <p class='gold' style={font}> {abilities()?.totalAgility}</p>
                 {/* <div style={styles.abilitiesP]}>({abilities()?.rawAgility} + {abilities()?.equipAgility})</div> */}
             </div>
             <div>{'\n'}</div>
-            <div style={{ width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block' }}>
-                <button class='buttonBorderless' onClick={() => toggle('achre')} style={{ 'font-size': '1em' }}>Ach</button>
-                <p class='gold' style={{ 'font-size': '1em' }}>{abilities()?.totalAchre}</p>
+            <div style={inline}>
+                <button class='buttonBorderless' onClick={() => toggle('achre')} style={font}>Ach</button>
+                <p class='gold' style={font}>{abilities()?.totalAchre}</p>
                 {/* <div style={styles.abilitiesP]}>({abilities()?.rawAchre} + {abilities()?.equipAchre})</div> */}
             </div>
             <div>{'\n'}</div>
-            <div style={{ width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block' }}>
-                <button class='buttonBorderless' onClick={() => toggle('caeren')} style={{ 'font-size': '1em' }}>Caer</button>
-                <p class='gold' style={{ 'font-size': '1em' }}>{abilities()?.totalCaeren}</p>
+            <div style={inline}>
+                <button class='buttonBorderless' onClick={() => toggle('caeren')} style={font}>Caer</button>
+                <p class='gold' style={font}>{abilities()?.totalCaeren}</p>
                 {/* <div style={styles.abilitiesP]}>({abilities()?.rawCaeren} + {abilities()?.equipCaeren})</div> */}
             </div>
             <div>{'\n'}</div>
-            <div style={{ width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block' }}>
-                <button class='buttonBorderless' onClick={() => toggle('kyosir')} style={{ 'font-size': '1em' }}>Kyo</button>
-                <p class='gold' style={{ 'font-size': '1em' }}>{abilities()?.totalKyosir}</p>
+            <div style={inline}>
+                <button class='buttonBorderless' onClick={() => toggle('kyosir')} style={font}>Kyo</button>
+                <p class='gold' style={font}>{abilities()?.totalKyosir}</p>
                 {/* <div style={styles.abilitiesP]}>({abilities()?.rawKyosir} + {abilities()?.equipKyosir})</div> */}
             </div>
         </div>

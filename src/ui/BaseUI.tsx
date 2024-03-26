@@ -154,14 +154,14 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     // const updateCombatTimer = (e: number) => setCombat({...(combat), combatTimer: e}); 
     const updateStamina = (e: number) => setStaminaPercentage(staminaPercentage() - e <= 0 ? 0 : staminaPercentage() - e);
 
-    function useStamina(percent: number, stam: number) {        
+    function useStamina(percent: Accessor<number>, stam: Accessor<number>) {        
         createEffect(() => { 
-            if (percent < 100) {
+            if (percent() < 100) {
                 const timer = setTimeout(() => {
-                    const newStamina = percent + (stam / 100);
+                    const newStamina = percent() + (stam() / 100);
                     setStaminaPercentage(newStamina);
                     EventBus.emit('updated-stamina', newStamina);
-                }, 200 - stam);
+                }, 200 - stam());
                 return () => clearTimeout(timer);
             };
         });
@@ -203,10 +203,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     //     };
     // };
 
-    // function showPlayer() {
-    //     setGame({ ...game, showPlayer: !game().showPlayer });
-    // };  
-
     function initiateCombat(e: { type: string; data: any }) {
         try {    
             console.log(e, 'Initiating Combat');
@@ -216,7 +212,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     const weapon = { ...combat(), [e.data.key]: e.data.value };
                     res = weaponActionCompiler(weapon) as Combat;
                     EventBus.emit('update-combat', { ...combat(), ...res });
-                    // setCombat({ ...(combat), ...res });
                     playerWin = res.playerWin;
                     computerWin = res.computerWin;
                     break;
@@ -224,7 +219,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     const pray = { ...combat(), playerEffects: e.data };
                     res = consumePrayer(pray) as Combat;
                     EventBus.emit('update-combat', { ...combat, newPlayerHealth: res.newPlayerHealth, playerEffects: res.playerEffects });
-                    // setCombat({ ...(combat), newPlayerHealth: res.newPlayerHealth, playerEffects: res.playerEffects });
                     playerWin = res.playerWin;
                     break;
                     case 'Instant':
@@ -235,8 +229,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     // res = prayerSplitter((combat), e.data);
                     console.log(res, 'Instant Action');
                     EventBus.emit('update-combat', res);
-                    // setCombat({ ...(combat), ...res });
-
                     // EventBus.emit('update-combat', res);
                     break;
                 case 'Player': // 'Player Blind Attack' i.e. hitting a non targeted enemy
@@ -302,7 +294,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     const newComputerHealth = combat().newComputerHealth - drained < 0 ? 0 : combat().newComputerHealth - drained;
                     playerWin = newComputerHealth === 0;
                     console.log(drained, newPlayerHealth, newComputerHealth, playerWin, 'Tshaeral Drain');
-                    // setCombat({ ...combat, newPlayerHealth: newPlayerHealth, newComputerHealth: newComputerHealth, playerWin: playerWin });
                     EventBus.emit('update-combat', { ...combat, newPlayerHealth: newPlayerHealth, newComputerHealth: newComputerHealth, playerWin: playerWin });
                     break;
                 case 'Health':
@@ -311,13 +302,11 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                         case 'player':
                             const healed = Math.floor(combat().playerHealth * (value / 100));
                             const newPlayerHealth = combat().newPlayerHealth + healed > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + healed;
-                            // setCombat({ ...combat, newPlayerHealth: newPlayerHealth });
                             EventBus.emit('update-combat', { ...combat, newPlayerHealth: newPlayerHealth });
                             break;
                         case 'computer':
                             const healedComputer = Math.floor(combat().computerHealth * (value / 100));
                             const newComputerHealth = combat().newComputerHealth + healedComputer > combat().computerHealth ? combat().computerHealth : combat().newComputerHealth + healedComputer;
-                            // setCombat({ ...combat, newComputerHealth: newComputerHealth });
                             EventBus.emit('update-combat', { ...combat, newComputerHealth: newComputerHealth });
                             break;
                         default:
@@ -342,8 +331,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
             if (data.playerWin) {
                 const exp = { state: asceanState, combat: combat };
                 const loot = { enemyID: combat().enemyID, level: combat()?.computer?.level! };
-                // lootDrop(loot);
-                // gainExperience(exp);
                 EventBus.emit('gain-experience', exp);
                 EventBus.emit('enemy-loot', loot);
             } else {
@@ -401,17 +388,14 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     // usePhaserEvent('show-dialog', showDialog);
     // usePhaserEvent('update-sound', soundEffects);
 
-    useStamina(staminaPercentage(), stamina());
+    useStamina(staminaPercentage, stamina);
     useTimer(game().currentGame, game().pauseState, gameTimer()); // gameRef.current
   
     // combat().weapons.filter((weapon) => weapon?.name !== 'Empty Weapon Slot');
     return (
-        <div id='overlay'>
+        <>
         <Show when={game().scrollEnabled}>
-            <CombatSettings damageType={combat()?.weapons?.[0]?.damageType as string[]} weapons={combat()?.weapons} 
-                scrollEnabled={game().scrollEnabled} selectedDamageTypeIndex={game().selectedDamageTypeIndex}
-                selectedPrayerIndex={game().selectedPrayerIndex} selectedHighlight={game().selectedHighlight}
-            />
+            <CombatSettings combat={combat} game={game} />
         </Show> 
         <Show when={game().showPlayer} fallback={
             <div style={{ position: "absolute", 'z-index': 1 }}>
@@ -419,7 +403,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 <Show when={combat().computer}><EnemyUI state={combat} pauseState={game().pauseState} enemies={enemies} /> </Show> 
             </div>
         }>
-            <StoryAscean settings={settings} setSettings={setSettings} ascean={ascean} asceanViews={settings().asceanViews} actions={settings().actions} specials={settings().specials} asceanState={asceanState} gameState={game} combatState={combat} />
+            <StoryAscean settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} gameState={game} combatState={combat} />
         </Show>
         <Show when={game().showCombat}><CombatText combat={combat} /></Show>
         <Show when={(game()?.lootDrops.length > 0 && game()?.showLoot)}><LootDropUI ascean={ascean} gameState={game} /></Show>
@@ -430,6 +414,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         { game().tutorial && ( 
             <StoryTutorial tutorial={game().tutorial} dispatch={dispatch} player={game().player}  /> 
         ) } */}
-        </div>
+        </>
     );
 };

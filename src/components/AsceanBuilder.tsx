@@ -52,11 +52,11 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
             {/* <<---------- LANDSCAPE ---------->> */}
                 <Switch>
                     <Match when={menu().screen === SCREENS.CHARACTER.KEY}>
-                        <div class='drop-25 left' style={{ width: '48%', display: 'inline-block' }}>
+                        <div class='drop-25 left' style={{ height: '82.5%', width: '48%', display: 'inline-block' }}>
                             <Character newAscean={newAscean} setNewAscean={setNewAscean} /> 
                             <Sex newAscean={newAscean} setNewAscean={setNewAscean} />
                         </div>
-                        <div class='drop-25 right' style={{ width: '48%', display: 'inline-block' }}>
+                        <div class='drop-25 right' style={{ height: '82.5%', width: '48%', display: 'inline-block' }}>
                             <Origin newAscean={newAscean} setNewAscean={setNewAscean} />
                             <br />
                             <br />
@@ -64,11 +64,11 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
                         </div>
                     </Match>
                     <Match when={menu().screen === SCREENS.ATTRIBUTES.KEY}>
-                        <div class='drop-25 left' style={{ width: '48%', display: 'inline-block' }}>
+                        <div class='drop-25 left' style={{ height: '82.5%', width: '48%', display: 'inline-block' }}>
                             <Mastery newAscean={newAscean} setNewAscean={setNewAscean} />
                             <Preference newAscean={newAscean} setNewAscean={setNewAscean} />
                         </div>
-                        <div class='drop-25 right' style={{ width: '48%', display: 'inline-block' }}>
+                        <div class='drop-25 right' style={{ height: '82.5%', width: '48%', display: 'inline-block' }}>
                             <AttributesCreate newAscean={newAscean} setNewAscean={setNewAscean} prevMastery={prevMastery} setPrevMastery={setPrevMastery} />    
                         </div>
                     </Match>

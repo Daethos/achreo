@@ -8,7 +8,6 @@ import NPC from '../../entities/NPC';
 import NewText from '../../phaser/NewText';
 import ParticleManager from '../../phaser/ParticleManager';
 import LootDrop from '../../matter/LootDrop';
-import EventEmitter from '../../phaser/EventEmitter';
 import CombatMachine from '../../phaser/CombatMachine';
 import ActionButtons from '../../phaser/ActionButtons';
 import { GameState } from '../../stores/game';
@@ -79,21 +78,6 @@ export class Game extends Scene {
     };
 
     create () {
-        // this.player = this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'player');
-        // this.camera = this.cameras.main;
-        // this.camera.setBackgroundColor(0x00ff00);
-
-        // this.background = this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'background');
-        // this.background.setAlpha(0.5);
-
-        // this.gameText = this.add.text(window.innerWidth / 2, window.innerHeight / 1.5, 'The Game is Running', {
-        //     fontFamily: 'Cinzel Regular', fontSize: 38, color: '#fdf6d8',
-        //     stroke: '#000000', strokeThickness: 8,
-        //     align: 'center'
-        // }).setOrigin(0.5).setDepth(100);
-        // this.gameText.setInteractive();
-        // this.gameText.on('pointerup', this.changeScene, this);
-
         EventBus.emit('current-scene-ready', this);
         EventBus.on('ascean', (ascean: Ascean) => {
             console.log('ascean', ascean);
@@ -209,7 +193,7 @@ export class Game extends Scene {
 
         this.music = this.sound.add('background', { volume: this?.settings?.volume ?? 0 / 2, loop: true });
         this.music.play();
-        // this.volumeListener = () => EventEmitter.on('update-volume', (e) => this.music.setVolume(e));
+        // this.volumeListener = () => EventBus.on('update-volume', (e) => this.music.setVolume(e));
         this.spooky = this.sound.add('spooky', { volume: this?.settings?.volume });
         this.righteous = this.sound.add('righteous', { volume: this?.settings?.volume });
         this.wild = this.sound.add('wild', { volume: this?.settings?.volume });
@@ -255,19 +239,19 @@ export class Game extends Scene {
         // this.scale.startFullscreen();
     };
 
-    equipListener = () => EventEmitter.on('equip-sound', () => {
+    equipListener = () => EventBus.on('equip-sound', () => {
         this.equip.play();
     });
-    unequipListener = () => EventEmitter.on('unequip-sound', () => {
+    unequipListener = () => EventBus.on('unequip-sound', () => {
         this.unequip.play();
     });
-    purchaseListener = () => EventEmitter.on('purchase-sound', () => {
+    purchaseListener = () => EventBus.on('purchase-sound', () => {
         this.purchase.play();
     });
-    weaponListener = () => EventEmitter.on('weapon-order-sound', () => {
+    weaponListener = () => EventBus.on('weapon-order-sound', () => {
         this.weaponOrder.play();
     });
-    actionButtonListener = () => EventEmitter.on('action-button-sound', () => {
+    actionButtonListener = () => EventBus.on('action-button-sound', () => {
         this.actionButton.play();
     });
 
@@ -378,9 +362,9 @@ export class Game extends Scene {
         if (!this.player.actionSuccess && (this.state.action !== 'counter' && this.state.action !== 'roll' && this.state.action !== '')) this.combatMachine.input('action', '');
     };
     clearNAEnemy = () => {
-        EventEmitter.emit('clear-enemy');
+        EventBus.emit('clear-enemy');
     };
-    clearNPC = () => EventEmitter.emit('clear-npc'); 
+    clearNPC = () => EventBus.emit('clear-npc'); 
     combatEngaged = (bool: boolean) => {
         if (bool) { 
             this.combat = true; 
@@ -393,28 +377,28 @@ export class Game extends Scene {
         // this.dispatch(getCombatFetch(bool));
     };
     drinkFlask = () => {
-        EventEmitter.emit('drink-firewater');
+        EventBus.emit('drink-firewater');
         // this.dispatch(getDrinkFirewaterFetch(this.state.player._id));
     };
     setupEnemy = (enemy: any) => {
         const data = { id: enemy.enemyID, game: enemy.ascean, enemy: enemy.combatStats, health: enemy.health, isAggressive: enemy.isAggressive, startedAggressive: enemy.startedAggressive, isDefeated: enemy.isDefeated, isTriumphant: enemy.isTriumphant };
-        EventEmitter.emit('setup-enemy', data);
+        EventBus.emit('setup-enemy', data);
     };
     setupNPC = (npc: any) => {
         const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType };
-        EventEmitter.emit('setup-npc', data);    
+        EventBus.emit('setup-npc', data);    
     };
-    showDialog = (dialog: boolean) => EventEmitter.emit('show-dialog', dialog);
+    showDialog = (dialog: boolean) => EventBus.emit('show-dialog', dialog);
 
         // ============================ Player ============================ \\
 
         caerenic = () => {
-            EventEmitter.emit('update-caerenic');
+            EventBus.emit('update-caerenic');
         } ;
         stalwart = () => {
-            EventEmitter.emit('update-stalwart');
+            EventBus.emit('update-stalwart');
         } ;
-        useStamina = (value: number) => EventEmitter.emit('update-stamina', value);
+        useStamina = (value: number) => EventBus.emit('update-stamina', value);
     
         createTextBorder(text: NewText) {
             const border = this.add.graphics();
@@ -437,7 +421,7 @@ export class Game extends Scene {
                 callback: () => {
                     if (this.scene.isPaused()) return;
                     this.combatTime += 1;
-                    EventEmitter.emit('update-combat-timer', this.combatTime);
+                    EventBus.emit('update-combat-timer', this.combatTime);
                 },
                 callbackScope: this,
                 loop: true
@@ -449,7 +433,7 @@ export class Game extends Scene {
             this.combatTimer.destroy();
             // this.combatTimer = undefined;
             this.combatTime = 0;
-            EventEmitter.emit('update-combat-timer', this.combatTime);
+            EventBus.emit('update-combat-timer', this.combatTime);
         };
     
         // ================== Update ================== \\

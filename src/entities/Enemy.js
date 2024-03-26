@@ -4,7 +4,7 @@ import { screenShake } from "../phaser/ScreenShake";
 import StateMachine, { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
-import EventEmitter from "../phaser/EventEmitter";
+import { EventBus } from "../game/EventBus";
 import { getRandomNumStr } from "../models/equipment";
 
 const DISTANCE = {
@@ -213,15 +213,15 @@ export default class Enemy extends Entity {
     };
 
     cleanUp() {
-        EventEmitter.off('update-combat-data', this.combatDataUpdate);
-        EventEmitter.off('update-combat', this.combatDataUpdate); 
-        EventEmitter.off('personal-update', this.personalUpdate);    
+        EventBus.off('update-combat-data', this.combatDataUpdate);
+        EventBus.off('update-combat', this.combatDataUpdate); 
+        EventBus.off('personal-update', this.personalUpdate);    
     };
 
     enemyStateListener() {
-        EventEmitter.on('update-combat-data', this.combatDataUpdate);
-        EventEmitter.on('update-combat', this.combatDataUpdate); 
-        EventEmitter.on('personal-update', this.personalUpdate);
+        EventBus.on('update-combat-data', this.combatDataUpdate);
+        EventBus.on('update-combat', this.combatDataUpdate); 
+        EventBus.on('personal-update', this.personalUpdate);
     };
 
     personalUpdate = (e) => {
@@ -364,13 +364,13 @@ export default class Enemy extends Entity {
         this.createShield(e.enemy.shield);
 
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health);
-        EventEmitter.off('enemy-fetched', this.enemyFetchedOn);
+        EventBus.off('enemy-fetched', this.enemyFetchedOn);
     };
 
     createEnemy = () => {
-        EventEmitter.on('enemy-fetched', this.enemyFetchedOn);
+        EventBus.on('enemy-fetched', this.enemyFetchedOn);
         const fetch = { enemyID: this.enemyID, level: this.scene.state.player.level };
-        EventEmitter.emit('fetch-enemy', fetch);
+        EventBus.emit('fetch-enemy', fetch);
     };
 
     createShield = (shield) => {

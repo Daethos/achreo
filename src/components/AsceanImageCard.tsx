@@ -14,15 +14,21 @@ interface Props {
 };
 
 export default function AsceanImageCard({ ascean, weaponOne, weaponTwo, weaponThree, setEquipment, show, setShow }: Props) { 
-    function itemStyle(rarity: string) {
+    function item(rarity: string) {
         return {
-            border: '0.15em solid ' + getRarityColor(rarity),
+            border: '0.2em solid ' + getRarityColor(rarity),
             transform: 'scale(1.1)',
             'background-color': 'black',
             'margin-top': '0.25em',
             'margin-bottom': '0.25em',
-
+            'padding-bottom': '-0.25em'
         };
+    };
+
+    const image = {
+        width: '100%',
+        height: '100%',
+        // transform: 'translate(0%, 5%)',
     };
 
     function info(item: Equipment) {
@@ -30,48 +36,46 @@ export default function AsceanImageCard({ ascean, weaponOne, weaponTwo, weaponTh
         setShow(!show());
     }; 
     return (
-        <div style={{ width: '100%' }}>
-        <div class='imageCardGrid center' style={{ width: '70%' }}>
+        <div class='imageCardGrid' style={{ width: '70%', margin: 'auto' }}>
             <div class='imageCardLeft'>
-                <button onClick={() =>info(weaponOne)} style={itemStyle(weaponOne.rarity as string)}>
-                    <img alt='item' src={weaponOne.imgUrl} />
-                </button>
-                <button onClick={() =>info(weaponTwo)} style={itemStyle(weaponTwo.rarity as string)}>
-                    <img alt='item' src={weaponTwo.imgUrl} />
-                </button>
-                <button onClick={() =>info(weaponThree)} style={itemStyle(weaponThree.rarity as string)}>
-                    <img alt='item' src={weaponThree.imgUrl} />
-                </button>
-                <button onClick={() =>info(ascean().shield)} style={itemStyle(ascean().shield.rarity as string)}>
-                    <img alt='item' src={ascean().shield.imgUrl} />
-                </button>
+                <div onClick={() =>info(weaponOne)} style={item(weaponOne.rarity as string)}>
+                    <img alt='item' style={image} src={weaponOne.imgUrl} />
+                </div>
+                <div onClick={() =>info(weaponTwo)} style={item(weaponTwo.rarity as string)}>
+                    <img alt='item' style={image} src={weaponTwo.imgUrl} />
+                </div>
+                <div onClick={() =>info(weaponThree)} style={item(weaponThree.rarity as string)}>
+                    <img alt='item' style={image} src={weaponThree.imgUrl} />
+                </div>
+                <div onClick={() =>info(ascean().shield)} style={item(ascean().shield.rarity as string)}>
+                    <img alt='item' style={image} src={ascean().shield.imgUrl} />
+                </div>
             </div>
             <div class='imageCardMiddle'>
-                <button onClick={() =>info(ascean().helmet)} style={itemStyle(ascean().helmet.rarity as string)}>
-                    <img alt='item' src={ascean().helmet.imgUrl} />
-                </button>
-                <button onClick={() =>info(ascean().chest)} style={itemStyle(ascean().chest.rarity as string)}>
-                    <img alt='item' src={ascean().chest.imgUrl} />
-                </button>
-                <button onClick={() =>info(ascean().legs)} style={itemStyle(ascean().legs.rarity as string)}>
-                    <img alt='item' src={ascean().legs.imgUrl} />
-                </button>
+                <div onClick={() =>info(ascean().helmet)} style={item(ascean().helmet.rarity as string)}>
+                    <img alt='item' style={image} src={ascean().helmet.imgUrl} />
+                </div>
+                <div onClick={() =>info(ascean().chest)} style={item(ascean().chest.rarity as string)}>
+                    <img alt='item' style={image} src={ascean().chest.imgUrl} />
+                </div>
+                <div onClick={() =>info(ascean().legs)} style={item(ascean().legs.rarity as string)}>
+                    <img alt='item' style={image} src={ascean().legs.imgUrl} />
+                </div>
             </div>
             <div class='imageCardRight'>
-                <button onClick={() =>info(ascean().amulet)} style={itemStyle(ascean().amulet.rarity as string)}>
-                    <img alt='item' src={ascean().amulet.imgUrl} />
-                </button>
-                <button onClick={() =>info(ascean().ringOne)} style={itemStyle(ascean().ringOne.rarity as string)}>
-                    <img alt='item' src={ascean().ringOne.imgUrl} />
-                </button>
-                <button onClick={() =>info(ascean().ringTwo)} style={itemStyle(ascean().ringTwo.rarity as string)}>
-                    <img alt='item' src={ascean().ringTwo.imgUrl} />
-                </button>
-                <button onClick={() =>info(ascean().trinket)} style={itemStyle(ascean().trinket.rarity as string)}>
-                    <img alt='item' src={ascean().trinket.imgUrl} />
-                </button>
+                <div onClick={() =>info(ascean().amulet)} style={item(ascean().amulet.rarity as string)}>
+                    <img alt='item' style={image} src={ascean().amulet.imgUrl} />
+                </div>
+                <div onClick={() =>info(ascean().ringOne)} style={item(ascean().ringOne.rarity as string)}>
+                    <img alt='item' style={image} src={ascean().ringOne.imgUrl} />
+                </div>
+                <div onClick={() =>info(ascean().ringTwo)} style={item(ascean().ringTwo.rarity as string)}>
+                    <img alt='item' style={image} src={ascean().ringTwo.imgUrl} />
+                </div>
+                <div onClick={() =>info(ascean().trinket)} style={item(ascean().trinket.rarity as string)}>
+                    <img alt='item' style={image} src={ascean().trinket.imgUrl} />
+                </div>
             </div>
         </div> 
-        </div>
     );
 };

@@ -35,18 +35,13 @@ const FaithCard = ({ faith, newAscean, setNewAscean }: { faith: any; newAscean: 
     };
     return (
         <Show when={show()} fallback={<button onClick={handleFaith} class='highlight' style={{ color: faith.worshipers === newAscean().faith ? 'gold' : '#fdf6d8' }}>{faith.name}</button>}>
-            <div class='modal' onClick={handleShow} >
-            <div class="border verticalCenter" style={dimensions()?.ORIENTATION === 'landscape' ? 
-                { position: 'absolute', left: '15%', width: '70%' } : { }}>
-                <div class="creature-heading border p-5"> 
-                <span id="popover-image"><img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === 'landscape' ? '15%' : '' }} /></span>
-                <br />
-                <span class='gold small'>{faith.origin}</span>
-                <br /><br />
-                <div class='creature-heading'>
-                    <h2 class='gold'>{faith.quote}</h2>
-                </div>
-                </div>
+            <div class='modal' onClick={handleShow}>
+            <div class="border verticalCenter" style={dimensions()?.ORIENTATION === 'landscape' ?{ position: 'absolute', left: '15%', width: '70%' } : { }}>
+            <div class="creature-heading border" style={{ 'text-wrap': 'balance' }}> 
+                <img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === 'landscape' ? '15%' : '', 'margin-top': '3%' }} />
+                <p class='gold small'>{faith.origin}</p>
+                <h2 class='gold'>{faith.quote}</h2>
+            </div>
             </div>
             </div>
         </Show> 
@@ -55,7 +50,7 @@ const FaithCard = ({ faith, newAscean, setNewAscean }: { faith: any; newAscean: 
 
 export default function Faith({ newAscean, setNewAscean }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet> }) {
   return (
-        <div class='center creature-heading'>
+        <div class='center creature-heading' style={{ 'margin-bottom': '3%' }}>
         <h1 class='gold'>Faith</h1>
         <div>
             <For each={FAITHS}>

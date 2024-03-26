@@ -15,8 +15,8 @@ export default function ExperienceBar({ totalExperience, currentExperience }: Pr
 
     return ( 
         <div class='healthbar center'>
-            <p class='playerPortrait center' style={{ color: 'purple' }}>{`${Math.round(currentExperience)} / ${totalExperience} [${experiencePercentage}%]`}</p>
-            <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, width: `${experiencePercentage}%`, 'background-color': 'gold' }}></div>
+            <p class='playerPortrait center' style={{ color: 'purple' }}>{`${Math.round(currentExperience)} / ${totalExperience} [${experiencePercentage()}%]`}</p>
+            <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, width: `${experiencePercentage()}%`, 'background-color': 'gold' }}></div>
         </div>
     );
 };

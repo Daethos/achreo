@@ -12,7 +12,7 @@ const ORIGINS = [{
     imgUrl: '../assets/images/Ashtre-Man.jpg'
 },{
     name: "Fyers",
-    bio: `"Fair folk from the Firelands, these people enjoy mild weather and bountiful harvest, leaving themselves to leisure time in pursuit of broad body and mind, often advancing both fields in competition and technology. 
+    bio: `Fair folk from the Firelands, these people enjoy mild weather and bountiful harvest, leaving themselves to leisure time in pursuit of broad body and mind, often advancing both fields in competition and technology. 
         Unsure of their origin, it is said they became a fusion of the Noth whom migrated south during the Sundering, mixing with Westothi battle clans, and moving further South, claiming the rich, fertile lands from the Quor'eite and Sedyreal.`,
     bioTwo: `The Fyers Lord Protectorate Theogeni Spiras, the Ghost Hawk of Greyrock, came to govern the land, siezing power after civil warring against House Ashfyre whose lineage held the title for centuries. 
         To note, also a former Ascean in 130 AE. Fyer is the Ancient heralded in the land and has been worshiped for centuries, influencing the people's culture and language, though not the only Ancient worshiped, 
@@ -55,7 +55,7 @@ const ORIGINS = [{
     imgUrl: '../assets/images/Nothos-Woman.jpg'
 }, {
     name: "Quor'eite",
-    bio: `"Relaxed folk of the southernmost tip of the land, they owed much of their pleasure in life to the hospitable regions affording luxurious living and supply, thus Quor'ei, the Ancient of Earth, garnerning the most appreciation. 
+    bio: `Relaxed folk of the southernmost tip of the land, they owed much of their pleasure in life to the hospitable regions affording luxurious living and supply, thus Quor'ei, the Ancient of Earth, garnerning the most appreciation. 
         This became disrupted during the invasion of the Sedyreal post-Sedyren War against Licivitas, culminating in the loss of life for many Quor'eite, many losing faith and seeking the word of Daethos as a means to calm their spirit. 
         From the war, many of the 'Quor'ator's as their lords are to be called, have been displaced from settling Sedyreal and have sought refuge in the harsher lands of Sedyrus as the whole province came to be called, others in the never settled, 
         sparse jungles; the entire land pocketed with dense hazards being an effective natural barrier for sometime between the peoples and their cultures changing worldviews.`,
@@ -89,16 +89,17 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
 // position: 'absolute', maxHeight: '80%', width: '80%', left: '10%', top: '10%', oveflow: 'scroll'
     return (
         <Show when={show()} fallback={<button onClick={handleOrigin} class="highlight" style={{ color: origin.name === newAscean()?.origin ? 'gold' : '#fdf6d8' }}>{origin.name}</button>}>
-            <div class='modal' onClick={handleShow}>
-            <div class="border verticalCenter" style={{ 'align-items': 'center', 'justify-content': 'center', 'text-align': 'center',
-                width: dimensions().ORIENTATION === 'landscape' ? '85%' : '', left: dimensions().ORIENTATION === 'landscape' ? '7.5%' : '', position: 'absolute'
+            <div class='modal' onClick={handleShow} style={{ 'text-wrap': 'balance' }}>
+            <div class="border verticalCenter" style={{ position: 'absolute',
+                width: dimensions().ORIENTATION === 'landscape' ? '85%' : '', 
+                left: dimensions().ORIENTATION === 'landscape' ? '7.5%' : '', 
             }}>
-                <div class="border creature-heading" style={{ 'text-align': 'center', height: '100%' }}><br />
+                <div class="border creature-heading" style={{ height: '100%', 'text-wrap': 'balance' }}><br />
                     {/* <img src={origin.imgUrl} alt={origin.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === 'landscape' ? '15%' : '' }} /> */}
-                    <h2 class='m-3 super' style={{ 'text-align': 'center' }}>
+                    <p class='super my-3'>
                         {origin.bio}<br /><br />{origin.bioTwo}
-                    </h2>
-                    <p class="gold small mb-3 mx-3">Bonuses: {origin.bonus}</p>
+                    </p>
+                    <p class="gold small mb-3">Bonuses: {origin.bonus}</p>
                 </div>
             </div>
             </div>

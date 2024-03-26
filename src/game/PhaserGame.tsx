@@ -1,4 +1,4 @@
-import { onCleanup, onMount, createSignal, Accessor, Setter } from 'solid-js';
+import { onCleanup, onMount, createSignal, Accessor, Setter, Show, createEffect } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import StartGame from './main';
 import { EventBus } from './EventBus';
@@ -33,6 +33,7 @@ export const PhaserGame = (props: IProps) => {
     const [combat, setCombat] = createSignal<Combat>(initCombat);
     const [game, setGame] = createSignal<GameState>(initGame);
     const [stamina, setStamina] = createSignal(0);
+    const [live, setLive] = createSignal(false);
 
     function lootDrop({ enemyID, level }: { enemyID: string; level: number }) {
         try {
@@ -192,23 +193,27 @@ export const PhaserGame = (props: IProps) => {
         EventBus.emit('equip-sound');
     };
 
-    // function update(player: Ascean) {
-    //     const res = asceanCompiler(player);
-    //     setCombat({
-    //         ...combat(),
-    //         player: res?.ascean,
-    //         playerHealth: res?.ascean.health.max,
-    //         newPlayerHealth: res?.ascean.health.current,
-    //         weapons: [res?.combatWeaponOne, res?.combatWeaponTwo, res?.combatWeaponThree],
-    //         weaponOne: res?.combatWeaponOne,
-    //         weaponTwo: res?.combatWeaponTwo,
-    //         weaponThree: res?.combatWeaponThree,
-    //         playerAttributes: res?.attributes,
-    //         playerDefense: res?.defense,
-    //         playerDamageType: res?.combatWeaponOne?.damageType?.[0] as string
-    //     });
-    //     EventBus.emit('update-ascean', res?.ascean);    
-    // };
+    function createUi() {
+        const res = asceanCompiler(props.ascean());
+        const cleanCombat: Combat = { 
+            ...combat(), 
+            player: res?.ascean, 
+            weapons: [res?.combatWeaponOne, res?.combatWeaponTwo, res?.combatWeaponThree],
+            playerAttributes: res?.attributes,
+            playerDefense: res?.defense,
+            playerDefenseDefault: res?.defense,
+            weaponOne: res?.combatWeaponOne,
+            weaponTwo: res?.combatWeaponTwo,
+            weaponThree: res?.combatWeaponThree,
+            newPlayerHealth: res?.ascean.health.current,
+            playerHealth: res?.ascean.health.max,
+            playerDamageType: res?.combatWeaponOne?.damageType?.[0] as string,
+        };
+        setCombat(cleanCombat);
+        setStamina(res?.attributes?.stamina as number);
+    };
+    
+    createUi();
 
     onMount(() => {
         const gameInstance = StartGame("game-container");
@@ -230,6 +235,8 @@ export const PhaserGame = (props: IProps) => {
         });
 
         EventBus.on('main-menu', (_sceneInstance: Phaser.Scene) => props.setMenu({ ...props?.menu, gameRunning: false }));
+        EventBus.on('start-game', () => setLive(!live()));
+
         EventBus.on('clear-enemy', () => setCombat({
             ...combat(),
             computer: undefined,
@@ -328,13 +335,25 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('set-equipper', (e: any) => swapEquipment(e));
         EventBus.on('show-combat-logs', (e: boolean) => setGame({ ...game(), showCombat: e }));
         EventBus.on('show-player', () => setGame({ ...game(), showPlayer: !game().showPlayer }));
+        EventBus.on('toggle-pause', () => setGame({ ...game(), pauseState: !game().pauseState }));
         EventBus.on('update-combat', (e: Combat) => setCombat(e));
         EventBus.on('update-combat-state', (e: { key: string; value: string }) => setCombat({ ...combat(), [e.key]: e.value }));
         EventBus.on('update-combat-timer', (e: number) => setCombat({ ...combat(), combatTimer: e }));
 
-        EventBus.on('update-caerenic', () => setCombat({ ...combat(), isCaerenic: !combat().isCaerenic }));
-        EventBus.on('update-stalwart', () => setCombat({ ...combat(), isStalwart: !combat().isStalwart }));
-        EventBus.on('update-stealth', () => setCombat({ ...combat(), isStealth: !combat().isStealth }));
+        EventBus.on('update-caerenic', () => {
+            console.log(!combat().isCaerenic, 'Caerenic Switch')       
+            setCombat({ ...combat(), isCaerenic: !combat().isCaerenic })
+        });
+        EventBus.on('update-stalwart', () => {
+            console.log(!combat().isStalwart, 'Stalwart Switch')
+            setCombat({ ...combat(), isStalwart: !combat().isStalwart })
+        });
+            
+        EventBus.on('update-stealth', () => {
+            console.log(!combat().isStealth, 'Stealth Switch')
+            setCombat({ ...combat(), isStealth: !combat().isStealth });
+            EventBus.emit('stealth-sound');
+        });
         // EventBus.on('update-health', (e: number) => setCombat({ ...combat(), e }));
         EventBus.on('update-lootdrops', (e: Equipment[]) => 
             setGame({ 
@@ -355,6 +374,7 @@ export const PhaserGame = (props: IProps) => {
             
             EventBus.removeListener('current-scene-ready');
             EventBus.removeListener('main-menu');
+            EventBus.removeListener('start-game');
             EventBus.removeListener('clear-enemy');
             EventBus.removeListener('fetch-enemy');   
             EventBus.removeListener('drink-firewater'); 
@@ -375,6 +395,8 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('selectWeapon');
             EventBus.removeListener('set-equipper');
             EventBus.removeListener('show-combat-logs');
+            EventBus.removeListener('show-player');
+            EventBus.removeListener('toggle-pause');
             EventBus.removeListener('update-combat-state');
             EventBus.removeListener('update-combat-timer');
             EventBus.removeListener('update-caerenic');
@@ -387,7 +409,9 @@ export const PhaserGame = (props: IProps) => {
 
     return (
         <>
-        {/* <BaseUI ascean={props.ascean} combat={combat} game={game} settings={props.settings} setSettings={props.setSettings} stamina={stamina} /> */}
+        <Show when={live()}>
+            <BaseUI ascean={props.ascean} combat={combat} game={game} settings={props.settings} setSettings={props.setSettings} stamina={stamina} />
+        </Show>
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
         </>
     );

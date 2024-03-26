@@ -146,7 +146,7 @@ export class Preloader extends Scene {
         this.txt_file = new NewText(
             this,
             this.centerX,
-            this.centerY / 0.67,
+            this.centerY / 0.65,
             '',
             'play',
             { x: 0.5, y: 1 }

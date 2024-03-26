@@ -11,6 +11,7 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
     const dimensions = useResizeListener();
 
     createEffect(() => {
+        console.log(newAscean()?.mastery, 'Mastery in Review');
         const deity = FAITHS.find(faith => faith.worshipers === newAscean()?.faith);
         setName(deity?.name as string);
         setCharacter(deity?.character as string);
@@ -30,35 +31,35 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
             <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
                 <>
                 <div class='center'>
-                <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id='deity-pic' style={{ 
+                <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id='origin-pic' style={{ 
                     width: dimensions().ORIENTATION === 'landscape' ? '50%' : '25%', height: dimensions().ORIENTATION === 'landscape' ? '50%' : '25%', border: '0.15em solid gold',   
                 }} />
                 </div>
                 <br />
                 <div class='creature-heading'>
-                    <h2 class={newAscean()?.mastery === 'constitution' ? 'gold' : '#fdf6d8'}>Constitution: {newAscean()?.constitution}</h2>
-                    <h2 class={newAscean()?.mastery === 'strength' ? 'gold' : '#fdf6d8'}>Strength: {newAscean()?.strength}</h2>
-                    <h2 class={newAscean()?.mastery === 'strength' ? 'gold' : '#fdf6d8'}>Agility: {newAscean()?.agility}</h2>
-                    <h2 class={newAscean()?.mastery === 'achre' ? 'gold' : '#fdf6d8'}>Achre: {newAscean()?.achre}</h2>
-                    <h2 class={newAscean()?.mastery === 'caeren' ? 'gold' : '#fdf6d8'}>Caeren: {newAscean()?.caeren}</h2>
-                    <h2 class={newAscean()?.mastery === 'kyosir' ? 'gold' : '#fdf6d8'}>Kyosir: {newAscean()?.kyosir}</h2>
+                    <h2 style={{color: newAscean()?.mastery === 'constitution' ? 'gold' : '#fdf6d8'}}>Constitution: {newAscean()?.constitution}</h2>
+                    <h2 style={{color: newAscean()?.mastery === 'strength' ? 'gold' : '#fdf6d8'}}>Strength: {newAscean()?.strength}</h2>
+                    <h2 style={{color: newAscean()?.mastery === 'agility' ? 'gold' : '#fdf6d8'}}>Agility: {newAscean()?.agility}</h2>
+                    <h2 style={{color: newAscean()?.mastery === 'achre' ? 'gold' : '#fdf6d8'}}>Achre: {newAscean()?.achre}</h2>
+                    <h2 style={{color: newAscean()?.mastery === 'caeren' ? 'gold' : '#fdf6d8'}}>Caeren: {newAscean()?.caeren}</h2>
+                    <h2 style={{color: newAscean()?.mastery === 'kyosir' ? 'gold' : '#fdf6d8'}}>Kyosir: {newAscean()?.kyosir}</h2>
                 </div>
                 </>
             }>
-                <div class='stat-block wide'>
-                <div class='section-left'>
+                <div class='stat-block'>
+                <div class='left' style={{ width: '48%' }}>
                     <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id='deity-pic' style={{ 
                         width: dimensions().ORIENTATION === 'landscape' ? '50%' : '25%', height: dimensions().ORIENTATION === 'landscape' ? '50%' : '25%', border: '0.15em solid gold',   
                     }} />
                 </div>
-                <div class='section-right'>
+                <div class='right' style={{ width: '48%' }}>
                 <div class='creature-heading center'>
-                    <h2 class={newAscean()?.mastery === 'constitution' ? 'gold' : '#fdf6d8'}>Constitution: {newAscean()?.constitution}</h2>
-                    <h2 class={newAscean()?.mastery === 'strength' ? 'gold' : '#fdf6d8'}>Strength: {newAscean()?.strength}</h2>
-                    <h2 class={newAscean()?.mastery === 'strength' ? 'gold' : '#fdf6d8'}>Agility: {newAscean()?.agility}</h2>
-                    <h2 class={newAscean()?.mastery === 'achre' ? 'gold' : '#fdf6d8'}>Achre: {newAscean()?.achre}</h2>
-                    <h2 class={newAscean()?.mastery === 'caeren' ? 'gold' : '#fdf6d8'}>Caeren: {newAscean()?.caeren}</h2>
-                    <h2 class={newAscean()?.mastery === 'kyosir' ? 'gold' : '#fdf6d8'}>Kyosir: {newAscean()?.kyosir}</h2>
+                    <h2 style={{color: newAscean()?.mastery === 'constitution' ? 'gold' : '#fdf6d8'}}>Constitution: {newAscean()?.constitution}</h2>
+                    <h2 style={{color: newAscean()?.mastery === 'strength' ? 'gold' : '#fdf6d8'}}>Strength: {newAscean()?.strength}</h2>
+                    <h2 style={{color: newAscean()?.mastery === 'agility' ? 'gold' : '#fdf6d8'}}>Agility: {newAscean()?.agility}</h2>
+                    <h2 style={{color: newAscean()?.mastery === 'achre' ? 'gold' : '#fdf6d8'}}>Achre: {newAscean()?.achre}</h2>
+                    <h2 style={{color: newAscean()?.mastery === 'caeren' ? 'gold' : '#fdf6d8'}}>Caeren: {newAscean()?.caeren}</h2>
+                    <h2 style={{color: newAscean()?.mastery === 'kyosir' ? 'gold' : '#fdf6d8'}}>Kyosir: {newAscean()?.kyosir}</h2>
                 </div>
                 </div>
                 </div>

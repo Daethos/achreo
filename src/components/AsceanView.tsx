@@ -16,15 +16,15 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
 
     return (
         <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
-            <div class='border center' style={{ width: dimensions().ORIENTATION === 'landscape' ? '60%' : '85%', overflow: 'scroll' }}>
+            <div class='border center' style={{ height: '100', width: '85%', overflow: 'scroll' }}>
             <div class='creature-heading' style={{ width: '100%', height: '100%' }}>
                 <h1>{ascean().name}</h1>
                 <h2 class='mb-3'>{ascean().description}</h2>
                 <img src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} id='origin-pic' />
-                <p class='gold'>Level: {ascean().level}</p>
-                <p class='gold'>Experience: {ascean().experience}</p>
-                <p class='gold'>Mastery: {ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</p>
-                <p class='gold'>Health: {ascean().health.current} / {ascean().health.max}</p>
+                <p class='gold' style={{ margin: '3%' }}>Level: {ascean().level}</p>
+                <p class='gold' style={{ margin: '3%' }}>Experience: {ascean().experience}</p>
+                <p class='gold' style={{ margin: '3%' }}>Mastery: {ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</p>
+                <p class='gold' style={{ margin: '3%' }}>Health: {ascean().health.current} / {ascean().health.max}</p>
                 <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
                 <AsceanImageCard ascean={ascean} weaponOne={ascean().weaponOne} weaponTwo={ascean().weaponTwo} weaponThree={ascean().weaponThree} show={show} setShow={setShow} setEquipment={setEquipment} />
                 <br />
@@ -42,20 +42,20 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
             </div>
             </div>
         }>
-            <div class='stat-block superCenter' style={{ width: dimensions().ORIENTATION === 'landscape' ? '80%' : '85%', overflow: 'scroll' }}>
-                <div class='drop-25 left' style={{ width: '50%' }}>
-                    <div class='center creature-heading' style={{ width: '100%', height: '100%' }}>
+            <div class='stat-block superCenter' style={{ width: '90%', overflow: 'scroll' }}>
+                <div class='left center' style={{ width: '48%', top: '10%' }}>
+                    <div class='creature-heading' style={{ width: '100%', height: '100%' }}>
                         <h1>{ascean().name}</h1>
                         <h2>{ascean().description}</h2>
                         <img src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} id='origin-pic' />
-                        <p class='gold'>Level: {ascean().level}</p>
-                        <p class='gold'>Experience: {ascean().experience}</p>
-                        <p class='gold'>Mastery: {ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</p>
-                        <p class='gold'>Health: {ascean().health.current} / {ascean().health.max}</p>
+                        <p class='gold' style={{ margin: '3%' }}>Level: {ascean().level}</p>
+                        <p class='gold' style={{ margin: '3%' }}>Experience: {ascean().experience}</p>
+                        <p class='gold' style={{ margin: '3%' }}>Mastery: {ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</p>
+                        <p class='gold' style={{ margin: '3%' }}>Health: {ascean().health.current} / {ascean().health.max}</p>
                     </div>
                 </div>
 
-                <div class='drop-25 right center' style={{ width: '50%' }}>
+                <div class='right center' style={{ width: '48%', top: '10%' }}>
                     <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
                     <AsceanImageCard ascean={ascean} weaponOne={ascean().weaponOne} weaponTwo={ascean().weaponTwo} weaponThree={ascean().weaponThree} show={show} setShow={setShow} setEquipment={setEquipment} />
                 </div>

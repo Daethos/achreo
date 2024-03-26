@@ -1,6 +1,13 @@
 export default class NewText {
-    constructor(ctx, x, y, string, style, origin, game) {
-        this.game = game;
+    private ctx: Phaser.Scene;
+    private x: number;
+    private y: number;
+    private text: string;
+    private code: string;
+    private style: any;
+    private origin: any;
+    private obj: any;
+    constructor(ctx: Phaser.Scene, x: number, y: number, string: string, style: string, origin: any) {
         this.ctx = ctx;
         this.x = x;
         this.y = y;
@@ -11,7 +18,7 @@ export default class NewText {
         this.obj = this.createText();
     };
 
-    initStyle(key) {
+    initStyle(key: string) {
         let style = {
             fontFamily: 'Cinzel',
             fontSize: 28,
@@ -54,7 +61,7 @@ export default class NewText {
         return style;
     };
 
-    initOrigin(origin) {
+    initOrigin(origin: any) {
         if (typeof origin === 'number') {
             return {
                 x: origin,
@@ -87,26 +94,26 @@ export default class NewText {
         this.obj = false;
     };
       
-    setText(string) {
+    setText(string: string | string[]) {
         this.obj.text = string;
         this.obj.setText(string);
     };
-    setX(x) {
+    setX(x: number) {
         this.x = x;
         this.obj.setX(x);
     };
-    setY(y) {
+    setY(y: number) {
         this.y = y;
         this.obj.setY(y);
     };
-    setOrigin(origin) {
+    setOrigin(origin: number) {
         this.origin = this.initOrigin(origin);
         this.obj.setOrigin(origin);
     };
-    setDepth(depth) {
+    setDepth(depth: number) {
         this.obj.setDepth(depth);
     };
-    setScrollFactor(scrollX, scrollY) {
+    setScrollFactor(scrollX: number, scrollY: number) {
         this.obj.setScrollFactor(scrollX, scrollY);
     };
 

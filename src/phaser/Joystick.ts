@@ -1,5 +1,5 @@
-import * as Phaser from 'phaser';
-import EventEmitter from './EventEmitter';
+import Phaser from 'phaser';
+import { EventBus } from '../game/EventBus';
 
 const FORCE = {
     MULTIPLIER: 0.03,
@@ -43,7 +43,7 @@ export default class Joystick extends Phaser.GameObjects.Container {
     };
 
     doubleTap() {
-        EventEmitter.on('doubletap', () => {
+        EventBus.on('update-cursor', () => {
             if (!this.pointer) return;
             this.pointer.x = this.play.cameras.main.width / 2;
             this.pointer.y = this.play.cameras.main.height / 2;

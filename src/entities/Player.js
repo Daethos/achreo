@@ -4,7 +4,7 @@ import { screenShake, walk } from "../phaser/ScreenShake";
 import StateMachine, { States } from "../phaser/StateMachine";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import HealthBar from "../phaser/HealthBar";
-import EventEmitter from "../phaser/EventEmitter";
+import { EventBus } from "../game/EventBus";
 import CastingBar from "../phaser/CastingBar";
 import Joystick from "../phaser/Joystick";
 
@@ -309,7 +309,7 @@ export default class Player extends Entity {
     };  
 
     multiplayerMovement = () => {
-        EventEmitter.emit('playerMoving', { 
+        EventBus.emit('playerMoving', { 
             x: this.x, y: this.y, flipX: this.flipX, attacking: this.isAttacking, countering: this.isCountering,
             dodging: this.isDodging, posturing: this.isPosturing, rolling: this.isRolling, isMoving: this.isMoving,
             consuming: this.isConsuming, caerenic: this.isCaerenic, tshaering: this.isTshaering, polymorphing: this.isPolymorphing,
@@ -320,9 +320,9 @@ export default class Player extends Entity {
     };
 
     cleanUp() {
-        EventEmitter.off('update-combat-data', this.constantUpdate);
-        EventEmitter.off('update-combat', this.eventUpdate);
-        EventEmitter.off('disengage', this.disengage);
+        EventBus.off('update-combat-data', this.constantUpdate);
+        EventBus.off('update-combat', this.eventUpdate);
+        EventBus.off('disengage', this.disengage);
     };
 
     highlightTarget = (sprite) => {
@@ -340,9 +340,9 @@ export default class Player extends Entity {
     };
 
     playerStateListener = () => {
-        EventEmitter.on('update-combat-data', this.constantUpdate); 
-        EventEmitter.on('update-combat', this.eventUpdate);
-        EventEmitter.on('disengage', this.disengage); 
+        EventBus.on('update-combat-data', this.constantUpdate); 
+        EventBus.on('update-combat', this.eventUpdate);
+        EventBus.on('disengage', this.disengage); 
     }; 
 
     disengage = () => {
@@ -607,7 +607,7 @@ export default class Player extends Entity {
                 if (other.gameObjectB && other.bodyB.label === 'lootdropCollider') {
                     this.interacting.push(other.gameObjectB);
                     const interactingLoot = { loot: other.gameObjectB._id, interacting: true };
-                    EventEmitter.emit('interacting-loot', interactingLoot);
+                    EventBus.emit('interacting-loot', interactingLoot);
                 };
             },
             context: this.scene,
@@ -619,7 +619,7 @@ export default class Player extends Entity {
                 if (other.gameObjectB && other.bodyB.label === 'lootdropCollider') {
                     this.interacting = this.interacting.filter(obj => obj.id !== other.gameObjectB.id);
                     const interactingLoot = { loot: other.gameObjectB._id, interacting: false };
-                    EventEmitter.emit('interacting-loot', interactingLoot);
+                    EventBus.emit('interacting-loot', interactingLoot);
                 };
             },
             context: this.scene,
@@ -838,7 +838,7 @@ export default class Player extends Entity {
     onStealthEnter = () => {
         this.isStealthing = true; 
         this.stealthEffect(true);    
-        // EventEmitter.emit('stealth', true);
+        // EventBus.emit('stealth', true);
     };
     onStealthUpdate = (_dt) => {
         if (!this.isStealthing || this.currentRound > 1) this.metaMachine.setState(States.CLEAN); 
@@ -846,7 +846,7 @@ export default class Player extends Entity {
     onStealthExit = () => { 
         this.isStealthing = false;
         this.stealthEffect(false);
-        // EventEmitter.emit('stealth', false);
+        // EventBus.emit('stealth', false);
     };
 
     stealthEffect(stealth) {
@@ -880,7 +880,7 @@ export default class Player extends Entity {
     };
 
     stealthListener = () => {
-        EventEmitter.on('update-stealth', () => {
+        EventBus.on('update-stealth', () => {
             if (this.isStealthing) {
                 this.isStealthing = false;
             } else {
@@ -890,7 +890,7 @@ export default class Player extends Entity {
     };
 
     caerenicListener = () => {
-        EventEmitter.on('update-caerenic', () => {
+        EventBus.on('update-caerenic', () => {
             this.isCaerenic = this.isCaerenic ? false : true;
             this.caerenicFx.play();
             if (this.isCaerenic) {
@@ -904,14 +904,14 @@ export default class Player extends Entity {
     };
 
     stalwartListener = () => {
-        EventEmitter.on('update-stalwart', () => {
+        EventBus.on('update-stalwart', () => {
             this.isStalwart = this.isStalwart ? false : true;
             this.stalwartFx.play();
         });
     };
 
     tabListener = () => {
-        EventEmitter.on('tab-target', (enemy) => {
+        EventBus.on('tab-target', (enemy) => {
             if (this.currentTarget) {
                 this.currentTarget.clearTint();
             };
@@ -1147,7 +1147,7 @@ export default class Player extends Entity {
                 isTriumphant: enemy.isTriumphant 
             };
         });
-        EventEmitter.emit('update-enemies', data);
+        EventBus.emit('update-enemies', data);
     };
     
     zeroOutVelocity = (velocityDirection, deceleration) => {
@@ -1388,7 +1388,7 @@ export default class Player extends Entity {
         }; 
 
         if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.firewater.T)) {
-            EventEmitter.emit('update-stealth');
+            EventBus.emit('update-stealth');
         };
 
         if (Phaser.Input.Keyboard.JustDown(this.inputKeys.firewater.T)) {

@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.ascean.app',
-  appName: 'ascean',
+  appName: 'The Ascean',
   webDir: 'dist',
   server: {
     androidScheme: 'https'

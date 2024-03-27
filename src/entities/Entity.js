@@ -534,8 +534,24 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.spriteWeapon.setOrigin(0.25, 0.5);
                         this.spriteWeapon.setAngle(250);
                     };
-                    if (this.frameCount === 35) {
+                    // ==================== NEW FRAMES ==================== \\
+                    
+                    if (this.frameCount === 32) {
                         this.spriteWeapon.setOrigin(0.25, 0.25);
+                        this.spriteWeapon.setAngle(-45);
+                    };
+                    if (this.frameCount === 33) {
+                        // this.spriteWeapon.setOrigin(0.25, 0.25);
+                        this.spriteWeapon.setAngle(-30);
+                    }
+                    if (this.frameCount === 34) {
+                        // this.spriteWeapon.setOrigin(0.25, 0.25);
+                        this.spriteWeapon.setAngle(-15);
+                    };
+
+                    // ==================== NEW FRAMES ==================== \\
+                    if (this.frameCount === 35) {
+                        // this.spriteWeapon.setOrigin(0.25, 0.25);
                         this.spriteWeapon.setAngle(0);
                     };
                     if (this.frameCount === 36) {
@@ -585,8 +601,24 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.spriteWeapon.setOrigin(0.25, 0.5);
                         this.spriteWeapon.setAngle(-125);
                     };
-                    if (this.frameCount === 35) {
+                    // ==================== NEW FRAMES ==================== \\
+
+                    if (this.frameCount === 32) {
                         this.spriteWeapon.setOrigin(0.25, 0.25);
+                        this.spriteWeapon.setAngle(45);
+                    };
+                    if (this.frameCount === 33) {
+                        // this.spriteWeapon.setOrigin(0.25, 0.25);
+                        this.spriteWeapon.setAngle(60);
+                    }
+                    if (this.frameCount === 34) {
+                        // this.spriteWeapon.setOrigin(0.25, 0.25);
+                        this.spriteWeapon.setAngle(75);
+                    };
+
+                    // ==================== NEW FRAMES ==================== \\
+                    if (this.frameCount === 35) {
+                        // this.spriteWeapon.setOrigin(0.25, 0.25);
                         this.spriteWeapon.setAngle(90);
                     };
                     if (this.frameCount === 36) {

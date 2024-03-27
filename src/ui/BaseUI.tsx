@@ -151,7 +151,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     // const showDialog = async (e) => dispatch(setDialogTag(e));
     const sendEnemyData = async () => EventBus.emit('get-enemy', combat().computer);
     const sendSettings = async () => EventBus.emit('get-settings', settings);
-    const updateCombatListener = (data: Combat) => EventBus.emit('update-combat-data', data); // Was Async
+    const updateCombatListener = (data: Combat) => EventBus.emit('combat', data); // Was Async
     // const updateCombatTimer = (e: number) => setCombat({...(combat), combatTimer: e}); 
     const updateStamina = (e: number) => setStaminaPercentage(staminaPercentage() - e <= 0 ? 0 : staminaPercentage() - e);
 

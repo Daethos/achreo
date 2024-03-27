@@ -390,74 +390,74 @@ export class Game extends Scene {
     };
     showDialog = (dialog: boolean) => EventBus.emit('show-dialog', dialog);
 
-        // ============================ Player ============================ \\
+    // ============================ Player ============================ \\
 
-        caerenic = () => {
-            EventBus.emit('update-caerenic');
-        } ;
-        stalwart = () => {
-            EventBus.emit('update-stalwart');
-        } ;
-        useStamina = (value: number) => EventBus.emit('update-stamina', value);
-    
-        createTextBorder(text: NewText) {
-            const border = this.add.graphics();
-            border.lineStyle(4, 0x2A0134, 1);
-            border.strokeRect(
-                text.x - text.width * text.originX - 2.5,
-                text.y - text.height * text.originY - 2.5, 
-                text.width + 5, 
-                text.height + 5 
-            );
-              
-            this.add.existing(border);
-            return border;
-        };   
-    
-        startCombatTimer = () => {
-            console.log('Starting Combat Timer')
-            this.combatTimer = this.time.addEvent({
-                delay: 1000,
-                callback: () => {
-                    if (this.scene.isPaused()) return;
-                    this.combatTime += 1;
-                    EventBus.emit('update-combat-timer', this.combatTime);
-                },
-                callbackScope: this,
-                loop: true
-            });
+    caerenic = () => {
+        EventBus.emit('update-caerenic');
+    } ;
+    stalwart = () => {
+        EventBus.emit('update-stalwart');
+    } ;
+    useStamina = (value: number) => EventBus.emit('update-stamina', value);
+
+    createTextBorder(text: NewText) {
+        const border = this.add.graphics();
+        border.lineStyle(4, 0x2A0134, 1);
+        border.strokeRect(
+            text.x - text.width * text.originX - 2.5,
+            text.y - text.height * text.originY - 2.5, 
+            text.width + 5, 
+            text.height + 5 
+        );
+            
+        this.add.existing(border);
+        return border;
+    };   
+
+    startCombatTimer = () => {
+        console.log('Starting Combat Timer')
+        this.combatTimer = this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                if (this.scene.isPaused()) return;
+                this.combatTime += 1;
+                EventBus.emit('update-combat-timer', this.combatTime);
+            },
+            callbackScope: this,
+            loop: true
+        });
+    };
+
+    stopCombatTimer = () => {
+        console.log('Stopping Combat Timer')
+        this.combatTimer.destroy();
+        // this.combatTimer = undefined;
+        this.combatTime = 0;
+        EventBus.emit('update-combat-timer', this.combatTime);
+    };
+
+    // ================== Update ================== \\
+
+    update() {
+        this.player.update(); 
+        for (let i = 0; i < this.enemies.length; i++) {
+            this.enemies[i].update();
         };
-    
-        stopCombatTimer = () => {
-            console.log('Stopping Combat Timer')
-            this.combatTimer.destroy();
-            // this.combatTimer = undefined;
-            this.combatTime = 0;
-            EventBus.emit('update-combat-timer', this.combatTime);
-        };
-    
-        // ================== Update ================== \\
-    
-        update() {
-            this.player.update(); 
-            for (let i = 0; i < this.enemies.length; i++) {
-                this.enemies[i].update();
-            };
-            for (let i = 0; i < this.npcs.length; i++) {
-                this.npcs[i].update();
-            }; 
-            this.combatMachine.processor();
-    
-            this.playerLight.setPosition(this.player.x, this.player.y);
-            this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2));
-        };
-    
-        pause() {
-            this.scene.pause();
-            this.music.pause();
-        };
-        resume() {
-            this.scene.resume();
-            this.music.resume();
-        };
+        for (let i = 0; i < this.npcs.length; i++) {
+            this.npcs[i].update();
+        }; 
+        this.combatMachine.processor();
+
+        this.playerLight.setPosition(this.player.x, this.player.y);
+        this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2));
+    };
+
+    pause() {
+        this.scene.pause();
+        this.music.pause();
+    };
+    resume() {
+        this.scene.resume();
+        this.music.resume();
+    };
 };

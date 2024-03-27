@@ -235,8 +235,16 @@ export class Game extends Scene {
         this.actionButtonListener();
 
         // =========================== FULLSCREEN =========================== \\
-        this.scale.fullscreenTarget = document.getElementById('game-container');
-        this.scale.startFullscreen();
+
+        // make a button in the bottom left corner of the screen
+        const button = this.add.image(0, 0, 'cursor').setOrigin(0).setInteractive();
+        button.on('pointerup', () => {
+            if (this.scale.isFullscreen) {
+                this.scale.stopFullscreen();
+            } else {
+                this.scale.startFullscreen();
+            }
+        });
     };
 
     equipListener = () => EventBus.on('equip-sound', () => {

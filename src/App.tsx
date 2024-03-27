@@ -148,7 +148,19 @@ export default function App() {
         } catch (err: any) {
             console.error('Error loading Ascean:', err);
         };
-    }; 
+    };
+    
+    function fullScreen(full: boolean) {
+        console.log('Full Screen:', full);
+        if (!full) {
+            const scene = phaserRef.scene as MainMenu;
+            scene.scale.stopFullscreen();
+        } else {
+            const scene = phaserRef.scene as MainMenu;
+            scene.scale.fullscreenTarget = document.getElementById('game-container');
+            scene.scale.startFullscreen();
+        };
+    };
 
     function togglePause(pause: boolean) {
         console.log('Pause:', pause);
@@ -172,6 +184,7 @@ export default function App() {
 
     usePhaserEvent('update-ascean', (e: Ascean) => setAscean(e));
     usePhaserEvent('update-pause', togglePause);
+    usePhaserEvent('update-fullscreen', fullScreen);
 
     return (
         <div id="app">

@@ -102,13 +102,22 @@ body {
 }
 
 .healthbar {
+    display: flex;
     position: absolute;
-    left: 5vw;
+    margin-left: 15%;
     width: 70%;
     overflow: hidden;
     border: 0.1em solid #fdf6d8;
-    margin-bottom: 10%;
-    border-radius: 25%;
+    border-radius: 0.5em;
+}
+
+.playerInventoryBag {
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    background-color: #000;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
 }
 
 .playerName {
@@ -124,7 +133,7 @@ body {
     font-family: 'Cinzel Regular';
     font-weight: 600;
     text-align: center;
-    z-index: 3;
+    z-index: 1;
 }
 
 .playerHealthBar {
@@ -169,6 +178,19 @@ body {
     top: 5vh;
 }
 
+.playerMenuHeading {
+    /* position: absolute;
+    top: 10;
+    */
+    font-family: 'Cinzel-Regular';
+    font-size: 1em; 
+    text-align: center;
+    color: #fdf6d8;
+    background-color: black;
+    padding: 0;
+    /* border: 0.1em solid ; */
+} 
+
 .playerWindow {
     position: absolute;
     top: 10vh;
@@ -177,6 +199,7 @@ body {
     height: 80vh;
     width: 32vw;
     border: 0.15em solid gold;
+    background-color: #000;
     overflow: scroll;
 }
 
@@ -226,6 +249,31 @@ body {
     bottom: 1%;
     background-color: black;
     z-index: 1;
+}
+
+.cell {
+    padding: 0.5em;
+    border: 0.1em solid #fdf6d8;
+    height: 100%;
+    max-width: 50%;
+    font-family: 'Cinzel Regular';
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 1em;
+    font-weight: 600;
+    color: #fdf6d8;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.table {
+    display: flex;
 }
 
 /* <------------- GAME UI -------------> */

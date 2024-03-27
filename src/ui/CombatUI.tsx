@@ -19,10 +19,8 @@ export default function CombatUI({ state, staminaPercentage, pauseState, stamina
     const [playerHealthPercentage, setPlayerHealthPercentage] = createSignal(0); 
 
     createEffect(() => {
-        console.log(state().newPlayerHealth, state().playerHealth, Math.round((state().newPlayerHealth/state().playerHealth) * 100));
         const newHealthPercentage = Math.round((state().newPlayerHealth/state().playerHealth) * 100);
-        console.log('newHealthPercentage', newHealthPercentage);
-        setPlayerHealthPercentage(Math.round((state().newPlayerHealth/state().playerHealth) * 100));
+        setPlayerHealthPercentage(newHealthPercentage);
     }); 
 
     // createEffect(() => {

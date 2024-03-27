@@ -129,8 +129,8 @@ export class Game extends Scene {
         const objectLayer = map.getObjectLayer('navmesh');
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, 32);
         this.navMesh = navMesh;
-        const debugGraphics = this.add.graphics().setAlpha(0.75);
-        this.navMesh.enableDebug(debugGraphics); 
+        // const debugGraphics = this.add.graphics().setAlpha(0.75);
+        // this.navMesh.enableDebug(debugGraphics); 
         this.matter.world.setBounds(0, 0, 4096, 4096); // Top Down
 
         this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });

@@ -11,7 +11,6 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
     const dimensions = useResizeListener();
 
     createEffect(() => {
-        console.log(newAscean()?.mastery, 'Mastery in Review');
         const deity = FAITHS.find(faith => faith.worshipers === newAscean()?.faith);
         setName(deity?.name as string);
         setCharacter(deity?.character as string);
@@ -46,10 +45,10 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
                 </div>
                 </>
             }>
-                <div class='stat-block'>
+                <div class='' style={{ position: 'absolute', width: '70%', left: '15%' }}>
                 <div class='left' style={{ width: '48%' }}>
                     <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id='deity-pic' style={{ 
-                        width: dimensions().ORIENTATION === 'landscape' ? '50%' : '25%', height: dimensions().ORIENTATION === 'landscape' ? '50%' : '25%', border: '0.15em solid gold',   
+                        width: dimensions().ORIENTATION === 'landscape' ? '75%' : '25%', height: dimensions().ORIENTATION === 'landscape' ? '50%' : '25%', border: '0.15em solid gold',   
                     }} />
                 </div>
                 <div class='right' style={{ width: '48%' }}>

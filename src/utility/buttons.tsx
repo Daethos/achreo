@@ -43,45 +43,44 @@ export function DynamicButton({ style, text, callback, opacity, setOpacity, left
     );
 };
 
-export function ActionButtonModal({ current, style, actions, index, handleAction, setShow }: { current: string, style: any, actions: string[], index: number, handleAction: (action: string, index: number) => void, setShow: Setter<boolean> }) {
+export function ActionButtonModal({ current, actions, index, handleAction }: { current: string, actions: string[], index: number, handleAction: (action: string, index: number) => void }) {
     return (
-        <div class='border creature-heading' style={{ width: '100%', height: '100%' }}>
-        <h1>{current}</h1>
-        <button class='button cornerBR' style={{ 'background-color': 'red', 'z-index': 1 }} onClick={() => setShow(false)}>
-            <div> X </div>
-        </button>
-        <div class='center' style={{ overflow: 'scroll', width: '100%', height: '100%' }}>
-        {actions.map((action) => {
-            return (
-                <button onClick={() => handleAction(action, index)} 
-                    style={{ 'background-color': 'black', width: '50%' }}>
-                    <div style={font('1.25em', '#fdf6d8')}>{action}</div>
-                </button>
-                );
-            })} 
+        <div class='border superCenter' style={{ width: '40%', height: '75%', overflow: 'scroll' }}>
+        <div class='creature-heading'>
+            <h1 style={{ 'text-align': 'center' }}>{current}</h1>
+            <div class='center' style={{ overflow: 'scroll', width: '100%', height: '100%' }}>
+            {actions.map((action) => {
+                return (
+                    <button class='highlight' onClick={() => handleAction(action, index)} style={{ 'background-color': 'black', margin: '5% auto', width: '75%', display: 'block' }}>
+                        <div style={font('1.25em', '#fdf6d8')}>{action}</div>
+                    </button>
+                    );
+                })} 
+            </div>
         </div>
         </div>
     );
 }
 
-export function Modal({ items, inventory, callback, show, setShow }: { items: Accessor<[{ item: Equipment | undefined; type: string; }]>, inventory: Equipment | undefined, callback: (type: string) => void, show: Accessor<boolean>, setShow: Setter<boolean> }) {
+export function Modal({ items, inventory, callback, show, setShow }: { items: Accessor<{ item: Equipment | undefined; type: string; }[]>, inventory: Equipment | undefined, callback: (type: string) => void, show: Accessor<boolean>, setShow: Setter<boolean> }) {
     return (
-        <div class='border creature-heading' style={ { height: '100%', width: '100%' }}>
-            <h1>{inventory?.name}</h1>
-            <button class='button cornerBR' style={{ 'background-color': 'red', 'z-index': 1 }} onClick={() => setShow(false)}>
-                <div> X </div>
-            </button>
-            <div class='center' style={{ overflow: 'scroll', width: '100%', height: '100%' }}>
+        <div class='border superCenter' style={{ width: '40%' }}>
+        <div class='creature-heading' >
+            <h1 style={{ 'text-align': 'center' }}>{inventory?.name}</h1>
             {items().map((item) => {
                 return (
-                    <button class='button center' style={{ 'background-color': 'black', width: '50%' }} onClick={() => callback(item.type)}>
+                    <button class='highlight center' style={{ 'background-color': 'black', margin: '5% auto', width: '75%', display: 'block' }} onClick={() => callback(item.type)}>
                         <div style={{ color: 'gold', 'text-align': 'center', width: '100%' }}>
-                            {item?.item?.name}    <img src={item?.item?.imgUrl} />
+                            {item?.item?.name} <img src={item?.item?.imgUrl} alt={item?.item?.name} />
                         </div>
                     </button>
                 )
             })}
-            </div>
+            <br /><br />
+            <button class='highlight cornerBR' style={{ 'background-color': 'red', 'z-index': 1 }} onClick={() => setShow(!show())}>
+                <p style={font('0.5em')}>X</p>
+            </button>
+        </div>
         </div>
     );
 };

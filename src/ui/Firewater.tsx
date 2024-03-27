@@ -102,7 +102,7 @@ export default function Firewater({ ascean }: Props) {
     };
     return (
         <>
-        <button class='playerSaveInventoryOuter' style={{ border: '0.15em solid gold', transform: 'scale(0.65)' }} onClick={() => setShowFirewater(!showFirewater())}>
+        <button class='playerSaveInventoryOuter' style={{ transform: 'scale(0.65)' }} onClick={() => setShowFirewater(!showFirewater())}>
             <img src={'../assets/images/firewater.png'} alt="Firewater" />
         </button>
         <Show when={showFirewater()}>

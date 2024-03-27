@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
-import Play from '../game/scenes/Play';
-import { PLAYER, staminaCheck } from '../entities/Player';
+import { Game } from '../game/scenes/Game';
+import { staminaCheck } from '../entities/Player';
+import { EventBus } from '../game/EventBus';
 
 const ACTIONS = [{
     ATTACK: 0x800080 // 0xFA0000
@@ -57,30 +58,33 @@ type ActionButton = {
 };
 
 export default class ActionButtons extends Phaser.GameObjects.Container {
-    private buttons: ActionButton[];
+    private actionButtons: ActionButton[];
+    private specialButtons: ActionButton[];
     private buttonWidth: number;
     private buttonHeight: number;
-    private strafeLeft: ActionButton;
-    private strafeRight: ActionButton;
-    private centerX: number;
-    private centerY: number;
+    // private strafeLeft: ActionButton;
+    // private strafeRight: ActionButton;
+    // private centerX: number;
+    // private centerY: number;
 
-    constructor(scene: Play) {
+    constructor(scene: Game) {
         super(scene);
-        this.buttons = [];
+        this.actionButtons = [];
+        this.specialButtons = [];
         this.buttonWidth = 24;
         this.buttonHeight = 24;
-        this.centerX = scene.cameras.main.width / 2;
-        this.centerY = scene.cameras.main.height / 2;
+        // this.centerX = scene.cameras.main.width / 2;
+        // this.centerY = scene.cameras.main.height / 2;
         this.addButtons(scene);
         scene.add.existing(this);
         const { width, height } = scene.cameras.main;
         this.setPosition(width / 5, height / 5); // 2.75, 1.5
         this.setScrollFactor(0);
         this.setVisible(true); // false
+        this.reorder();
     };
 
-    private addButtons = (scene: Play): void => {
+    private addButtons = (scene: Game): void => {
         const centerActionX = scene.cameras.main.width / 1.25; // X-coordinate of the center of the circle
         const centerActionY = scene.cameras.main.height / 1.35; // Y-coordinate of the center of the circle
         
@@ -123,17 +127,13 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 button.width), 
                 Phaser.Geom.Circle.Contains)
                     .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
-                        const input = button.name.toLowerCase();
-                        const check = staminaCheck(input, scene.player.stamina);
-                        if (check.success === true) {
-                            scene.player.stateMachine.setState(`${input}`);
-                        };
+                        this.pressButton(button, scene);
                     }); 
 
             button.graphic.setScrollFactor(0);
             button.border.setScrollFactor(0);
 
-            this.buttons.push(button);
+            this.actionButtons.push(button);
             this.add(button.border);
             this.add(button.graphic);
         });
@@ -167,18 +167,14 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
             scaleButton(button, 0.75);
             button.graphic.setInteractive(new Phaser.Geom.Circle(buttonX, buttonY, button.width), Phaser.Geom.Circle.Contains)
-                .on('pointerdown', function(_pointer: any, _localX: any, _localY: any, _event: any) {
-                    const input = button.name.toLowerCase();
-                    const check = staminaCheck(input, scene.player.stamina);
-                    if (check.success === true) {
-                        scene.player.stateMachine.setState(`${input}`);
-                    };
+                .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
+                    this.pressButton(button, scene);
                 }); 
             
             button.graphic.setScrollFactor(0);
             button.border.setScrollFactor(0);
 
-            this.buttons.push(button);
+            this.specialButtons.push(button);
             this.add(button.border);
             this.add(button.graphic);
         });
@@ -306,7 +302,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 
     private draw = (): void => {
-        this.buttons.forEach((button: ActionButton) => {
+        this.actionButtons.forEach((button: ActionButton) => {
             button.graphic.clear();
             button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
             button.graphic.fillCircle(button.x, button.y, this.buttonHeight * SETTINGS.SCALE * button.current / button.total);
@@ -314,19 +310,33 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
             button.border.strokeCircle(button.x, button.y, (this.buttonHeight + 2) * SETTINGS.SCALE * button.current / button.total);
             if (button.current / button.total >= 1) {
-                // button.graphic.setVisible(true);
-                // button.border.setVisible(true);
                 button.graphic.setInteractive();
             };
-            if (button.key === 'special') {
-                scaleButton(button, 0.75);
+        });
+        this.specialButtons.forEach((button: ActionButton) => {
+            button.graphic.clear();
+            button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
+            button.graphic.fillCircle(button.x, button.y, this.buttonHeight * SETTINGS.SCALE * button.current / button.total);
+            button.border.clear();
+            button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
+            button.border.strokeCircle(button.x, button.y, (this.buttonHeight + 2) * SETTINGS.SCALE * button.current / button.total);
+            if (button.current / button.total >= 1) {
+                button.graphic.setInteractive();
             };
+            scaleButton(button, 0.75);
         });
     };    
 
+    private pressButton = (button: ActionButton, scene: Play): void => {
+        const input = button.name.toLowerCase();
+        const check = staminaCheck(input, scene.player.stamina);
+        if (check.success === true) {
+            scene.player.stateMachine.setState(`${input}`);
+        };
+    };
+
     public setCurrent = (current: number, limit: number, name: string) => {
-        // console.log(progressPercentage, 'Progress Percentage', current, limit, name);
-        this.buttons.forEach((button) => {
+        this.actionButtons.forEach((button) => {
             if (button.name === name.toUpperCase()) {
                 const progressPercentage = current / limit;
                 if (current / limit >= 1) {
@@ -335,15 +345,46 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.graphic.fillCircle(button.x, button.y, this.buttonHeight * SETTINGS.SCALE * progressPercentage);
                 };
                 if (progressPercentage < 1) {
-                    // button.graphic.setVisible(true);
-                    // button.border.setVisible(true);
                     button.graphic.disableInteractive();
                 };
                 button.current = progressPercentage * button.total;
-                // button.current = button.total;
             };
-        });0
+        });
         this.draw();
+    };
+
+    public reorder = () => {
+        EventBus.on('reorder-buttons', (order: { list: string[], type: string }) => {
+            const { list, type } = order;
+            switch (type) {
+                case 'action': {
+                    this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
+                        button.graphic.removeAllListeners();
+                        const newButton = { ...button, name: list[index].toUpperCase() as string };
+                        newButton.graphic.setInteractive(new Phaser.Geom.Circle(newButton.x, newButton.y, newButton.width), Phaser.Geom.Circle.Contains)
+                            .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
+                                this.pressButton(newButton, this.scene);
+                            });
+                        return newButton;
+                    });
+                    break;
+                };
+                case 'special': {
+                    this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
+                        button.graphic.removeAllListeners();
+                        const newButton = { ...button, name: list[index].toUpperCase() as string };
+                        newButton.graphic.setInteractive(new Phaser.Geom.Circle(newButton.x, newButton.y, newButton.width), Phaser.Geom.Circle.Contains)
+                            .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
+                                this.pressButton(newButton, this.scene);
+                            });
+                        return newButton;
+                    });
+                    break;
+                };
+                default:
+                    break;
+            };    
+        });
     };
 };
 

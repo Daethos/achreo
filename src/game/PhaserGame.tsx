@@ -1,4 +1,4 @@
-import { onCleanup, onMount, createSignal, Accessor, Setter, Show, createEffect } from 'solid-js';
+import { onCleanup, onMount, createSignal, Accessor, Setter, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import StartGame from './main';
 import { EventBus } from './EventBus';
@@ -158,13 +158,13 @@ export const PhaserGame = (props: IProps) => {
 
     function swapEquipment(e: { type: string; item: Equipment }) {
         const { type, item } = e;
+        console.log(type, item, 'Swap Equipment');
         const oldEquipment = props.ascean()[type as keyof Ascean] as Equipment;
         const newEquipment = item;
-        const newAscean = { ...props.ascean, [type]: newEquipment };
+        const newAscean = { ...props.ascean(), [type]: newEquipment };
 
         let inventory = [ ...game().inventory ];
         inventory = inventory.filter((inv) => inv._id !== newEquipment._id);
-
         if (!oldEquipment.name.includes('Empty') && !oldEquipment.name.includes('Starter')) inventory.push(oldEquipment);
         
         const res = asceanCompiler(newAscean);
@@ -181,15 +181,11 @@ export const PhaserGame = (props: IProps) => {
             playerDefense: res?.defense,
             playerDamageType: res?.combatWeaponOne?.damageType?.[0] as string
         });
-
-        // setAscean(res?.ascean);
         setGame({ ...game(), inventory: inventory });
         setStamina(res?.attributes?.stamina as number);
+
         EventBus.emit('update-ascean', res?.ascean);
-
-        // EventBus.emit('update-game-slice', { inventory: inventory });
-
-        // EventBus.emit('update-full-request');
+        EventBus.emit('update-full-request');
         EventBus.emit('equip-sound');
     };
 
@@ -236,6 +232,10 @@ export const PhaserGame = (props: IProps) => {
 
         EventBus.on('main-menu', (_sceneInstance: Phaser.Scene) => props.setMenu({ ...props?.menu, gameRunning: false }));
         EventBus.on('start-game', () => setLive(!live()));
+
+        EventBus.on('add-item', (e: Equipment[]) => {
+            setGame({ ...game(), inventory: game()?.inventory?.length > 0 ? [...game().inventory, e[0]] : e });
+        });
 
         EventBus.on('clear-enemy', () => setCombat({
             ...combat(),
@@ -341,20 +341,16 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('update-combat-timer', (e: number) => setCombat({ ...combat(), combatTimer: e }));
 
         EventBus.on('update-caerenic', () => {
-            console.log(!combat().isCaerenic, 'Caerenic Switch')       
             setCombat({ ...combat(), isCaerenic: !combat().isCaerenic })
         });
         EventBus.on('update-stalwart', () => {
-            console.log(!combat().isStalwart, 'Stalwart Switch')
             setCombat({ ...combat(), isStalwart: !combat().isStalwart })
-        });
-            
+        });      
         EventBus.on('update-stealth', () => {
-            console.log(!combat().isStealth, 'Stealth Switch')
             setCombat({ ...combat(), isStealth: !combat().isStealth });
             EventBus.emit('stealth-sound');
         });
-        // EventBus.on('update-health', (e: number) => setCombat({ ...combat(), e }));
+        EventBus.on('update-health', (e: number) => setCombat({ ...combat(), e }));
         EventBus.on('update-lootdrops', (e: Equipment[]) => 
             setGame({ 
                 ...game(), 
@@ -375,6 +371,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('current-scene-ready');
             EventBus.removeListener('main-menu');
             EventBus.removeListener('start-game');
+            EventBus.removeListener('add-item');
             EventBus.removeListener('clear-enemy');
             EventBus.removeListener('fetch-enemy');   
             EventBus.removeListener('drink-firewater'); 
@@ -399,6 +396,8 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('toggle-pause');
             EventBus.removeListener('update-combat-state');
             EventBus.removeListener('update-combat-timer');
+            EventBus.removeListener('update-combat');
+            EventBus.removeListener('update-health');
             EventBus.removeListener('update-caerenic');
             EventBus.removeListener('update-stalwart');
             EventBus.removeListener('update-stealth');

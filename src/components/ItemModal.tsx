@@ -27,11 +27,11 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                 <div class='creature-heading' style={{ width: '100%'}}>
                     <h1 style={ empty ? { 'text-align': 'center' } : { 'justify-content': 'space-evenly' }}>
                         {name} 
-                            <Show when={!empty}>
-                            <span style={{ transform: 'scale(1.2)', float: 'right', 'margin-right': centerImage }}>
-                                <img src={item.imgUrl} />
-                            </span>
-                            </Show>
+                        <Show when={!empty}>
+                        <span style={{ transform: 'scale(1.2)', float: 'right', 'margin-right': centerImage }}>
+                            <img src={item.imgUrl} />
+                        </span>
+                        </Show>
                     </h1>
                 </div>
                 <Show when={!empty}> 

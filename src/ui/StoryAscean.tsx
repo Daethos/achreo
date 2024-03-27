@@ -4,7 +4,7 @@ import AttributeModal, { AttributeCompiler } from '../components/Attributes';
 import { styles } from '../styles';
 // import SettingSetter from '../utility/settings';
 import InventoryPouch from './InventoryPouch';
-import Inventory from './Inventory';
+// import Inventory from './Inventory';
 import { EventBus } from '../game/EventBus';
 import HealthBar from './HealthBar';
 import ExperienceBar from './ExperienceBar';
@@ -20,6 +20,7 @@ import Settings from '../models/settings';
 import Ascean from '../models/ascean';
 import { GameState } from '../stores/game';
 import { Combat } from '../stores/combat';
+import Highlight from './Highlight';
 
 // import {  playerTraits } from '../utility/ascean';
 // import LevelUpModal from './LevelUpModal';
@@ -57,15 +58,16 @@ interface Props {
     setSettings: Setter<Settings>;
     ascean: Accessor<Ascean>; 
     asceanState: Accessor<any>;
-    gameState: Accessor<GameState>;
+    game: Accessor<GameState>;
     combatState: Accessor<Combat>;
 };
 
-const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, combatState }: Props) => {
+const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatState }: Props) => {
     // const [playerTraitWrapper, setPlayerTraitWrapper] = createSignal({});
-    const [dragAndDropInventory, setDragAndDropInventory] = createSignal(gameState().inventory);
+    const [dragAndDropInventory, setDragAndDropInventory] = createSignal(game()?.inventory);
     const [attribute, setAttribute] = createSignal(Attributes[0]);
     const [equipment, setEquipment] = createSignal<Equipment | undefined>(undefined);
+    const [inventoryType, setInventoryType] = createSignal<any>('');
     const [highlighted, setHighlighted] = createSignal<{ item: Equipment | undefined; comparing: boolean; type: string }>({ item: undefined, comparing: false, type: '' });
     const [show, setShow] = createSignal(false);
     const [actionShow, setActionShow] = createSignal(false);
@@ -80,7 +82,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
     });
     const [equipModalShow, setEquipModalShow] = createSignal(false);
     const [inspectModalShow, setInspectModalShow] = createSignal(false);
-    const [inspectItems, setInspectItems] = createSignal<[{ item: Equipment | undefined; type: string; }]>([{ item: undefined, type: '' }]);
+    const [inspectItems, setInspectItems] = createSignal<{ item: Equipment | undefined; type: string; }[]>([{ item: undefined, type: '' }]);
     const [attrShow, setAttrShow] = createSignal(false);
     const [asceanPic, setAsceanPic] = createSignal('');
     const [ringCompared, setRingCompared] = createSignal('');
@@ -101,22 +103,18 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
     // }, [ascean]);
 
     // createEffect(() => {
-    //     if (ascean().tutorial.firstInventory && gameState().inventory.length && asceanViews === 'Inventory') dispatch(setTutorialContent('firstInventory'));
+    //     if (ascean().tutorial.firstInventory && game().inventory.length && asceanViews === 'Inventory') dispatch(setTutorialContent('firstInventory'));
     // }, [ascean().tutorial, asceanViews, dispatch]);
 
     createEffect(() => {
-        setDragAndDropInventory(gameState().inventory);
+        setDragAndDropInventory(game().inventory);
         checkHighlight();
         //     EventBus.emit('refresh-inventory', dragAndDropInventory);
-    });
-
-    createEffect(() => {
-        console.log(asceanState, "Ascean State");
-    });
-
+    }); 
     const checkHighlight = () => {
         if (highlighted()?.item) {
-            const item = gameState().inventory.find((item) => item?._id === highlighted()?.item?._id);
+            const item = game().inventory.find((item) => item?._id === highlighted()?.item?._id);
+            console.log(item, 'Item in checkHighlight')
             if (!item) setHighlighted({ item: undefined, comparing: false, type: '' });
         };
     };
@@ -147,8 +145,8 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
     // const shake = (value, action) => setSettings({ ...settings(), shake: { ...settings().shake, [action]: value } });
     // const handleShakeDurationChange = (e) => shake(parseFloat(e.target.value), 'duration');
     // const handleShakeIntensityChange = (e) => shake(parseFloat(e.target.value), 'intensity');
-    // const handleVibrationChange = (e) => setGameState({ ...gameState, vibration: parseFloat(e.target.value)});
-    // const handleVolumeChange = (e) => setGameState({ ...gameState, volume: parseFloat(e.target.value)});
+    // const handleVibrationChange = (e) => setGameState({ ...game, vibration: parseFloat(e.target.value)});
+    // const handleVolumeChange = (e) => setGameState({ ...game, volume: parseFloat(e.target.value)});
 
     const createCharacterInfo = (character: string) => {
         switch (character) {
@@ -158,7 +156,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
                 // let highestMastery = Object.entries(ascean?.statistics?.mastery).reduce((a, b) => a[1] > b[1] ? a : b);
                 // if (highestMastery?.[1] === 0) highestMastery = [ascean?.mastery, 0];
                 return (
-                    <div class='center'>
+                    <div>
                         <div>Attacks</div>
                             {/* Magical: <div class='gold'>{ascean?.statistics?.combat?.attacks?.magical}</div>{'\n'}
                             Physical: <div class='gold'>{ascean?.statistics?.combat?.attacks?.physical}</div>{'\n'}
@@ -177,7 +175,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
                 );
             case CHARACTERS.TRAITS:
                 return (
-                    <div class='center'>
+                    <div>
                     <div>Traits</div>
                     {/* <div>{playerTraitWrapper?.primary?.name}</div>
                         <div>{playerTraitWrapper?.primary?.traitOneName} - {playerTraitWrapper?.primary?.traitOneDescription}</div>
@@ -238,7 +236,8 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
         newActions[i] = newAction;
         
         EventBus.emit('update-action', newActions);
-        setActionShow(false);
+        EventBus.emit('reorder-buttons', { list: newActions, type: 'action' });
+        // setActionShow(false);
     };
 
     function handleSpecialButton(e: string, i: number) {
@@ -251,7 +250,8 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
         };
         newSpecials[i] = newSpecial;
         EventBus.emit('update-special', newSpecials);
-        setSpecialShow(false);
+        EventBus.emit('reorder-buttons', { list: newSpecials, type: 'special' });
+        // setSpecialShow(false);
     };
 
     function freeInventory() {
@@ -274,30 +274,34 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
     };
 
     function removeItem(id: string) {
-        const newInventory = gameState().inventory.filter((item) => item._id !== id);
-        // setGameState({ ...gameState, inventory: newInventory });
+        const newInventory = game().inventory.filter((item) => item._id !== id);
+        // setGameState({ ...game, inventory: newInventory });
         EventBus.emit('refresh-inventory', newInventory);
         setRemoveModalShow(false);
     };
 
     return (
-        <div style={{ 'z-index': 1, position: 'fixed', border: '0.1em solid gold', top: 0, left: 0 }}>
+        <div style={{ 'z-index': 1, position: 'fixed', top: 0, left: 0 }}>
         { settings().asceanViews === VIEWS.CHARACTER ? ( <>
-            <button onClick={() => setNextView()}>
-                <p class='highlight playerMenuHeading'>Character</p>
+            <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}>
+                <div class='playerMenuHeading'>Character</div>
             </button>
             <div class='highlight playerSettingSelect'>
             { settings().characterViews === CHARACTERS.STATISTICS ? (
-                <button onClick={() => currentCharacterView(CHARACTERS.TRAITS)}><p class='playerSetting'>Statistics</p></button>
+                <button onClick={() => currentCharacterView(CHARACTERS.TRAITS)}>
+                    <p class='playerSetting'>Statistics</p>
+                </button>
             ) : (
-                <button onClick={() => currentCharacterView(CHARACTERS.STATISTICS)}><p class='playerSetting'>Traits</p></button>
+                <button onClick={() => currentCharacterView(CHARACTERS.STATISTICS)}>
+                    <p class='playerSetting'>Traits</p>
+                </button>
             ) }     
             </div> 
         </> ) : settings().asceanViews === VIEWS.INVENTORY ? ( <>
-            <button onClick={() => setNextView()}><p class='highlight playerMenuHeading'>Inventory</p></button>
+            <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Inventory</div></button>
             <Firewater ascean={ascean} />
         </> ) : settings().asceanViews === VIEWS.SETTINGS ? ( <>
-            <button onClick={() => setNextView()}><p class='highlight playerMenuHeading'>Settings</p></button>
+            <button class='highlight' style={{ 'margin-left': '0.5%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Settings</div></button>
 
             <div class='playerSettingSelect' style={{ top: '-5%' }}>
                 <button class='button p-3' onClick={() => currentView(SETTINGS.ACTIONS)}><p class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Actions</p></button>
@@ -309,35 +313,28 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
         </> ) : ( '' ) }
         {/* <<----- WINDOW ONE ----->> */}
         <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
-            { height: `${dimensions().HEIGHT * 0.8}px`, left: '1vw', } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, }}>
-                { dragAndDropInventory.length < 300 && (
-                    <div class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.5em', padding: '0.5em' }}onClick={() => freeInventory()}>
+            { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'hidden' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, }}>
+                { dragAndDropInventory().length < 300 && (
+                    <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => freeInventory()}>
                         <p>Get Gear</p>
-                    </div>
+                    </button>
                 ) }
             {/* { (ascean().experience === ascean().level * 1000) && (
                 <LevelUpModal asceanState={asceanState} />
             ) }  */}
-            <div class='gold' style={dimensions().ORIENTATION === 'landscape' ? { margin: '10%', 'text-align': 'center' } : { margin: '5%', 'text-align': 'center' }}>
+            <div class='gold' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5%', 'text-align': 'center' } : { margin: '5%', 'text-align': 'center' }}>
                 {combatState()?.player?.name}
             </div>
-            <div style={dimensions().ORIENTATION === 'landscape' ? {} : { transform: 'scale(0.75)' }}>
-                <HealthBar totalPlayerHealth={combatState().playerHealth} newPlayerHealth={combatState().newPlayerHealth} />
+            <HealthBar totalPlayerHealth={combatState().playerHealth} newPlayerHealth={combatState().newPlayerHealth} />
+            <div style={dimensions().ORIENTATION === 'landscape' ? { 'margin-left': '0', 'margin-top': '7.5%', transform: 'scale(0.9)' } : { 'margin-left': '5%', transform: 'scale(0.75)', 'margin-top': '20%' }}>
+                <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
             </div>
-            <div style={dimensions().ORIENTATION === 'landscape' ? {
-                'margin-left': '-25%', 'margin-top': '45%' } : { 'margin-left': '5%', transform: '[{ scale: 0.75 }]', 'margin-top': '20%' }}>
-                <AsceanImageCard ascean={ascean} weaponOne={combatState().weapons[0] as Equipment} weaponTwo={combatState().weapons[1] as Equipment} weaponThree={combatState().weapons[2] as Equipment} show={show} setShow={setShow} setEquipment={setEquipment} />
-            </div>
-            <div style={dimensions().ORIENTATION === 'landscape' ? {
-                'margin-top': '30%'
-            } : {
-                transform: '[{ scale: 0.75 }]', 'margin-top': '0%'
-            }}>
+            <div style={{ 'margin-top': '-5%' }}>
                 <ExperienceBar totalExperience={ascean().level * 1000} currentExperience={ascean().experience} />
             </div>
         </div>
         {/* <<----- WINDOW TWO -----> */}
-        <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? { height: `${dimensions().HEIGHT * 0.8}px`, left: '34vw', } : {
+        <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? { height: `${dimensions().HEIGHT * 0.8}px`, left: '33.5vw', } : {
             height: `${dimensions().HEIGHT * 0.31}px`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 'margin-top': '64%'
         }}>
             { settings().asceanViews === VIEWS.CHARACTER ? (
@@ -354,7 +351,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
                         </h2>
                     </> ) }
 
-                    <div class='propertyBlock' style={{ 'margin-bottom': '0%' }}>
+                    <div class='propertyBlock' style={{ 'margin-bottom': '0%', 'font-size': '0.9em', 'font-family': 'Cinzel Regular' }}>
                         <div>Level: <span class='gold'>{combatState()?.player?.level}</span>{'\n'}</div>
                         <div>Silver: <span class='gold'>{ascean().currency.silver}</span> Gold: <span class='gold'>{ascean().currency.gold} {'\n'}</span></div>
                         <div>Mastery: <span class='gold'>{combatState()?.player?.mastery?.charAt(0).toUpperCase() as string + combatState()?.player?.mastery.slice(1)}</span>{'\n'}</div>
@@ -362,29 +359,35 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
                         <div>Physical Defense: <span class='gold'>{combatState()?.playerDefense?.physicalDefenseModifier}% / [{combatState()?.playerDefense?.physicalPosture}%]</span>{'\n'}</div>
                         <div>Initiative: <span class='gold'>{combatState()?.playerAttributes?.initiative}</span></div>
                     </div>
+                    <div style={{ transform: 'scale(0.9)' }}>
                     <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
+                    </div>
                 </div>
             ) : settings().asceanViews === VIEWS.INVENTORY ? (
                 highlighted().comparing && (
-                    <Inventory pouch={dragAndDropInventory} inventory={highlighted().item} ascean={ascean} removeModalShow={removeModalShow} setRemoveModalShow={setRemoveModalShow} ringCompared={ringCompared} setRingCompared={setRingCompared} weaponCompared={weaponCompared} setWeaponCompared={setWeaponCompared} setEquipModalShow={setEquipModalShow} equipModalShow={equipModalShow} setInspectItems={setInspectItems} inspectItems={inspectItems} setInspectModalShow={setInspectModalShow} inspectModalShow={inspectModalShow} index={0} compare={true} setHighlight={undefined} />
+                    <Highlight ascean={ascean} highlighted={highlighted as Accessor<{item: Equipment, comparing: boolean, type: string}>} inventoryType={inventoryType} ringCompared={ringCompared} weaponCompared={weaponCompared} 
+                        setInspectItems={setInspectItems} setInspectModalShow={setInspectModalShow} setRemoveModalShow={setRemoveModalShow} removeModalShow={removeModalShow} />
+                    // <Inventory pouch={dragAndDropInventory} inventory={highlighted} ascean={ascean} removeModalShow={removeModalShow} setRemoveModalShow={setRemoveModalShow} ringCompared={ringCompared} setRingCompared={setRingCompared} 
+                    //     weaponCompared={weaponCompared} setWeaponCompared={setWeaponCompared} setEquipModalShow={setEquipModalShow} equipModalShow={equipModalShow} setInspectItems={setInspectItems} inspectItems={inspectItems} 
+                    //     setInspectModalShow={setInspectModalShow} inspectModalShow={inspectModalShow} index={0} compare={true} setHighlighted={undefined} highlighted={undefined} />
                 )
             ) : settings().asceanViews === VIEWS.SETTINGS ? (
                 <div class='center' style={{ display: 'flex', 'flex-direction': 'row' }}>
-                    <div class='gold' style={{ position: 'absolute', top: '15%', 'font-size': '1.25em' }}>Gameplay Controls
+                    <div class='gold' style={{ position: 'absolute', top: '5%', 'font-size': '1.25em' }}>Gameplay Controls
                     </div>
-                    <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
+                    <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '20%' } : { 'margin-top': '50%' }}>
                         <div style={font('1em', '#fdf6d8')}>Action Buttons<br /></div>
                         {settings().actions?.map((action: string, index: number) =>
-                            <button onClick={() => actionModal(action, index)}>
-                                <p class='m-5' style={{ width: '100%', 'font-size': '1.25em' }}><span class='gold'>{index + 1} </span> {action}</p>
+                            <button class='highlight' onClick={() => actionModal(action, index)}>
+                                <p class='m-3' style={{ width: '100%', 'font-size': '0.75em' }}><span class='gold'>{index + 1} </span> {action}</p>
                             </button>
                         )}
                     </div>
-                    <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
+                    <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '20%' } : { 'margin-top': '50%' }}>
                         <div style={font('1em', '#fdf6d8')}>Special Buttons<br /></div>
                         {settings().specials?.map((special: string, index: number) => 
-                            <button onClick={() => specialModal(special, index)}>
-                                <p class='m-5' style={{ width: '100%', 'font-size': '1.25em' }}><span class='gold'>{index + 1} </span> {special}</p>
+                            <button  class='highlight' onClick={() => specialModal(special, index)}>
+                                <p class='m-3' style={{ width: '100%', 'font-size': '0.75em' }}><span class='gold'>{index + 1} </span> {special}</p>
                             </button>
                         )}
                     </div>
@@ -406,7 +409,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
                         Vibration Time <div class='gold'>({settings().vibration})</div>
                     </div></div>     
                 */}
-                    {/* <Form.Range value={gameState().vibrationTime} onChange={handleVibrationChange} min={0} max={1000} step={50} /><br /><br /> */}
+                    {/* <Form.Range value={game().vibrationTime} onChange={handleVibrationChange} min={0} max={1000} step={50} /><br /><br /> */}
                     {/* <Pressable style={{ position: 'absolute', 'margin-left': '5%' }} onClick={() => setShow(true)}>
                         <div>Reset Scene</div>
                     </Pressable> */}
@@ -432,26 +435,27 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
         </div>
         {/* <<----- WINDOW THREE ----->> */}
         <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? {
-            height: `${dimensions().HEIGHT * 0.8}px`, left: '67vw' 
+            height: `${dimensions().HEIGHT * 0.8}px`, left: '66.5vw' 
         } : { 
             height: `${dimensions().HEIGHT * 0.31}px`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 'margin-top': '129%'
         }}>
             { settings().asceanViews === VIEWS.CHARACTER ? (
-                <div class='center'> 
+                <div class='superCenter'> 
                     {createCharacterInfo(settings()?.characterViews)}
                 </div>
             ) : settings().asceanViews === VIEWS.INVENTORY ? ( 
-                <InventoryPouch ascean={ascean} ringCompared={ringCompared} setRingCompared={setRingCompared} setEquipModalShow={setEquipModalShow} equipModalShow={equipModalShow} setInspectModalShow={setInspectModalShow} inspectModalShow={inspectModalShow} highlighted={highlighted} setHighlighted={setHighlighted} weaponCompared={weaponCompared} setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} />
+                <InventoryPouch ascean={ascean} setRingCompared={setRingCompared} highlighted={highlighted} setHighlighted={setHighlighted} setInventoryType={setInventoryType} inventoryType={inventoryType}
+                    setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} />
             ) : settings().asceanViews === VIEWS.SETTINGS ? (
                 <div style={{ 'scrollbar-width': "none", overflow: 'scroll' }}> 
-                    <div class='center'>
+                    <div class='superCenter'>
                         Various kinds of Information on Aspects of the Game.
                         {/* <SettingSetter setting={settings()?.settingViews} /> */}
                     </div>
                 </div>
             ) : ( undefined ) }
         </div>
-        <button class='highlight cornerTR' style={{ transform: 'scale(0.75)', position: 'fixed', top: '-2%', right: '-1%' }} onClick={() => EventBus.emit('show-player')}>
+        <button class='highlight cornerTR' style={{ transform: 'scale(0.85)', position: 'fixed', top: '-1.5%', right: '-0.5%' }} onClick={() => EventBus.emit('show-player')}>
             <p style={font('0.5em')}>X</p>
         </button>
             <Show when={show()}>
@@ -463,8 +467,8 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
             <button onClick={() => setActionShow(!actionShow())}>
                 <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
             </button>
-            <div class='modal'>
-                <ActionButtonModal current={currentAction().action} style={[styles.stdInput, { margin: 5, padding: 10 }]} actions={ACTIONS} index={currentAction().index} handleAction={handleActionButton} setShow={setActionShow} /> 
+            <div class='modal' onClick={() => setActionShow(!actionShow())}>
+                <ActionButtonModal current={currentAction().action} actions={ACTIONS} index={currentAction().index} handleAction={handleActionButton} /> 
             </div>
             </> </Show>
             <Show when={attrShow()}>
@@ -473,35 +477,33 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, gameState, co
             </div> 
             </Show>
             <Show when={specialShow()}> <> 
-            <div class='modal'>
-                <ActionButtonModal current={currentSpecial().special} style={[styles.stdInput, { margin: 5, padding: 10 }]} actions={SPECIALS} index={currentSpecial().index} handleAction={handleSpecialButton} setShow={setSpecialShow} /> 
+            <div class='modal' onClick={() => setSpecialShow(!specialShow())}>
+                <ActionButtonModal current={currentSpecial().special} actions={SPECIALS} index={currentSpecial().index} handleAction={handleSpecialButton} /> 
             </div>
             </> </Show>
-            <Show when={(inspectModalShow() && inspectItems())}> <>
+            <Show when={(inspectModalShow() && inspectItems())}> 
+                <div class='modal'>
                 <button onClick={() => setInspectModalShow(!inspectModalShow)}>
                     <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
                 </button>
                 <div class='modal'>
                     <Modal items={inspectItems} inventory={highlighted().item} callback={handleInspect} show={inspectModalShow} setShow={setInspectModalShow} />
                 </div>
-            </> </Show>
-            <Show when={removeModalShow()}> <>
-                <button onClick={() => setInspectModalShow(!inspectModalShow)}>
-                    <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
-                </button>
+                </div> 
+            </Show>
+            <Show when={removeModalShow()}>
                 <div class='modal'>
-                <button class='button center m-5 p-10' style={{ 'background-color': 'red' }} onClick={() => removeItem(highlighted()?.item?._id as string)}>
-                    <div style={font('1.5em')}>Do You Wish To Remove and Destroy Your {highlighted()?.item?.name}? <br /><br /><div>
-                    <img src={highlighted()?.item?.imgUrl} alt={highlighted()?.item?.name} />
+                <div class='button superCenter' style={{ 'background-color': 'black' }}>
+                    <div class='center' style={font('1.5em')}>Do You Wish To Remove and Destroy Your {highlighted()?.item?.name}? <br /><br /><div>
+                        <img src={highlighted()?.item?.imgUrl} alt={highlighted()?.item?.name} onClick={() => removeItem(highlighted()?.item?._id as string)} />
                     </div>
-                    <br /><br />
-                    </div>
-                </button>
-                <button class='button cornerBR' style={{ transform: '[{ scale: 0.75 }]', bottom: '1em', right: '1em', 'background-color': 'red' }} onClick={() => setRemoveModalShow(!removeModalShow())}>
-                    <p style={font('1.5em')}>X</p>
-                </button>
+                    </div><br /><br />
+                    <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '0', right: '0', 'background-color': 'red' }} onClick={() => setRemoveModalShow(!removeModalShow())}>
+                        <p style={font('0.5em')}>X</p>
+                    </button>
                 </div>
-            </> </Show>
+                </div>
+            </Show>
         </div>
     );
 }; 

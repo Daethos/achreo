@@ -75,6 +75,7 @@ export default class Ascean {
         this.trinket = ascean.trinket;
         this.statistics = initStatistics;
     };
+    [key: string]: any;
 };
 
 function createAscean(data: any): Ascean {

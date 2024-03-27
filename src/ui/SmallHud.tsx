@@ -11,7 +11,7 @@ interface Props {
 };
 
 export default function SmallHud({ combat, game }: Props) { 
-    const [show, setShow] = createSignal<boolean>(false);
+    const [show, setShow] = createSignal<boolean>(true);
     const dimensions = useResizeListener(); 
 
     const combatLogs = () => {
@@ -50,9 +50,6 @@ export default function SmallHud({ combat, game }: Props) {
         'font-weight': 700,
         'align-items': 'center',
         'margin-top': '10%',
-        // 'margin-left': '-5%',
-        // width: '100%',
-        // height: '100%',
     };
 
     return (

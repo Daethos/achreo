@@ -5,15 +5,12 @@ import { getRarityColor } from '../utility/styling';
 
 interface Props {
     ascean: Accessor<Ascean>;
-    weaponOne: Equipment;
-    weaponTwo: Equipment;
-    weaponThree: Equipment;
     setEquipment: Setter<Equipment | undefined>;
-    show: () => boolean;
-    setShow: (arg: boolean) => void;
+    show: Accessor<boolean>;
+    setShow: Setter<boolean>;
 };
 
-export default function AsceanImageCard({ ascean, weaponOne, weaponTwo, weaponThree, setEquipment, show, setShow }: Props) { 
+export default function AsceanImageCard({ ascean, setEquipment, show, setShow }: Props) { 
     function item(rarity: string) {
         return {
             border: '0.2em solid ' + getRarityColor(rarity),
@@ -28,7 +25,6 @@ export default function AsceanImageCard({ ascean, weaponOne, weaponTwo, weaponTh
     const image = {
         width: '100%',
         height: '100%',
-        // transform: 'translate(0%, 5%)',
     };
 
     function info(item: Equipment) {
@@ -38,14 +34,14 @@ export default function AsceanImageCard({ ascean, weaponOne, weaponTwo, weaponTh
     return (
         <div class='imageCardGrid' style={{ width: '70%', margin: 'auto' }}>
             <div class='imageCardLeft'>
-                <div onClick={() =>info(weaponOne)} style={item(weaponOne.rarity as string)}>
-                    <img alt='item' style={image} src={weaponOne.imgUrl} />
+                <div onClick={() =>info(ascean().weaponOne)} style={item(ascean().weaponOne.rarity as string)}>
+                    <img alt='item' style={image} src={ascean().weaponOne.imgUrl} />
                 </div>
-                <div onClick={() =>info(weaponTwo)} style={item(weaponTwo.rarity as string)}>
-                    <img alt='item' style={image} src={weaponTwo.imgUrl} />
+                <div onClick={() =>info(ascean().weaponTwo)} style={item(ascean().weaponTwo.rarity as string)}>
+                    <img alt='item' style={image} src={ascean().weaponTwo.imgUrl} />
                 </div>
-                <div onClick={() =>info(weaponThree)} style={item(weaponThree.rarity as string)}>
-                    <img alt='item' style={image} src={weaponThree.imgUrl} />
+                <div onClick={() =>info(ascean().weaponThree)} style={item(ascean().weaponThree.rarity as string)}>
+                    <img alt='item' style={image} src={ascean().weaponThree.imgUrl} />
                 </div>
                 <div onClick={() =>info(ascean().shield)} style={item(ascean().shield.rarity as string)}>
                     <img alt='item' style={image} src={ascean().shield.imgUrl} />

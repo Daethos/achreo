@@ -14,7 +14,8 @@ import { consumePrayer, instantActionCompiler, weaponActionCompiler } from '../u
 import { fetchNpc } from '../utility/npc';
 import { GameState } from '../stores/game';
 import { usePhaserEvent } from '../utility/hooks';
-
+import createStamina from './Stamina';
+// import createTimer from './Timer';
 // import StoryTutorial from '../../../seyr/src/game/ui/StoryTutorial';
 // import { StoryDialog } from '../../../seyr/src/game/ui/StoryDialog';
 
@@ -28,8 +29,8 @@ interface Props {
 };
 
 export default function BaseUI({ ascean, combat, game, settings, setSettings, stamina }: Props) {
-    const [staminaPercentage, setStaminaPercentage] = createSignal(0);
-    const [gameTimer, setGameTimer] = createSignal(0);
+    const {staminaPercentage, setStaminaPercentage} = createStamina(stamina);
+    // const {gameTimer, setGameTimer} = createTimer(game);
     const [enemies, setEnemies] = createSignal<any[]>([]);
     const [asceanState, setAsceanState] = createSignal({
         ascean: ascean(),
@@ -154,28 +155,15 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     // const updateCombatTimer = (e: number) => setCombat({...(combat), combatTimer: e}); 
     const updateStamina = (e: number) => setStaminaPercentage(staminaPercentage() - e <= 0 ? 0 : staminaPercentage() - e);
 
-    function useStamina(percent: Accessor<number>, stam: Accessor<number>) {        
-        createEffect(() => { 
-            if (percent() < 100) {
-                const timer = setTimeout(() => {
-                    const newStamina = percent() + (stam() / 100);
-                    setStaminaPercentage(newStamina);
-                    EventBus.emit('updated-stamina', newStamina);
-                }, 200 - stam());
-                return () => clearTimeout(timer);
-            };
-        });
-    };
-
-    function useTimer(current: boolean, pause: boolean, timer: number) {
-        createEffect(() => {
-            if (!current || pause) return;
-            const timeout = setTimeout(() => {
-                setGameTimer(timer + 1);
-            }, 1000);
-            return () => clearTimeout(timeout);
-        });
-    }; 
+    // function createTimer(current: boolean, pause: boolean, timer: number) {
+    //     createEffect(() => {
+    //         if (!current || pause) return;
+    //         const timeout = setTimeout(() => {
+    //             setGameTimer(timer + 1);
+    //         }, 1000);
+    //         return () => clearTimeout(timeout);
+    //     });
+    // }; 
 
     // async function requestInventory() {
     //     try {
@@ -388,10 +376,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     // usePhaserEvent('show-dialog', showDialog);
     // usePhaserEvent('update-sound', soundEffects);
 
-    useStamina(staminaPercentage, stamina);
-    useTimer(game().currentGame, game().pauseState, gameTimer()); // gameRef.current
+    // createTimer(game().currentGame, game().pauseState, gameTimer()); // gameRef.current
   
-    // combat().weapons.filter((weapon) => weapon?.name !== 'Empty Weapon Slot');
     return (
         <>
         <Show when={game().scrollEnabled}>
@@ -403,10 +389,14 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 <Show when={combat().computer}><EnemyUI state={combat} pauseState={game().pauseState} enemies={enemies} /> </Show> 
             </div>
         }>
-            <StoryAscean settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} gameState={game} combatState={combat} />
+            <StoryAscean settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} game={game} combatState={combat} />
         </Show>
-        <Show when={game().showCombat}><CombatText combat={combat} /></Show>
-        <Show when={(game()?.lootDrops.length > 0 && game()?.showLoot)}><LootDropUI ascean={ascean} gameState={game} /></Show>
+        <Show when={game().showCombat}>
+            <CombatText combat={combat} />
+        </Show>
+        <Show when={(game()?.lootDrops.length > 0 && game()?.showLoot)}>
+            <LootDropUI ascean={ascean} gameState={game} />
+        </Show>
         <SmallHud combat={combat} game={game} /> 
         {/* { game().showDialog && game().dialogTag && (   
             <StoryDialog state={combat} deleteEquipment={deleteEquipment} />

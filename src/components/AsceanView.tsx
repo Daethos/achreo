@@ -26,7 +26,7 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                 <p class='gold' style={{ margin: '3%' }}>Mastery: {ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</p>
                 <p class='gold' style={{ margin: '3%' }}>Health: {ascean().health.current} / {ascean().health.max}</p>
                 <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
-                <AsceanImageCard ascean={ascean} weaponOne={ascean().weaponOne} weaponTwo={ascean().weaponTwo} weaponThree={ascean().weaponThree} show={show} setShow={setShow} setEquipment={setEquipment} />
+                <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
                 <br />
                 <Show when={show()}>
                     <div class='modal' onClick={() => setShow(!show())}>
@@ -57,7 +57,7 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
 
                 <div class='right center' style={{ width: '48%', top: '10%' }}>
                     <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
-                    <AsceanImageCard ascean={ascean} weaponOne={ascean().weaponOne} weaponTwo={ascean().weaponTwo} weaponThree={ascean().weaponThree} show={show} setShow={setShow} setEquipment={setEquipment} />
+                    <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
                 </div>
                 
             </div>

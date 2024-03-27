@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ascean</string>
+    <string name="title_activity_main">ascean</string>
+    <string name="package_name">com.ascean.app</string>
+    <string name="custom_url_scheme">com.ascean.app</string>
+</resources>

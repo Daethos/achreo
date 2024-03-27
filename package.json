@@ -24,6 +24,9 @@
         "build": "vite build --config vite/config.prod.mjs"
     },
     "dependencies": {
+        "@capacitor/android": "^5.7.4",
+        "@capacitor/core": "^5.7.4",
+        "@capacitor/ios": "^5.7.4",
         "phaser": "^3.80.1",
         "phaser-matter-collision-plugin": "^1.0.0",
         "phaser-navmesh": "^2.3.1",
@@ -32,6 +35,7 @@
         "solid-js": "^1.8.15"
     },
     "devDependencies": {
+        "@capacitor/cli": "^5.7.4",
         "autoprefixer": "^10.4.18",
         "terser": "^5.28.1",
         "typescript": "^5.2.2",

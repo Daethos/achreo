@@ -1,4 +1,5 @@
 import { populateEnemy, randomEnemy } from "../assets/db/db";
+import { EventBus } from "../game/EventBus";
 import EventEmitter from "../phaser/EventEmitter";
 import { asceanCompiler } from "./ascean";
 
@@ -31,7 +32,7 @@ import { asceanCompiler } from "./ascean";
 // }; 
 
 export function fetchEnemy(e: { enemyID: string; level: number; }): void {
-    function getOpponent(): { enemy: any; combat: any; enemyID: string; } {
+    function getOpponent(): void {
         try { 
             // const { minLevel, maxLevel } = getEnemyLevels(e.level); 
             // const enemyData = { username: '637b06f47560b345910bbc44', minLevel, maxLevel }; // mirio
@@ -39,12 +40,11 @@ export function fetchEnemy(e: { enemyID: string; level: number; }): void {
             let enemy = randomEnemy();
             enemy = populateEnemy(enemy);
             const res = asceanCompiler(enemy);
-            return ({ enemy: res?.ascean, combat: res, enemyID: e.enemyID });
+            EventBus.emit('enemy-fetched', { enemy: res?.ascean, combat: res, enemyID: e.enemyID });
+            EventBus.emit('update-enemies', { ...res?.ascean, enemyID: e.enemyID });
         } catch (err: any) {
             console.log(err.message, 'Error retrieving Enemies')
-            return { enemy: {}, combat: {}, enemyID: e.enemyID };
         };
     };
-    const opponent = getOpponent();
-    EventEmitter.emit('enemy-fetched', opponent);
+    getOpponent();
 };

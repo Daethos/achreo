@@ -88,8 +88,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const centerActionX = scene.cameras.main.width / 1.25; // X-coordinate of the center of the circle
         const centerActionY = scene.cameras.main.height / 1.35; // Y-coordinate of the center of the circle
         
-        const centerSpecialX = scene.cameras.main.width / 1.35;
-        const centerSpecialY = scene.cameras.main.height / 1.75;
+        const centerSpecialX = scene.cameras.main.width / 1.375;
+        const centerSpecialY = scene.cameras.main.height / 1.675;
         
         const radius = scene.cameras.main.height / 1.75; // Radius of the circle
         const startAngle = Math.PI; // Start angle (180 degrees) for the quarter circle

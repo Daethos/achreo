@@ -383,7 +383,9 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         <Show when={game().showPlayer} fallback={
             <div style={{ position: "absolute", 'z-index': 1 }}>
                 <CombatUI state={combat} staminaPercentage={staminaPercentage} pauseState={game().pauseState} stamina={stamina} />
-                <Show when={combat().computer}><EnemyUI state={combat} pauseState={game().pauseState} enemies={enemies} /> </Show> 
+                <Show when={combat().computer}>
+                    <EnemyUI state={combat} pauseState={game().pauseState} enemies={enemies} />
+                </Show> 
             </div>
         }>
             <StoryAscean settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} game={game} combatState={combat} />

@@ -175,7 +175,7 @@ export default class Enemy extends Entity {
         this.combatThreshold = 0;
         this.attackIsLive = false;
         this.isEnemy = true;
-        this.isAggressive = Math.random() > 0.5; // Math.random() > 0.5 || false
+        this.isAggressive = false; // Math.random() > 0.5 || false
         this.startedAggressive = this.isAggressive;
         this.isDefeated = false;
         this.isTriumphant = false;
@@ -213,13 +213,13 @@ export default class Enemy extends Entity {
     };
 
     cleanUp() {
-        EventBus.off('update-combat-data', this.combatDataUpdate);
+        EventBus.off('combat', this.combatDataUpdate);
         EventBus.off('update-combat', this.combatDataUpdate); 
         EventBus.off('personal-update', this.personalUpdate);    
     };
 
     enemyStateListener() {
-        EventBus.on('update-combat-data', this.combatDataUpdate);
+        EventBus.on('combat', this.combatDataUpdate);
         EventBus.on('update-combat', this.combatDataUpdate); 
         EventBus.on('personal-update', this.personalUpdate);
     };
@@ -354,6 +354,7 @@ export default class Enemy extends Entity {
 
     enemyFetchedOn = (e) => {
         if (this.enemyID !== e.enemyID) return;
+        console.log(e, 'Enemy Fetched')
         this.ascean = e.enemy;
         this.health = e.enemy.health.max;
         this.combatStats = e.combat; 

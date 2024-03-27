@@ -320,7 +320,7 @@ export default class Player extends Entity {
     };
 
     cleanUp() {
-        EventBus.off('update-combat-data', this.constantUpdate);
+        EventBus.off('combat', this.constantUpdate);
         EventBus.off('update-combat', this.eventUpdate);
         EventBus.off('disengage', this.disengage);
     };
@@ -340,7 +340,7 @@ export default class Player extends Entity {
     };
 
     playerStateListener = () => {
-        EventBus.on('update-combat-data', this.constantUpdate); 
+        EventBus.on('combat', this.constantUpdate); 
         EventBus.on('update-combat', this.eventUpdate);
         EventBus.on('disengage', this.disengage); 
     }; 
@@ -549,6 +549,7 @@ export default class Player extends Entity {
             callback: (other) => {
                 if (this.isValidEnemyCollision(other)) {
                     const isNewEnemy = this.isNewEnemy(other.gameObjectB);
+                    console.log(`%c Is New Enemy: ${isNewEnemy}`, 'color: #ff0000');
                     if (!isNewEnemy) return;
                     if (this.shouldPlayerEnterCombat(other.gameObjectB)) {
                         this.enterCombat(other);

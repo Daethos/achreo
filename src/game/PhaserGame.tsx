@@ -283,6 +283,7 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('request-game', () => EventBus.emit('game', game()));
 
         EventBus.on('setup-enemy', (e: any) => {
+            console.log(e, 'Setup Enemy');
             setCombat({
                 ...combat(),
                 computer: e.game,

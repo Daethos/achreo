@@ -85,7 +85,6 @@ export class Game extends Scene {
         });
         this.getAscean();
         EventBus.on('combat', (combat: any) => {
-            console.log('state', combat);
             this.state = combat;
         });
         this.getCombat();
@@ -225,8 +224,16 @@ export class Game extends Scene {
 
         // =========================== FPS =========================== \\
 
-        this.fpsText = this.add.text(window.innerWidth / 2 - 32, window.innerHeight + 20, 'FPS: ', { font: '16px Cinzel', color: '#fdf6d8' });
+        this.fpsText = this.add.text(window.innerWidth / 2 - 32, -40, 'FPS: ', { font: '16px Cinzel', color: '#fdf6d8' });
         this.fpsText.setScrollFactor(0);
+        this.fpsText.setInteractive()
+            .on('pointerup', () => {
+                if (this.scale.isFullscreen) {
+                    this.scale.stopFullscreen();
+                } else {
+                    this.scale.startFullscreen();
+                };
+            });
 
         this.equipListener();
         this.unequipListener();
@@ -234,17 +241,6 @@ export class Game extends Scene {
         this.weaponListener();
         this.actionButtonListener();
 
-        // =========================== FULLSCREEN =========================== \\
-
-        // make a button in the bottom left corner of the screen
-        const button = this.add.image(0, 0, 'cursor').setOrigin(0).setInteractive();
-        button.on('pointerup', () => {
-            if (this.scale.isFullscreen) {
-                this.scale.stopFullscreen();
-            } else {
-                this.scale.startFullscreen();
-            }
-        });
     };
 
     equipListener = () => EventBus.on('equip-sound', () => {

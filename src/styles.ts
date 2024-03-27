@@ -304,7 +304,6 @@ export const styles = {
     buttonPic: {
         width: 25,
         height: 25,
-
     },
     deityPic: {
         width: 75,

@@ -15,6 +15,7 @@ import { fetchNpc } from '../utility/npc';
 import { GameState } from '../stores/game';
 import { usePhaserEvent } from '../utility/hooks';
 import createStamina from './Stamina';
+import { getOneRandom } from '../models/equipment';
 // import createTimer from './Timer';
 // import StoryTutorial from '../../../seyr/src/game/ui/StoryTutorial';
 // import { StoryDialog } from '../../../seyr/src/game/ui/StoryDialog';
@@ -154,16 +155,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     const updateCombatListener = (data: Combat) => EventBus.emit('combat', data); // Was Async
     // const updateCombatTimer = (e: number) => setCombat({...(combat), combatTimer: e}); 
     const updateStamina = (e: number) => setStaminaPercentage(staminaPercentage() - e <= 0 ? 0 : staminaPercentage() - e);
-
-    // function createTimer(current: boolean, pause: boolean, timer: number) {
-    //     createEffect(() => {
-    //         if (!current || pause) return;
-    //         const timeout = setTimeout(() => {
-    //             setGameTimer(timer + 1);
-    //         }, 1000);
-    //         return () => clearTimeout(timeout);
-    //     });
-    // }; 
 
     // async function requestInventory() {
     //     try {
@@ -354,16 +345,15 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     // usePhaserEvent('request-inventory', requestInventory);
     // usePhaserEvent('request-lootdrop', lootDrop);
     
-    // usePhaserEvent('set-equipper', swapEquipment);
-    
-    usePhaserEvent('update-action', (e: any) => setSettings({ ...settings(), actions: e }));
     // usePhaserEvent('update-ascean-request', statPopulate);
-    usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
     // usePhaserEvent('update-full-request', compile);
     // usePhaserEvent('update-inventory-request', inventoryPopulate);    
-    usePhaserEvent('update-stamina', updateStamina);
     // usePhaserEvent('update-combat-timer', updateCombatTimer);
     // usePhaserEvent('update-lootdrops', (e: Equipment[]) => updateLootDrops(e));
+
+    usePhaserEvent('update-action', (e: any) => setSettings({ ...settings(), actions: e }));
+    usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
+    usePhaserEvent('update-stamina', updateStamina);
     usePhaserEvent('update-special', (e: any) => setSettings({ ...settings(), specials: e }));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
     
@@ -376,8 +366,15 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     // usePhaserEvent('show-dialog', showDialog);
     // usePhaserEvent('update-sound', soundEffects);
 
-    // createTimer(game().currentGame, game().pauseState, gameTimer()); // gameRef.current
-  
+    function lootDrop() {
+        const loot = getOneRandom(ascean().level);
+        console.log(loot, 'Loot Drop');
+        EventBus.emit('update-lootdrops', loot);
+        // setGame({ ...game, lootDrops: [...game().lootDrops, loot] });
+    };
+
+    lootDrop();
+
     return (
         <>
         <Show when={game().scrollEnabled}>
@@ -394,10 +391,10 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         <Show when={game().showCombat}>
             <CombatText combat={combat} />
         </Show>
-        <Show when={(game()?.lootDrops.length > 0 && game()?.showLoot)}>
+        <SmallHud combat={combat} game={game} /> 
+        <Show when={game().lootDrops.length > 0 && game().showLoot}>
             <LootDropUI ascean={ascean} gameState={game} />
         </Show>
-        <SmallHud combat={combat} game={game} /> 
         {/* { game().showDialog && game().dialogTag && (   
             <StoryDialog state={combat} deleteEquipment={deleteEquipment} />
         ) }

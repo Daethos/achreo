@@ -32,7 +32,7 @@ const config: Phaser.Types.Core.GameConfig = {
             gravity: { x: 0, y: 0 },
         }
     },
-    fps: { limit: 60, target: 60 },
+    fps: { limit: 90, target: 60 },
     plugins: {
         global: [{
             key: 'rexVirtualJoystick',

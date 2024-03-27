@@ -354,7 +354,7 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('update-lootdrops', (e: Equipment[]) => 
             setGame({ 
                 ...game(), 
-                lootDrops: e,
+                lootDrops: game().lootDrops.length > 0 ? [...game().lootDrops, ...e] : e,
                 showLoot: e.length > 0,
                 showLootIds: e.map((loot) => loot._id)
         }));
@@ -398,6 +398,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('update-combat-timer');
             EventBus.removeListener('update-combat');
             EventBus.removeListener('update-health');
+            EventBus.removeListener('update-lootdrops');
             EventBus.removeListener('update-caerenic');
             EventBus.removeListener('update-stalwart');
             EventBus.removeListener('update-stealth');

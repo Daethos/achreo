@@ -13,14 +13,13 @@ interface Props {
     caerenic: boolean;
 };
 
-
 export default function ItemModal({ item, stalwart, caerenic }: Props) {
     if (!item) return undefined;
     const attribute = item?.constitution + item?.strength + item?.agility + item?.achre + item?.caeren + item?.kyosir;
     const dimensions = useResizeListener();
     const empty = item.name.includes('Empty');
     const name = item.name.includes('Starter') ? ( item.name.split(' ')[0] + ' ' + item.name.split(' ')[1] ) : ( item.name );
-    const centerImage = dimensions()?.ORIENTATION === 'landscape' ? (name.length > 10 ? '7.5%' : '15%') : (name.length > 13 ? '40%' : name.length > 10 ? '5%' : '10%');
+    const centerImage = dimensions()?.ORIENTATION === 'landscape' ? (name.length > 15 ? '45%' : name.length > 10 ? '7.5%' : '15%') : (name.length > 13 ? '40%' : name.length > 10 ? '5%' : '10%');
     return (
         <div class="border superCenter" style={{ width: dimensions()?.ORIENTATION === 'landscape' ? '50%' : '75%' }}> 
             <div class='border' style={{ height: '100%' }}>

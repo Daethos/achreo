@@ -47,8 +47,8 @@ const masteryColor = (mastery: string): string => {
             return '#ffd700';
         default:
             return '#fdf6d8';
-    }
-}
+    };
+};
 
 
 const border = (color: string, width: number): string => `${width}em solid ${color}`;
@@ -74,6 +74,7 @@ const font = (fontSize: string = '1em', color?: string) => {
 const itemStyle = (rarity: string) => {
     return {
         border: `0.15em solid ${getRarityColor(rarity)}`,
+        'background-color': 'black',
     };
 };
 

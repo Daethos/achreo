@@ -66,13 +66,16 @@ export default function EnemyUI({ state, pauseState, enemies }: { state: Accesso
     const [playerEnemyPercentage, setEnemyHealthPercentage] = createSignal(0); 
     const [showModal, setShowModal] = createSignal(false);
     const [itemShow, setItemShow] = createSignal(false);
+    const [enemyList, setEnemyList] = createSignal<any[]>(enemies());
 
     createEffect(() => {
         setEnemyHealthPercentage(Math.round((state().newComputerHealth/state().computerHealth) * 100));
     });
 
     createEffect(() => {
-        console.log(enemies(), 'enemies');
+        setEnemyList(enemies());
+        // console.log(enemies(), 'enemies');
+        // console.log(state().enemyID, 'enemyID');
     });
 
     function checkPreview(idx: number): boolean {
@@ -106,21 +109,52 @@ export default function EnemyUI({ state, pauseState, enemies }: { state: Accesso
             </Show> 
             <div class='' style={{ transform: 'scale(0.625)', 'background-color': '#000', position: 'absolute',
                 width: '25vw', top: '12vh', right: '-4.5vw' }}>
-            <For each={enemies()}>
+            {/* <For each={enemyList()}>
                 {((enemy, index) => {
-                    const prevIdx = Number(index()) - 1 === -1 ? enemies().length - 1 : Number(index()) - 1;
-                    const prevIdxMore = prevIdx - 1 === -1 ? enemies().length - 1 : prevIdx - 1;
+                    const prevIdx = Number(index()) - 1 === -1 ? enemyList().length - 1 : Number(index()) - 1;
+                    const prevIdxMoreOriginal = prevIdx - 1 === -1 ? enemyList().length - 1 : prevIdx - 1;
+                    const prevIdxMore = prevIdx - 1 < 0 ? enemyList().length + (prevIdx - 1) : prevIdx - 1;
+                    console.log(prevIdxMore, 'prevIdxMore')
                     console.log(enemy, 'Enemy')
-                    const truePrev = enemies()[prevIdxMore].id !== state().enemyID && enemy.id !== enemies()[prevIdxMore].id;
+                    const truePrev = enemyList()[prevIdxMore].id !== state().enemyID && enemy.id !== enemyList()[prevIdxMore].id;
                     console.log(truePrev, 'truePrev');
-                    if (checkPreview(prevIdx)) return;
+                    if (enemyList().length < 2 || enemyList()[prevIdx].id !== state().enemyID) return;
                     return ( 
                         <div>
-                        <Show when={truePrev}>
-                            <button class='center' style={{ width: '50%', display: 'inline-block', 'background-color': '#000' }} onClick={() => fetchEnemy(enemies()[prevIdxMore])}>
+                        <Show when={truePrev === true}>
+                            <button class='center' style={{ width: '50%', display: 'inline-block', 'background-color': '#000' }} onClick={() => fetchEnemy(enemyList()[prevIdxMore])}>
+                                <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`<< Prev`}</div>
+                                <img src={`../assets/images/${enemyList()[prevIdxMore].game.origin}-${enemyList()[prevIdxMore].game.sex}.jpg`} alt={enemyList()[prevIdxMore].game.name} id='origin-pic' />
+                                <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{enemyList()[prevIdxMore].game.name}</div>
+                            </button>
+                        </Show>
+                        <button class='center' style={{ width: '50%', display: 'inline-block', 'margin-left': truePrev ? '' : '50%', 'background-color': '#000' }} onClick={() => fetchEnemy(enemy)}>
+                            <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`Next >>`}</div>
+                            <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={enemy.game.name} id='origin-pic' />
+                            <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{enemy.game.name}</div>
+                        </button>
+                    </div> 
+                )})}
+            </For> */}
+                {enemyList().map((enemy, index) => {
+                    const prevIdx = Number(index) - 1 === -1 ? enemyList().length - 1 : Number(index) - 1;
+                    // const prevIdxMoreOriginal = prevIdx - 1 === -1 ? enemyList().length - 1 : prevIdx - 1;
+                    const prevIdxMore = prevIdx - 1 < 0 ? enemyList().length + (prevIdx - 1) : prevIdx - 1;
+                    if (enemyList().length < 2 || enemyList()[prevIdx].id !== state().enemyID) return;
+                    // console.log(prevIdxMore, 'prevIdxMore', prevIdxMoreOriginal, 'prevIdxMoreOriginal')
+                    // console.log(enemy, 'Enemy')
+                    const truePrev = enemyList()[prevIdxMore].id !== state().enemyID && enemy.id !== enemyList()[prevIdxMore].id;
+                    // console.log(truePrev, 'truePrev');
+                    let cleanName = enemyList()[prevIdxMore].game.name;
+                    cleanName = cleanName.includes(' ') ? cleanName.split(' ')[0] + ' ' + cleanName.split(' ')[1] : cleanName;
+                    console.log(cleanName, 'Clean Name')
+                    return ( 
+                        <div>
+                        <Show when={truePrev === true}>
+                            <button class='center' style={{ width: '50%', display: 'inline-block', 'background-color': '#000' }} onClick={() => fetchEnemy(enemyList()[prevIdxMore])}>
                                 {/* <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`<< Prev`}</div> */}
-                                <img src={`../assets/images/${enemies()[prevIdxMore].game.origin}-${enemies()[prevIdxMore].game.sex}.jpg`} alt={enemies()[prevIdxMore].game.name} id='origin-pic' />
-                                <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{enemies()[prevIdxMore].game.name}</div>
+                                <img src={`../assets/images/${enemyList()[prevIdxMore].game.origin}-${enemyList()[prevIdxMore].game.sex}.jpg`} alt={enemyList()[prevIdxMore].game.name} id='origin-pic' />
+                                <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{cleanName}</div>
                             </button>
                         </Show>
                         <button class='center' style={{ width: '50%', display: 'inline-block', 'margin-left': truePrev ? '' : '50%', 'background-color': '#000' }} onClick={() => fetchEnemy(enemy)}>
@@ -130,7 +164,6 @@ export default function EnemyUI({ state, pauseState, enemies }: { state: Accesso
                         </button>
                     </div> 
                 )})}
-            </For>
             </div>
             <Show when={showModal()}>
                 <EnemyModal state={state} show={showModal} setShow={setShowModal} /> 

@@ -354,7 +354,6 @@ export default class Enemy extends Entity {
 
     enemyFetchedOn = (e) => {
         if (this.enemyID !== e.enemyID) return;
-        console.log(e, 'Enemy Fetched')
         this.ascean = e.enemy;
         this.health = e.enemy.health.max;
         this.combatStats = e.combat; 

@@ -16,8 +16,12 @@ const dimensions = useResizeListener();
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
-    width: dimensions()?.ORIENTATION === 'landscape' ? (window.innerWidth * 1.1) : window.innerHeight,
-    height: dimensions()?.ORIENTATION === 'landscape' ? window.innerHeight : window.innerWidth,
+    width: dimensions()?.ORIENTATION === 'landscape' ? (dimensions().WIDTH) : dimensions().HEIGHT,
+    height: dimensions()?.ORIENTATION === 'landscape' ? dimensions().HEIGHT : dimensions().WIDTH,
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
     parent: 'game-container',
     backgroundColor: '#000',
     scene: [

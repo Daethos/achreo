@@ -115,12 +115,12 @@ export default class Player extends Entity {
     constructor(data) {
         const { scene } = data;
         super({ ...data, name: 'player', ascean: scene.state.player, health: scene.state.newPlayerHealth }); 
-
-        this.glowFilter.add(this, {
-            glowColor: 0x000000,
-            intensity: 1,
-            knockout: true
-        });
+        this.setTint(0x000000);
+        // this.glowFilter.add(this, {
+        //     glowColor: 0x000000,
+        //     intensity: 1,
+        //     knockout: true
+        // });
 
         const weapon = scene?.state?.player?.weaponOne;
         this.currentWeaponSprite = this.assetSprite(weapon);
@@ -1084,7 +1084,7 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', PLAYER.DURATIONS.STUNNED, 'effect', true);
         this.scene.input.keyboard.enabled = false;
         this.stunDuration = PLAYER.DURATIONS.STUNNED;
-        this.setTint(0x888888);
+        this.setTint(0xFFFFFF);
         this.setStatic(true);
     };
     onStunUpdate = (dt) => {
@@ -1096,7 +1096,8 @@ export default class Player extends Entity {
     onStunExit = () => {
         this.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.scene.input.keyboard.enabled = true;
-        this.clearTint(); 
+        // this.clearTint(); 
+        this.setTint(0x000000)
         this.setStatic(false);
     };
 

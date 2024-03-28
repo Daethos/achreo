@@ -38,11 +38,12 @@ export default class Enemy extends Entity {
         this.scene.add.existing(this);
         this.enemyID = getRandomNumStr(16);
         this.createEnemy();
-        this.glowFilter.add(this, {
-            glowColor: 0x000000,
-            intensity: 1,
-            knockout: true
-        }); 
+        this.setTint(0x000000);
+        // this.glowFilter.add(this, {
+        //     glowColor: 0x000000,
+        //     intensity: 1,
+        //     knockout: true
+        // }); 
         this.stateMachine = new StateMachine(this, 'enemy');
         this.stateMachine
             .addState(States.IDLE, {
@@ -934,7 +935,7 @@ export default class Enemy extends Entity {
 
     onStunEnter = () => {
         this.stunDuration = DURATION.STUN;
-        this.setTint(0x888888); 
+        this.setTint(0xFFFFFF); // 0x888888
         this.setStatic(true);
     };
     onStunUpdate = (dt) => {
@@ -947,7 +948,8 @@ export default class Enemy extends Entity {
         };
     };
     onStunExit = () => { 
-        this.clearTint();
+        // this.clearTint();
+        this.setTint(0x000000)
         this.setStatic(false);
     };
 

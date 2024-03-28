@@ -191,12 +191,12 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.glowTimer = undefined;
                     break;        
             };
-            this.glowFilter.remove(object);
-            return this.glowFilter.add(this, {
-                glowColor: 0x000000,
-                intensity: 1,
-                knockout: true
-            }); 
+            return this.glowFilter.remove(object);
+            // return this.glowFilter.add(this, {
+            //     glowColor: 0x000000,
+            //     intensity: 1,
+            //     knockout: true
+            // }); 
         };
             
         const setColor = (mastery) => {

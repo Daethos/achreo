@@ -265,7 +265,7 @@ body {
 }
 .enemyName {
     position: absolute;
-    top: 1vh;
+    top: 1.5vh;
     right: 5vw;
     font-family: 'Cinzel Regular';
     font-size: 1em;

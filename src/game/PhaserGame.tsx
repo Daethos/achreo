@@ -237,26 +237,28 @@ export const PhaserGame = (props: IProps) => {
             setGame({ ...game(), inventory: game()?.inventory?.length > 0 ? [...game().inventory, e[0]] : e });
         });
 
-        EventBus.on('clear-enemy', () => setCombat({
-            ...combat(),
-            computer: undefined,
-            computerHealth: 0,
-            newComputerHealth: 0,
-            computerWeapons: [],
-            computerAttributes: undefined,
-            computerDefense: undefined,
-            computerDamageType: '',
-            isEnemy: false,
-            npcType: '',
-            enemyPersuaded: false,
-            playerLuckout: false,
-            combatEngaged: false,
-            isAggressive: false,
-            startedAggressive: false,
-            playerWin: false,
-            computerWin: false,
-            enemyID: ''
-        }))
+        EventBus.on('clear-enemy', () => {
+            setCombat({
+                ...combat(),
+                computer: undefined,
+                computerHealth: 0,
+                newComputerHealth: 0,
+                computerWeapons: [],
+                computerAttributes: undefined,
+                computerDefense: undefined,
+                computerDamageType: '',
+                isEnemy: false,
+                npcType: '',
+                enemyPersuaded: false,
+                playerLuckout: false,
+                combatEngaged: false,
+                isAggressive: false,
+                startedAggressive: false,
+                playerWin: false,
+                computerWin: false,
+                enemyID: ''
+            });
+        });
 
         EventBus.on('fetch-enemy', fetchEnemy);
         EventBus.on('request-ascean', () => {

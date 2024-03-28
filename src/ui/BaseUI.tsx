@@ -30,8 +30,8 @@ interface Props {
 };
 
 export default function BaseUI({ ascean, combat, game, settings, setSettings, stamina }: Props) {
-    const {staminaPercentage, setStaminaPercentage} = createStamina(stamina);
-    // const {gameTimer, setGameTimer} = createTimer(game);
+    const { staminaPercentage, setStaminaPercentage } = createStamina(stamina);
+    // const { gameTimer, setGameTimer } = createTimer(game);
     const [enemies, setEnemies] = createSignal<any[]>([]);
     const [asceanState, setAsceanState] = createSignal({
         ascean: ascean(),
@@ -331,6 +331,17 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         console.log(e, 'Setting Up NPC');
     };
 
+    function filterEnemies(id: string) {
+        console.log(enemies(), 'Filtering Enemies')
+        let newEnemies = enemies();
+        newEnemies = newEnemies.filter((enemy) => {
+            console.log(enemy.id === id, 'Filtering Enemies');
+            return enemy.id !== id ? true : false;
+        });
+        console.log(newEnemies, 'New Enemies');
+        setEnemies(newEnemies);
+    };
+
     usePhaserEvent('fetch-npc', fetchNpc);
     usePhaserEvent('setup-npc', setupNpc);
     usePhaserEvent('initiate-combat', initiateCombat);
@@ -351,6 +362,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     // usePhaserEvent('update-combat-timer', updateCombatTimer);
     // usePhaserEvent('update-lootdrops', (e: Equipment[]) => updateLootDrops(e));
 
+    usePhaserEvent('remove-enemy', filterEnemies);
     usePhaserEvent('update-action', (e: any) => setSettings({ ...settings(), actions: e }));
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
     usePhaserEvent('update-stamina', updateStamina);

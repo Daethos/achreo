@@ -23,9 +23,19 @@ function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: A
     createEffect(() => {
         setEnemy(state().computer);
     });
+
+    const removeEnemy = (id: string) => {
+        EventBus.emit('disengage');
+        EventBus.emit('remove-enemy', id);
+        setShow(!show());
+    };
+
     return (
         <div class='modal'>
         <div class='border center' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%', 'max-width': dimensions().ORIENTATION === 'landscape' ? '50%' : '70%' }}>
+            <button class='highlight cornerTL' style={{ 'z-index': 1 }} onClick={() => removeEnemy(state().enemyID)}>
+                <p style={{ color: '#fdf6d8' }}>Remove {enemy()?.name.split(' ')[0]}</p>
+            </button>
             <button class='highlight cornerTR' style={{ 'z-index': 1 }} onClick={() => setShow(!show)}>
                 <p style={{ color: '#fdf6d8' }}>X</p>
             </button>
@@ -66,22 +76,17 @@ export default function EnemyUI({ state, pauseState, enemies }: { state: Accesso
     const [playerEnemyPercentage, setEnemyHealthPercentage] = createSignal(0); 
     const [showModal, setShowModal] = createSignal(false);
     const [itemShow, setItemShow] = createSignal(false);
-    const [enemyList, setEnemyList] = createSignal<any[]>(enemies());
+    // const [enemyList, setEnemyList] = createSignal<any[]>(enemies());
 
     createEffect(() => {
         setEnemyHealthPercentage(Math.round((state().newComputerHealth/state().computerHealth) * 100));
     });
 
-    createEffect(() => {
-        setEnemyList(enemies());
+    // createEffect(() => {
+        // setEnemyList(enemies());
         // console.log(enemies(), 'enemies');
         // console.log(state().enemyID, 'enemyID');
-    });
-
-    function checkPreview(idx: number): boolean {
-        const preview = (enemies().length < 2 || enemies()[idx].id !== state().enemyID);
-        return preview;
-    };
+    // });
 
     function fetchEnemy(enemy: any) {
         console.log(enemy.id, enemy.game.name, 'fetchEnemy');
@@ -91,12 +96,12 @@ export default function EnemyUI({ state, pauseState, enemies }: { state: Accesso
 
     return (
         <div class='enemyCombatUi'>
-            <div class='enemyName' onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
+            <div class='enemyName' style={{ 'z-index': 1 }} onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
             <div class='center enemyHealthBar'>
                 <div class='enemyPortrait' style={{ 'font-size': '1em', color: '#fdf6d8' }}>{`${Math.round(state().newComputerHealth)} / ${state().computerHealth} [${playerEnemyPercentage()}%]`}</div>
                 <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `${playerEnemyPercentage()}%`, 'background-color': '#FF0000', 'border': '0.15 solid red' }}></div>
             </div>
-            <img id='enemyHealthbarBorder' src={'../assets/gui/enemy-healthbar.png'} alt="Health Bar" />
+            <img id='enemyHealthbarBorder' src={'../assets/gui/enemy-healthbar.png'} alt="Health Bar" style={{ 'z-index': -1 }} />
             <div class='enemyUiWeapon' onClick={() => setItemShow(!itemShow())} style={itemStyle(state()?.computerWeapons?.[0]?.rarity as string)}>
                 <img src={state().computerWeapons?.[0]?.imgUrl} alt={state().computerWeapons?.[0]?.name} />
             </div>
@@ -107,64 +112,37 @@ export default function EnemyUI({ state, pauseState, enemies }: { state: Accesso
                     ))}</For>
                 </div>
             </Show> 
-            <div class='' style={{ transform: 'scale(0.625)', 'background-color': '#000', position: 'absolute',
-                width: '25vw', top: '12vh', right: '-4.5vw' }}>
-            {/* <For each={enemyList()}>
-                {((enemy, index) => {
-                    const prevIdx = Number(index()) - 1 === -1 ? enemyList().length - 1 : Number(index()) - 1;
-                    const prevIdxMoreOriginal = prevIdx - 1 === -1 ? enemyList().length - 1 : prevIdx - 1;
-                    const prevIdxMore = prevIdx - 1 < 0 ? enemyList().length + (prevIdx - 1) : prevIdx - 1;
-                    console.log(prevIdxMore, 'prevIdxMore')
-                    console.log(enemy, 'Enemy')
-                    const truePrev = enemyList()[prevIdxMore].id !== state().enemyID && enemy.id !== enemyList()[prevIdxMore].id;
-                    console.log(truePrev, 'truePrev');
-                    if (enemyList().length < 2 || enemyList()[prevIdx].id !== state().enemyID) return;
-                    return ( 
-                        <div>
-                        <Show when={truePrev === true}>
-                            <button class='center' style={{ width: '50%', display: 'inline-block', 'background-color': '#000' }} onClick={() => fetchEnemy(enemyList()[prevIdxMore])}>
-                                <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`<< Prev`}</div>
-                                <img src={`../assets/images/${enemyList()[prevIdxMore].game.origin}-${enemyList()[prevIdxMore].game.sex}.jpg`} alt={enemyList()[prevIdxMore].game.name} id='origin-pic' />
-                                <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{enemyList()[prevIdxMore].game.name}</div>
+            {enemies()?.map((enemy, index) => {
+                const prevIdx = Number(index) - 1 === -1 ? enemies().length - 1 : Number(index) - 1;
+                const prevIdxMore = prevIdx - 1 < 0 ? enemies().length + (prevIdx - 1) : prevIdx - 1;
+                if (enemies().length < 2 || enemies()[prevIdx].id !== state().enemyID) return;
+                const truePrev = enemies()[prevIdxMore].id !== state().enemyID && enemy.id !== enemies()[prevIdxMore].id;
+                let cleanName = enemies()[prevIdxMore].game.name;
+                cleanName = cleanName.includes(' ') ? cleanName.split(' ')[0] + ' ' + cleanName.split(' ')[1] : cleanName;
+                return (
+                    <Show when={truePrev} fallback={
+                        <div style={{ transform: 'scale(0.625)', 'background-color': '#000', position: 'absolute', height: 'auto', width: '12.5vw', top: '12vh', right: '-2vw' }}>
+                            <button class='center' style={{ width: 'auto', height: '100%', display: 'inline-block', 'background-color': '#000' }} onClick={() => fetchEnemy(enemy)}>
+                                {/* <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`Next >>`}</div> */}
+                                <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={enemy.game.name} id='origin-pic' />
+                                <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{enemy.game.name}</div>
                             </button>
-                        </Show>
-                        <button class='center' style={{ width: '50%', display: 'inline-block', 'margin-left': truePrev ? '' : '50%', 'background-color': '#000' }} onClick={() => fetchEnemy(enemy)}>
-                            <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`Next >>`}</div>
-                            <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={enemy.game.name} id='origin-pic' />
-                            <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{enemy.game.name}</div>
-                        </button>
-                    </div> 
-                )})}
-            </For> */}
-                {enemyList().map((enemy, index) => {
-                    const prevIdx = Number(index) - 1 === -1 ? enemyList().length - 1 : Number(index) - 1;
-                    // const prevIdxMoreOriginal = prevIdx - 1 === -1 ? enemyList().length - 1 : prevIdx - 1;
-                    const prevIdxMore = prevIdx - 1 < 0 ? enemyList().length + (prevIdx - 1) : prevIdx - 1;
-                    if (enemyList().length < 2 || enemyList()[prevIdx].id !== state().enemyID) return;
-                    // console.log(prevIdxMore, 'prevIdxMore', prevIdxMoreOriginal, 'prevIdxMoreOriginal')
-                    // console.log(enemy, 'Enemy')
-                    const truePrev = enemyList()[prevIdxMore].id !== state().enemyID && enemy.id !== enemyList()[prevIdxMore].id;
-                    // console.log(truePrev, 'truePrev');
-                    let cleanName = enemyList()[prevIdxMore].game.name;
-                    cleanName = cleanName.includes(' ') ? cleanName.split(' ')[0] + ' ' + cleanName.split(' ')[1] : cleanName;
-                    console.log(cleanName, 'Clean Name')
-                    return ( 
-                        <div>
-                        <Show when={truePrev === true}>
-                            <button class='center' style={{ width: '50%', display: 'inline-block', 'background-color': '#000' }} onClick={() => fetchEnemy(enemyList()[prevIdxMore])}>
+                        </div>
+                    }>
+                        <div style={{ transform: 'scale(0.625)', position: 'absolute', width: '25vw', top: '12vh', right: '-4.5vw' }}>
+                            <button class='center' style={{ height: '100%', width: '50%', display: 'inline-block', 'background-color': '#000' }} onClick={() => fetchEnemy(enemies()[prevIdxMore])}>
                                 {/* <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`<< Prev`}</div> */}
-                                <img src={`../assets/images/${enemyList()[prevIdxMore].game.origin}-${enemyList()[prevIdxMore].game.sex}.jpg`} alt={enemyList()[prevIdxMore].game.name} id='origin-pic' />
+                                <img src={`../assets/images/${enemies()[prevIdxMore].game.origin}-${enemies()[prevIdxMore].game.sex}.jpg`} alt={enemies()[prevIdxMore].game.name} id='origin-pic' />
                                 <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{cleanName}</div>
                             </button>
-                        </Show>
-                        <button class='center' style={{ width: '50%', display: 'inline-block', 'margin-left': truePrev ? '' : '50%', 'background-color': '#000' }} onClick={() => fetchEnemy(enemy)}>
-                            {/* <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`Next >>`}</div> */}
-                            <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={enemy.game.name} id='origin-pic' />
-                            <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{enemy.game.name}</div>
-                        </button>
-                    </div> 
-                )})}
-            </div>
+                            <button class='center' style={{ width: '50%', height: '100%', display: 'inline-block', 'background-color': '#000' }} onClick={() => fetchEnemy(enemy)}>
+                                {/* <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`Next >>`}</div> */}
+                                <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={enemy.game.name} id='origin-pic' />
+                                <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{enemy.game.name}</div>
+                            </button>
+                        </div>
+                    </Show> 
+            )})}
             <Show when={showModal()}>
                 <EnemyModal state={state} show={showModal} setShow={setShowModal} /> 
             </Show>

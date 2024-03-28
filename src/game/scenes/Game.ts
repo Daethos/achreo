@@ -80,7 +80,6 @@ export class Game extends Scene {
     create () {
         EventBus.emit('current-scene-ready', this);
         EventBus.on('ascean', (ascean: Ascean) => {
-            console.log('ascean', ascean);
             this.ascean = ascean;
         });
         this.getAscean();
@@ -89,12 +88,10 @@ export class Game extends Scene {
         });
         this.getCombat();
         EventBus.on('game', (game: GameState) => {
-            console.log('game', game);
             this.gameState = game;
         });
         this.getGame();
         EventBus.on('settings', (settings: Settings) => {
-            console.log('settings', settings);
             this.settings = settings;
         });
         // this.setup();
@@ -146,7 +143,7 @@ export class Game extends Scene {
 
         // ================= Action Buttons ================= \\
 
-        this.target = this.add.sprite(0, 0, "target").setScale(0.15).setVisible(false);
+        this.target = this.add.sprite(0, 0, "target").setDepth(10).setScale(0.15).setVisible(false);
         this.actionBar = new ActionButtons(this);
 
         // ====================== Input Keys ====================== \\
@@ -240,7 +237,6 @@ export class Game extends Scene {
         this.purchaseListener();
         this.weaponListener();
         this.actionButtonListener();
-
     };
 
     equipListener = () => EventBus.on('equip-sound', () => {
@@ -259,7 +255,7 @@ export class Game extends Scene {
         this.actionButton.play();
     });
 
-    changeScene () {
+    changeScene (): void {
         this.scene.start('GameOver');
     };
 
@@ -287,7 +283,7 @@ export class Game extends Scene {
                 if (name === 'right') this.player.setVelocityX(1.5);
             };
         };
-    }
+    };
 
     // ================== Combat ================== \\
 
@@ -365,9 +361,7 @@ export class Game extends Scene {
     checkPlayerSuccess = () => {
         if (!this.player.actionSuccess && (this.state.action !== 'counter' && this.state.action !== 'roll' && this.state.action !== '')) this.combatMachine.input('action', '');
     };
-    clearNAEnemy = () => {
-        EventBus.emit('clear-enemy');
-    };
+    clearNAEnemy = () => EventBus.emit('clear-enemy');
     clearNPC = () => EventBus.emit('clear-npc'); 
     combatEngaged = (bool: boolean) => {
         if (bool) { 
@@ -380,10 +374,7 @@ export class Game extends Scene {
         console.log(`Combat engaged: ${bool}`);
         // this.dispatch(getCombatFetch(bool));
     };
-    drinkFlask = () => {
-        EventBus.emit('drink-firewater');
-        // this.dispatch(getDrinkFirewaterFetch(this.state.player._id));
-    };
+    drinkFlask = () => EventBus.emit('drink-firewater');
     setupEnemy = (enemy: any) => {
         const data = { id: enemy.enemyID, game: enemy.ascean, enemy: enemy.combatStats, health: enemy.health, isAggressive: enemy.isAggressive, startedAggressive: enemy.startedAggressive, isDefeated: enemy.isDefeated, isTriumphant: enemy.isTriumphant };
         EventBus.emit('setup-enemy', data);
@@ -396,12 +387,8 @@ export class Game extends Scene {
 
     // ============================ Player ============================ \\
 
-    caerenic = () => {
-        EventBus.emit('update-caerenic');
-    } ;
-    stalwart = () => {
-        EventBus.emit('update-stalwart');
-    } ;
+    caerenic = () => EventBus.emit('update-caerenic');
+    stalwart = () => EventBus.emit('update-stalwart');
     useStamina = (value: number) => EventBus.emit('update-stamina', value);
 
     createTextBorder(text: NewText) {

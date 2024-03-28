@@ -48,6 +48,14 @@ export const PLAYER = {
     },
 };
 
+const ORIGIN = {
+    WEAPON: { X: 0.25, Y: 1 },
+    SHIELD: { X: -0.2, Y: 0.25 },
+    HELMET: { X: 0.5, Y: 1.15 },
+    CHEST: { X: 0.5, Y: 0.25 },
+    LEGS: { X: 0.5, Y: -0.5 },
+};
+
 export const staminaCheck = (input, stamina) => {
     switch (input) {
         case 'attack':
@@ -105,37 +113,41 @@ export const staminaCheck = (input, stamina) => {
  
 export default class Player extends Entity {
     constructor(data) {
-        let {scene} = data;
+        const { scene } = data;
         super({ ...data, name: 'player', ascean: scene.state.player, health: scene.state.newPlayerHealth }); 
-        // const spriteName = scene?.state?.player?.weaponOne.imgUrl.split('/')[3].split('.')[0];
+
+        this.glowFilter.add(this, {
+            glowColor: 0x000000,
+            intensity: 1,
+            knockout: true
+        });
+
         const weapon = scene?.state?.player?.weaponOne;
-        const spriteName = this.imgSprite(weapon);
+        this.currentWeaponSprite = this.assetSprite(weapon);
         this.ascean = scene.state.player;
-        // this.inventory = new Inventory();
 
         this.playerID = scene.state.player._id;
-        this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, spriteName);
-        if (weapon.grip === 'Two Hand') {
-            this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
-            this.swingTimer = 1250;
-        } else {
+        this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, this.currentWeaponSprite);
+        if (weapon.grip === 'One Hand') {
             this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
             this.swingTimer = 800
+        } else {
+            this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
+            this.swingTimer = 1250;
         };
         this.spriteWeapon.setOrigin(0.25, 1);
         this.scene.add.existing(this);
         this.scene.add.existing(this.spriteWeapon);
         // this.spriteWeapon.setDepth(this + 1);
         this.spriteWeapon.setAngle(-195);
-        this.currentWeaponSprite = spriteName;
         this.currentDamageType = weapon?.damageType[0].toLowerCase();
         this.targetIndex = 1;
-        this.currentTarget = null;
+        this.currentTarget = undefined;
         this.stamina = scene?.state?.playerAttributes?.stamina;
         this.isMoving = false;
-        this.targetID = null;
-        this.attackedTarget = null;
-        this.triggeredActionAvailable = null;
+        this.targetID = undefined;
+        this.attackedTarget = undefined;
+        this.triggeredActionAvailable = undefined;
         this.rootCooldown = 0;
         this.snareCooldown = 0;
         this.isStealthing = false;
@@ -146,13 +158,17 @@ export default class Player extends Entity {
         this.strafingLeft = false;
         this.strafingRight = false;
 
-        const shieldName = scene?.state?.player?.shield.imgUrl.split('/')[2].split('.')[0];
-        this.spriteShield = new Phaser.GameObjects.Sprite(this.scene, 0, 0, shieldName);
-        this.spriteShield.setScale(PLAYER.SCALE.SHIELD);
-        this.spriteShield.setOrigin(0.5, 0.5);
-        this.scene.add.existing(this.spriteShield);
-        this.spriteShield.setDepth(this + 1);
-        this.spriteShield.setVisible(false);
+        this.currentShieldSprite = this.assetSprite(scene?.state?.player?.shield);
+        this.spriteShield = this.createSprite(this.currentShieldSprite, 0, 0, PLAYER.SCALE.SHIELD, ORIGIN.SHIELD.X, ORIGIN.SHIELD.Y);
+
+        // this.currentHelmSprite = this.assetSprite(scene?.state?.player?.helmet);
+        // this.currentChestSprite = this.assetSprite(scene?.state?.player?.chest);
+        // this.currentLegsSprite = this.assetSprite(scene?.state?.player?.legs);
+        // this.spriteHelm = this.createSprite(this.currentHelmSprite, 0, 0, 0.35, ORIGIN.HELMET.X, ORIGIN.HELMET.Y);
+        // this.spriteChest = this.createSprite(this.currentChestSprite, 0, 0, 0.55, ORIGIN.CHEST.X, ORIGIN.CHEST.Y);
+        // this.spriteLegs = this.createSprite(this.currentLegsSprite, 0, 0, 0.55, ORIGIN.LEGS.X, ORIGIN.LEGS.Y);
+
+        // this.spriteHelmt.setName
 
         this.playerVelocity = new Phaser.Math.Vector2();
         this.speed = this.startingSpeed(scene?.ascean);
@@ -246,29 +262,7 @@ export default class Player extends Entity {
 
         this.joystick = new Joystick(this.scene, window.innerWidth * 0.05, window.innerHeight * 0.8);
         this.rightJoystick = new Joystick(this.scene, window.innerWidth * 0.95, window.innerHeight * 0.8);
-        this.rightJoystick.createPointer(this.scene);
-
-        // const helmetName = scene?.state?.player?.helmet.imgUrl.split('/')[2].split('.')[0];
-        // const chestName = scene?.state?.player?.chest.imgUrl.split('/')[2].split('.')[0];
-        // const legsName = scene?.state?.player?.legs.imgUrl.split('/')[2].split('.')[0];
-        
-        // this.spriteHelmet = new Phaser.GameObjects.Sprite(this.scene, 0, 0, helmetName);
-        // this.spriteHelmet.setScale(0.35);
-        // this.spriteHelmet.setOrigin(0.5, 1.15);
-        // this.spriteHelmet.setDepth(this + 1);
-        // this.scene.add.existing(this.spriteHelmet);
-        
-        // this.spriteLegs = new Phaser.GameObjects.Sprite(this.scene, 0, 0, legsName);
-        // this.spriteLegs.setScale(0.55);
-        // this.spriteLegs.setOrigin(0.5, -0.5);
-        // this.spriteLegs.setDepth(this);
-        // this.scene.add.existing(this.spriteLegs);
-        
-        // this.spriteChest = new Phaser.GameObjects.Sprite(this.scene, 0, 0, chestName);
-        // this.spriteChest.setScale(0.55);
-        // this.spriteChest.setOrigin(0.5, 0.25);
-        // this.spriteChest.setDepth(this + 3);
-        // this.scene.add.existing(this.spriteChest);
+        this.rightJoystick.createPointer(this.scene); 
 
         this.setScale(PLAYER.SCALE.SELF);   
         const { Body, Bodies } = Phaser.Physics.Matter.Matter;
@@ -284,14 +278,15 @@ export default class Player extends Entity {
         this.knocking = false;
         this.isCaerenic = false;
         this.isTshaering = false;
-        this.tshaeringTimer = null;
+        this.tshaeringTimer = undefined;
         // this.setGlow(this.spriteWeapon);
         this.highlight = this.scene.add.graphics()
-            .lineStyle(3, 0xFF0000)
-            .setScale(0.35)
-            .strokeCircle(0, 0, 10); 
+            .lineStyle(3, 0xFF0000) // 3
+            .setScale(0.35) // 35
+            .strokeCircle(0, 0, 10) // 10 
+            .setDepth(1000);
         this.scene.plugins.get('rexGlowFilterPipeline').add(this.highlight, {
-            intensity: 0.005,
+            intensity: 0.005, // 005
         });
         this.highlight.setVisible(false);
         this.healthbar = new HealthBar(this.scene, this.x, this.y, scene.state.playerHealth, 'player');
@@ -305,8 +300,18 @@ export default class Player extends Entity {
         this.stealthListener();
         this.caerenicListener();
         this.stalwartListener();
+        this.enemyListener();
         this.tabListener();
-    };  
+    };   
+
+    createSprite = (imgUrl, x, y, scale, originX, originY) => {
+        const sprite = new Phaser.GameObjects.Sprite(this.scene, x, y, imgUrl);
+        sprite.setScale(scale);
+        sprite.setOrigin(originX, originY);
+        this.scene.add.existing(sprite);
+        sprite.setDepth(this);
+        return sprite;
+    };
 
     multiplayerMovement = () => {
         EventBus.emit('playerMoving', { 
@@ -327,8 +332,8 @@ export default class Player extends Entity {
 
     highlightTarget = (sprite) => {
         this.highlight.setPosition(sprite.x, sprite.y);
-        this.highlight.setDepth(sprite.depth + 1);
         this.highlight.setVisible(true);
+        this.scene.target.setPosition(sprite.x, sprite.y)
     };
 
     removeHighlight() {
@@ -347,8 +352,8 @@ export default class Player extends Entity {
 
     disengage = () => {
         this.inCombat = false;
-        this.attacking = null;
-        this.currentTarget = null;
+        this.attacking = undefined;
+        this.currentTarget = undefined;
         this.scene.clearNAEnemy();
         this.removeHighlight();
         this.scene.combatEngaged(false);
@@ -376,7 +381,7 @@ export default class Player extends Entity {
         if (e.newPlayerHealth <= 0) {
             // this.isDead = true;
             this.inCombat = false;
-            this.attacking = null;
+            this.attacking = undefined;
             this.anims.play('player_pray', true).on('animationcomplete', () => {
                 this.anims.play('player_idle', true);
             });
@@ -403,7 +408,7 @@ export default class Player extends Entity {
             if (this.isTshaering) this.isTshaering = false;
             if (this.tshaeringTimer) {
                 this.tshaeringTimer.remove(false);
-                this.tshaeringTimer = null;
+                this.tshaeringTimer = undefined;
             };
             
             this.defeatedEnemyCheck(e.enemyID);
@@ -462,10 +467,10 @@ export default class Player extends Entity {
         this.scene.combatMachine.clear(enemy);
         if (this.targets.every(obj => !obj.inCombat)) {
             this.inCombat = false;
-            this.attacking = null;
+            this.attacking = undefined;
             if (this.currentTarget) {
                 this.currentTarget.clearTint();
-                this.currentTarget = null;
+                this.currentTarget = undefined;
             };
         } else {
             if (this.currentTarget.enemyID === enemy) { // Was targeting the enemy that was defeated
@@ -593,7 +598,7 @@ export default class Player extends Entity {
                 this.touching = this.touching.filter(obj => obj?.enemyID !== other?.gameObjectB?.enemyID);
                 if (this.isValidEnemyCollision(other) && !this.touching.length) {
                     this.actionAvailable = false;
-                    this.triggeredActionAvailable = null;
+                    this.triggeredActionAvailable = undefined;
                     this.checkTargets(); // Was outside of if statement
                 };
             },
@@ -816,6 +821,11 @@ export default class Player extends Entity {
         this.isPraying = true;
         this.setStatic(true);
         if (!this.isCaerenic) this.glow = this.setGlow(this, true);
+        // if (!this.isCaerenic) {
+        //     this.glow = this.setGlow(this.spriteHelm, true, 'helm');
+        //     this.glow = this.setGlow(this.spriteChest, true, 'chest');
+        //     this.glow = this.setGlow(this.spriteLegs, true, 'legs');
+        // };
         this.invokeCooldown = 30;
         if (this.playerBlessing === '' || this.playerBlessing !== this.scene.state.playerBlessing) {
             this.playerBlessing = this.scene.state.playerBlessing;
@@ -827,6 +837,11 @@ export default class Player extends Entity {
     onInvokeExit = () => {
         this.setStatic(false);
         if (!this.isCaerenic) this.glow = this.setGlow(this, false);
+        // if (!this.isCaerenic) {
+        //     this.glow = this.setGlow(this.spriteHelm, false, 'helm');
+        //     this.glow = this.setGlow(this.spriteChest, false, 'chest');
+        //     this.glow = this.setGlow(this.spriteLegs, false, 'legs');
+        // };
         this.scene.combatMachine.action({ type: 'Instant', data: this.scene.state.playerBlessing });
         screenShake(this.scene);
         this.prayerFx.play();
@@ -896,9 +911,18 @@ export default class Player extends Entity {
             this.caerenicFx.play();
             if (this.isCaerenic) {
                 this.setGlow(this, true);
+
+                // this.setGlow(this.spriteHelm, true, 'helm');
+                // this.setGlow(this.spriteChest, true, 'chest');
+                // this.setGlow(this.spriteLegs, true, 'legs');
+
                 this.adjustSpeed(PLAYER.SPEED.CAERENIC);
             } else {
                 this.setGlow(this, false);
+                // this.setGlow(this.spriteHelm, false, 'helm');
+                // this.setGlow(this.spriteChest, false, 'chest');
+                // this.setGlow(this.spriteLegs, false, 'legs');
+
                 this.adjustSpeed(-PLAYER.SPEED.CAERENIC);
             };
         });
@@ -908,6 +932,23 @@ export default class Player extends Entity {
         EventBus.on('update-stalwart', () => {
             this.isStalwart = this.isStalwart ? false : true;
             this.stalwartFx.play();
+        });
+    };
+
+    enemyListener = () => {
+        EventBus.on('remove-enemy', (e) => {
+            const index = this.targets.findIndex(obj => obj.enemyID === e);
+            this.targets = this.targets.filter(obj => obj.enemyID !== e);
+            if (this.currentTarget) {
+                this.currentTarget.clearTint();
+            };
+            if (this.targets.length > 0) {
+                this.currentTarget = this.targets[index];
+                this.highlightTarget(this.currentTarget);
+                if (this.inCombat && !this.scene.state.computer) {
+                    this.scene.setupEnemy(this.currentTarget);
+                };
+            };
         });
     };
 
@@ -953,6 +994,9 @@ export default class Player extends Entity {
         screenShake(this.scene);
         if (!this.isCaerenic) {
             this.setGlow(this, true);
+            // this.setGlow(this.spriteHelm, true, 'helm');
+            // this.setGlow(this.spriteChest, true, 'chest');
+            // this.setGlow(this.spriteLegs, true, 'legs');
         };
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAERING / 2, 'damage');
         this.castbar.setTotal(PLAYER.DURATIONS.TSHAERING);
@@ -962,7 +1006,7 @@ export default class Player extends Entity {
             callback: () => {
                 if (!this.isTshaering || this.scene.state.playerWin || this.scene.state.newComputerHealth <= 0) {
                     this.tshaeringTimer.remove(false);
-                    this.tshaeringTimer = null;
+                    this.tshaeringTimer = undefined;
                     return;
                 };
                 this.scene.combatMachine.action({ type: 'Tshaeral', data: '' });
@@ -980,18 +1024,21 @@ export default class Player extends Entity {
     onTshaeralExit = () => {
         if (this.tshaeringTimer) {
             this.tshaeringTimer.remove(false);
-            this.tshaeringTimer = null;
+            this.tshaeringTimer = undefined;
         };
         this.castbar.reset();
         // if (this.beamTimer) {
         //     this.beamTimer.remove();
-        //     this.beamTimer = null;
+        //     this.beamTimer = undefined;
         // };
         if (!this.isCaerenic) {
+            // this.setGlow(this.spriteHelm, false, 'helm');
+            // this.setGlow(this.spriteChest, false, 'chest');
+            // this.setGlow(this.spriteLegs, false, 'legs');
             this.setGlow(this, false);
         }; 
         // this.tshaeringGraphic.destroy();
-        // this.tshaeringGraphic = null;
+        // this.tshaeringGraphic = undefined;
         screenShake(this.scene);
         this.setStatic(false);
     };
@@ -1001,6 +1048,11 @@ export default class Player extends Entity {
         this.castbar.setTotal(PLAYER.DURATIONS.POLYMORPHING);
         this.isPolymorphing = true;
         if (!this.isCaerenic) this.setGlow(this, true);
+        // if (!this.isCaerenic) {
+        //     this.setGlow(this.spriteHelm, true, 'helm');
+        //     this.setGlow(this.spriteChest, true, 'chest');
+        //     this.setGlow(this.spriteLegs, true, 'legs');
+        // };
     };
     onPolymorphingUpdate = (dt) => {
         if (this.isMoving) this.isPolymorphing = false;
@@ -1020,6 +1072,11 @@ export default class Player extends Entity {
         };
         this.castbar.reset();
         if (!this.isCaerenic) this.setGlow(this, false);
+        // if (!this.isCaerenic) {
+        //     this.setGlow(this.spriteHelm, false, 'helm');
+        //     this.setGlow(this.spriteChest, false, 'chest');
+        //     this.setGlow(this.spriteLegs, false, 'legs');
+        // };
     };
 
     onStunEnter = () => {
@@ -1075,7 +1132,7 @@ export default class Player extends Entity {
         this.canSwing = false;
         this.scene.time.delayedCall(this.swingTimer, () => {
             this.canSwing = true;
-        }, null, this);
+        }, undefined, this);
         let time = 0;
         this.scene.actionBar.setCurrent(time, this.swingTimer, type);
         const swingTime = this.scene.time.addEvent({
@@ -1124,7 +1181,7 @@ export default class Player extends Entity {
         };
 
         if (!this.touching.length && (this.triggeredActionAvailable || this.actionAvailable)) {
-            if (this.triggeredActionAvailable) this.triggeredActionAvailable = null;
+            if (this.triggeredActionAvailable) this.triggeredActionAvailable = undefined;
             if (this.actionAvailable) this.actionAvailable = false;
         };
     };
@@ -1199,7 +1256,7 @@ export default class Player extends Entity {
             };
             this.scene.particleManager.removeEffect(this.particleEffect.id);
             this.particleEffect.effect.destroy();
-            this.particleEffect = null;
+            this.particleEffect = undefined;
         } else {
             const action = this.checkPlayerAction();
             if (!action) return;
@@ -1238,7 +1295,7 @@ export default class Player extends Entity {
             currentDistance += Math.abs(dodgeDistance / dodgeDuration);
             requestAnimationFrame(dodgeLoop);
         };
-        let startTime = null;
+        let startTime = undefined;
         requestAnimationFrame(dodgeLoop);
     };
 
@@ -1267,7 +1324,7 @@ export default class Player extends Entity {
             currentDistance += Math.abs(rollDistance / rollDuration);
             requestAnimationFrame(rollLoop);
         };
-        let startTime = null;
+        let startTime = undefined;
         requestAnimationFrame(rollLoop);
     };
 
@@ -1437,11 +1494,15 @@ export default class Player extends Entity {
             if (this.isMoving) this.isMoving = false;
             this.anims.play('player_idle', true);
         };
+        
+        // ========================= Player Animation Positioning ========================= \\
+
         this.spriteWeapon.setPosition(this.x, this.y);
         this.spriteShield.setPosition(this.x, this.y);
-        // this.spriteHelmet.setPosition(this.x, this.y);
-        // this.spriteLegs.setPosition(this.x, this.y);
+
+        // this.spriteHelm.setPosition(this.x, this.y);
         // this.spriteChest.setPosition(this.x, this.y);
+        // this.spriteLegs.setPosition(this.x, this.y);
     };
 
     handleConcerns = () => {
@@ -1463,18 +1524,31 @@ export default class Player extends Entity {
         if (this.currentWeaponSprite !== this.assetSprite(this.scene.state.weapons[0])) {
             this.currentWeaponSprite = this.assetSprite(this.scene.state.weapons[0]);
             this.spriteWeapon.setTexture(this.currentWeaponSprite);
-            if (this.scene.state.weapons[0].grip === 'Two Hand') {
-                this.staminaModifier = 5;
-                this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
-            } else {
+            if (this.scene.state.weapons[0].grip === 'One Hand') {
                 this.staminaModifier = 0;
                 this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
+            } else {
+                this.staminaModifier = 5;
+                this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
             };
         };
         if (this.currentShieldSprite !== this.assetSprite(this.scene.state.player.shield)) {
             this.currentShieldSprite = this.assetSprite(this.scene.state.player.shield);
             this.spriteShield.setTexture(this.currentShieldSprite);
-        }; 
+        };
+        // if (this.currentHelmSprite !== this.assetSprite(this.scene.state.player.helmet)) {
+        //     this.currentHelmSprite = this.assetSprite(this.scene.state.player.helmet);
+        //     this.spriteHelm.setTexture(this.currentHelmSprite);
+        // };
+        // if (this.currentChestSprite !== this.assetSprite(this.scene.state.player.chest)) {
+        //     this.currentChestSprite = this.assetSprite(this.scene.state.player.chest);
+        //     this.spriteChest.setTexture(this.currentChestSprite);
+        // };
+        // if (this.currentLegsSprite !== this.assetSprite(this.scene.state.player.legs)) {
+        //     this.currentLegsSprite = this.assetSprite(this.scene.state.player.legs);
+        //     this.spriteLegs.setTexture(this.currentLegsSprite);
+        // };
+            
         if (this.healthbar) this.healthbar.update(this);
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.winningCombatText) this.winningCombatText.update(this);

@@ -45,7 +45,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.name = name;
         this.ascean = ascean;
         this.health = health;
-        this.combatStats = null;
+        this.combatStats = undefined;
         this.stamina = 0;
         this._position = new Phaser.Math.Vector2(this.x, this.y);
         this.scene.add.existing(this);
@@ -76,15 +76,15 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
         this.actionAvailable = false;
         this.actionSuccess = false;
-        this.actionTarget = null;
+        this.actionTarget = undefined;
         this.dodgeCooldown = 0;
         this.invokeCooldown = 0;
         this.playerBlessing = '';
         this.prayerConsuming = '';
         this.rollCooldown = 0;
 
-        this.attacking = null;
-        this.sensor = null;
+        this.attacking = undefined;
+        this.sensor = undefined;
         this.interacting = [];
         this.targets = [];
         this.touching = [];
@@ -94,33 +94,36 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.knockbackDirection = {};
         this.knockbackDuration = 250;
         
-        this.spriteShield = null;
-        this.spriteWeapon = null;
+        this.spriteShield = undefined;
+        this.spriteWeapon = undefined;
         this.frameCount = 0;
         this.currentWeaponSprite = '';
-        this.particleEffect = null;
-        this.stunTimer = null;
+        this.particleEffect = undefined;
+        this.stunTimer = undefined;
         this.stunDuration = 2500;
         
-        this.currentDamageType = null;
+        this.currentDamageType = undefined;
         this.currentRound = 0; 
         this.currentAction = '';
         this.currentActionFrame = 0;
         this.interruptCondition = false;
-        this.scrollingCombatText = null;
-        this.winningCombatText = null;
-        this.specialCombatText = null;
+        this.scrollingCombatText = undefined;
+        this.winningCombatText = undefined;
+        this.specialCombatText = undefined;
 
         this.path = [];
         this.nextPoint = {};
         this.pathDirection = {};
         this.isPathing = false;
-        this.chaseTimer = null;
-        this.leashTimer = null;
+        this.chaseTimer = undefined;
+        this.leashTimer = undefined;
         this.canSwing = true;
         this.swingTimer = 0; 
         this.glowing = false;
-        this.glowTimer = null;
+        this.glowHelm = undefined;
+        this.glowChest = undefined;
+        this.glowLegs = undefined;
+        this.glowTimer = undefined;
         this.speed = 0;
         this.isPolymorphed = false;
         this.isRooted = false;
@@ -165,6 +168,103 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         addModifier(legs);
         speed += modifier;
         return speed;
+    };
+
+    setGlow = (object, glow, type = undefined) => {
+        
+        if (!glow) {
+            switch (type) {
+                case 'helm':
+                    this.glowHelm.remove();
+                    this.glowHelm = undefined;
+                    break;
+                case 'chest':
+                    this.glowChest.remove();
+                    this.glowChest = undefined;
+                    break;
+                    case 'legs':
+                        this.glowLegs.remove();
+                    this.glowLegs = undefined;
+                    break;
+                default:
+                    this.glowTimer.remove();
+                    this.glowTimer = undefined;
+                    break;        
+            };
+            this.glowFilter.remove(object);
+            return this.glowFilter.add(this, {
+                glowColor: 0x000000,
+                intensity: 1,
+                knockout: true
+            }); 
+        };
+            
+        const setColor = (mastery) => {
+            switch (mastery) {
+                case 'constitution': return 0xFDF6D8;
+                case 'strength': return 0xFF0000;
+                case 'agility': return 0x00FF00;
+                case 'achre': return 0x0000FF;
+                case 'caeren': return 0x800080;
+                case 'kyosir': return 0xFFD700;
+                default: return 0xFFFFFF;
+            };
+        };
+
+        let glowColor = setColor(this.ascean.mastery);
+
+        const updateGlow = (time) => {
+            this.glowFilter.remove(object);
+
+            const outerStrength = 2 + Math.sin(time * 0.005) * 2; // Adjust the frequency and amplitude as needed
+            const innerStrength = 2 + Math.cos(time * 0.005) * 2;
+            const intensity = 0.25;
+
+            this.glowFilter.add(object, {
+                outerStrength,
+                innerStrength,
+                glowColor,
+                intensity,
+                knockout: true
+            });
+        }; 
+
+        updateGlow(this.scene.time.now);
+
+        switch (type) {
+            case 'helm':
+                this.glowHelm = this.scene.time.addEvent({
+                    delay: 125, // Adjust the delay as needed
+                    callback: () => updateGlow(this.scene.time.now),
+                    loop: true,
+                    callbackScope: this
+                });
+                break;
+            case 'chest':
+                this.glowChest = this.scene.time.addEvent({
+                    delay: 125, // Adjust the delay as needed
+                    callback: () => updateGlow(this.scene.time.now),
+                    loop: true,
+                    callbackScope: this
+                });
+                break;
+            case 'legs':
+                this.glowLegs = this.scene.time.addEvent({
+                    delay: 125, // Adjust the delay as needed
+                    callback: () => updateGlow(this.scene.time.now),
+                    loop: true,
+                    callbackScope: this
+                });
+                break;
+            default:
+                this.glowTimer = this.scene.time.addEvent({
+                    delay: 125, // Adjust the delay as needed
+                    callback: () => updateGlow(this.scene.time.now),
+                    loop: true,
+                    callbackScope: this
+                });
+                break;
+        };
     };
 
     adjustSpeed = (speed) => {
@@ -318,7 +418,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             requestAnimationFrame(knockbackLoop);
         };
 
-        let startTime = null;
+        let startTime = undefined;
         requestAnimationFrame(knockbackLoop);
         
         if ("vibrate" in navigator) {
@@ -345,56 +445,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     imgSprite = (item) => {
         return item.imgUrl.split('/')[3].split('.')[0];
-    };
-
-    setGlow = (object, glow) => {
-        const setColor = (mastery) => {
-            switch (mastery) {
-                case 'constitution': return 0xFDF6D8;
-                case 'strength': return 0xFF0000;
-                case 'agility': return 0x00FF00;
-                case 'achre': return 0x0000FF;
-                case 'caeren': return 0x800080;
-                case 'kyosir': return 0xFFD700;
-                default: return 0xFFFFFF;
-            };
-        }; 
-
-        if (!glow) {
-            if (this.glowTimer) {
-                this.glowTimer.remove();
-                this.glowTimer = null;
-            };
-            return this.glowFilter.remove(object); 
-        };
-
-        let glowColor = setColor(this.ascean.mastery);
-
-        const updateGlow = (time) => {
-            this.glowFilter.remove(object);
-
-            const outerStrength = 2 + Math.sin(time * 0.005) * 2; // Adjust the frequency and amplitude as needed
-            const innerStrength = 2 + Math.cos(time * 0.005) * 2;
-            const intensity = 0.25;
-
-            this.glowFilter.add(object, {
-                outerStrength,
-                innerStrength,
-                glowColor,
-                intensity,
-                knockout: true
-            });
-        }; 
-
-        updateGlow(this.scene.time.now);
-
-        this.glowTimer = this.scene.time.addEvent({
-            delay: 125, // Adjust the delay as needed
-            callback: () => updateGlow(this.scene.time.now),
-            loop: true,
-            callbackScope: this
-        });
-
     };
 
     checkActionSuccess = (entity, target) => {

@@ -34,10 +34,15 @@ const RANGE = {
 
 export default class Enemy extends Entity {
     constructor(data) {
-        super({ ...data, name: "enemy", ascean: null, health: 1 }); 
+        super({ ...data, name: "enemy", ascean: undefined, health: 1 }); 
         this.scene.add.existing(this);
         this.enemyID = getRandomNumStr(16);
-        this.createEnemy(); 
+        this.createEnemy();
+        this.glowFilter.add(this, {
+            glowColor: 0x000000,
+            intensity: 1,
+            knockout: true
+        }); 
         this.stateMachine = new StateMachine(this, 'enemy');
         this.stateMachine
             .addState(States.IDLE, {
@@ -162,16 +167,16 @@ export default class Enemy extends Entity {
         this.isPraying = false;
         this.rollCooldown = 0;
         this.dodgeCooldown = 0;
-        this.enemySensor = null;
+        this.enemySensor = undefined;
         this.waiting = 30;
         this.idleWait = 3000;
-        this.patrolTimer = null;
-        this.patrolReverse = null;
+        this.patrolTimer = undefined;
+        this.patrolReverse = undefined;
         this.patrolWait = 500;
         this.patrolVelocity = 1;
         this.polymorphVelocity = { x: 0, y: 0 };
-        this.attackSensor = null;
-        this.attackTimer = null;
+        this.attackSensor = undefined;
+        this.attackTimer = undefined;
         this.combatThreshold = 0;
         this.attackIsLive = false;
         this.isEnemy = true;
@@ -179,7 +184,7 @@ export default class Enemy extends Entity {
         this.startedAggressive = this.isAggressive;
         this.isDefeated = false;
         this.isTriumphant = false;
-        this.currentWeapon = null;
+        this.currentWeapon = undefined;
         this.isCurrentTarget = false;
         this.counterAction = '';
         this.originalPosition = new Phaser.Math.Vector2(this.x, this.y);
@@ -401,7 +406,7 @@ export default class Enemy extends Entity {
     clearCombat = () => {
         if (!this.stateMachine.isCurrentState(States.LEASH)) this.stateMachine.setState(States.LEASH);
         this.inCombat = false;
-        this.attacking = null;
+        this.attacking = undefined;
         this.isTriumphant = true;
         this.isAggressive = false; // Added to see if that helps with post-combat losses for the player
     };
@@ -452,7 +457,7 @@ export default class Enemy extends Entity {
         });
         this.isDefeated = true;
         this.inCombat = false;
-        this.attacking = null;
+        this.attacking = undefined;
         this.isAggressive = false;
         this.healthbar.setVisible(false);
         this.scene.time.delayedCall(300000, () => {
@@ -460,13 +465,13 @@ export default class Enemy extends Entity {
             this.health = this.ascean.health.max;
             this.isAggressive = this.startedAggressive;
             this.stateMachine.setState(States.IDLE);
-        }, null, this);
+        }, undefined, this);
     };
     onDeathEnter = () => {
         this.isDead = true;
         this.anims.play('player_death', true);
         this.inCombat = false;
-        this.attacking = null;
+        this.attacking = undefined;
         this.spriteWeapon.destroy();
         this.spriteShield.destroy();
         this.healthbar.destroy();
@@ -615,7 +620,7 @@ export default class Enemy extends Entity {
         this.scene.navMesh.debugDrawClear();
         this.setVelocity(0, 0);
         this.chaseTimer.destroy();
-        this.chaseTimer = null;
+        this.chaseTimer = undefined;
     };
 
     onCombatEnter = () => {
@@ -634,7 +639,7 @@ export default class Enemy extends Entity {
     };
     onCombatExit = () => { 
         this.attackTimer.destroy();
-        this.attackTimer = null;
+        this.attackTimer = undefined;
     };
 
     onEvasionEnter = () => { 
@@ -759,7 +764,7 @@ export default class Enemy extends Entity {
         this.anims.play('player_running', true);
         if (this.attacking) {
             this.attacking.removeTarget(this.enemyID);
-            this.attacking = null;
+            this.attacking = undefined;
             this.inCombat = false;
         };
         this.leashTimer = this.scene.time.addEvent({
@@ -807,7 +812,7 @@ export default class Enemy extends Entity {
         this.anims.stop('player_running');
         this.setVelocity(0, 0);
         this.leashTimer.destroy();
-        this.leashTimer = null;
+        this.leashTimer = undefined;
         this.scene.navMesh.debugDrawClear(); 
     };
 
@@ -838,7 +843,7 @@ export default class Enemy extends Entity {
         this.clearAnimations();
         if (this.consumedTimer) {
             this.consumedTimer.destroy();
-            this.consumedTimer = null;
+            this.consumedTimer = undefined;
         };
         this.setGlow(this, false);
         this.isConsumed = false;
@@ -923,7 +928,7 @@ export default class Enemy extends Entity {
         this.spriteWeapon.setVisible(true);
         if (this.polymorphTimer) {
             this.polymorphTimer.destroy();
-            this.polymorphTimer = null;
+            this.polymorphTimer = undefined;
         };
     };
 
@@ -1006,7 +1011,7 @@ export default class Enemy extends Entity {
             };
             this.scene.particleManager.removeEffect(this.particleEffect.id);
             this.particleEffect.effect.destroy();
-            this.particleEffect = null;
+            this.particleEffect = undefined;
         } else {
             if (this.isCurrentTarget) {
                 if (this.scene.state.computerAction === '') return;
@@ -1040,7 +1045,7 @@ export default class Enemy extends Entity {
             currentDistance += Math.abs(dodgeDistance / dodgeDuration);
             requestAnimationFrame(dodgeLoop);
         };
-        let startTime = null;
+        let startTime = undefined;
         requestAnimationFrame(dodgeLoop);
     };
 
@@ -1066,7 +1071,7 @@ export default class Enemy extends Entity {
             currentDistance += Math.abs(rollDistance / rollDuration);
             requestAnimationFrame(rollLoop);
         };
-        let startTime = null;
+        let startTime = undefined;
         requestAnimationFrame(rollLoop);
     };
 
@@ -1158,7 +1163,7 @@ export default class Enemy extends Entity {
     getEnemyParticle = () => {
         return this.attacking.particleEffect
             ? this.scene.particleManager.getEffect(this.attacking.particleEffect.id)
-            : null;
+            : undefined;
     };
 
     isUnderRangedAttack = () => {

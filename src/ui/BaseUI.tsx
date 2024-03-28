@@ -324,7 +324,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     };
 
     return (
-        <>
+        <div id='base-ui'>
         <Show when={game().scrollEnabled}>
             <CombatSettings combat={combat} game={game} />
         </Show> 
@@ -353,6 +353,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         { game().tutorial && ( 
             <StoryTutorial tutorial={game().tutorial} dispatch={dispatch} player={game().player}  /> 
         ) } */}
-        </>
+        </div>
     );
 };

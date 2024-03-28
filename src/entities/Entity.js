@@ -229,7 +229,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         switch (type) {
             case 'shield':
                 this.glowShield = this.scene.time.addEvent({
-                    delay: 250, // 125 Adjust the delay as needed
+                    delay: 125, // 125 Adjust the delay as needed
                     callback: () => updateGlow(this.scene.time.now),
                     loop: true,
                     callbackScope: this
@@ -237,7 +237,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 break;
             case 'weapon':
                 this.glowWeapon = this.scene.time.addEvent({
-                    delay: 250, // 125 Adjust the delay as needed
+                    delay: 125, // 125 Adjust the delay as needed
                     callback: () => updateGlow(this.scene.time.now),
                     loop: true,
                     callbackScope: this
@@ -245,7 +245,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 break;
             default:
                 this.glowTimer = this.scene.time.addEvent({
-                    delay: 250, // 125 Adjust the delay as needed
+                    delay: 125, // 125 Adjust the delay as needed
                     callback: () => updateGlow(this.scene.time.now),
                     loop: true,
                     callbackScope: this

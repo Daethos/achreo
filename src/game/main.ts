@@ -35,6 +35,7 @@ const config: Phaser.Types.Core.GameConfig = {
         }
     },
     fps: { limit: 90, target: 60 },
+    // fullscreenTarget: 'base-ui',
     plugins: {
         global: [{
             key: 'rexVirtualJoystick',

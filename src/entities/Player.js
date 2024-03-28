@@ -116,16 +116,9 @@ export default class Player extends Entity {
         const { scene } = data;
         super({ ...data, name: 'player', ascean: scene.state.player, health: scene.state.newPlayerHealth }); 
         this.setTint(0x000000);
-        // this.glowFilter.add(this, {
-        //     glowColor: 0x000000,
-        //     intensity: 1,
-        //     knockout: true
-        // });
-
         const weapon = scene?.state?.player?.weaponOne;
         this.currentWeaponSprite = this.assetSprite(weapon);
         this.ascean = scene.state.player;
-
         this.playerID = scene.state.player._id;
         this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, this.currentWeaponSprite);
         if (weapon.grip === 'One Hand') {
@@ -278,12 +271,11 @@ export default class Player extends Entity {
         this.knocking = false;
         this.isCaerenic = false;
         this.isTshaering = false;
-        this.tshaeringTimer = undefined;
-        // this.setGlow(this.spriteWeapon);
+        this.tshaeringTimer = undefined; 
         this.highlight = this.scene.add.graphics()
-            .lineStyle(3, 0xFF0000) // 3
-            .setScale(0.35) // 35
-            .strokeCircle(0, 0, 10) // 10 
+            .lineStyle(4, 0xFF0000) // 3
+            .setScale(0.25) // 35
+            .strokeCircle(0, 0, 12) // 10 
             .setDepth(1000);
         this.scene.plugins.get('rexGlowFilterPipeline').add(this.highlight, {
             intensity: 0.005, // 005
@@ -820,12 +812,11 @@ export default class Player extends Entity {
     onInvokeEnter = () => {
         this.isPraying = true;
         this.setStatic(true);
-        if (!this.isCaerenic) this.glow = this.setGlow(this, true);
-        // if (!this.isCaerenic) {
-        //     this.glow = this.setGlow(this.spriteHelm, true, 'helm');
-        //     this.glow = this.setGlow(this.spriteChest, true, 'chest');
-        //     this.glow = this.setGlow(this.spriteLegs, true, 'legs');
-        // };
+        if (!this.isCaerenic) {
+            this.setGlow(this, true);
+            this.setGlow(this.spriteWeapon, true, 'weapon');
+            this.setGlow(this.spriteShield, true, 'shield');
+        };
         this.invokeCooldown = 30;
         if (this.playerBlessing === '' || this.playerBlessing !== this.scene.state.playerBlessing) {
             this.playerBlessing = this.scene.state.playerBlessing;
@@ -836,12 +827,11 @@ export default class Player extends Entity {
     };
     onInvokeExit = () => {
         this.setStatic(false);
-        if (!this.isCaerenic) this.glow = this.setGlow(this, false);
-        // if (!this.isCaerenic) {
-        //     this.glow = this.setGlow(this.spriteHelm, false, 'helm');
-        //     this.glow = this.setGlow(this.spriteChest, false, 'chest');
-        //     this.glow = this.setGlow(this.spriteLegs, false, 'legs');
-        // };
+        if (!this.isCaerenic) {
+            this.setGlow(this, false);
+            this.setGlow(this.spriteWeapon, false, 'weapon');
+            this.setGlow(this.spriteShield, false, 'shield');
+        };
         this.scene.combatMachine.action({ type: 'Instant', data: this.scene.state.playerBlessing });
         screenShake(this.scene);
         this.prayerFx.play();
@@ -868,11 +858,11 @@ export default class Player extends Entity {
     stealthEffect(stealth) {
         if (stealth) {
             const getStealth = (object) => {
-                object.setAlpha(0.7);
+                object.setAlpha(0.5); // 0.7
                 object.setBlendMode(Phaser.BlendModes.SCREEN);
                 this.scene.tweens.add({
                     targets: object,
-                    tint: 0x00AAFF,
+                    tint: 0x00AAFF, // 0x00AAFF
                     duration: 500,
                     yoyo: true,
                     repeat: -1,
@@ -891,6 +881,7 @@ export default class Player extends Entity {
             clearStealth(this);
             clearStealth(this.spriteWeapon);
             clearStealth(this.spriteShield);
+            this.setTint(0x000000);
         };
         this.stealthFx.play();    
     };
@@ -911,17 +902,14 @@ export default class Player extends Entity {
             this.caerenicFx.play();
             if (this.isCaerenic) {
                 this.setGlow(this, true);
-
-                // this.setGlow(this.spriteHelm, true, 'helm');
-                // this.setGlow(this.spriteChest, true, 'chest');
-                // this.setGlow(this.spriteLegs, true, 'legs');
+                this.setGlow(this.spriteWeapon, true, 'weapon');
+                this.setGlow(this.spriteShield, true, 'shield'); 
 
                 this.adjustSpeed(PLAYER.SPEED.CAERENIC);
             } else {
                 this.setGlow(this, false);
-                // this.setGlow(this.spriteHelm, false, 'helm');
-                // this.setGlow(this.spriteChest, false, 'chest');
-                // this.setGlow(this.spriteLegs, false, 'legs');
+                this.setGlow(this.spriteWeapon, false, 'weapon')
+                this.setGlow(this.spriteShield, false, 'shield'); 
 
                 this.adjustSpeed(-PLAYER.SPEED.CAERENIC);
             };
@@ -937,17 +925,22 @@ export default class Player extends Entity {
 
     enemyListener = () => {
         EventBus.on('remove-enemy', (e) => {
+            console.log(`%c Targets: ${this.targets} Remaining" ${this.targets.length}`, 'color: #ff0000')
             const index = this.targets.findIndex(obj => obj.enemyID === e);
+            console.log(`%c Removing Enemy: ${e} with index ${index}`, 'color: #ff0000')
             this.targets = this.targets.filter(obj => obj.enemyID !== e);
             if (this.currentTarget) {
                 this.currentTarget.clearTint();
             };
             if (this.targets.length > 0) {
-                this.currentTarget = this.targets[index];
+                const newTarg = this.targets[index] || this.targets[0];
+                console.log(`%c New Target: ${newTarg}`, 'color: #ff0000')
+                if (!newTarg) return;
+                this.currentTarget = newTarg;
                 this.highlightTarget(this.currentTarget);
-                if (this.inCombat && !this.scene.state.computer) {
+                // if (this.inCombat && !this.scene.state.computer) {
                     this.scene.setupEnemy(this.currentTarget);
-                };
+                // };
             };
         });
     };
@@ -956,6 +949,7 @@ export default class Player extends Entity {
         EventBus.on('tab-target', (enemy) => {
             if (this.currentTarget) {
                 this.currentTarget.clearTint();
+                this.currentTarget.setTint(0x000000);
             };
 
             const newTarget = this.targets.find(obj => obj.enemyID === enemy.id);
@@ -994,9 +988,8 @@ export default class Player extends Entity {
         screenShake(this.scene);
         if (!this.isCaerenic) {
             this.setGlow(this, true);
-            // this.setGlow(this.spriteHelm, true, 'helm');
-            // this.setGlow(this.spriteChest, true, 'chest');
-            // this.setGlow(this.spriteLegs, true, 'legs');
+            this.setGlow(this.spriteWeapon, true, 'weapon'); 
+            this.setGlow(this.spriteShield, true, 'shield');
         };
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAERING / 2, 'damage');
         this.castbar.setTotal(PLAYER.DURATIONS.TSHAERING);
@@ -1031,11 +1024,10 @@ export default class Player extends Entity {
         //     this.beamTimer.remove();
         //     this.beamTimer = undefined;
         // };
-        if (!this.isCaerenic) {
-            // this.setGlow(this.spriteHelm, false, 'helm');
-            // this.setGlow(this.spriteChest, false, 'chest');
-            // this.setGlow(this.spriteLegs, false, 'legs');
+        if (!this.isCaerenic) { 
             this.setGlow(this, false);
+            this.setGlow(this.spriteWeapon, false, 'weapon');
+            this.setGlow(this.spriteShield, false, 'shield');
         }; 
         // this.tshaeringGraphic.destroy();
         // this.tshaeringGraphic = undefined;
@@ -1047,12 +1039,11 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphing', PLAYER.DURATIONS.POLYMORPHING / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.POLYMORPHING);
         this.isPolymorphing = true;
-        if (!this.isCaerenic) this.setGlow(this, true);
-        // if (!this.isCaerenic) {
-        //     this.setGlow(this.spriteHelm, true, 'helm');
-        //     this.setGlow(this.spriteChest, true, 'chest');
-        //     this.setGlow(this.spriteLegs, true, 'legs');
-        // };
+        if (!this.isCaerenic) {
+            this.setGlow(this, true);
+            this.setGlow(this.spriteWeapon, true, 'weapon');
+            this.setGlow(this.spriteShield, true, 'shield');
+        };
     };
     onPolymorphingUpdate = (dt) => {
         if (this.isMoving) this.isPolymorphing = false;
@@ -1071,12 +1062,11 @@ export default class Player extends Entity {
             this.polymorphSuccess = false;
         };
         this.castbar.reset();
-        if (!this.isCaerenic) this.setGlow(this, false);
-        // if (!this.isCaerenic) {
-        //     this.setGlow(this.spriteHelm, false, 'helm');
-        //     this.setGlow(this.spriteChest, false, 'chest');
-        //     this.setGlow(this.spriteLegs, false, 'legs');
-        // };
+        if (!this.isCaerenic) {
+            this.setGlow(this, false);
+            this.setGlow(this.spriteWeapon, false, 'weapon');
+            this.setGlow(this.spriteShield, false, 'shield');
+        };
     };
 
     onStunEnter = () => {

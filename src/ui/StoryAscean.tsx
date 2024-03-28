@@ -493,14 +493,16 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
             </Show>
             <Show when={removeModalShow()}>
                 <div class='modal'>
-                <div class='button superCenter' style={{ 'background-color': 'black' }}>
-                    <div class='center' style={font('1.5em')}>Do You Wish To Remove and Destroy Your {highlighted()?.item?.name}? <br /><br /><div>
-                        <img src={highlighted()?.item?.imgUrl} alt={highlighted()?.item?.name} onClick={() => removeItem(highlighted()?.item?._id as string)} />
+                <div class='button superCenter' style={{ 'background-color': 'black', width: '25%' }}>
+                    <div class='border'>
+                    <div class='center' style={font('1.5em')}>Do You Wish To Remove and Destroy Your <span style={{ color: 'gold' }}>{highlighted()?.item?.name}?</span> <br /><br /><div>
+                        <img style={{ transform: 'scale(1.25)' }} src={highlighted()?.item?.imgUrl} alt={highlighted()?.item?.name} onClick={() => removeItem(highlighted()?.item?._id as string)} />
+                        <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '4vh', right: '2vw', 'background-color': 'red' }} onClick={() => setRemoveModalShow(!removeModalShow())}>
+                            <p style={font('0.5em')}>X</p>
+                        </button>
                     </div>
-                    </div><br /><br />
-                    <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '0', right: '0', 'background-color': 'red' }} onClick={() => setRemoveModalShow(!removeModalShow())}>
-                        <p style={font('0.5em')}>X</p>
-                    </button>
+                    </div><br /><br /><br /><br />
+                    </div>
                 </div>
                 </div>
             </Show>

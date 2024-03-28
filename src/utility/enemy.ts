@@ -1,6 +1,5 @@
 import { populateEnemy, randomEnemy } from "../assets/db/db";
 import { EventBus } from "../game/EventBus";
-import EventEmitter from "../phaser/EventEmitter";
 import { asceanCompiler } from "./ascean";
 
 // const levelRanges = [

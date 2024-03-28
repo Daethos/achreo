@@ -4,6 +4,7 @@ import { Helmets, Chests, Legs, Shields } from './equipment';
 import Settings from '../../models/settings';
 import Ascean from '../../models/ascean';
 import { Asceans } from './ascean';
+import Equipment from '../../models/equipment';
 
 
 export const getSettings = (id: string): Object => {
@@ -33,17 +34,17 @@ export function indexEquipment(): Object[] {
 };
 
 export function populateEnemy(enemy: Ascean): Ascean {
-    const weaponOne = Weapons.find(weapon => weapon.name === enemy.weaponOne.name && weapon.rarity === enemy.weaponOne.rarity);
-    const weaponTwo = Weapons.find(weapon => weapon.name === enemy.weaponTwo.name && weapon.rarity === enemy.weaponTwo.rarity);
-    const weaponThree = Weapons.find(weapon => weapon.name === enemy.weaponThree.name && weapon.rarity === enemy.weaponThree.rarity);
-    const shield = Shields.find(shield => shield.name === enemy.shield.name && shield.rarity === enemy.shield.rarity);
-    const helmet = Helmets.find(helmet => helmet.name === enemy.helmet.name && helmet.rarity === enemy.helmet.rarity);
-    const chest = Chests.find(chest => chest.name === enemy.chest.name && chest.rarity === enemy.chest.rarity);
-    const legs = Legs.find(leg => leg.name === enemy.legs.name && leg.rarity === enemy.legs.rarity);
-    const ringOne = Rings.find(ring => ring.name === enemy.ringOne.name && ring.rarity === enemy.ringOne.rarity);
-    const ringTwo = Rings.find(ring => ring.name === enemy.ringTwo.name && ring.rarity === enemy.ringTwo.rarity);
-    const amulet = Amulets.find(amulet => amulet.name === enemy.amulet.name && amulet.rarity === enemy.amulet.rarity);
-    const trinket = Trinkets.find(trinket => trinket.name === enemy.trinket.name && trinket.rarity === enemy.trinket.rarity);
+    const weaponOne: Equipment = Weapons.find(weapon => weapon.name === enemy.weaponOne.name && weapon.rarity === enemy.weaponOne.rarity) as Equipment;
+    const weaponTwo: Equipment = Weapons.find(weapon => weapon.name === enemy.weaponTwo.name && weapon.rarity === enemy.weaponTwo.rarity) as Equipment;
+    const weaponThree: Equipment = Weapons.find(weapon => weapon.name === enemy.weaponThree.name && weapon.rarity === enemy.weaponThree.rarity) as Equipment;
+    const shield: Equipment = Shields.find(shield => shield.name === enemy.shield.name && shield.rarity === enemy.shield.rarity) as Equipment;
+    const helmet: Equipment = Helmets.find(helmet => helmet.name === enemy.helmet.name && helmet.rarity === enemy.helmet.rarity) as Equipment;
+    const chest: Equipment = Chests.find(chest => chest.name === enemy.chest.name && chest.rarity === enemy.chest.rarity) as Equipment;
+    const legs: Equipment = Legs.find(leg => leg.name === enemy.legs.name && leg.rarity === enemy.legs.rarity) as Equipment;
+    const ringOne: Equipment = Rings.find(ring => ring.name === enemy.ringOne.name && ring.rarity === enemy.ringOne.rarity) as Equipment;
+    const ringTwo: Equipment = Rings.find(ring => ring.name === enemy.ringTwo.name && ring.rarity === enemy.ringTwo.rarity) as Equipment;
+    const amulet: Equipment = Amulets.find(amulet => amulet.name === enemy.amulet.name && amulet.rarity === enemy.amulet.rarity) as Equipment;
+    const trinket: Equipment = Trinkets.find(trinket => trinket.name === enemy.trinket.name && trinket.rarity === enemy.trinket.rarity) as Equipment;
 
     return {
         ...enemy,

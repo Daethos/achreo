@@ -31,10 +31,10 @@ body {
 #deity-pic {
     /* width: 25%;
     height: 25%; */
-    /* max-height: 25%;
-    max-width: 25%; */
+    max-height: 37.5%;
+    max-width: 37.5%;
     border-radius: 50%;
-    border: 0.2em solid #fdf6d8;
+    border: 0.15em solid #fdf6d8;
     margin: 0 auto;
     cursor: pointer;
 }
@@ -151,11 +151,10 @@ body {
 
 .combatEffects {
     display: grid;
+    position: fixed;
     grid-template-columns: repeat(5, 1fr);
     width: 100%;
-    transform: scale(0.9);
-    top: 5vh;
-    left: 2%;
+    transform: scale(1);
     z-index: 1;
 }
 

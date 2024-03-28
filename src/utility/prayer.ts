@@ -92,6 +92,7 @@ export default class StatusEffect {
         this.endTime = this.startTime + (this.duration * EFFECT.DURATION_MODIFIER);
         this.id = this.setID();
     };
+    [key: string]: any;
 
     setID = () => {
         let id = this.name + '_' + this.startTime + '_' + this.endTime;

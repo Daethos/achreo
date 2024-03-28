@@ -417,11 +417,11 @@ function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, 
                     physicalDamage *= 0.9; // -10% Physical Ranged Damage
                 };
             } else {
-                if (weapon.damageType.includes('Fire') || weapon.damageType.includes('Frost') || weapon.damageType.includes('Earth') || weapon.damageType.includes('Wind') || weapon.damageType.includes('Lightning') || weapon.damageType.includes('Wild')) {
+                if (weapon?.damageType?.includes('Fire') || weapon?.damageType?.includes('Frost') || weapon?.damageType?.includes('Earth') || weapon?.damageType?.includes('Wind') || weapon?.damageType?.includes('Lightning') || weapon?.damageType?.includes('Wild')) {
                     magicalDamage *= 1.1; // +10% Magical Damage
                 };
             };
-            if (weapon.influences[0] !== 'Daethos') {
+            if (weapon?.influences?.[0] !== 'Daethos') {
                 magicalDamage *= 1.1; // +10% Magical Damage
             };
             break;
@@ -435,13 +435,13 @@ function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, 
             break;
         case 'Kingdom':
             physicalDamage *= 1.1;
-            if (weapon.influences[0] !== 'Daethos') {
+            if (weapon?.influences?.[0] !== 'Daethos') {
                 magicalDamage *= 1.1;
                 physicalDamage *= 1.1;
             };
             break;
         case 'Licivitas':
-            if (weapon.influences[0] === 'Daethos') {
+            if (weapon?.influences?.[0] === 'Daethos') {
                 magicalDamage *= 1.15;
                 physicalDamage *= 1.15;
             };
@@ -452,7 +452,7 @@ function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, 
             break;
         case 'Sedyrus':
             magicalDamage *= 1.1;
-            if (weapon.influences[0] !== 'Daethos') {
+            if (weapon?.influences?.[0] !== 'Daethos') {
                 magicalDamage *= 1.1;
                 physicalDamage *= 1.1;
             };
@@ -467,7 +467,7 @@ function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, 
             break;
         case 'Soverains':
             magicalDamage *= 1.1;
-            if (weapon.influences[0] !== 'Daethos') {
+            if (weapon.influences?.[0] !== 'Daethos') {
                 magicalDamage *= 1.1;
                 physicalDamage *= 1.1;
             };
@@ -480,14 +480,14 @@ function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, 
 
 function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Combat {
     if (player) {
-        combat.newComputerHealth -= effect.effect.damage * 0.33;
+        combat.newComputerHealth -= effect.effect.damage as number * 0.33;
         if (combat.newComputerHealth < 0) {
             combat.newComputerHealth = 0;
             combat.computerWin = false;
             combat.playerWin = true;
         };
     } else {
-        combat.newPlayerHealth -= effect.effect.damage * 0.33;
+        combat.newPlayerHealth -= effect.effect.damage as number * 0.33;
         if (combat.newPlayerHealth < 0) {
             if (combat.playerEffects.find(effect => effect.prayer === 'Denial')) {
                 combat.newPlayerHealth = 1;
@@ -504,10 +504,10 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
 
 function healTick(combat: Combat, effect:StatusEffect, player: boolean): Combat {
     if (player) {
-        combat.newPlayerHealth += effect.effect.healing * 0.33;
+        combat.newPlayerHealth += effect.effect.healing as number * 0.33;
         if (combat.newPlayerHealth > 0) combat.computerWin = false;
     } else {
-        combat.newComputerHealth += effect.effect.healing * 0.33;
+        combat.newComputerHealth += effect.effect.healing as number * 0.33;
         if (combat.newComputerHealth > 0) combat.playerWin = false;
     };
     return combat;
@@ -522,12 +522,12 @@ function statusEffectCheck(combat: Combat): Combat {
         
         if ((effect.endTime <= combat.combatTimer || combat.playerWin === true || combat.computerWin === true)) { // The Effect Expires, Now checking for Nmae too || && effect.enemyName === combat.computer.name
             if (effect.prayer === 'Buff') { // Reverses the Buff Effect to the magnitude of the stack to the proper weapon
-                const deBuff = stripEffect(effect, combat.playerDefense, combat.weapons[matchingWeaponIndex], false);
+                const deBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingWeaponIndex], false);
                 combat.weapons[matchingWeaponIndex] = deBuff.weapon;
                 combat.playerDefense = deBuff.defense;
             };
             if (effect.prayer === 'Debuff') { // Revereses the Debuff Effect to the proper weapon
-                const reBuff = stripEffect(effect, combat.playerDefense, combat.weapons[matchingDebuffTargetIndex], true);
+                const reBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingDebuffTargetIndex], true);
                 combat.weapons[matchingDebuffTargetIndex] = reBuff.weapon;
                 combat.playerDefense = reBuff.defense;
             };
@@ -544,12 +544,12 @@ function statusEffectCheck(combat: Combat): Combat {
 
         if (effect.endTime <= combat.combatTimer || combat.playerWin === true || combat.computerWin === true) { // The Effect Expires
             if (effect.prayer === 'Buff') { // Reverses the Buff Effect to the magnitude of the stack to the proper weapon
-                const deBuff = stripEffect(effect, combat.computerDefense, combat.computerWeapons[matchingWeaponIndex], false);
+                const deBuff = stripEffect(effect, combat.computerDefense as Defense, combat.computerWeapons[matchingWeaponIndex], false);
                 combat.computerWeapons[matchingWeaponIndex] = deBuff.weapon;
                 combat.computerDefense = deBuff.defense;
             };
             if (effect.prayer === 'Debuff') { // Revereses the Debuff Effect to the proper weapon
-                const reBuff = stripEffect(effect, combat.computerDefense, combat.computerWeapons[matchingDebuffTargetIndex], true);
+                const reBuff = stripEffect(effect, combat.computerDefense as Defense, combat.computerWeapons[matchingDebuffTargetIndex], true);
                 combat.computerWeapons[matchingDebuffTargetIndex] = reBuff.weapon;
                 combat.computerDefense = reBuff.defense;
             };
@@ -607,28 +607,28 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
     const desc = index === 0 ? '' : 'Two'
     if (name === 'player') {
         const blessing = combat.playerBlessing;
-        console.log(`${combat.player.name} ${blessing} Success`);
+        console.log(`${combat.player?.name} ${blessing} Success`);
         combat.prayerData.push(blessing);
-        combat.deityData.push(weapon.influences[0]);
+        combat.deityData.push(weapon.influences?.[0] as string);
         combat.religiousSuccess = true;
         const negativeEffect = blessing === 'Damage' || blessing === 'Debuff';
         let exists: StatusEffect | undefined;
 
         if (negativeEffect) {
-            exists = combat.computerEffects.find(effect => effect.name === `Gift of ${weapon.influences[0]}` && effect.prayer === blessing);
+            exists = combat.computerEffects.find(effect => effect.name === `Gift of ${weapon.influences?.[0]}` && effect.prayer === blessing);
         } else {
-            exists = combat.playerEffects.find(effect => effect.name === `Gift of ${weapon.influences[0]}` && effect.prayer === blessing);   
+            exists = combat.playerEffects.find(effect => effect.name === `Gift of ${weapon.influences?.[0]}` && effect.prayer === blessing);   
         };
 
         if (!exists) {
-            exists = new StatusEffect(combat, combat.player, combat.computer, weapon, combat.playerAttributes, blessing);
+            exists = new StatusEffect(combat, combat.player as Ascean, combat.computer, weapon, combat.playerAttributes, blessing);
             if (negativeEffect) {
                 combat.computerEffects.push(exists);
             } else {
                 combat.playerEffects.push(exists);
             };
             if (exists.prayer === 'Buff') {
-                const buff = applyEffect(exists, combat.playerDefense, weapon, true);
+                const buff = applyEffect(exists, combat.playerDefense as Defense, weapon, true);
                 combat.playerDefense = buff.defense;
                 weapon = buff.weapon;
             };
@@ -638,7 +638,7 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
                 combat.playerEffects.pop();
             };
             if (exists.prayer === 'Debuff') {
-                const debuff = applyEffect(exists, combat.computerDefense, combat.computerWeapons[0], false);
+                const debuff = applyEffect(exists, combat.computerDefense as Defense, combat.computerWeapons[0], false);
                 combat.computerDefense = debuff.defense;
                 weapon = debuff.weapon;
             };
@@ -648,10 +648,10 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
         } else {
             if (exists.stacks) {
                 console.log(`${name} stacked ${exists.prayer}`);
-                exists = StatusEffect.updateEffectStack(exists, combat, combat.player, weapon);
+                exists = StatusEffect.updateEffectStack(exists, combat, combat.player as Ascean, weapon);
                 combat[`playerInfluenceDescription${desc}`] = `${exists.description} Stacked ${exists.activeStacks} times.`; 
                 if (exists.prayer === 'Buff') {
-                    const buff = applyEffect(exists, combat.computerDefense, weapon, true);
+                    const buff = applyEffect(exists, combat.computerDefense as Defense, weapon, true);
                     combat.playerDefense = buff.defense;
                     weapon = buff.weapon;
                 };
@@ -660,7 +660,7 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
             }; 
             if (exists.refreshes) {
                 console.log(`${name} refreshed ${exists.prayer}`);
-                exists.duration = Math.floor(combat.player.level / 3 + 1) > 6 ? 6 : Math.floor(combat.player.level / 3 + 1);
+                exists.duration = Math.floor(combat?.player?.level as number / 3 + 1) > 6 ? 6 : Math.floor(combat?.player?.level as number / 3 + 1);
                 exists.tick.end += exists.duration;
                 exists.endTime += 6;
                 exists.activeRefreshes += 1;
@@ -678,26 +678,26 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
         let exists: StatusEffect | undefined;
 
         if (negativeEffect) {
-            exists = combat.playerEffects.find(effect => effect.name === `Gift of ${weapon.influences[0]}` && effect.prayer === blessing);
+            exists = combat.playerEffects.find(effect => effect.name === `Gift of ${weapon?.influences?.[0]}` && effect.prayer === blessing);
         } else {
-            exists = combat.computerEffects.find(effect => effect.name === `Gift of ${weapon.influences[0]}` && effect.prayer === blessing);   
+            exists = combat.computerEffects.find(effect => effect.name === `Gift of ${weapon?.influences?.[0]}` && effect.prayer === blessing);   
         };
 
         if (!exists) {
-            exists = new StatusEffect(combat, combat.computer, combat.player, weapon, combat.computerAttributes, blessing);
+            exists = new StatusEffect(combat, combat.computer as Ascean, combat.player as Ascean, weapon, combat.computerAttributes, blessing);
             if (negativeEffect) {
                 combat.playerEffects.push(exists);
             } else {
                 combat.computerEffects.push(exists);
             };
             if (exists.prayer === 'Buff') {
-                const buff = applyEffect(exists, combat.computerDefense, weapon, true);
+                const buff = applyEffect(exists, combat.computerDefense as Defense, weapon, true);
                 combat.computerDefense = buff.defense;
                 weapon = buff.weapon;
             };
             if (exists.prayer === 'Damage') damageTick(combat, exists, false);
             if (exists.prayer === 'Debuff') {
-                const debuff = applyEffect(exists, combat.playerDefense, combat.weapons[0], false);
+                const debuff = applyEffect(exists, combat.playerDefense as Defense, combat.weapons?.[0] as Equipment, false);
                 combat.computerDefense = debuff.defense;
                 weapon = debuff.weapon;
             };
@@ -706,10 +706,10 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
             combat[`computerInfluenceDescription${desc}`] = exists.description;
         } else {
             if (exists.stacks) {
-                exists = StatusEffect.updateEffectStack(exists, combat, combat.computer, weapon);
+                exists = StatusEffect.updateEffectStack(exists, combat, combat.computer as Ascean, weapon);
                 combat[`computerInfluenceDescription${desc}`] = `${exists.description} Stacked ${exists.activeStacks} times.`;
                 if (exists.prayer === 'Buff') {
-                    const buff = applyEffect(exists, combat.computerDefense, weapon, true);
+                    const buff = applyEffect(exists, combat.computerDefense as Defense, weapon, true);
                     combat.computerDefense = buff.defense;
                     weapon = buff.weapon;
                 };

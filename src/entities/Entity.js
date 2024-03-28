@@ -120,6 +120,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.canSwing = true;
         this.swingTimer = 0; 
         this.glowing = false;
+        this.glowWeapon = undefined;
         this.glowHelm = undefined;
         this.glowChest = undefined;
         this.glowLegs = undefined;
@@ -171,32 +172,27 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     setGlow = (object, glow, type = undefined) => {
-        
+
         if (!glow) {
             switch (type) {
-                case 'helm':
-                    this.glowHelm.remove();
-                    this.glowHelm = undefined;
-                    break;
-                case 'chest':
-                    this.glowChest.remove();
-                    this.glowChest = undefined;
-                    break;
-                    case 'legs':
-                        this.glowLegs.remove();
-                    this.glowLegs = undefined;
-                    break;
+                case 'shield':
+                    if (this.glowShield) {
+                        this.glowShield.remove();
+                        this.glowShield = undefined;
+                    };
+                case 'weapon':
+                    if (this.glowWeapon) {
+                        this.glowWeapon.remove();
+                        this.glowWeapon = undefined;
+                    };
                 default:
-                    this.glowTimer.remove();
-                    this.glowTimer = undefined;
+                    if (this.glowTimer) {
+                        this.glowTimer.remove();
+                        this.glowTimer = undefined;
+                    };
                     break;        
             };
             return this.glowFilter.remove(object);
-            // return this.glowFilter.add(this, {
-            //     glowColor: 0x000000,
-            //     intensity: 1,
-            //     knockout: true
-            // }); 
         };
             
         const setColor = (mastery) => {
@@ -215,7 +211,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
         const updateGlow = (time) => {
             this.glowFilter.remove(object);
-
             const outerStrength = 2 + Math.sin(time * 0.005) * 2; // Adjust the frequency and amplitude as needed
             const innerStrength = 2 + Math.cos(time * 0.005) * 2;
             const intensity = 0.25;
@@ -232,25 +227,17 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         updateGlow(this.scene.time.now);
 
         switch (type) {
-            case 'helm':
-                this.glowHelm = this.scene.time.addEvent({
-                    delay: 125, // Adjust the delay as needed
+            case 'shield':
+                this.glowShield = this.scene.time.addEvent({
+                    delay: 250, // 125 Adjust the delay as needed
                     callback: () => updateGlow(this.scene.time.now),
                     loop: true,
                     callbackScope: this
                 });
                 break;
-            case 'chest':
-                this.glowChest = this.scene.time.addEvent({
-                    delay: 125, // Adjust the delay as needed
-                    callback: () => updateGlow(this.scene.time.now),
-                    loop: true,
-                    callbackScope: this
-                });
-                break;
-            case 'legs':
-                this.glowLegs = this.scene.time.addEvent({
-                    delay: 125, // Adjust the delay as needed
+            case 'weapon':
+                this.glowWeapon = this.scene.time.addEvent({
+                    delay: 250, // 125 Adjust the delay as needed
                     callback: () => updateGlow(this.scene.time.now),
                     loop: true,
                     callbackScope: this
@@ -258,7 +245,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 break;
             default:
                 this.glowTimer = this.scene.time.addEvent({
-                    delay: 125, // Adjust the delay as needed
+                    delay: 250, // 125 Adjust the delay as needed
                     callback: () => updateGlow(this.scene.time.now),
                     loop: true,
                     callbackScope: this

@@ -39,11 +39,6 @@ export default class Enemy extends Entity {
         this.enemyID = getRandomNumStr(16);
         this.createEnemy();
         this.setTint(0x000000);
-        // this.glowFilter.add(this, {
-        //     glowColor: 0x000000,
-        //     intensity: 1,
-        //     knockout: true
-        // }); 
         this.stateMachine = new StateMachine(this, 'enemy');
         this.stateMachine
             .addState(States.IDLE, {

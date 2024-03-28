@@ -11,6 +11,8 @@ import { Combat } from '../stores/combat';
 import { Attributes } from '../utility/attributes';
 import Ascean from '../models/ascean';
 import Equipment from '../models/equipment';
+import StatusEffect from '../utility/prayer';
+import { PrayerModal } from '../utility/buttons';
 
 function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: Accessor<boolean>, setShow: Setter<boolean> }) {
     const [enemy, setEnemy] = createSignal(state().computer);
@@ -30,9 +32,17 @@ function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: A
         setShow(!show());
     };
 
+    const clearEnemy = () => {
+        EventBus.emit('disengage');
+        setShow(!show());
+    };
+
     return (
         <div class='modal'>
         <div class='border center' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%', 'max-width': dimensions().ORIENTATION === 'landscape' ? '50%' : '70%' }}>
+            <button class='highlight cornerBL' style={{ 'z-index': 1 }} onClick={clearEnemy}>
+                <p style={{ color: '#fdf6d8' }}>Clear {enemy()?.name.split(' ')[0]}</p>
+            </button>
             <button class='highlight cornerTL' style={{ 'z-index': 1 }} onClick={() => removeEnemy(state().enemyID)}>
                 <p style={{ color: '#fdf6d8' }}>Remove {enemy()?.name.split(' ')[0]}</p>
             </button>
@@ -46,7 +56,7 @@ function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: A
                 <h2>
                     {state().computer?.description}
                 </h2>
-                {/* <img src={`../assets/images/${state()?.computer?.origin}-${state()?.computer?.sex}.jpg`} alt={state().computer?.name} id='origin-pic' /> */}
+                {/* <img src={`../assets/images/${state()?.computer?.origin}-${state()?.computer?.sex}.jpg`} alt={state().computer?.name} id='deity-pic' /> */}
                 <div style={{ transform: 'scale(0.875)', 'margin-top': '5%' }}>
                     <HealthBar totalPlayerHealth={state().computerHealth} newPlayerHealth={state().newComputerHealth} />
                 </div>
@@ -76,17 +86,12 @@ export default function EnemyUI({ state, pauseState, enemies }: { state: Accesso
     const [playerEnemyPercentage, setEnemyHealthPercentage] = createSignal(0); 
     const [showModal, setShowModal] = createSignal(false);
     const [itemShow, setItemShow] = createSignal(false);
-    // const [enemyList, setEnemyList] = createSignal<any[]>(enemies());
+    const [prayerShow, setPrayerShow] = createSignal(false);
+    const [effect, setEffect] = createSignal<StatusEffect>();
 
     createEffect(() => {
         setEnemyHealthPercentage(Math.round((state().newComputerHealth/state().computerHealth) * 100));
-    });
-
-    // createEffect(() => {
-        // setEnemyList(enemies());
-        // console.log(enemies(), 'enemies');
-        // console.log(state().enemyID, 'enemyID');
-    // });
+    }); 
 
     function fetchEnemy(enemy: any) {
         console.log(enemy.id, enemy.game.name, 'fetchEnemy');
@@ -108,7 +113,7 @@ export default function EnemyUI({ state, pauseState, enemies }: { state: Accesso
             <Show when={state().computerEffects.length > 0}>
                 <div class='enemyCombatEffects'>
                     <For each={state().computerEffects}>{((effect) => ( 
-                        <PrayerEffects combat={state} effect={effect} enemy={true} pauseState={pauseState} /> 
+                        <PrayerEffects combat={state} effect={effect} enemy={true} pauseState={pauseState} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
                     ))}</For>
                 </div>
             </Show> 
@@ -119,26 +124,28 @@ export default function EnemyUI({ state, pauseState, enemies }: { state: Accesso
                 const truePrev = enemies()[prevIdxMore].id !== state().enemyID && enemy.id !== enemies()[prevIdxMore].id;
                 let cleanName = enemies()[prevIdxMore].game.name;
                 cleanName = cleanName.includes(' ') ? cleanName.split(' ')[0] + ' ' + cleanName.split(' ')[1] : cleanName;
+                let cleanEnemy = enemy.game.name;
+                cleanEnemy = cleanEnemy.includes(' ') ? cleanEnemy.split(' ')[0] + ' ' + cleanEnemy.split(' ')[1] : cleanEnemy;
                 return (
                     <Show when={truePrev} fallback={
-                        <div style={{ transform: 'scale(0.625)', 'background-color': '#000', position: 'absolute', height: 'auto', width: '12.5vw', top: '12vh', right: '-2vw' }}>
+                        <div style={{ transform: 'scale(0.75)', 'background-color': '#000', position: 'absolute', height: 'auto', width: '10vw', top: '13.5vh', right: '0vw' }}>
                             <button class='center' style={{ width: 'auto', height: '100%', display: 'inline-block', 'background-color': '#000' }} onClick={() => fetchEnemy(enemy)}>
                                 {/* <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`Next >>`}</div> */}
-                                <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={enemy.game.name} id='origin-pic' />
-                                <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{enemy.game.name}</div>
+                                <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={cleanEnemy} id='deity-pic' />
+                                <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{cleanEnemy}</div>
                             </button>
                         </div>
                     }>
-                        <div style={{ transform: 'scale(0.625)', position: 'absolute', width: '25vw', top: '12vh', right: '-4.5vw' }}>
+                        <div style={{ transform: 'scale(0.75)', position: 'absolute', width: '20vw', top: '13.5vh', right: '-2vw' }}>
                             <button class='center' style={{ height: '100%', width: '50%', display: 'inline-block', 'background-color': '#000' }} onClick={() => fetchEnemy(enemies()[prevIdxMore])}>
                                 {/* <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`<< Prev`}</div> */}
-                                <img src={`../assets/images/${enemies()[prevIdxMore].game.origin}-${enemies()[prevIdxMore].game.sex}.jpg`} alt={enemies()[prevIdxMore].game.name} id='origin-pic' />
+                                <img src={`../assets/images/${enemies()[prevIdxMore].game.origin}-${enemies()[prevIdxMore].game.sex}.jpg`} alt={enemies()[prevIdxMore].game.name} id='deity-pic' />
                                 <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{cleanName}</div>
                             </button>
                             <button class='center' style={{ width: '50%', height: '100%', display: 'inline-block', 'background-color': '#000' }} onClick={() => fetchEnemy(enemy)}>
                                 {/* <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`Next >>`}</div> */}
-                                <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={enemy.game.name} id='origin-pic' />
-                                <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{enemy.game.name}</div>
+                                <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={cleanEnemy} id='deity-pic' />
+                                <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{cleanEnemy}</div>
                             </button>
                         </div>
                     </Show> 
@@ -150,6 +157,9 @@ export default function EnemyUI({ state, pauseState, enemies }: { state: Accesso
                 <div class='modal' onClick={() => setItemShow(!itemShow)}>
                     <ItemModal item={state().computerWeapons[0]} stalwart={false} caerenic={false} /> 
                 </div>
+            </Show>
+            <Show when={prayerShow()}>
+                <PrayerModal prayer={effect as Accessor<StatusEffect>} show={prayerShow} setShow={setPrayerShow} />
             </Show>
         </div>
     );

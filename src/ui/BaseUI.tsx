@@ -15,7 +15,8 @@ import { fetchNpc } from '../utility/npc';
 import { GameState } from '../stores/game';
 import { usePhaserEvent } from '../utility/hooks';
 import createStamina from './Stamina';
-import { getOneRandom } from '../models/equipment';
+import Equipment, { getOneRandom } from '../models/equipment';
+import EnemyPreview from './EnemyPreview';
 // import createTimer from './Timer';
 // import StoryTutorial from '../../../seyr/src/game/ui/StoryTutorial';
 // import { StoryDialog } from '../../../seyr/src/game/ui/StoryDialog';
@@ -53,53 +54,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
 
     createEffect(() => {
         updateCombatListener(combat());
-    }); 
-
-    // function compile() {
-        // inventoryPopulate();
-        // statPopulate();
-    // }; 
-
-    // async function statPopulate() {
-    //     try {
-    //         // const res = await getAscean(ascean()._id);
-    //         // const pop = await populate(res);
-    //         // const hyd = asceanCompiler(combat().player);
-    //         // setAscean(hyd?.ascean);
-    //         // setCombat({
-    //         //     ...combat,
-    //         //     player: hyd?.ascean,
-    //         //     playerHealth: hyd?.ascean().health.max,
-    //         //     newPlayerHealth: hyd?.ascean().health.current,
-    //         //     weapons: [hyd?.combatWeaponOne, hyd?.combatWeaponTwo, hyd?.combatWeaponThree],
-    //         //     weaponOne: hyd?.combatWeaponOne,
-    //         //     weaponTwo: hyd?.combatWeaponTwo,
-    //         //     weaponThree: hyd?.combatWeaponThree,
-    //         //     playerAttributes: hyd?.attributes,
-    //         //     playerDefense: hyd?.defense,
-    //         //     playerDamageType: hyd?.combatWeaponOne?.damageType?.[0] as string,
-    //         // });
-    //     } catch (err: any) {
-    //         console.log(err, 'Error Populating Ascean');
-    //     };
-    // };
-
-    // const inventoryPopulate = () => {
-    //     console.log('<--- Populating Inventory --->');
-    //     // const update = async () => {
-    //     //     try {
-    //     //         const inventory = await getInventory(ascean()._id);
-    //     //         setGameState({
-    //     //             ...gameState,
-    //     //             ascean: ascean, 
-    //     //             inventory: inventory 
-    //     //         });
-    //     //     } catch (err) {
-    //     //         console.log(er, 'Error Updating Inventory');
-    //     //     };
-    //     // };
-    //     // update();
-    // };
+    });  
 
     // function destroyGame() {
     //     console.log('<--- Destroying Phaser Game --->');
@@ -131,29 +86,13 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         // dispatch(setCurrentNodeIndex(0));
     // };  
 
-    // const deleteEquipment = async (eqp) => await eqpAPI.deleteEquipment(eqp);
-    
-    // const interactingLoot = (e: { interacting: boolean; loot: string }) => {
-    //     if (e.interacting) {
-    //         setGame({
-    //             ...game,
-    //             showLootIds: [...game().showLootIds, e.loot],
-    //             showLoot: true
-    //         });
-    //     } else {
-    //         const updatedShowLootIds = game().showLootIds.filter((id) => id !== e.loot);
-    //         setGame({ 
-    //             ...game, 
-    //             showLootIds: updatedShowLootIds.length > 0 ? updatedShowLootIds : [],
-    //             showLoot: updatedShowLootIds.length > 0
-    //         });
-    //     };
-    // };
+    // const deleteEquipment = async (eqp) => await eqpAPI.deleteEquipment(eqp); 
     // const showDialog = async (e) => dispatch(setDialogTag(e));
+    // const updateCombatTimer = (e: number) => setCombat({...(combat), combatTimer: e}); 
+
     const sendEnemyData = async () => EventBus.emit('get-enemy', combat().computer);
     const sendSettings = async () => EventBus.emit('get-settings', settings);
     const updateCombatListener = (data: Combat) => EventBus.emit('combat', data); // Was Async
-    // const updateCombatTimer = (e: number) => setCombat({...(combat), combatTimer: e}); 
     const updateStamina = (e: number) => setStaminaPercentage(staminaPercentage() - e <= 0 ? 0 : staminaPercentage() - e);
 
     // async function requestInventory() {
@@ -348,19 +287,16 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     usePhaserEvent('request-enemy', sendEnemyData);
     usePhaserEvent('request-settings', sendSettings); // requestSettings
     
-    // usePhaserEvent('clear-enemy', clearEnemy);
     // usePhaserEvent('clear-npc', clearNPC);
-    // usePhaserEvent('clear-loot', clearLoot)
-    // usePhaserEvent('interacting-loot', interactingLoot);
     // usePhaserEvent('refresh-inventory', refreshInventory);
     // usePhaserEvent('request-inventory', requestInventory);
     // usePhaserEvent('request-lootdrop', lootDrop);
     
-    // usePhaserEvent('update-ascean-request', statPopulate);
     // usePhaserEvent('update-full-request', compile);
     // usePhaserEvent('update-inventory-request', inventoryPopulate);    
     // usePhaserEvent('update-combat-timer', updateCombatTimer);
-    // usePhaserEvent('update-lootdrops', (e: Equipment[]) => updateLootDrops(e));
+    // usePhaserEvent('show-dialog', showDialog);
+    // usePhaserEvent('update-sound', soundEffects);
 
     usePhaserEvent('remove-enemy', filterEnemies);
     usePhaserEvent('update-action', (e: any) => setSettings({ ...settings(), actions: e }));
@@ -368,24 +304,24 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     usePhaserEvent('update-stamina', updateStamina);
     usePhaserEvent('update-special', (e: any) => setSettings({ ...settings(), specials: e }));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
-    
-    // usePhaserEvent('drink-firewater', () => setCombat({ ...combat, newPlayerHealth: combat().playerHealth }));
-    // usePhaserEvent('initiate-input', (e: { key: string; value: string; }) => setCombat({ ...combat, [e.key]: e.value }));
-    // usePhaserEvent('update-combat-state', (e: { key: string; value: string }) => setCombat({ ...combat, [e.key]: e.value }));
-    // usePhaserEvent('useHighlight', (e: string) => setGame({ ...game, selectedHighlight: e }));
-    // usePhaserEvent('useScroll', (e: boolean) => setGame({ ...game, scrollEnabled: e }));
-    
-    // usePhaserEvent('show-dialog', showDialog);
-    // usePhaserEvent('update-sound', soundEffects);
 
     function lootDrop() {
-        const loot = getOneRandom(ascean().level);
+        let loot = getOneRandom(ascean().level) ?? [];
+        let lootTwo = getOneRandom(ascean().level) ?? [];
+        let lootThree = getOneRandom(ascean().level) ?? [];
+        loot.push(lootTwo[0] as Equipment);
+        loot.push(lootThree[0] as Equipment);
         console.log(loot, 'Loot Drop');
-        EventBus.emit('update-lootdrops', loot);
-        // setGame({ ...game, lootDrops: [...game().lootDrops, loot] });
+        EventBus.emit('add-lootdrop', loot);
     };
 
     lootDrop();
+
+    function fetchEnemy(enemy: any) {
+        console.log(enemy.id, enemy.game.name, 'fetchEnemy');
+        EventBus.emit('setup-enemy', enemy);
+        EventBus.emit('tab-target', enemy);    
+    };
 
     return (
         <>
@@ -395,7 +331,9 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         <Show when={game().showPlayer} fallback={
             <div style={{ position: "absolute", 'z-index': 1 }}>
                 <CombatUI state={combat} staminaPercentage={staminaPercentage} pauseState={game().pauseState} stamina={stamina} />
-                <Show when={combat().computer}>
+                <Show when={combat().computer} fallback={
+                    <EnemyPreview enemies={enemies} fetchEnemy={fetchEnemy} />
+                }>
                     <EnemyUI state={combat} pauseState={game().pauseState} enemies={enemies} />
                 </Show> 
             </div>
@@ -407,7 +345,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         </Show>
         <SmallHud combat={combat} game={game} /> 
         <Show when={game().lootDrops.length > 0 && game().showLoot}>
-            <LootDropUI ascean={ascean} gameState={game} />
+            <LootDropUI game={game} />
         </Show>
         {/* { game().showDialog && game().dialogTag && (   
             <StoryDialog state={combat} deleteEquipment={deleteEquipment} />

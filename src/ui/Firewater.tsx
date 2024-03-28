@@ -1,6 +1,7 @@
 import Ascean from "../models/ascean";
 import { Accessor, Setter, Show, createSignal } from 'solid-js';
 import { useResizeListener } from "../utility/dimensions";
+import { EventBus } from "../game/EventBus";
 
 interface FirewaterProps {
     ascean: Accessor<Ascean>;
@@ -16,9 +17,9 @@ function FirewaterModal({ ascean, showFirewater, setShowFirewater, drinkFirewate
     const dimensions = useResizeListener();
     return(
         <>
-        <div class='modal' onClick={() => setShowFirewater(!showFirewater())}>
-            <button class='border' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '85%' : '50%', 'max-width': dimensions().ORIENTATION === 'landscape' ? '35%' : '70%' }}>
-            <div style={{ height: '100%' }}>
+        <div class='modal'>
+            <button class='border superCenter' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '85%' : '50%', 'max-width': dimensions().ORIENTATION === 'landscape' ? '35%' : '70%' }}>
+            <div class='creature-heading' style={{ height: '100%' }}>
                 <h1>
                     Firewater ( {ascean().firewater.current} / {ascean().firewater.max} )
                 </h1>
@@ -27,17 +28,17 @@ function FirewaterModal({ ascean, showFirewater, setShowFirewater, drinkFirewate
                     more resilient and able to withstand combat and other challenges. This bottle has {ascean().firewater.current} charges left.
                 </h2>
                 {ascean().firewater.current === 0 ? ( <div>
-                    <button class='center' onClick={() => setShowBleed(!showBleed())}>
+                    <button class='center highlight' onClick={() => setShowBleed(!showBleed())}>
                         <p style={{ color: 'red' }}>Inspect</p>
                     </button>
-                    <button class='center' onClick={() => setShowFirewater(!showFirewater())}>
+                    <button class='center highlight' onClick={() => setShowFirewater(!showFirewater())}>
                         <p style={{ color: 'blue' }}>Close flask</p>
                     </button>
                 </div> ) : ( <div>
-                    <button class='center' onClick={drinkFirewater}>
+                    <button class='center highlight' onClick={drinkFirewater}>
                         <p class='gold'>Take A Drink?</p>
                     </button>
-                    <button class='center' onClick={() => setShowFirewater(!showFirewater())}>
+                    <button class='center highlight' onClick={() => setShowFirewater(!showFirewater())}>
                         <p style={{ color: 'blue' }}>Close Flask</p>
                     </button>
                 </div> )}
@@ -84,6 +85,7 @@ export default function Firewater({ ascean }: Props) {
         try {
             console.log('Drinking Firewater');
             // drinkFirewater(ascean()._id);
+            EventBus.emit('drink-firewater');
             setShowFirewater(false);
         } catch (err: any) {
             console.error(err.message);

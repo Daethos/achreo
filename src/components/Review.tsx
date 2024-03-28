@@ -47,8 +47,8 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
             }>
                 <div class='' style={{ position: 'absolute', width: '70%', left: '15%' }}>
                 <div class='left' style={{ width: '48%' }}>
-                    <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id='deity-pic' style={{ 
-                        width: dimensions().ORIENTATION === 'landscape' ? '75%' : '25%', height: dimensions().ORIENTATION === 'landscape' ? '50%' : '25%', border: '0.15em solid gold',   
+                    <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id='' style={{ 
+                        width: '75%', height: '50%', border: '0.15em solid gold', 'border-radius': '50%',
                     }} />
                 </div>
                 <div class='right' style={{ width: '48%' }}>

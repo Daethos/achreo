@@ -1,10 +1,17 @@
-import { Accessor, createEffect, createSignal } from 'solid-js'
+import { Accessor, Setter, createEffect, createSignal } from 'solid-js'
 import ItemModal from '../components/ItemModal';
 import { border, borderColor, itemStyle, masteryColor } from '../utility/styling';
 import PrayerEffects from './PrayerEffects';
 import { EventBus } from '../game/EventBus';
 import { For, Show } from 'solid-js';
 import { Combat } from '../stores/combat';
+import { populateEnemy, randomEnemy } from '../assets/db/db';
+import { asceanCompiler } from '../utility/ascean';
+import StatusEffect from '../utility/prayer';
+import Ascean from '../models/ascean';
+import Equipment from '../models/equipment';
+import { CombatAttributes } from '../utility/combat';
+import { PrayerModal } from '../utility/buttons';
 
 interface Props {
     state: Accessor<Combat>;
@@ -14,8 +21,10 @@ interface Props {
 };
 
 export default function CombatUI({ state, staminaPercentage, pauseState, stamina }: Props) {
+    const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal(false);
-    const [shieldShow, setShieldShow] = createSignal(false)
+    const [shieldShow, setShieldShow] = createSignal(false);
+    const [prayerShow, setPrayerShow] = createSignal(false);
     const [playerHealthPercentage, setPlayerHealthPercentage] = createSignal(0); 
 
     createEffect(() => {
@@ -42,6 +51,16 @@ export default function CombatUI({ state, staminaPercentage, pauseState, stamina
             'border': border(borderColor(state()?.playerBlessing), 0.15),
         };
     };
+
+    function createPrayer() {
+        console.log('Creating prayer...');
+        let enemy = randomEnemy();
+        enemy = populateEnemy(enemy);
+        const res = asceanCompiler(enemy);
+        const exists = new StatusEffect(state(), res?.ascean as Ascean, state().player as Ascean, state().weapons?.[0] as Equipment, res?.attributes as CombatAttributes, state().playerBlessing);
+        console.log(exists, 'exists');
+        EventBus.emit('create-prayer', exists);
+    };
     // 5a0043
     return (
         <div class='playerCombatUi'> 
@@ -52,7 +71,11 @@ export default function CombatUI({ state, staminaPercentage, pauseState, stamina
                 <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, 'z-index': -1, width: `${playerHealthPercentage()}%`, 'background-color': state()?.isStealth ? '#444' : '#FFC700' }}></div>
             </div>
             <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar"/>
-                
+            <button class='highlight superCenter' onClick={() => createPrayer()} style={{ top: '92.5vh', left: '50vw' }}>
+                <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>
+                    Create Prayer
+                </div>
+            </button>
             <div class='staminaBubble'>
                 {/* <img src={'../assets/gui/player-portrait.png'} alt="Player Portrait" id='staminaPortrait' /> */}
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, 'z-index': -1, 'background-color': '#008000', height: `${staminaPercentage()}%` }}></div>
@@ -77,18 +100,21 @@ export default function CombatUI({ state, staminaPercentage, pauseState, stamina
                 </div>
             </Show>  
             <Show when={state().playerEffects.length > 0}>
-                <div class='combatEffects'>
+                <div class='combatEffects' style={{ left: '-3.5vw', top: '15vh', 'height': '14vh', width: 'auto', transform: 'scale(0.75)' }}>
                     <For each={state().playerEffects}>{(effect) => ( 
-                        <PrayerEffects combat={state} effect={effect} enemy={false} pauseState={pauseState} /> 
+                        <PrayerEffects combat={state} effect={effect} enemy={false} pauseState={pauseState} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
                     )}</For>
                 </div>
             </Show> 
             <Show when={state().isStealth && state().computer}> 
-                <button class='disengage'onClick={() => disengage()}>
-                    <p style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>
+                <button class='disengage highlight' style={{ top: '12.5vh', left: '0vw' }} onClick={() => disengage()}>
+                    <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>
                         Disengage
-                    </p>
+                    </div>
                 </button> 
+            </Show>
+            <Show when={prayerShow()}>
+                <PrayerModal prayer={effect as Accessor<StatusEffect>} show={prayerShow} setShow={setPrayerShow} />
             </Show>
         </div> 
     );

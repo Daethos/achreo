@@ -158,7 +158,6 @@ export const PhaserGame = (props: IProps) => {
 
     function swapEquipment(e: { type: string; item: Equipment }) {
         const { type, item } = e;
-        console.log(type, item, 'Swap Equipment');
         const oldEquipment = props.ascean()[type as keyof Ascean] as Equipment;
         const newEquipment = item;
         const newAscean = { ...props.ascean(), [type]: newEquipment };
@@ -285,7 +284,6 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('request-game', () => EventBus.emit('game', game()));
 
         EventBus.on('setup-enemy', (e: any) => {
-            console.log(e, 'Setup Enemy');
             setCombat({
                 ...combat(),
                 computer: e.game,
@@ -309,7 +307,13 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('changePrayer', (e: string) => setCombat({ ...combat(), playerBlessing: e }));
         EventBus.on('changeWeapon', (e: [Equipment, Equipment, Equipment]) => setCombat({ ...combat(), weapons: e, weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2] }));
 
-        EventBus.on('drink-firewater', () => setCombat({ ...combat(), newPlayerHealth: combat().playerHealth }));
+        EventBus.on('drink-firewater', () => {
+            const newHealth = (combat().newPlayerHealth + (combat().playerHealth * 0.4)) > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + (combat().playerHealth * 0.4);
+            const newCharges = props.ascean().firewater.current > 0 ? props.ascean().firewater.current - 1 : 0;
+            setCombat({ ...combat(), newPlayerHealth: newHealth });
+            const newAscean = { ...props.ascean(), firewater: { ...props.ascean().firewater, current: newCharges }, health: { ...props.ascean().health, current: newHealth } };
+            EventBus.emit('update-ascean', newAscean);
+        });
         EventBus.on('gain-experience', (e: { state: any; combat: Combat }) => gainExperience(e));
         EventBus.on('add-loot', (e: Equipment[]) => setGame({ ...game(), inventory: game()?.inventory?.length > 0 ? [...game().inventory, e[0]] : e }));
         EventBus.on('clear-loot', () => setGame({ ...game(), lootDrops: [], showLoot: false, showLootIds: [] }));
@@ -354,6 +358,30 @@ export const PhaserGame = (props: IProps) => {
             EventBus.emit('stealth-sound');
         });
         EventBus.on('update-health', (e: number) => setCombat({ ...combat(), e }));
+        EventBus.on('add-lootdrop', (e: Equipment[]) => {
+            const newLootDrops = game().lootDrops.length > 0 ? [...game().lootDrops, ...e] : e;
+            const newLootIds = game().showLootIds.length > 0 ? [...game().showLootIds, ...e.map((loot) => loot._id)] : e.map((loot) => loot._id);
+            setGame({
+                ...game(), 
+                lootDrops: newLootDrops, 
+                showLoot: newLootIds.length > 0,
+                showLootIds: newLootIds
+            });
+        });
+        EventBus.on('remove-lootdrop', (e: string) => {
+            let updatedLootIds = [...game().showLootIds];
+            updatedLootIds = updatedLootIds.filter(id => id !== e);
+
+            let updatedLootDrops = [...game().lootDrops];
+            updatedLootDrops = updatedLootDrops.filter((loot) => loot._id !== e);
+
+            setGame({
+                ...game(),
+                lootDrops: updatedLootDrops,
+                showLoot: updatedLootIds.length > 0,
+                showLootIds: updatedLootIds
+            })
+        })
         EventBus.on('update-lootdrops', (e: Equipment[]) => 
             setGame({ 
                 ...game(), 
@@ -363,6 +391,10 @@ export const PhaserGame = (props: IProps) => {
         }));
         EventBus.on('useHighlight', (e: string) => setGame({ ...game(), selectedHighlight: e }));
         EventBus.on('useScroll', (e: boolean) => setGame({ ...game(), scrollEnabled: e }));
+
+        EventBus.on('create-prayer', (e: any) => {
+            setCombat({ ...combat(), playerEffects: combat().playerEffects.length > 0 ? [...combat().playerEffects, e] : [e] });
+        });
 
 
         onCleanup(() => {

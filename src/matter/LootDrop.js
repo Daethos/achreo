@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import EventEmitter from "../phaser/EventEmitter";
+import { EventBus } from "../game/EventBus";
 
 export const { Bodies } = Phaser.Physics.Matter.Matter;
 
@@ -20,7 +20,7 @@ export default class LootDrop extends Phaser.GameObjects.Sprite { // Physics.Mat
     }; 
 
     cleanUp() {
-        EventEmitter.off('destroy-lootdrop', this.destroyLootDrop);
+        EventBus.off('destroy-lootdrop', this.destroyLootDrop);
     };
 
     setupCollider = () => {
@@ -33,7 +33,7 @@ export default class LootDrop extends Phaser.GameObjects.Sprite { // Physics.Mat
     };
 
 
-    setupListener = () => EventEmitter.on('destroy-lootdrop', this.destroyLootDrop);
+    setupListener = () => EventBus.on('destroy-lootdrop', this.destroyLootDrop);
     
     destroyLootDrop = (e) => {
         if (e === this._id) {

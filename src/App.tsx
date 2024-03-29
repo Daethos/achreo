@@ -57,16 +57,13 @@ export default function App() {
         const fetch = async () => {
             try {
                 const res = await getAsceans();
-                console.log(res, 'Asceans')
                 if (!res.length) {
                     console.log('No Asceans Found');
                     setMenu({ ...menu(), loading: false });
                     return;
                 };
                 const pop = await Promise.all(res.map(async (asc: Ascean) => await populate(asc)));
-                console.log(pop, 'Populated Asceans')
                 setMenu({ ...menu(), asceans: pop, loading: false, choosingCharacter: true });
-                console.log(menu(), 'Menu');
             } catch (err: any) {
                 console.warn('Error fetching Asceans:', err);
             };

@@ -227,7 +227,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         newActions[newActions.indexOf(newAction)] = oldAction;
         newActions[i] = newAction;
         
-        // EventBus.emit('update-action', newActions);
         const newSettings: Settings = { ...settings(), actions: newActions };
         await saveSettings(newSettings);
         setSettings(newSettings);
@@ -244,7 +243,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
             newSpecials[newSpecials.indexOf(newSpecial)] = oldSpecial;
         };
         newSpecials[i] = newSpecial;
-        // EventBus.emit('update-special', newSpecials);
         const newSettings: Settings = { ...settings(), specials: newSpecials };
         await saveSettings(newSettings);
         setSettings(newSettings);

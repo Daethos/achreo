@@ -11,7 +11,7 @@ interface Props {
 };
 
 export default function SmallHud({ combat, game }: Props) { 
-    const [show, setShow] = createSignal<boolean>(true);
+    const [show, setShow] = createSignal<boolean>(false);
     const dimensions = useResizeListener(); 
 
     const combatLogs = () => {

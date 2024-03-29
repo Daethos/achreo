@@ -256,10 +256,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     // usePhaserEvent('update-sound', soundEffects);
 
     usePhaserEvent('remove-enemy', filterEnemies);
-    usePhaserEvent('update-action', (e: any) => setSettings({ ...settings(), actions: e }));
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
     usePhaserEvent('update-stamina', updateStamina);
-    usePhaserEvent('update-special', (e: any) => setSettings({ ...settings(), specials: e }));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
 
     function fetchEnemy(enemy: any) {

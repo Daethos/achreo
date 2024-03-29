@@ -1,11 +1,11 @@
 import { Shields, Helmets, Legs, Chests } from "../assets/db/equipment";
 import { Weapons } from "../assets/db/weaponry";
-import Equipment, { getRandomNumStr, mutate } from "./equipment";
+import Equipment, { mutate } from "./equipment";
 import { Amulets, Rings, Trinkets } from "../assets/db/jewelry";
 import { Statistics, initStatistics } from "../utility/statistics";
 import { initCharacter } from "../utility/ascean"; 
 import { v4 as uuidv4 } from 'uuid';
-import { addAscean, populateEnemy, randomEnemy } from "../assets/db/db";
+import { addAscean } from "../assets/db/db";
 
 export default class Ascean {
     _id: string = uuidv4();

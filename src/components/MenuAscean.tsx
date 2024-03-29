@@ -13,7 +13,6 @@ export const MenuAscean = ({ menu, viewAscean }: IProps) => {
         return newDesc;
     };
     const shortName = (name: string): string => name.split(' ').slice(0, 2).join(' ');
-    console.log(menu().asceans, 'asceans')
     return (
         <div style={{
             display: 'flex',

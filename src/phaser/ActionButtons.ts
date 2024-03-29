@@ -327,7 +327,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         });
     };    
 
-    private pressButton = (button: ActionButton, scene: Play): void => {
+    private pressButton = (button: ActionButton, scene: Game): void => {
         const input = button.name.toLowerCase();
         const check = staminaCheck(input, scene.player.stamina);
         if (check.success === true) {

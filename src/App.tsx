@@ -181,6 +181,9 @@ export default function App() {
                                 <div>Create {newAscean()?.name?.split(' ')[0]}</div>
                             </button>
                         }
+                        <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
+                            <div>Back</div>
+                        </button>
                         </>
                     }>
                         <>
@@ -199,6 +202,9 @@ export default function App() {
                                 <div>Create {newAscean()?.name?.split(' ')[0]}</div>
                             </button>
                         }
+                        <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
+                            <div>Back</div>
+                        </button>
                         </>
                     </Show>
                     </div>

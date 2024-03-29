@@ -1,7 +1,6 @@
 import { Accessor, Setter, Show, createEffect, createSignal } from 'solid-js';
 import AsceanImageCard from '../components/AsceanImageCard';
 import AttributeModal, { AttributeCompiler } from '../components/Attributes';
-import { styles } from '../styles';
 // import SettingSetter from '../utility/settings';
 import InventoryPouch from './InventoryPouch';
 // import Inventory from './Inventory';
@@ -21,6 +20,7 @@ import Ascean from '../models/ascean';
 import { GameState } from '../stores/game';
 import { Combat } from '../stores/combat';
 import Highlight from './Highlight';
+import { deleteEquipment } from '../assets/db/db';
 
 // import {  playerTraits } from '../utility/ascean';
 // import LevelUpModal from './LevelUpModal';
@@ -254,10 +254,14 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         // setSpecialShow(false);
     };
 
-    function freeInventory() {
-        const item = getOneRandom(ascean().level);
-        console.log('Item: ', item?.[0]?.name);
-        EventBus.emit('add-item', item);
+    async function freeInventory() {
+        try {
+            const item = await getOneRandom(ascean().level);
+            console.log('Item: ', item?.[0]?.name);
+            EventBus.emit('add-item', item);
+        } catch (err: any) {
+            console.warn(err, 'Error in Free Inventory');
+        };
     };
 
     function handleInspect(type: string) {
@@ -273,7 +277,8 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         };
     };
 
-    function removeItem(id: string) {
+    async function removeItem(id: string) {
+        await deleteEquipment(id);
         const newInventory = game().inventory.filter((item) => item._id !== id);
         // setGameState({ ...game, inventory: newInventory });
         EventBus.emit('refresh-inventory', newInventory);

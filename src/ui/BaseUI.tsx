@@ -305,14 +305,19 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     usePhaserEvent('update-special', (e: any) => setSettings({ ...settings(), specials: e }));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
 
-    function lootDrop() {
-        let loot = getOneRandom(ascean().level) ?? [];
-        let lootTwo = getOneRandom(ascean().level) ?? [];
-        let lootThree = getOneRandom(ascean().level) ?? [];
-        loot.push(lootTwo[0] as Equipment);
-        loot.push(lootThree[0] as Equipment);
-        console.log(loot, 'Loot Drop');
-        EventBus.emit('add-lootdrop', loot);
+    async function lootDrop() {
+        const array: any = [];
+        const loot = await getOneRandom(ascean().level) ?? [];
+        console.log(loot[0].name, loot[0]._id, 'Loot Drop One')
+        array.push(loot[0] as Equipment);
+        const lootTwo = await getOneRandom(ascean().level) ?? [];
+        console.log(loot[0].name, loot[0]._id, 'Loot Drop One', lootTwo[0].name, lootTwo[0]._id, 'Loot Drop Two');
+        array.push(lootTwo[0] as Equipment);
+        const lootThree = await getOneRandom(ascean().level) ?? [];
+        console.log(loot[0].name, loot[0]._id, 'Loot Drop One', lootTwo[0].name, lootTwo[0]._id, 'Loot Drop Two', lootThree[0].name, lootThree[0]._id, 'Loot Drop Three');
+        array.push(lootThree[0] as Equipment);
+        console.log(array, 'Loot Drop');
+        EventBus.emit('add-lootdrop', array);
     };
 
     lootDrop();
@@ -345,7 +350,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         </Show>
         <SmallHud combat={combat} game={game} /> 
         <Show when={game().lootDrops.length > 0 && game().showLoot}>
-            <LootDropUI game={game} />
+            <LootDropUI ascean={ascean} game={game} />
         </Show>
         {/* { game().showDialog && game().dialogTag && (   
             <StoryDialog state={combat} deleteEquipment={deleteEquipment} />

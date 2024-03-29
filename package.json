@@ -27,15 +27,18 @@
         "@capacitor/android": "^5.7.4",
         "@capacitor/core": "^5.7.4",
         "@capacitor/ios": "^5.7.4",
+        "localforage": "^1.10.0",
         "phaser": "^3.80.1",
         "phaser-matter-collision-plugin": "^1.0.0",
         "phaser-navmesh": "^2.3.1",
         "phaser3-rex-plugins": "^1.80.1",
         "solid-bootstrap": "^1.0.19",
-        "solid-js": "^1.8.15"
+        "solid-js": "^1.8.15",
+        "uuid": "^9.0.1"
     },
     "devDependencies": {
         "@capacitor/cli": "^5.7.4",
+        "@types/uuid": "^9.0.8",
         "autoprefixer": "^10.4.18",
         "terser": "^5.28.1",
         "typescript": "^5.2.2",

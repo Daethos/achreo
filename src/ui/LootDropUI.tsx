@@ -4,12 +4,14 @@ import LootDrop from './LootDrop';
 import { GameState } from '../stores/game';
 import { For, Show } from 'solid-js';
 import ItemModal from '../components/ItemModal';
+import Ascean from '../models/ascean';
 
 interface Props {
+    ascean: Accessor<Ascean>;
     game: Accessor<GameState>;
 };
 
-export default function LootDropUI({ game }: Props) {
+export default function LootDropUI({ ascean, game }: Props) {
     const [visibleLoot, setVisibleLoot] = createSignal<any[]>([]);
     const [show, setShow] = createSignal<boolean>(false);
     const [lootDrop, setLootDrop] = createSignal<Equipment | undefined>(undefined);
@@ -32,7 +34,7 @@ export default function LootDropUI({ game }: Props) {
                         {((lootDrop: Equipment) => {
                             console.log(lootDrop, 'lootDrop');
                             return (
-                                <LootDrop lootDrop={lootDrop} show={show} setShow={setShow} setLootDrop={setLootDrop} />
+                                <LootDrop ascean={ascean} lootDrop={lootDrop} show={show} setShow={setShow} setLootDrop={setLootDrop} />
                             ) 
                         })}
                     </For>

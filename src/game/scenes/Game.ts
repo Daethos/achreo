@@ -364,13 +364,7 @@ export class Game extends Scene {
     clearNAEnemy = () => EventBus.emit('clear-enemy');
     clearNPC = () => EventBus.emit('clear-npc'); 
     combatEngaged = (bool: boolean) => {
-        if (bool) { 
-            this.combat = true; 
-            this.actionBar.setVisible(true);
-        } else { 
-            this.combat = false; 
-            this.actionBar.setVisible(false);
-        };
+        this.combat = bool;
         console.log(`Combat engaged: ${bool}`);
         // this.dispatch(getCombatFetch(bool));
     };

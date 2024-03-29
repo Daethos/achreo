@@ -68,6 +68,5 @@ export type Menu = {
     creatingCharacter: boolean,
     gameRunning: boolean,
     loading: boolean,
-    picture: undefined | string,
     screen: string
 }; 

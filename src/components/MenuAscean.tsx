@@ -1,9 +1,9 @@
-import { For } from "solid-js";
+import { Accessor, For } from "solid-js";
 import { useResizeListener } from "../utility/dimensions";
 import { Menu } from "../utility/screens";
 
 interface IProps {
-    menu: Menu;
+    menu: Accessor<Menu>;
     viewAscean: (asc: string) => void;
 };
 export const MenuAscean = ({ menu, viewAscean }: IProps) => {
@@ -13,6 +13,7 @@ export const MenuAscean = ({ menu, viewAscean }: IProps) => {
         return newDesc;
     };
     const shortName = (name: string): string => name.split(' ').slice(0, 2).join(' ');
+    console.log(menu().asceans, 'asceans')
     return (
         <div style={{
             display: 'flex',
@@ -21,11 +22,11 @@ export const MenuAscean = ({ menu, viewAscean }: IProps) => {
             'justify-content': 'center',
             'align-items': 'center',
         }}>
-        <For each={menu?.asceans}> 
+        <For each={menu()?.asceans}> 
             {((asc, _idx) => (
                 <div class={dimensions().ORIENTATION === 'landscape' ? 'border center' : 'border'} style={{ 
                     height: dimensions().ORIENTATION === 'landscape' ? 'auto' : '30vh',
-                    width: dimensions().ORIENTATION === 'landscape' ? (menu?.asceans.length === 3 ?'30%' : '45%') : '100%', 
+                    width: dimensions().ORIENTATION === 'landscape' ? (menu()?.asceans.length === 3 ?'30%' : '45%') : '100%', 
                     overflow: dimensions().ORIENTATION === 'landscape' ? '' : '',
                 }}>
                 <div class='border center creature-heading' style={{ width: '100%', height: '100%' }}>

@@ -4,20 +4,117 @@ import { Helmets, Chests, Legs, Shields } from './equipment';
 import Settings from '../../models/settings';
 import Ascean from '../../models/ascean';
 import { Asceans } from './ascean';
+import PseudoBase from './pseudo';
 import Equipment from '../../models/equipment';
+let db = new PseudoBase('db');
 
+const EQUIPMENT = 'Equipment';
+const ASCEANS = 'Asceans';
+const SETTINGS = 'Settings';
 
-export const getSettings = (id: string): Object => {
-    const settings = new Settings(id);
-    return settings;
-    // const settings = await db.collection(SETTINGS).doc({ _id: id }).get();
-    // if (settings) {
-    //     return settings;
-    // } else {
-    //     const newSettings = new Settings(id);
-        // await db.collection(SETTINGS).add(newSettings);
-        // return newSettings;
-    // };
+export const getAsceans = async () => await db.collection(ASCEANS).get();
+export const getAscean = async (id: string) => await db.collection(ASCEANS).doc({ _id: id }).get();
+export const addAscean = async (ascean: any) => await db.collection(ASCEANS).add(ascean);
+export const updateAscean = async (ascean: any) => await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
+export const deleteAscean = async (id: string) => {
+    const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+    const equipment = [ascean.weaponOne, ascean.weaponTwo, ascean.weaponThree, ascean.shield, ascean.helmet, ascean.chest, ascean.legs, ascean.ringOne, ascean.ringTwo, ascean.amulet, ascean.trinket];
+    const inventory = await getInventoryIds(id);
+    equipment.forEach(async (item: string) => {
+        await db.collection(EQUIPMENT).doc({ _id: item }).delete();
+    });
+    inventory.forEach(async (item: string) => {
+        await db.collection(EQUIPMENT).doc({ _id: item }).delete();
+    });
+    await db.collection(ASCEANS).doc({ _id: id }).delete()
+};
+
+export const scrub = async (ascean: Ascean) => {
+    const scrubbed = { ...ascean, weaponOne: ascean.weaponOne._id, weaponTwo: ascean.weaponTwo._id, weaponThree: ascean.weaponThree._id, shield: ascean.shield._id, helmet: ascean.helmet._id, chest: ascean.chest._id, legs: ascean.legs._id, ringOne: ascean.ringOne._id, ringTwo: ascean.ringTwo._id, amulet: ascean.amulet._id, trinket: ascean.trinket._id, inventory: ascean.inventory.map((item: Equipment) => item._id) };
+    await updateAscean(scrubbed);
+    return scrubbed;
+};
+
+export const getInventory = async (id: string) => {
+    const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+    const inventory = ascean.inventory;
+    if (!inventory) return [];
+    const populated = Promise.all(inventory.map(async (item: Equipment) => {
+        const equipment = await db.collection(EQUIPMENT).doc({ _id: item }).get();
+        return equipment;
+    }));
+    return populated;
+};
+
+export const getInventoryIds = async (id: string) => {
+    const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+    return ascean.inventory;
+};
+
+export const updateInventory = async (id: string, inventory: string[]) => {
+    let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+    ascean.inventory = inventory;
+    await db.collection(ASCEANS).doc({ _id: id }).update(ascean);
+};
+
+// export const getSettings = (id: string): Object => {
+//     const settings = new Settings(id);
+//     return settings;
+//     // const settings = await db.collection(SETTINGS).doc({ _id: id }).get();
+//     // if (settings) {
+//     //     return settings;
+//     // } else {
+//     //     const newSettings = new Settings(id);
+//         // await db.collection(SETTINGS).add(newSettings);
+//         // return newSettings;
+//     // };
+// };
+
+export const getSettings = async (id: string) => {
+    const settings = await db.collection(SETTINGS).doc({ _id: id }).get();
+    if (settings) {
+        return settings;
+    } else {
+        const newSettings = new Settings(id);
+        await db.collection(SETTINGS).add(newSettings);
+        return newSettings;
+    };
+};
+
+export const updateSettings = async (settings: Settings) => {
+    await db.collection(SETTINGS).doc({ _id: settings._id }).update(settings);
+};
+
+export const populate = async (ascean: any) => {
+    const weaponOne = await db.collection(EQUIPMENT).doc({ _id: ascean.weaponOne }).get();
+    const weaponTwo = await db.collection(EQUIPMENT).doc({ _id: ascean.weaponTwo }).get();
+    const weaponThree = await db.collection(EQUIPMENT).doc({ _id: ascean.weaponThree }).get();
+    const shield = await db.collection(EQUIPMENT).doc({ _id: ascean.shield }).get();
+    const helmet = await db.collection(EQUIPMENT).doc({ _id: ascean.helmet }).get();
+    const chest = await db.collection(EQUIPMENT).doc({ _id: ascean.chest }).get();
+    const legs = await db.collection(EQUIPMENT).doc({ _id: ascean.legs }).get();
+    const ringOne = await db.collection(EQUIPMENT).doc({ _id: ascean.ringOne }).get();
+    const ringTwo = await db.collection(EQUIPMENT).doc({ _id: ascean.ringTwo }).get();
+    const amulet = await db.collection(EQUIPMENT).doc({ _id: ascean.amulet }).get();
+    const trinket = await db.collection(EQUIPMENT).doc({ _id: ascean.trinket }).get();
+
+    const populated = Promise.all([weaponOne, weaponTwo, weaponThree, shield, helmet, chest, legs, ringOne, ringTwo, amulet, trinket]).then((values) => {
+        return {
+            ...ascean,
+            weaponOne: values[0],
+            weaponTwo: values[1],
+            weaponThree: values[2],
+            shield: values[3],
+            helmet: values[4],
+            chest: values[5],
+            legs: values[6],
+            ringOne: values[7],
+            ringTwo: values[8],
+            amulet: values[9],
+            trinket: values[10],
+        };
+    });
+    return populated;
 };
 
 export function indexEquipment(): Object[] {
@@ -65,4 +162,53 @@ export function populateEnemy(enemy: Ascean): Ascean {
 export function randomEnemy() {
     const random = Math.floor(Math.random() * Asceans.length);
     return Asceans[random];
+};
+
+export const addEquipment = async (equipment: Equipment) => await db.collection(EQUIPMENT).add(equipment);
+export const deleteEquipment = async (id: string) => await db.collection(EQUIPMENT).doc({ _id: id }).delete();
+export const getEquipment = async (id: string) => await db.collection(EQUIPMENT).doc({ _id: id }).get();
+export const getEquipmentByName = async (name: string) => await db.collection(EQUIPMENT).doc({ name: name }).get();
+export const getEquipmentByRarity = async (rarity: string) => await db.collection(EQUIPMENT).doc({ rarity: rarity }).get();
+
+export const equipmentSwap = async (inventoryId: string, editState: any, id: string) => {
+    try {
+        let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+        const keyToUpdate = Object.keys(editState).find(key => {
+            return editState[key as keyof typeof editState] !== '' && key === editState.inventoryType;
+        });
+
+        const currentItem = ascean[keyToUpdate];
+        ascean[keyToUpdate] = inventoryId;
+        const equipment = await getEquipment(currentItem);
+        
+        if (equipment.rarity === 'Default') {
+            await db.collection(EQUIPMENT).doc({ _id: currentItem }).delete();
+        } else { // Default rarities are deleted from the database
+            ascean.inventory.push(currentItem);
+        };
+
+        const oldItemIndex = ascean.inventory.indexOf(inventoryId);
+        ascean.inventory.splice(oldItemIndex, 1);
+        await db.collection(ASCEANS).doc({ _id: id }).update(ascean);
+        return ascean;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
+export const equipmentRemove = async (data: any) => {
+    try {
+        let ascean = await db.collection(ASCEANS).doc({ _id: data.id }).get();
+        let inventory = ascean.inventory;
+        const itemId = data.inventory._id;
+        const itemIndex = ascean.inventory.indexOf(itemId);
+        inventory.splice(itemIndex, 1);
+        ascean.inventory = inventory;
+        
+        await db.collection(ASCEANS).doc({ _id: data.id }).update(ascean);
+        await db.collection(EQUIPMENT).doc({ _id: itemId }).delete();
+        return ascean.inventory;
+    } catch (error) {
+        console.error(error);
+    };
 };

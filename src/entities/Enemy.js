@@ -5,6 +5,7 @@ import StateMachine, { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import { EventBus } from "../game/EventBus";
+import { v4 as uuidv4 } from 'uuid';
 import { getRandomNumStr } from "../models/equipment";
 
 const DISTANCE = {
@@ -36,7 +37,7 @@ export default class Enemy extends Entity {
     constructor(data) {
         super({ ...data, name: "enemy", ascean: undefined, health: 1 }); 
         this.scene.add.existing(this);
-        this.enemyID = getRandomNumStr(16);
+        this.enemyID = uuidv4();
         this.createEnemy();
         this.setTint(0x000000);
         this.stateMachine = new StateMachine(this, 'enemy');

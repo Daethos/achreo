@@ -19,7 +19,7 @@ const config: Phaser.Types.Core.GameConfig = {
     width: dimensions()?.ORIENTATION === 'landscape' ? (dimensions().WIDTH) : dimensions().HEIGHT,
     height: dimensions()?.ORIENTATION === 'landscape' ? dimensions().HEIGHT : dimensions().WIDTH,
     scale: {
-        mode: Phaser.Scale.FIT,
+        mode: Phaser.Scale.HEIGHT_CONTROLS_WIDTH, // FIT
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     parent: 'game-container',

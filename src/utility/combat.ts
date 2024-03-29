@@ -36,6 +36,7 @@ export type CombatAttributes = {
     initiative: number;
     stamina: number;
     grace: number;
+    [key: string]: any;
 };
 
 export type Defense = {
@@ -43,6 +44,7 @@ export type Defense = {
     magicalDefenseModifier: number;
     physicalPosture: number;
     magicalPosture: number;
+    [key: string]: any;
 };
 
 export type CombatStats =  {
@@ -52,6 +54,7 @@ export type CombatStats =  {
     combatWeaponTwo: Equipment;
     combatWeaponThree: Equipment;
     defense: Defense;
+    [key: string]: any;
 };
 
 
@@ -515,19 +518,19 @@ function healTick(combat: Combat, effect:StatusEffect, player: boolean): Combat 
 
 function statusEffectCheck(combat: Combat): Combat {
     combat.playerEffects = combat.playerEffects.filter(effect => {
-        const matchingWeapon = combat.weapons.find(weapon => weapon._id === effect.weapon.id);
+        const matchingWeapon = combat.weapons.find(weapon => weapon?._id === effect.weapon.id);
         const matchingWeaponIndex = combat.weapons.indexOf(matchingWeapon);
-        const matchingDebuffTarget = combat.weapons.find(weapon => weapon.name === effect.debuffTarget);
+        const matchingDebuffTarget = combat.weapons.find(weapon => weapon?.name === effect.debuffTarget);
         const matchingDebuffTargetIndex = combat.weapons.indexOf(matchingDebuffTarget);
         
         if ((effect.endTime <= combat.combatTimer || combat.playerWin === true || combat.computerWin === true)) { // The Effect Expires, Now checking for Nmae too || && effect.enemyName === combat.computer.name
             if (effect.prayer === 'Buff') { // Reverses the Buff Effect to the magnitude of the stack to the proper weapon
-                const deBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingWeaponIndex], false);
+                const deBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingWeaponIndex] as Equipment, false);
                 combat.weapons[matchingWeaponIndex] = deBuff.weapon;
                 combat.playerDefense = deBuff.defense;
             };
             if (effect.prayer === 'Debuff') { // Revereses the Debuff Effect to the proper weapon
-                const reBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingDebuffTargetIndex], true);
+                const reBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingDebuffTargetIndex] as Equipment, true);
                 combat.weapons[matchingDebuffTargetIndex] = reBuff.weapon;
                 combat.playerDefense = reBuff.defense;
             };
@@ -538,9 +541,9 @@ function statusEffectCheck(combat: Combat): Combat {
 
     combat.computerEffects = combat.computerEffects.filter(effect => {
         const matchingWeapon = combat.computerWeapons.find(weapon => weapon._id === effect.weapon.id);
-        const matchingWeaponIndex = combat.computerWeapons.indexOf(matchingWeapon);
+        const matchingWeaponIndex = combat.computerWeapons.indexOf(matchingWeapon as Equipment);
         const matchingDebuffTarget = combat.computerWeapons.find(weapon => weapon.name === effect.debuffTarget);
-        const matchingDebuffTargetIndex = combat.computerWeapons.indexOf(matchingDebuffTarget);
+        const matchingDebuffTargetIndex = combat.computerWeapons.indexOf(matchingDebuffTarget as Equipment);
 
         if (effect.endTime <= combat.combatTimer || combat.playerWin === true || combat.computerWin === true) { // The Effect Expires
             if (effect.prayer === 'Buff') { // Reverses the Buff Effect to the magnitude of the stack to the proper weapon
@@ -567,7 +570,7 @@ function statusEffectCheck(combat: Combat): Combat {
 function applyEffect(prayer: StatusEffect, defense: Defense, weapon: Equipment, isBuff: boolean): { defense: Defense, weapon: Equipment } {
     const modifier = isBuff ? 1 : -1; 
     for (let key in weapon) {
-        if (prayer.effect[key]) {
+        if (prayer.effect?.[key] as string) {
             let modifiedValue = weapon[key] + prayer.effect[key] * modifier;
             modifiedValue = roundToTwoDecimals(modifiedValue);
             weapon[key] = modifiedValue;
@@ -621,7 +624,7 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
         };
 
         if (!exists) {
-            exists = new StatusEffect(combat, combat.player as Ascean, combat.computer, weapon, combat.playerAttributes, blessing);
+            exists = new StatusEffect(combat, combat.player as Ascean, combat.computer as Ascean, weapon, combat.playerAttributes as CombatAttributes, blessing);
             if (negativeEffect) {
                 combat.computerEffects.push(exists);
             } else {
@@ -684,7 +687,7 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
         };
 
         if (!exists) {
-            exists = new StatusEffect(combat, combat.computer as Ascean, combat.player as Ascean, weapon, combat.computerAttributes, blessing);
+            exists = new StatusEffect(combat, combat.computer as Ascean, combat.player as Ascean, weapon, combat.computerAttributes as CombatAttributes, blessing);
             if (negativeEffect) {
                 combat.playerEffects.push(exists);
             } else {
@@ -715,7 +718,7 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
                 };
             };
             if (exists.refreshes) {
-                exists.duration = Math.floor(combat.computer.level / 3 + 1) > 6 ? 6 : Math.floor(combat.computer.level / 3 + 1);
+                exists.duration = Math.floor(combat?.computer?.level as number / 3 + 1) > 6 ? 6 : Math.floor(combat.computer?.level as number / 3 + 1);
                 exists.tick.end += exists.duration;
                 exists.endTime += 6;
                 exists.activeRefreshes += 1;
@@ -727,10 +730,10 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
 };
 
 function faithModCompiler(player: Ascean, faithOne: number, weaponOne: Equipment, faithTwo: number, weaponTwo: Equipment, amuletInfluence: string, trinketInfluence: string): { faithOne: number, faithTwo: number }{
-    if (player.faith === 'devoted' && weaponOne.influences[0] === 'Daethos') faithOne += 5;
-    if (player.faith === 'adherent' && weaponOne.influences[0] !== 'Daethos') faithOne += 5;
-    if (player.faith === 'devoted' && weaponTwo.influences[0] === 'Daethos') faithTwo += 5;
-    if (player.faith === 'adherent' && weaponTwo.influences[0] !== 'Daethos') faithTwo += 5;
+    if (player.faith === 'devoted' && weaponOne?.influences?.[0] === 'Daethos') faithOne += 5;
+    if (player.faith === 'adherent' && weaponOne?.influences?.[0] !== 'Daethos') faithOne += 5;
+    if (player.faith === 'devoted' && weaponTwo?.influences?.[0] === 'Daethos') faithTwo += 5;
+    if (player.faith === 'adherent' && weaponTwo?.influences?.[0] !== 'Daethos') faithTwo += 5;
     
     const addRarity = (rarity: string, faith: number): number => {
         const modifier = {
@@ -740,39 +743,39 @@ function faithModCompiler(player: Ascean, faithOne: number, weaponOne: Equipment
             'Epic': 5,
             'Legendary': 10
         };
-        faith += modifier[rarity]; 
+        faith += modifier[rarity as keyof typeof modifier]; 
         return faith;
     };
 
-    faithOne = addRarity(weaponOne.rarity, faithOne);
-    faithTwo = addRarity(weaponTwo.rarity, faithTwo); 
-    if (weaponOne.influences[0] === amuletInfluence) {
-        faithOne = addRarity(player.amulet.rarity, faithOne); 
+    faithOne = addRarity(weaponOne.rarity as string, faithOne);
+    faithTwo = addRarity(weaponTwo.rarity as string, faithTwo); 
+    if (weaponOne?.influences?.[0] === amuletInfluence) {
+        faithOne = addRarity(player.amulet.rarity as string, faithOne); 
     };
-    if (weaponTwo.influences[0] === amuletInfluence) {
-        faithTwo = addRarity(player.amulet.rarity, faithTwo); 
+    if (weaponTwo?.influences?.[0] === amuletInfluence) {
+        faithTwo = addRarity(player.amulet.rarity as string, faithTwo); 
     }; 
-    if (weaponOne.influences[0] === trinketInfluence) {
-        faithOne = addRarity(player.trinket.rarity, faithOne); 
+    if (weaponOne?.influences?.[0] === trinketInfluence) {
+        faithOne = addRarity(player.trinket.rarity as string, faithOne); 
     };
-    if (weaponTwo.influences[0] === trinketInfluence) {
-        faithTwo = addRarity(player.trinket.rarity, faithTwo); 
+    if (weaponTwo?.influences?.[0] === trinketInfluence) {
+        faithTwo = addRarity(player.trinket.rarity as string, faithTwo); 
     };
     return { faithOne, faithTwo };
 };
 
 function faithCompiler(combat: Combat): Combat { // The influence will add a chance to have a special effect occur
-    if (combat.playerWin === true || combat.computerWin === true || combat.playerBlessing === '') return;
+    if (combat.playerWin === true || combat.computerWin === true || combat.playerBlessing === '') return combat;
     let faithNumber = Math.floor(Math.random() * 101);
     let faithNumberTwo = Math.floor(Math.random() * 101); 
     let computerFaithNumber = Math.floor(Math.random() * 101);
     let computerFaithNumberTwo = Math.floor(Math.random() * 101);
 
-    combat.weapons[0].criticalChance = Number(combat.weapons[0].criticalChance);
-    combat.weapons[0].criticalDamage = Number(combat.weapons[0].criticalDamage);
+    combat.weapons[0]!.criticalChance = Number(combat.weapons[0]?.criticalChance);
+    combat.weapons[0]!.criticalDamage = Number(combat.weapons[0]?.criticalDamage);
 
-    combat.weapons[1].criticalChance = Number(combat.weapons[1].criticalChance);
-    combat.weapons[1].criticalDamage = Number(combat.weapons[1].criticalDamage);
+    combat.weapons[1]!.criticalChance = Number(combat.weapons[1]?.criticalChance);
+    combat.weapons[1]!.criticalDamage = Number(combat.weapons[1]?.criticalDamage);
 
     combat.computerWeapons[0].criticalChance = Number(combat.computerWeapons[0].criticalChance);
     combat.computerWeapons[0].criticalDamage = Number(combat.computerWeapons[0].criticalDamage);
@@ -780,21 +783,21 @@ function faithCompiler(combat: Combat): Combat { // The influence will add a cha
     combat.computerWeapons[1].criticalChance = Number(combat.computerWeapons[1].criticalChance);
     combat.computerWeapons[1].criticalDamage = Number(combat.computerWeapons[1].criticalDamage);
 
-    const playerFaith = faithModCompiler(combat.player, faithNumber, combat.weapons[0], faithNumberTwo, combat.weapons[1], combat.player.amulet.influences[0], combat.player.trinket.influences[0]);
+    const playerFaith = faithModCompiler(combat.player as Ascean, faithNumber, combat.weapons[0] as Equipment, faithNumberTwo, combat.weapons[1] as Equipment, combat.player?.amulet?.influences?.[0] as string, combat.player?.trinket?.influences?.[0] as string);
     faithNumber = playerFaith.faithOne;
     faithNumberTwo = playerFaith.faithTwo;
 
-    const computerFaith = faithModCompiler(combat.computer, computerFaithNumber, combat.computerWeapons[0], computerFaithNumberTwo, combat.computerWeapons[1], combat.computer.amulet.influences[0], combat.computer.trinket.influences[0]);
+    const computerFaith = faithModCompiler(combat.computer as Ascean, computerFaithNumber, combat.computerWeapons[0], computerFaithNumberTwo, combat.computerWeapons[1], combat.computer?.amulet?.influences?.[0] as string, combat.computer?.trinket?.influences?.[0] as string);
     computerFaithNumber = computerFaith.faithOne;
     computerFaithNumberTwo = computerFaith.faithTwo;
 
     if (faithNumber > 90) {
         combat.actionData.push('prayer');
-        faithSuccess(combat, 'player', combat.weapons[0], 0);
+        faithSuccess(combat, 'player', combat.weapons[0] as Equipment, 0);
     };
     if (combat.dualWielding === true && faithNumberTwo > 90) {
         combat.actionData.push('prayer');    
-        faithSuccess(combat, 'player', combat.weapons[1], 1);
+        faithSuccess(combat, 'player', combat.weapons[1] as Equipment, 1);
     };
 
     if (!combat.playerEffects.find(effect => effect.prayer === 'Silence')) {
@@ -837,7 +840,7 @@ function computerActionCompiler(combat: Combat, playerAction: string): Combat {
         counterPosture: 20 + combat.counterPostureWeight,
         counterRoll: 20 + combat.counterRollWeight,
         rollRating: combat.computerWeapons[0].roll,
-        armorRating: (combat.computerDefense.physicalPosture + combat.computerDefense.magicalPosture)  /  4,
+        armorRating: (combat?.computerDefense?.physicalPosture  as number) + (combat?.computerDefense?.magicalPosture  as number)  /  4,
     };
 
     if (playerAction === 'attack') { 
@@ -915,9 +918,9 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
     const weapTwoClearance: number = Math.floor(Math.random() * 101);
     let weapOneCrit: number = combat.computerWeapons[0].criticalChance;
     let weapTwoCrit: number = combat.computerWeapons[1].criticalChance;
-    weapOneCrit -= combat.playerAttributes.kyosirMod;
-    weapTwoCrit -= combat.playerAttributes.kyosirMod;
-    const resultOne = criticalCompiler(combat.computer, weapOneCrit, weapOneClearance, combat.computerWeapons[0], computerWeaponOnePhysicalDamage, computerWeaponOneMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
+    weapOneCrit -= combat?.playerAttributes?.kyosirMod as number;
+    weapTwoCrit -= combat?.playerAttributes?.kyosirMod as number;
+    const resultOne = criticalCompiler(combat.computer as Ascean, weapOneCrit, weapOneClearance, combat.computerWeapons[0], computerWeaponOnePhysicalDamage, computerWeaponOneMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
     combat.computerGlancingBlow = resultOne.glancingBlow;
     combat.computerCriticalSuccess = resultOne.criticalSuccess;
     computerWeaponOnePhysicalDamage = resultOne.physicalDamage;
@@ -925,7 +928,7 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
     if (weapOneCrit >= weapOneClearance) {
         firstWeaponCrit = true;
     };
-    const resultTwo = criticalCompiler(combat.computer, weapTwoCrit, weapTwoClearance, combat.computerWeapons[1], computerWeaponTwoOhysicalDamage, computerWeaponTwoMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
+    const resultTwo = criticalCompiler(combat.computer as Ascean, weapTwoCrit, weapTwoClearance, combat.computerWeapons[1], computerWeaponTwoOhysicalDamage, computerWeaponTwoMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
     combat.computerGlancingBlow = resultTwo.glancingBlow;
     combat.computerCriticalSuccess = resultTwo.criticalSuccess;
     computerWeaponTwoOhysicalDamage = resultTwo.physicalDamage;
@@ -934,17 +937,17 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
         secondWeaponCrit = true;
     };
     
-    computerWeaponOnePhysicalDamage *= 1 - ((1 - playerPhysicalDefenseMultiplier) * (1 - (weapons[0].physicalPenetration / 100 )));
-    computerWeaponOneMagicalDamage *= 1 - ((1 - playerMagicalDefenseMultiplier) * (1 - (weapons[0].magicalPenetration  / 100 )));
+    computerWeaponOnePhysicalDamage *= 1 - ((1 - playerPhysicalDefenseMultiplier) * (1 - (weapons[0].physicalPenetration as number / 100 )));
+    computerWeaponOneMagicalDamage *= 1 - ((1 - playerMagicalDefenseMultiplier) * (1 - (weapons[0].magicalPenetration as number  / 100 )));
 
-    computerWeaponTwoOhysicalDamage *= 1 - ((1 - playerPhysicalDefenseMultiplier) * (1 - (weapons[1].physicalPenetration / 100 )));
-    computerWeaponTwoMagicalDamage *= 1 - ((1 - playerMagicalDefenseMultiplier) * (1 - (weapons[1].magicalPenetration / 100 )));
+    computerWeaponTwoOhysicalDamage *= 1 - ((1 - playerPhysicalDefenseMultiplier) * (1 - (weapons[1].physicalPenetration as number / 100 )));
+    computerWeaponTwoMagicalDamage *= 1 - ((1 - playerMagicalDefenseMultiplier) * (1 - (weapons[1].magicalPenetration as number / 100 )));
 
-    const damageType = damageTypeCompiler(combat.computerDamageType, combat.player, weapons[0], computerWeaponOnePhysicalDamage, computerWeaponOneMagicalDamage);
+    const damageType = damageTypeCompiler(combat.computerDamageType, combat.player as Ascean, weapons[0], computerWeaponOnePhysicalDamage, computerWeaponOneMagicalDamage);
     computerWeaponOnePhysicalDamage = damageType.physicalDamage;
     computerWeaponOneMagicalDamage = damageType.magicalDamage;
 
-    const damageTypeTwo = damageTypeCompiler(combat.computerDamageType, combat.player, weapons[1], computerWeaponTwoOhysicalDamage, computerWeaponTwoMagicalDamage);
+    const damageTypeTwo = damageTypeCompiler(combat.computerDamageType, combat.player as Ascean, weapons[1], computerWeaponTwoOhysicalDamage, computerWeaponTwoMagicalDamage);
     computerWeaponTwoOhysicalDamage = damageTypeTwo.physicalDamage;
     computerWeaponTwoMagicalDamage = damageTypeTwo.magicalDamage;
 
@@ -966,10 +969,10 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
         combat.realizedComputerDamage = 0;
     };
 
-    let strength = combat.computerAttributes.totalStrength + combat.computerWeapons[0].strength  + combat.computerWeapons[1].strength;
-    let agility = combat.computerAttributes.totalAgility + combat.computerWeapons[0].agility  + combat.computerWeapons[1].agility;
-    let achre = combat.computerAttributes.totalAchre + combat.computerWeapons[0].achre  + combat.computerWeapons[1].achre;
-    let caeren = combat.computerAttributes.totalCaeren + combat.computerWeapons[0].caeren  + combat.computerWeapons[1].caeren;
+    let strength = combat?.computerAttributes?.totalStrength as number + combat.computerWeapons[0].strength  + combat.computerWeapons[1].strength;
+    let agility = combat?.computerAttributes?.totalAgility as number + combat.computerWeapons[0].agility  + combat.computerWeapons[1].agility;
+    let achre = combat?.computerAttributes?.totalAchre as number + combat.computerWeapons[0].achre  + combat.computerWeapons[1].achre;
+    let caeren = combat?.computerAttributes?.totalCaeren as number + combat.computerWeapons[0].caeren  + combat.computerWeapons[1].caeren;
 
     if (combat.computerWeapons[0].grip === 'One Hand') {
         if (combat.computerWeapons[0].attackType === 'Physical') {
@@ -1017,30 +1020,30 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
     };
     
     combat.computerActionDescription = 
-        `${computer.name} dual-wield attacks you with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedComputerDamage)} ${combat.computerDamageType} and ${weapons[1].damageType[0] ? weapons[1].damageType[0] : ''}${weapons[1].damageType[1] ? ' / ' + weapons[1].damageType[1] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'Critical Strike Damage' : firstWeaponCrit === true || secondWeaponCrit === true ? 'Partial Crit Damage' : combat.computerGlancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `${computer?.name} dual-wield attacks you with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedComputerDamage)} ${combat.computerDamageType} and ${weapons[1].damageType?.[0] ? weapons[1].damageType[0] : ''}${weapons[1]?.damageType?.[1] ? ' / ' + weapons[1].damageType?.[1] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'Critical Strike Damage' : firstWeaponCrit === true || secondWeaponCrit === true ? 'Partial Crit Damage' : combat.computerGlancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
     
     return combat;
 };
 
 function computerAttackCompiler(combat: Combat, computerAction: string): Combat {
-    if (combat.playerWin === true) { return }
+    if (combat.playerWin === true) return combat;
     let computerPhysicalDamage: number = combat.computerWeapons[0].physicalDamage;
     let computerMagicalDamage: number = combat.computerWeapons[0].magicalDamage;
     let computerTotalDamage: number = 0;
 
-    let playerPhysicalDefenseMultiplier = 1 - (combat.playerDefense.physicalDefenseModifier / 100);
-    let playerMagicalDefenseMultiplier = 1 - (combat.playerDefense.magicalDefenseModifier / 100);
+    let playerPhysicalDefenseMultiplier = 1 - (combat.playerDefense?.physicalDefenseModifier as number / 100);
+    let playerMagicalDefenseMultiplier = 1 - (combat.playerDefense?.magicalDefenseModifier as number / 100);
 
     if ((combat.action === 'posture' || combat.isStalwart) && combat.computerCounterSuccess !== true && combat.computerRollSuccess !== true) {
-        playerPhysicalDefenseMultiplier = 1 - (combat.playerDefense.physicalPosture / 100);
-        playerMagicalDefenseMultiplier = 1 - (combat.playerDefense.magicalPosture / 100);
+        playerPhysicalDefenseMultiplier = 1 - (combat.playerDefense?.physicalPosture as number / 100);
+        playerMagicalDefenseMultiplier = 1 - (combat.playerDefense?.magicalPosture as number / 100);
     };
 
     if (combat.computerAction === 'attack') {
         if (combat.computerWeapons[0].grip === 'One Hand') {
             if (combat.computerWeapons[0].attackType === 'Physical') {
-                if (combat.computer.mastery === 'Agility' || combat.computer.mastery === 'Constitution') {
-                    if (combat.computerAttributes.totalAgility + combat.computerWeapons[0].agility + combat.computerWeapons[1].agility >= 50) {
+                if (combat.computer?.mastery === 'Agility' || combat.computer?.mastery === 'Constitution') {
+                    if (combat.computerAttributes?.totalAgility as number + combat.computerWeapons[0].agility + combat.computerWeapons[1].agility >= 50) {
                         if (combat.computerWeapons[1].grip === 'One Hand') { // If you're Focusing Attack + 1h + Agi Mastery + 1h in Second Slot
                            combat.computerDualWielding = true;
                             computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
@@ -1059,8 +1062,8 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                 };
             };
             if (combat.computerWeapons[0].attackType === 'Magic') {
-                if (combat.computer.mastery === 'Achre' || combat.computer.mastery === 'Kyosir') {
-                    if (combat.computerAttributes.totalAchre + combat.computerWeapons[0].achre + combat.computerWeapons[1].achre >= 50) {
+                if (combat.computer?.mastery === 'Achre' || combat.computer?.mastery === 'Kyosir') {
+                    if (combat.computerAttributes?.totalAchre as number + combat.computerWeapons[0].achre + combat.computerWeapons[1].achre >= 50) {
                         if (combat.computerWeapons[1].grip === 'One Hand') { // Might be a dual-wield compiler instead to take the rest of it
                             combat.computerDualWielding = true;
                             computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
@@ -1081,8 +1084,8 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
         };
         if (combat.computerWeapons[0].grip === 'Two Hand') {
             if (combat.computerWeapons[0].attackType === 'Physical' && combat.computerWeapons[0].type !== 'Bow' && combat.computerWeapons[0].type !== 'Greatbow') {
-                if (combat.computer.mastery === 'Strength' || combat.computer.mastery === 'Constitution') {
-                    if (combat.computerAttributes.totalStrength + combat.computerWeapons[0].strength + combat.computerWeapons[1].strength >= 75) { // Might be a dual-wield compiler instead to take the rest of it
+                if (combat.computer?.mastery === 'Strength' || combat.computer?.mastery === 'Constitution') {
+                    if (combat.computerAttributes?.totalStrength as number + combat.computerWeapons[0].strength + combat.computerWeapons[1].strength >= 75) { // Might be a dual-wield compiler instead to take the rest of it
                         if (combat.computerWeapons[1].type !== 'Bow') {
                             combat.computerDualWielding = true;
                             computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
@@ -1101,8 +1104,8 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                 };
             };
             if (combat.computerWeapons[0].attackType === 'Magic') {
-                if (combat.computer.mastery === 'Caeren' || combat.computer.mastery === 'Kyosir') {
-                    if (combat.computerAttributes.totalCaeren + combat.computerWeapons[0].caeren + combat.computerWeapons[1].caeren >= 75) {
+                if (combat.computer?.mastery === 'Caeren' || combat.computer?.mastery === 'Kyosir') {
+                    if (combat.computerAttributes?.totalCaeren as number + combat.computerWeapons[0].caeren + combat.computerWeapons[1].caeren >= 75) {
                         if (combat.computerWeapons[1].type !== 'Bow') {
                             combat.computerDualWielding = true;
                             computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
@@ -1154,18 +1157,18 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
 
     const criticalClearance = Math.floor(Math.random() * 101);
     let criticalChance = combat.computerWeapons[0].criticalChance;
-    criticalChance -= combat.playerAttributes.kyosirMod;
+    criticalChance -= combat.playerAttributes?.kyosirMod as number;
     if (combat.weather === 'Astralands') criticalChance += 10;
 
-    const criticalResult = criticalCompiler(combat.computer, criticalChance, criticalClearance, combat.computerWeapons[0], computerPhysicalDamage, computerMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
+    const criticalResult = criticalCompiler(combat.computer as Ascean, criticalChance, criticalClearance, combat.computerWeapons[0], computerPhysicalDamage, computerMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
     combat.computerGlancingBlow = criticalResult.glancingBlow;
     combat.computerCriticalSuccess = criticalResult.criticalSuccess;
     computerPhysicalDamage = criticalResult.physicalDamage;
     computerMagicalDamage = criticalResult.magicalDamage;
 
-    computerPhysicalDamage *= 1 - ((1 - playerPhysicalDefenseMultiplier) * (1 - (combat.computerWeapons[0].physicalPenetration / 100)));
-    computerMagicalDamage *= 1 - ((1 - playerMagicalDefenseMultiplier) * (1 - (combat.computerWeapons[0].magicalPenetration / 100)));
-    const damageType = damageTypeCompiler(combat.computerDamageType, combat.player, combat.computerWeapons[0], computerPhysicalDamage, computerMagicalDamage);
+    computerPhysicalDamage *= 1 - ((1 - playerPhysicalDefenseMultiplier) * (1 - (combat.computerWeapons[0]?.physicalPenetration as number / 100)));
+    computerMagicalDamage *= 1 - ((1 - playerMagicalDefenseMultiplier) * (1 - (combat.computerWeapons[0]?.magicalPenetration as number / 100)));
+    const damageType = damageTypeCompiler(combat.computerDamageType, combat.player as Ascean, combat.computerWeapons[0], computerPhysicalDamage, computerMagicalDamage);
     computerPhysicalDamage = damageType.physicalDamage;
     computerMagicalDamage = damageType.magicalDamage;
 
@@ -1201,7 +1204,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
 
 
     combat.computerActionDescription = 
-        `${combat.computer.name} attacks you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? 'Critical Strike Damage' : combat.computerGlancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `${combat.computer?.name} attacks you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? 'Critical Strike Damage' : combat.computerGlancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
 
     if (combat.newPlayerHealth < 0) {
         if (combat.playerEffects.find(effect => effect.prayer === 'Denial')) {
@@ -1225,7 +1228,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     
 function computerRollCompiler(combat: Combat, playerAction: string, computerAction: string): Combat {
     let computerRoll = combat.computerWeapons[0].roll;
-    let rollCatch = Math.floor(Math.random() * 101) + combat.playerAttributes.kyosirMod;
+    let rollCatch = Math.floor(Math.random() * 101) + (combat.playerAttributes?.kyosirMod as number);
     if (combat.weather === 'Alluring Isles') {
         computerRoll -= 10;
     };
@@ -1237,10 +1240,10 @@ function computerRollCompiler(combat: Combat, playerAction: string, computerActi
     };
     if (computerRoll > rollCatch) {
         combat.computerRollSuccess = true;
-        combat.computerSpecialDescription = `${combat.computer.name} successfully rolls against you, avoiding your ${playerAction === 'attack' ? 'Focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } Attack.`
+        combat.computerSpecialDescription = `${combat.computer?.name} successfully rolls against you, avoiding your ${playerAction === 'attack' ? 'Focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } Attack.`
         computerAttackCompiler(combat, computerAction);
     } else {
-        combat.computerSpecialDescription = `${combat.computer.name} fails to roll against your ${  playerAction === 'attack' ? 'Focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } Attack.`
+        combat.computerSpecialDescription = `${combat.computer?.name} fails to roll against your ${  playerAction === 'attack' ? 'Focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } Attack.`
         return combat;
     };
     return combat;
@@ -1252,25 +1255,25 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     const computer = combat.computer;
     const weapons = combat.weapons;
 
-    let playerWeaponOnePhysicalDamage = combat.weapons[0].physicalDamage;
-    let playerWeaponOneMagicalDamage = combat.weapons[0].magicalDamage;
-    let playerWeaponTwoPhysicalDamage = combat.weapons[1].physicalDamage;
-    let playerWeaponTwoMagicalDamage = combat.weapons[1].magicalDamage;
+    let playerWeaponOnePhysicalDamage = combat.weapons[0]?.physicalDamage;
+    let playerWeaponOneMagicalDamage = combat.weapons[0]?.magicalDamage;
+    let playerWeaponTwoPhysicalDamage = combat.weapons[1]?.physicalDamage;
+    let playerWeaponTwoMagicalDamage = combat.weapons[1]?.magicalDamage;
     let playerWeaponOneTotalDamage;
     let playerWeaponTwoTotalDamage;
     let firstWeaponCrit = false;
     let secondWeaponCrit = false;
     
-    let computerPhysicalDefenseMultiplier = 1 - (combat.computerDefense.physicalDefenseModifier / 100);
-    let computerMagicalDefenseMultiplier = 1 - (combat.computerDefense.magicalDefenseModifier / 100);
+    let computerPhysicalDefenseMultiplier = 1 - (combat.computerDefense?.physicalDefenseModifier as number / 100);
+    let computerMagicalDefenseMultiplier = 1 - (combat.computerDefense?.magicalDefenseModifier as number / 100);
 
     const weapOneClearance = Math.floor(Math.random() * 10100) / 100;
     const weapTwoClearance = Math.floor(Math.random() * 10100) / 100;
-    let weapOneCrit = combat.weapons[0].criticalChance;
-    let weapTwoCrit = combat.weapons[1].criticalChance;
-    weapOneCrit -= combat.computerAttributes.kyosirMod;
-    weapTwoCrit -= combat.computerAttributes.kyosirMod;
-    const resultOne = criticalCompiler(combat.player, weapOneCrit, weapOneClearance, combat.weapons[0], playerWeaponOnePhysicalDamage, playerWeaponOneMagicalDamage, combat.weather, combat.glancingBlow, combat.criticalSuccess);
+    let weapOneCrit = combat.weapons[0]?.criticalChance as number
+    let weapTwoCrit = combat.weapons[1]?.criticalChance as number;
+    weapOneCrit -= combat.computerAttributes?.kyosirMod as number;
+    weapTwoCrit -= combat.computerAttributes?.kyosirMod as number;
+    const resultOne = criticalCompiler(combat.player as Ascean, weapOneCrit, weapOneClearance, combat.weapons[0] as Equipment, playerWeaponOnePhysicalDamage as number, playerWeaponOneMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess);
     combat.criticalSuccess = resultOne.criticalSuccess;
     combat.glancingBlow = resultOne.glancingBlow;
     playerWeaponOnePhysicalDamage = resultOne.physicalDamage;
@@ -1278,7 +1281,7 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     if (weapOneCrit >= weapOneClearance) {
         firstWeaponCrit = true;
     };
-    const resultTwo = criticalCompiler(combat.player, weapTwoCrit, weapTwoClearance, combat.weapons[1], playerWeaponTwoPhysicalDamage, playerWeaponTwoMagicalDamage, combat.weather, combat.glancingBlow, combat.criticalSuccess);
+    const resultTwo = criticalCompiler(combat.player as Ascean, weapTwoCrit, weapTwoClearance, combat.weapons[1] as Equipment, playerWeaponTwoPhysicalDamage as number, playerWeaponTwoMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess);
     combat.criticalSuccess = resultTwo.criticalSuccess;
     combat.glancingBlow = resultTwo.glancingBlow;
     playerWeaponTwoPhysicalDamage = resultTwo.physicalDamage;
@@ -1287,25 +1290,25 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
         secondWeaponCrit = true;
     };
 
-    playerWeaponOnePhysicalDamage *= 1 - ((1 - computerPhysicalDefenseMultiplier) * (1 - (weapons[0].physicalPenetration / 100)));
-    playerWeaponOneMagicalDamage *= 1 - ((1 - computerMagicalDefenseMultiplier) * (1 - (weapons[0].magicalPenetration / 100)));
+    playerWeaponOnePhysicalDamage *= 1 - ((1 - computerPhysicalDefenseMultiplier) * (1 - (weapons[0]?.physicalPenetration as number / 100)));
+    playerWeaponOneMagicalDamage *= 1 - ((1 - computerMagicalDefenseMultiplier) * (1 - (weapons[0]?.magicalPenetration as number / 100)));
 
-    playerWeaponTwoPhysicalDamage *= 1 - ((1 - computerPhysicalDefenseMultiplier) * (1 - (weapons[1].physicalPenetration / 100)));
-    playerWeaponTwoMagicalDamage *= 1 - ((1 - computerMagicalDefenseMultiplier) * (1 - (weapons[1].magicalPenetration / 100)));
+    playerWeaponTwoPhysicalDamage *= 1 - ((1 - computerPhysicalDefenseMultiplier) * (1 - (weapons[1]?.physicalPenetration as number / 100)));
+    playerWeaponTwoMagicalDamage *= 1 - ((1 - computerMagicalDefenseMultiplier) * (1 - (weapons[1]?.magicalPenetration as number / 100)));
 
-    const damageType = damageTypeCompiler(combat.playerDamageType, combat.computer, weapons[0], playerWeaponOnePhysicalDamage, playerWeaponOneMagicalDamage);
+    const damageType = damageTypeCompiler(combat.playerDamageType, combat.computer as Ascean, weapons[0] as Equipment, playerWeaponOnePhysicalDamage, playerWeaponOneMagicalDamage);
     playerWeaponOnePhysicalDamage = damageType.physicalDamage;
     playerWeaponOneMagicalDamage = damageType.magicalDamage;
 
-    const damageTypeTwo = damageTypeCompiler(combat.playerDamageType, combat.computer, weapons[1], playerWeaponTwoPhysicalDamage, playerWeaponTwoMagicalDamage);
+    const damageTypeTwo = damageTypeCompiler(combat.playerDamageType, combat.computer as Ascean, weapons[1] as Equipment, playerWeaponTwoPhysicalDamage, playerWeaponTwoMagicalDamage);
     playerWeaponTwoPhysicalDamage = damageTypeTwo.physicalDamage;
     playerWeaponTwoMagicalDamage = damageTypeTwo.magicalDamage;
 
-    const weatherResult = weatherEffectCheck(combat.weapons[0], playerWeaponOneMagicalDamage, playerWeaponOnePhysicalDamage, combat.weather, firstWeaponCrit);
+    const weatherResult = weatherEffectCheck(combat.weapons[0] as Equipment, playerWeaponOneMagicalDamage, playerWeaponOnePhysicalDamage, combat.weather, firstWeaponCrit);
     playerWeaponOnePhysicalDamage = weatherResult.physicalDamage;
     playerWeaponOneMagicalDamage = weatherResult.magicalDamage;
 
-    const weatherResultTwo = weatherEffectCheck(combat.weapons[1], playerWeaponTwoMagicalDamage, playerWeaponTwoPhysicalDamage, combat.weather, secondWeaponCrit);
+    const weatherResultTwo = weatherEffectCheck(combat.weapons[1] as Equipment, playerWeaponTwoMagicalDamage, playerWeaponTwoPhysicalDamage, combat.weather, secondWeaponCrit);
     playerWeaponTwoPhysicalDamage = weatherResultTwo.physicalDamage;
     playerWeaponTwoMagicalDamage = weatherResultTwo.magicalDamage;
 
@@ -1317,21 +1320,21 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
         combat.realizedPlayerDamage = 0;
     };
 
-    let strength = combat.playerAttributes.totalStrength + combat.weapons[0].strength  + combat.weapons[1].strength;
-    let agility = combat.playerAttributes.totalAgility + combat.weapons[0].agility  + combat.weapons[1].agility;
-    let achre = combat.playerAttributes.totalAchre + combat.weapons[0].achre + combat.weapons[1].achre;
-    let caeren = combat.playerAttributes.totalCaeren + combat.weapons[0].caeren  + combat.weapons[1].caeren;
+    let strength = combat.playerAttributes?.totalStrength as number + (combat.weapons[0]?.strength as number)  + (combat.weapons[1]?.strength as number);
+    let agility = combat.playerAttributes?.totalAgility as number + (combat.weapons[0]?.agility as number)  + (combat.weapons[1]?.agility as number);
+    let achre = combat.playerAttributes?.totalAchre as number + (combat.weapons[0]?.achre as number) + (combat.weapons[1]?.achre as number);
+    let caeren = combat.playerAttributes?.totalCaeren as number + (combat.weapons[0]?.caeren as number)  + (combat.weapons[1]?.caeren as number);
 
-    if (combat.weapons[0].grip === 'One Hand') {
-        if (combat.weapons[0].attackType === 'Physical') {
+    if (combat.weapons[0]?.grip === 'One Hand') {
+        if (combat.weapons[0]?.attackType === 'Physical') {
             combat.realizedPlayerDamage *= (agility / 100)
         } else {
             combat.realizedPlayerDamage *= (achre / 100)
         };
     };
 
-    if (combat.weapons[0].grip === 'Two Hand') {
-        if (combat.weapons[0].attackType === 'Physical') {
+    if (combat.weapons[0]?.grip === 'Two Hand') {
+        if (combat.weapons[0]?.attackType === 'Physical') {
             combat.realizedPlayerDamage *= (strength / 150) 
         } else {
             combat.realizedPlayerDamage *= (caeren / 150)
@@ -1356,39 +1359,39 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     };
   
     // ==================== STATISTIC LOGIC ====================
-    combat.typeAttackData.push(combat.weapons[0].attackType, combat.weapons[1].attackType);
+    combat.typeAttackData.push(combat.weapons[0]?.attackType as string, combat.weapons[1]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
     combat.totalDamageData = combat.realizedPlayerDamage > combat.totalDamageData ? combat.realizedPlayerDamage : combat.totalDamageData;
     // ==================== STATISTIC LOGIC ====================
     
     combat.playerActionDescription = 
-        `You dual-wield attack ${computer.name} with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} and ${weapons[1].damageType[0] ? weapons[1].damageType[0] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'Critical Strike Damage' : firstWeaponCrit === true || secondWeaponCrit === true ? 'Partial Crit Damage' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `You dual-wield attack ${computer?.name} with ${weapons[0]?.name} and ${weapons[1]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} and ${weapons[1]?.damageType?.[0] ? weapons[1]?.damageType?.[0] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'Critical Strike Damage' : firstWeaponCrit === true || secondWeaponCrit === true ? 'Partial Crit Damage' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
         
     return combat;
 };
     
 function attackCompiler(combat: Combat, playerAction: string): Combat {
-    if (combat.computerWin === true) return;
-    let playerPhysicalDamage = combat.weapons[0].physicalDamage;
-    let playerMagicalDamage = combat.weapons[0].magicalDamage;
+    if (combat.computerWin === true) return combat;
+    let playerPhysicalDamage = combat.weapons[0]?.physicalDamage as number;
+    let playerMagicalDamage = combat.weapons[0]?.magicalDamage as number;
     let playerTotalDamage;
 
-    let computerPhysicalDefenseMultiplier = 1 - (combat.computerDefense.physicalDefenseModifier / 100);
-    let computerMagicalDefenseMultiplier = 1 - (combat.computerDefense.magicalDefenseModifier / 100);
+    let computerPhysicalDefenseMultiplier = 1 - (combat.computerDefense?.physicalDefenseModifier as number / 100);
+    let computerMagicalDefenseMultiplier = 1 - (combat.computerDefense?.magicalDefenseModifier as number / 100);
     
     // This is for Opponent's who are Posturing
     if (combat.computerAction === 'posture' && !combat.counterSuccess && !combat.rollSuccess) {
-        computerPhysicalDefenseMultiplier = 1 - (combat.computerDefense.physicalPosture / 100);
-        computerMagicalDefenseMultiplier = 1 - (combat.computerDefense.magicalPosture / 100);
+        computerPhysicalDefenseMultiplier = 1 - (combat.computerDefense?.physicalPosture as number / 100);
+        computerMagicalDefenseMultiplier = 1 - (combat.computerDefense?.magicalPosture as number / 100);
     };
 
     // This is for the Focused Attack Action i.e. you chose to Attack over adding a defensive component
     if (combat.action === 'attack') {
-        if (combat.weapons[0].grip === 'One Hand') {
-            if (combat.weapons[0].attackType === 'Physical') {
-                if (combat.player.mastery === 'Agility' || combat.player.mastery === 'Constitution') {
-                    if (combat.playerAttributes.totalAgility + combat.weapons[0].agility + combat.weapons[1].agility >= 50) {
-                        if (combat.weapons[1].grip === 'One Hand') { // If you're Focusing Attack + 1h + Agi Mastery + 1h in Second Slot
+        if (combat.weapons[0]?.grip === 'One Hand') {
+            if (combat.weapons[0]?.attackType === 'Physical') {
+                if (combat.player?.mastery === 'Agility' || combat.player?.mastery === 'Constitution') {
+                    if (combat.playerAttributes?.totalAgility as number + combat.weapons[0]?.agility + (combat.weapons[1]?.agility as number) >= 50) {
+                        if (combat.weapons[1]?.grip === 'One Hand') { // If you're Focusing Attack + 1h + Agi Mastery + 1h in Second Slot
                             combat.dualWielding = true;
                             dualWieldCompiler(combat);
                             return combat;
@@ -1405,10 +1408,10 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                     playerMagicalDamage *= 1.1; // DAMAGE_**_LOW
                 };
             };
-            if (combat.weapons[0].attackType === 'Magic') {
-                if (combat.player.mastery === 'Achre' || combat.player.mastery === 'Kyosir') {
-                    if (combat.playerAttributes.totalAchre + combat.weapons[0].achre + combat.weapons[0].achre + combat.weapons[1].achre >= 50) {
-                        if (combat.weapons[1].grip === 'One Hand') { // Might be a dual-wield compiler instead to take the rest of it
+            if (combat.weapons[0]?.attackType === 'Magic') {
+                if (combat.player?.mastery === 'Achre' || combat.player?.mastery === 'Kyosir') {
+                    if (combat.playerAttributes?.totalAchre as number + combat.weapons[0].achre + combat.weapons[0].achre + (combat.weapons[1]?.achre as number) >= 50) {
+                        if (combat.weapons[1]?.grip === 'One Hand') { // Might be a dual-wield compiler instead to take the rest of it
                             combat.dualWielding = true;
                             dualWieldCompiler(combat);
                             return combat;
@@ -1426,11 +1429,11 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                 };
             };
         };
-        if (combat.weapons[0].grip === 'Two Hand') { // Weapon is TWO HAND
-            if (combat.weapons[0].attackType === 'Physical' && combat.weapons[0].type !== 'Bow' && combat.weapons[0].type !== 'Greatbow') {
-                if (combat.player.mastery === 'Strength' || combat.player.mastery === 'Constitution') {
-                    if (combat.playerAttributes.totalStrength + combat.weapons[0].strength  + combat.weapons[1].strength >= 75) { // Might be a dual-wield compiler instead to take the rest of it
-                        if (combat.weapons[1].type !== 'Bow') {
+        if (combat.weapons[0]?.grip === 'Two Hand') { // Weapon is TWO HAND
+            if (combat.weapons[0]?.attackType === 'Physical' && combat.weapons[0]?.type !== 'Bow' && combat.weapons[0]?.type !== 'Greatbow') {
+                if (combat.player?.mastery === 'Strength' || combat.player?.mastery === 'Constitution') {
+                    if (combat.playerAttributes?.totalStrength as number + (combat.weapons[0]?.strength as number)  + (combat.weapons[1]?.strength as number) >= 75) { // Might be a dual-wield compiler instead to take the rest of it
+                        if (combat.weapons[1]?.type !== 'Bow') {
                             combat.dualWielding = true;
                             dualWieldCompiler(combat);
                             return combat;
@@ -1448,9 +1451,9 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                 };
             };
             if (combat.weapons[0].attackType === 'Magic') {
-                if (combat.player.mastery === 'Caeren' || combat.player.mastery === 'Kyosir') {
-                    if (combat.playerAttributes.totalCaeren + combat.weapons[0].caeren + combat.weapons[1].caeren >= 75) {
-                        if (combat.weapons[1].type !== 'Bow') {
+                if (combat.player?.mastery === 'Caeren' || combat.player?.mastery === 'Kyosir') {
+                    if (combat.playerAttributes?.totalCaeren as number + (combat.weapons[0]?.caeren as number) + (combat.weapons[1]?.caeren as number) >= 75) {
+                        if (combat.weapons[1]?.type !== 'Bow') {
                             combat.dualWielding = true;
                             dualWieldCompiler(combat);
                             return combat;
@@ -1467,7 +1470,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                     playerMagicalDamage *= 1.1;
                 };
             };
-            if (combat.weapons[0].type === 'Bow' || combat.weapons[0].type !== 'Greatbow') {
+            if (combat.weapons[0]?.type === 'Bow' || combat.weapons[0]?.type !== 'Greatbow') {
                 playerPhysicalDamage *= 1.3;
                 playerMagicalDamage *= 1.3;
             };
@@ -1500,23 +1503,23 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
         };
     };
     const criticalClearance = Math.floor(Math.random() * 10100) / 100;
-    let criticalChance = combat.weapons[0].criticalChance;
-    criticalChance -= combat.computerAttributes.kyosirMod;
+    let criticalChance = combat.weapons[0]?.criticalChance as number;
+    criticalChance -= combat.computerAttributes?.kyosirMod as number;
     if (combat.weather === 'Astralands') criticalChance += 10;
-    if (combat.weather === 'Astralands' && combat.weapons[0].influences[0] === 'Astra') criticalChance += 10;
-    const criticalResult = criticalCompiler(combat.player, criticalChance, criticalClearance, combat.weapons[0], playerPhysicalDamage, playerMagicalDamage, combat.weather, combat.glancingBlow, combat.criticalSuccess);
+    if (combat.weather === 'Astralands' && combat.weapons[0]?.influences?.[0] === 'Astra') criticalChance += 10;
+    const criticalResult = criticalCompiler(combat.player as Ascean, criticalChance, criticalClearance, combat.weapons[0] as Equipment, playerPhysicalDamage, playerMagicalDamage, combat.weather, combat.glancingBlow, combat.criticalSuccess);
     combat.criticalSuccess = criticalResult.criticalSuccess;
     combat.glancingBlow = criticalResult.glancingBlow;
     playerPhysicalDamage = criticalResult.physicalDamage;
     playerMagicalDamage = criticalResult.magicalDamage;
 
     // If you made it here, your basic attack now resolves itself
-    playerPhysicalDamage *= 1 - ((1 - computerPhysicalDefenseMultiplier) * (1 - (combat.weapons[0].physicalPenetration / 100)));
-    playerMagicalDamage *=1 - ((1 - computerMagicalDefenseMultiplier) * (1 - (combat.weapons[0].magicalPenetration / 100)));
-    const damageType = damageTypeCompiler(combat.playerDamageType, combat.computer, combat.weapons[0], playerPhysicalDamage, playerMagicalDamage);
+    playerPhysicalDamage *= 1 - ((1 - computerPhysicalDefenseMultiplier) * (1 - (combat.weapons[0]?.physicalPenetration as number / 100)));
+    playerMagicalDamage *=1 - ((1 - computerMagicalDefenseMultiplier) * (1 - (combat.weapons[0]?.magicalPenetration  as number/ 100)));
+    const damageType = damageTypeCompiler(combat.playerDamageType, combat.computer as Ascean, combat.weapons[0] as Equipment, playerPhysicalDamage, playerMagicalDamage);
     playerPhysicalDamage = damageType.physicalDamage;
     playerMagicalDamage = damageType.magicalDamage;
-    const weatherResult = weatherEffectCheck(combat.weapons[0], playerMagicalDamage, playerPhysicalDamage, combat.weather, combat.criticalSuccess);
+    const weatherResult = weatherEffectCheck(combat.weapons[0] as Equipment, playerMagicalDamage, playerPhysicalDamage, combat.weather, combat.criticalSuccess);
     playerPhysicalDamage = weatherResult.physicalDamage;
     playerMagicalDamage = weatherResult.magicalDamage;
 
@@ -1536,13 +1539,13 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     combat.newComputerHealth -= combat.realizedPlayerDamage;
 
     // ==================== STATISTIC LOGIC ====================
-    combat.typeAttackData.push(combat.weapons[0].attackType);
+    combat.typeAttackData.push(combat.weapons[0]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
     combat.totalDamageData = combat.realizedPlayerDamage > combat.totalDamageData ? combat.realizedPlayerDamage : combat.totalDamageData;
     // ==================== STATISTIC LOGIC ====================
 
     combat.playerActionDescription = 
-        `You attack ${combat.computer.name} with your ${combat.weapons[0].name} for ${Math.round(playerTotalDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'Critical Strike Damage' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `You attack ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(playerTotalDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'Critical Strike Damage' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
 
     if (combat.newComputerHealth <= 0) {
         combat.newComputerHealth = 0;
@@ -1553,8 +1556,8 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
 };
 
 function playerRollCompiler(combat: Combat, playerAction: string, computerAction: string): Combat { 
-    let playerRoll = combat.weapons[0].roll;
-    let rollCatch = Math.floor(Math.random() * 101) + combat.computerAttributes.kyosirMod;
+    let playerRoll = combat.weapons[0]?.roll as number;
+    let rollCatch = Math.floor(Math.random() * 101) + (combat.computerAttributes?.kyosirMod as number);
     if (combat.weather === 'Alluring Isles') {
         playerRoll -= 10;
     };
@@ -1567,11 +1570,11 @@ function playerRollCompiler(combat: Combat, playerAction: string, computerAction
     if (playerRoll > rollCatch) {
         combat.rollSuccess = true;
         combat.playerSpecialDescription = 
-                `You successfully roll against ${combat.computer.name}, avoiding their ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack.`;
+                `You successfully roll against ${combat.computer?.name}, avoiding their ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack.`;
         attackCompiler(combat, playerAction);
     } else {
         combat.playerSpecialDescription =
-        `You failed to roll against ${combat.computer.name}'s ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack.`
+        `You failed to roll against ${combat.computer?.name}'s ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack.`
          
     };
     return combat;
@@ -1580,9 +1583,9 @@ function playerRollCompiler(combat: Combat, playerAction: string, computerAction
 // ================================== COMBAT COMPILER FUNCTIONS ====================================== \\
 
 function doubleRollCompiler(combat: Combat, playerInitiative: number, computerInitiative: number, playerAction: string, computerAction: string): Combat {
-    let playerRoll: number = combat.weapons[0].roll;
+    let playerRoll: number = combat.weapons[0]?.roll as number;
     let computerRoll: number = combat.computerWeapons[0].roll;
-    let rollCatch: number = Math.floor(Math.random() * 101) + combat.computerAttributes.kyosirMod;
+    let rollCatch: number = Math.floor(Math.random() * 101) + (combat.computerAttributes?.kyosirMod as number);
     if (combat.weather === 'Alluring Isles') {
         playerRoll -= 10;
         computerRoll -= 10;
@@ -1598,38 +1601,38 @@ function doubleRollCompiler(combat: Combat, playerInitiative: number, computerIn
     if (playerInitiative > computerInitiative) { // You have Higher Initiative
         if (playerRoll > rollCatch) { // The Player Succeeds the Roll
             combat.playerSpecialDescription = 
-                `You successfully roll against ${combat.computer.name}, avoiding their ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
+                `You successfully roll against ${combat.computer?.name}, avoiding their ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
             attackCompiler(combat, playerAction);
         } else if (computerRoll > rollCatch) { // The Player Fails the Roll and the Computer Succeeds
             combat.playerSpecialDescription = 
-                `You failed to roll against ${combat.computer.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
+                `You failed to roll against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
             combat.computerSpecialDescription = 
-                `${combat.computer.name} successfully rolls against you, avoiding your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
+                `${combat.computer?.name} successfully rolls against you, avoiding your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
             computerAttackCompiler(combat, computerAction);
         } else { // Neither Player nor Computer Succeed
             combat.playerSpecialDescription = 
-                `You failed to roll against ${combat.computer.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
+                `You failed to roll against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
             combat.computerSpecialDescription = 
-                `${combat.computer.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
+                `${combat.computer?.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
             attackCompiler(combat, playerAction);
             computerAttackCompiler(combat, computerAction);
         }
     } else { // The Computer has Higher Initiative
         if (computerRoll > rollCatch) { // The Computer Succeeds the Roll
             combat.computerSpecialDescription = 
-                `${combat.computer.name} successfully rolls against you, avoiding your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
+                `${combat.computer?.name} successfully rolls against you, avoiding your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
             computerAttackCompiler(combat, computerAction);
         } else if (playerRoll > rollCatch) { // The Computer Fails the Roll and the Player Succeeds
             combat.computerSpecialDescription = 
-                `${combat.computer.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
+                `${combat.computer?.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
             combat.playerSpecialDescription = 
-                `You successfully roll against ${combat.computer.name}, avoiding their ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
+                `You successfully roll against ${combat.computer?.name}, avoiding their ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
             attackCompiler(combat, playerAction);
         } else { // Neither Computer nor Player Succeed
             combat.computerSpecialDescription = 
-                `${combat.computer.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
+                `${combat.computer?.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
             combat.playerSpecialDescription = 
-                `You failed to roll against ${combat.computer.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
+                `You failed to roll against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
             computerAttackCompiler(combat, computerAction);
             attackCompiler(combat, playerAction);
         };
@@ -1649,8 +1652,8 @@ function actionSplitter(combat: Combat): Combat {
 
     if (playerAction === '' && !newData.phaser) {
         let possibleChoices = ['attack', 'posture', 'roll'];
-        let postureRating = ((combat.playerDefense.physicalPosture + combat.playerDefense.magicalPosture) / 4) + 5;
-        let rollRating = combat.weapons[0].roll;
+        let postureRating = ((combat.playerDefense?.physicalPosture as number + (combat.playerDefense?.magicalPosture as number)) / 4) + 5;
+        let rollRating: number = combat.weapons[0]?.roll as number;
         let posture = 'posture';
         let roll = 'roll';
 
@@ -1878,22 +1881,22 @@ function computerWeaponMaker(combat: Combat): Combat {
     let newPrayer = Math.floor(Math.random() * prayers.length);
     combat.computerBlessing = prayers[newPrayer];
 
-    let defenseTypes = {
+    let defenseTypes: any = {
         "Leather-Cloth": 0,
         "Leather-Mail": 0,
         "Chain-Mail": 0,
         "Plate-Mail": 0,
     };
-    let armorWeights = {
+    let armorWeights: any = {
         "helmet": 2,
         "chest": 1.5,
         "legs": 1,
     };
-    defenseTypes[combat.player.helmet.type as keyof typeof defenseTypes] += armorWeights.helmet;
-    defenseTypes[combat.player.chest.type] += armorWeights.chest;
-    defenseTypes[combat.player.legs.type] += armorWeights.legs;
+    defenseTypes[combat.player?.helmet.type as keyof typeof defenseTypes] += armorWeights.helmet;
+    defenseTypes[combat.player?.chest.type as keyof typeof defenseTypes] += armorWeights.chest;
+    defenseTypes[combat.player?.legs.type as keyof typeof defenseTypes] += armorWeights.legs;
     const sortedDefenses = Object.entries(defenseTypes)
-        .sort((a, b) => b[1] - a[1]) // Sort based on the values in descending order
+        .sort((a, b) => b[1] as number - (a[1] as number)) // Sort based on the values in descending order
         .map(([type, weight]) => ({ type, weight })); // Convert back to an array of objects
     
     let strongTypes = {
@@ -1902,38 +1905,38 @@ function computerWeaponMaker(combat: Combat): Combat {
         "Chain-Mail": ["Blunt", "Slash", "Sorcery", "Wind", "Wild"],
         "Plate-Mail": ["Blunt", "Earth", "Fire", "Spooky"],
     };
-    let computerTypes = {
+    let computerTypes: any = {
         0: [],
         1: [],
         2: [],
     };
     combat.computerWeapons.forEach((weapon, index) => {
-        weapon.damageType.forEach((type) => {
-            if (strongTypes[sortedDefenses[0].type].includes(type)) {
-                computerTypes[index].push({ type, rank: 1 });
-            } else if (strongTypes[sortedDefenses[1].type].includes(type)) {
+        weapon.damageType?.forEach((type) => {
+            if (strongTypes[sortedDefenses[0].type as keyof typeof strongTypes].includes(type)) {
+                computerTypes[index as keyof typeof computerTypes].push({ type, rank: 1 });
+            } else if (strongTypes[sortedDefenses[1].type as keyof typeof strongTypes].includes(type)) {
                 computerTypes[index].push({ type, rank: 2 });
-            } else if (strongTypes[sortedDefenses[2].type].includes(type)) {
+            } else if (strongTypes[sortedDefenses[2].type  as keyof typeof strongTypes].includes(type)) {
                 computerTypes[index].push({ type, rank: 3 });
-            } else if (strongTypes[sortedDefenses[3].type].includes(type)) {
+            } else if (strongTypes[sortedDefenses[3].type  as keyof typeof strongTypes].includes(type)) {
                 computerTypes[index].push({ type, rank: 4 });
             };
         });      
     });
 
     for (let rank = 1; rank <= 4; rank++) {
-        if (computerTypes[0].length && computerTypes[0].find(type => type.rank === rank)) {
+        if (computerTypes[0].length && computerTypes[0].find((type: { rank: number; }) => type.rank === rank)) {
             if (rank === 1) {
-                combat.computerDamageType = computerTypes[0].sort((a, b) => a.rank - b.rank)[0].type;
+                combat.computerDamageType = computerTypes[0].sort((a: { rank: number; }, b: { rank: number; }) => a.rank - b.rank)[0].type;
             } else {
                 combat.computerDamageType = computerTypes[0][Math.floor(Math.random() * computerTypes[0].length)].type;
             };
             break;
-        } else if (computerTypes[1].length && computerTypes[1].find(type => type.rank === rank)) {
+        } else if (computerTypes[1].length && computerTypes[1].find((type: { rank: number; }) => type.rank === rank)) {
             combat.computerWeapons = [combat.computerWeapons[1], combat.computerWeapons[0], combat.computerWeapons[2]];
             combat.computerDamageType = computerTypes[1][Math.floor(Math.random() * computerTypes[1].length)].type;
             break;
-        } else if (computerTypes[2].length && computerTypes[2].find(type => type.rank === rank)) {
+        } else if (computerTypes[2].length && computerTypes[2].find((type: { rank: number; }) => type.rank === rank)) {
             combat.computerWeapons = [combat.computerWeapons[2], combat.computerWeapons[0], combat.computerWeapons[1]];
             combat.computerDamageType = computerTypes[2][Math.floor(Math.random() * computerTypes[2].length)].type;
             break;
@@ -2281,11 +2284,11 @@ function newDataCompiler(combat: Combat): any {
 };
 
 function computerDispel(combat: Combat): Combat {
-    const effect: StatusEffect = combat.computerEffects.find(effect => (effect.prayer !== 'Debuff' && effect.prayer !== 'Damage'));
-    const matchingWeapon: Equipment = combat.computerWeapons.find(weapon => weapon._id === effect.weapon.id);
+    const effect: StatusEffect = combat.computerEffects.find(effect => (effect.prayer !== 'Debuff' && effect.prayer !== 'Damage')) as StatusEffect;
+    const matchingWeapon: Equipment = combat.computerWeapons.find(weapon => weapon._id === effect.weapon.id) as Equipment;
     const matchingWeaponIndex: number = combat.computerWeapons.indexOf(matchingWeapon);
     if (effect.prayer === 'Buff') {
-        const deBuff = stripEffect(effect, combat.computerDefense, combat.computerWeapons[matchingWeaponIndex], false);
+        const deBuff = stripEffect(effect, combat.computerDefense as Defense, combat.computerWeapons[matchingWeaponIndex], false);
         combat.computerDefense = deBuff.defense;
         combat.computerWeapons[matchingWeaponIndex] = deBuff.weapon; 
     };
@@ -2299,23 +2302,23 @@ function prayerSplitter(combat: Combat, prayer: string): Combat {
     console.log(`Prayer: ${prayer}`);
     let originalPrayer = combat.playerBlessing;
     combat.playerBlessing = prayer; 
-    faithSuccess(combat, 'player', combat.weapons[0], 0);
+    faithSuccess(combat, 'player', combat.weapons[0] as Equipment, 0);
     combat.playerBlessing = originalPrayer;
     return combat;
 };
 
 function instantDamageSplitter(combat: Combat, mastery: string): Combat {
-    let damage = combat.player[mastery] * 0.5 + combat.player.level;
+    let damage = combat.player?.[mastery] * 0.5 + (combat.player?.level as number);
     combat.realizedPlayerDamage = damage;
     combat.newComputerHealth -= combat.realizedPlayerDamage;
     combat.computerDamaged = true;
     combat.playerAction = 'invoke';
-    combat.playerActionDescription = `You attack ${combat.computer.name}'s Caeren with your ${combat.player.mastery}'s Invocation of ${combat.weapons[0].influences[0]} for ${Math.round(damage)} Pure Damage.`;    
+    combat.playerActionDescription = `You attack ${combat.computer?.name}'s Caeren with your ${combat.player?.mastery}'s Invocation of ${combat.weapons[0]?.influences?.[0]} for ${Math.round(damage)} Pure Damage.`;    
     return combat;
 };
 
 function instantActionSplitter(combat: Combat): any {
-    switch (combat.player.mastery) {
+    switch (combat.player?.mastery) {
         case 'Constitution':
             prayerSplitter(combat, 'Heal');
             prayerSplitter(combat, 'Buff');
@@ -2384,30 +2387,30 @@ function consumePrayerSplitter(combat: Combat): any {
 
     combat.playerEffects = combat.playerEffects.filter(effect => {
         if (effect.prayer !== combat.prayerSacrifice || effect.name !== combat.prayerSacrificeName) return true; // || effect.enemyName !== combat.computer.name
-        const matchingWeapon = combat.weapons.find(weapon => weapon._id === effect.weapon.id);
+        const matchingWeapon = combat.weapons.find(weapon => weapon?._id === effect.weapon.id);
         const matchingWeaponIndex = combat.weapons.indexOf(matchingWeapon);
-        const matchingDebuffTarget = combat.weapons.find(weapon => weapon.name === effect.debuffTarget);
+        const matchingDebuffTarget = combat.weapons.find(weapon => weapon?.name === effect.debuffTarget);
         const matchingDebuffTargetIndex = combat.weapons.indexOf(matchingDebuffTarget);
 
         console.log(`Sacrificing: ${combat.prayerSacrifice}`);
         switch (combat.prayerSacrifice) {
             case 'Heal':
-                combat.newPlayerHealth += effect.effect.healing * 0.165;
+                combat.newPlayerHealth += effect.effect?.healing as number * 0.165;
                 if (combat.newPlayerHealth > 0) combat.computerWin = false;
                 break;
             case 'Buff':
                 combat.newComputerHealth -= (combat.realizedPlayerDamage * 0.5);
-                combat.playerActionDescription = `${combat.weapons[0].influences[0]}'s Tendrils serenade ${combat.computer.name}, echoing ${Math.round(combat.realizedPlayerDamage * 0.5)} more damage.`    
+                combat.playerActionDescription = `${combat.weapons[0]?.influences?.[0]}'s Tendrils serenade ${combat.computer?.name}, echoing ${Math.round(combat.realizedPlayerDamage * 0.5)} more damage.`    
                 if (combat.newComputerHealth <= 0) {
                     combat.newComputerHealth = 0;
                     combat.playerWin = true;
                 };
-                const deBuff = stripEffect(effect, combat.playerDefense, combat.weapons[matchingWeaponIndex], false);
+                const deBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingWeaponIndex] as Equipment, false);
                 combat.weapons[matchingWeaponIndex] = deBuff.weapon;
                 combat.playerDefense = deBuff.defense;
                 break;
             case 'Damage':
-                combat.newComputerHealth -= effect.effect.damage * 0.165;
+                combat.newComputerHealth -= effect.effect?.damage as number * 0.165;
                 if (combat.newComputerHealth <= 0) {
                     combat.newComputerHealth = 0;
                     combat.playerWin = true;
@@ -2415,13 +2418,13 @@ function consumePrayerSplitter(combat: Combat): any {
                 break;
             case 'Debuff':
                 combat.newComputerHealth -= (combat.realizedComputerDamage * 0.5);
-                combat.playerActionDescription = `The Hush of ${combat.weapons[0].influences[0]} wracks ${combat.computer.name}, wearing for ${Math.round(combat.realizedComputerDamage * 0.5)} more damage.`;   
+                combat.playerActionDescription = `The Hush of ${combat.weapons[0]?.influences?.[0]} wracks ${combat.computer?.name}, wearing for ${Math.round(combat.realizedComputerDamage * 0.5)} more damage.`;   
             
                 if (combat.newComputerHealth <= 0) {
                     combat.newComputerHealth = 0;
                     combat.playerWin = true;
                 };
-                const reBuff = stripEffect(effect, combat.playerDefense, combat.weapons[matchingDebuffTargetIndex], true);
+                const reBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingDebuffTargetIndex] as Equipment, true);
                 combat.playerDefense = reBuff.defense;
                 combat.weapons[matchingDebuffTargetIndex] = reBuff.weapon;
                 break;
@@ -2468,7 +2471,7 @@ function consumePrayerSplitter(combat: Combat): any {
 function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, effectTimer: number }): any { 
     let { combat, effect, effectTimer } = data;
 
-    if (effect.playerName === combat.player.name) { 
+    if (effect.playerName === combat.player?.name) { 
         if (effect.prayer === 'Damage') { 
             damageTick(combat, effect, true);
             if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.computerEffects = combat.computerEffects.filter(compEffect => compEffect.id !== effect.id);
@@ -2477,7 +2480,7 @@ function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, 
             healTick(combat, effect, true);
             if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.playerEffects = combat.playerEffects.filter(playerEffect => playerEffect.id !== effect.id);
         };  
-    } else if (effect.playerName === combat.computer.name) {
+    } else if (effect.playerName === combat.computer?.name) {
         if (effect.prayer === 'Damage') {
             damageTick(combat, effect, false);
             if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.playerEffects = combat.playerEffects.filter(playEffect => playEffect.id !== effect.id);
@@ -2513,53 +2516,53 @@ function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, 
 function prayerRemoveTickSplitter(combat: Combat, statusEffect: StatusEffect): Combat {
     // const { combat, statusEffect } = data;
     const target = (statusEffect.prayer === 'Damage' || statusEffect.prayer === 'Debuff') ? statusEffect.enemyName : statusEffect.playerName;
-    console.log(target, combat.player.name, combat.computer.name, 'Removing Tick from Target - Player Name - Computer Name');
+    console.log(target, combat.player?.name, combat.computer?.name, 'Removing Tick from Target - Player Name - Computer Name');
     console.log(`%c Removing ${statusEffect.prayer} from ${statusEffect.playerName}`, 'color: #ff0000');
 
-    if (target === combat.player.name) { 
+    if (target === combat.player?.name) { 
         combat.playerEffects = combat.playerEffects.filter(effect => {
             if (effect.id !== statusEffect.id) return true; 
 
-            const matchingWeapon: Equipment = combat.weapons.find(weapon => weapon._id === effect.weapon.id);
+            const matchingWeapon: Equipment = combat.weapons.find(weapon => weapon?._id === effect.weapon.id) as Equipment;
             const matchingWeaponIndex: number = combat.weapons.indexOf(matchingWeapon);
-            const matchingDebuffTarget: Equipment = combat.weapons.find(weapon => weapon.name === effect.debuffTarget);
+            const matchingDebuffTarget: Equipment = combat.weapons.find(weapon => weapon?.name === effect.debuffTarget) as Equipment;
             const matchingDebuffTargetIndex: number = combat.weapons.indexOf(matchingDebuffTarget);
 
             if (effect.prayer === 'Buff') { 
                 console.log(`Removing Buff Effect from ${effect.playerName}`);
-                const deBuff = stripEffect(effect, combat.playerDefense, combat.weapons[matchingWeaponIndex], false);
+                const deBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingWeaponIndex] as Equipment, false);
                 combat.playerDefense = deBuff.defense;
                 combat.weapons[matchingWeaponIndex] = deBuff.weapon;
             };
 
             if (effect.prayer === 'Debuff') { 
                 console.log(`Removing Debuff Effect from ${effect.playerName} against ${effect.debuffTarget}`);
-                const reBuff = stripEffect(effect, combat.playerDefense, combat.weapons[matchingDebuffTargetIndex], true);
+                const reBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingDebuffTargetIndex] as Equipment, true);
                 combat.playerDefense = reBuff.defense;
                 combat.weapons[matchingDebuffTargetIndex] = reBuff.weapon;
             };
 
             return false;
         });
-    } else if (target === combat.computer.name) {
+    } else if (target === combat.computer?.name) {
         combat.computerEffects = combat.computerEffects.filter(effect => {
             if (effect.id !== statusEffect.id) return true;
 
-            const matchingWeapon: Equipment = combat.computerWeapons.find(weapon => weapon._id === effect.weapon.id);
+            const matchingWeapon: Equipment = combat.computerWeapons.find(weapon => weapon._id === effect.weapon.id) as Equipment;
             const matchingWeaponIndex: number = combat.computerWeapons.indexOf(matchingWeapon);
-            const matchingDebuffTarget: Equipment = combat.computerWeapons.find(weapon => weapon.name === effect.debuffTarget);
+            const matchingDebuffTarget: Equipment = combat.computerWeapons.find(weapon => weapon.name === effect.debuffTarget) as Equipment;
             const matchingDebuffTargetIndex: number = combat.computerWeapons.indexOf(matchingDebuffTarget);
 
             if (effect.prayer === 'Buff') { 
                 console.log(`Removing Buff Effect from ${effect.playerName}`);
-                const deBuff = stripEffect(effect, combat.computerDefense, combat.computerWeapons[matchingWeaponIndex], false);
+                const deBuff = stripEffect(effect, combat.computerDefense as Defense, combat.computerWeapons[matchingWeaponIndex], false);
                 combat.computerDefense = deBuff.defense;
                 combat.computerWeapons[matchingWeaponIndex] = deBuff.weapon;
             };
 
             if (effect.prayer === 'Debuff') { 
                 console.log(`Removing Debuff Effect from ${effect.playerName} against ${effect.debuffTarget}`);
-                const reBuff = stripEffect(effect, combat.computerDefense, combat.computerWeapons[matchingDebuffTargetIndex], true);
+                const reBuff = stripEffect(effect, combat.computerDefense as Defense, combat.computerWeapons[matchingDebuffTargetIndex], true);
                 combat.computerDefense = reBuff.defense;
                 combat.computerWeapons[matchingDebuffTargetIndex] = reBuff.weapon;
             };
@@ -2570,7 +2573,7 @@ function prayerRemoveTickSplitter(combat: Combat, statusEffect: StatusEffect): C
     return combat;
 };
 
-function computerCombatSplitter(data: { computerOne: Combat, computerTwo: Combat }): { computerOne: Combat, computerTwo: Combat } {
+function computerCombatSplitter(data: { computerOne: Combat, computerTwo: Combat }) {
     try {
         let { computerOne, computerTwo } = data;
         console.log(computerOne, computerTwo, 'Computer Combat Splitter Data');
@@ -2600,7 +2603,7 @@ function computerCombatSplitter(data: { computerOne: Combat, computerTwo: Combat
         computerActionCompiler(computerTwo, computerOne.computerAction);
 
 
-        return { computerOne, computerTwo };
+        return { computerOne, computerTwo } as { computerOne: Combat, computerTwo: Combat };
     } catch (err) {
         console.log(err, 'Error in the Phaser Effect Tick of Game Services');
     };

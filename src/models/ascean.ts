@@ -3,10 +3,12 @@ import { Weapons } from "../assets/db/weaponry";
 import Equipment, { getRandomNumStr, mutate } from "./equipment";
 import { Amulets, Rings, Trinkets } from "../assets/db/jewelry";
 import { Statistics, initStatistics } from "../utility/statistics";
-import { initCharacter } from "../utility/ascean";
+import { initCharacter } from "../utility/ascean"; 
+import { v4 as uuidv4 } from 'uuid';
+import { addAscean } from "../assets/db/db";
 
 export default class Ascean {
-    _id: string = getRandomNumStr(16);
+    _id: string = uuidv4();
     origin: string = 'Ashtre';
     sex: string = 'Man';
     mastery: string = 'achre';
@@ -78,7 +80,7 @@ export default class Ascean {
     [key: string]: any;
 };
 
-function createAscean(data: any): Ascean {
+async function createAscean(data: any, template?: boolean): Promise<Ascean> {
     const pref = data.preference;
     const faith = data.faith;
     switch (pref) {
@@ -180,31 +182,62 @@ function createAscean(data: any): Ascean {
     const amulet = Amulets.find(amulet => amulet.rarity === 'Default');
     const trinket = Trinkets.find(trinket => trinket.rarity === 'Default');
 
-    mutate([weaponOne, weaponTwo, shield, weaponThree, helmet, chest, legs, ringOne, ringTwo, amulet, trinket] as any[], 'Common')
-    const ascean = new Ascean({
-        ...data,
-        _id: getRandomNumStr(16),
-        weaponOne: weaponOne,
-        weaponTwo: weaponTwo,
-        weaponThree: weaponThree,
-        shield: shield,
-        helmet: helmet,
-        chest: chest,
-        legs: legs,
-        ringOne: ringOne,
-        ringTwo: ringTwo,
-        amulet: amulet,
-        trinket: trinket,
-        currency: {
-            silver: data.kyosir * 3,
-            gold: 0
-        },
-        experience: 0,
-        imgUrl: `../assets/images/${data.origin}-${data.sex}.jpg`
-    });
-    return ascean;
+    if (!template) {
+        await mutate([weaponOne, weaponTwo, shield, weaponThree, helmet, chest, legs, ringOne, ringTwo, amulet, trinket] as any[], 'Common')
+    };
+    
+    if (template) {
+        const ascean = new Ascean({
+            ...data,
+            _id: uuidv4(),
+            weaponOne: weaponOne,
+            weaponTwo: weaponTwo,
+            weaponThree: weaponThree,
+            shield: shield,
+            helmet: helmet,
+            chest: chest,
+            legs: legs,
+            ringOne: ringOne,
+            ringTwo: ringTwo,
+            amulet: amulet,
+            trinket: trinket,
+            currency: {
+                silver: data.kyosir * 3,
+                gold: 0
+            },
+            experience: 0,
+            imgUrl: `../assets/images/${data.origin}-${data.sex}.jpg`
+        });
+        return ascean;
+    
+    } else {
+        const ascean = new Ascean({
+            ...data,
+            _id: uuidv4(),
+            weaponOne: weaponOne?._id,
+            weaponTwo: weaponTwo?._id,
+            weaponThree: weaponThree?._id,
+            shield: shield?._id,
+            helmet: helmet?._id,
+            chest: chest?._id,
+            legs: legs?._id,
+            ringOne: ringOne?._id,
+            ringTwo: ringTwo?._id,
+            amulet: amulet?._id,
+            trinket: trinket?._id,
+            currency: {
+                silver: data.kyosir * 3,
+                gold: 0
+            },
+            experience: 0,
+            imgUrl: `../assets/images/${data.origin}-${data.sex}.jpg`
+        });
+        const res = await addAscean(ascean);
+        console.log(res, 'Added Ascean to Database');
+        return ascean;
+    };
 };
 
-const initAscean: Ascean = createAscean(initCharacter);;
+const initAscean = await createAscean(initCharacter, true);
 
 export { createAscean, initAscean };

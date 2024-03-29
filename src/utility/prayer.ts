@@ -18,6 +18,7 @@ export type Effect = {
     roll?: number;
     healing?: number;
     damage?: number;
+    [key: string]: any;
 };
 
 export type Intensity = {

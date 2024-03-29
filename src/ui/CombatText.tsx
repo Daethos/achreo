@@ -1,4 +1,4 @@
-import { Accessor, createEffect, createMemo, createSignal } from 'solid-js';
+import { Accessor, createMemo, createSignal } from 'solid-js';
 import { Combat } from '../stores/combat';
 import { useResizeListener } from '../utility/dimensions';
 
@@ -46,7 +46,6 @@ export default function CombatText({ combat }: { combat: Accessor<Combat> }) {
                 <br /><br />
                 And perhaps I should parse through to highlight <span style={{ color: 'red' }}>critical</span> and <span style={{ color: 'blue' }}>glancing</span> blows. This might add a much needed 
                 <span style={{ color: 'purple' }}>dramatic</span> effect and <span style={{ color: 'gold'}}>punch</span> to reading the combat logs.</>
-        console.log(result, 'result')
         return history;
     };
 

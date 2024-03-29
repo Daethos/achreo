@@ -40,7 +40,7 @@ export default function SmallHud({ combat, game }: Props) {
     const showPlayer = () => EventBus.emit('show-player', !game().showPlayer);
 
     const icon = {
-        width: '1.75em',
+        width: 'auto',
         height: '1.75em',
     };
 
@@ -68,7 +68,7 @@ export default function SmallHud({ combat, game }: Props) {
                 { height: '7.5%', width: '3.75%', right: '20.5%' } :
                 { height: '3.5%', width: '7.5%', right: '44%' }} 
                 onClick={caerenic}>
-                    <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                    <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center', height: 'auto', width: 'auto' }}>
                         <img src={'../assets/images/caerenic.png'} style={icon} alt='Ce' />
                     </div>
             </button>

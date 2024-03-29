@@ -14,7 +14,7 @@ import { CharacterSheet, asceanCompiler } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
 import type { IRefPhaserGame } from './game/PhaserGame';
 import { EventBus } from './game/EventBus';
-import { deleteAscean, getAsceans, getInventory, populate, scrub } from './assets/db/db'; 
+import { deleteAscean, getAsceans, getInventory, getSettings, populate, scrub } from './assets/db/db'; 
 
 
 export default function App() {
@@ -110,6 +110,8 @@ export default function App() {
             const res = asceanCompiler(asc);
             const inv = await getInventory(asc?._id as string);
             const full = { ...res?.ascean, inventory: inv };
+            const set = await getSettings(asc?._id as string);
+            setSettings(set);
             setAscean(full);
             setMenu({ ...menu(), choosingCharacter: false, gameRunning: true });
         } catch (err: any) {

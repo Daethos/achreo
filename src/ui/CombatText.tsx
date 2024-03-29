@@ -53,8 +53,8 @@ export default function CombatText({ combat }: { combat: Accessor<Combat> }) {
 
     return (
         <div style={dimensions().ORIENTATION === 'landscape' ? { 
-            position: 'absolute', left: '25vw', height: '30vh', width: '50vw', top: '55vh', margin: 'auto 0', 'text-align': 'center', 'align-items': 'center', 'justify-content': 'center', overflow: 'scroll',
-            'background-color': '#000', 'border': '0.15em solid #FFC700', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700' 
+            position: 'absolute', left: '25vw', height: '15vh', width: '50vw', top: '75vh', margin: 'auto 0', 'text-align': 'center', 'align-items': 'center', 'justify-content': 'center', overflow: 'scroll',
+            'background-color': '#000', 'border': '0.15em solid #FFC700', 'border-radius': '0.25em', 'box-shadow': '0 0 0.25em #FFC700' 
             
         } : { 
             position: 'absolute', top: '50vh', 'align-items': 'center', 'justify-content': 'center', overflow: 'scroll' 
@@ -62,7 +62,7 @@ export default function CombatText({ combat }: { combat: Accessor<Combat> }) {
             {/* <img src={'../assets/gui/message_window.png'} alt="message window" style={{ 
                 position: 'fixed', bottom: '10vh', left: '15vw', // 'z-index': 0
             }} /> */}
-            <div style={{ 'text-wrap': 'balance', margin: '5%' }}>
+            <div style={{ 'text-wrap': 'balance', margin: '3%' }}>
                 <p class='gold' style={{ 'z-index': 1, 'font-size': '0.6em' }}>{history()}</p>
             </div> 
         </div>

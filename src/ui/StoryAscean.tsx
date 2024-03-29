@@ -17,7 +17,7 @@ import Ascean from '../models/ascean';
 import { GameState } from '../stores/game';
 import { Combat } from '../stores/combat';
 import Highlight from './Highlight';
-import { deleteEquipment } from '../assets/db/db';
+import { deleteEquipment, updateSettings } from '../assets/db/db';
 import SettingSetter from '../utility/settings';
 
 // import { updateInventory, updateSettings } from '../assets/db/db';
@@ -117,18 +117,19 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         };
     }; 
 
-    // const saveSettings = async (newSettings) => {
-    //     try {
-    //         await updateSettings(newSettings);
-    //     } catch (err) {
-    //         console.warn(err, "Error Saving Game Settings");
-    //     };
-    // };
+    const saveSettings = async (newSettings: Settings) => {
+        try {
+            await updateSettings(newSettings);
+        } catch (err) {
+            console.warn(err, "Error Saving Game Settings");
+        };
+    };
 
-    const currentCharacterView = (e: string) => {
+    const currentCharacterView = async (e: string) => {
         console.log(e, "Character div");
         const newSettings: Settings = { ...settings(), characterViews: e };
         setSettings(newSettings);
+        await saveSettings(newSettings);
     };
 
     // const shake = (value, action) => setSettings({ ...settings(), shake: { ...settings().shake, [action]: value } });
@@ -195,6 +196,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         console.log(newSettings, "New Settings");
         // setSettingViews(createSettingInfo(settings().settingViews));
         setSettings(newSettings);
+        await saveSettings(newSettings);
     };
 
     async function setNextView() {
@@ -203,6 +205,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
             console.log(nextView, "Next div")
             const newSettings: Settings = { ...settings(), asceanViews: nextView };
             setSettings(newSettings);
+            await saveSettings(newSettings);
         };
     }; 
 
@@ -216,7 +219,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         setSpecialShow(true);
     };
 
-    function handleActionButton(e: string, i: number) {
+    async function handleActionButton(e: string, i: number) {
         const newActions = [...settings().actions];
         const newAction = e;
         
@@ -224,11 +227,15 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         newActions[newActions.indexOf(newAction)] = oldAction;
         newActions[i] = newAction;
         
-        EventBus.emit('update-action', newActions);
+        // EventBus.emit('update-action', newActions);
+        const newSettings: Settings = { ...settings(), actions: newActions };
+        await saveSettings(newSettings);
+        setSettings(newSettings);
         EventBus.emit('reorder-buttons', { list: newActions, type: 'action' });
+
     };
 
-    function handleSpecialButton(e: string, i: number) {
+    async function handleSpecialButton(e: string, i: number) {
         const newSpecials = [...settings().specials];
         const newSpecial = e;
 
@@ -237,8 +244,12 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
             newSpecials[newSpecials.indexOf(newSpecial)] = oldSpecial;
         };
         newSpecials[i] = newSpecial;
-        EventBus.emit('update-special', newSpecials);
+        // EventBus.emit('update-special', newSpecials);
+        const newSettings: Settings = { ...settings(), specials: newSpecials };
+        await saveSettings(newSettings);
+        setSettings(newSettings);
         EventBus.emit('reorder-buttons', { list: newSpecials, type: 'special' });
+
     };
 
     async function freeInventory() {

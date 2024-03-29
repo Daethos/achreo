@@ -15,7 +15,7 @@ import { fetchNpc } from '../utility/npc';
 import { GameState } from '../stores/game';
 import { usePhaserEvent } from '../utility/hooks';
 import createStamina from './Stamina';
-import Equipment, { getOneRandom } from '../models/equipment';
+// import Equipment, { getOneRandom } from '../models/equipment';
 import EnemyPreview from './EnemyPreview';
 // import createTimer from './Timer';
 // import StoryTutorial from '../../../seyr/src/game/ui/StoryTutorial';
@@ -55,27 +55,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     createEffect(() => {
         updateCombatListener(combat());
     });  
-
-    // function destroyGame() {
-    //     console.log('<--- Destroying Phaser Game --->');
-    //     // const game = gameRef?.current;
-    //     // if (!game) return;
-    //     // console.log(game, 'Game')
-    //     // const scene = game()?.scene?.getScene('Play');
-    //     // for (let i = 0; i < scene.enemies.length; i++) {
-    //     //     scene.enemies[i].cleanUp();
-    //     // };
-    //     // for (let i = 0; i < scene.npcs.length; i++) {
-    //     //     scene.npcs[i].cleanUp();
-    //     // };
-    //     // scene.player.cleanUp();
-    //     // scene.cleanUp();
-    //     // while (game().firstChild) {
-    //     //     game().removeChild(game().firstChild);
-    //     // };
-    //     // game().destroy(true);
-    //     // gameRef.current = null;
-    // };
  
     // const clearNPC = async () => {
     //     if (game().merchantEquipment.length > 0) {
@@ -92,34 +71,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
 
     const sendEnemyData = async () => EventBus.emit('get-enemy', combat().computer);
     const sendSettings = async () => EventBus.emit('get-settings', settings);
-    const updateCombatListener = (data: Combat) => EventBus.emit('combat', data); // Was Async
+    const updateCombatListener = (data: Combat) => EventBus.emit('combat', data);
     const updateStamina = (e: number) => setStaminaPercentage(staminaPercentage() - e <= 0 ? 0 : staminaPercentage() - e);
-
-    // async function requestInventory() {
-    //     try {
-    //         // const inventory = await getInventory(ascean()._id);
-    //         // EventBus.emit('get-inventory', inventory);
-    //     } catch (err: any) {
-    //         console.log(err, 'Error Updating Inventory');
-    //     };
-    // };
-
-    // async function saveInventory(inventory: Equipment[]) {
-    //     try {
-    //         const newInventory = inventory.map((item) => item._id);
-    //         await updateInventory(ascean()._id, flattenedInventory);
-    //     } catch (err: any) {
-    //         console.log(err, 'Error Saving Inventory');
-    //     };
-    // };
-
-    // async function refreshInventory(freshInventory: Equipment[]) {
-    //     try {
-    //         setGame({ ...game, inventory: freshInventory });
-    //     } catch (err: any) {
-    //         console.log(err, 'Error Refreshing Inventory');
-    //     };
-    // };
 
     function initiateCombat(e: { type: string; data: any }) {
         try {    
@@ -281,6 +234,10 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         setEnemies(newEnemies);
     };
 
+    usePhaserEvent('fetch-button-reorder', () => {
+        EventBus.emit('reorder-buttons', { list: settings().actions, type: 'action' });
+        EventBus.emit('reorder-buttons', { list: settings().specials, type: 'special' });
+    });
     usePhaserEvent('fetch-npc', fetchNpc);
     usePhaserEvent('setup-npc', setupNpc);
     usePhaserEvent('initiate-combat', initiateCombat);
@@ -305,25 +262,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     usePhaserEvent('update-special', (e: any) => setSettings({ ...settings(), specials: e }));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
 
-    // async function lootDrop() {
-    //     const array: any = [];
-    //     const loot = await getOneRandom(ascean().level) ?? [];
-    //     console.log(loot[0].name, loot[0]._id, 'Loot Drop One')
-    //     array.push(loot[0] as Equipment);
-    //     const lootTwo = await getOneRandom(ascean().level) ?? [];
-    //     console.log(loot[0].name, loot[0]._id, 'Loot Drop One', lootTwo[0].name, lootTwo[0]._id, 'Loot Drop Two');
-    //     array.push(lootTwo[0] as Equipment);
-    //     const lootThree = await getOneRandom(ascean().level) ?? [];
-    //     console.log(loot[0].name, loot[0]._id, 'Loot Drop One', lootTwo[0].name, lootTwo[0]._id, 'Loot Drop Two', lootThree[0].name, lootThree[0]._id, 'Loot Drop Three');
-    //     array.push(lootThree[0] as Equipment);
-    //     console.log(array, 'Loot Drop');
-    //     EventBus.emit('add-lootdrop', array);
-    // };
-
-    // lootDrop();
-
     function fetchEnemy(enemy: any) {
-        console.log(enemy.id, enemy.game.name, 'fetchEnemy');
         EventBus.emit('setup-enemy', enemy);
         EventBus.emit('tab-target', enemy);    
     };

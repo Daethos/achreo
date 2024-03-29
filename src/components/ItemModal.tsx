@@ -19,7 +19,7 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
     const dimensions = useResizeListener();
     const empty = item.name.includes('Empty');
     const name = item.name.includes('Starter') ? ( item.name.split(' ')[0] + ' ' + item.name.split(' ')[1] ) : ( item.name );
-    const centerImage = dimensions()?.ORIENTATION === 'landscape' ? (name.length > 15 ? '45%' : name.length > 10 ? '7.5%' : '15%') : (name.length > 13 ? '40%' : name.length > 10 ? '5%' : '10%');
+    const centerImage = dimensions()?.ORIENTATION === 'landscape' ? (name.length > 18 ? '45%' : name.length > 10 ? '7.5%' : '15%') : (name.length > 13 ? '40%' : name.length > 10 ? '5%' : '10%');
     return (
         <div class="border superCenter" style={{ width: dimensions()?.ORIENTATION === 'landscape' ? '50%' : '75%' }}> 
             <div class='border' style={{ height: '100%' }}>
@@ -67,16 +67,15 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                     <Show when={item?.influences && item?.influences?.length > 0}>
                         Influence: <span class='gold'>{item?.influences?.[0]}</span>
                     </Show>
-                    <div style={{ color: getRarityColor(item?.rarity as string), 'font-size': '1.5em', 'margin-top': '3%' }}>
+                    <p style={{ color: getRarityColor(item?.rarity as string), 'font-size': '1.5em', 'margin': '3%' }}>
                         {item?.rarity}
-                    </div>
+                    </p>
                     <Show when={stalwart}>
                         <p class='gold' style={{ 'font-size': '0.75em' }}>
                             Stalwart - You are engaged in combat with your shield raised, adding it to your passive defense. 
                             You receive 50% less poise damage. 
                             You receive 10% less damage. 
                             You cannot dodge or roll.
-                            <br /><br />
                         </p>
                     </Show>
                     <Show when={caerenic}>
@@ -84,7 +83,6 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                             Caerenic - You attempt to harnass your caer with your achre, increasing your damage by 15%. 
                             You move 15% faster. 
                             You receive 25% more damage. 
-                            <br /><br />
                         </p>
                     </Show>
                 </div> 

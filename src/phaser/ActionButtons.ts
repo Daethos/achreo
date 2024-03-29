@@ -327,7 +327,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         });
     };    
 
-    private pressButton = (button: ActionButton, scene: Game): void => {
+    private pressButton = (button: ActionButton, scene: any): void => {
         const input = button.name.toLowerCase();
         const check = staminaCheck(input, scene.player.stamina);
         if (check.success === true) {
@@ -385,6 +385,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     break;
             };    
         });
+        EventBus.emit('fetch-button-reorder');
     };
 };
 

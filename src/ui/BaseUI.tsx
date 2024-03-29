@@ -305,22 +305,22 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     usePhaserEvent('update-special', (e: any) => setSettings({ ...settings(), specials: e }));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
 
-    async function lootDrop() {
-        const array: any = [];
-        const loot = await getOneRandom(ascean().level) ?? [];
-        console.log(loot[0].name, loot[0]._id, 'Loot Drop One')
-        array.push(loot[0] as Equipment);
-        const lootTwo = await getOneRandom(ascean().level) ?? [];
-        console.log(loot[0].name, loot[0]._id, 'Loot Drop One', lootTwo[0].name, lootTwo[0]._id, 'Loot Drop Two');
-        array.push(lootTwo[0] as Equipment);
-        const lootThree = await getOneRandom(ascean().level) ?? [];
-        console.log(loot[0].name, loot[0]._id, 'Loot Drop One', lootTwo[0].name, lootTwo[0]._id, 'Loot Drop Two', lootThree[0].name, lootThree[0]._id, 'Loot Drop Three');
-        array.push(lootThree[0] as Equipment);
-        console.log(array, 'Loot Drop');
-        EventBus.emit('add-lootdrop', array);
-    };
+    // async function lootDrop() {
+    //     const array: any = [];
+    //     const loot = await getOneRandom(ascean().level) ?? [];
+    //     console.log(loot[0].name, loot[0]._id, 'Loot Drop One')
+    //     array.push(loot[0] as Equipment);
+    //     const lootTwo = await getOneRandom(ascean().level) ?? [];
+    //     console.log(loot[0].name, loot[0]._id, 'Loot Drop One', lootTwo[0].name, lootTwo[0]._id, 'Loot Drop Two');
+    //     array.push(lootTwo[0] as Equipment);
+    //     const lootThree = await getOneRandom(ascean().level) ?? [];
+    //     console.log(loot[0].name, loot[0]._id, 'Loot Drop One', lootTwo[0].name, lootTwo[0]._id, 'Loot Drop Two', lootThree[0].name, lootThree[0]._id, 'Loot Drop Three');
+    //     array.push(lootThree[0] as Equipment);
+    //     console.log(array, 'Loot Drop');
+    //     EventBus.emit('add-lootdrop', array);
+    // };
 
-    lootDrop();
+    // lootDrop();
 
     function fetchEnemy(enemy: any) {
         console.log(enemy.id, enemy.game.name, 'fetchEnemy');

@@ -16,10 +16,9 @@ import type { IRefPhaserGame } from './game/PhaserGame';
 import { EventBus } from './game/EventBus';
 import { deleteAscean, getAsceans, getInventory, populate, scrub } from './assets/db/db'; 
 
-const init = initAscean;
 
 export default function App() {
-    const [ascean, setAscean] = createSignal<Ascean>(init);
+    const [ascean, setAscean] = createSignal<Ascean>(initAscean);
     const [settings, setSettings] = createSignal(initSettings);
     const [menu, setMenu] = createSignal<Menu>({
         asceans: [] as Ascean[] | [],  
@@ -64,9 +63,7 @@ export default function App() {
                     setMenu({ ...menu(), loading: false });
                     return;
                 };
-                // const pop = await res.map(async (asc: Ascean) => await populate(asc));
                 const pop = await Promise.all(res.map(async (asc: Ascean) => await populate(asc)));
-                // res.forEach((asc: Ascean) => populate(asc));
                 console.log(pop, 'Populated Asceans')
                 setMenu({ ...menu(), asceans: pop, loading: false, choosingCharacter: true });
                 console.log(menu(), 'Menu');
@@ -76,63 +73,9 @@ export default function App() {
         };
         fetch();
     };
-
-    // The sprite can only be moved in the MainMenu Scene
-    // const [canMoveSprite, setCanMoveSprite] = createSignal(true);
-    // const [spritePosition, setSpritePosition] = createSignal({ x: 0, y: 0 });
-        
-    // createEffect(() => {
-    //     setSettings(initSettings); // Pretending to fetch settings from the database
-    //     setAscean(undefined); // Pretending to fetch Ascean from the database
-    // });
-
-    // const changeScene = () => {
-    //     const scene = phaserRef.scene as MainMenu;
-    //     if (scene) {
-    //         scene.changeScene();
-    //     };
-    // };
-
-    // const moveSprite = () => {
-    //     const scene = phaserRef.scene as MainMenu;
-
-    //     if (scene) {
-    //         if (scene.scene.key === 'MainMenu') {
-    //             // Get the update logo position
-    //             scene.moveLogo(({ x, y }) => {
-    //                 setSpritePosition({ x, y });
-    //             });
-    //         };
-    //     };
-    // };
-
-    // const addSprite = () => {
-    //     const scene = phaserRef.scene;
-
-    //     if (scene) {
-    //         // Add more stars
-    //         const x = Phaser.Math.Between(64, scene.scale.width - 64);
-    //         const y = Phaser.Math.Between(64, scene.scale.height - 64);
-
-    //         //  `add.sprite` is a Phaser GameObjectFactory method and it returns a Sprite Game Object instance
-    //         const star = scene.add.sprite(x, y, 'star');
-    //         //  ... which you can then act upon. Here we create a Phaser Tween to fade the star sprite in and out.
-    //         //  You could, of course, do this from within the Phaser Scene code, but this is just an example
-    //         //  showing that Phaser objects and systems can be acted upon from outside of Phaser itself.
-    //         scene.add.tween({
-    //             targets: star,
-    //             duration: 500 + Math.random() * 1000,
-    //             alpha: 0,
-    //             yoyo: true,
-    //             repeat: -1
-    //         });
-    //     };
-    // };
-
-    // Event emitted from the PhaserGame component
+ 
     const currentScene = (scene: Phaser.Scene) => {
         console.log('Current Scene:', scene.scene.key);
-        // setCanMoveSprite(scene.scene.key !== 'MainMenu');
     };
 
     async function createCharacter(character: CharacterSheet) {

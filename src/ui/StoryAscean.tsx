@@ -1,13 +1,10 @@
 import { Accessor, Setter, Show, createEffect, createSignal } from 'solid-js';
 import AsceanImageCard from '../components/AsceanImageCard';
 import AttributeModal, { AttributeCompiler } from '../components/Attributes';
-// import SettingSetter from '../utility/settings';
 import InventoryPouch from './InventoryPouch';
-// import Inventory from './Inventory';
 import { EventBus } from '../game/EventBus';
 import HealthBar from './HealthBar';
 import ExperienceBar from './ExperienceBar';
-// import { updateInventory, updateSettings } from '../assets/db/db';
 import Firewater from './Firewater';
 import { ActionButtonModal, Modal } from '../utility/buttons';
 import { font } from '../utility/styling';
@@ -21,8 +18,10 @@ import { GameState } from '../stores/game';
 import { Combat } from '../stores/combat';
 import Highlight from './Highlight';
 import { deleteEquipment } from '../assets/db/db';
+import SettingSetter from '../utility/settings';
 
-// import {  playerTraits } from '../utility/ascean';
+// import { updateInventory, updateSettings } from '../assets/db/db';
+// import { playerTraits } from '../utility/ascean';
 // import LevelUpModal from './LevelUpModal';
 
 export const viewCycleMap = {
@@ -80,7 +79,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         special: SPECIALS[0],
         index: 0,
     });
-    const [equipModalShow, setEquipModalShow] = createSignal(false);
     const [inspectModalShow, setInspectModalShow] = createSignal(false);
     const [inspectItems, setInspectItems] = createSignal<{ item: Equipment | undefined; type: string; }[]>([{ item: undefined, type: '' }]);
     const [attrShow, setAttrShow] = createSignal(false);
@@ -117,16 +115,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
             console.log(item, 'Item in checkHighlight')
             if (!item) setHighlighted({ item: undefined, comparing: false, type: '' });
         };
-    };
-
-    // const saveInventory = async (inventory) => {
-        // try {
-            // const flattenedInventory = inventory.map((item) => item?._id);
-            // await updateInventory(ascean()._id, flattenedInventory);
-        // } catch (err) {
-            // console.warn(err, "Error Saving Inventory");
-        // };
-    // };
+    }; 
 
     // const saveSettings = async (newSettings) => {
     //     try {
@@ -237,7 +226,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         
         EventBus.emit('update-action', newActions);
         EventBus.emit('reorder-buttons', { list: newActions, type: 'action' });
-        // setActionShow(false);
     };
 
     function handleSpecialButton(e: string, i: number) {
@@ -251,7 +239,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         newSpecials[i] = newSpecial;
         EventBus.emit('update-special', newSpecials);
         EventBus.emit('reorder-buttons', { list: newSpecials, type: 'special' });
-        // setSpecialShow(false);
     };
 
     async function freeInventory() {
@@ -280,7 +267,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
     async function removeItem(id: string) {
         await deleteEquipment(id);
         const newInventory = game().inventory.filter((item) => item._id !== id);
-        // setGameState({ ...game, inventory: newInventory });
         EventBus.emit('refresh-inventory', newInventory);
         setRemoveModalShow(false);
     };
@@ -308,12 +294,12 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         </> ) : settings().asceanViews === VIEWS.SETTINGS ? ( <>
             <button class='highlight' style={{ 'margin-left': '0.5%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Settings</div></button>
 
-            <div class='playerSettingSelect' style={{ top: '-5%' }}>
-                <button class='button p-3' onClick={() => currentView(SETTINGS.ACTIONS)}><p class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Actions</p></button>
-                <button class='button p-3' onClick={() => currentView(SETTINGS.CONTROL)}><p class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Control</p></button>
-                <button class='button p-3' onClick={() => currentView(SETTINGS.GENERAL)}><p class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>General</p></button>
-                <button class='button p-3' onClick={() => currentView(SETTINGS.INVENTORY)}><p class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Inventory</p></button>
-                <button class='button p-3' onClick={() => currentView(SETTINGS.TACTICS)}><p class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Tactics</p></button>
+            <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '10vh', 'z-index': 1000 }}>
+                <button class='highlight p-3' onClick={() => currentView(SETTINGS.ACTIONS)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Actions</div></button>
+                <button class='highlight p-3' onClick={() => currentView(SETTINGS.CONTROL)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Control</div></button>
+                <button class='highlight p-3' onClick={() => currentView(SETTINGS.GENERAL)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>General</div></button>
+                <button class='highlight p-3' onClick={() => currentView(SETTINGS.INVENTORY)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Inventory</div></button>
+                <button class='highlight p-3' onClick={() => currentView(SETTINGS.TACTICS)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Tactics</div></button>
             </div>
         </> ) : ( '' ) }
         {/* <<----- WINDOW ONE ----->> */}
@@ -453,9 +439,9 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
                     setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} />
             ) : settings().asceanViews === VIEWS.SETTINGS ? (
                 <div style={{ 'scrollbar-width': "none", overflow: 'scroll' }}> 
-                    <div class='superCenter'>
-                        Various kinds of Information on Aspects of the Game.
-                        {/* <SettingSetter setting={settings()?.settingViews} /> */}
+                    <div class='center' style={{ padding: '5%', 'font-size': '0.75em' }}>
+                        {/* Various kinds of Information on Aspects of the Game. */}
+                        <SettingSetter setting={settings} />
                     </div>
                 </div>
             ) : ( undefined ) }

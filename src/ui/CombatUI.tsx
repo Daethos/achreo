@@ -71,11 +71,11 @@ export default function CombatUI({ state, staminaPercentage, pauseState, stamina
                 <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, 'z-index': -1, width: `${playerHealthPercentage()}%`, 'background-color': state()?.isStealth ? '#444' : '#FFC700' }}></div>
             </div>
             <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar"/>
-            <button class='highlight superCenter' onClick={() => createPrayer()} style={{ top: '92.5vh', left: '50vw' }}>
+            {/* <button class='highlight superCenter' onClick={() => createPrayer()} style={{ top: '92.5vh', left: '50vw' }}>
                 <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>
                     Create Prayer
                 </div>
-            </button>
+            </button> */}
             <div class='staminaBubble'>
                 {/* <img src={'../assets/gui/player-portrait.png'} alt="Player Portrait" id='staminaPortrait' /> */}
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, 'z-index': -1, 'background-color': '#008000', height: `${staminaPercentage()}%` }}></div>

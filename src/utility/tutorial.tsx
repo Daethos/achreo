@@ -1,4 +1,4 @@
-import { Accessor, Setter, createEffect } from "solid-js";
+import { Accessor, Setter } from "solid-js";
 import { saveTutorial } from "../assets/db/db";
 import { EventBus } from "../game/EventBus";
 
@@ -32,16 +32,10 @@ const arrows = {
 }
 
 export default function TutorialOverlay({ id, tutorial, show, setShow }: { id: string; tutorial: Accessor<string>; show: Accessor<boolean>; setShow: Setter<boolean>; }) {
-    createEffect(() => {
-        console.log(tutorial(), 'TutorialOverlay');
-    });
-
     async function exitTutorial(): Promise<void> {
         try {
-            console.log('Exiting tutorial', tutorial());
-            const res = await saveTutorial(id, tutorial());
+            await saveTutorial(id, tutorial());
             EventBus.emit('fetch-ascean', id);
-            console.log(res, 'Tutorial saved');
             setShow(!show());
         } catch (err: any) {
             console.warn(err.message);
@@ -80,7 +74,7 @@ export default function TutorialOverlay({ id, tutorial, show, setShow }: { id: s
                     Cycle between character information {arrows.right}  <br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[Statistics display combat history, Traits display percularities of your character]</span>
                 </p>
-                <p class='cornerBL gold highlight' style={{ bottom: '3em', left: '20.5em', 'font-weight': 700 }}>
+                <p class='cornerBL gold highlight' style={{ bottom: '3em', left: '50%', 'font-weight': 700, transform: 'translateX(-50%)' }}>
                     {arrows.up} <br /> 
                     Expanded Character Statistics <br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[Attributes can be clicked for more information]</span>
@@ -97,7 +91,7 @@ export default function TutorialOverlay({ id, tutorial, show, setShow }: { id: s
                     Click here to view your flask of firewater {arrows.right} <br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[This Information is Displayed in the Third Panel]</span>
                 </p> 
-                <p class='cornerTR gold highlight' style={{ right: '21em', top: '12.5em', 'font-weight': 700 }}>
+                <p class='superCenter gold highlight' style={{ 'font-weight': 700 }}>
                 {arrows.down} Click an Item to Compare {arrows.right} <br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[You May Remove and Equip such Items if you Qualify, <br /> and can Switch Rings and Weapons for Specific Comparison.]</span>
                 </p>
@@ -117,7 +111,7 @@ export default function TutorialOverlay({ id, tutorial, show, setShow }: { id: s
                     Click to switch game topics {arrows.right} <br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[This Information is Displayed in the Third Panel]</span>
                 </p>
-                <p class='cornerTL gold highlight' style={{ left: '20em', top: '3.5em', 'font-weight': 700 }}>
+                <p class='cornerTL gold highlight' style={{ left: '50%', top: '3.5em', 'font-weight': 700, transform: 'translateX(-50%)' }}> 
                    Click to re-map between actions 
                    <br />{arrows.down} 
                 </p>
@@ -130,7 +124,7 @@ export default function TutorialOverlay({ id, tutorial, show, setShow }: { id: s
             { tutorial() === 'views' && <div>
                 <p class='cornerTL gold highlight' style={{ left: '7.5em', 'font-weight': 700 }}>
                    {arrows.left} Click here to cycle between different views. <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[Inventory displays all your loot, Character show you extra info, Settings ]</span>
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Inventory Displays All Your Loot, Character Displays Expanded Player Info, Settings Show Gameplay Information]</span>
                 </p>
                 <p class='cornerTR gold highlight' style={{ right: '2.5em', 'font-weight': 700 }}>
                     Click here to exit views {arrows.right} <br />

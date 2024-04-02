@@ -233,7 +233,7 @@ export default function App() {
                     </Show>
                     <Show when={menu().deleteModal}>
                         <div class='modal' onClick={() => setMenu({ ...menu(), deleteModal: false })} style={{ background: 'rgba(0, 0, 0, 0.95)' }}>
-                            <div class='button superCenter' onClick={() => deleteCharacter(ascean()?._id)} style={{ color: 'red', 'border-color': 'red', margin: 0, padding: '1em' }}>Delete {ascean()?.name}?</div>
+                            <div class='button superCenter' onClick={() => deleteCharacter(ascean()?._id)} style={{ color: 'red', 'border-color': 'red', margin: 0, padding: '1em', width: 'auto' }}>Delete {ascean()?.name}?</div>
                             <div class='gold verticalBottom super' style={{ 'margin-bottom': '20%' }}>
                                 [This action is irreversible. You may click anywhere to cancel.]
                             </div>

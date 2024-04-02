@@ -10,7 +10,7 @@ interface IProps {
 export const MenuAscean = ({ menu, viewAscean, loadAscean }: IProps) => {
     const dimensions = useResizeListener();
     const shortDescription = (desc: string): string => {
-        const newDesc = desc.split(' ').slice(0, 4).join(' ') + (desc.length > 4 ? '...' : '');
+        const newDesc = desc.split(' ').slice(0, 3).join(' ') + (desc.length > 4 ? '...' : '');
         return newDesc;
     };
     
@@ -20,13 +20,19 @@ export const MenuAscean = ({ menu, viewAscean, loadAscean }: IProps) => {
 
     const style = (m: Accessor<Menu>, d: Accessor<DIMS>) => {
         return {
-            height: d().ORIENTATION === 'landscape' ? 'auto' 
+            'height': d().ORIENTATION === 'landscape' ? 'auto' 
             : m()?.asceans.length === 3 ? `${(d().HEIGHT / 3) - (25)}px` 
             : m()?.asceans.length === 2 ? `${(d().HEIGHT / 3) - (25)}px` 
             : `${(d().HEIGHT / 3) - (25)}px`,
-            width: d().ORIENTATION === 'landscape' ? (m()?.asceans.length === 3 ? '30%' : '45%') : m()?.asceans.length === 1 ? '100%' : '80vw',
-            transform: d()?.ORIENTATION === 'landscape' ? '' : (m()?.asceans.length === 3 ? 'scale(1)' : m()?.asceans.length === 2 ?  'scale(1)' : 'scale(1.2)'),
-            'margin-left': d()?.ORIENTATION === 'landscape' ? '' : (m()?.asceans.length === 3 ? '1.25%' : m()?.asceans.length === 2 ? '2%' : '0%'),
+            width: d().ORIENTATION === 'landscape' 
+                ? (m()?.asceans.length === 3 ? '30%' : m()?.asceans.length === 2 ? '45%' : '50vw') 
+                : m()?.asceans.length === 1 ? '100%' : '80vw',
+            transform: d()?.ORIENTATION === 'landscape' 
+                ? '' : (m()?.asceans.length === 3 ? 'scale(1)' 
+                : m()?.asceans.length === 2 ?  'scale(1)' : 'scale(1.2)'),
+            'margin-left': d()?.ORIENTATION === 'landscape' 
+                ? (m()?.asceans.length === 3 ? '0.5%' : m()?.asceans.length === 2 ? '1.5%' : '0%') 
+                : (m()?.asceans.length === 3 ? '1.25%' : m()?.asceans.length === 2 ? '2%' : '0%'),
             overflow: d().ORIENTATION === 'landscape' ? '' : '',
             'margin-bottom': m()?.asceans.length > 1 ? '2.5%' : '0%',
             'margin-top': m()?.asceans.length > 1 ? '2.5%' : '0%',
@@ -40,6 +46,7 @@ export const MenuAscean = ({ menu, viewAscean, loadAscean }: IProps) => {
             'flex-wrap': 'wrap',
             'justify-content': 'center',
             'align-items': 'center',
+            'gap': '2%',
         }}>
         <For each={menu()?.asceans}> 
             {((asc, _idx) => (

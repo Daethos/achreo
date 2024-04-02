@@ -68,5 +68,7 @@ export type Menu = {
     creatingCharacter: boolean,
     gameRunning: boolean,
     loading: boolean,
-    screen: string
+    screen: string,
+    deleteModal: boolean,
+    playModal: boolean,
 }; 

@@ -1,6 +1,6 @@
-import { onCleanup, createEffect, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 
-type DIMS = {
+export type DIMS = {
     WIDTH: number,
     HEIGHT: number,
     ORIENTATION: string
@@ -21,13 +21,8 @@ const useResizeListener = () => {
         };
         setDimensions(updated);
     };
-    
-    createEffect(() => {
-        window.addEventListener('resize', handleResize);
-        onCleanup(() => {
-            window.removeEventListener('resize', handleResize);
-        });
-    });
+
+    window.addEventListener('resize', handleResize);
 
     return dimensions;
 };

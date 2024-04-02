@@ -117,10 +117,12 @@ body {
 .playerName {
     position: absolute;
     left: 5vw;
-    top: -3vh;
+    top: -1.5vh;
     font-family: 'Cinzel Regular';
     font-size: 1em;
     color: gold;
+    font-weight: 600;
+    text-shadow: 0 0 0.5em rgba(0, 0, 0, 1);
 }
 
 .playerPortrait {
@@ -141,7 +143,7 @@ body {
 }
 
 #playerHealthbarBorder {
-    position: absolute;
+    position: fixed;
     top: 4vh;
     left: 0;
     height: 12.5vh;
@@ -162,7 +164,7 @@ body {
     position: fixed;
     /* border: 0.15em solid gold; */
     background-color: transparent;
-    z-index: 2;
+    /* z-index: 2; */
 }
 
 .disengage {
@@ -264,29 +266,32 @@ body {
 }
 .enemyName {
     position: absolute;
-    top: 1.5vh;
+    top: 2vh;
     right: 5vw;
     font-family: 'Cinzel Regular';
     font-size: 1em;
-    color: gold;
+    color: red;
+    font-weight: 600;
+    text-shadow: 0 0 0.5em rgba(0, 0, 0, 1);
 }
 .enemyPortrait {
     font-family: 'Cinzel Regular';
     font-weight: 600;
     text-align: center;
+    text-shadow: 0 0 0.5em rgba(0, 0, 0, 1);
     z-index: 1;
 }
 .enemyHealthBar {
     position: fixed;
-    top: 7.5vh;
-    right: 2.5vw;
+    top: 7.25vh;
+    right: 2.25vw;
     width: 20vw;
     height: 5vh;
     overflow: hidden;
     border: 0.1em solid purple;
 }
 #enemyHealthbarBorder {
-    position: absolute;
+    position: fixed;
     top: 4vh;
     right: 0;
     height: 12.5vh;
@@ -309,7 +314,6 @@ body {
     position: fixed;
     bottom: 1%;
     background-color: black;
-    z-index: 1;
 }
 
 .cell {
@@ -504,6 +508,7 @@ body {
     position: absolute;
     bottom: 0;
     left: 50%;
+    transform: translateX(-50%);
 }
 .verticalCenter {
     position: absolute;

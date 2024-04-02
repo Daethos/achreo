@@ -51,6 +51,15 @@ export type CombatStats = {
     originMagDef: number;
 };
 
+export type Compiler = {
+    ascean: Ascean;
+    attributes: CombatAttributes;
+    combatWeaponOne: Equipment;
+    combatWeaponTwo: Equipment;
+    combatWeaponThree: Equipment;
+    defense: Defense;
+};
+
 // ================================== HELPER FUNCTIONS =================================== \\
 const attributeCompiler = (ascean: Ascean, rarities: { helmet: number; chest: number; legs: number; ringOne: number; ringTwo: number; amulet: number; shield: number; trinket: number }): CombatAttributes => {
     let newAttributes: CombatAttributes | any = {};

@@ -1,4 +1,4 @@
-import { Accessor, Setter, Show, createEffect, createSignal } from 'solid-js';
+import { Accessor, Setter, Show, createEffect, createSignal, onMount } from 'solid-js';
 import CombatUI from './CombatUI';
 import EnemyUI from './EnemyUI';
 import StoryAscean from './StoryAscean';
@@ -17,6 +17,8 @@ import { usePhaserEvent } from '../utility/hooks';
 import createStamina from './Stamina';
 // import Equipment, { getOneRandom } from '../models/equipment';
 import EnemyPreview from './EnemyPreview';
+import TutorialOverlay from '../utility/tutorial';
+import { getOneRandom } from '../models/equipment';
 // import createTimer from './Timer';
 // import StoryTutorial from '../../../seyr/src/game/ui/StoryTutorial';
 // import { StoryDialog } from '../../../seyr/src/game/ui/StoryDialog';
@@ -34,6 +36,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     const { staminaPercentage, setStaminaPercentage } = createStamina(stamina);
     // const { gameTimer, setGameTimer } = createTimer(game);
     const [enemies, setEnemies] = createSignal<any[]>([]);
+    const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
+    const [tutorial, setTutorial] = createSignal<string>('');
     const [asceanState, setAsceanState] = createSignal({
         ascean: ascean(),
         experience: ascean().experience,
@@ -55,6 +59,14 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     createEffect(() => {
         updateCombatListener(combat());
     });  
+
+    createEffect(() => {
+        if (!ascean().tutorial.boot) {
+            console.log('Tutorial Overlay');
+            setTutorial('boot');
+            setShowTutorial(true);
+        };
+    });
  
     // const clearNPC = async () => {
     //     if (game().merchantEquipment.length > 0) {
@@ -265,6 +277,14 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         EventBus.emit('tab-target', enemy);    
     };
 
+    // async function loot() {
+    //     const loot = await getOneRandom(ascean().level *4);
+    //     console.log(loot, 'Loot Drop');
+    //     EventBus.emit('add-lootdrop', loot);
+    // };
+
+    // loot();
+
     return (
         <div id='base-ui'>
         <Show when={game().scrollEnabled}>
@@ -295,6 +315,9 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         { game().tutorial && ( 
             <StoryTutorial tutorial={game().tutorial} dispatch={dispatch} player={game().player}  /> 
         ) } */}
+        <Show when={showTutorial()}>
+            <TutorialOverlay id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
+        </Show>
         </div>
     );
 };

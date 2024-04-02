@@ -27,6 +27,20 @@ export const deleteAscean = async (id: string) => {
         await db.collection(EQUIPMENT).doc({ _id: item }).delete();
     });
     await db.collection(ASCEANS).doc({ _id: id }).delete()
+    const settings = await db.collection(SETTINGS).doc({ _id: id }).get();
+    if (settings) {
+        console.log('deleting settings')
+        await db.collection(SETTINGS).doc({ _id: id }).delete();
+    };
+};
+
+export const saveTutorial = async (id: string, type: string) => {
+    const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+    console.log(type, 'Tutorial saved')
+    const update = { ...ascean, tutorial: { ...ascean.tutorial, [type]: true} };
+    console.log(update, 'Tutorial update')
+    const save = await db.collection(ASCEANS).doc({ _id: id }).update(update);
+    return save;
 };
 
 export const scrub = async (ascean: Ascean) => {
@@ -56,19 +70,6 @@ export const updateInventory = async (id: string, inventory: string[]) => {
     ascean.inventory = inventory;
     await db.collection(ASCEANS).doc({ _id: id }).update(ascean);
 };
-
-// export const getSettings = (id: string): Object => {
-//     const settings = new Settings(id);
-//     return settings;
-//     // const settings = await db.collection(SETTINGS).doc({ _id: id }).get();
-//     // if (settings) {
-//     //     return settings;
-//     // } else {
-//     //     const newSettings = new Settings(id);
-//         // await db.collection(SETTINGS).add(newSettings);
-//         // return newSettings;
-//     // };
-// };
 
 export const getSettings = async (id: string) => {
     const settings = await db.collection(SETTINGS).doc({ _id: id }).get();

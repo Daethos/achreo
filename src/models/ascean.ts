@@ -3,6 +3,7 @@ import { Weapons } from "../assets/db/weaponry";
 import Equipment, { mutate } from "./equipment";
 import { Amulets, Rings, Trinkets } from "../assets/db/jewelry";
 import { Statistics, initStatistics } from "../utility/statistics";
+import { Tutorial, initTutorial } from "../utility/tutorial";
 import { initCharacter } from "../utility/ascean"; 
 import { v4 as uuidv4 } from 'uuid';
 import { addAscean } from "../assets/db/db";
@@ -40,6 +41,7 @@ export default class Ascean {
     ringTwo: Equipment;
     trinket: Equipment;
     statistics: Statistics;
+    tutorial: Tutorial;
 
     constructor(ascean: Ascean) {
         this._id = ascean._id;
@@ -76,6 +78,7 @@ export default class Ascean {
         this.ringTwo = ascean.ringTwo;
         this.trinket = ascean.trinket;
         this.statistics = initStatistics;
+        this.tutorial = initTutorial;
     };
     [key: string]: any;
 };

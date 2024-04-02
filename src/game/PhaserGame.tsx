@@ -409,12 +409,29 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('add-lootdrop', (e: Equipment[]) => {
             const newLootDrops = game().lootDrops.length > 0 ? [...game().lootDrops, ...e] : e;
             const newLootIds = game().showLootIds.length > 0 ? [...game().showLootIds, ...e.map((loot) => loot._id)] : e.map((loot) => loot._id);
-            setGame({
+            // setGame({
+            //     ...game(), 
+            //     lootDrops: newLootDrops, 
+            //     showLoot: newLootIds.length > 0,
+            //     showLootIds: newLootIds
+            // });
+
+            console.log(e[0].name, e[0]._id, 'Item Added');
+            console.log(game().inventory, 'Current Inventory')
+            const cleanInventory = [...game().inventory];
+            console.log(cleanInventory, 'Clean Inventory')
+            const newInventory = cleanInventory.length > 0 ? [...cleanInventory, ...e] : e;
+            console.log(newInventory, 'New Inventory')
+            newInventory.forEach((item) => console.log(item.name, item._id, 'Item'));
+            setGame({ 
                 ...game(), 
+                inventory: newInventory,
                 lootDrops: newLootDrops, 
                 showLoot: newLootIds.length > 0,
                 showLootIds: newLootIds
             });
+            const update = { ...props.ascean(), inventory: newInventory };
+            EventBus.emit('update-ascean', update);
         });
         EventBus.on('remove-lootdrop', (e: string) => {
             let updatedLootIds = [...game().showLootIds];

@@ -43,8 +43,8 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
             </div>
         }>
             <div class='stat-block superCenter' style={{ width: '90%', overflow: 'scroll' }}>
-                <div class='left center' style={{ width: '48%', top: '10%' }}>
-                    <div class='creature-heading' style={{ width: '100%', height: '100%' }}>
+                <div class='border left center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
+                    <div class='creature-heading' style={{ width: '100%', height: '100%', 'margin-top': '5%' }}>
                         <h1>{ascean().name}</h1>
                         <h2>{ascean().description}</h2>
                         <img src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} id='origin-pic' />
@@ -55,9 +55,11 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                     </div>
                 </div>
 
-                <div class='right center' style={{ width: '48%', top: '10%' }}>
+                <div class='border right center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
+                    <div style={{ 'margin-top': '5%' }}>
                     <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
                     <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
+                    </div>
                 </div>
                 
             </div>

@@ -99,9 +99,20 @@ export default function EnemyUI({ state, pauseState, enemies }: { state: Accesso
         EventBus.emit('tab-target', enemy);    
     };
 
+    const size = (len: number) => {
+        switch (true) {
+            case len < 20:
+                return '1em';
+            case len < 30:
+                return '0.85em';
+            default:
+                return '0.6em';
+        };
+    };
+
     return (
         <div class='enemyCombatUi'>
-            <div class='enemyName' style={{ 'z-index': 1 }} onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
+            <div class='enemyName' style={{ 'z-index': 1, 'font-size': size(state().computer?.name.length as number) }} onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
             <div class='center enemyHealthBar'>
                 <div class='enemyPortrait' style={{ 'font-size': '1em', color: '#fdf6d8' }}>{`${Math.round(state().newComputerHealth)} / ${state().computerHealth} [${playerEnemyPercentage()}%]`}</div>
                 <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `${playerEnemyPercentage()}%`, 'background-color': '#FF0000', 'border': '0.15 solid red' }}></div>

@@ -1,7 +1,994 @@
-import Ascean from "../../models/ascean";
-import Equipment from "../../models/equipment";
-
-export const Asceans: any[] = [
+export const Asceans: any[] = [   
+    {
+        "_id":"daethic_knight_1",
+        "origin":"Li'ivi",
+        "sex":"Man",
+        "mastery":"caeren",
+        "level":1,
+        "experience":0,
+        "inventory":[],
+        "name":"Daethic Knight",
+        "description":"Devoted Knight of Daethos. This caste is pledged to the Seyr",
+        "constitution":14,
+        "strength":12,
+        "agility":10,
+        "achre":10,
+        "caeren":14,
+        "kyosir":13,
+        "weaponOne":{
+            name: "Hush of Daethos",
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Daethic Halberd',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Daethic Bow',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Shaorahi',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Daethic Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Daethic Cuirass",
+            rarity: 'Common',
+        },"legs":{
+            name: "Daethic Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":33,"max":33}
+    },
+    {
+        "_id":"fang_duelist_1",
+        "origin":"Li'ivi",
+        "sex":"Man",
+        "mastery":"agility",
+        "level":1,
+        "experience":0,
+        "inventory":[],
+        "name":"Fang Mercenary",
+        "description":"Refined Gentleman of the Fangs",
+        "constitution":12,
+        "strength":10,
+        "agility":15,
+        "achre":13,
+        "caeren":10,
+        "kyosir":13,
+        "weaponOne":{
+            name: "Longsword",
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Scimitar',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Pernach',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Fireland Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Fireland Cuirass",
+            rarity: 'Common',
+        },"legs":{
+            name: "Fireland Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":29,"max":29}
+    },
+    {
+        "_id":"fang_mercenary_1",
+        "origin":"Nothos",
+        "sex":"Man",
+        "mastery":"strength",
+        "level":1,
+        "experience":0,
+        "inventory":[],
+        "name":"Fang Mercenary",
+        "description":"Of a Clan in the West Fangs",
+        "constitution":14,
+        "strength":15,
+        "agility":12,
+        "achre":10,
+        "caeren":10,
+        "kyosir":12,
+        "weaponOne":{
+            name: "War Hammer",
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Battle Axe',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Claymore',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Fang Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Fang Armor",
+            rarity: 'Common',
+        },"legs":{
+            name: "Fang Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":36,"max":36}
+    },
+    {
+        "_id":"marauder_1",
+        "origin":"Sedyreal",
+        "sex":"Man",
+        "mastery":"agility",
+        "level":1,
+        "experience":0,
+        "inventory":[],
+        "name":"Marauder",
+        "description":"Ravaging countryside; akin to Fang Mercenaries",
+        "constitution":14,
+        "strength":13,
+        "agility":16,
+        "achre":10,
+        "caeren":10,
+        "kyosir":10,
+        "weaponOne":{
+            name: 'Hand Axe',
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Pernach',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Spear',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Scutum',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Marauder's Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Marauder's Armor",
+            rarity: 'Common',
+        },"legs":{
+            name: "Marauder's Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":32,"max":32}
+    },
+    {
+        "_id":"mavrosin_occultist_1",
+        "origin":"Nothos",
+        "sex":"Man",
+        "mastery":"strength",
+        "level":1,
+        "experience":0,
+        "inventory":[],
+        "name":"Mavrosin Occultist",
+        "description":"Cultist of Mavros Ilios. Adherence to the true Sun",
+        "constitution":14,
+        "strength":15,
+        "agility":12,
+        "achre":10,
+        "caeren":10,
+        "kyosir":12,
+        "weaponOne":{
+            name: "Sunshatter",
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Sunshear',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: "Se'vasi Greatbow",
+            rarity: 'Common',
+        },"shield":{
+            name: 'Shaorahi',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Soverain Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Soverain Cuirass",
+            rarity: 'Common',
+        },"legs":{
+            name: "Soverain Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":36,"max":36}
+    },
+    {
+        "_id":"northren_wanderer_1",
+        "origin":"Nothos",
+        "sex":"Man",
+        "mastery":"constitution",
+        "level":1,
+        "experience":0,
+        "inventory":[],
+        "name":"Northren Wanderer",
+        "description":"Dispossessed Warrior from the Northren Wars",
+        "constitution":14,
+        "strength":10,
+        "agility":10,
+        "achre":13,
+        "caeren":13,
+        "kyosir":13,
+        "weaponOne":{
+            name: "Quor'eite Crush",
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Nyrolean Bolt',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Astral Spear',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Pavise',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Soverain Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Soverain Cuirass",
+            rarity: 'Common',
+        },"legs":{
+            name: "Soverain Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":39,"max":39}
+    },
+    {
+        "_id":"quor'eite_stalker_1",
+        "origin":"Quor'eite",
+        "sex":"Man",
+        "mastery":"agility",
+        "level":1,
+        "experience":0,
+        "inventory":[],
+        "name":"Quor'eite Stalker",
+        "description":"Hunters of Sedyrus",
+        "constitution":13,
+        "strength":10,
+        "agility":15,
+        "achre":13,
+        "caeren":10,
+        "kyosir":12,
+        "weaponOne":{
+            name: 'Longsword',
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Longbow',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Spear',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Pavise',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Marauder's Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Marauder's Armor",
+            rarity: 'Common',
+        },"legs":{
+            name: "Marauder's Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":29,"max":29}
+    },
+    {
+        "_id":"rahvrecur_1",
+        "origin":"Notheo",
+        "sex":"Man",
+        "mastery":"achre",
+        "level":1,
+        "experience":0,
+        "inventory":[],
+        "name":"Rahvrehcur",
+        "description":"Old Occultist to the Ancient of Dreams",
+        "constitution":14,
+        "strength":10,
+        "agility":12,
+        "achre":14,
+        "caeren":10,
+        "kyosir":13,
+        "weaponOne":{
+            name: "Nightmare",
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Caeren Barrage',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Cursed Dagger',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Shaorahi',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Li'kyr Hood",
+            rarity: 'Common',
+        },"chest":{
+            name: "Li'kyr Robes",
+            rarity: 'Common',
+        },"legs":{
+            name: "Li'kyr Pants",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":33,"max":33}
+    },
+    {
+        "_id":"southron_wanderer_1",
+        "origin":"Sedyreal",
+        "sex":"Man",
+        "mastery":"agility",
+        "level":1,
+        "experience":0,
+        "inventory":[],
+        "name":"Southron Wanderer",
+        "description":"Dispossessed Warrior from the Sedyren Conquest",
+        "constitution":14,
+        "strength":13,
+        "agility":13,
+        "achre":10,
+        "caeren":13,
+        "kyosir":10,
+        "weaponOne":{
+            name: 'Longbow',
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Hand Axe',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Scimitar',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Scutum',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Chain-Knight Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Chain-Knight Cuirass",
+            rarity: 'Common',
+        },"legs":{
+            name: "Chain-Knight Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":33,"max":33}
+    },
+    {
+        "_id":"daethic_knight_2",
+        "origin":"Li'ivi",
+        "sex":"Man",
+        "mastery":"caeren",
+        "level":2,
+        "experience":0,
+        "inventory":[],
+        "name":"Daethic Knight",
+        "description":"Devoted Knight of Daethos. This caste is pledged to the Seyr",
+        "constitution":16,
+        "strength":14,
+        "agility":10,
+        "achre":10,
+        "caeren":16,
+        "kyosir":15,
+        "weaponOne":{
+            name: "Hush of Daethos",
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Daethic Halberd',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Daethic Bow',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Shaorahi',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Daethic Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Daethic Cuirass",
+            rarity: 'Common',
+        },"legs":{
+            name: "Daethic Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":33,"max":33}
+    },
+    {
+        "_id":"fang_duelist_2",
+        "origin":"Li'ivi",
+        "sex":"Man",
+        "mastery":"agility",
+        "level":2,
+        "experience":0,
+        "inventory":[],
+        "name":"Fang Mercenary",
+        "description":"Refined Gentleman of the Fangs",
+        "constitution":14,
+        "strength":10,
+        "agility":17,
+        "achre":15,
+        "caeren":10,
+        "kyosir":15,
+        "weaponOne":{
+            name: "Longsword",
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Scimitar',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Pernach',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Fireland Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Fireland Cuirass",
+            rarity: 'Common',
+        },"legs":{
+            name: "Fireland Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":29,"max":29}
+    }, 
+    {
+        "_id":"fang_mercenary_2",
+        "origin":"Nothos",
+        "sex":"Man",
+        "mastery":"strength",
+        "level":2,
+        "experience":0,
+        "inventory":[],
+        "name":"Fang Mercenary",
+        "description":"Of a Clan in the West Fangs",
+        "constitution":16,
+        "strength":17,
+        "agility":14,
+        "achre":10,
+        "caeren":10,
+        "kyosir":14,
+        "weaponOne":{
+            name: "War Hammer",
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Battle Axe',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Claymore',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Fang Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Fang Armor",
+            rarity: 'Common',
+        },"legs":{
+            name: "Fang Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":36,"max":36}
+    },
+    {
+        "_id":"marauder_2",
+        "origin":"Sedyreal",
+        "sex":"Man",
+        "mastery":"agility",
+        "level":2,
+        "experience":0,
+        "inventory":[],
+        "name":"Marauder",
+        "description":"Ravaging countryside; akin to Fang Mercenaries",
+        "constitution":15,
+        "strength":14,
+        "agility":18,
+        "achre":12,
+        "caeren":10,
+        "kyosir":11,
+        "weaponOne":{
+            name: 'Hand Axe',
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Pernach',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Spear',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Scutum',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Marauder's Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Marauder's Armor",
+            rarity: 'Common',
+        },"legs":{
+            name: "Marauder's Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":32,"max":32}
+    },
+    {
+        "_id":"mavrosin_occultist_2",
+        "origin":"Nothos",
+        "sex":"Man",
+        "mastery":"strength",
+        "level":2,
+        "experience":0,
+        "inventory":[],
+        "name":"Mavrosin Occultist",
+        "description":"Cultist of Mavros Ilios. Adherence to the true Sun",
+        "constitution":16,
+        "strength":17,
+        "agility":14,
+        "achre":10,
+        "caeren":12,
+        "kyosir":12,
+        "weaponOne":{
+            name: "Sunshatter",
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Sunshear',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: "Se'vasi Greatbow",
+            rarity: 'Common',
+        },"shield":{
+            name: 'Shaorahi',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Soverain Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Soverain Cuirass",
+            rarity: 'Common',
+        },"legs":{
+            name: "Soverain Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":36,"max":36}
+    },
+    {
+        "_id":"northren_wanderer_2",
+        "origin":"Nothos",
+        "sex":"Man",
+        "mastery":"constitution",
+        "level":2,
+        "experience":0,
+        "inventory":[],
+        "name":"Northren Wanderer",
+        "description":"Dispossessed Warrior from the Northren Wars",
+        "constitution":16,
+        "strength":10,
+        "agility":10,
+        "achre":15,
+        "caeren":15,
+        "kyosir":15,
+        "weaponOne":{
+            name: "Quor'eite Crush",
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Nyrolean Bolt',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Astral Spear',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Pavise',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Soverain Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Soverain Cuirass",
+            rarity: 'Common',
+        },"legs":{
+            name: "Soverain Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":39,"max":39}
+    },
+    {
+        "_id":"quor'eite_stalker_2",
+        "origin":"Quor'eite",
+        "sex":"Man",
+        "mastery":"agility",
+        "level":2,
+        "experience":0,
+        "inventory":[],
+        "name":"Quor'eite Stalker",
+        "description":"Hunters of Sedyrus",
+        "constitution":14,
+        "strength":10,
+        "agility":18,
+        "achre":15,
+        "caeren":10,
+        "kyosir":14,
+        "weaponOne":{
+            name: 'Longsword',
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Longbow',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Spear',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Pavise',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Marauder's Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Marauder's Armor",
+            rarity: 'Common',
+        },"legs":{
+            name: "Marauder's Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":29,"max":29}
+    },
+    {
+        "_id":"rahvrecur_2",
+        "origin":"Notheo",
+        "sex":"Man",
+        "mastery":"achre",
+        "level":2,
+        "experience":0,
+        "inventory":[],
+        "name":"Rahvrehcur",
+        "description":"Old Occultist to the Ancient of Dreams",
+        "constitution":16,
+        "strength":10,
+        "agility":14,
+        "achre":16,
+        "caeren":10,
+        "kyosir":15,
+        "weaponOne":{
+            name: "Nightmare",
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Caeren Barrage',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Cursed Dagger',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Shaorahi',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Li'kyr Hood",
+            rarity: 'Common',
+        },"chest":{
+            name: "Li'kyr Robes",
+            rarity: 'Common',
+        },"legs":{
+            name: "Li'kyr Pants",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":33,"max":33}
+    },
+    {
+        "_id":"southron_wanderer_2",
+        "origin":"Sedyreal",
+        "sex":"Man",
+        "mastery":"agility",
+        "level":2,
+        "experience":0,
+        "inventory":[],
+        "name":"Southron Wanderer",
+        "description":"Dispossessed Warrior from the Sedyren Conquest",
+        "constitution":16,
+        "strength":15,
+        "agility":15,
+        "achre":10,
+        "caeren":15,
+        "kyosir":10,
+        "weaponOne":{
+            name: 'Longbow',
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: 'Hand Axe',
+            rarity: 'Common',
+        },"weaponThree":{
+            name: 'Scimitar',
+            rarity: 'Common',
+        },"shield":{
+            name: 'Scutum',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Chain-Knight Helm",
+            rarity: 'Common',
+        },"chest":{
+            name: "Chain-Knight Cuirass",
+            rarity: 'Common',
+        },"legs":{
+            name: "Chain-Knight Greaves",
+            rarity: 'Common',
+        },"ringOne":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"ringTwo":{
+            name: 'Empty Ring Slot',
+            rarity: 'Default',
+        },"amulet":{
+            name: 'Empty Amulet Slot',
+            rarity: 'Default',
+        },"trinket":    {
+            name: 'Empty Trinket Slot',
+            rarity: 'Default',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":33,"max":33}
+    },
     {
     "_id":"kreceus_8",
     "origin":"Ashtre",

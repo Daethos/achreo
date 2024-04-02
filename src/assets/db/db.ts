@@ -160,9 +160,11 @@ export function populateEnemy(enemy: Ascean): Ascean {
     };
 };
 
-export function randomEnemy() {
-    const random = Math.floor(Math.random() * Asceans.length);
-    return Asceans[random];
+export function randomEnemy(min: number, max: number): Ascean {
+    // const random = Math.floor(Math.random() * Asceans.length);
+    const random = Asceans.filter(ascean => ascean.level >= min && ascean.level <= max);
+    const enemy = random[Math.floor(Math.random() * random.length)];
+    return enemy;
 };
 
 export const addEquipment = async (equipment: Equipment) => await db.collection(EQUIPMENT).add(equipment);

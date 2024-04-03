@@ -40,6 +40,9 @@ export const PLAYER = {
         ROLL: 5, // 25
         TSHAER: 35,
         INVOKE: -15,
+        ROOT: 15,
+        SNARE: 15,
+        POLYMORPH: 15,
     },
     DURATIONS: {
         POLYMORPHING: 1500,
@@ -95,7 +98,28 @@ export const staminaCheck = (input, stamina) => {
                 success: invokeSuccess,
                 cost: PLAYER.STAMINA.INVOKE,
             };
-        case 'tshaer':
+        case 'polymorph':
+            const polymorphSuccess = stamina >= PLAYER.STAMINA.POLYMORPH;
+            console.log(`Polymorph Success: ${polymorphSuccess}`)
+            return {
+                success: polymorphSuccess,
+                cost: PLAYER.STAMINA.POLYMORPH,
+            };
+        case 'root':
+            const rootSuccess = stamina >= PLAYER.STAMINA.ROOT;
+            console.log(`Root Success: ${rootSuccess}`)
+            return {
+                success: rootSuccess,
+                cost: PLAYER.STAMINA.ROOT,
+            };
+        case 'snare':
+            const snareSuccess = stamina >= PLAYER.STAMINA.SNARE;
+            console.log(`Snare Success: ${snareSuccess}`)
+            return {
+                success: snareSuccess,
+                cost: PLAYER.STAMINA.SNARE,
+            };
+        case 'tshaeral':
             const tshaerSuccess = stamina >= PLAYER.STAMINA.TSHAER;
             console.log(`Tshaer Success: ${tshaerSuccess}`)
             return {
@@ -228,6 +252,16 @@ export default class Player extends Entity {
                 onEnter: this.onPolymorphingEnter,
                 onUpdate: this.onPolymorphingUpdate,
                 onExit: this.onPolymorphingExit,
+            })
+            .addState(States.ROOTING, {
+                onEnter: this.onRootingEnter,
+                onUpdate: this.onRootingUpdate,
+                onExit: this.onRootingExit,
+            })
+            .addState(States.SNARING, {
+                onEnter: this.onSnaringEnter,
+                onUpdate: this.onSnaringUpdate,
+                onExit: this.onSnaringExit,
             })
 
         this.stateMachine.setState(States.NONCOMBAT);
@@ -412,34 +446,52 @@ export default class Player extends Entity {
 
     soundEffects(sfx) {
         try {
-            const soundEffectMap = {
-                Spooky: this.scene.spooky.play(),
-                Righteous: this.scene.righteous.play(),
-                Wild: this.scene.wild.play(),
-                Earth: this.scene.earth.play(),
-                Fire: this.scene.fire.play(),
-                Frost: this.scene.frost.play(),
-                Lightning: this.scene.lightning.play(),
-                Sorcery: this.scene.sorcery.play(),
-                Wind: this.scene.wind.play(),
-                Pierce: (weapon) => (weapon.type === "Bow" || weapon.type === "Greatbow") ? this.scene.bow.play() : this.scene.pierce.play(),
-                Slash: this.scene.slash.play(),
-                Blunt: this.scene.blunt.play(),
+            console.log(sfx.computerDamaged, 'Computer Damaged', sfx.playerDamaged, 'Player Damaged')
+            const soundEffectMap = (type, weapon) => {
+
+                switch (type) {
+                    case 'Spooky':
+                        return this.scene.spooky.play();
+                    case 'Righteous':
+                        return this.scene.righteous.play();
+                    case 'Wild':
+                        return this.scene.wild.play();
+                    case 'Earth':
+                        return this.scene.earth.play();
+                    case 'Fire':
+                        return this.scene.fire.play();
+                    case 'Frost':
+                        return this.scene.frost.play();
+                    case 'Lightning':
+                        return this.scene.lightning.play();
+                    case 'Sorcery':
+                        return this.scene.sorcery.play();
+                    case 'Wind':
+                        return this.scene.wind.play();
+                    case 'Pierce':
+                        return (weapon === 'Bow' || weapon === 'Greatbow') ? this.scene.bow.play() : this.scene.pierce.play();
+                    case 'Slash':
+                        return this.scene.slash.play();
+                    case 'Blunt':
+                        return this.scene.blunt.play();
+                }
             };
-            if (sfx.computerDamaged) {
+            if (sfx.computerDamaged === true) {
                 const { playerDamageType } = sfx;
-                const soundEffectFn = soundEffectMap[playerDamageType];
-                if (soundEffectFn) soundEffectFn(sfx.weapons[0]);
+                soundEffectMap(playerDamageType, sfx.computerWeapons[0]);                
+                // const soundEffectFn = soundEffectMap[playerDamageType];
+                // if (soundEffectFn) soundEffectFn(sfx.weapons[0]);
             };
-            if (sfx.playerDamaged) {
+            if (sfx.playerDamaged === true) {
                 const { computerDamageType } = sfx;
-                const soundEffectFn = soundEffectMap[computerDamageType];
-                if (soundEffectFn) soundEffectFn(sfx.computerWeapons[0]);
+                soundEffectMap(computerDamageType, sfx.computerWeapons[0]);
+                // const soundEffectFn = soundEffectMap[computerDamageType];
+                // if (soundEffectFn) soundEffectFn(sfx.computerWeapons[0]);
             };
             if (sfx.religiousSuccess === true) this.scene.righteous.play();
             if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.roll.play();
             if (sfx.counterSuccess === true || sfx.computerCounterSuccess === true) this.scene.counter.play();
-            if (sfx.playerWin) this.scene.righteous.play();
+            if (sfx.playerWin === true) this.scene.righteous.play();
             // if (sfx.computerWin) playDeath();
             // dispatch(setToggleDamaged(false));
         } catch (err) {
@@ -833,9 +885,36 @@ export default class Player extends Entity {
             this.setGlow(this.spriteShield, false, 'shield');
         };
         this.scene.combatMachine.action({ type: 'Instant', data: this.scene.state.playerBlessing });
-        screenShake(this.scene);
+        // screenShake(this.scene);
         this.prayerFx.play();
         this.scene.useStamina(PLAYER.STAMINA.INVOKE);
+    };
+
+    onRootingEnter = () => {
+        if (!this.inCombat) return;
+        this.isHealing = true;
+        this.setTimeEvent('rootCooldown', 6000);
+    };
+    onRootingUpdate = (_dt) => {
+        this.combatChecker(this.isHealing);
+    };
+    onRootingExit = () => { 
+        this.scene.root();
+        this.scene.useStamina(PLAYER.STAMINA.ROOT);
+    };
+
+    onSnaringEnter = () => {
+        if (!this.inCombat) return;
+        this.isHealing = true;
+        this.setTimeEvent('snareCooldown', 6000);
+    };
+    onSnaringUpdate = (_dt) => {
+        this.combatChecker(this.isHealing);
+    };
+    onSnaringExit = () => {
+        if (!this.inCombat) return;
+        this.scene.snare(this.attacking.enemyID);
+        this.scene.useStamina(PLAYER.STAMINA.SNARE);
     };
 
     onCleanEnter = () => {};
@@ -982,10 +1061,11 @@ export default class Player extends Entity {
     };
 
     onTshaeralEnter = () => {
+        if (!this.inCombat) return;
         this.isTshaering = true;
         this.attacking.isConsumed = true;
         this.scene.useStamina(PLAYER.STAMINA.TSHAER);
-        screenShake(this.scene);
+        // screenShake(this.scene);
         if (!this.isCaerenic) {
             this.setGlow(this, true);
             this.setGlow(this.spriteWeapon, true, 'weapon'); 
@@ -998,6 +1078,7 @@ export default class Player extends Entity {
             delay: 250,
             callback: () => {
                 if (!this.isTshaering || this.scene.state.playerWin || this.scene.state.newComputerHealth <= 0) {
+                    this.isTshaering = false;
                     this.tshaeringTimer.remove(false);
                     this.tshaeringTimer = undefined;
                     return;
@@ -1008,6 +1089,15 @@ export default class Player extends Entity {
             callbackScope: this,
             repeat: 8,
         });
+        this.setTimeEvent('tshaeralCooldown', 15000);
+        this.scene.time.addEvent({
+            delay: 2000,
+            callback: () => {
+                this.isTshaering = false;
+            },
+            callbackScope: this,
+            loop: false,
+        });
         this.setStatic(true);
     };
     onTshaeralUpdate = (dt) => {
@@ -1015,11 +1105,12 @@ export default class Player extends Entity {
         if (this.isTshaering) this.castbar.update(dt, 'channel');
     };
     onTshaeralExit = () => {
+        this.castbar.reset();
+
         if (this.tshaeringTimer) {
             this.tshaeringTimer.remove(false);
             this.tshaeringTimer = undefined;
         };
-        this.castbar.reset();
         // if (this.beamTimer) {
         //     this.beamTimer.remove();
         //     this.beamTimer = undefined;
@@ -1031,11 +1122,11 @@ export default class Player extends Entity {
         }; 
         // this.tshaeringGraphic.destroy();
         // this.tshaeringGraphic = undefined;
-        screenShake(this.scene);
         this.setStatic(false);
     };
 
     onPolymorphingEnter = () => {
+        if (!this.inCombat) return;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphing', PLAYER.DURATIONS.POLYMORPHING / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.POLYMORPHING);
         this.isPolymorphing = true;
@@ -1058,7 +1149,6 @@ export default class Player extends Entity {
         if (this.polymorphSuccess) {
             this.scene.polymorph(this.attacking?.enemyID);
             this.setTimeEvent('polymorphCooldown', 4000);    
-            screenShake(this.scene);
             this.polymorphSuccess = false;
         };
         this.castbar.reset();
@@ -1382,7 +1472,7 @@ export default class Player extends Entity {
             if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.snare.V) && this.rootCooldown === 0) {
                 this.scene.root();
                 this.setTimeEvent('rootCooldown', 6000);
-                screenShake(this.scene);
+                // screenShake(this.scene);
             };
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.snare.V) && this.snareCooldown === 0) {
                 this.scene.snare(this.attacking.enemyID);
@@ -1412,7 +1502,7 @@ export default class Player extends Entity {
                 if (this.scene.state.playerEffects.length === 0) return;
                 this.isConsuming = true;
                 this.scene.combatMachine.action({ type: 'Consume', data: this.scene.state.playerEffects });
-                screenShake(this.scene);
+                // screenShake(this.scene);
             };
         };
 

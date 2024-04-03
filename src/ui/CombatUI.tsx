@@ -12,15 +12,16 @@ import Ascean from '../models/ascean';
 import Equipment from '../models/equipment';
 import { CombatAttributes } from '../utility/combat';
 import { PrayerModal } from '../utility/buttons';
+import { GameState } from '../stores/game';
 
 interface Props {
     state: Accessor<Combat>;
     staminaPercentage: Accessor<number>;
-    pauseState: boolean;
+    game: Accessor<GameState>;
     stamina: Accessor<number>;
 };
 
-export default function CombatUI({ state, staminaPercentage, pauseState, stamina }: Props) {
+export default function CombatUI({ state, staminaPercentage, game, stamina }: Props) {
     const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal(false);
     const [shieldShow, setShieldShow] = createSignal(false);
@@ -52,20 +53,20 @@ export default function CombatUI({ state, staminaPercentage, pauseState, stamina
         };
     };
 
-    function createPrayer() {
-        console.log('Creating prayer...');
-        let enemy = randomEnemy();
-        enemy = populateEnemy(enemy);
-        const res = asceanCompiler(enemy);
-        const exists = new StatusEffect(state(), res?.ascean as Ascean, state().player as Ascean, state().weapons?.[0] as Equipment, res?.attributes as CombatAttributes, state().playerBlessing);
-        console.log(exists, 'exists');
-        EventBus.emit('create-prayer', exists);
-    };
+    // function createPrayer() {
+    //     console.log('Creating prayer...');
+    //     let enemy = randomEnemy();
+    //     enemy = populateEnemy(enemy);
+    //     const res = asceanCompiler(enemy);
+    //     const exists = new StatusEffect(state(), res?.ascean as Ascean, state().player as Ascean, state().weapons?.[0] as Equipment, res?.attributes as CombatAttributes, state().playerBlessing);
+    //     console.log(exists, 'exists');
+    //     EventBus.emit('create-prayer', exists);
+    // };
     // 5a0043
     return (
         <div class='playerCombatUi'> 
             {/* <CombatModals state={state} />  */}
-            <p class='playerName' onClick={() => showPlayer()}>{state()?.player?.name}</p>
+            <p class='playerName' style={{ 'z-index': 2 }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
             <div class='center playerHealthBar'>
                 <div class='playerPortrait' style={{ 'font-size': '1em', color: state().isStealth ? '#fdf6d8' : '#000' }}>{`${Math.round(state().newPlayerHealth)} / ${state().playerHealth} [${playerHealthPercentage()}%]`}</div>
                 <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, 'z-index': -1, width: `${playerHealthPercentage()}%`, 'background-color': state()?.isStealth ? '#444' : '#FFC700' }}></div>
@@ -102,7 +103,7 @@ export default function CombatUI({ state, staminaPercentage, pauseState, stamina
             <Show when={state().playerEffects.length > 0}>
                 <div class='combatEffects' style={{ left: '-3.5vw', top: '15vh', 'height': '14vh', width: 'auto', transform: 'scale(0.75)' }}>
                     <For each={state().playerEffects}>{(effect) => ( 
-                        <PrayerEffects combat={state} effect={effect} enemy={false} pauseState={pauseState} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
+                        <PrayerEffects combat={state} effect={effect} enemy={false} game={game} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
                     )}</For>
                 </div>
             </Show> 

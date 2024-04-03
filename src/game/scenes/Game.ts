@@ -46,6 +46,7 @@ export class Game extends Scene {
     joystick: any;
     baseSprite: Phaser.GameObjects.Sprite;
     thumbSprite: Phaser.GameObjects.Sprite;
+    postFxPipeline: any;
 
     music: Phaser.Sound.BaseSound;
     spooky: Phaser.Sound.BaseSound;
@@ -78,23 +79,24 @@ export class Game extends Scene {
     };
 
     create () {
+
+        // ================== Camera ================== \\
+
+        let camera = this.cameras.main;
+        camera.zoom = 0.8;
+
+        // ================== Event Bus ================== \\
+
         EventBus.emit('current-scene-ready', this);
-        EventBus.on('ascean', (ascean: Ascean) => {
-            this.ascean = ascean;
-        });
+
+        this.asceanListener();
         this.getAscean();
-        EventBus.on('combat', (combat: any) => {
-            this.state = combat;
-        });
+        this.combatListener();
         this.getCombat();
-        EventBus.on('game', (game: GameState) => {
-            this.gameState = game;
-        });
+        this.gameListener();
         this.getGame();
-        EventBus.on('settings', (settings: Settings) => {
-            this.settings = settings;
-        });
-        // this.setup();
+        this.settingsListener();
+        this.getSettings();
 
         // ================== Add Multiple Inputs ================== \\
         this.input.addPointer(3);
@@ -136,6 +138,48 @@ export class Game extends Scene {
         map?.getObjectLayer('Npcs')?.objects.forEach((npc: any) => 
             this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' })));
 
+        // ====================== Camera ====================== \\
+            
+        camera.startFollow(this.player);
+        camera.setLerp(0.1, 0.1);
+        camera.setBounds(0, 0, 4096, 4096);
+        const darkOverlay = this.add.graphics();
+        darkOverlay.fillStyle(0x000000, 0.35); // Black with 50% opacity
+        darkOverlay.fillRect(0, 0, 4096, 4096);
+
+        var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
+        console.log(this.settings, this.settings?.postFx?.scanlinesEnable, 'Settings');
+        this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main, { 
+            enable: this.settings?.postFx?.enable,
+            bloomRadius: 25,
+            bloomIntensity: 0.5,
+            bloomThreshold: 0.5,
+            // Chromatic abberation
+            chromaticEnable: this.settings?.postFx?.chromaticEnable,
+            chabIntensity: this.settings?.postFx?.chabIntensity,
+            // Vignette
+            vignetteEnable: this.settings?.postFx?.vignetteEnable,
+            vignetteStrength: this.settings?.postFx?.vignetteStrength,
+            vignetteIntensity: this.settings?.postFx?.vignetteIntensity,
+            // Noise
+            noiseEnable: this.settings?.postFx?.noiseEnable,
+            noiseStrength: this.settings?.postFx?.noiseStrength,
+            // seed: 0.5,
+            
+            // VHS
+            vhsEnable: this.settings?.postFx?.vhsEnable,
+            vhsStrength: this.settings?.postFx?.vhsStrength,
+
+            // Scanlines
+            scanLinesEnable: this.settings?.postFx?.scanlinesEnable,
+            scanStrength: this.settings?.postFx?.scanStrength,
+
+            // CRT
+            crtEnable: this.settings?.postFx?.crtEnable,
+            crtWidth: this.settings?.postFx?.crtWidth,
+        });
+
+        this.setPostFx(this.settings?.postFx, this.settings?.postFx.enable);
 
         // ====================== Combat Machine ====================== \\
 
@@ -170,16 +214,6 @@ export class Game extends Scene {
             stalwart: this?.input?.keyboard?.addKeys('G'),
         }; 
 
-        // ====================== Camera ====================== \\
-            
-        let camera = this.cameras.main;
-        camera.zoom = 0.8;
-        camera.startFollow(this.player);
-        camera.setLerp(0.1, 0.1);
-        camera.setBounds(0, 0, 4096, 4096);
-        const darkOverlay = this.add.graphics();
-        darkOverlay.fillStyle(0x000000, 0.35); // Black with 50% opacity
-        darkOverlay.fillRect(0, 0, 4096, 4096);
 
         // =========================== Lighting =========================== \\
 
@@ -214,12 +248,6 @@ export class Game extends Scene {
         this.treasure = this.sound.add('treasure', { volume: this?.settings?.volume });
         this.phenomena = this.sound.add('phenomena', { volume: this?.settings?.volume });
 
-        this.equipListener();
-        this.unequipListener();
-        this.purchaseListener();
-        this.weaponListener();
-        this.actionButtonListener();
-
         // =========================== FPS =========================== \\
 
         this.fpsText = this.add.text(window.innerWidth / 2 - 32, -40, 'FPS: ', { font: '16px Cinzel', color: '#fdf6d8' });
@@ -238,38 +266,195 @@ export class Game extends Scene {
         this.purchaseListener();
         this.weaponListener();
         this.actionButtonListener();
+        this.postFxListener();
     };
 
-    equipListener = () => EventBus.on('equip-sound', () => {
-        this.equip.play();
-    });
-    unequipListener = () => EventBus.on('unequip-sound', () => {
-        this.unequip.play();
-    });
-    purchaseListener = () => EventBus.on('purchase-sound', () => {
-        this.purchase.play();
-    });
-    weaponListener = () => EventBus.on('weapon-order-sound', () => {
-        this.weaponOrder.play();
-    });
-    actionButtonListener = () => EventBus.on('action-button-sound', () => {
-        this.actionButton.play();
+    asceanListener():void {
+        EventBus.on('ascean', (ascean: Ascean) => {
+            console.log(ascean, 'Ascean')
+            this.ascean = ascean;
+        });
+    };
+
+    combatListener():void {
+        EventBus.on('combat', (combat: any) => {
+            console.log(combat, 'combat')
+            this.state = combat;
+        });
+    };
+
+    gameListener():void {
+        EventBus.on('game', (game: GameState) => {
+            console.log(game, 'game')
+            this.gameState = game;
+        });
+    };
+
+    settingsListener():void {
+        EventBus.on('settings', (settings: Settings) => {
+            console.log(settings, 'settings')
+            this.settings = settings;
+        });
+    };
+
+    postFxListener = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
+        const { type, val } = data;
+        console.log(type, val, 'Type and Value') 
+        if (type === 'bloom') {
+            this.postFxPipeline.setBloomRadius(val);
+        };
+        if (type === 'threshold') {
+            this.postFxPipeline.setBloomThreshold(val);
+        };
+        if (type === 'chromatic') {
+            if (val === true) {
+                this.postFxPipeline.setChromaticEnable();
+            } else {
+                this.postFxPipeline.setChromaticEnable(val);
+            };
+        };
+        if (type === 'chabIntensity') {
+            this.postFxPipeline.setChabIntensity(val);
+        };
+        if (type === 'vignetteEnable') {
+            if (val === true) {
+                this.postFxPipeline.setVignetteEnable();
+            } else {
+                this.postFxPipeline.setVignetteEnable(val);
+            };
+        };
+        if (type === 'vignetteStrength') {
+            this.postFxPipeline.setVignetteStrength(val);
+        };
+        if (type === 'vignetteIntensity') {
+            this.postFxPipeline.setVignetteIntensity(val);
+        };
+
+        if (type === 'noiseEnable') {
+            if (val === true) {
+                this.postFxPipeline.setNoiseEnable();
+            } else {
+                this.postFxPipeline.setNoiseEnable(val);
+            };
+        };
+        if (type === 'noiseSeed') {
+            this.postFxPipeline.setNoiseSeed(val);
+        };
+        if (type === 'noiseStrength') {
+            this.postFxPipeline.setNoiseStrength(val);
+        };
+
+        if (type === 'vhsEnable') {
+            if (val === true) {
+                this.postFxPipeline.setVHSEnable();
+            } else {
+                this.postFxPipeline.setVHSEnable(val);
+            };
+        };
+        if (type === 'vhsStrength') {
+            this.postFxPipeline.setVhsStrength(val);
+        };
+
+        if (type === 'scanlinesEnable') {
+            if (val === true) {
+                this.postFxPipeline.setScanlinesEnable();
+            } else {
+                this.postFxPipeline.setScanlinesEnable(val);
+            };
+        };
+        if (type === 'scanStrength') {
+            this.postFxPipeline.setScanStrength(val);
+        };
+        
+        if (type === 'crtEnable') {
+            if (val === true) {
+                this.postFxPipeline.setCRTEnable();
+            } else {
+                this.postFxPipeline.setCRTEnable(val);
+            };
+        };
+        if (type === 'crtHeight') {
+            this.postFxPipeline.crtHeight = val;
+        };
+        if (type === 'crtWidth') {
+            this.postFxPipeline.crtWidth = val;
+        };
+
+        if (type === 'enable') {
+            if (val === true) {
+                this.setPostFx(this.settings?.postFx, true);
+            } else {
+                this.postFxPipeline.setEnable(false);
+            };
+        };
     });
 
-    changeScene (): void {
+    setPostFx = (settings: any, enable: boolean) => { 
+        console.log(settings, 'PostFx Settings being Set in Phaser')
+        if (enable) this.postFxPipeline.setEnable();
+        this.postFxPipeline.setBloomRadius(25);
+        this.postFxPipeline.setBloomIntensity(0.5);
+        this.postFxPipeline.setBloomThreshold(0.5);
+        this.postFxPipeline.setChromaticEnable(settings.chromaticEnable);
+        this.postFxPipeline.setChabIntensity(settings.chabIntensity);
+        this.postFxPipeline.setVignetteEnable(settings.vignetteEnable);
+        this.postFxPipeline.setVignetteStrength(settings.vignetteStrength);
+        this.postFxPipeline.setVignetteIntensity(settings.vignetteIntensity);
+        this.postFxPipeline.setNoiseEnable(settings.noiseEnable);
+        this.postFxPipeline.setNoiseStrength(settings.noiseStrength);
+        this.postFxPipeline.setVHSEnable(settings.vhsEnable);
+        this.postFxPipeline.setVhsStrength(settings.vhsStrength);
+        this.postFxPipeline.setScanlinesEnable(settings.scanlinesEnable);
+        this.postFxPipeline.setScanStrength(settings.scanStrength);
+        this.postFxPipeline.setCRTEnable(settings.crtEnable);
+        this.postFxPipeline.crtHeight = settings.crtHeight;
+        this.postFxPipeline.crtWidth = settings.crtWidth;
+    };
+
+    equipListener():void {
+        EventBus.on('equip-sound', () => {
+            this.equip.play();
+        });
+    };
+    unequipListener():void {
+        EventBus.on('unequip-sound', () => {
+            this.unequip.play();
+        });
+    };
+    purchaseListener():void {
+        EventBus.on('purchase-sound', () => {
+            this.purchase.play();
+        });
+    };
+    weaponListener():void {
+        EventBus.on('weapon-order-sound', () => {
+            this.weaponOrder.play();
+        });
+    };
+    actionButtonListener():void {
+        EventBus.on('action-button-sound', () => {
+            this.actionButton.play();
+        });
+    };
+
+    changeScene(): void {
         this.scene.start('GameOver');
     };
 
-    getAscean (): void {
+    getAscean(): void {
         EventBus.emit('request-ascean');
     };
 
-    getCombat (): void {
+    getCombat(): void {
         EventBus.emit('request-combat');
     };
 
-    getGame (): void {
+    getGame(): void {
         EventBus.emit('request-game');
+    };
+
+    getSettings(): void {
+        EventBus.emit('request-settings');
     };
 
     handleJoystickUpdate() {
@@ -299,8 +484,14 @@ export class Game extends Scene {
     };
     root = () => {
         // const { worldX, worldY } = this.input.activePointer;
-        const worldX = this.player.rightJoystick.pointer.x;
-        const worldY = this.player.rightJoystick.pointer.y;
+        console.log(this.player.rightJoystick.pointer.worldX, this.player.rightJoystick.pointer.worldY, 'Right Joystick Pointer')
+        const bounds = this.player.rightJoystick.pointer.getBounds();
+        console.log(bounds, 'Bounds');
+        const worldX = bounds.centerX;
+        const worldY = bounds.centerY;
+        // const worldX = this.player.rightJoystick.pointer.x;
+        // const worldY = this.player.rightJoystick.pointer.y;
+        console.log(worldX, worldY, 'World X and Y');
         const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, worldX, worldY);
         const duration = 2 * distance;
         const rise = 0.5 * distance;
@@ -322,30 +513,26 @@ export class Game extends Scene {
                 onStart: () => {
                     this.target.setVisible(true);
                 },    
-                // onUpdate: (_tween, target, key, current) => {
-                //     if (key !== 'z') return;
-                //     target.y += current;
-                // }, 
+                onUpdate: (_tween, target: Phaser.GameObjects.Sprite, key: any, current) => {
+                    if (key !== 'z') return;
+                    target.y += current;
+                },
+                onComplete: () => {
+                    this.enemies.forEach((enemy: any) => {
+                        if (Phaser.Geom.Circle.ContainsPoint(sensorBounds, new Phaser.Geom.Point(enemy.x, enemy.y))) {
+                            enemy.isRooted = true;
+                        };
+                    });
+                    this.time.addEvent({
+                        delay: 3000,
+                        callback: () => {
+                            this.target.setVisible(false);
+                            rootTween.destroy();
+                        },
+                        callbackScope: this
+                    });
+                }, 
             },
-        });
-        this.time.addEvent({
-            delay: duration,
-            callback: () => { 
-                this.enemies.forEach((enemy: any) => {
-                    if (Phaser.Geom.Circle.ContainsPoint(sensorBounds, new Phaser.Geom.Point(enemy.x, enemy.y))) {
-                        enemy.isRooted = true;
-                    };
-                });
-            },
-            callbackScope: this
-        });
-        this.time.addEvent({
-            delay: 3000,
-            callback: () => {
-                this.target.setVisible(false);
-                rootTween.destroy();
-            },
-            callbackScope: this
         });
     };
     snare = (id: string): void => {
@@ -390,8 +577,8 @@ export class Game extends Scene {
         const border = this.add.graphics();
         border.lineStyle(4, 0x2A0134, 1);
         border.strokeRect(
-            text.x - text.width * text.originX - 2.5,
-            text.y - text.height * text.originY - 2.5, 
+            text.x - text.width * text.origin.x - 2.5,
+            text.y - text.height * text.origin.y - 2.5, 
             text.width + 5, 
             text.height + 5 
         );

@@ -53,19 +53,23 @@ export function DynamicButton({ style, text, callback, opacity, setOpacity, left
     );
 };
 
-export function ActionButtonModal({ current, actions, index, handleAction }: { current: string, actions: string[], index: number, handleAction: (action: string, index: number) => void }) {
+                           
+export function ActionButtonModal({ currentAction, actions, handleAction, handleCounter, special }: { currentAction: Accessor<any>, actions: string[], handleAction: (action: string, index: number) => void, handleCounter?: (counter: string) => void, special?: boolean }) {
     return (
         <div class='border superCenter' style={{ width: '40%', height: '75%', overflow: 'scroll' }}>
         <div class='creature-heading'>
-            <h1 style={{ 'text-align': 'center' }}>{current}</h1>
+            <h1 style={{ 'text-align': 'center' }}>{special ? currentAction().special : currentAction().action}</h1>
             <div class='center' style={{ overflow: 'scroll', width: '100%', height: '100%' }}>
             {actions.map((action) => {
                 return (
-                    <button class='highlight' onClick={() => handleAction(action, index)} style={{ 'background-color': 'black', margin: '5% auto', width: '75%', display: 'block' }}>
+                    <button class='highlight' onClick={() => handleAction(action, currentAction().index)} style={{ 'background-color': 'black', margin: '5% auto', width: '75%', display: 'block' }}>
                         <div style={font('1.25em', '#fdf6d8')}>{action}</div>
+                        { (currentAction().action === 'Counter' && handleCounter) && ( 
+                            <button class='highlight cornerBR' style={{ margin: '1%' }} onClick={() => handleCounter(action)}>Choose Counter</button> 
+                        ) }
                     </button>
-                    );
-                })} 
+                );
+            })} 
             </div>
         </div>
         </div>
@@ -97,6 +101,7 @@ export function Modal({ items, inventory, callback, show, setShow }: { items: Ac
 
 export function PrayerModal({ prayer, show, setShow }: { prayer: Accessor<StatusEffect>, show: Accessor<boolean>, setShow: Setter<boolean> }) {
     const dimensions = useResizeListener();
+    console.log(prayer(), 'prayer')
     return (
         <div class='modal' onClick={() => setShow(!show)}>
             <button class='border superCenter' onClick={() => setShow(!show)} style={{ 
@@ -111,91 +116,94 @@ export function PrayerModal({ prayer, show, setShow }: { prayer: Accessor<Status
                     <h2>
                         {prayer().description}
                     </h2>
-                    <div class='gold'>
-                            Duration: {prayer().duration} <br />
-                            Start: {prayer()?.startTime}s | End: {prayer()?.endTime}s
-                        <div>
+                    <div class='' style={{ color: '#fdf6d8' }}>
+                        Prayer: <span style={{ color: 'gold' }}>{prayer()?.prayer}</span> <br />
                         <br />
-                        </div>
-                        {prayer()?.refreshes ? `Active Refreshes: ${prayer()?.activeRefreshes}` : `Active Stacks: ${prayer()?.activeStacks}`}
-                        <div>
-                        <br />
-                        </div>
-                        {specials.includes(prayer().prayer) && ( <>
-                            {specialDescription[prayer().prayer as keyof typeof specialDescription]}
-                        </> )}
-                        {prayer()?.effect?.physicalDamage && 
-                            <div>
-                            Physical Damage: {prayer()?.effect?.physicalDamage}<br /> 
-                            </div>
-                        }
-                        {prayer()?.effect?.magicalDamage ? 
-                            <div>
-                            Magical Damage: {prayer()?.effect?.magicalDamage}<br /> 
-                            </div>
-                        : undefined}
-                        {prayer()?.effect?.physicalPenetration ? 
-                            <div>
-                            Physical Penetration: {prayer()?.effect?.physicalPenetration}<br /> 
-                            </div>
-                        : undefined}
-                        {prayer()?.effect?.magicalPenetration ? 
-                            <div>
-                            Magical Penetration: {prayer()?.effect?.magicalPenetration}<br /> 
-                            </div>
-                        : undefined}
-                        {prayer()?.effect?.criticalChance ? 
-                            <div>
-                            Critical Chance: {prayer()?.effect?.criticalChance}<br /> 
-                            </div>
-                        : undefined}
-                        {prayer()?.effect?.criticalDamage ? 
-                            <div>
-                            Critical Damage: {prayer()?.effect?.criticalDamage}<br /> 
-                            </div>
-                        : undefined}
-                        {prayer()?.effect?.physicalPosture ? 
-                            <div>
-                            Physical Posture: {prayer()?.effect.physicalPosture}<br /> 
-                            </div>
-                        : undefined}
-                        {prayer()?.effect?.magicalPosture ? 
-                            <div>
-                            Magical Posture: {prayer()?.effect.magicalPosture}<br /> 
-                            </div>
-                        : undefined}
-                        {prayer()?.effect?.physicalDefenseModifier ? 
-                            <div>
-                            Physical Defense Modifier: {prayer()?.effect?.physicalDefenseModifier}<br /> 
-                            </div>
-                        : undefined}
-                        {prayer()?.effect?.magicalDefenseModifier ? 
-                            <div>
-                            Magical Defense Modifier: {prayer()?.effect?.magicalDefenseModifier}<br /> 
-                            </div>
-                        : undefined}
-                        {prayer()?.effect?.roll ? 
-                            <div>
-                            Roll Chance: {prayer()?.effect?.roll}<br /> 
-                            </div>
-                        : undefined}
-                        {prayer()?.effect?.dodge ? 
-                            <div>
-                            Dodge Distance: {prayer()?.effect?.dodge}<br /> 
-                            </div>
-                        : undefined}
-                        {prayer()?.effect?.healing ? 
-                            <div>
-                            Healing: {Math.round(prayer()?.effect?.healing as number)}<br /> 
-                            </div>
-                        : undefined}
-                        {prayer()?.effect?.damage ? 
-                            <div>
-                            Damage: {Math.round(prayer()?.effect?.damage as number)}<br /> 
-                            </div>
-                        : undefined}
-                    </div>
+                        Duration: <span style={{ color: 'gold' }}>{prayer().duration}</span> <br />
+                        Start: <span style={{ color: 'gold' }}>{prayer()?.startTime}s</span> | End: <span style={{ color: 'gold' }}>{prayer()?.endTime}s</span>
+                    <div>
                 </div>
+                {prayer()?.refreshes ? 
+                    <>Active Refreshes: <span style={{ color: 'gold' }}>{prayer()?.activeRefreshes}</span></> : 
+                    <>Active Stacks: <span style={{ color: 'gold' }}>{prayer()?.activeStacks}</span></>}
+                <div>
+                <br />
+                </div>
+                {specials.includes(prayer().prayer) && ( <>
+                    {specialDescription[prayer().prayer as keyof typeof specialDescription]}
+                </> )}
+                {prayer()?.effect?.physicalDamage && 
+                    <div>
+                    Physical Damage: <span style={{ color: 'gold' }}>{prayer()?.effect?.physicalDamage}</span><br /> 
+                    </div>
+                }
+                {prayer()?.effect?.magicalDamage ? 
+                    <div>
+                    Magical Damage: <span style={{ color: 'gold' }}>{prayer()?.effect?.magicalDamage}</span><br /> 
+                    </div>
+                : undefined}
+                {prayer()?.effect?.physicalPenetration ? 
+                    <div>
+                    Physical Penetration: <span style={{ color: 'gold' }}>{prayer()?.effect?.physicalPenetration}</span><br /> 
+                    </div>
+                : undefined}
+                {prayer()?.effect?.magicalPenetration ? 
+                    <div>
+                    Magical Penetration: <span style={{ color: 'gold' }}>{prayer()?.effect?.magicalPenetration}</span><br /> 
+                    </div>
+                : undefined}
+                {prayer()?.effect?.criticalChance ? 
+                    <div>
+                    Critical Chance: <span style={{ color: 'gold' }}>{prayer()?.effect?.criticalChance}</span><br /> 
+                    </div>
+                : undefined}
+                {prayer()?.effect?.criticalDamage ? 
+                    <div>
+                    Critical Damage: <span style={{ color: 'gold' }}>{prayer()?.effect?.criticalDamage}</span><br /> 
+                    </div>
+                : undefined}
+                {prayer()?.effect?.physicalPosture ? 
+                    <div>
+                    Physical Posture: <span style={{ color: 'gold' }}>{prayer()?.effect.physicalPosture}</span><br /> 
+                    </div>
+                : undefined}
+                {prayer()?.effect?.magicalPosture ? 
+                    <div>
+                    Magical Posture: <span style={{ color: 'gold' }}>{prayer()?.effect.magicalPosture}</span><br /> 
+                    </div>
+                : undefined}
+                {prayer()?.effect?.physicalDefenseModifier ? 
+                    <div>
+                    Physical Defense Modifier: <span style={{ color: 'gold' }}>{prayer()?.effect?.physicalDefenseModifier}</span><br /> 
+                    </div>
+                : undefined}
+                {prayer()?.effect?.magicalDefenseModifier ? 
+                    <div>
+                    Magical Defense Modifier: <span style={{ color: 'gold' }}>{prayer()?.effect?.magicalDefenseModifier}</span><br /> 
+                    </div>
+                : undefined}
+                {prayer()?.effect?.roll ? 
+                    <div>
+                    Roll Chance: <span style={{ color: 'gold' }}>{prayer()?.effect?.roll}</span><br /> 
+                    </div>
+                : undefined}
+                {prayer()?.effect?.dodge ? 
+                    <div>
+                    Dodge Distance: <span style={{ color: 'gold' }}>{prayer()?.effect?.dodge}</span><br /> 
+                    </div>
+                : undefined}
+                {prayer()?.effect?.healing ? 
+                    <div>
+                    Healing: <span style={{ color: 'gold' }}>{Math.round(prayer()?.effect?.healing as number)}</span><br /> 
+                    </div>
+                : undefined}
+                {prayer()?.effect?.damage ? 
+                    <div>
+                    Damage: <span style={{ color: 'gold' }}>{Math.round(prayer()?.effect?.damage as number)}</span><br /> 
+                    </div>
+                : undefined}
+                </div>
+            </div>
             </button>
         </div>
     );

@@ -57,10 +57,17 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     });
 
     createEffect(() => {
-        updateCombatListener(combat());
+        console.log(combat(), 'Combat');
+        // updateCombatListener(combat());
+        EventBus.emit('combat', combat());
     });  
 
     createEffect(() => {
+        console.log(settings().postFx, 'Settings Updated');
+        EventBus.emit('settings', settings());
+    });
+
+    onMount(() => {
         if (!ascean().tutorial.boot) {
             console.log('Tutorial Overlay');
             setTutorial('boot');
@@ -92,31 +99,30 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
             let playerWin: boolean = false, computerWin: boolean = false, res: Combat = initCombat;
             switch (e.type) {
                 case 'Weapon':
+                    console.log(e.data, 'Weapon Action')
                     const weapon = { ...combat(), [e.data.key]: e.data.value };
                     res = weaponActionCompiler(weapon) as Combat;
-                    EventBus.emit('update-combat', { ...combat(), ...res });
+                    EventBus.emit('blend-combat', res);
                     playerWin = res.playerWin;
                     computerWin = res.computerWin;
                     break;
                 case 'Prayer':
                     const pray = { ...combat(), playerEffects: e.data };
                     res = consumePrayer(pray) as Combat;
-                    EventBus.emit('update-combat', { ...combat, newPlayerHealth: res.newPlayerHealth, playerEffects: res.playerEffects });
+                    EventBus.emit('blend-combat', { newPlayerHealth: res.newPlayerHealth, playerEffects: res.playerEffects });
                     playerWin = res.playerWin;
                     break;
-                    case 'Instant':
-                        const insta = { ...combat(), playerBlessing: e.data };
-                    res = instantActionCompiler(insta) as Combat;
-                    // setCombat({ ...(combat), ...res });
-                    playerWin = res.playerWin;
-                    // res = prayerSplitter((combat), e.data);
+                case 'Instant':
+                    let insta = { ...combat(), playerBlessing: e.data };
+                    insta = instantActionCompiler(insta) as Combat;
+                    playerWin = insta.playerWin;
+                    res = { ...combat(), ...insta };
                     console.log(res, 'Instant Action');
-                    EventBus.emit('update-combat', res);
-                    // EventBus.emit('update-combat', res);
+                    EventBus.emit('blend-combat', insta);
                     break;
                 case 'Player': // 'Player Blind Attack' i.e. hitting a non targeted enemy
                     const { playerAction, enemyID, ascean, damageType, combatStats, weapons, health, actionData } = e.data;
-                    let enemyData = {
+                    let playerData = {
                         action: playerAction.action,
                         counterGuess: playerAction.counter,
                         computer: ascean,
@@ -134,12 +140,9 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                         computerEffects: [],
                         enemyID: enemyID, // Was ''
                     };
-                    res = { ...combat(), ...enemyData };
+                    res = { ...combat(), ...playerData };
                     res = weaponActionCompiler(res) as Combat;
-                    EventBus.emit('update-combat', res);
-                    // setPlayerActions(res); || Below is what setPlayerActions does
-                    EventBus.emit('update-combat', {
-                        ...combat,
+                    EventBus.emit('blernd-combat', {
                         playerWin: res.playerWin,
                         computerWin: res.computerWin,
                         playerActionDescription: res.playerActionDescription,
@@ -177,7 +180,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     const newComputerHealth = combat().newComputerHealth - drained < 0 ? 0 : combat().newComputerHealth - drained;
                     playerWin = newComputerHealth === 0;
                     console.log(drained, newPlayerHealth, newComputerHealth, playerWin, 'Tshaeral Drain');
-                    EventBus.emit('update-combat', { ...combat, newPlayerHealth: newPlayerHealth, newComputerHealth: newComputerHealth, playerWin: playerWin });
+                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, playerWin });
                     break;
                 case 'Health':
                     let { key, value } = e.data;
@@ -185,16 +188,38 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                         case 'player':
                             const healed = Math.floor(combat().playerHealth * (value / 100));
                             const newPlayerHealth = combat().newPlayerHealth + healed > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + healed;
-                            EventBus.emit('update-combat', { ...combat, newPlayerHealth: newPlayerHealth });
+                            EventBus.emit('blend-combat', { newPlayerHealth });
                             break;
                         case 'computer':
                             const healedComputer = Math.floor(combat().computerHealth * (value / 100));
                             const newComputerHealth = combat().newComputerHealth + healedComputer > combat().computerHealth ? combat().computerHealth : combat().newComputerHealth + healedComputer;
-                            EventBus.emit('update-combat', { ...combat, newComputerHealth: newComputerHealth });
+                            EventBus.emit('blend-combat', { newComputerHealth });
                             break;
                         default:
                             break;
                     };
+                    break;
+                case 'Enemy':
+                    let enemyData = {
+                        computer: e.data.enemy,
+                        computerAttributes: e.data.combatStats.attributes,
+                        computerWeaponOne: e.data.combatStats.combatWeaponOne,
+                        computerWeaponTwo: e.data.combatStats.combatWeaponTwo,
+                        computerWeaponThree: e.data.combatStats.combatWeaponThree,
+                        newComputerHealth: e.data.health,
+                        computerHealth: e.data.combatStats.healthTotal,
+                        computerDefense: e.data.combatStats.defense,
+                        computerWeapons: e.data.weapons,
+                        computerAction: e.data.actionData.action,
+                        computerCounterGuess: e.data.actionData.counter,
+                        computerDamageType: e.data.damageType,
+                        computerEffects: [],
+                        enemyID: e.data.enemyID,
+                    };
+                    res = { ...combat(), ...enemyData };
+                    res = weaponActionCompiler(res) as Combat;
+                    console.log(res, 'Res in Enemy')
+                    EventBus.emit('update-combat', res);
                     break;
                 default:
                     break;
@@ -213,7 +238,9 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
             // setStatistics(rec);
             if (data.playerWin) {
                 const exp = { state: asceanState, combat: combat };
+                console.log(exp, 'Experience Gain Request');
                 const loot = { enemyID: combat().enemyID, level: combat()?.computer?.level! };
+                console.log(loot, 'Loot Drop Request');
                 EventBus.emit('gain-experience', exp);
                 EventBus.emit('enemy-loot', loot);
             } else {
@@ -292,11 +319,11 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         </Show> 
         <Show when={game().showPlayer} fallback={
             <div style={{ position: "absolute", 'z-index': 1 }}>
-                <CombatUI state={combat} staminaPercentage={staminaPercentage} pauseState={game().pauseState} stamina={stamina} />
+                <CombatUI state={combat} staminaPercentage={staminaPercentage} game={game} stamina={stamina} />
                 <Show when={combat().computer} fallback={
                     <EnemyPreview enemies={enemies} fetchEnemy={fetchEnemy} />
                 }>
-                    <EnemyUI state={combat} pauseState={game().pauseState} enemies={enemies} />
+                    <EnemyUI state={combat} game={game} enemies={enemies} />
                 </Show> 
             </div>
         }>

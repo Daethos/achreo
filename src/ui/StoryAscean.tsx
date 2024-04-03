@@ -1,4 +1,5 @@
-import { Accessor, Setter, Show, createEffect, createSignal } from 'solid-js';
+import { Accessor, Match, Setter, Show, Switch, createEffect, createSignal } from 'solid-js';
+import { Form } from 'solid-bootstrap';
 import AsceanImageCard from '../components/AsceanImageCard';
 import AttributeModal, { AttributeCompiler } from '../components/Attributes';
 import InventoryPouch from './InventoryPouch';
@@ -46,12 +47,12 @@ const SETTINGS = {
     GENERAL: 'General',
     TACTICS: 'Tactics',
 };
-// const CONTROLS = {
-//     BUTTONS: 'Buttons',
-//     SOUND_SHAKE: 'Sound & Shake',
-// };
+const CONTROLS = {
+    BUTTONS: 'Buttons',
+    POST_FX: 'Post FX',
+};
 const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Counter'];
-const SPECIALS = ['Charm', 'Confuse', 'Consume', 'Fear', 'Invoke', 'Polymorph', 'Root', 'Snare', 'Tshaeral'];
+const SPECIALS = ['Consume', 'Invoke', 'Polymorph', 'Root', 'Snare', 'Tshaeral']; // 'Charm', 'Confuse', 'Fear', 
 
 interface Props {
     settings: Accessor<Settings>;
@@ -75,6 +76,8 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         action: ACTIONS[0],
         index: 0,
     });
+    const [counterShow, setCounterShow] = createSignal<boolean>(false);
+    const [currentCounter, setCurrentCounter] = createSignal({ counter: '', index: 0 });
     const [specialShow, setSpecialShow] = createSignal<boolean>(false);
     const [currentSpecial, setCurrentSpecial] = createSignal({
         special: SPECIALS[0],
@@ -98,11 +101,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
             setAsceanPic(`../assets/images/${ascean().origin}-${ascean().sex}.jpg`);
         };
     });
-
-
-    // createEffect(() => {
-    //     playerTraits();
-    // });
 
     createEffect(() => {
         if (!ascean().tutorial.views) {
@@ -147,6 +145,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         const newSettings: Settings = { ...settings(), characterViews: e };
         setSettings(newSettings);
         await saveSettings(newSettings);
+        // EventBus.emit('settings', newSettings);
     };
 
     // const shake = (value, action) => setSettings({ ...settings(), shake: { ...settings().shake, [action]: value } });
@@ -204,8 +203,16 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
     //     const newSettings: Settings = { ...settings(), volume: volume };
     //     setSettings(newSettings);
     //     // await saveSettings(newSettings);
+            // EventBus.emit('settings', newSettings);
     //     EventBus.emit('update-volume', volume);
     // };
+
+    async function currentControl(e: string) {
+        const newSettings: Settings = { ...settings(), control: e };
+        setSettings(newSettings);
+        await saveSettings(newSettings);
+        // EventBus.emit('settings', newSettings);
+    };
 
     async function currentView(e: string) {
         console.log(e, "Current Setting div");
@@ -214,6 +221,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         // setSettingViews(createSettingInfo(settings().settingViews));
         setSettings(newSettings);
         await saveSettings(newSettings);
+        // EventBus.emit('settings', newSettings);
     };
 
     async function setNextView() {
@@ -223,12 +231,18 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
             const newSettings: Settings = { ...settings(), asceanViews: nextView };
             setSettings(newSettings);
             await saveSettings(newSettings);
+            // EventBus.emit('settings', newSettings);
         };
     }; 
 
     function actionModal(action: string, index: number) {
         setCurrentAction({ action: action, index: index });
         setActionShow(true);
+    };
+
+    function counterModal(counter: string, index: number) {
+        setCurrentCounter({ counter: counter, index: index });
+        setCounterShow(true);
     };
 
     function specialModal(special: string, index: number) {
@@ -246,8 +260,20 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         
         const newSettings: Settings = { ...settings(), actions: newActions };
         await saveSettings(newSettings);
+        // EventBus.emit('settings', newSettings);
         setSettings(newSettings);
         EventBus.emit('reorder-buttons', { list: newActions, type: 'action' }); 
+    };
+
+    function handleCounterButton(e: string) {
+        console.log(e, "Counter Button");
+        setCounterShow(false);
+        EventBus.emit('blend-combat', { counterGuess: e.toLowerCase() })
+    };
+
+    function handleCounterShow(e: string) {
+        setCounterShow(true);
+        // EventBus.emit('blend-combat', { counterGuess: e })
     };
 
     async function handleSpecialButton(e: string, i: number) {
@@ -260,9 +286,20 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         };
         newSpecials[i] = newSpecial;
         const newSettings: Settings = { ...settings(), specials: newSpecials };
+        setSettings(newSettings);
+        await saveSettings(newSettings);
+        // EventBus.emit('settings', newSettings);
+        EventBus.emit('reorder-buttons', { list: newSpecials, type: 'special' }); 
+    };
+
+    async function handlePostFx(type: string, val: any) {
+        console.log(type, val, "Post FX");
+        EventBus.emit('update-postfx', { type, val });
+        const newSettings = { ...settings(), postFx: { ...settings().postFx, [type]: val } };
+        console.log(newSettings.postFx, "New Post FX")
         await saveSettings(newSettings);
         setSettings(newSettings);
-        EventBus.emit('reorder-buttons', { list: newSpecials, type: 'special' }); 
+        // EventBus.emit('settings', newSettings);
     };
 
     async function freeInventory() {
@@ -327,27 +364,29 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
             </div>
         </> ) : ( '' ) }
         {/* <<----- WINDOW ONE ----->> */}
-        <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
-            { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'hidden' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, }}>
-                { dragAndDropInventory().length < 300 && (
-                    <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => freeInventory()}>
-                        <p>Get Gear</p>
-                    </button>
-                ) }
-            {/* { (ascean().experience === ascean().level * 1000) && (
-                <LevelUpModal asceanState={asceanState} />
-            ) }  */}
-            <div class='gold' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5%', 'text-align': 'center' } : { margin: '5%', 'text-align': 'center' }}>
-                {combatState()?.player?.name}
+        <Show when={settings().control !== CONTROLS.POST_FX || settings().asceanViews !== VIEWS.SETTINGS}>
+            <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
+                { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'hidden' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, }}>
+                    { dragAndDropInventory().length < 300 && (
+                        <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => freeInventory()}>
+                            <p>Get Gear</p>
+                        </button>
+                    ) }
+                {/* { (ascean().experience === ascean().level * 1000) && (
+                    <LevelUpModal asceanState={asceanState} />
+                ) }  */}
+                <div class='gold' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5%', 'text-align': 'center' } : { margin: '5%', 'text-align': 'center' }}>
+                    {combatState()?.player?.name}
+                </div>
+                <HealthBar combat={combatState} />
+                <div style={dimensions().ORIENTATION === 'landscape' ? { 'margin-left': '0', 'margin-top': '7.5%', transform: 'scale(0.9)' } : { 'margin-left': '5%', transform: 'scale(0.75)', 'margin-top': '20%' }}>
+                    <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
+                </div>
+                <div style={{ 'margin-top': '-5%' }}>
+                    <ExperienceBar totalExperience={ascean().level * 1000} currentExperience={ascean().experience} />
+                </div>
             </div>
-            <HealthBar totalPlayerHealth={combatState().playerHealth} newPlayerHealth={combatState().newPlayerHealth} />
-            <div style={dimensions().ORIENTATION === 'landscape' ? { 'margin-left': '0', 'margin-top': '7.5%', transform: 'scale(0.9)' } : { 'margin-left': '5%', transform: 'scale(0.75)', 'margin-top': '20%' }}>
-                <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
-            </div>
-            <div style={{ 'margin-top': '-5%' }}>
-                <ExperienceBar totalExperience={ascean().level * 1000} currentExperience={ascean().experience} />
-            </div>
-        </div>
+        </Show>
         {/* <<----- WINDOW TWO -----> */}
         <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? { height: `${dimensions().HEIGHT * 0.8}px`, left: '33.5vw', } : {
             height: `${dimensions().HEIGHT * 0.31}px`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 'margin-top': '64%'
@@ -388,13 +427,104 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
                 )
             ) : settings().asceanViews === VIEWS.SETTINGS ? (
                 <div class='center' style={{ display: 'flex', 'flex-direction': 'row' }}>
-                    <div class='gold' style={{ position: 'absolute', top: '5%', 'font-size': '1.25em' }}>Gameplay Controls
+                    <div class='gold' style={{ position: 'absolute', top: '2%', 'font-size': '1.25em', display: 'inline' }}>Gameplay Controls <br />
+                        <button class='highlight' style={{ 'font-size': '0.5em', display: 'inline' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Buttons</button>
+                        <button class='highlight' style={{ 'font-size': '0.5em', display: 'inline' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
                     </div>
-                    <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '20%' } : { 'margin-top': '50%' }}>
+                    <Switch>
+                        <Match when={settings().control === CONTROLS.BUTTONS}>
+                            <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '30%' } : { 'margin-top': '50%' }}>
+                            <div style={font('1em', '#fdf6d8')}>Action Buttons<br /></div>
+                            {settings().actions?.map((action: string, index: number) =>
+                                <button class='highlight' onClick={() => actionModal(action, index)}>
+                                    <div style={{ width: '100%', 'font-size': '0.75em', margin: '3%' }}><span class='gold'>{index + 1} </span> {action}</div>
+                                </button>
+                            )}
+                            </div>
+                            <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '30%' } : { 'margin-top': '50%' }}>
+                                <div style={font('1em', '#fdf6d8')}>Special Buttons<br /></div>
+                                {settings().specials?.map((special: string, index: number) => 
+                                    <button  class='highlight' onClick={() => specialModal(special, index)}>
+                                        <div style={{ width: '100%', 'font-size': '0.75em', margin: '3%' }}><span class='gold'>{index + 1} </span> {special}</div>
+                                    </button>
+                                )}
+                            </div>
+                        </Match>
+                        <Match when={settings().control === CONTROLS.POST_FX}>
+                            <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '30%' } : { 'margin-top': '50%' }}>
+                                <div style={font('0.75em', '#fdf6d8')}>PostFx
+                                <button class='highlight' onClick={() => handlePostFx('enable', !settings().postFx?.enable)}>
+                                    {settings().postFx?.enable ? 'On' : 'Off'}
+                                </button> 
+                                </div>
+
+                                <div style={font('0.75em', '#fdf6d8')}>Chromatic Abb.
+                                <button class='highlight' onClick={() => handlePostFx('chromaticEnable', !settings().postFx?.chromaticEnable)}>
+                                    {settings().postFx?.chromaticEnable ? 'On' : 'Off'}
+                                </button>
+                                </div>
+                                <div style={font('0.75em', '#fdf6d8')}>Chab ({settings().postFx.chabIntensity})</div>
+                                <Form.Range min={0} max={1} step={0.01} value={settings().postFx.chabIntensity} onChange={(e) => handlePostFx('chabIntensity', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+
+
+
+                                <div style={font('0.75em', '#fdf6d8')}>Vignette Enable
+                                <button class='highlight' onClick={() => handlePostFx('vignetteEnable', !settings().postFx?.vignetteEnable)}>
+                                    {settings().postFx?.vignetteEnable ? 'On' : 'Off'}
+                                </button>
+                                </div>
+                                <div style={font('0.75em', '#fdf6d8')}>Vignette Strength ({settings().postFx.vignetteStrength})</div>
+                                <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vignetteStrength} onChange={(e) => handlePostFx('vignetteStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                                <div style={font('0.75em', '#fdf6d8')}>Vignette Intensity ({settings().postFx.vignetteIntensity})</div>
+                                <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vignetteIntensity} onChange={(e) => handlePostFx('vignetteIntensity', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+
+                                <div style={font('0.75em', '#fdf6d8')}>Noise Enable
+                                <button class='highlight' onClick={() => handlePostFx('noiseEnable', !settings().postFx?.noiseEnable)}>
+                                    {settings().postFx?.noiseEnable ? 'On' : 'Off'}
+                                </button>
+                                </div>
+                                <div style={font('0.75em', '#fdf6d8')}>Noise Strength ({settings().postFx.noiseStrength})</div>
+                                <Form.Range min={0} max={1} step={0.01} value={settings().postFx.noiseStrength} onChange={(e) => handlePostFx('noiseStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                                <div style={font('0.75em', '#fdf6d8')}>Noise Seed ({settings().postFx.noiseSeed})</div>
+                                <Form.Range min={0} max={1} step={0.01} value={settings().postFx.noiseSeed} onChange={(e) => handlePostFx('noiseSeed', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+
+
+                                <div style={font('0.75em', '#fdf6d8')}>VHS Enable
+                                <button class='highlight' onClick={() => handlePostFx('vhsEnable', !settings().postFx?.vhsEnable)}>
+                                    {settings().postFx?.vhsEnable ? 'On' : 'Off'}
+                                </button>
+                                </div>
+                                <div style={font('0.75em', '#fdf6d8')}>VHS Strength ({settings().postFx.vhsStrength})</div>
+                                <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vhsStrength} onChange={(e) => handlePostFx('vhsStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+
+
+                                <div style={font('0.75em', '#fdf6d8')}>Scanline Enable
+                                <button class='highlight' onClick={() => handlePostFx('scanlinesEnable', !settings().postFx?.scanlinesEnable)}>
+                                    {settings().postFx?.scanlinesEnable ? 'On' : 'Off'}
+                                </button>
+                                </div>
+                                <div style={font('0.75em', '#fdf6d8')}>Scanline Strength ({settings().postFx.scanStrength})</div>
+                                <Form.Range min={0} max={1} step={0.01} value={settings().postFx.scanStrength} onChange={(e) => handlePostFx('scanStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+
+
+                                <div style={font('0.75em', '#fdf6d8')}>CRT Enable
+                                <button class='highlight' onClick={() => handlePostFx('crtEnable', !settings().postFx?.crtEnable)}>
+                                    {settings().postFx?.crtEnable ? 'On' : 'Off'}
+                                </button>
+                                </div>
+                                <div style={font('0.75em', '#fdf6d8')}>CRT Height ({settings().postFx.crtHeight})</div>
+                                <Form.Range min={0} max={5} step={0.1} value={settings().postFx.crtHeight} onChange={(e) => handlePostFx('crtHeight', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                                <div style={font('0.75em', '#fdf6d8')}>CRT Width ({settings().postFx.crtWidth})</div>
+                                <Form.Range min={0} max={5} step={0.1} value={settings().postFx.crtWidth} onChange={(e) => handlePostFx('crtWidth', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                                </div>
+                        </Match>
+                    </Switch>
+
+                    {/* <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '20%' } : { 'margin-top': '50%' }}>
                         <div style={font('1em', '#fdf6d8')}>Action Buttons<br /></div>
                         {settings().actions?.map((action: string, index: number) =>
                             <button class='highlight' onClick={() => actionModal(action, index)}>
-                                <p class='m-3' style={{ width: '100%', 'font-size': '0.75em' }}><span class='gold'>{index + 1} </span> {action}</p>
+                                <div style={{ width: '100%', 'font-size': '0.75em', margin: '3%' }}><span class='gold'>{index + 1} </span> {action}</div>
                             </button>
                         )}
                     </div>
@@ -402,10 +532,10 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
                         <div style={font('1em', '#fdf6d8')}>Special Buttons<br /></div>
                         {settings().specials?.map((special: string, index: number) => 
                             <button  class='highlight' onClick={() => specialModal(special, index)}>
-                                <p class='m-3' style={{ width: '100%', 'font-size': '0.75em' }}><span class='gold'>{index + 1} </span> {special}</p>
+                                <div style={{ width: '100%', 'font-size': '0.75em', margin: '3%' }}><span class='gold'>{index + 1} </span> {special}</div>
                             </button>
                         )}
-                    </div>
+                    </div> */}
                 {/* <div><div>
                         Screenshake Duration <span class='gold'>({settings().shake.duration})</span>
                     </div><br /><br />
@@ -449,52 +579,63 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
             ) : ( undefined ) }
         </div>
         {/* <<----- WINDOW THREE ----->> */}
-        <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? {
-            height: `${dimensions().HEIGHT * 0.8}px`, left: '66.5vw' 
-        } : { 
-            height: `${dimensions().HEIGHT * 0.31}px`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 'margin-top': '129%'
-        }}>
-            { settings().asceanViews === VIEWS.CHARACTER ? (
-                <div class='superCenter'> 
-                    {createCharacterInfo(settings()?.characterViews)}
-                </div>
-            ) : settings().asceanViews === VIEWS.INVENTORY ? ( 
-                <InventoryPouch ascean={ascean} setRingCompared={setRingCompared} highlighted={highlighted} setHighlighted={setHighlighted} setInventoryType={setInventoryType} inventoryType={inventoryType}
-                    setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} />
-            ) : settings().asceanViews === VIEWS.SETTINGS ? (
-                <div style={{ 'scrollbar-width': "none", overflow: 'scroll' }}> 
-                    <div class='center' style={{ padding: '5%', 'font-size': '0.75em' }}>
-                        {/* Various kinds of Information on Aspects of the Game. */}
-                        <SettingSetter setting={settings} />
+        <Show when={settings().control !== CONTROLS.POST_FX || settings().asceanViews !== VIEWS.SETTINGS}>
+            <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? {
+                height: `${dimensions().HEIGHT * 0.8}px`, left: '66.5vw' 
+            } : { 
+                height: `${dimensions().HEIGHT * 0.31}px`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 'margin-top': '129%'
+            }}>
+                { settings().asceanViews === VIEWS.CHARACTER ? (
+                    <div class='superCenter'> 
+                        {createCharacterInfo(settings()?.characterViews)}
                     </div>
-                </div>
-            ) : ( undefined ) }
-        </div>
+                ) : settings().asceanViews === VIEWS.INVENTORY ? ( 
+                    <InventoryPouch ascean={ascean} setRingCompared={setRingCompared} highlighted={highlighted} setHighlighted={setHighlighted} setInventoryType={setInventoryType} inventoryType={inventoryType}
+                        setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} />
+                ) : settings().asceanViews === VIEWS.SETTINGS ? (
+                    <div style={{ 'scrollbar-width': "none", overflow: 'scroll' }}> 
+                        <div class='center' style={{ padding: '5%', 'font-size': '0.75em' }}>
+                            {/* Various kinds of Information on Aspects of the Game. */}
+                            <SettingSetter setting={settings} />
+                        </div>
+                    </div>
+                ) : ( undefined ) }
+            </div>
+        </Show>
+
         <button class='highlight cornerTR' style={{ transform: 'scale(0.85)', position: 'fixed', top: '-1.5%', right: '-0.5%' }} onClick={() => EventBus.emit('show-player')}>
             <p style={font('0.5em')}>X</p>
         </button>
             <Show when={show()}>
-            <div class='modal' onClick={() => setShow(!show)}>
-                <ItemModal item={equipment()} stalwart={combatState().isStalwart} caerenic={combatState().isCaerenic} /> 
-            </div> 
+                <div class='modal' onClick={() => setShow(!show)}>
+                    <ItemModal item={equipment()} stalwart={combatState().isStalwart} caerenic={combatState().isCaerenic} /> 
+                </div> 
             </Show>
             <Show when={actionShow()}> <>
-            <button onClick={() => setActionShow(!actionShow())}>
-                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
-            </button>
-            <div class='modal' onClick={() => setActionShow(!actionShow())}>
-                <ActionButtonModal current={currentAction().action} actions={ACTIONS} index={currentAction().index} handleAction={handleActionButton} /> 
-            </div>
+                {/* <button onClick={() => setActionShow(!actionShow())}>
+                    <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
+                </button> */}
+                <div class='modal' onClick={() => setActionShow(!actionShow())}>
+                    <ActionButtonModal currentAction={currentAction} actions={ACTIONS}  handleAction={handleActionButton} handleCounter={handleCounterShow} /> 
+                </div>
             </> </Show>
             <Show when={attrShow()}>
-            <div class='modal' onClick={() => setAttrShow(!attrShow())}>
-                <AttributeModal attribute={attribute()} />
-            </div> 
+                <div class='modal' onClick={() => setAttrShow(!attrShow())}>
+                    <AttributeModal attribute={attribute()} />
+                </div> 
             </Show>
+            <Show when={counterShow()}> <>
+                {/* <button onClick={() => setCounterShow(!counterShow())}>
+                    <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
+                </button> */}
+                <div class='modal'>
+                    <ActionButtonModal currentAction={currentAction} actions={ACTIONS.filter(actions => actions !== 'Dodge')}  handleAction={handleCounterButton} /> 
+                </div>
+            </> </Show>
             <Show when={specialShow()}> <> 
-            <div class='modal' onClick={() => setSpecialShow(!specialShow())}>
-                <ActionButtonModal current={currentSpecial().special} actions={SPECIALS} index={currentSpecial().index} handleAction={handleSpecialButton} /> 
-            </div>
+                <div class='modal' onClick={() => setSpecialShow(!specialShow())}>
+                    <ActionButtonModal currentAction={currentSpecial} actions={SPECIALS} handleAction={handleSpecialButton} special={true} /> 
+                </div>
             </> </Show>
             <Show when={(inspectModalShow() && inspectItems())}> 
                 <div class='modal'>

@@ -1,8 +1,7 @@
 // import { CombatData } from "../../components/GameCompiler/CombatStore";
 // import { StatusEffect } from "../../components/GameCompiler/StatusEffects";
-import EventEmitter from "./EventEmitter";
+import { EventBus } from "../game/EventBus";
 import * as Dispatcher from "./Dispatcher";
-import Play from "../scenes/Play";
 import { Combat } from "../stores/combat";
 
 type ActionHandler = (data: any) => void;
@@ -19,14 +18,14 @@ export interface KVI {
 };
 
 export default class CombatMachine {
-    private context: Play;
+    private context: any;
     private actionQueue: Action[];
     private clearQueue: string[];
     private inputQueue: KVI[];
     // private dispatch: any;
     private state: any;
 
-    constructor(context: Play) { // dispatch: any
+    constructor(context: any) { // dispatch: any
         this.context = context;
         this.actionQueue = [];
         this.clearQueue = [];
@@ -39,6 +38,7 @@ export default class CombatMachine {
     private actionHandlers: { [key: string]: ActionHandler } = {
         Weapon: (data: KVI) => {
             const { key, value } = data;
+            console.log(`Weapon action: ${key} with value: ${value}`);
             if (key === 'action' && value === 'counter' && this.state.computerAction === '') {
                 return; // Don't allow counter if computer hasn't acted yet. Null action.
             };
@@ -55,10 +55,10 @@ export default class CombatMachine {
         Enemy: (data: any) => Dispatcher.enemyAction(data),
     };
 
-    private listener = () => EventEmitter.on('update-combat-data', (e: Combat): Combat => (this.state = e));
+    private listener = () => EventBus.on('combat', (e: Combat): Combat => (this.context = e));
 
     private process = (): void => {
-        if (this.state.computerWin) {
+        if (this.context.computerWin) {
             this.inputQueue = [];
             this.actionQueue = [];
         };
@@ -71,7 +71,12 @@ export default class CombatMachine {
 
         while (this.inputQueue.length) {
             const { key, value, id } = this.inputQueue.shift()!;
-            if (!id || this.state.enemyID === id) Dispatcher.actionInput({ key, value });
+            console.log(`Inputting key: ${key} with value: ${value} and id: ${id}`, this.context.enemyID, 'enemyID')
+            if (!id || this.context.enemyID === id) {
+                console.log(`Inputting key: ${key} with value: ${value}`);    
+                console.log(`updating combat with: ${key} and ${value}`);
+                EventBus.emit('update-combat-state', { key, value });
+            };
         };
 
         while (this.actionQueue.length) {

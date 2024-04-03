@@ -13,6 +13,7 @@ import Ascean from '../models/ascean';
 import Equipment from '../models/equipment';
 import StatusEffect from '../utility/prayer';
 import { PrayerModal } from '../utility/buttons';
+import { GameState } from '../stores/game';
 
 function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: Accessor<boolean>, setShow: Setter<boolean> }) {
     const [enemy, setEnemy] = createSignal(state().computer);
@@ -39,9 +40,10 @@ function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: A
 
     return (
         <div class='modal'>
-        <div class='border center' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%', 'max-width': dimensions().ORIENTATION === 'landscape' ? '50%' : '70%' }}>
+        <div class='border center' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%', 'width': dimensions().ORIENTATION === 'landscape' ? '50%' : '70%',
+            top: '' }}>
             <button class='highlight cornerBL' style={{ 'z-index': 1 }} onClick={clearEnemy}>
-                <p style={{ color: '#fdf6d8' }}>Clear {enemy()?.name.split(' ')[0]}</p>
+                <p style={{ color: '#fdf6d8' }}>Clear UI</p>
             </button>
             <button class='highlight cornerTL' style={{ 'z-index': 1 }} onClick={() => removeEnemy(state().enemyID)}>
                 <p style={{ color: '#fdf6d8' }}>Remove {enemy()?.name.split(' ')[0]}</p>
@@ -49,16 +51,15 @@ function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: A
             <button class='highlight cornerTR' style={{ 'z-index': 1 }} onClick={() => setShow(!show)}>
                 <p style={{ color: '#fdf6d8' }}>X</p>
             </button>
-            <div class='creature-heading' style={{ height: '100%', width: '100%' }}>
+            <div class='creature-heading center' style={{ height: '100%', width: '100%' }}>
                 <h1 class='m-5' style={{ 'text-align': 'center', color: "gold", 'padding-top': '0.5em' }}>
                     {state().computer?.name}
                 </h1>
                 <h2>
                     {state().computer?.description}
                 </h2>
-                {/* <img src={`../assets/images/${state()?.computer?.origin}-${state()?.computer?.sex}.jpg`} alt={state().computer?.name} id='deity-pic' /> */}
                 <div style={{ transform: 'scale(0.875)', 'margin-top': '5%' }}>
-                    <HealthBar totalPlayerHealth={state().computerHealth} newPlayerHealth={state().newComputerHealth} />
+                    <HealthBar combat={state} enemy={true} />
                 </div>
                 <div style={{ transform: 'scale(0.875)', 'margin-top': '10%' }}>
                     <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} />
@@ -82,7 +83,7 @@ function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: A
     );
 };
 
-export default function EnemyUI({ state, pauseState, enemies }: { state: Accessor<Combat>, pauseState: boolean, enemies: Accessor<any[]> }) {
+export default function EnemyUI({ state, game, enemies }: { state: Accessor<Combat>, game: Accessor<GameState>, enemies: Accessor<any[]> }) {
     const [playerEnemyPercentage, setEnemyHealthPercentage] = createSignal(0); 
     const [showModal, setShowModal] = createSignal(false);
     const [itemShow, setItemShow] = createSignal(false);
@@ -109,6 +110,19 @@ export default function EnemyUI({ state, pauseState, enemies }: { state: Accesso
                 return '0.6em';
         };
     };
+    // function createPrayer() {
+    //     console.log('Creating prayer...');
+    //     const exists = new StatusEffect(
+    //         state(), 
+    //         state().computer as Ascean, 
+    //         state().player as Ascean, 
+    //         state().computerWeapons[0] as Equipment, 
+    //         state().computerAttributes as CombatAttributes, 
+    //         state().computerBlessing
+    //     );
+    //         console.log(exists, 'exists');
+    //     EventBus.emit('create-enemy-prayer', exists);
+    // };
 
     return (
         <div class='enemyCombatUi'>
@@ -121,10 +135,15 @@ export default function EnemyUI({ state, pauseState, enemies }: { state: Accesso
             <div class='enemyUiWeapon' onClick={() => setItemShow(!itemShow())} style={itemStyle(state()?.computerWeapons?.[0]?.rarity as string)}>
                 <img src={state().computerWeapons?.[0]?.imgUrl} alt={state().computerWeapons?.[0]?.name} />
             </div>
+            {/* <button class='highlight center' onClick={() => createPrayer()} style={{ }}>
+                <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>
+                    Create Prayer
+                </div>
+            </button> */}
             <Show when={state().computerEffects.length > 0}>
-                <div class='enemyCombatEffects'>
+                <div class='combatEffects' style={{ position: 'fixed', right: '7vw', top: '14vh', 'height': '13vh', width: 'auto', transform: 'scale(0.5)' }}>
                     <For each={state().computerEffects}>{((effect) => ( 
-                        <PrayerEffects combat={state} effect={effect} enemy={true} pauseState={pauseState} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
+                        <PrayerEffects combat={state} effect={effect} enemy={true} game={game} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
                     ))}</For>
                 </div>
             </Show> 

@@ -71,6 +71,7 @@ export default class StatusEffect {
     public endTime: number;
 
     constructor(combat: Combat, player: Ascean, enemy: Ascean, weapon: Equipment, attributes: CombatAttributes, prayer: string) {
+        console.log(prayer, 'prayer');
         this.name = this.setName(weapon?.influences?.[0] as string);
         this.playerName = player.name;
         this.enemyName = enemy.name;

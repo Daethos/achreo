@@ -34,8 +34,6 @@ export function fetchEnemy(e: { enemyID: string; level: number; }): void {
     function getOpponent(): void {
         try { 
             const { minLevel, maxLevel } = getEnemyLevels(e.level); 
-            // const enemyData = { username: '637b06f47560b345910bbc44', minLevel, maxLevel }; // mirio
-            // const ascean = await userService.getRandomEnemy(enemyData);
             let enemy = randomEnemy(minLevel, maxLevel);
             enemy = populateEnemy(enemy);
             const res = asceanCompiler(enemy);

@@ -3,17 +3,13 @@ import { Game } from '../game/scenes/Game';
 import { staminaCheck } from '../entities/Player';
 import { EventBus } from '../game/EventBus';
 
-const ACTIONS = [{
-    ATTACK: 0x800080 // 0xFA0000
-}, {
-    POSTURE: 0x800080 // 0x005100
-}, {
-    ROLL: 0x800080 // 0x0000FA
-}, {
-    DODGE: 0x800080 // 0xFAFA00 // 
-}, {
-    COUNTER: 0x800080
-}];
+const ACTIONS = [
+    { ATTACK: 0x800080 }, // 0xFA0000 
+    { POSTURE: 0x800080 }, // 0x005100 
+    { ROLL: 0x800080 }, // 0x0000FA 
+    { DODGE: 0x800080 }, // 0xFAFA00 
+    { COUNTER: 0x800080 }
+];
 
 const SPECIALS = [{
     INVOKE: 0x000000
@@ -330,7 +326,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     private pressButton = (button: ActionButton, scene: any): void => {
         const input = button.name.toLowerCase();
         const check = staminaCheck(input, scene.player.stamina);
-        if (check.success === true) {
+        if (check.success === true && scene.player.stateMachine.isState(input)) {
             scene.player.stateMachine.setState(`${input}`);
         };
     };

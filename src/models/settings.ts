@@ -16,6 +16,24 @@ export default class Settings {
     public control: string;
     public creationLeft: string;
     public creationRight: string;
+    public postFx: { 
+        enable: boolean; 
+        chromaticEnable: boolean; 
+        chabIntensity: number; 
+        vignetteEnable: boolean; 
+        vignetteStrength: number; 
+        vignetteIntensity: number; 
+        noiseEnable: boolean;
+        noiseSeed: number; 
+        noiseStrength: number; 
+        vhsEnable: boolean; 
+        vhsStrength: number; 
+        scanlinesEnable: boolean; 
+        scanStrength: number;
+        crtEnable: boolean; 
+        crtHeight: number;
+        crtWidth: number;
+    };
 
     public constructor(id: string) {
         this._id = id;
@@ -44,6 +62,24 @@ export default class Settings {
         this.settingViews = 'Control';
         this.characterViews = 'Statistics';
         this.control = 'Buttons';
+        this.postFx = {
+            enable: false, 
+            chromaticEnable: false, 
+            chabIntensity: 0.5, 
+            vignetteEnable: false,
+            vignetteStrength: 0.5, 
+            vignetteIntensity: 0.5, 
+            noiseEnable: false, 
+            noiseSeed: 0.5,
+            noiseStrength: 0.5, 
+            vhsEnable: false, 
+            vhsStrength: 0.5, 
+            scanlinesEnable: false, 
+            scanStrength: 0.5,
+            crtEnable: false, 
+            crtHeight: 2,
+            crtWidth: 2,
+        };
     };
     [key: string]: any;
 };

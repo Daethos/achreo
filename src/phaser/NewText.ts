@@ -1,12 +1,15 @@
 export default class NewText {
-    private ctx: Phaser.Scene;
-    private x: number;
-    private y: number;
-    private text: string;
-    private code: string;
-    private style: any;
-    private origin: any;
-    private obj: any;
+    public ctx: Phaser.Scene;
+    public x: number;
+    public y: number;
+    public text: string;
+    public code: string;
+    public style: any;
+    public origin: any;
+    public obj: any;
+    public width: number;
+    public height: number;
+    
     constructor(ctx: Phaser.Scene, x: number, y: number, string: string, style: string, origin: any) {
         this.ctx = ctx;
         this.x = x;
@@ -16,6 +19,8 @@ export default class NewText {
         this.style = this.initStyle(style);
         this.origin = this.initOrigin(origin);
         this.obj = this.createText();
+        this.width = this.obj.width;
+        this.height = this.obj.height;
     };
 
     initStyle(key: string) {

@@ -411,7 +411,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if ("vibrate" in navigator) {
             navigator.vibrate(40);
         };
-        screenShake(this.scene);
+        // screenShake(this.scene);
     };
 
     checkDamageType = (type, concern) => {

@@ -1692,7 +1692,7 @@ function actionSplitter(combat: Combat): Combat {
                     `You successfully Countered ${newData.computer.name}'s Counter-Counter! Absolutely Brutal`;
                 attackCompiler(newData, playerAction);
                 faithCompiler(newData); 
-                statusEffectCheck(newData);
+                // statusEffectCheck(newData);
                 newData.combatRound += 1;
                 newData.sessionRound += 1;
                 return newData;
@@ -1703,7 +1703,7 @@ function actionSplitter(combat: Combat): Combat {
                 computerAttackCompiler(newData, computerAction);
                 faithCompiler(newData);
 
-                statusEffectCheck(newData);
+                // statusEffectCheck(newData);
                 newData.combatRound += 1;
                 newData.sessionRound += 1;
                 return newData;
@@ -1716,7 +1716,7 @@ function actionSplitter(combat: Combat): Combat {
                 `You successfully Countered ${newData.computer.name}'s Counter-${computerCounter.charAt(0).toUpperCase() + computerCounter.slice(1)}! Absolutely Brutal`
             attackCompiler(newData, playerAction)
             faithCompiler(newData);
-            statusEffectCheck(newData);
+            // statusEffectCheck(newData);
             newData.combatRound += 1;
             newData.sessionRound += 1;
             return newData;
@@ -1729,7 +1729,7 @@ function actionSplitter(combat: Combat): Combat {
                 `${newData.computer.name} successfully Countered your Counter-${playerCounter.charAt(0).toUpperCase() + playerCounter.slice(1)}! Absolutely Brutal`
             computerAttackCompiler(newData, computerAction);
             faithCompiler(newData);
-            statusEffectCheck(newData);
+            // statusEffectCheck(newData);
             newData.combatRound += 1;
             newData.sessionRound += 1;
             return newData;
@@ -1757,7 +1757,7 @@ function actionSplitter(combat: Combat): Combat {
                 `You successfully Countered ${newData.computer.name}'s ${ newData.computerAction === 'attack' ? 'Focused' : newData.computerAction.charAt(0).toUpperCase() + newData.computerAction.slice(1) } Attack.`
             attackCompiler(newData, playerAction);
             faithCompiler(newData);
-            statusEffectCheck(newData);
+            // statusEffectCheck(newData);
             newData.combatRound += 1;
             newData.sessionRound += 1;
             return newData;
@@ -1774,7 +1774,7 @@ function actionSplitter(combat: Combat): Combat {
                 `${newData.computer.name} successfully Countered your ${ newData.action === 'attack' ? 'Focused' : newData.action.charAt(0).toUpperCase() + newData.action.slice(1) } Attack.`
             computerAttackCompiler(newData, computerAction);
             faithCompiler(newData);
-            statusEffectCheck(newData);
+            // statusEffectCheck(newData);
             newData.combatRound += 1;
             newData.sessionRound += 1;
             return newData;
@@ -1801,7 +1801,7 @@ function actionSplitter(combat: Combat): Combat {
             `You successfully Dodge ${newData.computer.name}'s ${ newData.computerAction === 'attack' ? 'Focused' : newData.computerAction.charAt(0).toUpperCase() + newData.computerAction.slice(1) } Attack`
         attackCompiler(newData, playerAction);
         faithCompiler(newData);
-        statusEffectCheck(newData);
+        // statusEffectCheck(newData);
         newData.combatRound += 1;
         newData.sessionRound += 1;
         return newData;
@@ -1812,7 +1812,7 @@ function actionSplitter(combat: Combat): Combat {
         `${newData.computer.name} successfully Dodges your ${ newData.action === 'attack' ? 'Focused' : newData.action.charAt(0).toUpperCase() + newData.action.slice(1) } Attack`
         computerAttackCompiler(newData, computerAction);
         faithCompiler(newData);
-        statusEffectCheck(newData);
+        // statusEffectCheck(newData);
         newData.combatRound += 1;
         newData.sessionRound += 1;
         return newData;
@@ -1826,7 +1826,7 @@ function actionSplitter(combat: Combat): Combat {
         playerRollCompiler(newData, playerAction, computerAction);
         if (newData.rollSuccess === true) {
             faithCompiler(newData);
-            statusEffectCheck(newData);
+            // statusEffectCheck(newData);
             newData.combatRound += 1;
             newData.sessionRound += 1;
             return newData;
@@ -1837,7 +1837,7 @@ function actionSplitter(combat: Combat): Combat {
         computerRollCompiler(newData, playerAction, computerAction);
         if (newData.computerRollSuccess === true) {
             faithCompiler(newData);
-            statusEffectCheck(newData);
+            // statusEffectCheck(newData);
             newData.combatRound += 1;
             newData.sessionRound += 1;
             return newData;
@@ -1855,7 +1855,7 @@ function actionSplitter(combat: Combat): Combat {
     };
 
     faithCompiler(newData);
-    statusEffectCheck(newData);
+    // statusEffectCheck(newData);
     
     if (newData.playerWin === true) {
         newData.computerDeathDescription = 

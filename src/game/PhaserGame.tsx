@@ -64,7 +64,7 @@ export const PhaserGame = (props: IProps) => {
     function gainExperience({ state, combat }: { state: any; combat: Combat }) {
         try {
             let exp = Math.round((combat?.computer?.level!) * 100 * ((combat?.computer?.level! / combat?.player?.level!)) + (combat?.playerAttributes?.rawKyosir!));
-            const avarice = combat.prayerData.includes('Avarice');
+            const avarice = combat.prayerData?.includes?.('Avarice');
             const total = state.ascean.experience + exp;
             const newAsceanState = {
                 ...state,
@@ -316,14 +316,19 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('request-game', () => EventBus.emit('game', game()));
 
         EventBus.on('setup-enemy', (e: any) => {
+            console.log(e, 'setup enemy')
             setCombat({
                 ...combat(),
                 computer: e.game,
                 computerHealth: e.enemy.attributes.healthTotal,
                 newComputerHealth: e.health,
                 computerWeapons: [e.enemy.combatWeaponOne, e.enemy.combatWeaponTwo, e.enemy.combatWeaponThree],
+                computerWeaponOne: e.enemy.combatWeaponOne,
+                computerWeaponTwo: e.enemy.combatWeaponTwo,
+                computerWeaponThree: e.enemy.combatWeaponThree,
                 computerAttributes: e.enemy.attributes,
                 computerDefense: e.enemy.defense,
+                computerDefenseDefault: e.enemy.defense,
                 computerDamageType: e.enemy.combatWeaponOne.damageType[0],
                 isEnemy: true,
                 npcType: '',
@@ -346,8 +351,17 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('drink-firewater', () => {
             const newHealth = (combat().newPlayerHealth + (combat().playerHealth * 0.4)) > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + (combat().playerHealth * 0.4);
             const newCharges = props.ascean().firewater.current > 0 ? props.ascean().firewater.current - 1 : 0;
-            setCombat({ ...combat(), newPlayerHealth: newHealth });
-            const newAscean = { ...props.ascean(), firewater: { ...props.ascean().firewater, current: newCharges }, health: { ...props.ascean().health, current: newHealth }, inventory: game().inventory.map((item) => item._id)};
+            console.log(newHealth, newCharges, 'Firewater');
+            console.log(game().inventory, 'Current Inventory')
+            const inventory = game()?.inventory?.length > 0 ? game().inventory.map((item) => item && item._id) : [];
+            setCombat({ ...combat(), newPlayerHealth: newHealth, 
+                player: { ...combat().player as Ascean, health: { ...props.ascean().health, current: newHealth } } });
+            const newAscean = { 
+                ...props.ascean(), 
+                firewater: { ...props.ascean().firewater, current: newCharges }, 
+                health: { ...props.ascean().health, current: newHealth }, 
+                inventory: inventory
+            };
             EventBus.emit('update-ascean', newAscean);
         });
         EventBus.on('gain-experience', (e: { state: any; combat: Combat }) => gainExperience(e));
@@ -390,9 +404,13 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('show-combat-logs', (e: boolean) => setGame({ ...game(), showCombat: e }));
         EventBus.on('show-player', () => setGame({ ...game(), showPlayer: !game().showPlayer }));
         EventBus.on('toggle-pause', () => setGame({ ...game(), pauseState: !game().pauseState }));
+        EventBus.on('blend-combat', (e: any) => setCombat({ ...combat(), ...e }));
         EventBus.on('update-combat', (e: Combat) => setCombat(e));
         EventBus.on('update-combat-player', (e: any) => setCombat({ ...combat(), player: e.ascean, playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, playerAttributes: e.attributes, playerDefense: e.defense, playerDefenseDefault: e.defense }));
-        EventBus.on('update-combat-state', (e: { key: string; value: string }) => setCombat({ ...combat(), [e.key]: e.value }));
+        EventBus.on('update-combat-state', (e: { key: string; value: string }) => {
+            console.log(e.key, e.value, 'Update Combat State');
+            setCombat({ ...combat(), [e.key]: e.value })
+        });
         EventBus.on('update-combat-timer', (e: number) => setCombat({ ...combat(), combatTimer: e }));
 
         EventBus.on('update-caerenic', () => {
@@ -409,19 +427,8 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('add-lootdrop', (e: Equipment[]) => {
             const newLootDrops = game().lootDrops.length > 0 ? [...game().lootDrops, ...e] : e;
             const newLootIds = game().showLootIds.length > 0 ? [...game().showLootIds, ...e.map((loot) => loot._id)] : e.map((loot) => loot._id);
-            // setGame({
-            //     ...game(), 
-            //     lootDrops: newLootDrops, 
-            //     showLoot: newLootIds.length > 0,
-            //     showLootIds: newLootIds
-            // });
-
-            // console.log(e[0].name, e[0]._id, 'Item Added');
-            // console.log(game().inventory, 'Current Inventory')
             const cleanInventory = [...game().inventory];
-            // console.log(cleanInventory, 'Clean Inventory')
             const newInventory = cleanInventory.length > 0 ? [...cleanInventory, ...e] : e;
-            // console.log(newInventory, 'New Inventory')
             newInventory.forEach((item) => console.log(item.name, item._id, 'Item'));
             setGame({ 
                 ...game(), 
@@ -459,7 +466,9 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('create-prayer', (e: any) => {
             setCombat({ ...combat(), playerEffects: combat().playerEffects.length > 0 ? [...combat().playerEffects, e] : [e] });
         });
-
+        EventBus.on('create-enemy-prayer', (e: any) => {
+            setCombat({ ...combat(), computerEffects: combat().computerEffects.length > 0 ? [...combat().computerEffects, e] : [e] });
+        });
 
         onCleanup(() => {
             if (instance.game) {
@@ -475,6 +484,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('fetch-enemy');   
             EventBus.removeListener('drink-firewater'); 
             EventBus.removeListener('gain-experience');
+            EventBus.removeListener('add-lootdrop');
             EventBus.removeListener('clear-loot');
             EventBus.removeListener('enemy-loot');
             EventBus.removeListener('interacting-loot');
@@ -493,6 +503,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('show-combat-logs');
             EventBus.removeListener('show-player');
             EventBus.removeListener('toggle-pause');
+            EventBus.removeListener('blend-combat');
             EventBus.removeListener('update-combat-state');
             EventBus.removeListener('update-combat-timer');
             EventBus.removeListener('update-combat');
@@ -503,6 +514,8 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('update-stealth');
             EventBus.removeListener('useHighlight');
             EventBus.removeListener('useScroll');
+            EventBus.removeListener('create-prayer');
+            EventBus.removeListener('create-enemy-prayer');
         });
     });
 

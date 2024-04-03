@@ -7,7 +7,7 @@ interface FirewaterProps {
     ascean: Accessor<Ascean>;
     showFirewater: Accessor<boolean>;
     setShowFirewater: Setter<boolean>;
-    drinkFirewater: () => void;
+    drinkFirewater: () => Promise<void>;
     showBleed: Accessor<boolean>;
     setShowBleed: Setter<boolean>;
     repelenishFirewater: () => void;
@@ -28,18 +28,18 @@ function FirewaterModal({ ascean, showFirewater, setShowFirewater, drinkFirewate
                     more resilient and able to withstand combat and other challenges. This bottle has {ascean().firewater.current} charges left.
                 </h2>
                 {ascean().firewater.current === 0 ? ( <div>
-                    <button class='center highlight' onClick={() => setShowBleed(!showBleed())}>
-                        <p style={{ color: 'red' }}>Inspect</p>
+                    <button class='center highlight' style={{ margin: '3%' }} onClick={() => setShowBleed(!showBleed())}>
+                        <div style={{ color: 'red' }}>Inspect</div>
                     </button>
-                    <button class='center highlight' onClick={() => setShowFirewater(!showFirewater())}>
-                        <p style={{ color: 'blue' }}>Close flask</p>
+                    <button class='center highlight' style={{ margin: '3%' }} onClick={() => setShowFirewater(!showFirewater())}>
+                        <div style={{ color: 'blue' }}>Close flask</div>
                     </button>
                 </div> ) : ( <div>
-                    <button class='center highlight' onClick={drinkFirewater}>
-                        <p class='gold'>Take A Drink?</p>
+                    <button class='center highlight' style={{ margin: '3%' }} onClick={() => drinkFirewater()}>
+                        <div class='gold'>Take A Drink?</div>
                     </button>
-                    <button class='center highlight' onClick={() => setShowFirewater(!showFirewater())}>
-                        <p style={{ color: 'blue' }}>Close Flask</p>
+                    <button class='center highlight' style={{ margin: '3%' }} onClick={() => setShowFirewater(!showFirewater())}>
+                        <div style={{ color: 'blue' }}>Close Flask</div>
                     </button>
                 </div> )}
             </div>
@@ -80,11 +80,10 @@ export default function Firewater({ ascean }: Props) {
     const [showFirewater, setShowFirewater] = createSignal<boolean>(false);
     const [showBleed, setShowBleed] = createSignal<boolean>(false);
 
-    async function drinkFirewater(): Promise<void> {
-        if (ascean().firewater.current === 0) return;
+    const drinkFirewater = async (): Promise<void> => {
         try {
+            if (ascean().firewater.current === 0) return;
             console.log('Drinking Firewater');
-            // drinkFirewater(ascean()._id);
             EventBus.emit('drink-firewater');
             setShowFirewater(false);
         } catch (err: any) {
@@ -95,7 +94,6 @@ export default function Firewater({ ascean }: Props) {
     async function repelenishFirewater(): Promise<void> {
         try {
             console.log('Replenishing Firewater');
-            // repelenishFirewater(ascean()._id);
             setShowBleed(false);
             setShowFirewater(false);
         } catch (err: any) {

@@ -48,10 +48,19 @@ class Particle {
         if (player.name === 'enemy') {
             const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y);
             const direction = target.subtract(player.position);
+            direction.normalize();
             return direction;
         } else {
-            const target = new Phaser.Math.Vector2(this.scene.input.activePointer.worldX, this.scene.input.activePointer.worldY);
+            const worldPoint = player.rightJoystick.pointer.getWorldTransformMatrix();
+            console.log(worldPoint, 'World Point');
+            const target = new Phaser.Math.Vector2(worldPoint.tx, worldPoint.ty);
+            // const target = new Phaser.Math.Vector2(this.scene.input.activePointer.worldX, this.scene.input.activePointer.worldY);
+            // const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y) // player.rightJoystick.pointer.x, player.rightJoystick.pointer.y
+            console.log(target, player.rightJoystick, 'Target - X, Y');
             const direction = target.subtract(player.position);
+            console.log(direction, 'Direction')
+            direction.normalize();
+            console.log(direction, 'Normalized Direction ?');
             return direction;
         };
     };
@@ -153,7 +162,8 @@ export default class ParticleManager extends Phaser.Scene {
             if (player.name === 'player' && player.particleEffect.action === 'roll') return;
             player.particleEffect.effect.play(player.particleEffect.key, true);
             const target = player.particleEffect.target;
-            target.normalize();
+            if (player.name === 'player') console.log(target, 'Target');
+            // target.normalize();
             player.particleEffect.effect.setVelocity(player.particleEffect.velocity * target.x, target.y * player.particleEffect.velocity);
         };
     };

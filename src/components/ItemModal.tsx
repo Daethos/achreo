@@ -22,7 +22,7 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
     const centerImage = dimensions()?.ORIENTATION === 'landscape' ? (name.length > 18 ? '45%' : name.length > 10 ? '7.5%' : '15%') : (name.length > 13 ? '40%' : name.length > 10 ? '5%' : '10%');
     return (
         <div class="border superCenter" style={{ width: dimensions()?.ORIENTATION === 'landscape' ? '50%' : '75%' }}> 
-            <div class='border' style={{ height: '100%' }}>
+            <div class='wrap' style={{ height: '100%' }}>
                 <div class='creature-heading' style={{ width: '100%'}}>
                     <h1 style={ empty ? { 'text-align': 'center' } : { 'justify-content': 'space-evenly' }}>
                         {name} 
@@ -39,13 +39,13 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                 </svg>
                 <div class='center'>
                     <Show when={item?.type && item?.grip}>
-                        <p class='my-2' style={font('1.25em')}>
+                        <div class='my-2' style={{ 'font-size': '1.25em', 'margin': '3%' }}>
                             {item?.type} [<span style={{ 'font-style': 'italic', color: 'gold' }}>{item?.grip}</span>] <br />
                             {item?.attackType} [<span style={{ 'font-style': 'italic', color: 'gold' }}>{item?.damageType?.[0]}{item?.damageType?.[1] ? ' / ' + item.damageType[1] : '' }{item?.damageType?.[2] ? ' / ' + item?.damageType?.[2] : '' }</span>] <br />
-                        </p>
+                        </div>
                     </Show>
                     <Show when={item?.type && !item?.grip}>
-                        <p class='my-2' style={font('1.25em')}>{item.type}</p>
+                        <div style={{ 'font-size': '1.25em', 'margin': '3%' }}>{item.type}</div>
                     </Show>
                     { item?.constitution > 0 ? attrSplitter('CON', item?.constitution) : '' }
                     { item?.strength > 0 ? attrSplitter('STR', item?.strength) : '' }
@@ -67,9 +67,9 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                     <Show when={item?.influences && item?.influences?.length > 0}>
                         Influence: <span class='gold'>{item?.influences?.[0]}</span>
                     </Show>
-                    <p style={{ color: getRarityColor(item?.rarity as string), 'font-size': '1.5em', 'margin': '3%' }}>
+                    <div style={{ color: getRarityColor(item?.rarity as string), 'font-size': '1.5em', 'margin-top': '3%', 'margin-bottom': '4%' }}>
                         {item?.rarity}
-                    </p>
+                    </div>
                     <Show when={stalwart}>
                         <p class='gold' style={{ 'font-size': '0.75em' }}>
                             Stalwart - You are engaged in combat with your shield raised, adding it to your passive defense. 

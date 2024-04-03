@@ -1,4 +1,4 @@
-import { Accessor, createEffect, createSignal } from 'solid-js';
+import { Accessor, createEffect, createSignal, onMount } from 'solid-js';
 import Equipment from '../models/equipment';
 import LootDrop from './LootDrop';
 import { GameState } from '../stores/game';
@@ -24,12 +24,20 @@ export default function LootDropUI({ ascean, game }: Props) {
         setVisibleLoot(visible);
     });
 
-    createEffect(() => {
+    // createEffect(() => {
+    //     if (!ascean().tutorial.loot) {
+    //         setShowTutorial(true);
+    //         setTutorial('loot');
+    //     };
+    // });
+
+    onMount(() => {
         if (!ascean().tutorial.loot) {
             setShowTutorial(true);
             setTutorial('loot');
         };
-    })
+    });
+
     return (
         <div class='center lootDropWindow' style={{ 
             position: 'fixed', height: '100vh', width: '100vw', left: 0, top: 0, bottom: 0, right: 0, // 'z-index': 2

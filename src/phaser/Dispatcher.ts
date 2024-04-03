@@ -1,5 +1,5 @@
 import { KVI } from "./CombatMachine";
-import EventEmitter from "./EventEmitter";
+import { EventBus } from "../game/EventBus";
 
 const ActionTypes = {
     WEAPON: 'Weapon',
@@ -13,35 +13,36 @@ const ActionTypes = {
 };
 
 function weaponAction(data: KVI): void {
-    EventEmitter.emit('initiate-combat', {data, type: ActionTypes.WEAPON});
+    EventBus.emit('initiate-combat', { data, type: ActionTypes.WEAPON });
 };
 
 function instantAction(data: string): void {
-    EventEmitter.emit('initiate-combat', {data, type: ActionTypes.INSTANT});
+    EventBus.emit('initiate-combat', { data, type: ActionTypes.INSTANT });
 };
 
 function prayerAction(data: any[]): void {
-    EventEmitter.emit('initiate-combat', {data, type: ActionTypes.PRAYER});
+    EventBus.emit('initiate-combat', { data, type: ActionTypes.PRAYER });
 };
 
 function playerAction(data: any): void {
-    EventEmitter.emit('initiate-combat', {data, type: ActionTypes.PLAYER});
+    EventBus.emit('initiate-combat', { data, type: ActionTypes.PLAYER });
 };
 
 function enemyAction(data: any): void {
-    EventEmitter.emit('initiate-combat', {data, type: ActionTypes.ENEMY});
+    EventBus.emit('initiate-combat', { data, type: ActionTypes.ENEMY });
 };
 
 function actionInput({ key, value }: { key: string, value: string | number | boolean }): void {
-    EventEmitter.emit('update-combat-state', { key, value });
+    console.log(`Action input: ${key} with value: ${value}`);
+    EventBus.emit('update-combat-state', { key, value });
 };
 
 function tshaeralAction(): void {
-    EventEmitter.emit('initiate-combat', {data: null, type: ActionTypes.TSHAERAL});
+    EventBus.emit('initiate-combat', { data: null, type: ActionTypes.TSHAERAL });
 };
 
 function healthAction(data: KVI): void {
-    EventEmitter.emit('initiate-combat', {data, type: ActionTypes.HEALTH});
+    EventBus.emit('initiate-combat', { data, type: ActionTypes.HEALTH });
 };
 
 export { weaponAction, instantAction, prayerAction, playerAction, enemyAction, actionInput, tshaeralAction, healthAction };

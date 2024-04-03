@@ -177,7 +177,7 @@ export default class Enemy extends Entity {
         this.combatThreshold = 0;
         this.attackIsLive = false;
         this.isEnemy = true;
-        this.isAggressive = false; // Math.random() > 0.5 || false
+        this.isAggressive = Math.random() > 0.5; // Math.random() > 0.5 || false
         this.startedAggressive = this.isAggressive;
         this.isDefeated = false;
         this.isTriumphant = false;
@@ -850,6 +850,7 @@ export default class Enemy extends Entity {
         this.isPolymorphed = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphed', DURATION.TEXT, 'effect');
         this.clearAnimations();
+        this.clearTint();
         this.anims.pause();
         this.anims.play('rabbit_idle_down', true);
         this.anims.resume();
@@ -921,6 +922,7 @@ export default class Enemy extends Entity {
         if (this.isPolymorphed) this.isPolymorphed = false;
         this.evaluateCombatDistance();
         this.clearAnimations();
+        this.setTint(0x000000);
         this.anims.play('player_running', true);
         this.spriteWeapon.setVisible(true);
         if (this.polymorphTimer) {
@@ -956,7 +958,7 @@ export default class Enemy extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Rooted', DURATION.TEXT, 'effect');
         if (!this.isPolymorphed) this.clearAnimations();
         this.rootDuration = DURATION.ROOT;
-        this.setTint(0x888888);
+        this.setTint(0xFFFFFF); // 0x888888
         this.setStatic(true);
         this.scene.time.addEvent({
             delay: this.rootDuration,
@@ -976,13 +978,14 @@ export default class Enemy extends Entity {
     };
     onRootExit = () => {  
         this.clearTint();
+        this.setTint(0x000000);
         this.setStatic(false);
     };
     onSnareEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snared', DURATION.TEXT, 'effect');
         this.snareDuration = 3000;
-        this.setTint(0x888888);
-        this.adjustSpeed(-2);
+        this.setTint(0xFFFFFF); // 0x888888
+        this.adjustSpeed(-1.5);
         this.scene.time.addEvent({
             delay: this.snareDuration,
             callback: () => {
@@ -996,6 +999,7 @@ export default class Enemy extends Entity {
     // onSnareUpdate = (dt) => {};
     onSnareExit = () => { 
         this.clearTint();
+        this.setTint(0x000000);
         this.adjustSpeed(2);
     };
 
@@ -1011,14 +1015,17 @@ export default class Enemy extends Entity {
             this.particleEffect.effect.destroy();
             this.particleEffect = undefined;
         } else {
+            console.log(this.isCurrentTarget, 'Enemy Action Success')
             if (this.isCurrentTarget) {
+                console.log(this.scene.state.computerAction, 'Computer Action')
                 if (this.scene.state.computerAction === '') return;
+                console.log('Executing Computer Action')
                 this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: this.scene.state.computerAction, id: this.enemyID } });
             } else {
                 this.scene.combatMachine.action({ type: 'Enemy', data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.currentAction, counter: this.counterAction, id: this.enemyID }}});
             };
         }; 
-        screenShake(this.scene);
+        // screenShake(this.scene);
     };
 
     enemyDodge = () => {

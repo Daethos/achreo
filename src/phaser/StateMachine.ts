@@ -31,7 +31,9 @@ export const States = {
 
     CONSUMED: "consumed",
     TSHAERAL: "tshaeral",
-    POLYMORPHING: "polymorphing",
+    POLYMORPHING: "polymorph",
+    ROOTING: "root",
+    SNARING: "snare",
 
     CLEAN: "clean",
     POLYMORPH: "polymorph",
@@ -54,6 +56,10 @@ export default class StateMachine {
         this.id = id || this.id;
         this.context = context;
         this.states = new Map();
+    };
+
+    isState(name: string) {
+        return this.states.has(name);
     };
 
     isCurrentState(name: string) {

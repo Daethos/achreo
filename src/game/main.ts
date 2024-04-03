@@ -1,6 +1,7 @@
 import PhaserMatterCollisionPlugin from 'phaser-matter-collision-plugin';
 import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-plugin.js';
 import GlowFilterPipelinePlugin from 'phaser3-rex-plugins/plugins/glowfilter2pipeline-plugin.js';
+import HorrifiPipelinePlugin from 'phaser3-rex-plugins/plugins/horrifipipeline-plugin.js';
 // @ts-ignore
 import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 import { Boot } from './scenes/Boot';
@@ -42,6 +43,10 @@ const config: Phaser.Types.Core.GameConfig = {
     fullscreenTarget: 'base-ui',
     plugins: {
         global: [{
+            key: 'rexHorrifiPipeline',
+            plugin: HorrifiPipelinePlugin,
+            start: true
+        }, {
             key: 'rexVirtualJoystick',
             plugin: VirtualJoystickPlugin,
             start: true

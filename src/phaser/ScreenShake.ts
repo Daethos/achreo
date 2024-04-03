@@ -1,4 +1,4 @@
-import * as Phaser from 'phaser';
+import Phaser from 'phaser';
 let totalTrauma = 0;
 
 export function screenShake(scene: Phaser.Scene, duration = 96, intensity = 0.005) {

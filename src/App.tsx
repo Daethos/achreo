@@ -118,11 +118,11 @@ export default function App() {
     async function loadAscean(id: string): Promise<void> {
         try {
             console.log('Loading Ascean:', id);
+            const set = await getSettings(id);
+            setSettings(set);
             const asc: Ascean = menu()?.asceans?.find((asc: Ascean) => asc._id === id) as Ascean;
             const inv = await getInventory(asc?._id as string);
             const full = { ...asc, inventory: inv };
-            const set = await getSettings(asc?._id as string);
-            setSettings(set);
             setAscean(full);
             setMenu({ ...menu(), choosingCharacter: false, gameRunning: true, playModal: false });
         } catch (err: any) {
@@ -166,6 +166,7 @@ export default function App() {
     usePhaserEvent('fetch-ascean', fetchAscean);
     usePhaserEvent('update-ascean', updateAscean);
     usePhaserEvent('update-pause', togglePause);
+    usePhaserEvent('request-settings', () => EventBus.emit('settings', settings()));
 
     return (
         <div id="app">
@@ -233,16 +234,16 @@ export default function App() {
                     </Show>
                     <Show when={menu().deleteModal}>
                         <div class='modal' onClick={() => setMenu({ ...menu(), deleteModal: false })} style={{ background: 'rgba(0, 0, 0, 0.95)' }}>
-                            <div class='button superCenter' onClick={() => deleteCharacter(ascean()?._id)} style={{ color: 'red', 'border-color': 'red', margin: 0, padding: '1em', width: 'auto' }}>Delete {ascean()?.name}?</div>
-                            <div class='gold verticalBottom super' style={{ 'margin-bottom': '20%' }}>
+                            <div class='button superCenter' onClick={() => deleteCharacter(ascean()?._id)} style={{ color: 'red', 'border': '0.2em solid red', margin: 0, padding: '1em', width: 'auto', 'font-size': '1.5em', 'font-weight': 700, 'border-radius': '0' }}>Delete {ascean()?.name}?</div>
+                            <div class='gold verticalBottom super' style={{ 'margin-bottom': '10%' }}>
                                 [This action is irreversible. You may click anywhere to cancel.]
                             </div>
                         </div>
                     </Show>
                     <Show when={menu().playModal}>
                         <div class='modal' onClick={() => setMenu({ ...menu(), playModal: false })} style={{ background: 'rgba(0, 0, 0, 0.95)' }}>
-                            <div class='button superCenter' onClick={() => loadAscean(ascean()?._id)} style={{ color: 'gold', 'border-color': 'gold', margin: 0, padding: '1em', width: 'auto' }}>Enter the game with {ascean()?.name}?</div>
-                            <div class='verticalBottom super' style={{ 'margin-bottom': '20%' }}>
+                            <div class='button superCenter' onClick={() => loadAscean(ascean()?._id)} style={{ color: 'gold', 'border': '0.25em solid gold', margin: 0, padding: '1em', width: 'auto' }}>Enter the game with {ascean()?.name}?</div>
+                            <div class='verticalBottom super' style={{ 'margin-bottom': '10%' }}>
                                 [You may click anywhere to cancel.]
                             </div>
                         </div>

@@ -40,11 +40,13 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     const [tutorial, setTutorial] = createSignal<string>('');
     const [asceanState, setAsceanState] = createSignal({
         ascean: ascean(),
+        currency: ascean().currency,
+        currentHealth: ascean().health.current,
         experience: ascean().experience,
         experienceNeeded: ascean().level * 1000,
-        currency: ascean().currency,
+        faith: ascean().faith,
         firewater: ascean().firewater,
-        currentHealth: ascean().health.current,
+        mastery: ascean().mastery,
         avarice: false,
         opponent: 0,
         opponentExp: 0,
@@ -57,19 +59,37 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     });
 
     createEffect(() => {
-        console.log(combat(), 'Combat');
-        // updateCombatListener(combat());
         EventBus.emit('combat', combat());
     });  
 
     createEffect(() => {
-        console.log(settings().postFx, 'Settings Updated');
         EventBus.emit('settings', settings());
     });
 
+    function updateAsceanState(ascean: Accessor<Ascean>) {
+        setAsceanState({
+            ...asceanState(),
+            ascean: ascean(),
+            experience: ascean().experience,
+            experienceNeeded: ascean().level * 1000,
+            currency: ascean().currency,
+            firewater: ascean().firewater,
+            currentHealth: ascean().health.current,
+            mastery: ascean().mastery,
+            avarice: combat().prayerData.length > 0 ? combat().prayerData.includes('Avarice') : false,
+            opponent: 0,
+            opponentExp: 0,
+            constitution: 0,
+            strength: 0,
+            agility: 0,
+            achre: 0,
+            caeren: 0,
+            kyosir: 0,
+        });
+    };
+
     onMount(() => {
         if (!ascean().tutorial.boot) {
-            console.log('Tutorial Overlay');
             setTutorial('boot');
             setShowTutorial(true);
         };
@@ -90,13 +110,12 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
 
     const sendEnemyData = async () => EventBus.emit('get-enemy', combat().computer);
     const sendSettings = async () => EventBus.emit('get-settings', settings);
-    const updateCombatListener = (data: Combat) => EventBus.emit('combat', data);
     const updateStamina = (e: number) => setStaminaPercentage(staminaPercentage() - e <= 0 ? 0 : staminaPercentage() - e);
 
     function initiateCombat(e: { type: string; data: any }) {
         try {    
             console.log(e, 'Initiating Combat');
-            let playerWin: boolean = false, computerWin: boolean = false, res: Combat = initCombat;
+            let playerWin: boolean = false, computerWin: boolean = false, res: Combat = { ...combat() };
             switch (e.type) {
                 case 'Weapon':
                     console.log(e.data, 'Weapon Action')
@@ -142,7 +161,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     };
                     res = { ...combat(), ...playerData };
                     res = weaponActionCompiler(res) as Combat;
-                    EventBus.emit('blernd-combat', {
+                    EventBus.emit('blend-combat', {
                         playerWin: res.playerWin,
                         computerWin: res.computerWin,
                         playerActionDescription: res.playerActionDescription,
@@ -179,6 +198,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     const newPlayerHealth = combat().newPlayerHealth + drained > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + drained;
                     const newComputerHealth = combat().newComputerHealth - drained < 0 ? 0 : combat().newComputerHealth - drained;
                     playerWin = newComputerHealth === 0;
+                    res.playerWin = playerWin;
                     console.log(drained, newPlayerHealth, newComputerHealth, playerWin, 'Tshaeral Drain');
                     EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, playerWin });
                     break;
@@ -232,12 +252,19 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
 
     async function resolveCombat(res: Combat) {
         try {
-            const data = { ...combat, ...res };
+            const data = { ...combat(), ...res };
             // const stat = statFiler(data, data.playerWin);
             // const rec = recordCombat(stat);
             // setStatistics(rec);
             if (data.playerWin) {
-                const exp = { state: asceanState, combat: combat };
+                const newState = { 
+                    ...asceanState(), 
+                    currency: ascean().currency,
+                    firewater: ascean().firewater,
+                    healthCurrent: data.newPlayerHealth,
+                    avarice: data.prayerData.length > 0 ? data.prayerData.includes('Avarice') : false 
+                };
+                const exp = { state: newState, combat: data };
                 console.log(exp, 'Experience Gain Request');
                 const loot = { enemyID: combat().enemyID, level: combat()?.computer?.level! };
                 console.log(loot, 'Loot Drop Request');

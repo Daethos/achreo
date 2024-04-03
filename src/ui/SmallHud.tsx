@@ -40,8 +40,7 @@ export default function SmallHud({ combat, game }: Props) {
     const showPlayer = () => EventBus.emit('show-player', !game().showPlayer);
 
     const icon = {
-        width: 'auto',
-        height: '1.75em',
+        width: '2em',
     };
 
     const p: JSX.CSSProperties = {

@@ -15,10 +15,11 @@ interface Props {
     setDragAndDropInventory: Setter<Equipment[]>;
     inventoryType: Accessor<string>;
     setInventoryType: Setter<string>;
+    scaleImage: Accessor<{ id: string; scale: number }>;
+    setScaleImage: Setter<{ id: string; scale: number }>;
 };
 
-export default function InventoryPouch({ ascean, inventoryType, setInventoryType, setHighlighted, highlighted, setRingCompared, setWeaponCompared, dragAndDropInventory, setDragAndDropInventory }: Props) {
-    const [scaleImage, setScaleImage] = createSignal({ id: '', scale: 48 });
+export default function InventoryPouch({ ascean, inventoryType, setInventoryType, setHighlighted, highlighted, setRingCompared, setWeaponCompared, dragAndDropInventory, setDragAndDropInventory, scaleImage, setScaleImage }: Props) {
     const [inventorySwap, setInventorySwap] = createSignal({ start: { id: null, index: -1 }, end: { id: null, index: -1 } });
     const dimensions = useResizeListener();
 

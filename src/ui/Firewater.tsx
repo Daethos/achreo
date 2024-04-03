@@ -2,6 +2,7 @@ import Ascean from "../models/ascean";
 import { Accessor, Setter, Show, createSignal } from 'solid-js';
 import { useResizeListener } from "../utility/dimensions";
 import { EventBus } from "../game/EventBus";
+import { font } from "../utility/styling";
 
 interface FirewaterProps {
     ascean: Accessor<Ascean>;
@@ -19,7 +20,7 @@ function FirewaterModal({ ascean, showFirewater, setShowFirewater, drinkFirewate
         <>
         <div class='modal'>
             <button class='border superCenter' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '85%' : '50%', 'max-width': dimensions().ORIENTATION === 'landscape' ? '35%' : '70%' }}>
-            <div class='creature-heading' style={{ height: '100%' }}>
+            <div class='creature-heading wrap' style={{ height: '100%' }}>
                 <h1>
                     Firewater ( {ascean().firewater.current} / {ascean().firewater.max} )
                 </h1>
@@ -27,19 +28,25 @@ function FirewaterModal({ ascean, showFirewater, setShowFirewater, drinkFirewate
                     This is a bottle of Fyervas Firewater, associated with Fyer of Fire and Se'vas of War. This elixir strengthens the body and imbues you with a fiery spirit, making you{' '}
                     more resilient and able to withstand combat and other challenges. This bottle has {ascean().firewater.current} charges left.
                 </h2>
+                <p class='gold'>
+                    Do you wish to drink from the flask?<br />
+                    <span style={font('0.75em', '#fdf6d8')}>
+                        [This replenishes 40% of your maximum health. Defeating enemies of comparable or greater strength will replenish the Firewater]
+                    </span>
+                </p>
                 {ascean().firewater.current === 0 ? ( <div>
                     <button class='center highlight' style={{ margin: '3%' }} onClick={() => setShowBleed(!showBleed())}>
                         <div style={{ color: 'red' }}>Inspect</div>
                     </button>
                     <button class='center highlight' style={{ margin: '3%' }} onClick={() => setShowFirewater(!showFirewater())}>
-                        <div style={{ color: 'blue' }}>Close flask</div>
+                        <div style={{ color: 'gold' }}>Close flask</div>
                     </button>
                 </div> ) : ( <div>
                     <button class='center highlight' style={{ margin: '3%' }} onClick={() => drinkFirewater()}>
-                        <div class='gold'>Take A Drink?</div>
+                        <div style={{ color: 'blue' }}>Drink?</div>
                     </button>
                     <button class='center highlight' style={{ margin: '3%' }} onClick={() => setShowFirewater(!showFirewater())}>
-                        <div style={{ color: 'blue' }}>Close Flask</div>
+                        <div style={{ color: 'gold' }}>Close Flask</div>
                     </button>
                 </div> )}
             </div>

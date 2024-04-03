@@ -2,7 +2,7 @@ import { Weapons } from '../assets/db/weaponry';
 import { Legs, Chests, Shields, Helmets } from '../assets/db/equipment';
 import { Amulets, Rings, Trinkets } from '../assets/db/jewelry';
 import { v4 as uuidv4 } from 'uuid';
-import { addEquipment } from '../assets/db/db';
+import { addEquipment, deleteEquipment, getAscean, updateAscean } from '../assets/db/db';
 
 export default class Equipment {
     public _id: string | number[] = uuidv4();
@@ -79,7 +79,7 @@ async function defaultMutate(equipment: Equipment[]) {
     };
 };
 
-async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
+async function mutate(equipment: Equipment[], rarity?: string | 'Common') { 
     try {
         const attributeRanges = {
             Default: [0, 0, 0, 0, 0, 0],
@@ -223,37 +223,61 @@ async function aggregate(rarity: string, type: string, size: number, name?: stri
         const fetcher = () => {
             switch (type) {
                 case 'Weapon':
-                    if (name) equipment = Weapons.find((eq) => eq.name === name) as Equipment;
-                    equipment = shuffleArray(Weapons.filter((eq) => eq.rarity === rarity))[0];
-                    return {...equipment}; 
+                    if (name) {
+                        equipment = Weapons.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
+                    } else {
+                        equipment = shuffleArray(Weapons.filter((eq) => eq.rarity === rarity))[0];
+                    };
+                    return { ...equipment }; 
                 case 'Shield':
-                    if (name) equipment = Shields.find((eq) => eq.name === name) as Equipment;
-                    equipment = shuffleArray(Shields.filter((eq) => eq.rarity === rarity))[0];
-                    return {...equipment};
+                    if (name) {
+                        equipment = Shields.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
+                    } else {
+                        equipment = shuffleArray(Shields.filter((eq) => eq.rarity === rarity))[0];
+                    };
+                    return { ...equipment };
                 case 'Helmet':
-                    if (name) equipment = Helmets.find((eq) => eq.name === name) as Equipment;
-                    equipment = shuffleArray(Helmets.filter((eq) => eq.rarity === rarity))[0];
-                    return {...equipment};
+                    if (name) {
+                        equipment = Helmets.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
+                    } else {
+                        equipment = shuffleArray(Helmets.filter((eq) => eq.rarity === rarity))[0];
+                    };
+                    return { ...equipment };
                 case 'Chest':
-                    if (name) equipment = Chests.find((eq) => eq.name === name) as Equipment;
-                    equipment = shuffleArray(Chests.filter((eq) => eq.rarity === rarity))[0];
-                    return {...equipment};
+                    if (name) {
+                        equipment = Chests.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
+                    } else {
+                        equipment = shuffleArray(Chests.filter((eq) => eq.rarity === rarity))[0];
+                    };
+                    return { ...equipment };
                 case 'Legs':
-                    if (name) equipment = Legs.find((eq) => eq.name === name) as Equipment;
-                    equipment = shuffleArray(Legs.filter((eq) => eq.rarity === rarity))[0];
-                    return {...equipment};
+                    if (name) {
+                        equipment = Legs.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
+                    } else {
+                        equipment = shuffleArray(Legs.filter((eq) => eq.rarity === rarity))[0];
+                    };
+                    return { ...equipment };
                 case 'Ring':
-                    if (name) equipment = Rings.find((eq) => eq.name === name) as Equipment;
-                    equipment = shuffleArray(Rings.filter((eq) => eq.rarity === rarity))[0];
-                    return {...equipment};
+                    if (name) {
+                        equipment = Rings.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
+                    } else {
+                        equipment = shuffleArray(Rings.filter((eq) => eq.rarity === rarity))[0];
+                    };
+                    return { ...equipment };
                 case 'Amulet':
-                    if (name) equipment = Amulets.find((eq) => eq.name === name) as Equipment;
-                    equipment = shuffleArray(Amulets.filter((eq) => eq.rarity === rarity))[0];
-                    return {...equipment};
+                    if (name) {
+                        equipment = Amulets.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
+                    } else {
+                        equipment = shuffleArray(Amulets.filter((eq) => eq.rarity === rarity))[0];
+                    };
+                    return { ...equipment };
                 case 'Trinket':
-                    if (name) equipment = Trinkets.find((eq) => eq.name === name) as Equipment;
-                    equipment = shuffleArray(Trinkets.filter((eq) => eq.rarity === rarity))[0];
-                    return {...equipment};
+                    if (name) {
+                        equipment = Trinkets.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
+                    } else {
+                        equipment = shuffleArray(Trinkets.filter((eq) => eq.rarity === rarity))[0];
+                    };
+                    return { ...equipment };
                 default:
                     const allEquipmentOfType = [...Weapons, ...Shields, ...Helmets /* add other types here */];
                     const filteredEquipment = allEquipmentOfType.filter((eq) => eq.rarity === rarity);
@@ -345,20 +369,111 @@ function determineEquipmentType(): string {
     };
 };
 
-// async function getHigherRarity(name: string, type: string, rarity: string) {
-//     let nextRarity: string = '';
-//     if (rarity === 'Common') {
-//         nextRarity = 'Uncommon';
-//     } else if (rarity === 'Uncommon') {
-//         nextRarity = 'Rare';
-//     } else if (rarity === 'Rare') {
-//         nextRarity = 'Epic';
-//     } else if (rarity === 'Epic') {
-//         nextRarity = 'Legendary';
-//     };
-//     const nextItem = await aggregate(nextRarity, type, 1);
-//     return nextItem || null;
-// };  
+async function getHigherRarity(name: string, type: string, rarity: string) {
+    let nextRarity: string = '';
+    if (rarity === 'Common') {
+        nextRarity = 'Uncommon';
+    } else if (rarity === 'Uncommon') {
+        nextRarity = 'Rare';
+    } else if (rarity === 'Rare') {
+        nextRarity = 'Epic';
+    } else if (rarity === 'Epic') {
+        nextRarity = 'Legendary';
+    };
+    const nextItem = await aggregate(nextRarity, type, 1, name);
+    console.log(nextItem, 'Next Item')
+    return nextItem || null;
+};  
+
+async function upgradeEquipment(data: any) {
+    try {
+        let realType;
+        switch (data.inventoryType) {
+            case 'weaponOne': 
+                realType = 'Weapon'; 
+                break;
+            case 'weaponTwo': 
+                realType = 'Weapon';
+                break;
+            case 'weaponThree': 
+                realType = 'Weapon';
+                break;
+            case 'shield': 
+                realType = 'Shield';
+                break;
+            case 'helmet': 
+                realType = 'Helmet';
+                break;
+            case 'chest': 
+                realType = 'Chest';
+                break;
+            case 'legs': 
+                realType = 'Legs';
+                break;
+            case 'ringOne': 
+                realType = 'Ring';
+                break;
+            case 'ringTwo': 
+                realType = 'Ring';
+                break;
+            case 'amulet': 
+                realType = 'Amulet';
+                break;
+            case 'trinket': 
+                realType = 'Trinket';
+                break;
+            default: 
+                realType = undefined;
+                break;
+        };
+        // let ascean = await Ascean.findById(data.asceanID);
+        // let ascean = await getAscean(data.asceanID);
+        let item = await getHigherRarity(data.upgradeName, realType as string, data.currentRarity);
+
+        // ascean.inventory.push(item?.[0]._id);
+        // let itemsToRemove = data.upgradeMatches;
+
+        // if (itemsToRemove.length > 3) {
+        //     itemsToRemove = itemsToRemove.slice(0, 3);
+        // };
+        // const itemsIdsToRemove = itemsToRemove.map((item: Equipment) => item._id);
+
+        // let inventory = ascean.inventory;
+
+        // itemsIdsToRemove.forEach(async (itemID: string) => {
+        //     const itemIndex = inventory.indexOf(itemID);
+        //     inventory.splice(itemIndex, 1);
+        //     await deleteEquipmentCheck(itemID);
+        // });
+
+        // ascean.inventory = inventory;
+        // let gold = 0;
+        // if (item?.[0].rarity === 'Uncommon') {
+        //     gold = 1;
+        // } else if (item?.[0].rarity === 'Rare') {
+        //     gold = 3;
+        // } else if (item?.[0].rarity === 'Epic') {
+        //     gold = 12;
+        // } else if (item?.[0].rarity === 'Legendary') {
+        //     gold = 60;
+        // };
+        // ascean.currency.gold -= gold;
+        
+        return item;
+        // await updateAscean(ascean);
+    } catch (err: any) {
+        console.log(err, 'err')
+    };
+};
+
+const deleteEquipmentCheck = async (id: string) => {
+    try {
+        const deleted = await deleteEquipment(id);
+        console.log(`Successfully deleted equipment: ${deleted}`);
+    } catch (err) {
+        console.log(err, 'err');
+    };
+};
 
 function randomIntFromInterval(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -388,4 +503,4 @@ function getRandomNumStr(length: number): string {
     return result;
 }; 
 
-export { create, defaultMutate, mutate, getOneRandom, getRandomNumStr };
+export { create, defaultMutate, mutate, getOneRandom, getRandomNumStr, upgradeEquipment };

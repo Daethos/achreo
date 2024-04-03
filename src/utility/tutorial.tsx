@@ -87,7 +87,7 @@ export default function TutorialOverlay({ id, tutorial, show, setShow }: { id: s
                 This is the dialog tutorial
             </div> }
             { tutorial() === 'inventory' && <div>
-                <p class='cornerTR gold highlight' style={{ right: '4.5em', 'font-weight': 700 }}>
+                <p class='cornerTR gold highlight' style={{ right: '10%', 'font-weight': 700 }}>
                     Click here to view your flask of firewater {arrows.right} <br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[This Information is Displayed in the Third Panel]</span>
                 </p> 

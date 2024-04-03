@@ -7,6 +7,7 @@ import { font, getRarityColor } from "../utility/styling";
 
 interface Props {
     ascean: Accessor<Ascean>;
+    pouch: Accessor<Equipment[]>;
     highlighted: Accessor<{ item: Equipment; comparing: boolean; type: string }>;
     inventoryType: Accessor<string>;
     weaponCompared: Accessor<string>;
@@ -15,9 +16,13 @@ interface Props {
     removeModalShow: Accessor<boolean>;
     setInspectModalShow: Setter<boolean>;
     setInspectItems: Setter<{ item: Equipment | undefined; type: string; }[]>;
+    forge: Accessor<boolean>;
+    setForge: Setter<boolean>;
+    upgrade: Accessor<boolean>;
+    setUpgrade: Setter<boolean>;
 };
 
-export default function Highlight({ ascean, highlighted, inventoryType, ringCompared, weaponCompared, setInspectItems, setInspectModalShow, setRemoveModalShow, removeModalShow }: Props) {
+export default function Highlight({ ascean, pouch, highlighted, inventoryType, ringCompared, weaponCompared, setInspectItems, setInspectModalShow, setRemoveModalShow, removeModalShow, forge, setForge, upgrade, setUpgrade }: Props) {
     const [trueType, setTrueType] = createSignal<string>('');
     const dimensions = useResizeListener();
 
@@ -29,6 +34,7 @@ export default function Highlight({ ascean, highlighted, inventoryType, ringComp
         } else {
             setTrueType(inventoryType());
         };
+        canUpgrade(pouch, highlighted()?.item?.name, highlighted()?.item?.rarity as string);
     });
 
     function canEquip(level: number, rarity: string): boolean {
@@ -88,9 +94,67 @@ export default function Highlight({ ascean, highlighted, inventoryType, ringComp
             setInspectItems([{ item: ascean().weaponOne, type: 'weaponOne' }, { item: ascean().weaponTwo, type: 'weaponTwo' }, { item: ascean().weaponThree, type: 'weaponThree'}]);
         } else if (inventoryType() === 'ringOne') {
             setInspectItems([{ item: ascean().ringOne, type: 'ringOne' }, { item: ascean().ringTwo, type: 'ringTwo' }]);
+        } else {
+            setInspectItems([]);
         };
         setInspectModalShow(true);
     };
+
+    function canUpgrade(inventory: Accessor<Equipment[]>, name: string, rarity: string): void {
+        const matches = inventory().filter(item => item?.name === name && item?.rarity === rarity);
+        console.log(matches.length, "Matches Length");
+        const canUpgrade = matches.length >= 3;
+        console.log(canUpgrade, "canUpgrade");
+        setUpgrade(canUpgrade);
+    };
+
+    // async function handleUpgradeItem() {
+    //     if (highlighted().item?.rarity === 'Common' && ascean()?.currency?.gold < 1) {
+    //         return;
+    //     } else if (highlighted().item?.rarity === 'Uncommon' && ascean()?.currency?.gold < 3) {
+    //         return;
+    //     } else if (highlighted().item?.rarity === 'Rare' && ascean()?.currency?.gold < 12) {
+    //         return;
+    //     } else if (highlighted().item?.rarity === 'Epic' && ascean()?.currency?.gold < 60) {
+    //         return;
+    //     } else if (highlighted().item?.rarity === 'Legendary' && ascean()?.currency?.gold < 300) {
+    //         return;
+    //     } else if (highlighted().item?.rarity === 'Mythic' && ascean()?.currency?.gold < 1500) {
+    //         return;
+    //     } else if (highlighted().item?.rarity === 'Divine' && ascean()?.currency?.gold < 7500) {
+    //         return;
+    //     } else if (highlighted().item?.rarity === 'Ascended' && ascean()?.currency?.gold < 37500) {
+    //         return;
+    //     } else if (highlighted().item?.rarity === 'Godly' && ascean()?.currency?.gold < 225000) {
+    //         return;
+    //     };
+    //     try {
+    //         console.log(`Upgrading ${highlighted().item?.name} of ${highlighted().item?.rarity} quality.`);
+    //         // setLoadingContent(`Forging A Greater ${highlighted().item?.name}`);
+    //         const matches = pouch().filter((item) => item.name === highlighted().item?.name && item?.rarity === highlighted().item?.rarity);
+    //         const data = {
+    //             asceanID: ascean()._id,
+    //             upgradeID: highlighted().item._id,
+    //             upgradeName: highlighted().item.name,
+    //             upgradeType: highlighted().item.itemType,
+    //             currentRarity: highlighted().item.rarity,
+    //             inventoryType: inventoryType,
+    //             upgradeMatches: matches,
+    //         };
+    //         console.log(data, "Upgrading Item?");
+
+    //         EventBus.emit('upgrade-item', data);
+    //         EventBus.emit('play-equip');
+
+    //         setForge(false);
+
+    //         // EventBus.emit('update-inventory-request');
+    //         // dispatch(setCurrency(res.currency));
+            
+    //     } catch (err: any) {
+    //         console.log(err, '<- Error upgrading item');
+    //     };
+    // };
 
     function responsiveSizeStyle(len: number): string {
         if (len >= 18) {
@@ -280,7 +344,7 @@ export default function Highlight({ ascean, highlighted, inventoryType, ringComp
                 <button class='highlight cornerBL' style={{ left: '0', bottom: dimensions().ORIENTATION === 'landscape' ? '0' : '0', 'font-size': '0.5em' }} onClick={() => setRemoveModalShow(!removeModalShow())}>
                     <div style={{ color: 'red' }}>Remove</div>
                 </button>
-                { (inventoryType() === 'weaponOne' || inventoryType() === 'ringOne') && (
+                { (inventoryType() === 'weaponOne' || inventoryType() === 'ringOne' || upgrade() === true) && ( // || upgrade() === true
                     <button class='highlight cornerBL' style={{ transform: 'translateX(-50%)', left: '50%', bottom: dimensions().ORIENTATION === 'landscape' ? '0' : '0', 'font-size': '0.5em' }} onClick={() => setInspector()}>
                         <div style={{ color: '#fdf6d8' }}>Inspect</div>
                     </button>
@@ -291,11 +355,11 @@ export default function Highlight({ ascean, highlighted, inventoryType, ringComp
                     </button> 
                 ) }
             </> ) : ( <>
-                <div class='center' style={font('1em', 'gold')}>
-                    Unforuntaely for you, {highlighted()?.item?.name} requires one to be level {equipLevel(highlighted()?.item?.rarity as string)} to equip.
+                <div class='' style={{ 'font-size': '0.75em', color: 'gold', 'bottom': '10%', position: 'absolute' }}>
+                    Unforuntaely, {highlighted()?.item?.name} requires one to be level {equipLevel(highlighted()?.item?.rarity as string)} to equip.
                     {'\n'}{'\n'}    
                 </div>
-                <button class='highlight cornerBL' style={{ left: '44%', bottom: dimensions().ORIENTATION === 'landscape' ? '0' : '0', 'font-size': '0.5em' }}>
+                <button class='highlight cornerBL' style={{ transform: 'translateX(-50%)', left: '50%', bottom: dimensions().ORIENTATION === 'landscape' ? '0' : '0', 'font-size': '0.5em' }} onClick={() => setRemoveModalShow(!removeModalShow())}>
                         <div style={{ color: 'red' }}>Remove</div>
                     </button>
             </> ) }

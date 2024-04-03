@@ -258,7 +258,6 @@ const Inventory = ({ ascean, index, inventory, pouch, blacksmith = false, compar
             return;
         };
         try {
-            // playUnequip();
             console.log(`Upgrading ${inventory?.name} of ${inventory?.rarity} quality.`);
             // setLoadingContent(`Forging A Greater ${inventory?.name}`);
             const matches = pouch().filter((item) => item.name === inventory?.name && item?.rarity === inventory?.rarity);
@@ -271,15 +270,16 @@ const Inventory = ({ ascean, index, inventory, pouch, blacksmith = false, compar
                 inventoryType: inventoryType,
                 upgradeMatches: matches,
             };
-            console.log(data, "Upgrading Item?")
+            console.log(data, "Upgrading Item?");
+
+            EventBus.emit('upgrade-item', data);
+            EventBus.emit('play-equip');
 
             setForgeModalShow(false);
-            // setLoadingContent('');
 
-            EventBus.emit('update-inventory-request');
+            // EventBus.emit('update-inventory-request');
             // dispatch(setCurrency(res.currency));
             
-            // playEquip();
         } catch (err: any) {
             console.log(err, '<- Error upgrading item');
         };

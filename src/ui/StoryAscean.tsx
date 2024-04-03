@@ -1,4 +1,4 @@
-import { Accessor, Match, Setter, Show, Switch, createEffect, createSignal } from 'solid-js';
+import { Accessor, JSX, Match, Setter, Show, Switch, createEffect, createSignal } from 'solid-js';
 import { Form } from 'solid-bootstrap';
 import AsceanImageCard from '../components/AsceanImageCard';
 import AttributeModal, { AttributeCompiler } from '../components/Attributes';
@@ -8,7 +8,7 @@ import HealthBar from './HealthBar';
 import ExperienceBar from './ExperienceBar';
 import Firewater from './Firewater';
 import { ActionButtonModal, Modal } from '../utility/buttons';
-import { font } from '../utility/styling';
+import { font, getRarityColor } from '../utility/styling';
 import ItemModal from '../components/ItemModal';
 import Equipment, { getOneRandom } from '../models/equipment';
 import { useResizeListener } from '../utility/dimensions';
@@ -21,6 +21,7 @@ import Highlight from './Highlight';
 import { deleteEquipment, updateSettings } from '../assets/db/db';
 import SettingSetter from '../utility/settings';
 import TutorialOverlay from '../utility/tutorial';
+import LevelUp from './LevelUp';
 
 // import { updateInventory, updateSettings } from '../assets/db/db';
 // import { playerTraits } from '../utility/ascean';
@@ -53,7 +54,19 @@ const CONTROLS = {
 };
 const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Counter'];
 const SPECIALS = ['Consume', 'Invoke', 'Polymorph', 'Root', 'Snare', 'Tshaeral']; // 'Charm', 'Confuse', 'Fear', 
+const GET_FORGE_COST = {
+    Common: 1,
+    Uncommon: 3,
+    Rare: 12,
+    Epic: 60,
+};
 
+const GET_NEXT_RARITY = {
+    Common: "Uncommon",
+    Uncommon: 'Rare',
+    Rare: "Epic",
+    Epic: "Legendary",
+};
 interface Props {
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
@@ -66,6 +79,8 @@ interface Props {
 const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatState }: Props) => {
     // const [playerTraitWrapper, setPlayerTraitWrapper] = createSignal({});
     const [dragAndDropInventory, setDragAndDropInventory] = createSignal(game()?.inventory);
+    const [canUpgrade, setCanUpgrade] = createSignal<boolean>(false);
+    const [forgeModalShow, setForgeModalShow] = createSignal(false); 
     const [attribute, setAttribute] = createSignal(Attributes[0]);
     const [equipment, setEquipment] = createSignal<Equipment | undefined>(undefined);
     const [inventoryType, setInventoryType] = createSignal<string>('');
@@ -84,7 +99,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         index: 0,
     });
     const [inspectModalShow, setInspectModalShow] = createSignal<boolean>(false);
-    const [inspectItems, setInspectItems] = createSignal<{ item: Equipment | undefined; type: string; }[]>([{ item: undefined, type: '' }]);
+    const [inspectItems, setInspectItems] = createSignal<{ item: Equipment | undefined; type: string; } | any[]>([]);
     const [attrShow, setAttrShow] = createSignal<boolean>(false);
     const [asceanPic, setAsceanPic] = createSignal<string>('');
     const [ringCompared, setRingCompared] = createSignal<string>('');
@@ -92,7 +107,9 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
     const [weaponCompared, setWeaponCompared] = createSignal<string>('');
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [showInventory, setShowInventory] = createSignal<boolean>(false);
+    const [scaleImage, setScaleImage] = createSignal({ id: '', scale: 48 });
     const [tutorial, setTutorial] = createSignal<string>('');
+    const [levelUpModalShow, setLevelUpModalShow] = createSignal<boolean>(false);
 
     const dimensions = useResizeListener();
  
@@ -124,6 +141,25 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         checkHighlight();
         //     EventBus.emit('refresh-inventory', dragAndDropInventory);
     }); 
+
+    const getBackgroundStyle = () => {
+        if (scaleImage().scale > 48 && scaleImage().id === highlighted()?.item?._id) {
+            console.log('ScaleImage is greater than 48');
+            return 'gold';
+        } else if (highlighted()?.item && (highlighted()?.item?._id === highlighted()?.item?._id)) {
+            return '#820303';
+        } else {
+            return 'transparent';
+        };
+    };
+
+    const currentItemStyle = (rarity: string): JSX.CSSProperties => {
+        return {
+            border: `0.15em solid ${getRarityColor(rarity)}`,
+            'background-color': getBackgroundStyle(),
+        };
+    };
+
     const checkHighlight = () => {
         if (highlighted()?.item) {
             const item = game().inventory.find((item) => item?._id === highlighted()?.item?._id);
@@ -312,6 +348,55 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         };
     };
 
+    async function handleUpgradeItem() {
+        if (highlighted().item?.rarity === 'Common' && ascean()?.currency?.gold < GET_FORGE_COST.Common) {
+            return;
+        } else if (highlighted().item?.rarity === 'Uncommon' && ascean()?.currency?.gold < 3) {
+            return;
+        } else if (highlighted().item?.rarity === 'Rare' && ascean()?.currency?.gold < 12) {
+            return;
+        } else if (highlighted().item?.rarity === 'Epic' && ascean()?.currency?.gold < 60) {
+            return;
+        } else if (highlighted().item?.rarity === 'Legendary' && ascean()?.currency?.gold < 300) {
+            return;
+        } else if (highlighted().item?.rarity === 'Mythic' && ascean()?.currency?.gold < 1500) {
+            return;
+        } else if (highlighted().item?.rarity === 'Divine' && ascean()?.currency?.gold < 7500) {
+            return;
+        } else if (highlighted().item?.rarity === 'Ascended' && ascean()?.currency?.gold < 37500) {
+            return;
+        } else if (highlighted().item?.rarity === 'Godly' && ascean()?.currency?.gold < 225000) {
+            return;
+        };
+        try {
+            console.log(`Upgrading ${highlighted().item?.name} of ${highlighted().item?.rarity} quality.`);
+            // setLoadingContent(`Forging A Greater ${highlighted().item?.name}`);
+            const matches = dragAndDropInventory().filter((item) => item.name === highlighted().item?.name && item?.rarity === highlighted().item?.rarity);
+            const data = {
+                asceanID: ascean()._id,
+                upgradeID: highlighted().item?._id,
+                upgradeName: highlighted().item?.name,
+                upgradeType: highlighted().item?.itemType,
+                currentRarity: highlighted().item?.rarity,
+                inventoryType: inventoryType(),
+                upgradeMatches: matches,
+            };
+            console.log(data, "Upgrading Item?");
+
+            EventBus.emit('upgrade-item', data);
+            EventBus.emit('play-equip');
+
+            setForgeModalShow(false);
+            setCanUpgrade(false);
+            setInspectModalShow(false);
+            // EventBus.emit('update-inventory-request');
+            // dispatch(setCurrency(res.currency));
+            
+        } catch (err: any) {
+            console.log(err, '<- Error upgrading item');
+        };
+    };
+
     function handleInspect(type: string) {
         try {
             if (type === 'weaponOne' || type === 'weaponTwo' || type === 'weaponThree') {
@@ -330,6 +415,10 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         const newInventory = game().inventory.filter((item) => item._id !== id);
         EventBus.emit('refresh-inventory', newInventory);
         setRemoveModalShow(false);
+    };
+
+    async function levelUp(level: any) {
+        EventBus.emit('level-up', level);
     };
 
     return (
@@ -370,6 +459,11 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
                     { dragAndDropInventory().length < 300 && (
                         <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => freeInventory()}>
                             <p>Get Gear</p>
+                        </button>
+                    ) }
+                    { asceanState().experience === asceanState().experienceNeeded && (
+                        <button class='highlight cornerTR' style={{ 'background-color': 'purple', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
+                            <p>Level++</p>
                         </button>
                     ) }
                 {/* { (ascean().experience === ascean().level * 1000) && (
@@ -419,9 +513,17 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
                 </div>
             ) : settings().asceanViews === VIEWS.INVENTORY ? (
                 highlighted().comparing && (
-                    <Highlight ascean={ascean} highlighted={highlighted as Accessor<{item: Equipment, comparing: boolean, type: string}>} inventoryType={inventoryType} ringCompared={ringCompared} weaponCompared={weaponCompared} 
-                        setInspectItems={setInspectItems} setInspectModalShow={setInspectModalShow} setRemoveModalShow={setRemoveModalShow} removeModalShow={removeModalShow} />
-                    // <Inventory pouch={dragAndDropInventory} inventory={highlighted} ascean={ascean} removeModalShow={removeModalShow} setRemoveModalShow={setRemoveModalShow} ringCompared={ringCompared} setRingCompared={setRingCompared} 
+                    <Highlight ascean={ascean} pouch={dragAndDropInventory} 
+                        highlighted={highlighted as Accessor<{item: Equipment, comparing: boolean, type: string}>} 
+                        inventoryType={inventoryType} ringCompared={ringCompared} weaponCompared={weaponCompared} 
+                        setInspectItems={setInspectItems as Setter<{ item: Equipment | undefined; type: string; }[]>} 
+                        setInspectModalShow={setInspectModalShow} 
+                        setRemoveModalShow={setRemoveModalShow} removeModalShow={removeModalShow} 
+                        forge={forgeModalShow} setForge={setForgeModalShow} 
+                        upgrade={canUpgrade} setUpgrade={setCanUpgrade}
+                    />
+
+                        // <Inventory pouch={dragAndDropInventory} inventory={highlighted} ascean={ascean} removeModalShow={removeModalShow} setRemoveModalShow={setRemoveModalShow} ringCompared={ringCompared} setRingCompared={setRingCompared} 
                     //     weaponCompared={weaponCompared} setWeaponCompared={setWeaponCompared} setEquipModalShow={setEquipModalShow} equipModalShow={equipModalShow} setInspectItems={setInspectItems} inspectItems={inspectItems} 
                     //     setInspectModalShow={setInspectModalShow} inspectModalShow={inspectModalShow} index={0} compare={true} setHighlighted={undefined} highlighted={undefined} />
                 )
@@ -591,7 +693,9 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
                     </div>
                 ) : settings().asceanViews === VIEWS.INVENTORY ? ( 
                     <InventoryPouch ascean={ascean} setRingCompared={setRingCompared} highlighted={highlighted} setHighlighted={setHighlighted} setInventoryType={setInventoryType} inventoryType={inventoryType}
-                        setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} />
+                        setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} 
+                        scaleImage={scaleImage} setScaleImage={setScaleImage}
+                    />
                 ) : settings().asceanViews === VIEWS.SETTINGS ? (
                     <div style={{ 'scrollbar-width': "none", overflow: 'scroll' }}> 
                         <div class='center' style={{ padding: '5%', 'font-size': '0.75em' }}>
@@ -606,6 +710,9 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         <button class='highlight cornerTR' style={{ transform: 'scale(0.85)', position: 'fixed', top: '-1.5%', right: '-0.5%' }} onClick={() => EventBus.emit('show-player')}>
             <p style={font('0.5em')}>X</p>
         </button>
+            <Show when={levelUpModalShow()}>
+                <LevelUp asceanState={asceanState} show={levelUpModalShow} setShow={setLevelUpModalShow} />
+            </Show>
             <Show when={show()}>
                 <div class='modal' onClick={() => setShow(!show)}>
                     <ItemModal item={equipment()} stalwart={combatState().isStalwart} caerenic={combatState().isCaerenic} /> 
@@ -639,11 +746,42 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
             </> </Show>
             <Show when={(inspectModalShow() && inspectItems())}> 
                 <div class='modal'>
-                <button onClick={() => setInspectModalShow(!inspectModalShow)}>
+                {/* <button onClick={() => setInspectModalShow(!inspectModalShow())}>
                     <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
-                </button>
+                </button> */}
                 <div class='modal'>
-                    <Modal items={inspectItems} inventory={highlighted().item} callback={handleInspect} show={inspectModalShow} setShow={setInspectModalShow} />
+                    <Modal 
+                        items={inspectItems as Accessor<{ item: Equipment | undefined; type: string; }[]>} 
+                        inventory={highlighted().item} callback={handleInspect} 
+                        forge={forgeModalShow} setForge={setForgeModalShow} upgrade={canUpgrade} setUpgrade={setCanUpgrade} 
+                        show={inspectModalShow} setShow={setInspectModalShow} 
+                    />
+                </div>
+                </div> 
+            </Show>
+            <Show when={forgeModalShow()}> 
+                <div class='modal'>
+                {/* <button onClick={() => setForgeModalShow(!forgeModalShow())}>
+                    <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
+                </button> */}
+                <div class='modal'>
+                    <div class='border superCenter wrap' style={{ width: '50%' }}>
+                    <p class='center wrap' style={{ color: "red", 'font-size': "1.25em", margin: '3%' }}>
+                        Do You Wish To Collapse Three {highlighted()?.item?.name} into one of {GET_NEXT_RARITY[highlighted()?.item?.rarity as string as keyof typeof GET_NEXT_RARITY]} Quality for {GET_FORGE_COST[highlighted()?.item?.rarity as string as keyof typeof GET_FORGE_COST]} Gold?
+                    </p>
+                    <div>
+                        <button class='highlight' style={{ color: 'gold', 'font-weight': 600, 'font-size': "1.5em" }} onClick={() => handleUpgradeItem()}>
+                            {highlighted()?.item?.rarity && GET_FORGE_COST[highlighted()?.item?.rarity as string as keyof typeof GET_FORGE_COST]} Gold Forge
+                        </button>    
+                        <div style={{ color: "gold", 'font-weight': 600 }}>
+                            <p style={{ 'font-size': '2em' }}>
+                                (3) <img src={highlighted()?.item?.imgUrl} alt={highlighted()?.item?.name} style={currentItemStyle(highlighted()?.item?.rarity as string)} /> 
+                                {' => '} <img src={highlighted()?.item?.imgUrl} alt={highlighted()?.item?.name} style={currentItemStyle(GET_NEXT_RARITY[highlighted()?.item?.rarity as string as keyof typeof GET_NEXT_RARITY])} />
+                                </p> 
+                        </div>
+                    <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setForgeModalShow(false)}>x</button>
+                    </div>
+                    </div>
                 </div>
                 </div> 
             </Show>

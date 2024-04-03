@@ -7,11 +7,11 @@ import Ascean from '../models/ascean';
 import { Combat, initCombat } from '../stores/combat';
 import { fetchEnemy } from '../utility/enemy';
 import { GameState, initGame } from '../stores/game';
-import Equipment, { getOneRandom } from '../models/equipment';
+import Equipment, { getOneRandom, upgradeEquipment } from '../models/equipment';
 import Settings from '../models/settings';
 import BaseUI from '../ui/BaseUI';
 import { asceanCompiler } from '../utility/ascean';
-import { deleteEquipment, getAscean, getInventory, populate } from '../assets/db/db';
+import { deleteEquipment, getInventory } from '../assets/db/db';
 
 export interface IRefPhaserGame {
     game: Phaser.Game | null;
@@ -76,41 +76,94 @@ export const PhaserGame = (props: IProps) => {
             };
             console.log(newAsceanState, 'New Ascean State');
             saveChanges(newAsceanState);
-            // setAsceanState({
-            //     ...state,
-            //     experience: res.experience,
-            //     currentHealth: res.health.current,
-            //     avarice: false,
-            //     opponent: 0,
-            //     opponentExp: 0
-            // });
         } catch (err: any) {
             console.log(err, 'Error Gaining Experience');
         };
     };
 
-    async function inventoryFetch() {
+    async function levelUp(state: Accessor<any>) {
+        let constitution = Number(state().constitution);
+        let strength = Number(state().strength);
+        let agility = Number(state().agility);
+        let achre = Number(state().achre);
+        let caeren = Number(state().caeren);
+        let kyosir = Number(state().kyosir);
+        let newMastery = state().mastery;
+        let statMastery = newMastery.toLowerCase();
         try {
-            const inventory = await getInventory(props.ascean()._id);
-            setGame({ ...game(), inventory: inventory });
+            let update = {
+                ...props.ascean(),
+                level: state().ascean.level + 1,
+                experience: 0,
+                constitution: Math.round((state().ascean.constitution + constitution) * (newMastery === 'constitution' ? 1.07 : 1.04)), // 1.04 = +1 stat once the stat is 13 as it rounds up from .52 (1.04 * 13 = 13.52)
+                strength: Math.round((state().ascean.strength + strength) * (newMastery === 'strength' ? 1.07 : 1.04)), // 1.07 = +1 stat always, even at base 8. Requires 22 Stat points to increase by 2 / level. 22 * 1.07 = 23.54, rounded up to 24 
+                agility: Math.round((state().ascean.agility + agility) * (newMastery === 'agility' ? 1.07 : 1.04)),
+                achre: Math.round((state().ascean.achre + achre) * (newMastery === 'achre' ? 1.07 : 1.04)),
+                caeren: Math.round((state().ascean.caeren + caeren) * (newMastery === 'caeren' ? 1.07 : 1.04)),
+                kyosir: Math.round((state().ascean.kyosir + kyosir) * (newMastery === 'kyosir' ? 1.07 : 1.04)),
+                mastery: newMastery, 
+                faith: state().faith,
+                statistics: {
+                    ...state().ascean.statistics,
+                    mastery: {
+                        ...state().ascean.statistics.mastery,
+                        [statMastery]: state().ascean.statistics.mastery[statMastery] + 1,
+                    }
+                } 
+            };
+            console.log(update, 'New Level Update');
+            const beast = asceanCompiler(update);
+            
+            EventBus.emit('update-ascean-state', {
+                ...state(),
+                ascean: beast?.ascean,
+                experience: 0,
+                experienceNeeded: beast?.ascean.level * 1000,
+                level: beast?.ascean.level,
+                constitution: 0,
+                strength: 0,
+                agility: 0,
+                achre: 0,
+                caeren: 0,
+                kyosir: 0,
+                mastery: beast?.ascean.mastery,
+                faith: beast?.ascean.faith,
+                
+            });                
+            EventBus.emit('update-ascean', update);
+
+
+            setCombat({
+                ...combat(),
+                player: beast?.ascean,
+                playerHealth: beast?.ascean.health.max,
+                newPlayerHealth: beast?.ascean.health.current,
+                weapons: [beast?.combatWeaponOne, beast?.combatWeaponTwo, beast?.combatWeaponThree],
+                weaponOne: beast?.combatWeaponOne,
+                weaponTwo: beast?.combatWeaponTwo,
+                weaponThree: beast?.combatWeaponThree,
+                playerAttributes: beast?.attributes,
+                playerDefense: beast?.defense,
+                playerDefenseDefault: beast?.defense,
+            });
         } catch (err: any) {
-            console.log(err, 'Error Fetching Inventory');
+            console.log(err, '<- Error in the Controller Updating the Level!')
         };
     };
 
     function saveChanges(state: any) {
         try {
-            let silver = 0, gold = 0, experience = 0, firewater = { current: 0, max: 0 };
+            let silver = state.currency.silver, gold = state.currency.gold, experience = state.experience, firewater = { ...props.ascean().firewater };
             let value = state.opponent;
             if (state.avarice) value *= 2;
             let health = state.currentHealth > props.ascean().health.max ? props.ascean().health.max : state.currentHealth;
+
             if (value === 1) {
                 silver = Math.floor(Math.random() * 2) + 1;
                 gold = 0;
             } else if (value >= 2 && value <= 10) {
                 silver = (Math.floor(Math.random() * 10) + 1) * value;
                 gold = 0;
-                if (silver > 99) silver = 99;
             } else if (value > 10 && value <= 20) {
                 if (value <= 15) {
                     if (Math.random() >= 0.5) {
@@ -119,47 +172,37 @@ export const PhaserGame = (props: IProps) => {
                     } else {
                         silver = Math.floor(Math.random() * 10) + 35;
                         gold = 0;
-                        silver = silver > 99 ? 99 : silver;
                     };
                 };
             };
 
             silver += state.currency.silver;
             gold += state.currency.gold;
+
             if (silver > 99) {
                 gold += Math.floor(silver / 100);
                 silver = silver % 100;
             };
 
-            if (props.ascean().firewater.current < 5 ** props.ascean().level <= state.opponent) {
+            if (props.ascean().firewater.current < 5 && props.ascean().level <= state.opponent) {
                 firewater = {
                     current: props.ascean().firewater.current + 1,
                     max: props.ascean().firewater.max
                 };
-            } else {
-                firewater = {
-                    current: props.ascean().firewater.current,
-                    max: props.ascean().firewater.max
-                };
-            };
-
-            if (state.experience + state.opponentExp > state.level * 1000) {
-                experience = props.ascean().level * 1000;
-            } else {
-                experience = state.experience + state.opponentExp;
             };
 
             const newAscean = {
-                ...props.ascean,
+                ...props.ascean(),
                 experience: experience,
-                currentHealth: health,
+                health: { ...props.ascean().health, current: health },
                 currency: {
                     silver: silver,
                     gold: gold
                 },
                 firewater: firewater,
-                inventory: state.inventory.map((item: Equipment) => item._id)  
+                inventory: game().inventory.map((item: Equipment) => item._id)  
             };
+            console.log(newAscean, 'New Ascean Changes Saved');
 
             EventBus.emit('update-ascean', newAscean);
         } catch (err: any) {
@@ -268,6 +311,50 @@ export const PhaserGame = (props: IProps) => {
             EventBus.emit('update-ascean', update);
         });
 
+        EventBus.on('upgrade-item', async (data: any) => {
+            const item = await upgradeEquipment(data);
+            console.log(item, 'Upgraded Equipment');
+
+            let itemsToRemove = data.upgradeMatches;
+    
+            if (itemsToRemove.length > 3) {
+                itemsToRemove = itemsToRemove.slice(0, 3);
+            };
+            const itemsIdsToRemove = itemsToRemove.map((itr: Equipment) => itr._id);
+
+            let inventory: Equipment[] = props.ascean().inventory.length > 0 ? [...props.ascean().inventory, ...(item as Equipment[])] : item as Equipment[];
+
+            itemsIdsToRemove.forEach(async (itemID: string) => {
+                console.log(itemID, 'Item ID to Remove and Delete');
+                const itemIndex = inventory.findIndex((item: Equipment) => item._id === itemID);
+                console.log(itemIndex, 'Item Index')
+                inventory.splice(itemIndex, 1);
+                // await deleteEquipment(itemID);
+            });
+
+            let gold = 0;
+            if (item?.[0].rarity === 'Uncommon') {
+                gold = 1;
+            } else if (item?.[0].rarity === 'Rare') {
+                gold = 3;
+            } else if (item?.[0].rarity === 'Epic') {
+                gold = 12;
+            } else if (item?.[0].rarity === 'Legendary') {
+                gold = 60;
+            };
+            // props.ascean().currency.gold -= gold;
+
+            const update = { ...props.ascean(), inventory: inventory, currency: { ...props.ascean().currency, gold: props.ascean().currency.gold - gold } };
+
+            console.log(update, 'New Inventory');
+            setGame({ ...game(), inventory: inventory });
+            setCombat({
+                ...combat(),
+                player: { ...combat().player as Ascean, ...update }
+            });
+            EventBus.emit('update-ascean', update);
+        })
+
         EventBus.on('clear-enemy', () => {
             setCombat({
                 ...combat(),
@@ -365,6 +452,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.emit('update-ascean', newAscean);
         });
         EventBus.on('gain-experience', (e: { state: any; combat: Combat }) => gainExperience(e));
+        EventBus.on('level-up', (e: any) => levelUp(e));
         EventBus.on('add-loot', (e: Equipment[]) => {
             console.log(e[0].name, e[0]._id, 'Loot Drop')
             const newInventory = game().inventory.length > 0 ? [...game().inventory, ...e] : e;
@@ -402,7 +490,11 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('selectWeapon', (e: any) => setGame({ ...game(), selectedWeaponIndex: e.index, selectedHighlight: e.highlight }));
         EventBus.on('set-equipper', (e: any) => swapEquipment(e));
         EventBus.on('show-combat-logs', (e: boolean) => setGame({ ...game(), showCombat: e }));
-        EventBus.on('show-player', () => setGame({ ...game(), showPlayer: !game().showPlayer }));
+        EventBus.on('show-player', () => {
+            // pause the game
+            EventBus.emit('update-pause', !game().showPlayer);
+            setGame({ ...game(), showPlayer: !game().showPlayer })
+        });
         EventBus.on('toggle-pause', () => setGame({ ...game(), pauseState: !game().pauseState }));
         EventBus.on('blend-combat', (e: any) => setCombat({ ...combat(), ...e }));
         EventBus.on('update-combat', (e: Combat) => setCombat(e));

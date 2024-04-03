@@ -32,6 +32,7 @@ export default function AttributesCreate({ newAscean, setNewAscean, prevMastery,
                 ...newAscean(),
                 ...LOADOUT[mastery as keyof typeof LOADOUT]
             });
+            setPool((newAscean().strength + newAscean().agility + newAscean().constitution + newAscean().achre + newAscean().caeren + newAscean().kyosir) - 48);    
         };
     });
 

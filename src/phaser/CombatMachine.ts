@@ -71,10 +71,7 @@ export default class CombatMachine {
 
         while (this.inputQueue.length) {
             const { key, value, id } = this.inputQueue.shift()!;
-            console.log(`Inputting key: ${key} with value: ${value} and id: ${id}`, this.context.enemyID, 'enemyID')
             if (!id || this.context.enemyID === id) {
-                console.log(`Inputting key: ${key} with value: ${value}`);    
-                console.log(`updating combat with: ${key} and ${value}`);
                 EventBus.emit('update-combat-state', { key, value });
             };
         };

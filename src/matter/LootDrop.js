@@ -3,13 +3,16 @@ import { EventBus } from "../game/EventBus";
 
 export const { Bodies } = Phaser.Physics.Matter.Matter;
 
-export default class LootDrop extends Phaser.GameObjects.Sprite { // Physics.Matter.Image  
+export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.Matter.Image  
     constructor(data) {
         console.log(data, 'Data of Loot Drop');
         let { scene, enemyID, drop } = data;
         const texture = imgUrl(drop.imgUrl);
         const enemy = scene.enemies?.find((e) => e.enemyID === enemyID);
-        super (scene.matter.world, enemy.body.position.x - 16, enemy.body.position.y + 16, texture);
+        super (scene.matter.world, 
+            enemy.body.position.x - 16, 
+            enemy.body.position.y + 16, 
+            texture);
         this.scene = scene;
         this.scene.add.existing(this);
         this.setScale(0.5);

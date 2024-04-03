@@ -2,7 +2,6 @@ import { Accessor, Setter } from "solid-js";
 import Equipment from "../models/equipment";
 import { getRarityColor } from "../utility/styling";
 import { EventBus } from "../game/EventBus";
-import { updateInventory } from "../assets/db/db";
 import Ascean from "../models/ascean";
 
 interface Props {
@@ -18,9 +17,6 @@ export default function LootDrop({ ascean, lootDrop, show, setShow, setLootDrop 
 
     async function saveItem(): Promise<void> {
         try {
-            console.log(`Saving ${lootDrop.name} to inventory`);
-            const data = { ascean, lootDrop };
-            await savetoInventory(data);
             EventBus.emit('add-item', [lootDrop]);
             EventBus.emit('remove-lootdrop', lootDrop._id);    
             EventBus.emit('destroy-lootdrop', lootDrop._id);
@@ -29,16 +25,9 @@ export default function LootDrop({ ascean, lootDrop, show, setShow, setLootDrop 
         };
     };
 
-    async function savetoInventory(data: any): Promise<void> {
-        const idInventory: string[] = Array.from(new Set (ascean().inventory.map((item: Equipment) => item._id))) as string[];
-        idInventory.push(data.lootDrop._id);
-        await updateInventory(ascean()._id, idInventory);
-    };
-    
     const handleLootDrop = (): void => {
-        console.log('LootDrop', lootDrop, 'show', !show());
-        setShow(!show());
         setLootDrop(lootDrop);
+        setShow(true);
     };
 
     return (

@@ -76,12 +76,13 @@ export function ActionButtonModal({ currentAction, actions, handleAction, handle
     );
 }
 
-export function Modal({ items, inventory, callback, show, setShow }: { items: Accessor<{ item: Equipment | undefined; type: string; }[]>, inventory: Equipment | undefined, callback: (type: string) => void, show: Accessor<boolean>, setShow: Setter<boolean> }) {
+export function Modal({ items, inventory, callback, show, setShow, forge, setForge, upgrade, setUpgrade }: { items: Accessor<{ item: Equipment | undefined; type: string; }[]>, inventory: Equipment | undefined, callback: (type: string) => void, show: Accessor<boolean>, setShow: Setter<boolean>, forge: Accessor<boolean>, setForge: Setter<boolean>, upgrade: Accessor<boolean>, setUpgrade: Setter<boolean>}) {
+    console.log(items(), 'items')
     return (
         <div class='border superCenter' style={{ width: '40%' }}>
         <div class='creature-heading' >
             <h1 style={{ 'text-align': 'center' }}>{inventory?.name}</h1>
-            {items().map((item) => {
+            {items().length > 0 && items().map((item) => {
                 return (
                     <button class='highlight center' style={{ 'background-color': 'black', margin: '5% auto', width: '75%', display: 'block' }} onClick={() => callback(item.type)}>
                         <div style={{ color: 'gold', 'text-align': 'center', width: '100%' }}>
@@ -90,6 +91,14 @@ export function Modal({ items, inventory, callback, show, setShow }: { items: Ac
                     </button>
                 )
             })}
+            { upgrade() && (
+                <button class='highlight center' style={{ 'background-color': 'black', margin: '5% auto', width: '75%', display: 'block' }} onClick={() => setForge(!forge())}>
+                    <div style={{ color: 'gold', 'text-align': 'center', width: '100%' }}>
+                        Forge
+                    </div>
+                </button> 
+            ) }
+           
             <br /><br />
             <button class='highlight cornerBR' style={{ 'background-color': 'red', 'z-index': 1 }} onClick={() => setShow(!show())}>
                 <p style={font('0.5em')}>X</p>

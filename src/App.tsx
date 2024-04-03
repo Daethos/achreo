@@ -144,6 +144,19 @@ export default function App() {
         EventBus.emit('toggle-pause');
     };
 
+    async function saveAscean(vaEsai: any): Promise<void> {
+        try {
+            const save = await updateAscean(vaEsai);
+            const res = await populate(save);
+            const beast = asceanCompiler(res);
+            const inv = await getInventory(beast?.ascean?._id as string);
+            const full = { ...beast?.ascean, inventory: inv };
+            setAscean(full);
+        } catch (err: any) {
+            console.warn('Error saving Ascean:', err);
+        };
+    };
+
     async function updateAscean(vaEsai: Ascean): Promise<void> {
         try {
             const save = await scrub(vaEsai);
@@ -164,6 +177,7 @@ export default function App() {
     };
 
     usePhaserEvent('fetch-ascean', fetchAscean);
+    usePhaserEvent('save-ascean', saveAscean);
     usePhaserEvent('update-ascean', updateAscean);
     usePhaserEvent('update-pause', togglePause);
     usePhaserEvent('request-settings', () => EventBus.emit('settings', settings()));

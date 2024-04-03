@@ -12,6 +12,7 @@ import CombatMachine from '../../phaser/CombatMachine';
 import ActionButtons from '../../phaser/ActionButtons';
 import { GameState } from '../../stores/game';
 import Settings, { initSettings } from '../../models/settings';
+import Equipment from '../../models/equipment';
 
 export class Game extends Scene {
     gameText: Phaser.GameObjects.Text;
@@ -72,7 +73,7 @@ export class Game extends Scene {
     treasure: Phaser.Sound.BaseSound;
     phenomena: Phaser.Sound.BaseSound;
     fpsText: Phaser.GameObjects.Text;
-    volumeListener: () => void;
+    volumeEvent: () => void;
 
     constructor () {
         super('Game');
@@ -89,13 +90,13 @@ export class Game extends Scene {
 
         EventBus.emit('current-scene-ready', this);
 
-        this.asceanListener();
+        this.asceanEvent();
         this.getAscean();
-        this.combatListener();
+        this.combatEvent();
         this.getCombat();
-        this.gameListener();
+        this.gameEvent();
         this.getGame();
-        this.settingsListener();
+        this.settingsEvent();
         this.getSettings();
 
         // ================== Add Multiple Inputs ================== \\
@@ -224,7 +225,7 @@ export class Game extends Scene {
 
         this.music = this.sound.add('background', { volume: this?.settings?.volume ?? 0 / 2, loop: true });
         this.music.play();
-        // this.volumeListener = () => EventBus.on('update-volume', (e) => this.music.setVolume(e));
+        // this.volumeEvent = () => EventBus.on('update-volume', (e) => this.music.setVolume(e));
         this.spooky = this.sound.add('spooky', { volume: this?.settings?.volume });
         this.righteous = this.sound.add('righteous', { volume: this?.settings?.volume });
         this.wild = this.sound.add('wild', { volume: this?.settings?.volume });
@@ -261,43 +262,48 @@ export class Game extends Scene {
                 };
             });
 
-        this.equipListener();
-        this.unequipListener();
-        this.purchaseListener();
-        this.weaponListener();
-        this.actionButtonListener();
-        this.postFxListener();
+        this.equipEvent();
+        this.unequipEvent();
+        this.purchaseEvent();
+        this.weaponEvent();
+        this.actionButtonEvent();
+        this.postFxEvent();
+        this.lootDropEvent();
     };
 
-    asceanListener():void {
+    asceanEvent():void {
         EventBus.on('ascean', (ascean: Ascean) => {
-            console.log(ascean, 'Ascean')
             this.ascean = ascean;
         });
     };
 
-    combatListener():void {
+    combatEvent():void {
         EventBus.on('combat', (combat: any) => {
-            console.log(combat, 'combat')
             this.state = combat;
         });
     };
 
-    gameListener():void {
+    gameEvent():void {
         EventBus.on('game', (game: GameState) => {
-            console.log(game, 'game')
             this.gameState = game;
         });
     };
 
-    settingsListener():void {
+    settingsEvent():void {
         EventBus.on('settings', (settings: Settings) => {
-            console.log(settings, 'settings')
             this.settings = settings;
         });
     };
 
-    postFxListener = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
+    lootDropEvent(): void {
+        EventBus.on('enemyLootDrop', (drops: any) => {
+            drops.drops.forEach((drop: Equipment) => {
+                this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop }))
+            })
+        });
+    };
+
+    postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
         console.log(type, val, 'Type and Value') 
         if (type === 'bloom') {
@@ -411,27 +417,27 @@ export class Game extends Scene {
         this.postFxPipeline.crtWidth = settings.crtWidth;
     };
 
-    equipListener():void {
+    equipEvent():void {
         EventBus.on('equip-sound', () => {
             this.equip.play();
         });
     };
-    unequipListener():void {
+    unequipEvent():void {
         EventBus.on('unequip-sound', () => {
             this.unequip.play();
         });
     };
-    purchaseListener():void {
+    purchaseEvent():void {
         EventBus.on('purchase-sound', () => {
             this.purchase.play();
         });
     };
-    weaponListener():void {
+    weaponEvent():void {
         EventBus.on('weapon-order-sound', () => {
             this.weaponOrder.play();
         });
     };
-    actionButtonListener():void {
+    actionButtonEvent():void {
         EventBus.on('action-button-sound', () => {
             this.actionButton.play();
         });

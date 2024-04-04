@@ -54,7 +54,6 @@ export default function App() {
         fetchAsceans();
     });
     
-    
     function fetchAsceans(): void {
         const fetch = async () => {
             try {
@@ -93,7 +92,6 @@ export default function App() {
             console.log('Deleting Ascean:', id);
             const newAsceans = menu()?.asceans?.filter((asc: Ascean) => asc._id !== id);
             setMenu({ ...menu(), asceans: newAsceans, choosingCharacter: newAsceans.length > 0 });
-            // const newAsc = newAsceans?.length > 0 ? newAsceans[0] : undefined;
             setAscean(undefined as unknown as Ascean);
             await deleteAscean(id as string);
         } catch (err) {
@@ -131,9 +129,7 @@ export default function App() {
     };
 
     function togglePause(pause: boolean): void {
-        console.log('Pause:', pause);
         const scene = phaserRef.scene as MainMenu;
-        console.log('Scene:', scene);
         if (scene) {
             if (pause) {
                 scene.scene.pause();

@@ -2080,6 +2080,7 @@ function weaponActionSplitter(combat: Combat): Combat {
             'computerDualWielding': cleanData.computerDualWielding, 
         };
     } else if (playerActionLive && !computerActionLive) {
+        if (cleanData.action === 'counter') return cleanData;
         computerActionCompiler(cleanData, cleanData.action);
         attackCompiler(cleanData, cleanData.action);
         changes = {
@@ -2100,6 +2101,7 @@ function weaponActionSplitter(combat: Combat): Combat {
         };
     } else if (!playerActionLive && computerActionLive) {
         // console.log(cleanData.computer.name, "Computer Attacking");
+        if (cleanData.computerAction === 'counter') return cleanData;
         computerWeaponMaker(cleanData);
         computerAttackCompiler(cleanData, cleanData.computerAction);
         changes = {

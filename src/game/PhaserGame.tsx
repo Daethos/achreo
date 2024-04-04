@@ -103,6 +103,7 @@ export const PhaserGame = (props: IProps) => {
                 kyosir: Math.round((state().ascean.kyosir + kyosir) * (newMastery === 'kyosir' ? 1.07 : 1.04)),
                 mastery: newMastery, 
                 faith: state().faith,
+                inventory: game().inventory,
                 statistics: {
                     ...state().ascean.statistics,
                     mastery: {
@@ -244,6 +245,7 @@ export const PhaserGame = (props: IProps) => {
         setGame({ ...game(), inventory: inventory });
         setStamina(res?.attributes?.stamina as number);
 
+        EventBus.emit('speed', res?.ascean);
         EventBus.emit('update-ascean', update);
         EventBus.emit('update-full-request');
         EventBus.emit('equip-sound');
@@ -296,13 +298,8 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('start-game', () => setLive(!live()));
 
         EventBus.on('add-item', (e: Equipment[]) => {
-            // console.log(e[0].name, e[0]._id, 'Item Added');
-            // console.log(game().inventory, 'Current Inventory')
             const cleanInventory = [...game().inventory];
-            // console.log(cleanInventory, 'Clean Inventory')
             const newInventory = cleanInventory.length > 0 ? [...cleanInventory, ...e] : e;
-            // console.log(newInventory, 'New Inventory')
-            newInventory.forEach((item) => console.log(item.name, item._id, 'Item'));
             setGame({ 
                 ...game(), 
                 inventory: newInventory 
@@ -329,7 +326,7 @@ export const PhaserGame = (props: IProps) => {
                 const itemIndex = inventory.findIndex((item: Equipment) => item._id === itemID);
                 console.log(itemIndex, 'Item Index')
                 inventory.splice(itemIndex, 1);
-                // await deleteEquipment(itemID);
+                await deleteEquipment(itemID);
             });
 
             let gold = 0;
@@ -342,7 +339,6 @@ export const PhaserGame = (props: IProps) => {
             } else if (item?.[0].rarity === 'Legendary') {
                 gold = 60;
             };
-            // props.ascean().currency.gold -= gold;
 
             const update = { ...props.ascean(), inventory: inventory, currency: { ...props.ascean().currency, gold: props.ascean().currency.gold - gold } };
 
@@ -403,7 +399,6 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('request-game', () => EventBus.emit('game', game()));
 
         EventBus.on('setup-enemy', (e: any) => {
-            console.log(e, 'setup enemy')
             setCombat({
                 ...combat(),
                 computer: e.game,
@@ -500,8 +495,7 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('update-combat', (e: Combat) => setCombat(e));
         EventBus.on('update-combat-player', (e: any) => setCombat({ ...combat(), player: e.ascean, playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, playerAttributes: e.attributes, playerDefense: e.defense, playerDefenseDefault: e.defense }));
         EventBus.on('update-combat-state', (e: { key: string; value: string }) => {
-            console.log(e.key, e.value, 'Update Combat State');
-            setCombat({ ...combat(), [e.key]: e.value })
+            setCombat({ ...combat(), [e.key]: e.value });
         });
         EventBus.on('update-combat-timer', (e: number) => setCombat({ ...combat(), combatTimer: e }));
 

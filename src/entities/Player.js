@@ -328,7 +328,14 @@ export default class Player extends Entity {
         this.stalwartListener();
         this.enemyListener();
         this.tabListener();
+        this.speedListener();
     };   
+
+    speedListener = () => {
+        EventBus.on('speed', (ascean) => {
+            this.speed = this.startingSpeed(ascean);
+        });
+    };
 
     createSprite = (imgUrl, x, y, scale, originX, originY) => {
         const sprite = new Phaser.GameObjects.Sprite(this.scene, x, y, imgUrl);
@@ -869,6 +876,7 @@ export default class Player extends Entity {
             this.setGlow(this.spriteWeapon, true, 'weapon');
             this.setGlow(this.spriteShield, true, 'shield');
         };
+        this.setTimeEvent('invokeCooldown', 15000);
         this.invokeCooldown = 30;
         if (this.playerBlessing === '' || this.playerBlessing !== this.scene.state.playerBlessing) {
             this.playerBlessing = this.scene.state.playerBlessing;
@@ -899,17 +907,18 @@ export default class Player extends Entity {
         this.combatChecker(this.isHealing);
     };
     onRootingExit = () => { 
+        if (!this.inCombat) return;
         this.scene.root();
         this.scene.useStamina(PLAYER.STAMINA.ROOT);
     };
 
     onSnaringEnter = () => {
         if (!this.inCombat) return;
-        this.isHealing = true;
+        this.isConsuming = true;
         this.setTimeEvent('snareCooldown', 6000);
     };
     onSnaringUpdate = (_dt) => {
-        this.combatChecker(this.isHealing);
+        this.combatChecker(this.isConsuming);
     };
     onSnaringExit = () => {
         if (!this.inCombat) return;
@@ -1148,7 +1157,7 @@ export default class Player extends Entity {
     onPolymorphingExit = () => {
         if (this.polymorphSuccess) {
             this.scene.polymorph(this.attacking?.enemyID);
-            this.setTimeEvent('polymorphCooldown', 4000);    
+            this.setTimeEvent('polymorphCooldown', 4000);  
             this.polymorphSuccess = false;
         };
         this.castbar.reset();

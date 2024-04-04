@@ -11,17 +11,14 @@ const ACTIONS = [
     { COUNTER: 0x800080 }
 ];
 
-const SPECIALS = [{
-    INVOKE: 0x000000
-}, {
-    TSHAERAL: 0x000000 // 0x7000FF
-}, {
-    POLYMORPH: 0x000000 // 0x00BEBE
-}, {
-    ROOT: 0x000000 // 0xFF2E00
-}, {
-    SNARE: 0x000000 // 0xCB0050
-}];
+const SPECIALS = [
+    { INVOKE: 0x000000 }, 
+    { TSHAERAL: 0x000000 }, // 0x7000FF 
+    { POLYMORPH: 0x000000 }, // 0x00BEBE 
+    { ROOT: 0x000000 }, // 0xFF2E00
+    { SNARE: 0x000000 }, // 0xCB0050
+    // { CONSUME: 0x000000 }
+];
 // { STEALTH: 0x000000 },
 
 const SETTINGS = {
@@ -155,17 +152,18 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
             button.graphic.fillStyle(Object.values(element)[0], SETTINGS.OPACITY);
             button.graphic.fillCircle(buttonX, buttonY, button.width as number);
-            // button.graphic.setVisible(true);
             
             button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
             button.border.strokeCircle(buttonX, buttonY, button.width + 2 as number);
-            // button.border.setVisible(true);
 
             scaleButton(button, 0.75);
-            button.graphic.setInteractive(new Phaser.Geom.Circle(buttonX, buttonY, button.width), Phaser.Geom.Circle.Contains)
-                .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
-                    this.pressButton(button, scene);
-                }); 
+            button.graphic.setInteractive(new Phaser.Geom.Circle(
+                buttonX, buttonY, 
+                button.width), 
+                Phaser.Geom.Circle.Contains)
+                    .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
+                        this.pressButton(button, scene);
+                    }); 
             
             button.graphic.setScrollFactor(0);
             button.border.setScrollFactor(0);
@@ -299,26 +297,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     private draw = (): void => {
         this.actionButtons.forEach((button: ActionButton) => {
-            button.graphic.clear();
-            button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
-            button.graphic.fillCircle(button.x, button.y, this.buttonHeight * SETTINGS.SCALE * button.current / button.total);
-            button.border.clear();
-            button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
-            button.border.strokeCircle(button.x, button.y, (this.buttonHeight + 2) * SETTINGS.SCALE * button.current / button.total);
-            if (button.current / button.total >= 1) {
-                button.graphic.setInteractive();
-            };
+            scaleButton(button, 1); 
         });
-        this.specialButtons.forEach((button: ActionButton) => {
-            button.graphic.clear();
-            button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
-            button.graphic.fillCircle(button.x, button.y, this.buttonHeight * SETTINGS.SCALE * button.current / button.total);
-            button.border.clear();
-            button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
-            button.border.strokeCircle(button.x, button.y, (this.buttonHeight + 2) * SETTINGS.SCALE * button.current / button.total);
-            if (button.current / button.total >= 1) {
-                button.graphic.setInteractive();
-            };
+        this.specialButtons.forEach((button: ActionButton) => { 
             scaleButton(button, 0.75);
         });
     };    
@@ -339,8 +320,18 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.graphic.fillCircle(button.x, button.y, this.buttonHeight * SETTINGS.SCALE * 1.25);
                 } else {
                     button.graphic.fillCircle(button.x, button.y, this.buttonHeight * SETTINGS.SCALE * progressPercentage);
+                    button.graphic.disableInteractive();
                 };
-                if (progressPercentage < 1) {
+                button.current = progressPercentage * button.total;
+            };
+        });
+        this.specialButtons.forEach((button) => {
+            if (button.name === name.toUpperCase()) {
+                const progressPercentage = current / limit;
+                if (current / limit >= 1) {
+                    button.graphic.fillCircle(button.x, button.y, this.buttonHeight * SETTINGS.SCALE * 1.25 * 0.75);
+                } else {
+                    button.graphic.fillCircle(button.x, button.y, this.buttonHeight * SETTINGS.SCALE * progressPercentage * 0.75);
                     button.graphic.disableInteractive();
                 };
                 button.current = progressPercentage * button.total;
@@ -405,8 +396,11 @@ const scaleStrafe = (button: ActionButton, scale: number): void => {
 const scaleButton = (button: ActionButton, scale: number): void => {
     button.graphic.clear();
     button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
-    button.graphic.fillCircle(button.x, button.y, SETTINGS.BUTTON_WIDTH * SETTINGS.SCALE * scale);
+    button.graphic.fillCircle(button.x, button.y, SETTINGS.BUTTON_WIDTH * SETTINGS.SCALE * scale * button.current / button.total);
     button.border.clear();
     button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
-    button.border.strokeCircle(button.x, button.y, (SETTINGS.BUTTON_WIDTH + 2) * SETTINGS.SCALE * scale);
+    button.border.strokeCircle(button.x, button.y, (SETTINGS.BUTTON_WIDTH + 2) * SETTINGS.SCALE * scale * button.current / button.total);
+    if (button.current / button.total >= 1) {
+        button.graphic.setInteractive();
+    };
 };

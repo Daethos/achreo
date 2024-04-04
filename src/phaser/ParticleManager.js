@@ -53,7 +53,16 @@ class Particle {
         } else {
             const worldPoint = player.rightJoystick.pointer.getWorldTransformMatrix();
             console.log(worldPoint, 'World Point');
-            const target = new Phaser.Math.Vector2(worldPoint.tx, worldPoint.ty);
+
+            const x = player.rightJoystick.pointer.x;
+            const y = player.rightJoystick.pointer.y;
+            const x2 = player.x;
+            const y2 = player.y;
+            const worldX = x > x2 ? x + x2 : x - x2;
+            const worldY = y > y2 ? y + y2 : y - y2;
+            const target = new Phaser.Math.Vector2(worldX, worldY);
+
+            // const target = new Phaser.Math.Vector2(worldPoint.tx, worldPoint.ty);
             // const target = new Phaser.Math.Vector2(this.scene.input.activePointer.worldX, this.scene.input.activePointer.worldY);
             // const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y) // player.rightJoystick.pointer.x, player.rightJoystick.pointer.y
             console.log(target, player.rightJoystick, 'Target - X, Y');

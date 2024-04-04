@@ -10,7 +10,6 @@ export default function EnemyPreview ({ enemies, fetchEnemy }: Props) {
         <>
         {enemies()?.length > 0 && enemies()?.map((enemy, index) => {
             if (enemies().length < 2 || index !== 0) return;
-            console.log(enemy.game.name, index, 'Enemy that is first in the array')
             const prevIdx = Number(index) - 1 === -1 ? enemies().length - 1 : Number(index) - 1;
             const prevIdxMore = prevIdx - 1 < 0 ? enemies().length + (prevIdx - 1) : prevIdx - 1;
             const truePrev = enemy.id !== enemies()[prevIdxMore].id;

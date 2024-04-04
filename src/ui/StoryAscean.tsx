@@ -461,14 +461,11 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
                             <p>Get Gear</p>
                         </button>
                     ) }
-                    { asceanState().experience === asceanState().experienceNeeded && (
+                    { ascean().experience >= ascean().level * 1000 && (
                         <button class='highlight cornerTR' style={{ 'background-color': 'purple', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
                             <p>Level++</p>
                         </button>
                     ) }
-                {/* { (ascean().experience === ascean().level * 1000) && (
-                    <LevelUpModal asceanState={asceanState} />
-                ) }  */}
                 <div class='gold' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5%', 'text-align': 'center' } : { margin: '5%', 'text-align': 'center' }}>
                     {combatState()?.player?.name}
                 </div>
@@ -477,7 +474,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
                     <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
                 </div>
                 <div style={{ 'margin-top': '-5%' }}>
-                    <ExperienceBar totalExperience={ascean().level * 1000} currentExperience={ascean().experience} />
+                    <ExperienceBar ascean={ascean} />
                 </div>
             </div>
         </Show>
@@ -788,15 +785,16 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
             <Show when={removeModalShow()}>
                 <div class='modal'>
                 <div class='button superCenter' style={{ 'background-color': 'black', width: '25%' }}>
-                    <div class='border'>
+                    <div class=''>
                     <div class='center' style={font('1.5em')}>Do You Wish To Remove and Destroy Your <span style={{ color: 'gold' }}>{highlighted()?.item?.name}?</span> <br /><br /><div>
                         <img style={{ transform: 'scale(1.25)' }} src={highlighted()?.item?.imgUrl} alt={highlighted()?.item?.name} onClick={() => removeItem(highlighted()?.item?._id as string)} />
-                        <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '4vh', right: '2vw', 'background-color': 'red' }} onClick={() => setRemoveModalShow(!removeModalShow())}>
-                            <p style={font('0.5em')}>X</p>
-                        </button>
                     </div>
-                    </div><br /><br /><br /><br />
                     </div>
+                    </div>
+                    <br /><br /><br />
+                    <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '0', right: '0', 'background-color': 'red' }} onClick={() => setRemoveModalShow(!removeModalShow())}>
+                        <p style={font('0.5em')}>X</p>
+                    </button>
                 </div>
                 </div>
             </Show>

@@ -1042,7 +1042,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     if (combat.computerAction === 'attack') {
         if (combat.computerWeapons[0].grip === 'One Hand') {
             if (combat.computerWeapons[0].attackType === 'Physical') {
-                if (combat.computer?.mastery === 'Agility' || combat.computer?.mastery === 'Constitution') {
+                if (combat.computer?.mastery === 'agility' || combat.computer?.mastery === 'constitution') {
                     if (combat.computerAttributes?.totalAgility as number + combat.computerWeapons[0].agility + combat.computerWeapons[1].agility >= 50) {
                         if (combat.computerWeapons[1].grip === 'One Hand') { // If you're Focusing Attack + 1h + Agi Mastery + 1h in Second Slot
                            combat.computerDualWielding = true;
@@ -1062,7 +1062,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                 };
             };
             if (combat.computerWeapons[0].attackType === 'Magic') {
-                if (combat.computer?.mastery === 'Achre' || combat.computer?.mastery === 'Kyosir') {
+                if (combat.computer?.mastery === 'achre' || combat.computer?.mastery === 'kyosir') {
                     if (combat.computerAttributes?.totalAchre as number + combat.computerWeapons[0].achre + combat.computerWeapons[1].achre >= 50) {
                         if (combat.computerWeapons[1].grip === 'One Hand') { // Might be a dual-wield compiler instead to take the rest of it
                             combat.computerDualWielding = true;
@@ -1084,7 +1084,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
         };
         if (combat.computerWeapons[0].grip === 'Two Hand') {
             if (combat.computerWeapons[0].attackType === 'Physical' && combat.computerWeapons[0].type !== 'Bow' && combat.computerWeapons[0].type !== 'Greatbow') {
-                if (combat.computer?.mastery === 'Strength' || combat.computer?.mastery === 'Constitution') {
+                if (combat.computer?.mastery === 'strength' || combat.computer?.mastery === 'constitution') {
                     if (combat.computerAttributes?.totalStrength as number + combat.computerWeapons[0].strength + combat.computerWeapons[1].strength >= 75) { // Might be a dual-wield compiler instead to take the rest of it
                         if (combat.computerWeapons[1].type !== 'Bow') {
                             combat.computerDualWielding = true;
@@ -1104,7 +1104,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                 };
             };
             if (combat.computerWeapons[0].attackType === 'Magic') {
-                if (combat.computer?.mastery === 'Caeren' || combat.computer?.mastery === 'Kyosir') {
+                if (combat.computer?.mastery === 'caeren' || combat.computer?.mastery === 'kyosir') {
                     if (combat.computerAttributes?.totalCaeren as number + combat.computerWeapons[0].caeren + combat.computerWeapons[1].caeren >= 75) {
                         if (combat.computerWeapons[1].type !== 'Bow') {
                             combat.computerDualWielding = true;
@@ -1389,7 +1389,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     if (combat.action === 'attack') {
         if (combat.weapons[0]?.grip === 'One Hand') {
             if (combat.weapons[0]?.attackType === 'Physical') {
-                if (combat.player?.mastery === 'Agility' || combat.player?.mastery === 'Constitution') {
+                if (combat.player?.mastery === 'agility' || combat.player?.mastery === 'constitution') {
                     if (combat.playerAttributes?.totalAgility as number + combat.weapons[0]?.agility + (combat.weapons[1]?.agility as number) >= 50) {
                         if (combat.weapons[1]?.grip === 'One Hand') { // If you're Focusing Attack + 1h + Agi Mastery + 1h in Second Slot
                             combat.dualWielding = true;
@@ -1409,7 +1409,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                 };
             };
             if (combat.weapons[0]?.attackType === 'Magic') {
-                if (combat.player?.mastery === 'Achre' || combat.player?.mastery === 'Kyosir') {
+                if (combat.player?.mastery === 'achre' || combat.player?.mastery === 'kyosir') {
                     if (combat.playerAttributes?.totalAchre as number + combat.weapons[0].achre + combat.weapons[0].achre + (combat.weapons[1]?.achre as number) >= 50) {
                         if (combat.weapons[1]?.grip === 'One Hand') { // Might be a dual-wield compiler instead to take the rest of it
                             combat.dualWielding = true;
@@ -1431,7 +1431,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
         };
         if (combat.weapons[0]?.grip === 'Two Hand') { // Weapon is TWO HAND
             if (combat.weapons[0]?.attackType === 'Physical' && combat.weapons[0]?.type !== 'Bow' && combat.weapons[0]?.type !== 'Greatbow') {
-                if (combat.player?.mastery === 'Strength' || combat.player?.mastery === 'Constitution') {
+                if (combat.player?.mastery === 'strength' || combat.player?.mastery === 'constitution') {
                     if (combat.playerAttributes?.totalStrength as number + (combat.weapons[0]?.strength as number)  + (combat.weapons[1]?.strength as number) >= 75) { // Might be a dual-wield compiler instead to take the rest of it
                         if (combat.weapons[1]?.type !== 'Bow') {
                             combat.dualWielding = true;
@@ -1451,7 +1451,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                 };
             };
             if (combat.weapons[0].attackType === 'Magic') {
-                if (combat.player?.mastery === 'Caeren' || combat.player?.mastery === 'Kyosir') {
+                if (combat.player?.mastery === 'caeren' || combat.player?.mastery === 'kyosir') {
                     if (combat.playerAttributes?.totalCaeren as number + (combat.weapons[0]?.caeren as number) + (combat.weapons[1]?.caeren as number) >= 75) {
                         if (combat.weapons[1]?.type !== 'Bow') {
                             combat.dualWielding = true;
@@ -2319,27 +2319,27 @@ function instantDamageSplitter(combat: Combat, mastery: string): Combat {
 
 function instantActionSplitter(combat: Combat): any {
     switch (combat.player?.mastery) {
-        case 'Constitution':
+        case 'constitution':
             prayerSplitter(combat, 'Heal');
             prayerSplitter(combat, 'Buff');
             break;
-        case 'Strength':
+        case 'strength':
             prayerSplitter(combat, combat.playerBlessing);
             instantDamageSplitter(combat, 'strength');
             break;
-        case 'Agility':
+        case 'agility':
             prayerSplitter(combat, combat.playerBlessing);
             instantDamageSplitter(combat, 'agility');
             break;
-        case 'Achre':
+        case 'achre':
             prayerSplitter(combat, combat.playerBlessing);
             instantDamageSplitter(combat, 'achre');
             break;
-        case 'Caeren':
+        case 'caeren':
             prayerSplitter(combat, combat.playerBlessing);
             instantDamageSplitter(combat, 'caeren');
             break;
-        case 'Kyosir':
+        case 'kyosir':
             prayerSplitter(combat, 'Damage');
             prayerSplitter(combat, 'Debuff');
             break;
@@ -2634,6 +2634,7 @@ function actionCompiler (combat: Combat): Combat | undefined {
 function instantActionCompiler(combat: Combat): Combat | undefined {
     try {
         if (validate(combat) === false) return combat;
+        console.log('Instant Action Compiler');
         const res = instantActionSplitter(combat);
         return res;
     } catch (err) {

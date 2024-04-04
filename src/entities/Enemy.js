@@ -900,9 +900,11 @@ export default class Enemy extends Entity {
                     randomDirection();
                     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '...thump', 1000, 'effect');
                     if (this.isCurrentTarget && this.health < this.ascean.health.max) {
-                        this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: 20 } });
+                        this.health = (this.health + (this.ascean.health.max * 0.3)) > this.ascean.health.max ? this.ascean.health.max : (this.health + (this.ascean.health.max * 0.3));
+                        this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: this.health } });
+                        // EventBus.emit('update-combat-state', { newComputerHealth: this.health });
                     } else if (this.health < this.ascean.health.max) {
-                        this.health = this.health + (this.ascean.health.max * 0.1);
+                        this.health = this.health + (this.ascean.health.max * 0.3);
                         this.updateHealthBar(this.health);
                         this.healthbar.setValue(this.health);
                     };
@@ -984,7 +986,7 @@ export default class Enemy extends Entity {
     onSnareEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snared', DURATION.TEXT, 'effect');
         this.snareDuration = 3000;
-        this.setTint(0xFFFFFF); // 0x888888
+        this.setTint(0xFF0000); // 0x888888
         this.adjustSpeed(-1.5);
         this.scene.time.addEvent({
             delay: this.snareDuration,

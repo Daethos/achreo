@@ -134,9 +134,10 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 case 'Instant':
                     let insta = { ...combat(), playerBlessing: e.data };
                     insta = instantActionCompiler(insta) as Combat;
+                    console.log(insta, 'Instant Action')
                     playerWin = insta.playerWin;
-                    res = { ...combat(), ...insta };
-                    console.log(res, 'Instant Action');
+                    res = { ...res, ...insta };
+                    // console.log(res, 'Instant Action');
                     EventBus.emit('blend-combat', insta);
                     break;
                 case 'Player': // 'Player Blind Attack' i.e. hitting a non targeted enemy
@@ -210,10 +211,9 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                             const newPlayerHealth = combat().newPlayerHealth + healed > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + healed;
                             EventBus.emit('blend-combat', { newPlayerHealth });
                             break;
-                        case 'computer':
-                            const healedComputer = Math.floor(combat().computerHealth * (value / 100));
-                            const newComputerHealth = combat().newComputerHealth + healedComputer > combat().computerHealth ? combat().computerHealth : combat().newComputerHealth + healedComputer;
-                            EventBus.emit('blend-combat', { newComputerHealth });
+                        case 'enemy':
+                            console.log(`Enemy Health: ${value}`);
+                            EventBus.emit('update-combat-state', { key: 'newComputerHealth',  value });
                             break;
                         default:
                             break;
@@ -290,13 +290,11 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     };
 
     function filterEnemies(id: string) {
-        console.log(enemies(), 'Filtering Enemies')
         let newEnemies = enemies();
         newEnemies = newEnemies.filter((enemy) => {
             console.log(enemy.id === id, 'Filtering Enemies');
             return enemy.id !== id ? true : false;
         });
-        console.log(newEnemies, 'New Enemies');
         setEnemies(newEnemies);
     };
 

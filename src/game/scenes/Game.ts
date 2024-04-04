@@ -73,6 +73,7 @@ export class Game extends Scene {
     treasure: Phaser.Sound.BaseSound;
     phenomena: Phaser.Sound.BaseSound;
     fpsText: Phaser.GameObjects.Text;
+    combatTimerText: Phaser.GameObjects.Text;
     volumeEvent: () => void;
 
     constructor () {
@@ -262,6 +263,12 @@ export class Game extends Scene {
                 };
             });
 
+        // ========================== Combat Timer ========================== \\
+
+        this.combatTimerText = this.add.text(window.innerWidth / 2 - 40, window.innerHeight + 20, 'Combat Timer: ', { font: '16px Cinzel', color: '#fdf6d8' });
+        this.combatTimerText.setScrollFactor(0);
+        this.combatTimerText.setVisible(false);
+            
         this.equipEvent();
         this.unequipEvent();
         this.purchaseEvent();
@@ -489,21 +496,31 @@ export class Game extends Scene {
         enemy.isPolymorphed = true;
     };
     root = () => {
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === this.state.enemyID);
+        enemy.isRooted = true;
+
         // const { worldX, worldY } = this.input.activePointer;
-        console.log(this.player.rightJoystick.pointer.worldX, this.player.rightJoystick.pointer.worldY, 'Right Joystick Pointer')
-        const bounds = this.player.rightJoystick.pointer.getBounds();
-        console.log(bounds, 'Bounds');
-        const worldX = bounds.centerX;
-        const worldY = bounds.centerY;
+        // console.log(this.player.rightJoystick.pointer.x, this.player.rightJoystick.pointer.y, 'Right Joystick Pointer')
+        
+        // deriving the world x and y from the pointer
+        let x = this.player.rightJoystick.pointer.x;
+        let x2 = window.innerWidth / 2;
+
+        let y = this.player.rightJoystick.pointer.y;
+        let y2 = window.innerHeight / 2;
+
+        const worldX = (x > x2 ? x : -x) + this.player.x;
+        const worldY = (y > y2 ? y : -y) + this.player.y;
         // const worldX = this.player.rightJoystick.pointer.x;
         // const worldY = this.player.rightJoystick.pointer.y;
         console.log(worldX, worldY, 'World X and Y');
         const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, worldX, worldY);
         const duration = 2 * distance;
         const rise = 0.5 * distance;
+        console.log(distance, duration, rise, 'Distance, Duration, Rise');
         const sensorRadius = 25;
         const sensorBounds = new Phaser.Geom.Circle(worldX, worldY, sensorRadius);
-
+        console.log(this.player.x, this.player.y, 'Player x and y')
         const rootTween = this.add.tween({
             targets: this.target,
             props: {
@@ -524,11 +541,12 @@ export class Game extends Scene {
                     target.y += current;
                 },
                 onComplete: () => {
-                    this.enemies.forEach((enemy: any) => {
-                        if (Phaser.Geom.Circle.ContainsPoint(sensorBounds, new Phaser.Geom.Point(enemy.x, enemy.y))) {
-                            enemy.isRooted = true;
-                        };
-                    });
+                    // this.enemies.forEach((enemy: any) => {
+                    //     if (Phaser.Geom.Circle.ContainsPoint(sensorBounds, new Phaser.Geom.Point(enemy.x, enemy.y))) {
+                    //         enemy.isRooted = true;
+                    //         console.log(enemy.enemyID, 'Enemy Rooted');
+                    //     };
+                    // });
                     this.time.addEvent({
                         delay: 3000,
                         callback: () => {
@@ -560,6 +578,11 @@ export class Game extends Scene {
     combatEngaged = (bool: boolean) => {
         this.combat = bool;
         console.log(`Combat engaged: ${bool}`);
+        if (bool) {
+            this.combatTimerText.setVisible(true);
+        } else {
+            this.combatTimerText.setVisible(false);
+        };
         // this.dispatch(getCombatFetch(bool));
     };
     drinkFlask = () => EventBus.emit('drink-firewater');
@@ -594,7 +617,6 @@ export class Game extends Scene {
     };   
 
     startCombatTimer = () => {
-        console.log('Starting Combat Timer')
         this.combatTimer = this.time.addEvent({
             delay: 1000,
             callback: () => {
@@ -608,7 +630,6 @@ export class Game extends Scene {
     };
 
     stopCombatTimer = () => {
-        console.log('Stopping Combat Timer')
         this.combatTimer.destroy();
         // this.combatTimer = undefined;
         this.combatTime = 0;
@@ -629,6 +650,7 @@ export class Game extends Scene {
 
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2));
+        this.combatTimerText.setText('Combat Timer: ' + this.combatTime);
     };
 
     pause() {

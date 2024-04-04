@@ -24,7 +24,7 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                 <p class='gold' style={{ margin: '3%' }}>Level: {ascean().level}</p>
                 <p class='gold' style={{ margin: '3%' }}>Experience: {ascean().experience}</p>
                 <p class='gold' style={{ margin: '3%' }}>Mastery: {ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</p>
-                <p class='gold' style={{ margin: '3%' }}>Health: {ascean().health.current} / {ascean().health.max}</p>
+                <p class='gold' style={{ margin: '3%' }}>Health: {Math.round(ascean().health.current)} / {ascean().health.max}</p>
                 <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
                 <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
                 <br />
@@ -51,7 +51,7 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                         <p class='gold' style={{ margin: '3%' }}>Level: {ascean().level}</p>
                         <p class='gold' style={{ margin: '3%' }}>Experience: {ascean().experience}</p>
                         <p class='gold' style={{ margin: '3%' }}>Mastery: {ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</p>
-                        <p class='gold' style={{ margin: '3%' }}>Health: {ascean().health.current} / {ascean().health.max}</p>
+                        <p class='gold' style={{ margin: '3%' }}>Health: {Math.round(ascean().health.current)} / {ascean().health.max}</p>
                     </div>
                 </div>
 

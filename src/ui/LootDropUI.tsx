@@ -24,13 +24,6 @@ export default function LootDropUI({ ascean, game }: Props) {
         setVisibleLoot(visible);
     });
 
-    // createEffect(() => {
-    //     if (!ascean().tutorial.loot) {
-    //         setShowTutorial(true);
-    //         setTutorial('loot');
-    //     };
-    // });
-
     onMount(() => {
         if (!ascean().tutorial.loot) {
             setShowTutorial(true);
@@ -44,7 +37,7 @@ export default function LootDropUI({ ascean, game }: Props) {
         }}>
             <div class='gold' style={{ position: 'absolute', 'font-family': 'Cinzel-Regular', 'background-color': '#000', height: '35%', width: '45%',
                 top: '70%', left: '50%', 'transform': 'translate(-50%, -50%)', 'padding': '0.5em', 'border': '0.15em solid #FFC700',
-                'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', 'overflow-y': 'scroll'
+                'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', 'overflow-y': 'scroll', 'z-index': 2
             }}>
                 <Show when={visibleLoot()}>
                     <For each={visibleLoot()}>
@@ -58,7 +51,7 @@ export default function LootDropUI({ ascean, game }: Props) {
                 </Show>
             </div>
             <Show when={show()}>
-                <div class='modal' onClick={() => setShow(!show())}>
+                <div class='modal' onClick={() => setShow(!show())} style={{ 'z-index': 3 }}>
                     <ItemModal item={lootDrop()} stalwart={false} caerenic={false} />
                 </div>
             </Show> 

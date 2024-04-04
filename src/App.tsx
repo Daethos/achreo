@@ -27,23 +27,23 @@ export default function App() {
         creatingCharacter: false,
         gameRunning: false,
         loading: true,
-        screen: SCREENS.COMPLETE.KEY,
+        screen: SCREENS.CHARACTER.KEY,
         deleteModal: false,
         playModal: false,
     });
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>({
-        name: 'Dorien Caderyn',
-        description: 'Prince of the Daethic Kingdom',
+        name: 'Stranger', // Dorien Caderyn
+        description: 'Commoner from elsewhere', // Prince of the Daethic Kingdom
         sex: 'Man',
-        origin: "Notheo",
-        constitution: 12,
-        strength: 16,
+        origin: "Ashtre", // Notheo
+        constitution: 16, // 12
+        strength: 14, // 16
         agility: 10,
         achre: 10,
-        caeren: 12,
-        kyosir: 13,
-        mastery: 'strength',
-        faith: 'None',
+        caeren: 13, // 12
+        kyosir: 10, // 13
+        mastery: 'constitution',
+        faith: 'adherent',
         preference: 'Plate-Mail',
     });
     const dimensions = useResizeListener();

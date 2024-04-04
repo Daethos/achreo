@@ -43,7 +43,7 @@ export default function App() {
         caeren: 13, // 12
         kyosir: 10, // 13
         mastery: 'constitution',
-        faith: 'adherent',
+        faith: 'Adherent',
         preference: 'Plate-Mail',
     });
     const dimensions = useResizeListener();

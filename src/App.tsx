@@ -14,7 +14,7 @@ import { CharacterSheet, Compiler, asceanCompiler } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
 import type { IRefPhaserGame } from './game/PhaserGame';
 import { EventBus } from './game/EventBus';
-import { deleteAscean, getAscean, getAsceans, getInventory, getSettings, populate, scrub } from './assets/db/db'; 
+import { allEquipment, deleteAscean, getAscean, getAsceans, getInventory, getSettings, populate, scrub } from './assets/db/db'; 
 
 
 export default function App() {
@@ -58,6 +58,7 @@ export default function App() {
         const fetch = async () => {
             try {
                 const res = await getAsceans();
+                await allEquipment();
                 if (!res.length) {
                     console.log('No Asceans Found');
                     setMenu({ ...menu(), loading: false });

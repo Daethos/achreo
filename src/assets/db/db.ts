@@ -177,6 +177,7 @@ export function randomEnemy(min: number, max: number): Ascean {
     return enemy;
 };
 
+export const allEquipment = async () => await db.collection(EQUIPMENT).get();
 export const addEquipment = async (equipment: Equipment) => await db.collection(EQUIPMENT).add(equipment);
 export const deleteEquipment = async (id: string) => await db.collection(EQUIPMENT).doc({ _id: id }).delete();
 export const getEquipment = async (id: string) => await db.collection(EQUIPMENT).doc({ _id: id }).get();

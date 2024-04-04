@@ -177,7 +177,7 @@ export default class Enemy extends Entity {
         this.combatThreshold = 0;
         this.attackIsLive = false;
         this.isEnemy = true;
-        this.isAggressive = Math.random() > 0.5; // Math.random() > 0.5 || false
+        this.isAggressive = Math.random() > 0.25; // Math.random() > 0.5 || false
         this.startedAggressive = this.isAggressive;
         this.isDefeated = false;
         this.isTriumphant = false;

@@ -28,57 +28,67 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
     const [endTime, setEndTime] = createSignal(effect.endTime);
     const [effectTimer, setEffectTimer] = createSignal(effect.endTime - effect.startTime);
     var timeout: any = undefined;
-    const { timer } = createTick(effectTimer);
-    // function tickEffect() {
-    //     if (game().pauseState) return;
-    //     if (!combat().combatEngaged) prayerRemoveTick(combat(), effect);
-    //     console.log(`%c Effect ${effect.prayer} ticking... ${effectTimer()}s left. End Time: ${endTime()} / Combat Time: ${combat().combatTimer}`, `color: gold`)
-        
-    //     if (canTick(effect, effectTimer(), combat().combatTimer)) {
-    //         console.log('%c ticking...', 'color: gold');
-    //         prayerEffectTick({ combat: combat(), effect: effect, effectTimer: effectTimer() });
-    //     };
-    //     if (endTime() < effect.endTime) {
-    //         console.log(`%c Effect Refreshing from ${endTime()} to ${effect.endTime}s end time...`, 'color: green');
-    //         setEndTime(effect.endTime);
-    //         setEffectTimer(effect.endTime - combat().combatTimer);
-    //     };
-    //     if (effectTimer() <= 0) {
-    //         console.log(`%c Effect ${effect.prayer} has expired...`, 'color: red');
-    //         prayerRemoveTick(combat(), effect);
-    //         clearInterval(timeout);
-    //     };
-    // };
-
-    function tickEffect(): void {
-        if (game().pauseState || effectTimer() <= 0 || !combat().combatEngaged) {
+    // const { timer } = createTick(effectTimer);
+    
+    function tickEffect(timer: Accessor<number>) {
+        if (game().pauseState) {
             clearInterval(timeout);
-            prayerRemoveTick(combat(), effect);
             return;
         };
-    
-        const newEndTime = effect.endTime - combat().combatTimer;
-        if (newEndTime > 0) {
-            // setEndTime(newEndTime);
-            setEffectTimer(time => time - 1);
+        if (!combat().combatEngaged || timer() <= 0) {
+            console.log(`%c Effect ${effect.prayer} has expired...`, 'color: red');
+            prayerRemoveTick(combat(), effect);
+            clearInterval(timeout);
+            return;
         };
-    
-        console.log(`%c Effect ${effect.prayer} ticking... ${effectTimer()}s left. End Time: ${newEndTime} / Combat Time: ${combat().combatTimer}`, `color: gold`);
-        console.log('%c ticking...', 'color: gold');
+
+        console.log(`%c Effect ${effect.prayer} ticking... ${timer()}s left. End Time: ${effect.endtime} / Combat Time: ${combat().combatTimer}`, `color: gold`)
         
-        if (canTick(effect, effectTimer(), combat().combatTimer)) prayerEffectTick({ combat: combat(), effect: effect, effectTimer: effectTimer() });
+        if (canTick(effect, timer(), combat().combatTimer)) {
+            console.log('%c ticking...', 'color: gold');
+            prayerEffectTick({ combat: combat(), effect: effect, effectTimer: timer() });
+        };
+        
+        if (effect.endTime - combat().combatTimer > timer()) {
+            console.log(`%c Effect Refreshing from ${timer()}s remaining to ${effect.endTime - combat().combatTimer}s end time...`, 'color: green');
+            // setEndTime(effect.endTime);
+            setEffectTimer(effect.endTime - combat().combatTimer);
+        } else {
+            console.log(`%c Effect ${effect.prayer} expiring in ${effect.endTime - combat().combatTimer}s...`, 'color: red');
+            setEffectTimer(time => time - 1);
+        }
     };
 
+    // function tickEffect(): void {
+    //     if (game().pauseState || effectTimer() <= 0 || !combat().combatEngaged) {
+    //         clearInterval(timeout);
+    //         prayerRemoveTick(combat(), effect);
+    //         return;
+    //     };
+    
+    //     const newEndTime = effect.endTime - combat().combatTimer;
+    //     if (newEndTime > 0) {
+    //         // setEndTime(newEndTime);
+    //         setEffectTimer(time => time - 1);
+    //     };
+    
+    //     console.log(`%c Effect ${effect.prayer} ticking... ${effectTimer()}s left. End Time: ${newEndTime} / Combat Time: ${combat().combatTimer}`, `color: gold`);
+    //     console.log('%c ticking...', 'color: gold');
+        
+    //     if (canTick(effect, effectTimer(), combat().combatTimer)) prayerEffectTick({ combat: combat(), effect: effect, effectTimer: effectTimer() });
+    // };
+
     createEffect(() => {
-        timeout = setTimeout(tickEffect, 1000);
-    }, effectTimer());
+        timeout = setInterval(() => tickEffect(effectTimer), 1000);
 
-    onCleanup(() => clearTimeout(timeout));
+        return () => clearInterval(timeout);
+    });
 
-    const tick = createMemo(() => {
-        console.log(`%c Effect ${effect.prayer} expiring in ${effect.endTime - combat().combatTimer}s...`, 'color: red');
-        tickEffect();
-    })
+
+    // const tick = createMemo(() => {
+    //     console.log(`%c Effect ${effect.prayer} expiring in ${effect.endTime - combat().combatTimer}s...`, 'color: red');
+    //     tickEffect();
+    // })
     
 
     // createMemo(() => {

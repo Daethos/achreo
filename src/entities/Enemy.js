@@ -1017,11 +1017,8 @@ export default class Enemy extends Entity {
             this.particleEffect.effect.destroy();
             this.particleEffect = undefined;
         } else {
-            console.log(this.isCurrentTarget, 'Enemy Action Success')
             if (this.isCurrentTarget) {
-                console.log(this.scene.state.computerAction, 'Computer Action')
                 if (this.scene.state.computerAction === '') return;
-                console.log('Executing Computer Action')
                 this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: this.scene.state.computerAction, id: this.enemyID } });
             } else {
                 this.scene.combatMachine.action({ type: 'Enemy', data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.currentAction, counter: this.counterAction, id: this.enemyID }}});

@@ -403,10 +403,14 @@ export default class Player extends Entity {
         if (this.health < e.newPlayerHealth) {
             let heal = Math.round(e.newPlayerHealth - this.health);
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, 1500, 'heal');
-        };
-        if (this.currentRound !== e.combatRound) {
+        }; 
+    
+        if (this.currentRound !== e.combatRound && this.scene.combat) {
             this.currentRound = e.combatRound;
             if (this.targets.length) this.checkTargets(); // Was inside playerWin
+            if (e.computerDamaged || e.playerDamaged) {
+                this.soundEffects(e);
+            };
         };
         this.health = e.newPlayerHealth;
         this.healthbar.setValue(this.health);
@@ -448,7 +452,6 @@ export default class Player extends Entity {
             
             this.winningCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Victory', 3000, 'effect', true);    
         };
-        this.soundEffects(e);    
     };
 
     soundEffects(sfx) {
@@ -499,6 +502,8 @@ export default class Player extends Entity {
             if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.roll.play();
             if (sfx.counterSuccess === true || sfx.computerCounterSuccess === true) this.scene.counter.play();
             if (sfx.playerWin === true) this.scene.righteous.play();
+
+            EventBus.emit('blend-combat', { computerDamaged: false, playerDamaged: false });
             // if (sfx.computerWin) playDeath();
             // dispatch(setToggleDamaged(false));
         } catch (err) {

@@ -456,11 +456,11 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         <Show when={settings().control !== CONTROLS.POST_FX || settings().asceanViews !== VIEWS.SETTINGS}>
             <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
                 { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'hidden' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, }}>
-                    { dragAndDropInventory().length < 300 && (
+                    {/* { dragAndDropInventory().length < 300 && (
                         <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => freeInventory()}>
                             <p>Get Gear</p>
                         </button>
-                    ) }
+                    ) } */}
                     { ascean().experience >= ascean().level * 1000 && (
                         <button class='highlight cornerTR' style={{ 'background-color': 'purple', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
                             <p>Level++</p>

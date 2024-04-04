@@ -430,6 +430,8 @@ export const PhaserGame = (props: IProps) => {
             EventBus.emit('update-ascean', update);
         });
 
+        EventBus.on('combat-engaged', (e: boolean) => setCombat({ ...combat(), combatEngaged: e }));
+
         EventBus.on('drink-firewater', () => {
             const newHealth = (combat().newPlayerHealth + (combat().playerHealth * 0.4)) > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + (combat().playerHealth * 0.4);
             const newCharges = props.ascean().firewater.current > 0 ? props.ascean().firewater.current - 1 : 0;
@@ -567,7 +569,8 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('start-game');
             EventBus.removeListener('add-item');
             EventBus.removeListener('clear-enemy');
-            EventBus.removeListener('fetch-enemy');   
+            EventBus.removeListener('fetch-enemy'); 
+            EventBus.removeListener('combat-engaged');  
             EventBus.removeListener('drink-firewater'); 
             EventBus.removeListener('gain-experience');
             EventBus.removeListener('add-lootdrop');

@@ -44,7 +44,17 @@ export const saveTutorial = async (id: string, type: string) => {
 };
 
 export const scrub = async (ascean: Ascean) => {
-    const scrubbed = { ...ascean, weaponOne: ascean.weaponOne._id, weaponTwo: ascean.weaponTwo._id, weaponThree: ascean.weaponThree._id, shield: ascean.shield._id, helmet: ascean.helmet._id, chest: ascean.chest._id, legs: ascean.legs._id, ringOne: ascean.ringOne._id, ringTwo: ascean.ringTwo._id, amulet: ascean.amulet._id, trinket: ascean.trinket._id, inventory: ascean.inventory.map((item: Equipment) => item._id) };
+    let inventory = Array.from(new Set(ascean.inventory));
+    inventory = inventory.filter((item: Equipment) => {
+        const real = (item !== undefined && item !== null && item != undefined && item != null)
+        return real;
+    }); 
+    inventory = inventory.map((item: Equipment) => item._id);
+    const scrubbed = { ...ascean, 
+        weaponOne: ascean.weaponOne._id, weaponTwo: ascean.weaponTwo._id, weaponThree: ascean.weaponThree._id, shield: ascean.shield._id, 
+        helmet: ascean.helmet._id, chest: ascean.chest._id, legs: ascean.legs._id, 
+        ringOne: ascean.ringOne._id, ringTwo: ascean.ringTwo._id, amulet: ascean.amulet._id, trinket: ascean.trinket._id, 
+        inventory: inventory };
     await updateAscean(scrubbed);
     return scrubbed;
 };

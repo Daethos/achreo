@@ -27,6 +27,7 @@
         "@capacitor/android": "^5.7.4",
         "@capacitor/core": "^5.7.4",
         "@capacitor/ios": "^5.7.4",
+        "@thisbeyond/solid-dnd": "^0.7.5",
         "localforage": "^1.10.0",
         "phaser": "^3.80.1",
         "phaser-matter-collision-plugin": "^1.0.0",

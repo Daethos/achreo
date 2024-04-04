@@ -4,22 +4,8 @@ import { font, getRarityColor } from '../utility/styling';
 import Equipment from '../models/equipment';
 import { useResizeListener } from '../utility/dimensions';
 import Ascean from '../models/ascean';
-// import { checkPlayerTrait, checkTraits } from './PlayerTraits';
-// import { equipmentRemove, equipmentSwap } from '../assets/db/db';
 
-// const GET_FORGE_COST = {
-//     Common: 1,
-//     Uncommon: 3,
-//     Rare: 12,
-//     Epic: 60,
-// };
-
-// const GET_NEXT_RARITY = {
-//     Common: "Uncommon",
-//     Uncommon: 'Rare',
-//     Rare: "Epic",
-//     Epic: "Legendary",
-// };
+// import { checkPlayerTrait, checkTraits } from './PlayerTraits'; 
 
 interface Props {
     ascean: Accessor<Ascean>;

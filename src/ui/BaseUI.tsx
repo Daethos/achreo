@@ -121,6 +121,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     console.log(e.data, 'Weapon Action')
                     const weapon = { ...combat(), [e.data.key]: e.data.value };
                     res = weaponActionCompiler(weapon) as Combat;
+                    console.log(res.playerEffects, 'Weapon Action')
                     EventBus.emit('blend-combat', res);
                     playerWin = res.playerWin;
                     computerWin = res.computerWin;
@@ -128,6 +129,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 case 'Prayer':
                     const pray = { ...combat(), playerEffects: e.data };
                     res = consumePrayer(pray) as Combat;
+                    console.log(res.playerEffects, 'Prayer Action')
                     EventBus.emit('blend-combat', { newPlayerHealth: res.newPlayerHealth, playerEffects: res.playerEffects });
                     playerWin = res.playerWin;
                     break;
@@ -135,6 +137,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     let insta = { ...combat(), playerBlessing: e.data };
                     insta = instantActionCompiler(insta) as Combat;
                     console.log(insta, 'Instant Action')
+                    console.log(insta.playerEffects, 'Instant Action')
                     playerWin = insta.playerWin;
                     res = { ...res, ...insta };
                     // console.log(res, 'Instant Action');
@@ -162,6 +165,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     };
                     res = { ...combat(), ...playerData };
                     res = weaponActionCompiler(res) as Combat;
+                    console.log(res.playerEffects, 'Player Action')
                     EventBus.emit('blend-combat', {
                         playerWin: res.playerWin,
                         computerWin: res.computerWin,
@@ -238,6 +242,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     };
                     res = { ...combat(), ...enemyData };
                     res = weaponActionCompiler(res) as Combat;
+                    console.log(res.playerEffects, 'Enemy Action')
                     console.log(res, 'Res in Enemy')
                     EventBus.emit('update-combat', res);
                     break;
@@ -266,7 +271,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 };
                 const exp = { state: newState, combat: data };
                 console.log(exp, 'Experience Gain Request');
-                const loot = { enemyID: combat().enemyID, level: combat()?.computer?.level! };
+                const loot = { enemyID: data.enemyID, level: data?.computer?.level! };
                 console.log(loot, 'Loot Drop Request');
                 EventBus.emit('gain-experience', exp);
                 EventBus.emit('enemy-loot', loot);

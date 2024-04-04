@@ -1,5 +1,5 @@
 import Inventory from "./Inventory";
-import { Accessor, createEffect, createSignal, For, Setter } from 'solid-js';
+import { Accessor, createEffect, createSignal, For, JSX, Setter } from 'solid-js';
 import { EventBus } from "../game/EventBus";
 import { useResizeListener } from "../utility/dimensions";
 import Ascean from "../models/ascean";
@@ -21,7 +21,27 @@ interface Props {
 
 export default function InventoryPouch({ ascean, inventoryType, setInventoryType, setHighlighted, highlighted, setRingCompared, setWeaponCompared, dragAndDropInventory, setDragAndDropInventory, scaleImage, setScaleImage }: Props) {
     const [inventorySwap, setInventorySwap] = createSignal({ start: { id: null, index: -1 }, end: { id: null, index: -1 } });
+    const [activeItem, setActiveItem] = createSignal(null);
     const dimensions = useResizeListener();
+    const ids = () => dragAndDropInventory();
+
+    const onDragStart = ({ draggable }: { draggable: any; }) => {
+        console.log('Drag Start', draggable.id);
+        setActiveItem(draggable.id)
+    };
+    const onDragEnd = ({ draggable, droppable }: { draggable: any; droppable: any; }) => {
+        if (draggable && droppable) {
+            const currentItems = ids();
+            const fromIndex = currentItems.indexOf(draggable.id);
+            const toIndex = currentItems.indexOf(droppable.id);
+            if (fromIndex !== toIndex) {
+                const updatedItems = currentItems.slice();
+                updatedItems.splice(toIndex, 0, ...updatedItems.splice(fromIndex, 1));
+                setDragAndDropInventory(updatedItems);
+            };
+        };
+        setActiveItem(null);
+    };
 
     createEffect(() => {
         if (inventorySwap().start.id === null || inventorySwap().end.id === null) return;
@@ -46,7 +66,7 @@ export default function InventoryPouch({ ascean, inventoryType, setInventoryType
     }; 
 
     return ( 
-        <div class='playerInventoryBag'>  
+        <div class='playerInventoryBag'> 
             <For each={dragAndDropInventory()}>{(item, index) => {
                 if (item === undefined || item === null) return;
                 return (

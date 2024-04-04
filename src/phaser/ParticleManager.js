@@ -51,25 +51,16 @@ class Particle {
             direction.normalize();
             return direction;
         } else {
-            const worldPoint = player.rightJoystick.pointer.getWorldTransformMatrix();
-            console.log(worldPoint, 'World Point');
-
             const x = player.rightJoystick.pointer.x;
             const y = player.rightJoystick.pointer.y;
-            const x2 = player.x;
-            const y2 = player.y;
-            const worldX = x > x2 ? x + x2 : x - x2;
-            const worldY = y > y2 ? y + y2 : y - y2;
+            const x2 = this.scene.scale.width / 2;
+            const y2 = this.scene.scale.height / 2;
+            const worldX = (x > x2 ? x : -x) + player.x;
+            const worldY = (y > y2 ? y : -y) + player.y;
             const target = new Phaser.Math.Vector2(worldX, worldY);
-
-            // const target = new Phaser.Math.Vector2(worldPoint.tx, worldPoint.ty);
-            // const target = new Phaser.Math.Vector2(this.scene.input.activePointer.worldX, this.scene.input.activePointer.worldY);
             // const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y) // player.rightJoystick.pointer.x, player.rightJoystick.pointer.y
-            console.log(target, player.rightJoystick, 'Target - X, Y');
             const direction = target.subtract(player.position);
-            console.log(direction, 'Direction')
             direction.normalize();
-            console.log(direction, 'Normalized Direction ?');
             return direction;
         };
     };
@@ -171,7 +162,6 @@ export default class ParticleManager extends Phaser.Scene {
             if (player.name === 'player' && player.particleEffect.action === 'roll') return;
             player.particleEffect.effect.play(player.particleEffect.key, true);
             const target = player.particleEffect.target;
-            if (player.name === 'player') console.log(target, 'Target');
             // target.normalize();
             player.particleEffect.effect.setVelocity(player.particleEffect.velocity * target.x, target.y * player.particleEffect.velocity);
         };

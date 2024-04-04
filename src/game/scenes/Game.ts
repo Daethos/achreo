@@ -577,6 +577,7 @@ export class Game extends Scene {
     clearNPC = () => EventBus.emit('clear-npc'); 
     combatEngaged = (bool: boolean) => {
         this.combat = bool;
+        EventBus.emit('combat-engaged', bool);
         console.log(`Combat engaged: ${bool}`);
         if (bool) {
             this.combatTimerText.setVisible(true);

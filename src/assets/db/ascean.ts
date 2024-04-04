@@ -1155,59 +1155,389 @@ export const Asceans: any[] = [
     "health":{"current":423,"max":423}
     },
     {
-    "_id":"achreon_druid_4",
-    "origin":"Notheo",
-    "sex":"Man",
-    "mastery":"achre",
-    "level":4,
-    "experience":0,
-    "inventory":[],
-    "name":"Achreon Druid",
-    "description":"Northren Druid of the Wild",
-    "constitution":17,
-    "strength":14,
-    "agility":20,
-    "achre":20,
-    "caeren":10,
-    "kyosir":10,
-    "weaponOne":{
-        name: "Wildstrike",
-        rarity: 'Uncommon',
-    },"weaponTwo":{
-        name: "Wildstrike",
-        rarity: 'Uncommon',
-    },"weaponThree":{
-        name: 'Achreon Recurve',
-        rarity: 'Uncommon',
-    },"shield":{
-        name: 'Parma',
-        rarity: 'Uncommon',
-    },"helmet":{
-        name: "Achreon Helm",
-        rarity: 'Uncommon',
-    },"chest":{
-        name: "Achreon Armor",
-        rarity: 'Uncommon',
-    },"legs":{
-        name: "Achreon Greaves",
-        rarity: 'Uncommon',
-    },"ringOne":{
-        name: "Achreon Ring",
-        rarity: 'Uncommon',
-    },"ringTwo":{
-        name: "Quor'eite Ring",
-        rarity: 'Uncommon',
-    },"amulet":{
-        name: "Achreon Amulet",
-        rarity: 'Uncommon',
-    },"trinket":    {
-        name: "Achreon Trinket",
-        rarity: 'Uncommon',
+        "_id":"ahn'are_apostle_4",
+        "origin":"Ashtre",
+        "sex":"Woman",
+        "mastery":"achre",
+        "level":4,
+        "experience":0,
+        "inventory":[],
+        "name":"Ahn'are Apostle",
+        "description":"Prietsess of Ahn've, the Wind Ancient",
+        "constitution":17,
+        "strength":10,
+        "agility":12,
+        "achre":22,
+        "caeren":17,
+        "kyosir":12,
+        "weaponOne":{
+            name: "Windshear",
+            rarity: 'Uncommon',
+        },"weaponTwo":{
+            name: "Windshear",
+            rarity: 'Uncommon',
+        },"weaponThree":{
+            name: "Ahn've's Wing",
+            rarity: 'Uncommon',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Uncommon',
+        },"helmet":{
+            name: "Sage Hood",
+            rarity: 'Uncommon',
+        },"chest":{
+            name: "Sage Robes",
+            rarity: 'Uncommon',
+        },"legs":{
+            name: "Sage Pants",
+            rarity: 'Uncommon',
+        },"ringOne":{
+            name: "Sage Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Sage Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Sage Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Sage Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":147,"max":147}
     },
-    "faith":"adherent",
-    "currency":{"silver":0,"gold":0},
-    "firewater":{"current":5,"max":5},
-    "health":{"current":147,"max":147}
+    {
+        "_id":"astral_apostle_4",
+        "origin":"Ashtre",
+        "sex":"Woman",
+        "mastery":"achre",
+        "level":4,
+        "experience":0,
+        "inventory":[],
+        "name":"Astral Apostle",
+        "description":"Prietsess of Astra, Witness to her Eternal Ascension",
+        "constitution":17,
+        "strength":10,
+        "agility":12,
+        "achre":22,
+        "caeren":12,
+        "kyosir":19,
+        "weaponOne":{
+            name: "Astral Spear",
+            rarity: 'Uncommon',
+        },"weaponTwo":{
+            name: "Astral Spear",
+            rarity: 'Uncommon',
+        },"weaponThree":{
+            name: "Achreon Recurve",
+            rarity: 'Uncommon',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Uncommon',
+        },"helmet":{
+            name: "Astral Hood",
+            rarity: 'Uncommon',
+        },"chest":{
+            name: "Astral Robes",
+            rarity: 'Uncommon',
+        },"legs":{
+            name: "Astral Pants",
+            rarity: 'Uncommon',
+        },"ringOne":{
+            name: "Astral Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Astral Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Astral Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Astral Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":147,"max":147}
+    },
+    {
+        "_id":"achreon_druid_4",
+        "origin":"Notheo",
+        "sex":"Man",
+        "mastery":"achre",
+        "level":4,
+        "experience":0,
+        "inventory":[],
+        "name":"Achreon Druid",
+        "description":"Northren Druid of the Wild",
+        "constitution":17,
+        "strength":14,
+        "agility":20,
+        "achre":20,
+        "caeren":10,
+        "kyosir":10,
+        "weaponOne":{
+            name: "Wildstrike",
+            rarity: 'Uncommon',
+        },"weaponTwo":{
+            name: "Wildstrike",
+            rarity: 'Uncommon',
+        },"weaponThree":{
+            name: 'Achreon Recurve',
+            rarity: 'Uncommon',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Uncommon',
+        },"helmet":{
+            name: "Achreon Helm",
+            rarity: 'Uncommon',
+        },"chest":{
+            name: "Achreon Armor",
+            rarity: 'Uncommon',
+        },"legs":{
+            name: "Achreon Greaves",
+            rarity: 'Uncommon',
+        },"ringOne":{
+            name: "Achreon Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Quor'eite Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Achreon Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Achreon Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":147,"max":147}
+    },
+    {
+        "_id":"daethic_inquisitor_4",
+        "origin":"Li'ivi",
+        "sex":"Woman",
+        "mastery":"constitution",
+        "level":4,
+        "experience":0,
+        "inventory":[],
+        "name":"Daethic Inquisitor",
+        "description":"Old Caste of Worship in the Seyr",
+        "constitution":21,
+        "strength":10,
+        "agility":10,
+        "achre":18,
+        "caeren":18,
+        "kyosir":16,
+        "weaponOne":{
+            name: "Tendril",
+            rarity: 'Uncommon',
+        },"weaponTwo":{
+            name: "Hush",
+            rarity: 'Uncommon',
+        },"weaponThree":{
+            name: 'Achreon Recurve',
+            rarity: 'Uncommon',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Uncommon',
+        },"helmet":{
+            name: "Dae Hood",
+            rarity: 'Uncommon',
+        },"chest":{
+            name: "Dae Robes",
+            rarity: 'Uncommon',
+        },"legs":{
+            name: "Dae Pants",
+            rarity: 'Uncommon',
+        },"ringOne":{
+            name: "Dae Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Dae Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Dae Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Dae Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"devoted",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":147,"max":147}
+    },
+    {
+        "_id":"daethic_knight_4",
+        "origin":"Li'ivi",
+        "sex":"Man",
+        "mastery":"caeren",
+        "level":4,
+        "experience":0,
+        "inventory":[],
+        "name":"Daethic Knight",
+        "description":"Mythic Caste of Daethic Warriors in the Seyr",
+        "constitution":20,
+        "strength":18,
+        "agility":16,
+        "achre":10,
+        "caeren":20,
+        "kyosir":12,
+        "weaponOne":{
+            name: "Tendril",
+            rarity: 'Uncommon',
+        },"weaponTwo":{
+            name: "Hush",
+            rarity: 'Uncommon',
+        },"weaponThree":{
+            name: 'Achreon Recurve',
+            rarity: 'Uncommon',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Uncommon',
+        },"helmet":{
+            name: "Daethic Helm",
+            rarity: 'Uncommon',
+        },"chest":{
+            name: "Daethic Cuirass",
+            rarity: 'Uncommon',
+        },"legs":{
+            name: "Daethic Greaves",
+            rarity: 'Uncommon',
+        },"ringOne":{
+            name: "Daethic Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Daethic Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Daethic Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Daethic Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"devoted",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":147,"max":147}
+    },
+    {
+        "_id":"fyers_occultist_4",
+        "origin":"Fyers",
+        "sex":"Man",
+        "mastery":"achre",
+        "level":4,
+        "experience":0,
+        "inventory":[],
+        "name":"Fyers Occultist",
+        "description":"Southron Occultist of Fyer",
+        "constitution":18,
+        "strength":10,
+        "agility":12,
+        "achre":21,
+        "caeren":19,
+        "kyosir":10,
+        "weaponOne":{
+            name: "Lava Spit",
+            rarity: 'Uncommon',
+        },"weaponTwo":{
+            name: "Lava Spit",
+            rarity: 'Uncommon',
+        },"weaponThree":{
+            name: 'Achreon Recurve',
+            rarity: 'Uncommon',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Uncommon',
+        },"helmet":{
+            name: "Fyers Hood",
+            rarity: 'Uncommon',
+        },"chest":{
+            name: "Fyers Robes",
+            rarity: 'Uncommon',
+        },"legs":{
+            name: "Fyers Pants",
+            rarity: 'Uncommon',
+        },"ringOne":{
+            name: "Fyers Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Fyers Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Fyers Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Fyers Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":147,"max":147}
+    },
+    {
+        "_id":"kyrisian_4",
+        "origin":"Notheo",
+        "sex":"Woman",
+        "mastery":"constitution",
+        "level":4,
+        "experience":0,
+        "inventory":[],
+        "name":"Kyrisian Occultist",
+        "description":"Occultist Adherent to Kyrisos, Ancient of Gold. Care with interactions.",
+        "constitution":19,
+        "strength":10,
+        "agility":12,
+        "achre":12,
+        "caeren":14,
+        "kyosir":16,
+        "weaponOne":{
+            name: "Blessed Dagger",
+            rarity: 'Uncommon',
+        },"weaponTwo":{
+            name: "Cursed Dagger",
+            rarity: 'Uncommon',
+        },"weaponThree":{
+            name: 'Achreon Recurve',
+            rarity: 'Uncommon',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Uncommon',
+        },"helmet":{
+            name: "Ly'kyr Hood",
+            rarity: 'Uncommon',
+        },"chest":{
+            name: "Ly'kyr Robes",
+            rarity: 'Uncommon',
+        },"legs":{
+            name: "Ly'kyr Pants",
+            rarity: 'Uncommon',
+        },"ringOne":{
+            name: "Kyrnaic Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Kyrnaic Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Kyrnaic Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Kyrnaic Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":147,"max":147}
     },
     {
     "_id":"ma'ier_occultist_4",
@@ -1319,6 +1649,61 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":139,"max":139}
     },
+    {
+        "_id":"quor'eite_occultist_4",
+        "origin":"Nothos",
+        "sex":"Man",
+        "mastery":"achre",
+        "level":4,
+        "experience":0,
+        "inventory":[],
+        "name":"Quor'eite Occultist",
+        "description":"Southron Occultist of Quor'ei, Ancient of Earth",
+        "constitution":19,
+        "strength":10,
+        "agility":12,
+        "achre":20,
+        "caeren":18,
+        "kyosir":14,
+        "weaponOne":{
+            name: "Quor'eite Crush",
+            rarity: 'Common',
+        },"weaponTwo":{
+            name: "Quor'eite Crush",
+            rarity: 'Common',
+        },"weaponThree":{
+            name: "Achreon Recurve",
+            rarity: 'Common',
+        },"shield":{
+            name: 'Pavise',
+            rarity: 'Common',
+        },"helmet":{
+            name: "Quor'eite Hood",
+            rarity: 'Common',
+        },"chest":{
+            name: "Quor'eite Robes",
+            rarity: 'Common',
+        },"legs":{
+            name: "Quor'eite Pants",
+            rarity: 'Common',
+        },"ringOne":{
+            name: "Quor'eite Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Quor'eite Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Quor'eite Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Quor'eite Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":139,"max":139}
+        },
     {
     "_id":"tshaeral_shaman_4",
     "origin":"Sedyreal",

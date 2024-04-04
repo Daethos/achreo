@@ -458,7 +458,6 @@ export default class Player extends Entity {
         try {
             console.log(sfx.computerDamaged, 'Computer Damaged', sfx.playerDamaged, 'Player Damaged')
             const soundEffectMap = (type, weapon) => {
-
                 switch (type) {
                     case 'Spooky':
                         return this.scene.spooky.play();
@@ -484,28 +483,23 @@ export default class Player extends Entity {
                         return this.scene.slash.play();
                     case 'Blunt':
                         return this.scene.blunt.play();
-                }
+                };
             };
             if (sfx.computerDamaged === true) {
                 const { playerDamageType } = sfx;
                 soundEffectMap(playerDamageType, sfx.computerWeapons[0]);                
-                // const soundEffectFn = soundEffectMap[playerDamageType];
-                // if (soundEffectFn) soundEffectFn(sfx.weapons[0]);
             };
             if (sfx.playerDamaged === true) {
                 const { computerDamageType } = sfx;
                 soundEffectMap(computerDamageType, sfx.computerWeapons[0]);
-                // const soundEffectFn = soundEffectMap[computerDamageType];
-                // if (soundEffectFn) soundEffectFn(sfx.computerWeapons[0]);
             };
             if (sfx.religiousSuccess === true) this.scene.righteous.play();
             if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.roll.play();
             if (sfx.counterSuccess === true || sfx.computerCounterSuccess === true) this.scene.counter.play();
             if (sfx.playerWin === true) this.scene.righteous.play();
+            // if (sfx.computerWin) this.scene.death.play();
 
             EventBus.emit('blend-combat', { computerDamaged: false, playerDamaged: false });
-            // if (sfx.computerWin) playDeath();
-            // dispatch(setToggleDamaged(false));
         } catch (err) {
             console.log(err.message, 'Error Setting Sound Effects');
         };
@@ -525,12 +519,12 @@ export default class Player extends Entity {
             this.inCombat = false;
             this.attacking = undefined;
             if (this.currentTarget) {
-                this.currentTarget.clearTint();
+                // this.currentTarget.clearTint();
                 this.currentTarget = undefined;
             };
         } else {
             if (this.currentTarget.enemyID === enemy) { // Was targeting the enemy that was defeated
-                this.currentTarget.clearTint();
+                // this.currentTarget.clearTint();
                 const newTarget = this.targets.find(obj => obj.enemyID !== enemy);
                 if (!newTarget) return;
                 this.scene.setupEnemy(newTarget);
@@ -1022,9 +1016,9 @@ export default class Player extends Entity {
             const index = this.targets.findIndex(obj => obj.enemyID === e);
             console.log(`%c Removing Enemy: ${e} with index ${index}`, 'color: #ff0000')
             this.targets = this.targets.filter(obj => obj.enemyID !== e);
-            if (this.currentTarget) {
-                this.currentTarget.clearTint();
-            };
+            // if (this.currentTarget) {
+            //     this.currentTarget.clearTint();
+            // };
             if (this.targets.length > 0) {
                 const newTarg = this.targets[index] || this.targets[0];
                 console.log(`%c New Target: ${newTarg}`, 'color: #ff0000')
@@ -1361,7 +1355,7 @@ export default class Player extends Entity {
                 this.scene.combatMachine.action({ type: 'Player', data: { playerAction: { action: action, counter: this.scene.state.counterGuess }, enemyID: this.attackedTarget.enemyID, ascean: this.attackedTarget.ascean, damageType: this.attackedTarget.currentDamageType, combatStats: this.attackedTarget.combatStats, weapons: this.attackedTarget.weapons, health: this.attackedTarget.health, actionData: { action: this.attackedTarget.currentAction, counter: this.attackedTarget.counterAction }} });
             };
         };
-        this.knockback(this.actionTarget); // actionTarget
+        if (this.actionTarget) this.knockback(this.actionTarget); // actionTarget
         if (this.isStealthing) this.scene.stun(this.attackedTarget.enemyID);
         // screenShake(this.scene); 
     };
@@ -1427,9 +1421,9 @@ export default class Player extends Entity {
         // ========================= Tab Targeting ========================= \\
         
         if (Phaser.Input.Keyboard.JustDown(this.inputKeys.target.TAB) && this.targets.length) { // was > 1 More than 1 i.e. worth tabbing
-            if (this.currentTarget) {
-                this.currentTarget.clearTint();
-            };
+            // if (this.currentTarget) {
+            //     this.currentTarget.clearTint();
+            // };
             const newTarget = this.targets[this.targetIndex];
             this.targetIndex = this.targetIndex + 1 >= this.targets.length ? 0 : this.targetIndex + 1;
             if (!newTarget) return;

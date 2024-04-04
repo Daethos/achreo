@@ -425,7 +425,7 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('changeDamageType', (e: string) => setCombat({ ...combat(), playerDamageType: e }));
         EventBus.on('changePrayer', (e: string) => setCombat({ ...combat(), playerBlessing: e }));
         EventBus.on('changeWeapon', (e: [Equipment, Equipment, Equipment]) => {
-            setCombat({ ...combat(), weapons: e, weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2] });
+            setCombat({ ...combat(), weapons: e, weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2], playerDamageType: e[0].damageType?.[0] as string});
             const update = { ...props.ascean(), weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2] };
             EventBus.emit('update-ascean', update);
         });

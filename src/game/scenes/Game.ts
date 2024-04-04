@@ -265,7 +265,7 @@ export class Game extends Scene {
 
         // ========================== Combat Timer ========================== \\
 
-        this.combatTimerText = this.add.text(window.innerWidth / 2 - 40, window.innerHeight + 20, 'Combat Timer: ', { font: '16px Cinzel', color: '#fdf6d8' });
+        this.combatTimerText = this.add.text(window.innerWidth / 2 - 40, window.innerHeight + 30, 'Combat Timer: ', { font: '16px Cinzel', color: '#fdf6d8' });
         this.combatTimerText.setScrollFactor(0);
         this.combatTimerText.setVisible(false);
             

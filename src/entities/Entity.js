@@ -141,7 +141,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     startingSpeed = (entity) => {
-        let speed = 1.5; // PLAYER.SPEED.INITIAL
+        let speed = (this.name === 'player' ? 1.5: 1.25); // PLAYER.SPEED.INITIAL
+        console.log(speed, 'speed')
         const helmet = entity.helmet.type;
         const chest = entity.chest.type;
         const legs = entity.legs.type;
@@ -408,14 +409,17 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         let startTime = undefined;
         requestAnimationFrame(knockbackLoop);
         
-        if ("vibrate" in navigator) {
-            navigator.vibrate(40);
-        };
+        // if ("vibrate" in navigator) {
+        //     navigator.vibrate(100);
+        // };
         // screenShake(this.scene);
     };
 
     checkDamageType = (type, concern) => {
-        const types = { 'magic': ['earth', 'fire', 'frost', 'lightning', 'righteous', 'spooky', 'sorcery', 'wild', 'wind'], 'physical': ['blunt', 'pierce', 'slash'] };
+        const types = { 
+            'magic': ['earth', 'fire', 'frost', 'lightning', 'righteous', 'spooky', 'sorcery', 'wild', 'wind'], 
+            'physical': ['blunt', 'pierce', 'slash'] 
+        };
         if (types[concern].includes(type)) return true;
         return false;
     };
@@ -508,10 +512,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
         } else if (this.isRolling) {
             if (this.frameCount === FRAME_COUNT.ROLL_LIVE) {
-                if (entity === 'player' && this.inCombat && this.isRanged) {
-                    if (this.hasMagic) this.particleEffect = this.scene.particleManager.addEffect('roll', this, this.currentDamageType);
-                    if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('roll', this, 'arrow');
-                };
+                // if (entity === 'player' && this.inCombat && this.isRanged) {
+                //     if (this.hasMagic) this.particleEffect = this.scene.particleManager.addEffect('roll', this, this.currentDamageType);
+                //     if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('roll', this, 'arrow');
+                // };
                 if (entity === 'enemy' && this.attacking && this.inCombat && this.isRanged) {
                     if (this.hasMagic) this.particleEffect = this.scene.particleManager.addEffect('roll', this, this.currentDamageType);
                     if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('roll', this, 'arrow');

@@ -676,7 +676,7 @@ export default class Enemy extends Entity {
     };
     onAttackUpdate = (_dt) => {
         if (this.frameCount === FRAME_COUNT.ATTACK_LIVE && !this.isRanged) this.scene.combatMachine.input('computerAction', 'attack', this.enemyID);
-        if (!this.isRanged) this.swingMomentum(this.attacking);
+        if (!this.isRanged && (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0)) this.swingMomentum(this.attacking);
         if (!this.isAttacking) this.evaluateCombatDistance(); 
     };
     onAttackExit = () => {
@@ -689,7 +689,7 @@ export default class Enemy extends Entity {
     };
     onCounterUpdate = (_dt) => {
         if (this.frameCount === FRAME_COUNT.COUNTER_LIVE && !this.isRanged) this.scene.combatMachine.input('computerAction', 'counter', this.enemyID);
-        if (!this.isRanged) this.swingMomentum(this.attacking);
+        if (!this.isRanged && (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0)) this.swingMomentum(this.attacking);
         if (!this.isCountering) this.evaluateCombatDistance();
     };
     onCounterExit = () => {
@@ -730,7 +730,7 @@ export default class Enemy extends Entity {
     };
     onPostureUpdate = (_dt) => {
         if (this.frameCount === FRAME_COUNT.POSTURE_LIVE && !this.isRanged) this.scene.combatMachine.input('computerAction', 'posture', this.enemyID);
-        if (!this.isRanged) this.swingMomentum(this.attacking);
+        if (!this.isRanged && (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0)) this.swingMomentum(this.attacking);
         if (!this.isPosturing) this.evaluateCombatDistance();
     };
     onPostureExit = () => {
@@ -924,8 +924,8 @@ export default class Enemy extends Entity {
         if (this.isPolymorphed) this.isPolymorphed = false;
         this.evaluateCombatDistance();
         this.clearAnimations();
-        this.setTint(0x000000);
         this.anims.play('player_running', true);
+        this.setTint(0x000000);
         this.spriteWeapon.setVisible(true);
         if (this.polymorphTimer) {
             this.polymorphTimer.destroy();

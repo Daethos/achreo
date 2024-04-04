@@ -362,15 +362,12 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         <Show when={game().showCombat}>
             <CombatText combat={combat} />
         </Show>
-        <SmallHud combat={combat} game={game} /> 
+        <SmallHud ascean={ascean} combat={combat} game={game} /> 
         <Show when={game().lootDrops.length > 0 && game().showLoot}>
             <LootDropUI ascean={ascean} game={game} />
         </Show>
         {/* { game().showDialog && game().dialogTag && (   
             <StoryDialog state={combat} deleteEquipment={deleteEquipment} />
-        ) }
-        { game().tutorial && ( 
-            <StoryTutorial tutorial={game().tutorial} dispatch={dispatch} player={game().player}  /> 
         ) } */}
         <Show when={showTutorial()}>
             <TutorialOverlay id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />

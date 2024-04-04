@@ -1,18 +1,39 @@
 
 import { EventBus } from '../game/EventBus';
-import { Accessor, JSX, Show, createSignal } from 'solid-js';
+import { Accessor, JSX, Show, createMemo, createSignal } from 'solid-js';
 import { useResizeListener } from '../utility/dimensions';
 import { GameState } from '../stores/game';
 import { Combat } from '../stores/combat';
+import ExperienceToast from './ExperienceToast';
+import Ascean from '../models/ascean';
+
 
 interface Props {
+    ascean: Accessor<Ascean>;
     combat: Accessor<Combat>;
     game: Accessor<GameState>;
 };
 
-export default function SmallHud({ combat, game }: Props) { 
+export default function SmallHud({ ascean, combat, game }: Props) { 
     const [show, setShow] = createSignal<boolean>(false);
+    const [alert, setAlert] = createSignal<{ header: string; body: string } | undefined>(undefined);
+    const [toastShow, setToastShow] = createSignal<boolean>(false);
+    const [experience, setExperience] = createSignal<number>(ascean().experience as number); // ascean().experience as number
     const dimensions = useResizeListener(); 
+
+    createMemo(() => {
+        if (ascean().experience as number > experience()) {
+            setToastShow(true);
+            setAlert({
+                header: 'Experience Gain',
+                body: `You've Gained ${ascean().experience as number - experience()} Experience!`,
+            });
+        } else if (ascean().experience !== 0 && ascean().experience as number < experience()) {
+            setAlert(undefined);    
+            setToastShow(false);
+        };     
+        setExperience(ascean().experience as number);
+    });
 
     const combatLogs = () => {
         EventBus.emit('show-combat-logs', !game().showCombat);
@@ -53,6 +74,11 @@ export default function SmallHud({ combat, game }: Props) {
 
     return (
         <>
+        <Show when={toastShow()}>
+            <div class='cornerBL' style={{ width: '30%' }}>
+                <ExperienceToast show={toastShow} setShow={setToastShow} alert={alert} setAlert={setAlert} />
+            </div>
+        </Show>
         <Show when={show()} fallback={
             <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { 
                 height: '7.5%', width: '3.75%', right: '0.5%'

@@ -445,7 +445,7 @@ function setHealth(ascean: Ascean, max: number, current?: number): Ascean {
     return ascean;
 }
 
-const asceanCompiler = (ascean: any) => {
+const asceanCompiler = (ascean: any): Compiler | undefined => {
     try {
         const rarities = rarityCompiler(ascean);
         const attributes = attributeCompiler(ascean, rarities);
@@ -515,7 +515,7 @@ const asceanCompiler = (ascean: any) => {
         const combatWeaponTwo = weaponCompiler(ascean.weaponTwo, ascean, attributes, combatStats, rarities.weaponTwo);
         const combatWeaponThree = weaponCompiler(ascean.weaponThree, ascean, attributes, combatStats, rarities.weaponThree);
         const defense = defenseCompiler(ascean, attributes, combatStats, rarities);
-        return { ascean, attributes, combatWeaponOne, combatWeaponTwo, combatWeaponThree, defense };
+        return { ascean, attributes, combatWeaponOne, combatWeaponTwo, combatWeaponThree, defense } as Compiler;
     } catch (err) {
         console.log(err, 'Ascean Compiler Error');
     };

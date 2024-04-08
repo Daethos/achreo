@@ -55,7 +55,7 @@ export default function CombatUI({ state, staminaPercentage, game, stamina }: Pr
 
     // function createPrayer() {
     //     console.log('Creating prayer...');
-    //     let enemy = randomEnemy();
+    //     let enemy = randomEnemy(1, 2);
     //     enemy = populateEnemy(enemy);
     //     const res = asceanCompiler(enemy);
     //     const exists = new StatusEffect(state(), res?.ascean as Ascean, state().player as Ascean, state().weapons?.[0] as Equipment, res?.attributes as CombatAttributes, state().playerBlessing);

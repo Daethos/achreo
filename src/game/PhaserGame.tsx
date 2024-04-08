@@ -61,26 +61,6 @@ export const PhaserGame = (props: IProps) => {
         };
     };
 
-    function gainExperience({ state, combat }: { state: any; combat: Combat }) {
-        try {
-            let exp = Math.round((combat?.computer?.level!) * 100 * ((combat?.computer?.level! / combat?.player?.level!)) + (combat?.playerAttributes?.rawKyosir!));
-            const avarice = combat.prayerData?.includes?.('Avarice');
-            const total = state.ascean.experience + exp;
-            const newAsceanState = {
-                ...state,
-                opponent: combat?.computer?.level,
-                opponentExp: exp,
-                currentHealth: combat.newPlayerHealth,
-                experience: Math.min(total, state.experienceNeeded),
-                avarice: avarice                
-            };
-            console.log(newAsceanState, 'New Ascean State');
-            saveChanges(newAsceanState);
-        } catch (err: any) {
-            console.log(err, 'Error Gaining Experience');
-        };
-    };
-
     async function levelUp(state: Accessor<any>) {
         let constitution = Number(state().constitution);
         let strength = Number(state().strength);
@@ -113,22 +93,22 @@ export const PhaserGame = (props: IProps) => {
                 } 
             };
             console.log(update, 'New Level Update');
-            const beast = asceanCompiler(update);
+            const hyd = asceanCompiler(update);
             
             EventBus.emit('update-ascean-state', {
                 ...state(),
-                ascean: beast?.ascean,
+                ascean: hyd?.ascean,
                 experience: 0,
-                experienceNeeded: beast?.ascean.level * 1000,
-                level: beast?.ascean.level,
+                experienceNeeded: hyd?.ascean?.level as number * 1000,
+                level: hyd?.ascean.level,
                 constitution: 0,
                 strength: 0,
                 agility: 0,
                 achre: 0,
                 caeren: 0,
                 kyosir: 0,
-                mastery: beast?.ascean.mastery,
-                faith: beast?.ascean.faith,
+                mastery: hyd?.ascean.mastery,
+                faith: hyd?.ascean.faith,
                 
             });                
             EventBus.emit('update-ascean', update);
@@ -136,16 +116,16 @@ export const PhaserGame = (props: IProps) => {
 
             setCombat({
                 ...combat(),
-                player: beast?.ascean,
-                playerHealth: beast?.ascean.health.max,
-                newPlayerHealth: beast?.ascean.health.current,
-                weapons: [beast?.combatWeaponOne, beast?.combatWeaponTwo, beast?.combatWeaponThree],
-                weaponOne: beast?.combatWeaponOne,
-                weaponTwo: beast?.combatWeaponTwo,
-                weaponThree: beast?.combatWeaponThree,
-                playerAttributes: beast?.attributes,
-                playerDefense: beast?.defense,
-                playerDefenseDefault: beast?.defense,
+                player: hyd?.ascean,
+                playerHealth: hyd?.ascean.health.max as number,
+                newPlayerHealth: hyd?.ascean.health.current as number,
+                weapons: [hyd?.combatWeaponOne, hyd?.combatWeaponTwo, hyd?.combatWeaponThree],
+                weaponOne: hyd?.combatWeaponOne,
+                weaponTwo: hyd?.combatWeaponTwo,
+                weaponThree: hyd?.combatWeaponThree,
+                playerAttributes: hyd?.attributes,
+                playerDefense: hyd?.defense,
+                playerDefenseDefault: hyd?.defense,
             });
         } catch (err: any) {
             console.log(err, '<- Error in the Controller Updating the Level!')
@@ -154,19 +134,23 @@ export const PhaserGame = (props: IProps) => {
 
     function saveChanges(state: any) {
         try {
-            let silver = state.currency.silver, gold = state.currency.gold, experience = state.experience, firewater = { ...props.ascean().firewater };
-            let value = state.opponent;
-            if (state.avarice) value *= 2;
+            console.log(state, 'State to Save');
+            let silver: number = state.currency.silver, gold: number = state.currency.gold, 
+                experience: number = state.opponentExp, firewater = { ...props.ascean().firewater };
+
+            console.log(experience, 'Experience Gained');
+            let computerLevel: number = state.opponent;
+            if (state.avarice) experience *= 1.2;
             let health = state.currentHealth > props.ascean().health.max ? props.ascean().health.max : state.currentHealth;
 
-            if (value === 1) {
+            if (computerLevel === 1) {
                 silver = Math.floor(Math.random() * 2) + 1;
                 gold = 0;
-            } else if (value >= 2 && value <= 10) {
-                silver = (Math.floor(Math.random() * 10) + 1) * value;
+            } else if (computerLevel >= 2 && computerLevel <= 10) {
+                silver = (Math.floor(Math.random() * 10) + 1) * computerLevel;
                 gold = 0;
-            } else if (value > 10 && value <= 20) {
-                if (value <= 15) {
+            } else if (computerLevel > 10 && computerLevel <= 20) {
+                if (computerLevel <= 15) {
                     if (Math.random() >= 0.5) {
                         silver = Math.floor(Math.random() * 10) + 1;
                         gold = 1;
@@ -201,7 +185,7 @@ export const PhaserGame = (props: IProps) => {
                     gold: gold
                 },
                 firewater: firewater,
-                inventory: game().inventory.map((item: Equipment) => item._id)  
+                inventory: game().inventory
             };
             console.log(newAscean, 'New Ascean Changes Saved');
 
@@ -232,14 +216,15 @@ export const PhaserGame = (props: IProps) => {
         setCombat({
             ...combat(),
             player: res?.ascean,
-            playerHealth: res?.ascean.health.max,
-            newPlayerHealth: res?.ascean.health.current,
+            playerHealth: res?.ascean.health.max as number,
+            newPlayerHealth: res?.ascean.health.current as number,
             weapons: [res?.combatWeaponOne, res?.combatWeaponTwo, res?.combatWeaponThree],
             weaponOne: res?.combatWeaponOne,
             weaponTwo: res?.combatWeaponTwo,
             weaponThree: res?.combatWeaponThree,
             playerAttributes: res?.attributes,
             playerDefense: res?.defense,
+            playerDefenseDefault: res?.defense,
             playerDamageType: res?.combatWeaponOne?.damageType?.[0] as string
         });
         setGame({ ...game(), inventory: inventory });
@@ -263,8 +248,8 @@ export const PhaserGame = (props: IProps) => {
             weaponOne: res?.combatWeaponOne,
             weaponTwo: res?.combatWeaponTwo,
             weaponThree: res?.combatWeaponThree,
-            newPlayerHealth: res?.ascean.health.current,
-            playerHealth: res?.ascean.health.max,
+            newPlayerHealth: res?.ascean.health.current as number,
+            playerHealth: res?.ascean.health.max as number,
             playerDamageType: res?.combatWeaponOne?.damageType?.[0] as string,
         };
         setCombat(cleanCombat);
@@ -448,7 +433,7 @@ export const PhaserGame = (props: IProps) => {
             };
             EventBus.emit('update-ascean', newAscean);
         });
-        EventBus.on('gain-experience', (e: { state: any; combat: Combat }) => gainExperience(e));
+        EventBus.on('gain-experience', (e: { state: any; }) => saveChanges(e));
         EventBus.on('level-up', (e: any) => levelUp(e));
         EventBus.on('add-loot', (e: Equipment[]) => {
             console.log(e[0].name, e[0]._id, 'Loot Drop')

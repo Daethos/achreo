@@ -4,6 +4,7 @@ import { Accessor, Setter } from 'solid-js';
 import Equipment from '../models/equipment';
 import { useResizeListener } from './dimensions';
 import StatusEffect from './prayer';
+import { EventBus } from '../game/EventBus';
 
 const specials = ['Avarice', 'Dispel', 'Denial', 'Silence']; // Slow, Fear, Confuse, Charm
 
@@ -110,7 +111,12 @@ export function Modal({ items, inventory, callback, show, setShow, forge, setFor
 
 export function PrayerModal({ prayer, show, setShow }: { prayer: Accessor<StatusEffect>, show: Accessor<boolean>, setShow: Setter<boolean> }) {
     const dimensions = useResizeListener();
-    console.log(prayer(), 'prayer')
+    console.log(prayer(), 'prayer');
+
+    async function consume() {
+        console.log(`Consuming ${prayer().prayer}...`);
+        EventBus.emit('initiate-combat', { data: { prayerSacrifice: prayer().prayer, prayerSacrificeName: prayer().name }, type: 'Consume' });
+    };
     return (
         <div class='modal' onClick={() => setShow(!show)}>
             <button class='border superCenter' onClick={() => setShow(!show)} style={{ 
@@ -213,6 +219,9 @@ export function PrayerModal({ prayer, show, setShow }: { prayer: Accessor<Status
                 : undefined}
                 </div>
             </div>
+            </button>
+            <button class='cornerBR highlight' onClick={() => consume()} style={{ color: 'red' }}>
+                Consume
             </button>
         </div>
     );

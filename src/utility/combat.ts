@@ -2386,9 +2386,10 @@ function consumePrayerSplitter(combat: Combat): any {
     if (combat.prayerSacrificeName === '') combat.prayerSacrificeName = combat.playerEffects[0].name;
     combat.actionData.push('consume');
     combat.prayerData.push(combat.prayerSacrifice);
-
+    console.log(`Sacrificing: ${combat.prayerSacrifice} - ${combat.prayerSacrificeName}?`);
     combat.playerEffects = combat.playerEffects.filter(effect => {
         if (effect.prayer !== combat.prayerSacrifice || effect.name !== combat.prayerSacrificeName) return true; // || effect.enemyName !== combat.computer.name
+        console.log(`Sacrificing: ${combat.prayerSacrifice} - ${combat.prayerSacrificeName}!`);
         const matchingWeapon = combat.weapons.find(weapon => weapon?._id === effect.weapon.id);
         const matchingWeaponIndex = combat.weapons.indexOf(matchingWeapon);
         const matchingDebuffTarget = combat.weapons.find(weapon => weapon?.name === effect.debuffTarget);

@@ -62,6 +62,9 @@ export default class Settings {
         this.settingViews = 'Control';
         this.characterViews = 'Statistics';
         this.control = 'Buttons';
+        this.difficulty = {
+            aim: false,
+        };
         this.postFx = {
             enable: false, 
             chromaticEnable: false, 

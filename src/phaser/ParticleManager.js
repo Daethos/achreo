@@ -9,7 +9,7 @@ class Particle {
         this.action = action;
         this.effect = this.spriteMaker(this.scene, player, key + '_effect'); 
         this.key = key + '_effect';
-        this.target = this.setTarget(player);
+        this.target = this.setTarget(player, scene);
         this.success = false;
         this.timer = this.setTimer(action, id);
         this.triggered = false;
@@ -44,24 +44,39 @@ class Particle {
         });
     };
 
-    setTarget(player) {
+    setTarget(player, scene) {
         if (player.name === 'enemy') {
             const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y);
             const direction = target.subtract(player.position);
             direction.normalize();
             return direction;
         } else {
-            const x = player.rightJoystick.pointer.x;
-            const y = player.rightJoystick.pointer.y;
-            const x2 = this.scene.scale.width / 2;
-            const y2 = this.scene.scale.height / 2;
-            const worldX = (x > x2 ? x : -x) + player.x;
-            const worldY = (y > y2 ? y : -y) + player.y;
-            const target = new Phaser.Math.Vector2(worldX, worldY);
-            // const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y) // player.rightJoystick.pointer.x, player.rightJoystick.pointer.y
-            const direction = target.subtract(player.position);
-            direction.normalize();
-            return direction;
+            if (scene.settings.difficulty.aim === true) {
+
+                const pointer = player.rightJoystick.pointer;
+    
+                // Convert screen coordinates to world coordinates
+                const worldX = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
+                const worldY = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
+                console.log(worldX, worldY);
+
+                // const x = player.rightJoystick.pointer.x;
+                // const y = player.rightJoystick.pointer.y;
+                // const x2 = this.scene.scale.width / 2;
+                // const y2 = this.scene.scale.height / 2;
+                // const worldX = (x > x2 ? x : -x) + player.x;
+                // const worldY = (y > y2 ? y : -y) + player.y;
+                const target = new Phaser.Math.Vector2(worldX, worldY);
+                // const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y) // player.rightJoystick.pointer.x, player.rightJoystick.pointer.y
+                const direction = target.subtract(player.position);
+                direction.normalize();
+                return direction;
+            } else {
+                const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y);
+                const direction = target.subtract(player.position);
+                direction.normalize();
+                return direction;
+            };
         };
     };
 

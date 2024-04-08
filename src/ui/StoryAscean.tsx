@@ -50,6 +50,7 @@ const SETTINGS = {
 };
 const CONTROLS = {
     BUTTONS: 'Buttons',
+    DIFFICULTY: 'Difficulty',
     POST_FX: 'Post FX',
 };
 const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Counter'];
@@ -338,6 +339,12 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         // EventBus.emit('settings', newSettings);
     };
 
+    async function handleAim() {
+        const newSettings = { ...settings(), difficulty: { ...settings().difficulty, aim: !settings().difficulty.aim } };
+        setSettings(newSettings);
+        await saveSettings(newSettings);
+    };
+
     async function freeInventory() {
         try {
             const item = await getOneRandom(ascean().level);
@@ -415,10 +422,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         const newInventory = game().inventory.filter((item) => item._id !== id);
         EventBus.emit('refresh-inventory', newInventory);
         setRemoveModalShow(false);
-    };
-
-    async function levelUp(level: any) {
-        EventBus.emit('level-up', level);
     };
 
     return (
@@ -527,8 +530,9 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
             ) : settings().asceanViews === VIEWS.SETTINGS ? (
                 <div class='center' style={{ display: 'flex', 'flex-direction': 'row' }}>
                     <div class='gold' style={{ position: 'absolute', top: '2%', 'font-size': '1.25em', display: 'inline' }}>Gameplay Controls <br />
-                        <button class='highlight' style={{ 'font-size': '0.5em', display: 'inline' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Buttons</button>
-                        <button class='highlight' style={{ 'font-size': '0.5em', display: 'inline' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
+                        <button class='highlight' style={{ 'font-size': '0.4em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.BUTTONS ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Buttons</button>
+                        <button class='highlight' style={{ 'font-size': '0.4em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.DIFFICULTY ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Difficulty</button>
+                        <button class='highlight' style={{ 'font-size': '0.4em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.POST_FX ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
                     </div>
                     <Switch>
                         <Match when={settings().control === CONTROLS.BUTTONS}>
@@ -616,6 +620,14 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
                                 <div style={font('0.75em', '#fdf6d8')}>CRT Width ({settings().postFx.crtWidth})</div>
                                 <Form.Range min={0} max={5} step={0.1} value={settings().postFx.crtWidth} onChange={(e) => handlePostFx('crtWidth', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                                 </div>
+                        </Match>
+                        <Match when={settings().control === CONTROLS.DIFFICULTY}>
+                            <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '30%' } : { 'margin-top': '50%' }}>
+                                <div style={font('1em', '#fdf6d8')}>
+                                    Aim: <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'True' : 'False'}</button>
+                                </div>
+                                <div style={font('0.5em')}>[Toggle: True = Manual Aim, False = Auto Aim]</div>
+                            </div>
                         </Match>
                     </Switch>
 

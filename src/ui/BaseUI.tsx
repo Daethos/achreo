@@ -269,14 +269,15 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     };
                     break;
                 case 'Enemy':
+                    console.log(data, 'Data')
                     let enemyData = {
-                        computer: data.enemy,
+                        computer: data.ascean,
                         computerAttributes: data.combatStats.attributes,
                         computerWeaponOne: data.combatStats.combatWeaponOne,
                         computerWeaponTwo: data.combatStats.combatWeaponTwo,
                         computerWeaponThree: data.combatStats.combatWeaponThree,
                         newComputerHealth: data.health,
-                        computerHealth: data.combatStats.healthTotal,
+                        computerHealth: data.combatStats.attributes.healthTotal,
                         computerDefense: data.combatStats.defense,
                         computerWeapons: data.weapons,
                         computerAction: data.actionData.action,

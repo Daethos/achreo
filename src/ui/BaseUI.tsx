@@ -291,7 +291,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     playerWin = res.playerWin;
                     console.log(res.playerEffects, 'Enemy Action');
                     console.log(res, 'Res in Enemy');
-                    EventBus.emit('update-combat', res);
+                    EventBus.emit('blend-combat', res);
                     break;
                 default:
                     break;

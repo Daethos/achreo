@@ -46,6 +46,7 @@ const SETTINGS = {
     CONTROL: 'Control',
     INVENTORY: 'Inventory',
     GENERAL: 'General',
+    SPECIALS: 'Specials',
     TACTICS: 'Tactics',
 };
 const CONTROLS = {
@@ -449,6 +450,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
 
             <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '10vh', 'z-index': 1 }}>
                 <button class='highlight p-3' onClick={() => currentView(SETTINGS.ACTIONS)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Actions</div></button>
+                <button class='highlight p-3' onClick={() => currentView(SETTINGS.SPECIALS)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Specials</div></button>
                 <button class='highlight p-3' onClick={() => currentView(SETTINGS.CONTROL)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Control</div></button>
                 <button class='highlight p-3' onClick={() => currentView(SETTINGS.GENERAL)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>General</div></button>
                 <button class='highlight p-3' onClick={() => currentView(SETTINGS.INVENTORY)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Inventory</div></button>

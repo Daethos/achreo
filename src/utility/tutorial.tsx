@@ -89,15 +89,15 @@ export default function TutorialOverlay({ id, tutorial, show, setShow }: { id: s
             { tutorial() === 'inventory' && <div>
                 <p class='cornerTR gold highlight' style={{ right: '10%', 'font-weight': 700 }}>
                     Click here to view your flask of firewater {arrows.right} <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[This Information is Displayed in the Third Panel]</span>
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Clicking this gives information about its properties and uses.]</span>
                 </p> 
                 <p class='superCenter gold highlight' style={{ 'font-weight': 700 }}>
                 {arrows.down} Click an Item to Compare {arrows.right} <br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[You May Remove and Equip such Items if you Qualify, <br /> and can Switch Rings and Weapons for Specific Comparison.]</span>
                 </p>
-                <p class='cornerBR gold highlight' style={{ bottom: '5em', right: '4em', 'font-weight': 700 }} onClick={() => exitTutorial()}>
-                    {arrows.up} Inventory Pouch <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[Contains all the loot you've collected]</span>
+                <p class='cornerBR gold highlight' style={{ bottom: '5em', right: '0', 'font-weight': 700 }} onClick={() => exitTutorial()}>
+                    Inventory Pouch {arrows.up} <br />
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Contains all the loot you've collected, endless in its holdings. <br /> Double-clicking between items allows one to swap and reorganize their inventory.]</span>
                 </p>
             </div> }
             { tutorial() === 'loot' && <div>

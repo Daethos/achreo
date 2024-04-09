@@ -348,12 +348,12 @@ export default class Enemy extends Entity {
         const newEnemy = this.isNewEnemy(this.scene.player);
         if (newEnemy) {
             this.scene.player.targets.push(this);
-            this.attacking = this.scene.player;
-            this.inCombat = true;
-            if (this.healthbar) this.healthbar.setVisible(true);
-            this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
-            this.stateMachine.setState(States.CHASE); 
         };
+        this.attacking = this.scene.player;
+        this.inCombat = true;
+        if (this.healthbar) this.healthbar.setVisible(true);
+        this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
+        this.stateMachine.setState(States.CHASE); 
     };
 
     playerStatusCheck = (other) => {

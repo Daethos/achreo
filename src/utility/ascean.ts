@@ -60,6 +60,12 @@ export type Compiler = {
     defense: Defense;
 };
 
+const WEIGHTS = {
+    MAJOR: 2,
+    MINOR: 8,
+    MODIFIER: 3,
+}
+
 // ================================== HELPER FUNCTIONS =================================== \\
 const attributeCompiler = (ascean: Ascean, rarities: { helmet: number; chest: number; legs: number; ringOne: number; ringTwo: number; amulet: number; shield: number; trinket: number }): CombatAttributes => {
     let newAttributes: CombatAttributes | any = {};
@@ -216,43 +222,52 @@ function gripCompiler(weapon: Equipment, attributes: CombatAttributes, ascean: A
         magicalMultiplier = 1.1;
     };
 
-    if (weapon.grip === 'One Hand') {
-        weapon.physicalDamage += ((((weapon.agility / 2)) + attributes.agilityMod) + ((weapon.strength / 8) + attributes.strengthMod / 3)) * physicalMultiplier;
-        weapon.magicalDamage += ((weapon.achre / 2) + (weapon.caeren / 8) + attributes.achreMod + (attributes.caerenMod / 3)) * magicalMultiplier;
+    if (weapon.grip === 'One Hand' || weapon.type === 'Bow') {
+        weapon.physicalDamage += 
+            (((weapon.agility + attributes.agilityMod) / WEIGHTS.MAJOR) + ((weapon.strength + attributes.strengthMod) / WEIGHTS.MODIFIER)) 
+            * physicalMultiplier;
+        weapon.magicalDamage += 
+            (((weapon.achre + attributes.achreMod) / WEIGHTS.MAJOR) + ((weapon.caeren + attributes.caerenMod) / WEIGHTS.MINOR)) 
+            * magicalMultiplier;
 
-        weapon.physicalDamage *= 1 + ((((weapon.agility / 2)) + attributes.agilityMod) + ((weapon.strength / 8) + attributes.strengthMod / 3)) / (100 + (20 / ascean.level));
-        weapon.magicalDamage *= 1 + ((weapon.achre / 2) + (weapon.caeren / 8) + attributes.achreMod + (attributes.caerenMod / 3)) / (100 + (20 / ascean.level));
+        weapon.physicalDamage *= 1 
+            + (((weapon.agility + attributes.agilityMod) / WEIGHTS.MAJOR) + ((weapon.strength + attributes.strengthMod) / WEIGHTS.MODIFIER)) 
+            / (100 + (20 / ascean.level));
+        weapon.magicalDamage *= 1 
+            + (((weapon.achre + attributes.achreMod) / WEIGHTS.MAJOR) + ((weapon.caeren + attributes.caerenMod) / WEIGHTS.MINOR)) 
+            / (100 + (20 / ascean.level));
     };
-    if (weapon.type === 'Bow') {
-        weapon.physicalDamage += ((weapon.agility / 2) + attributes.agilityMod + (weapon.strength / 8) + (attributes.strengthMod / 3)) * physicalMultiplier;
-        weapon.magicalDamage += ((weapon.achre / 2) + (weapon.caeren / 8) + attributes.achreMod + (attributes.caerenMod / 3)) * magicalMultiplier;
-
-        weapon.physicalDamage *= 1 + ((((weapon.agility / 4)) + attributes.agilityMod) + ((weapon.strength / 12) + attributes.strengthMod)) / (100 + (20 / ascean.level));
-        weapon.magicalDamage *= 1 + ((weapon.achre / 4) + (weapon.caeren / 12) + attributes.achreMod + (attributes.caerenMod / 3)) / (100 + (20 / ascean.level));
-    }  
     if (weapon.grip === 'Two Hand' && weapon.type !== 'Bow') {
-        weapon.physicalDamage += ((weapon.strength / 2) + attributes.strengthMod + (weapon.agility / 8) + (attributes.agilityMod / 3)) * physicalMultiplier;
-        weapon.magicalDamage += ((weapon.achre / 8) + (weapon.caeren / 2) + (attributes.achreMod / 3) + (attributes.caerenMod)) * magicalMultiplier;
+        weapon.physicalDamage += 
+            (((weapon.strength + attributes.strengthMod) / WEIGHTS.MAJOR) + ((weapon.agility + attributes.agilityMod) / WEIGHTS.MODIFIER)) 
+            * physicalMultiplier;
+        weapon.magicalDamage += 
+            (((weapon.caeren + attributes.caerenMod) / WEIGHTS.MAJOR) + ((weapon.achre + attributes.achreMod) / WEIGHTS.MINOR)) 
+            * magicalMultiplier;
 
-        weapon.physicalDamage *= 1 + ((weapon.strength / 2) + attributes.strengthMod + (weapon.agility / 8) + (attributes.agilityMod / 3)) / (100 + (20 / ascean.level));
-        weapon.magicalDamage *= 1 + (((weapon.achre / 8) + (weapon.caeren / 2) + (attributes.achreMod / 3)) + attributes.caerenMod) / (100 + (20 / ascean.level));
+        weapon.physicalDamage *= 1 
+            + (((weapon.strength + attributes.strengthMod) / WEIGHTS.MAJOR) + ((weapon.agility + attributes.agilityMod) / WEIGHTS.MODIFIER)) 
+            / (100 + (20 / ascean.level));
+        weapon.magicalDamage *= 1 
+            + (((weapon.caeren + attributes.caerenMod) / WEIGHTS.MAJOR) + ((weapon.achre + attributes.achreMod) / WEIGHTS.MINOR)) 
+            / (100 + (20 / ascean.level));    
     };
     return weapon;
 };
 
 function penetrationCompiler(weapon: any, attributes: CombatAttributes, combatStats: { penetrationMagical: number; penetrationPhysical: number; }): Equipment {
-    weapon.magicalPenetration += Math.round(combatStats.penetrationMagical + attributes.kyosirMod + (weapon.kyosir / 2));
-    weapon.physicalPenetration += Math.round(combatStats.penetrationPhysical + attributes.kyosirMod + (weapon.kyosir / 2));
+    weapon.magicalPenetration += Math.round(combatStats.penetrationMagical + attributes.kyosirMod + (weapon.kyosir / WEIGHTS.MAJOR));
+    weapon.physicalPenetration += Math.round(combatStats.penetrationPhysical + attributes.kyosirMod + (weapon.kyosir / WEIGHTS.MAJOR));
     return weapon;
 };
 
 function critCompiler(weapon: Equipment, attributes: CombatAttributes, combatStats: { criticalChance: number; criticalDamage: number }): Equipment { 
     if (weapon.attackType === 'Physical') {
-        weapon.criticalChance += combatStats.criticalChance + attributes.agilityMod + (weapon.agility / 2);
-        weapon.criticalDamage += (combatStats.criticalDamage / 10) + ((attributes.constitutionMod + attributes.strengthMod + ((weapon.strength) / 2)) / 50);
+        weapon.criticalChance += combatStats.criticalChance + attributes.agilityMod + (weapon.agility / WEIGHTS.MAJOR);
+        weapon.criticalDamage += (combatStats.criticalDamage / 10) + ((attributes.constitutionMod + attributes.strengthMod + ((weapon.strength) / WEIGHTS.MAJOR)) / 50);
     } else {
-        weapon.criticalChance += combatStats.criticalChance + attributes.achreMod + (weapon.achre / 2);
-        weapon.criticalDamage += (combatStats.criticalDamage / 10) + ((attributes.constitutionMod + attributes.caerenMod + ((weapon.caeren) / 2)) / 50);
+        weapon.criticalChance += combatStats.criticalChance + attributes.achreMod + (weapon.achre / WEIGHTS.MAJOR);
+        weapon.criticalDamage += (combatStats.criticalDamage / 10) + ((attributes.constitutionMod + attributes.caerenMod + ((weapon.caeren) / WEIGHTS.MAJOR)) / 50);
     };
     // weapon.criticalChance += combatStats.criticalChance + ((attributes.agilityMod + attributes.achreMod + ((weapon.agility + weapon.achre) / 2)) / 3);
     // weapon.criticalDamage += (combatStats.criticalDamage / 10) + ((attributes.constitutionMod + attributes.strengthMod + attributes.caerenMod + ((weapon.strength + weapon.caeren) / 2)) / 50);

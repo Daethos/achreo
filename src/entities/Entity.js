@@ -17,7 +17,8 @@ export const FRAME_COUNT = {
     DISTANCE_CLEAR: 51,
 }; 
 
-export const SWING_TIME = { 'One Hand': 800, 'Two Hand': 1250 }; // 750, 1250 [old]
+export const SWING_TIME = { 'One Hand': 1250, 'Two Hand': 1750 }; // 750, 1250 [old]
+export const ENEMY_SWING_TIME = { 'One Hand': 750, 'Two Hand': 1250 }; // 750, 1250 [old]
 
 export default class Entity extends Phaser.Physics.Matter.Sprite {
 
@@ -142,7 +143,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     startingSpeed = (entity) => {
-        let speed = (this.name === 'player' ? 1.5: 1.25); // PLAYER.SPEED.INITIAL
+        let speed = (this.name === 'player' ? 1.5: 1.5); // PLAYER.SPEED.INITIAL
         console.log(speed, 'starting speed')
         const helmet = entity.helmet.type;
         const chest = entity.chest.type;
@@ -432,7 +433,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     checkMeleeOrRanged = (weapon) => {
         this.isRanged = weapon?.attackType === 'Magic' || weapon?.type === 'Bow' || weapon?.type === 'Greatbow';
-        this.swingTimer = SWING_TIME[weapon?.grip] || 1000;
+        if (this.name === 'player') {
+            this.swingTimer = SWING_TIME[weapon?.grip] || 1500;
+        } else {
+            this.swingTimer = ENEMY_SWING_TIME[weapon?.grip] || 1000;
+        };
         this.hasBow = this.checkBow(weapon);
     };
 

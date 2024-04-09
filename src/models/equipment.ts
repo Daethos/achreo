@@ -370,6 +370,7 @@ function determineEquipmentType(): string {
 };
 
 async function getHigherRarity(name: string, type: string, rarity: string) {
+    console.log(name, type, rarity, 'Upgrade Equipment')
     let nextRarity: string = '';
     if (rarity === 'Common') {
         nextRarity = 'Uncommon';
@@ -380,6 +381,7 @@ async function getHigherRarity(name: string, type: string, rarity: string) {
     } else if (rarity === 'Epic') {
         nextRarity = 'Legendary';
     };
+    console.log(nextRarity, 'Next Rarity')
     const nextItem = await aggregate(nextRarity, type, 1, name);
     console.log(nextItem, 'Next Item')
     return nextItem || null;

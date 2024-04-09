@@ -588,7 +588,7 @@ function applyEffect(prayer: StatusEffect, defense: Defense, weapon: Equipment, 
 
 function stripEffect(prayer: StatusEffect, defense: Defense, weapon: Equipment, isDebuff: boolean): { defense: Defense, weapon: Equipment } {
     const modifier = isDebuff ? 1 : -1;
-    console.log(`Stripping ${prayer.prayer} from ${prayer.weapon} of ${isDebuff ? prayer.enemyName : prayer.playerName}`);
+    console.log(`Stripping ${prayer.prayer} from ${prayer.weapon.name} of ${isDebuff ? prayer.enemyName : prayer.playerName}`);
     for (let key in weapon) {
         if (prayer.effect[key]) {
             let modifiedValue = weapon[key] + prayer.effect[key] * modifier * prayer.activeStacks;

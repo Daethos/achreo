@@ -38,15 +38,16 @@ export const PLAYER = {
         COUNTER: 15,
         DODGE: 15, // 25
         POSTURE: 25,
+        CONSUME: 25,
         ROLL: 15, // 25
         TSHAER: 35,
         BLINK: 15,
         INVOKE: -15,
-        ROOT: 15,
-        SNARE: 15,
-        POLYMORPH: 15,
+        ROOT: 25,
+        SNARE: 25,
+        POLYMORPH: 25,
         HEALING: 25,
-        FEARING: 15,
+        FEARING: 25,
     },
     DURATIONS: {
         FEARING: 1000,
@@ -102,6 +103,12 @@ export const staminaCheck = (input, stamina) => {
             return {
                 success: blinkSuccess,
                 cost: PLAYER.STAMINA.BLINK,
+            };
+        case 'consume':
+            const consumeSuccess = stamina >= PLAYER.STAMINA.CONSUME;
+            return {
+                success: consumeSuccess,
+                cost: PLAYER.STAMINA.CONSUME,
             };
         case 'fear':
             const fearingSuccess = stamina >= PLAYER.STAMINA.FEARING;
@@ -261,6 +268,11 @@ export default class Player extends Entity {
                 onEnter: this.onHealingEnter,
                 onUpdate: this.onHealingUpdate,
                 onExit: this.onHealingExit,
+            })
+            .addState(States.CONSUME, {
+                onEnter: this.onConsumeEnter,
+                onUpdate: this.onConsumeUpdate,
+                onExit: this.onConsumeExit,
             })
             .addState(States.INVOKE, {
                 onEnter: this.onInvokeEnter,
@@ -804,6 +816,7 @@ export default class Player extends Entity {
     onAttackEnter = () => {
         this.isAttacking = true;
         this.swingReset(States.ATTACK);
+        this.swingReset(States.POSTURE);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.ATTACK);
         // this.scene.purchase.play();
     }; 
@@ -837,6 +850,7 @@ export default class Player extends Entity {
     onPostureEnter = () => {
         this.isPosturing = true;
         this.swingReset(States.POSTURE);
+        this.swingReset(States.ATTACK);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.POSTURE);
         // this.scene.purchase.play();
     };
@@ -851,10 +865,12 @@ export default class Player extends Entity {
     };
 
     onRollEnter = () => {
+        if (this.isStalwart) return;
         this.isRolling = true;
         this.scene.roll.play();
         // if (this.inCombat) 
         this.swingReset(States.ROLL);
+        this.swingReset(States.DODGE);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.ROLL);
         this.body.parts[2].position.y += this.sensorDisp;
         this.body.parts[2].circleRadius = PLAYER.SENSOR.EVADE;
@@ -876,10 +892,12 @@ export default class Player extends Entity {
     };
 
     onDodgeEnter = () => {
+        if (this.isStalwart) return;
         this.isDodging = true;
         // this.scene.righteous.play();
         this.scene.useStamina(PLAYER.STAMINA.DODGE);
         this.swingReset(States.DODGE);
+        this.swingReset(States.ROLL);
         this.wasFlipped = this.flipX; 
         this.body.parts[2].position.y += this.sensorDisp;
         this.body.parts[2].circleRadius = PLAYER.SENSOR.EVADE;
@@ -951,6 +969,22 @@ export default class Player extends Entity {
     onPrayerExit = () => {
         this.scene.drinkFlask();
         this.setStatic(false);
+    };
+
+    onConsumeEnter = () => {
+        if (this.scene.state.playerEffects.length === 0) return;
+        this.isConsuming = true;
+        this.setTimeEvent('consumeCooldown', 3000);
+    };
+
+    onConsumeUpdate = (_dt) => {
+        this.combatChecker(this.isConsuming);
+    };
+
+    onConsumeExit = () => {
+        console.log(this.scene.state.playerEffects, 'Player Effects [onConsumeExit]')
+        this.scene.combatMachine.action({ type: 'Consume', data: this.scene.state.playerEffects });        
+        this.scene.useStamina(PLAYER.STAMINA.CONSUME);
     };
 
     onInvokeEnter = () => {
@@ -1158,7 +1192,7 @@ export default class Player extends Entity {
         });
     };
     onBlinkEnter = () => {
-        this.scene.roll.play();
+        this.caerenicFx.play();
         if (!this.isCaerenic) {
             this.setGlow(this, true);
             this.setGlow(this.spriteWeapon, true, 'weapon');
@@ -1177,24 +1211,31 @@ export default class Player extends Entity {
         if (Math.abs(this.velocity.x) || Math.abs(this.velocity.y)) {
             this.scene.useStamina(PLAYER.STAMINA.BLINK);
         };
-        this.setTimeEvent('blinkCooldown', 3000);
+        this.setTimeEvent('blinkCooldown', 1500);
+        if (!this.blinkEvent) {
+            console.log(`%c Blink Event`, 'color: #ff0000')
+            this.blinkEvent = this.scene.time.addEvent({
+                delay: 750,
+                callback: () => {
+                    console.log(`%c Blink Event Callback`, 'color: #ff0000')
+                    if (!this.isCaerenic) {
+                        this.setGlow(this, false);
+                        this.setGlow(this.spriteWeapon, false, 'weapon');
+                        this.setGlow(this.spriteShield, false, 'shield');
+                    };
+                    this.blinkEvent.remove(false);
+                    this.blinkEvent = undefined;
+                },
+                callbackScope: this,
+                loop: false,
+            });
+        };
     };
     onBlinkUpdate = (_dt) => {
         this.combatChecker(this.isBlinking);
     };
     onBlinkExit = () => {
-        this.scene.time.addEvent({
-            delay: 750,
-            callback: () => {
-                if (!this.isCaerenic) {
-                    this.setGlow(this, false);
-                    this.setGlow(this.spriteWeapon, false, 'weapon');
-                    this.setGlow(this.spriteShield, false, 'shield');
-                };
-            },
-            callbackScope: this,
-            loop: false,
-        });
+        
     };
 
     onTshaeralEnter = () => {
@@ -1352,6 +1393,10 @@ export default class Player extends Entity {
         this.setStatic(false);
     };
 
+    offCombatTimer = (type) => {
+        return !this.inCombat && type !== 'blink';
+    };
+
     setTimeEvent = (cooldown, limit = 30000) => {
         const evasion = cooldown === 'rollCooldown' || cooldown === 'dodgeCooldown' 
         if (!evasion) {
@@ -1366,7 +1411,7 @@ export default class Player extends Entity {
             callback: () => {
                 time += interval;
                 this.scene.actionBar.setCurrent(time, limit, type);
-                if (time >= limit || !this.inCombat) {
+                if (time >= limit || this.offCombatTimer(type)) {
                     if (!this.inCombat) this.scene.actionBar.setCurrent(limit, limit, type);
                     if (!evasion) {
                         this[cooldown] = 0;

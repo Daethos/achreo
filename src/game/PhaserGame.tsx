@@ -236,6 +236,63 @@ export const PhaserGame = (props: IProps) => {
         EventBus.emit('equip-sound');
     };
 
+    async function upgradeItem(data: any) {
+        try {
+            const item: Equipment[] = await upgradeEquipment(data) as Equipment[];
+            console.log(item, 'Upgraded Equipment');
+
+            let itemsToRemove = data.upgradeMatches;
+    
+            if (itemsToRemove.length > 3) {
+                itemsToRemove = itemsToRemove.slice(0, 3);
+            };
+            const itemsIdsToRemove = itemsToRemove.map((itr: Equipment) => itr._id);
+
+            // let inventory: Equipment[] = 
+            //     props.ascean().inventory.length > 0 ? 
+            //     [ ...props.ascean().inventory, ...item ] : 
+            //     item as Equipment[];
+
+            let inventory: Equipment[] = game().inventory?.length > 0 ? [ ...game().inventory ] : [];
+            inventory.push(item[0]);
+
+            console.log(inventory, 'Current Inventory');
+
+            itemsIdsToRemove.forEach(async (itemID: string) => {
+                console.log(itemID, 'Item ID to Remove and Delete');
+                const itemIndex = inventory.findIndex((item: Equipment) => item._id === itemID);
+                console.log(itemIndex, 'Item Index')
+                inventory.splice(itemIndex, 1);
+                await deleteEquipment(itemID);
+            });
+
+            console.log(inventory, 'New Inventory');
+
+            let gold = 0;
+            if (item?.[0].rarity === 'Uncommon') {
+                gold = 1;
+            } else if (item?.[0].rarity === 'Rare') {
+                gold = 3;
+            } else if (item?.[0].rarity === 'Epic') {
+                gold = 12;
+            } else if (item?.[0].rarity === 'Legendary') {
+                gold = 60;
+            };
+
+            const update = { ...props.ascean(), inventory: inventory, currency: { ...props.ascean().currency, gold: props.ascean().currency.gold - gold } };
+
+            console.log(update, 'New Ascean With Upgraded Item');
+            setGame({ ...game(), inventory: inventory });
+            setCombat({
+                ...combat(),
+                player: { ...combat().player as Ascean, ...update }
+            });
+            EventBus.emit('update-ascean', update);
+        } catch (err: any) {
+            console.warn(err, 'Error Upgrading Item');
+        };
+    };
+
     async function createUi() {
         const res = asceanCompiler(props.ascean());
         const cleanCombat: Combat = { 
@@ -293,48 +350,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.emit('update-ascean', update);
         });
 
-        EventBus.on('upgrade-item', async (data: any) => {
-            const item = await upgradeEquipment(data);
-            console.log(item, 'Upgraded Equipment');
-
-            let itemsToRemove = data.upgradeMatches;
-    
-            if (itemsToRemove.length > 3) {
-                itemsToRemove = itemsToRemove.slice(0, 3);
-            };
-            const itemsIdsToRemove = itemsToRemove.map((itr: Equipment) => itr._id);
-
-            let inventory: Equipment[] = props.ascean().inventory.length > 0 ? [...props.ascean().inventory, ...(item as Equipment[])] : item as Equipment[];
-
-            itemsIdsToRemove.forEach(async (itemID: string) => {
-                console.log(itemID, 'Item ID to Remove and Delete');
-                const itemIndex = inventory.findIndex((item: Equipment) => item._id === itemID);
-                console.log(itemIndex, 'Item Index')
-                inventory.splice(itemIndex, 1);
-                await deleteEquipment(itemID);
-            });
-
-            let gold = 0;
-            if (item?.[0].rarity === 'Uncommon') {
-                gold = 1;
-            } else if (item?.[0].rarity === 'Rare') {
-                gold = 3;
-            } else if (item?.[0].rarity === 'Epic') {
-                gold = 12;
-            } else if (item?.[0].rarity === 'Legendary') {
-                gold = 60;
-            };
-
-            const update = { ...props.ascean(), inventory: inventory, currency: { ...props.ascean().currency, gold: props.ascean().currency.gold - gold } };
-
-            console.log(update, 'New Inventory');
-            setGame({ ...game(), inventory: inventory });
-            setCombat({
-                ...combat(),
-                player: { ...combat().player as Ascean, ...update }
-            });
-            EventBus.emit('update-ascean', update);
-        })
+        EventBus.on('upgrade-item', (data: any) => upgradeItem(data));
 
         EventBus.on('clear-enemy', () => {
             setCombat({

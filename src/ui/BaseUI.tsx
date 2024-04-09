@@ -93,14 +93,14 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
 
     function initiateCombat(data: any, type: string) {
         try {    
-            console.log(data, type, 'Initiating Combat');
+            // console.log(data, type, 'Initiating Combat');
             let playerWin: boolean = false, computerWin: boolean = false, res: any = undefined;
             switch (type) {
                 case 'Weapon':
-                    console.log(data, 'Weapon Action')
+                    // console.log(data, 'Weapon Action')
                     const weapon = { ...combat(), [data.key]: data.value };
                     res = weaponActionCompiler(weapon) as Combat;
-                    console.log(res.playerEffects, 'Weapon Action');
+                    // console.log(res.playerEffects, 'Weapon Action');
                     EventBus.emit('blend-combat', res);
                     playerWin = res.playerWin;
                     computerWin = res.computerWin;
@@ -109,7 +109,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     // let enemy = randomEnemy(1, 2);
                     // enemy = populateEnemy(enemy);
                     // const hyd = asceanCompiler(enemy);
-                    
                     const consume = { 
                         ...combat(), 
                         prayerSacrifice: data.prayerSacrifice, 
@@ -131,7 +130,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     };
 
                     res = consumePrayer(consume) as Combat;
-                    console.log(res, 'Consume Action');
+                    // console.log(res, 'Consume Action');
                     EventBus.emit('blend-combat', { 
                         newComputerHealth: res.newComputerHealth,
                         newPlayerHealth: res.newPlayerHealth, 
@@ -143,7 +142,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 case 'Prayer':
                     const pray = { ...combat(), playerEffects: data };
                     res = consumePrayer(pray) as Combat;
-                    console.log(res.playerEffects, 'Prayer Action');
+                    // console.log(res.playerEffects, 'Prayer Action');
                     EventBus.emit('blend-combat', { 
                         newComputerHealth: res.newComputerHealth, 
                         newPlayerHealth: res.newPlayerHealth, 
@@ -155,8 +154,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 case 'Instant':
                     let insta = { ...combat(), playerBlessing: data };
                     insta = instantActionCompiler(insta) as Combat;
-                    console.log(insta, 'Instant Action')
-                    console.log(insta.playerEffects, 'Instant Action');
+                    // console.log(insta, 'Instant Action')
+                    // console.log(insta.playerEffects, 'Instant Action');
                     playerWin = insta.playerWin;
                     res = { ...combat(), ...insta };
                     // console.log(res, 'Instant Action');
@@ -184,7 +183,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     };
                     res = { ...combat(), ...playerData };
                     res = weaponActionCompiler(res) as Combat;
-                    console.log(res.playerEffects, 'Player Action')
+                    // console.log(res.playerEffects, 'Player Action')
                     EventBus.emit('blend-combat', {
                         playerWin: res.playerWin,
                         computerWin: res.computerWin,
@@ -226,7 +225,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     if (playerWin) {
                         res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin };
                     };
-                    console.log(drained, newPlayerHealth, newComputerHealth, playerWin, 'Tshaeral Drain');
+                    // console.log(drained, newPlayerHealth, newComputerHealth, playerWin, 'Tshaeral Drain');
                     EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, playerWin });
                     break;
                 case 'Health':
@@ -238,7 +237,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                             EventBus.emit('blend-combat', { newPlayerHealth });
                             break;
                         case 'enemy':
-                            console.log(`Enemy Health: ${value}`);
+                            // console.log(`Enemy Health: ${value}`);
                             EventBus.emit('update-combat-state', { key: 'newComputerHealth',  value });
                             break;
                         default:
@@ -246,7 +245,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     };
                     break;
                 case 'Enemy':
-                    console.log(data, 'Data')
+                    // console.log(data, 'Data')
                     let enemyData = {
                         computer: data.ascean,
                         computerAttributes: data.combatStats.attributes,

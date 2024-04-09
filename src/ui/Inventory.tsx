@@ -97,6 +97,7 @@ const Inventory = ({ ascean, index, inventory, pouch, blacksmith = false, compar
     });
 
     createEffect(() => {
+        checkInventory();
         setEditState({
             ...editState,
             weaponOne: ascean().weaponOne,
@@ -166,7 +167,6 @@ const Inventory = ({ ascean, index, inventory, pouch, blacksmith = false, compar
                 setInventoryType('shield');
                 type = 'shield';
             };
-            console.log(trueType(), 'TrueType');
             setTrueType(type);
         } catch (err: any) {
             console.log(err, '<- This is the error in checkInventory');

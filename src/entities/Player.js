@@ -928,7 +928,6 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Healing', PLAYER.DURATIONS.HEALING / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.HEALING);
         this.isPolymorphing = true;
-        // this.setStatic(true);
         if (!this.isCaerenic) {
             this.setGlow(this, true);
             this.setGlow(this.spriteWeapon, true, 'weapon');
@@ -956,9 +955,7 @@ export default class Player extends Entity {
             this.setGlow(this.spriteWeapon, false, 'weapon');
             this.setGlow(this.spriteShield, false, 'shield');
         };
-        // this.setStatic(false);
     };
-
     onPrayerEnter = () => {
         this.isHealing = true;
         this.setStatic(true);
@@ -974,6 +971,7 @@ export default class Player extends Entity {
     onConsumeEnter = () => {
         if (this.scene.state.playerEffects.length === 0) return;
         this.isConsuming = true;
+        this.scene.sound.play('consume', { volume: this.scene.gameState.soundEffectVolume });
         this.setTimeEvent('consumeCooldown', 3000);
     };
 
@@ -982,7 +980,7 @@ export default class Player extends Entity {
     };
 
     onConsumeExit = () => {
-        console.log(this.scene.state.playerEffects, 'Player Effects [onConsumeExit]')
+        if (this.scene.state.playerEffects.length === 0) return;
         this.scene.combatMachine.action({ type: 'Consume', data: this.scene.state.playerEffects });        
         this.scene.useStamina(PLAYER.STAMINA.CONSUME);
     };
@@ -1192,7 +1190,7 @@ export default class Player extends Entity {
         });
     };
     onBlinkEnter = () => {
-        this.caerenicFx.play();
+        this.scene.sound.play('blink', { volume: this.scene.gameState.soundEffectVolume / 3 });
         if (!this.isCaerenic) {
             this.setGlow(this, true);
             this.setGlow(this.spriteWeapon, true, 'weapon');
@@ -1213,11 +1211,9 @@ export default class Player extends Entity {
         };
         this.setTimeEvent('blinkCooldown', 1500);
         if (!this.blinkEvent) {
-            console.log(`%c Blink Event`, 'color: #ff0000')
             this.blinkEvent = this.scene.time.addEvent({
                 delay: 750,
                 callback: () => {
-                    console.log(`%c Blink Event Callback`, 'color: #ff0000')
                     if (!this.isCaerenic) {
                         this.setGlow(this, false);
                         this.setGlow(this.spriteWeapon, false, 'weapon');

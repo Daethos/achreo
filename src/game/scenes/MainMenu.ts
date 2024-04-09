@@ -41,6 +41,7 @@ export class MainMenu extends Scene {
             this.logoTween.stop();
             this.logoTween = null;
         };
+        // this.sound.play('cymbal', { loop: false });
         this.scene.start('Game');
         EventBus.emit('start-game');
     };

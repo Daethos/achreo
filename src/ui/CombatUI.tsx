@@ -1,4 +1,4 @@
-import { Accessor, Setter, createEffect, createSignal } from 'solid-js'
+import { Accessor, Setter, createEffect, createSignal, on } from 'solid-js'
 import ItemModal from '../components/ItemModal';
 import { border, borderColor, itemStyle, masteryColor } from '../utility/styling';
 import PrayerEffects from './PrayerEffects';
@@ -22,6 +22,7 @@ interface Props {
 };
 
 export default function CombatUI({ state, staminaPercentage, game, stamina }: Props) {
+    const [prayers, setPrayers] = createSignal<StatusEffect[]>([]);
     const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal(false);
     const [shieldShow, setShieldShow] = createSignal(false);
@@ -32,6 +33,13 @@ export default function CombatUI({ state, staminaPercentage, game, stamina }: Pr
         const newHealthPercentage = Math.round((state().newPlayerHealth/state().playerHealth) * 100);
         setPlayerHealthPercentage(newHealthPercentage);
     }); 
+
+    createEffect(
+        on(state, (s) => {
+            console.log('State:', s);
+            setPrayers(s.playerEffects);
+        }, { defer: true })
+    );
 
     // createEffect(() => {
     //     let instantTimer;
@@ -102,9 +110,9 @@ export default function CombatUI({ state, staminaPercentage, game, stamina }: Pr
                     <ItemModal item={state()?.player?.shield} stalwart={state().isStalwart} caerenic={false} />
                 </div>
             </Show>  
-            <Show when={state().playerEffects.length > 0}>
+            <Show when={prayers().length > 0}>
                 <div class='combatEffects' style={{ left: '-3.5vw', top: '15vh', 'height': '14vh', width: 'auto', transform: 'scale(0.75)' }}>
-                    <For each={state().playerEffects}>{(effect) => ( 
+                    <For each={prayers()}>{(effect) => ( 
                         <PrayerEffects combat={state} effect={effect} enemy={false} game={game} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
                     )}</For>
                 </div>

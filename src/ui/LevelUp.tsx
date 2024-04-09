@@ -1,6 +1,6 @@
-import { Accessor, For, Setter, Show, createEffect, createMemo, createSignal, onMount } from "solid-js";
+import { Accessor, For, Setter, Show, createSignal, onMount } from "solid-js";
 import { EventBus } from "../game/EventBus";
-import { Attributes, LOADOUT } from "../utility/attributes";
+import { Attributes } from "../utility/attributes";
 import { InputGroup } from "solid-bootstrap";
 import { useResizeListener } from "../utility/dimensions";
 import AttributeModal from "../components/Attributes";
@@ -14,7 +14,6 @@ const [show, setShow] = createSignal<boolean>(false);
             ...state(),
             mastery: mastery.name
         });
-        // setNewAscean({ ...state(), mastery: mastery.name });
         setShow(!show());
     };
 
@@ -44,7 +43,6 @@ const Faith = ({ faith, state }: { faith: any; state: Accessor<any>; }) => {
             ...state(),
             faith: faith.worshipers
         });
-        // setNewAscean({ ...state(), faith: faith.worshipers });
         setShow(!show());
     };
     return (
@@ -68,7 +66,6 @@ export default function LevelUp({ asceanState, show, setShow }: Props) {
 
     const handleChange = (event: any, name: string, value: number): void => {
         event.preventDefault();
-        // setAsceanState
         EventBus.emit('update-ascean-state', {
             ...asceanState(),
             [name]: Number(asceanState()[name as keyof typeof asceanState]) + value
@@ -97,20 +94,6 @@ export default function LevelUp({ asceanState, show, setShow }: Props) {
         setPool(asceanStateAttributeTotal);
     });
 
-    // createEffect(() => {
-    // });
-
-    // createMemo(() => {
-    //     EventBus.emit('update-ascean-state', {
-    //         ...asceanState(),
-    //     });
-    //     const poolTotal = 
-    //         (asceanState().strength + asceanState().agility + asceanState().constitution + asceanState().achre + asceanState().caeren + asceanState().kyosir) 
-    //         + 2;
-
-    //     setPool(poolTotal);    
-    // });
-
     const levelUp = (state: Accessor<any>) => {
         console.log('level up', state())
         EventBus.emit('level-up', state);
@@ -119,7 +102,6 @@ export default function LevelUp({ asceanState, show, setShow }: Props) {
     
     return (
         <div class='modal'>
-            {/* <div class='border center creature-heading' style={{ width: '60%' }}> */}
                 <div class='stat-block superCenter' style={{ width: '100%', background: 'rgba(0, 0, 0, 0.75' }}>
 
                 <div class='left center' style={{ height: '80%', width: '48%',  top: '10%',display: 'inline-block', border: '0.15em solid #fdf6d8' }}>
@@ -168,7 +150,6 @@ export default function LevelUp({ asceanState, show, setShow }: Props) {
                 </div>
                 </div>
 
-                {/* </div> */}
                 <Show when={pool() === 2}>
                     <button class='highlight cornerTL' style={{ 'background-color': 'gold', color: '#000', 'font-weight': 700 }} onClick={() => levelUp(asceanState)}>Level Up</button>
                 </Show>

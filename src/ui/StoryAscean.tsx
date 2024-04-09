@@ -473,11 +473,9 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         <Show when={settings().control !== CONTROLS.POST_FX || settings().asceanViews !== VIEWS.SETTINGS}>
             <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
                 { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'hidden' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, }}>
-                    { dragAndDropInventory().length < 300 && (
-                        <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => freeInventory()}>
-                            <p>Get Gear</p>
-                        </button>
-                    ) }
+                    {/* <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => freeInventory()}>
+                        <p>Get Gear</p>
+                    </button> */}
                     {/* <button class='highlight cornerTR' style={{ 'background-color': 'green', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getMoney()}>
                         <p>Get Money</p>
                     </button> */}

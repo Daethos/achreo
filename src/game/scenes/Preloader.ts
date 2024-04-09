@@ -62,8 +62,11 @@ export class Preloader extends Scene {
         // this.load.plugin('rexhorrifipipelineplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexhorrifipipelineplugin.min.js', true);
         this.load.scenePlugin({ key: 'rexuiplugin', url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', sceneKey: 'rexUI' });
 
+        this.load.audio('cymbal', '../assets/sounds/cymbal-long-2.wav');
         this.load.audio('background', '../assets/sounds/background.mp3');
+        this.load.audio('blink', '../assets/sounds/blink.wav');
         this.load.audio('caerenic', '../assets/sounds/caerenic.wav');
+        this.load.audio('consume', '../assets/sounds/consume.wav');
         this.load.audio('stalwart', '../assets/sounds/stalwart.mp3');
         this.load.audio('stealth', '../assets/sounds/stealth.mp3');
         this.load.audio('prayer', '../assets/sounds/religious.mp3');
@@ -111,6 +114,8 @@ export class Preloader extends Scene {
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         // this.scene.start('MainMenu');
+        // play drum_roll
+
         this.time.addEvent({
             delay: 500,
             callback: () => { 
@@ -120,7 +125,6 @@ export class Preloader extends Scene {
                 this.title.destroy();
                 this.txt_progress.destroy();
                 this.txt_file.destroy();
-
             },
             callbackScope: this
         }); 

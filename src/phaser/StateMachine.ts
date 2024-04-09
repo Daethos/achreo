@@ -30,6 +30,7 @@ export const States = {
     INVOKE: "invoke",
     STEALTH: "stealth",
 
+    BLINK: "blink",
     CONSUMED: "consumed",
     FEARING: "fear",
     TSHAERAL: "tshaeral",

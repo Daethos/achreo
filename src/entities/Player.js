@@ -19,6 +19,7 @@ export const PLAYER = {
         ACCELERATION: 0.1,
         DECELERATION: 0.05,
         CAERENIC: 0.5,
+        BLINK: 200,
     },  
     SCALE: {
         SELF: 0.8,
@@ -39,6 +40,7 @@ export const PLAYER = {
         POSTURE: 25,
         ROLL: 15, // 25
         TSHAER: 35,
+        BLINK: 15,
         INVOKE: -15,
         ROOT: 15,
         SNARE: 15,
@@ -94,6 +96,12 @@ export const staminaCheck = (input, stamina) => {
             return {
                 success: counterSuccess,
                 cost: PLAYER.STAMINA.COUNTER,
+            };
+        case 'blink':
+            const blinkSuccess = stamina >= PLAYER.STAMINA.BLINK;
+            return {
+                success: blinkSuccess,
+                cost: PLAYER.STAMINA.BLINK,
             };
         case 'fear':
             const fearingSuccess = stamina >= PLAYER.STAMINA.FEARING;
@@ -263,6 +271,11 @@ export default class Player extends Entity {
                 onEnter: this.onStunEnter,
                 onUpdate: this.onStunUpdate,
                 onExit: this.onStunExit,
+            })
+            .addState(States.BLINK, {
+                onEnter: this.onBlinkEnter,
+                onUpdate: this.onBlinkUpdate,
+                onExit: this.onBlinkExit,
             })
             .addState(States.TSHAERAL, {
                 onEnter: this.onTshaeralEnter,
@@ -1142,6 +1155,45 @@ export default class Player extends Entity {
                     this.removeHighlight();
                 };
             };
+        });
+    };
+    onBlinkEnter = () => {
+        this.scene.roll.play();
+        if (!this.isCaerenic) {
+            this.setGlow(this, true);
+            this.setGlow(this.spriteWeapon, true, 'weapon');
+            this.setGlow(this.spriteShield, true, 'shield');
+        };
+        if (this.velocity.x > 0) {
+            this.setVelocityX(PLAYER.SPEED.BLINK);
+        } else if (this.velocity.x < 0) {
+            this.setVelocityX(-PLAYER.SPEED.BLINK);
+        };
+        if (this.velocity.y > 0) {
+            this.setVelocityY(PLAYER.SPEED.BLINK);
+        } else if (this.velocity.y < 0) {
+            this.setVelocityY(-PLAYER.SPEED.BLINK);
+        };
+        if (Math.abs(this.velocity.x) || Math.abs(this.velocity.y)) {
+            this.scene.useStamina(PLAYER.STAMINA.BLINK);
+        };
+        this.setTimeEvent('blinkCooldown', 3000);
+    };
+    onBlinkUpdate = (_dt) => {
+        this.combatChecker(this.isBlinking);
+    };
+    onBlinkExit = () => {
+        this.scene.time.addEvent({
+            delay: 750,
+            callback: () => {
+                if (!this.isCaerenic) {
+                    this.setGlow(this, false);
+                    this.setGlow(this.spriteWeapon, false, 'weapon');
+                    this.setGlow(this.spriteShield, false, 'shield');
+                };
+            },
+            callbackScope: this,
+            loop: false,
         });
     };
 

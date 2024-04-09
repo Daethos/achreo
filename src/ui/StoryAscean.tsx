@@ -55,7 +55,7 @@ const CONTROLS = {
     POST_FX: 'Post FX',
 };
 const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Counter'];
-const SPECIALS = ['Consume', 'Fear', 'Healing', 'Invoke', 'Polymorph', 'Root', 'Snare', 'Tshaeral']; // 'Charm', 'Confuse' 
+const SPECIALS = ['Blink', 'Consume', 'Fear', 'Healing', 'Invoke', 'Polymorph', 'Root', 'Snare', 'Tshaeral']; // 'Charm', 'Confuse' 
 const GET_FORGE_COST = {
     Common: 1,
     Uncommon: 3,

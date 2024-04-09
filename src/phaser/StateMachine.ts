@@ -31,12 +31,14 @@ export const States = {
     STEALTH: "stealth",
 
     CONSUMED: "consumed",
+    FEARING: "fear",
     TSHAERAL: "tshaeral",
     POLYMORPHING: "polymorph",
     ROOTING: "root",
     SNARING: "snare",
 
     CLEAN: "clean",
+    FEAR: "fear",
     POLYMORPH: "polymorph",
     ROOT: "root",
     SNARE: "snare",

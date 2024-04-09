@@ -44,8 +44,10 @@ export const PLAYER = {
         SNARE: 15,
         POLYMORPH: 15,
         HEALING: 25,
+        FEARING: 15,
     },
     DURATIONS: {
+        FEARING: 1000,
         HEALING: 1500,
         POLYMORPHING: 1500,
         STUNNED: 2500,
@@ -92,6 +94,12 @@ export const staminaCheck = (input, stamina) => {
             return {
                 success: counterSuccess,
                 cost: PLAYER.STAMINA.COUNTER,
+            };
+        case 'fear':
+            const fearingSuccess = stamina >= PLAYER.STAMINA.FEARING;
+            return {
+                success: fearingSuccess,
+                cost: PLAYER.STAMINA.FEARING,
             };
         case 'healing':
             const healingSuccess = stamina >= PLAYER.STAMINA.HEALING;
@@ -155,10 +163,10 @@ export default class Player extends Entity {
         this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, this.currentWeaponSprite);
         if (weapon.grip === 'One Hand') {
             this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
-            this.swingTimer = 800
+            this.swingTimer = 1250
         } else {
             this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
-            this.swingTimer = 1250;
+            this.swingTimer = 1650;
         };
         this.spriteWeapon.setOrigin(0.25, 1);
         this.scene.add.existing(this);
@@ -260,6 +268,11 @@ export default class Player extends Entity {
                 onEnter: this.onTshaeralEnter,
                 onUpdate: this.onTshaeralUpdate,
                 onExit: this.onTshaeralExit,
+            })
+            .addState(States.FEARING, {
+                onEnter: this.onFearingEnter,
+                onUpdate: this.onFearingUpdate,
+                onExit: this.onFearingExit,
             })
             .addState(States.POLYMORPHING, {
                 onEnter: this.onPolymorphingEnter,
@@ -1195,6 +1208,40 @@ export default class Player extends Entity {
         // this.tshaeringGraphic.destroy();
         // this.tshaeringGraphic = undefined;
         this.setStatic(false);
+    };
+
+    onFearingEnter = () => {
+        if (!this.inCombat) return;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Fearing', PLAYER.DURATIONS.FEARING / 2, 'cast');
+        this.castbar.setTotal(PLAYER.DURATIONS.FEARING);
+        this.isFearing = true;
+        if (!this.isCaerenic) {
+            this.setGlow(this, true);
+            this.setGlow(this.spriteWeapon, true, 'weapon');
+            this.setGlow(this.spriteShield, true, 'shield');
+        };
+    };
+    onFearingUpdate = (dt) => {
+        if (this.isMoving) this.isFearing = false;
+        this.combatChecker(this.isFearing);
+        if (this.castbar.time >= PLAYER.DURATIONS.FEARING) {
+            this.fearSuccess = true;
+            this.isFearing = false;
+        };
+        if (this.isFearing) this.castbar.update(dt, 'cast');
+    };
+    onFearingExit = () => {
+        if (this.fearSuccess) {
+            this.scene.fear(this.attacking?.enemyID);
+            this.setTimeEvent('fearCooldown', 6000);  
+            this.fearSuccess = false;
+        };
+        this.castbar.reset();
+        if (!this.isCaerenic) {
+            this.setGlow(this, false);
+            this.setGlow(this.spriteWeapon, false, 'weapon');
+            this.setGlow(this.spriteShield, false, 'shield');
+        };
     };
 
     onPolymorphingEnter = () => {

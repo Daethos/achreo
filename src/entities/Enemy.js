@@ -102,6 +102,11 @@ export default class Enemy extends Entity {
                 onUpdate: this.onRollUpdate,
                 onExit: this.onRollExit,    
             })
+            .addState(States.FEAR, {
+                onEnter: this.onFearEnter,
+                onUpdate: this.onFearUpdate,
+                onExit: this.onFearExit,
+            })
             .addState(States.POLYMORPH, {
                 onEnter: this.onPolymorphEnter,
                 onUpdate: this.onPolymorphUpdate,
@@ -251,7 +256,7 @@ export default class Enemy extends Entity {
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.criticalSuccess);
             console.log(`%c ${e.player.name} Dealt ${damage} Damage To ${this.ascean.name}`, 'color: #00ff00')
 
-            if (!this.isConsumed && !this.isHurt) this.stateMachine.setState(States.HURT);
+            if (!this.isConsumed && !this.isHurt && !this.isFeared) this.stateMachine.setState(States.HURT);
             if (this.currentRound !== e.combatRound) {
                 // if (this.isStunned) this.isStunned = false;
                 if (this.isPolymorphed) this.isPolymorphed = false;
@@ -576,6 +581,7 @@ export default class Enemy extends Entity {
     };
 
     onChaseEnter = () => {
+        if (!this.attacking) return;
         this.anims.play('player_running', true);
         this.chaseTimer = this.scene.time.addEvent({
             delay: 500,
@@ -826,7 +832,6 @@ export default class Enemy extends Entity {
     onConsumedEnter = () => {
         this.consumedDuration = DURATION.CONSUMED;
         this.clearAnimations();
-        this.setGlow(this, true);
         this.consumedTimer = this.scene.time.addEvent({
             delay: 250,
             callback: () => {
@@ -854,6 +859,82 @@ export default class Enemy extends Entity {
         };
         this.setGlow(this, false);
         this.isConsumed = false;
+    };
+
+    onFearEnter = () => {
+        this.isFeared = true;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Feared', DURATION.TEXT, 'effect');
+        this.spriteWeapon.setVisible(false);
+        this.spriteShield.setVisible(false);
+        this.fearDirection = 'down';
+        this.fearMovement = 'idle';
+        this.fearVelocity = { x: 0, y: 0 };
+        this.isAttacking = false;
+        this.isCountering = false;
+        this.isPosturing = false;
+        this.isRolling = false;
+        this.currentAction = ''; 
+        this.setGlow(this, true);
+        let iteration = 0;
+        const randomDirection = () => {  
+            const move = Phaser.Math.Between(1, 100);
+            const directions = ['up', 'down', 'left', 'right'];
+            const direction = directions[Phaser.Math.Between(0, 3)];
+            if (move > 50) {
+                if (direction === 'up') {
+                    this.fearVelocity = { x: 0, y: -1.25 };
+                } else if (direction === 'down') {
+                    this.fearVelocity = { x: 0, y: 1.25 };
+                } else if (direction === 'right') {
+                    this.fearVelocity = { x: -1.25, y: 0 };
+                } else if (direction === 'left') {
+                    this.fearVelocity = { x: 1.25, y: 0 };
+                };
+                this.fearMovement = 'move';
+            } else {
+                this.fearVelocity = { x: 0, y: 0 };
+                this.fearMovement = 'idle';                
+            };
+            this.fearDirection = direction;
+        };
+
+        this.fearTimer = this.scene.time.addEvent({
+            delay: 1500,
+            callback: () => {
+                iteration++;
+                if (iteration === 3) {
+                    iteration = 0;
+                    this.isFeared = false;
+                } else {   
+                    randomDirection();
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '...ahhh!', 1000, 'effect');
+                };
+            },
+            callbackScope: this,
+            repeat: 3,
+        }); 
+
+    };
+    onFearUpdate = (_dt) => {
+        if (!this.isFeared) this.evaluateCombatDistance();
+        this.setVelocity(this.fearVelocity.x, this.fearVelocity.y);
+        if (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0) {
+            this.getDirection();
+            this.anims.play(`player_running`, true);
+        } else {
+            this.anims.play(`player_idle`, true);
+        };
+    };
+    onFearExit = () => { 
+        if (this.isFeared) this.isFeared = false;
+        this.evaluateCombatDistance();
+        this.anims.play('player_running', true);
+        this.spriteWeapon.setVisible(true);
+        if (this.fearTimer) {
+            this.fearTimer.destroy();
+            this.fearTimer = undefined;
+        };
+        this.setGlow(this, false);
     };
 
     onPolymorphEnter = () => {
@@ -925,7 +1006,7 @@ export default class Enemy extends Entity {
         }); 
 
     };
-    onPolymorphUpdate = (dt) => {
+    onPolymorphUpdate = (_dt) => {
         if (!this.isPolymorphed) this.evaluateCombatDistance();
         this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
         this.setVelocity(this.polymorphVelocity.x, this.polymorphVelocity.y);
@@ -1228,6 +1309,10 @@ export default class Enemy extends Entity {
     }; 
 
     evaluateEnemyState = () => {
+        if (this.isFeared && !this.stateMachine.isCurrentState(States.FEAR)) {
+            this.stateMachine.setState(States.FEAR);
+            return;
+        };
         if (this.isPolymorphed && !this.stateMachine.isCurrentState(States.POLYMORPH)) {
             this.stateMachine.setState(States.POLYMORPH);
             return;
@@ -1267,7 +1352,7 @@ export default class Enemy extends Entity {
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this);
         if (this.attacking) {
-            if (!this.isPolymorphed) {
+            if (!this.isPolymorphed && !this.isFeared) {
                 if (this.isUnderRangedAttack()) {
                     this.stateMachine.setState(States.EVADE);
                     return;

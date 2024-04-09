@@ -126,6 +126,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.glowLegs = undefined;
         this.glowTimer = undefined;
         this.speed = 0;
+        this.isFeared = false;
         this.isPolymorphed = false;
         this.isRooted = false;
         this.isSnared = false;

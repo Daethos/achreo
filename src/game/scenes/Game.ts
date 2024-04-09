@@ -491,6 +491,10 @@ export class Game extends Scene {
     };
 
     // ============================ Combat ============================ \\ 
+    fear = (id: string) => {
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        enemy.isFeared = true;
+    };
     polymorph = (id: string) => {
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         enemy.isPolymorphed = true;

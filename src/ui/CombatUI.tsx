@@ -1,16 +1,16 @@
-import { Accessor, Setter, createEffect, createSignal, on } from 'solid-js'
+import { Accessor, Setter, createEffect, createSignal } from 'solid-js'
 import ItemModal from '../components/ItemModal';
 import { border, borderColor, itemStyle, masteryColor } from '../utility/styling';
 import PrayerEffects from './PrayerEffects';
 import { EventBus } from '../game/EventBus';
 import { For, Show } from 'solid-js';
 import { Combat } from '../stores/combat';
-import { populateEnemy, randomEnemy } from '../assets/db/db';
-import { asceanCompiler } from '../utility/ascean';
+// import { populateEnemy, randomEnemy } from '../assets/db/db';
+// import { asceanCompiler } from '../utility/ascean';
 import StatusEffect from '../utility/prayer';
-import Ascean from '../models/ascean';
-import Equipment from '../models/equipment';
-import { CombatAttributes } from '../utility/combat';
+// import Ascean from '../models/ascean';
+// import Equipment from '../models/equipment';
+// import { CombatAttributes } from '../utility/combat';
 import { PrayerModal } from '../utility/buttons';
 import { GameState } from '../stores/game';
 
@@ -22,7 +22,6 @@ interface Props {
 };
 
 export default function CombatUI({ state, staminaPercentage, game, stamina }: Props) {
-    const [prayers, setPrayers] = createSignal<StatusEffect[]>([]);
     const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal(false);
     const [shieldShow, setShieldShow] = createSignal(false);
@@ -32,24 +31,7 @@ export default function CombatUI({ state, staminaPercentage, game, stamina }: Pr
     createEffect(() => {
         const newHealthPercentage = Math.round((state().newPlayerHealth/state().playerHealth) * 100);
         setPlayerHealthPercentage(newHealthPercentage);
-    }); 
-
-    createEffect(
-        on(state, (s) => {
-            console.log('State:', s);
-            setPrayers(s.playerEffects);
-        }, { defer: true })
-    );
-
-    // createEffect(() => {
-    //     let instantTimer;
-    //     if (state().instantStatus) {
-    //         instantTimer = setTimeout(() => dispatch(setInstantStatus(false)), 30000);
-    //     } else if (!state().combatEngaged) {
-    //         dispatch(setInstantStatus(false));
-    //     };
-    //     return () => clearTimeout(instantTimer);
-    // });
+    });  
 
     const disengage = () => EventBus.emit('disengage');
     const showPlayer = () => EventBus.emit('show-player');
@@ -60,8 +42,6 @@ export default function CombatUI({ state, staminaPercentage, game, stamina }: Pr
             'border': border(borderColor(state()?.playerBlessing), 0.15),
         };
     };
-
-    console.log(state().isStealth, 'Stealthing')
 
     // function createPrayer() {
     //     console.log('Creating prayer...');
@@ -75,10 +55,9 @@ export default function CombatUI({ state, staminaPercentage, game, stamina }: Pr
     // 5a0043
     return (
         <div class='playerCombatUi'> 
-            {/* <CombatModals state={state} />  */}
             <p class='playerName' style={{ 'z-index': 2 }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
-            <div class='center playerHealthBar'>
-                <div class='playerPortrait' style={{ 'font-size': '1em', color: state().isStealth ? '#fdf6d8' : '#000' }}>{`${Math.round(state().newPlayerHealth)} / ${state().playerHealth} [${playerHealthPercentage()}%]`}</div>
+            <div class='center playerHealthBar' style={{ 'z-index': 0 }}>
+                <div class='playerPortrait' style={{ 'font-size': '1em', color: state().isStealth ? '#fdf6d8' : '#000', 'z-index': 1 }}>{`${Math.round(state().newPlayerHealth)} / ${state().playerHealth} [${playerHealthPercentage()}%]`}</div>
                 <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, 'z-index': -1, width: `${playerHealthPercentage()}%`, 'background-color': state()?.isStealth ? '#444' : '#FFC700' }}></div>
             </div>
             <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar"/>
@@ -88,7 +67,6 @@ export default function CombatUI({ state, staminaPercentage, game, stamina }: Pr
                 </div>
             </button> */}
             <div class='staminaBubble'>
-                {/* <img src={'../assets/gui/player-portrait.png'} alt="Player Portrait" id='staminaPortrait' /> */}
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, 'z-index': -1, 'background-color': '#008000', height: `${staminaPercentage()}%` }}></div>
                 <p class='stamina' style={{ 'margin-top': '25%' }}>{Math.round((staminaPercentage() * stamina() / 100))}</p>
             </div>
@@ -110,9 +88,9 @@ export default function CombatUI({ state, staminaPercentage, game, stamina }: Pr
                     <ItemModal item={state()?.player?.shield} stalwart={state().isStalwart} caerenic={false} />
                 </div>
             </Show>  
-            <Show when={prayers().length > 0}>
+            <Show when={state().playerEffects.length > 0}>
                 <div class='combatEffects' style={{ left: '-3.5vw', top: '15vh', 'height': '14vh', width: 'auto', transform: 'scale(0.75)' }}>
-                    <For each={prayers()}>{(effect) => ( 
+                    <For each={state().playerEffects}>{(effect) => ( 
                         <PrayerEffects combat={state} effect={effect} enemy={false} game={game} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
                     )}</For>
                 </div>

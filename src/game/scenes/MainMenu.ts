@@ -17,9 +17,6 @@ export class MainMenu extends Scene {
     };
 
     create () {
-        // this.background = this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'background');
-
-        // this.logo = this.add.image(window.innerWidth / 2, window.innerHeight / 3, 'logo').setDepth(100);
         this.title = this.add.text(this.centerX, this.centerY / 1.5, 'The Ascean', {
                 fontFamily: 'Cinzel Regular', fontSize: 76, color: '#fdf6d8',
                 stroke: '#000000', strokeThickness: 8,
@@ -41,7 +38,7 @@ export class MainMenu extends Scene {
             this.logoTween.stop();
             this.logoTween = null;
         };
-        // this.sound.play('cymbal', { loop: false });
+        this.sound.play('cymbal', { loop: false });
         this.scene.start('Game');
         EventBus.emit('start-game');
     };

@@ -13,7 +13,7 @@ export class Boot extends Scene {
     };
 
     create () {
-        // this.sound.play('drum_roll', { loop: false });
+        this.sound.play('drum_roll', { loop: false });
         this.scene.start('Preloader');
     };
 };

@@ -22,9 +22,10 @@ interface Props {
     setWeaponCompared: Setter<string>;
     inventoryType: Accessor<string>;
     setInventoryType: Setter<string>;
+    inventorySwap: Accessor<any>;
 };
 
-const Inventory = ({ ascean, index, inventory, pouch, blacksmith = false, compare = false, inventoryType, setInventoryType, setRingCompared, setHighlighted, highlighted, scaleImage, setScaleImage, setWeaponCompared }: Props) => {
+const Inventory = ({ ascean, index, inventory, pouch, blacksmith = false, compare = false, inventoryType, setInventoryType, setRingCompared, setHighlighted, highlighted, scaleImage, setScaleImage, setWeaponCompared, inventorySwap }: Props) => {
     const [trueType, setTrueType] = createSignal('');
     const [forgeModalShow, setForgeModalShow] = createSignal(false); 
     const [inventoryTypeTwo, setInventoryTypeTwo] = createSignal<any>('');
@@ -173,7 +174,7 @@ const Inventory = ({ ascean, index, inventory, pouch, blacksmith = false, compar
     };
 
     const getBackgroundStyle = () => {
-        if (scaleImage().scale > 48 && scaleImage().id === inventory?._id) {
+        if (inventorySwap()?.start?.id === inventory?._id) {
             console.log('ScaleImage is greater than 48');
             return 'gold';
         } else if (highlighted()?.item && (highlighted()?.item?._id === inventory?._id)) {

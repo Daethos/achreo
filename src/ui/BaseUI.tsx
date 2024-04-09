@@ -36,7 +36,6 @@ interface Props {
 
 export default function BaseUI({ ascean, combat, game, settings, setSettings, stamina }: Props) {
     const { staminaPercentage, setStaminaPercentage } = createStamina(stamina);
-    // const { gameTimer, setGameTimer } = createTimer(game);
     const [enemies, setEnemies] = createSignal<any[]>([]);
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [tutorial, setTutorial] = createSignal<string>('');
@@ -67,28 +66,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     createEffect(() => {
         EventBus.emit('settings', settings());
     });
-
-    function updateAsceanState(ascean: Accessor<Ascean>) {
-        setAsceanState({
-            ...asceanState(),
-            ascean: ascean(),
-            experience: ascean().experience,
-            experienceNeeded: ascean().level * 1000,
-            currency: ascean().currency,
-            firewater: ascean().firewater,
-            currentHealth: ascean().health.current,
-            mastery: ascean().mastery,
-            avarice: combat().prayerData.length > 0 ? combat().prayerData.includes('Avarice') : false,
-            opponent: 0,
-            opponentExp: 0,
-            constitution: 0,
-            strength: 0,
-            agility: 0,
-            achre: 0,
-            caeren: 0,
-            kyosir: 0,
-        });
-    };
 
     onMount(() => {
         if (!ascean().tutorial.boot) {

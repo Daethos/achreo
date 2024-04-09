@@ -35,16 +35,18 @@ export const PLAYER = {
     STAMINA: {
         ATTACK: 35,
         COUNTER: 15,
-        DODGE: 5, // 25
+        DODGE: 15, // 25
         POSTURE: 25,
-        ROLL: 5, // 25
+        ROLL: 15, // 25
         TSHAER: 35,
         INVOKE: -15,
         ROOT: 15,
         SNARE: 15,
         POLYMORPH: 15,
+        HEALING: 25,
     },
     DURATIONS: {
+        HEALING: 1500,
         POLYMORPHING: 1500,
         STUNNED: 2500,
         TSHAERING: 2000,
@@ -90,6 +92,12 @@ export const staminaCheck = (input, stamina) => {
             return {
                 success: counterSuccess,
                 cost: PLAYER.STAMINA.COUNTER,
+            };
+        case 'healing':
+            const healingSuccess = stamina >= PLAYER.STAMINA.HEALING;
+            return {
+                success: healingSuccess,
+                cost: PLAYER.STAMINA.HEALING,
             };
         case 'invoke':
             const invokeSuccess = stamina >= PLAYER.STAMINA.INVOKE;
@@ -232,6 +240,11 @@ export default class Player extends Entity {
                 onEnter: this.onPrayerEnter,
                 onUpdate: this.onPrayerUpdate,
                 onExit: this.onPrayerExit,
+            })
+            .addState(States.HEALING, {
+                onEnter: this.onHealingEnter,
+                onUpdate: this.onHealingUpdate,
+                onExit: this.onHealingExit,
             })
             .addState(States.INVOKE, {
                 onEnter: this.onInvokeEnter,
@@ -540,15 +553,16 @@ export default class Player extends Entity {
         return this.inCombat || this.scene.combat || this.scene.state.combatEngaged;
     };
 
-    shouldPlayerEnterCombat = (enemy) => {
-        const hasAggressiveEnemy = enemy?.isAggressive;
+    shouldPlayerEnterCombat = (other) => {
         const hasRemainingEnemies = this.scene.combat && this.scene.state.combatEngaged && this.inCombat;
     
-        if (hasAggressiveEnemy && !hasRemainingEnemies) {
-            return true;
+        if (!hasRemainingEnemies && !this.isStealthing) {
+            console.log(`%c Should Player Enter Combat? YES`, 'color: #ff0000');
+            this.enterCombat(other);
+        } else if (this.isStealthing) {
+            console.log(`%c Should Player Prepare Combat? YES`, 'color: #ff0000');
+            this.prepareCombat(other);    
         };
-    
-        return false;
     }; 
 
     enterCombat = (other) => {
@@ -560,6 +574,15 @@ export default class Player extends Entity {
         this.scene.combatEngaged(true);
         this.highlightTarget(other.gameObjectB);
         this.inCombat = true;
+    };
+
+    prepareCombat = (other) => {
+        this.scene.setupEnemy(other.gameObjectB);
+        this.actionTarget = other;
+        this.attacking = other.gameObjectB;
+        this.currentTarget = other.gameObjectB;
+        this.targetID = other.gameObjectB.enemyID;
+        this.highlightTarget(other.gameObjectB);
     };
 
     isAttackTarget = (enemy) => {
@@ -603,16 +626,19 @@ export default class Player extends Entity {
             objectA: [playerSensor],
             callback: (other) => {
                 if (this.isValidEnemyCollision(other)) {
+                    console.log(other, 'Other')
                     const isNewEnemy = this.isNewEnemy(other.gameObjectB);
                     console.log(`%c Is New Enemy: ${isNewEnemy}`, 'color: #ff0000');
                     if (!isNewEnemy) return;
-                    if (this.shouldPlayerEnterCombat(other.gameObjectB)) {
-                        this.enterCombat(other);
-                    };
+                    // if (this.shouldPlayerEnterCombat(other.gameObjectB)) {
+                    //     this.enterCombat(other);
+                    // };
+                    this.shouldPlayerEnterCombat(other);
                     this.touching.push(other.gameObjectB);
                     this.checkTargets();
                 } else if (this.isValidNeutralCollision(other)) {
                     const isNeutral = this.isNewEnemy(other.gameObjectB);
+                    console.log(`%c Is Neutral: ${isNeutral}`, 'color: #ff0000')
                     if (!isNeutral) return;
                     this.touching.push(other.gameObjectB);
                     this.checkTargets();
@@ -854,6 +880,40 @@ export default class Player extends Entity {
         this.body.parts[0].vertices[1].x -= this.wasFlipped ? this.colliderDisp : -this.colliderDisp;
         this.body.parts[1].vertices[0].x -= this.wasFlipped ? this.colliderDisp : -this.colliderDisp;
     };
+    onHealingEnter = () => {
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Healing', PLAYER.DURATIONS.HEALING / 2, 'cast');
+        this.castbar.setTotal(PLAYER.DURATIONS.HEALING);
+        this.isPolymorphing = true;
+        // this.setStatic(true);
+        if (!this.isCaerenic) {
+            this.setGlow(this, true);
+            this.setGlow(this.spriteWeapon, true, 'weapon');
+            this.setGlow(this.spriteShield, true, 'shield');
+        };
+    };
+    onHealingUpdate = (dt) => {
+        if (this.isMoving) this.isPolymorphing = false;
+        this.combatChecker(this.isPolymorphing);
+        if (this.castbar.time >= PLAYER.DURATIONS.HEALING) {
+            this.healingSuccess = true;
+            this.isPolymorphing = false;
+        };
+        if (this.isPolymorphing) this.castbar.update(dt, 'cast');
+    };
+    onHealingExit = () => {
+        if (this.healingSuccess) {
+            this.setTimeEvent('healingCooldown', 6000);  
+            this.healingSuccess = false;
+            EventBus.emit('initiate-combat', { data: { key: 'player', value: 25 }, type: 'Health' });
+        };
+        this.castbar.reset();
+        if (!this.isCaerenic) {
+            this.setGlow(this, false);
+            this.setGlow(this.spriteWeapon, false, 'weapon');
+            this.setGlow(this.spriteShield, false, 'shield');
+        };
+        // this.setStatic(false);
+    };
 
     onPrayerEnter = () => {
         this.isHealing = true;
@@ -934,11 +994,15 @@ export default class Player extends Entity {
         // EventBus.emit('stealth', true);
     };
     onStealthUpdate = (_dt) => {
-        if (!this.isStealthing || this.currentRound > 1) this.metaMachine.setState(States.CLEAN); 
+        if (!this.isStealthing || this.currentRound > 1 || this.scene.combat) {
+            console.log(`%c Exiting Stealth [onStealthUpdate]`, 'color: #ff0000')
+            this.metaMachine.setState(States.CLEAN); 
+        };
     };
     onStealthExit = () => { 
         this.isStealthing = false;
         this.stealthEffect(false);
+        // EventBus.emit('update-stealth');
         // EventBus.emit('stealth', false);
     };
 
@@ -1356,7 +1420,15 @@ export default class Player extends Entity {
             };
         };
         if (this.actionTarget) this.knockback(this.actionTarget); // actionTarget
-        if (this.isStealthing) this.scene.stun(this.attackedTarget.enemyID);
+        if (this.isStealthing) {
+            console.log(`%c Exiting Stealth`, 'color: #ff0000');
+            this.scene.stun(this.attackedTarget.enemyID);
+            this.isStealthing = false;
+            this.scene.combatEngaged(true);
+            this.inCombat = true;
+            this.attackedTarget.jumpIntoCombat();
+            EventBus.emit('update-stealth');
+        };
         // screenShake(this.scene); 
     };
 
@@ -1377,7 +1449,7 @@ export default class Player extends Entity {
                 return;
             };
         
-            const direction = !this.flipX ? -(dodgeDistance / dodgeDuration) : (dodgeDistance / dodgeDuration);
+            const direction = this.flipX ? -(dodgeDistance / dodgeDuration) : (dodgeDistance / dodgeDuration);
             if (Math.abs(this.velocity.x) > 0.1) this.setVelocityX(direction);
             if (this.velocity.y > 0.1) this.setVelocityY(dodgeDistance / dodgeDuration);
             if (this.velocity.y < -0.1) this.setVelocityY(-dodgeDistance / dodgeDuration);

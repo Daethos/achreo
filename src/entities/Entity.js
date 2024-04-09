@@ -142,7 +142,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     startingSpeed = (entity) => {
         let speed = (this.name === 'player' ? 1.5: 1.25); // PLAYER.SPEED.INITIAL
-        console.log(speed, 'speed')
+        console.log(speed, 'starting speed')
         const helmet = entity.helmet.type;
         const chest = entity.chest.type;
         const legs = entity.legs.type;
@@ -169,6 +169,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         addModifier(chest);
         addModifier(legs);
         speed += modifier;
+        console.log(speed, 'ending speed')
         return speed;
     };
 

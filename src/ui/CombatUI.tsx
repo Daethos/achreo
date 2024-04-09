@@ -53,6 +53,8 @@ export default function CombatUI({ state, staminaPercentage, game, stamina }: Pr
         };
     };
 
+    console.log(state().isStealth, 'Stealthing')
+
     // function createPrayer() {
     //     console.log('Creating prayer...');
     //     let enemy = randomEnemy(1, 2);

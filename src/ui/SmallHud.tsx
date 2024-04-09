@@ -15,7 +15,7 @@ interface Props {
 };
 
 export default function SmallHud({ ascean, combat, game }: Props) { 
-    const [show, setShow] = createSignal<boolean>(false);
+    const [show, setShow] = createSignal<boolean>(true);
     const [alert, setAlert] = createSignal<{ header: string; body: string } | undefined>(undefined);
     const [toastShow, setToastShow] = createSignal<boolean>(false);
     const [experience, setExperience] = createSignal<number>(ascean().experience as number); // ascean().experience as number
@@ -35,10 +35,10 @@ export default function SmallHud({ ascean, combat, game }: Props) {
         setExperience(ascean().experience as number);
     });
 
-    const combatLogs = () => {
-        EventBus.emit('show-combat-logs', !game().showCombat);
-        EventBus.emit('action-button-sound');
-    };
+    // const combatLogs = () => {
+    //     EventBus.emit('show-combat-logs', !game().showCombat);
+    //     EventBus.emit('action-button-sound');
+    // };
     const combatSettings = () => {
         EventBus.emit('useScroll', !game().scrollEnabled);
         EventBus.emit('action-button-sound');
@@ -143,17 +143,17 @@ export default function SmallHud({ ascean, combat, game }: Props) {
                     </p>
             </button>
 
-            <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? 
+            {/* <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? 
                     { height: '7.5%', width: '3.75%', right: '24.5%' } : // right: '0.5%', top: '82.5%' SECOND ROW
                     { height: '3.5%', width: '7.5%', right: '52%' }} // right: '4%', bottom: '4.75%' SECOND ROW
                     onClick={combatLogs}>
                 <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
                     <img src={'../assets/images/logs.png'} style={icon} alt='Sh' />
                 </div>
-            </button>
+            </button> */}
             
             <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? 
-                    { height: '7.5%', width: '3.75%', right: '28.5%' } : // right: '4.5%', top: '82.5%' SECOND ROW
+                    { height: '7.5%', width: '3.75%', right: '24.5%' } : // right: '4.5%', top: '82.5%' SECOND ROW
                     { height: '3.5%', width: '7.5%', right: '60%' }} // right: '12%', bottom: '4.75%' SECOND ROW
                     onClick={combatSettings}>
                 <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
@@ -162,7 +162,7 @@ export default function SmallHud({ ascean, combat, game }: Props) {
             </button>
 
             <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? 
-                    { height: '7.5%', width: '3.75%', right: '32.5%' } : // right: '8.5%', top: '82.5%' SECOND ROW
+                    { height: '7.5%', width: '3.75%', right: '28.5%' } : // right: '8.5%', top: '82.5%' SECOND ROW
                     { height: '3.5%', width: '7.5%', right: '68%' }} // right: '20%', bottom: '4.75%' SECOND ROW
                     onClick={showPlayer}>
                 <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>

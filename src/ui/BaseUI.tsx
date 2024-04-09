@@ -114,14 +114,14 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     const sendSettings = async () => EventBus.emit('get-settings', settings);
     const updateStamina = (e: number) => setStaminaPercentage(staminaPercentage() - e <= 0 ? 0 : staminaPercentage() - e);
 
-    function initiateCombat(e: { type: string; data: any }) {
+    function initiateCombat(data: any, type: string) {
         try {    
-            console.log(e, 'Initiating Combat');
+            console.log(data, type, 'Initiating Combat');
             let playerWin: boolean = false, computerWin: boolean = false, res: any = undefined;
-            switch (e.type) {
+            switch (type) {
                 case 'Weapon':
-                    console.log(e.data, 'Weapon Action')
-                    const weapon = { ...combat(), [e.data.key]: e.data.value };
+                    console.log(data, 'Weapon Action')
+                    const weapon = { ...combat(), [data.key]: data.value };
                     res = weaponActionCompiler(weapon) as Combat;
                     console.log(res.playerEffects, 'Weapon Action');
                     EventBus.emit('blend-combat', res);
@@ -135,8 +135,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     
                     const consume = { 
                         ...combat(), 
-                        prayerSacrifice: e.data.prayerSacrifice, 
-                        prayerSacrificeName: e.data.prayerSacrificeName,
+                        prayerSacrifice: data.prayerSacrifice, 
+                        prayerSacrificeName: data.prayerSacrificeName,
                         // computer: hyd?.ascean as Ascean, 
                         // computerAttributes: hyd?.attributes as CombatAttributes, 
                         // computerWeaponOne: hyd?.combatWeaponOne,
@@ -164,7 +164,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     playerWin = res.playerWin;
                     break;
                 case 'Prayer':
-                    const pray = { ...combat(), playerEffects: e.data };
+                    const pray = { ...combat(), playerEffects: data };
                     res = consumePrayer(pray) as Combat;
                     console.log(res.playerEffects, 'Prayer Action');
                     EventBus.emit('blend-combat', { 
@@ -176,7 +176,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     playerWin = res.playerWin;
                     break;
                 case 'Instant':
-                    let insta = { ...combat(), playerBlessing: e.data };
+                    let insta = { ...combat(), playerBlessing: data };
                     insta = instantActionCompiler(insta) as Combat;
                     console.log(insta, 'Instant Action')
                     console.log(insta.playerEffects, 'Instant Action');
@@ -185,8 +185,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     // console.log(res, 'Instant Action');
                     EventBus.emit('blend-combat', insta);
                     break;
-                case 'Player': // 'Player Blind Attack' i.e. hitting a non targeted enemy
-                    const { playerAction, enemyID, ascean, damageType, combatStats, weapons, health, actionData } = e.data;
+                case 'Player': // 'Player Blind Attack' i. hitting a non targeted enemy
+                    const { playerAction, enemyID, ascean, damageType, combatStats, weapons, health, actionData } = data;
                     let playerData = {
                         action: playerAction.action,
                         counterGuess: playerAction.counter,
@@ -202,7 +202,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                         computerAction: actionData.action,
                         computerCounterGuess: actionData.counter,
                         computerDamageType: damageType,
-                        // computerEffects: [],
+                        computerEffects: [],
                         enemyID: enemyID, // Was ''
                     };
                     res = { ...combat(), ...playerData };
@@ -236,6 +236,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                         glancingBlow: res.glancingBlow,
                         dualWielding: res.dualWielding,
                         playerEffects: res.playerEffects,
+                        enemyID: res.enemyID,
                     });
                     computerWin = res.computerWin;
                     playerWin = res.playerWin;
@@ -252,7 +253,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, playerWin });
                     break;
                 case 'Health':
-                    let { key, value } = e.data;
+                    let { key, value } = data;
                     switch (key) {
                         case 'player':
                             const healed = Math.floor(combat().playerHealth * (value / 100));
@@ -269,20 +270,20 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     break;
                 case 'Enemy':
                     let enemyData = {
-                        computer: e.data.enemy,
-                        computerAttributes: e.data.combatStats.attributes,
-                        computerWeaponOne: e.data.combatStats.combatWeaponOne,
-                        computerWeaponTwo: e.data.combatStats.combatWeaponTwo,
-                        computerWeaponThree: e.data.combatStats.combatWeaponThree,
-                        newComputerHealth: e.data.health,
-                        computerHealth: e.data.combatStats.healthTotal,
-                        computerDefense: e.data.combatStats.defense,
-                        computerWeapons: e.data.weapons,
-                        computerAction: e.data.actionData.action,
-                        computerCounterGuess: e.data.actionData.counter,
-                        computerDamageType: e.data.damageType,
-                        computerEffects: e.data.computerEffects,
-                        enemyID: e.data.enemyID,
+                        computer: data.enemy,
+                        computerAttributes: data.combatStats.attributes,
+                        computerWeaponOne: data.combatStats.combatWeaponOne,
+                        computerWeaponTwo: data.combatStats.combatWeaponTwo,
+                        computerWeaponThree: data.combatStats.combatWeaponThree,
+                        newComputerHealth: data.health,
+                        computerHealth: data.combatStats.healthTotal,
+                        computerDefense: data.combatStats.defense,
+                        computerWeapons: data.weapons,
+                        computerAction: data.actionData.action,
+                        computerCounterGuess: data.actionData.counter,
+                        computerDamageType: data.damageType,
+                        computerEffects: [],
+                        enemyID: data.enemyID,
                     };
                     res = { ...combat(), ...enemyData };
                     res = weaponActionCompiler(res) as Combat;
@@ -362,18 +363,11 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     });
     usePhaserEvent('fetch-npc', fetchNpc);
     usePhaserEvent('setup-npc', setupNpc);
-    usePhaserEvent('initiate-combat', initiateCombat);
+    usePhaserEvent('initiate-combat', (payload: { data: any, type: string }) => initiateCombat(payload.data, payload.type));
     usePhaserEvent('request-enemy', sendEnemyData);
     usePhaserEvent('request-settings', sendSettings); // requestSettings
     
-    // usePhaserEvent('clear-npc', clearNPC);
-    // usePhaserEvent('refresh-inventory', refreshInventory);
-    // usePhaserEvent('request-inventory', requestInventory);
-    // usePhaserEvent('request-lootdrop', lootDrop);
-    
-    // usePhaserEvent('update-full-request', compile);
-    // usePhaserEvent('update-inventory-request', inventoryPopulate);    
-    // usePhaserEvent('update-combat-timer', updateCombatTimer);
+    // usePhaserEvent('clear-npc', clearNPC);  
     // usePhaserEvent('show-dialog', showDialog);
     // usePhaserEvent('update-sound', soundEffects);
 
@@ -394,23 +388,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     // };
 
     // loot();
-
-    // function getExperience() {
-    //     let plus = Math.round(800);
-    //     const total = Math.min(ascean().experience + plus, ascean().level * 1000);
-    //     const exp = { 
-    //         ...asceanState(),
-    //         experience: ascean().experience,
-    //         experienceNeeded: ascean().level * 1000,
-    //         opponent: 1,
-    //         opponentExp: total,
-    //         avarice: false, 
-    //         currency: ascean().currency,
-    //         firewater: ascean().firewater,
-    //     };
-    //     console.log(exp, 'Experience Gain Request');
-    //     EventBus.emit('gain-experience', exp);
-    // };
 
     return (
         <div id='base-ui'>
@@ -439,9 +416,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         {/* { game().showDialog && game().dialogTag && (   
             <StoryDialog state={combat} deleteEquipment={deleteEquipment} />
         ) } */}
-        {/* <button class='highlight verticalBottom' onClick={() => getExperience()} style={{  }}>
-            Experience
-        </button> */}
         <Show when={showTutorial()}>
             <TutorialOverlay id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
         </Show>

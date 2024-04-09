@@ -113,7 +113,6 @@ export const PhaserGame = (props: IProps) => {
             });                
             EventBus.emit('update-ascean', update);
 
-
             setCombat({
                 ...combat(),
                 player: hyd?.ascean,
@@ -127,6 +126,7 @@ export const PhaserGame = (props: IProps) => {
                 playerDefense: hyd?.defense,
                 playerDefenseDefault: hyd?.defense,
             });
+            setStamina(hyd?.attributes?.stamina as number);
         } catch (err: any) {
             console.log(err, '<- Error in the Controller Updating the Level!')
         };
@@ -493,6 +493,7 @@ export const PhaserGame = (props: IProps) => {
             setCombat({ ...combat(), isStalwart: !combat().isStalwart })
         });      
         EventBus.on('update-stealth', () => {
+            console.log(combat().isStealth, 'Stealth');
             setCombat({ ...combat(), isStealth: !combat().isStealth });
             EventBus.emit('stealth-sound');
         });

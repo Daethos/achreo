@@ -394,13 +394,15 @@ const scaleStrafe = (button: ActionButton, scale: number): void => {
 };
 
 const scaleButton = (button: ActionButton, scale: number): void => {
-    button.graphic.clear();
-    button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
-    button.graphic.fillCircle(button.x, button.y, SETTINGS.BUTTON_WIDTH * SETTINGS.SCALE * scale * button.current / button.total);
-    button.border.clear();
-    button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
-    button.border.strokeCircle(button.x, button.y, (SETTINGS.BUTTON_WIDTH + 2) * SETTINGS.SCALE * scale * button.current / button.total);
     if (button.current / button.total >= 1) {
+        button.graphic.clear();
+        button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
+        button.graphic.fillCircle(button.x, button.y, SETTINGS.BUTTON_WIDTH * SETTINGS.SCALE * scale * button.current / button.total);
+        button.border.clear();
+        button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
+        button.border.strokeCircle(button.x, button.y, (SETTINGS.BUTTON_WIDTH + 2) * SETTINGS.SCALE * scale * button.current / button.total);
         button.graphic.setInteractive();
+    } else {
+        button.graphic.fillStyle(0xFFC700, SETTINGS.OPACITY);
     };
 };

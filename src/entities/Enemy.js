@@ -256,7 +256,7 @@ export default class Enemy extends Entity {
                 // if (this.isStunned) this.isStunned = false;
                 if (this.isPolymorphed) this.isPolymorphed = false;
                 if (!this.inCombat && !this.isDefeated) {
-                    this.jumpIntoCombat();
+                    this.checkEnemyCombatEnter();
                 };
             };
             if (e.newComputerHealth <= 0) this.stateMachine.setState(States.DEFEATED);
@@ -286,6 +286,7 @@ export default class Enemy extends Entity {
                 if (this.ascean && other.gameObjectB && other.gameObjectB.name === 'player' && !other.gameObjectB.isStealthing && this.enemyStatusCheck()) { 
                     this.createCombat(other, 'start');
                 } else if (this.playerStatusCheck(other.gameObjectB) && !this.isDead && !this.isAggressive) {
+                    console.log('enemyCollision - stealth: ', other.gameObjectB.isStealthing);
                     const newEnemy = this.isNewEnemy(other.gameObjectB);
                     if (newEnemy) {
                         other.gameObjectB.targets.push(this);
@@ -335,6 +336,15 @@ export default class Enemy extends Entity {
     };
 
     jumpIntoCombat = () => {
+        console.log(this.enemyID, this.ascean.name, 'Jumping Into Combat');
+        this.attacking = this.scene.player;
+        this.inCombat = true;
+        if (this.healthbar) this.healthbar.setVisible(true);
+        this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
+        this.stateMachine.setState(States.CHASE); 
+    };
+
+    checkEnemyCombatEnter = () => {
         const newEnemy = this.isNewEnemy(this.scene.player);
         if (newEnemy) {
             this.scene.player.targets.push(this);
@@ -934,6 +944,7 @@ export default class Enemy extends Entity {
     };
 
     onStunEnter = () => {
+        console.log('Stunned');
         this.stunDuration = DURATION.STUN;
         this.setTint(0xFFFFFF); // 0x888888
         this.setStatic(true);
@@ -949,6 +960,7 @@ export default class Enemy extends Entity {
     };
     onStunExit = () => { 
         // this.clearTint();
+        this.isStunned = false;
         this.setTint(0x000000)
         this.setStatic(false);
     };
@@ -1221,6 +1233,7 @@ export default class Enemy extends Entity {
             return;
         };
         if (this.isStunned && !this.stateMachine.isCurrentState(States.STUN)) {
+            console.log('Stunned OG')
             this.stateMachine.setState(States.STUN);
             return;
         };
@@ -1237,6 +1250,7 @@ export default class Enemy extends Entity {
             return;    
         };
         if (this.isBlindsided && !this.stateMachine.isCurrentState(States.STUN)) {
+            console.log('Blindsided')
             this.setStun();
             this.stateMachine.setState(States.STUN);
             this.isBlindsided = false;

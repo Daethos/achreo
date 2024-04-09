@@ -25,6 +25,7 @@ export const States = {
     POSTURE: "posture",
     ROLL: "roll",
     HEAL: "heal",
+    HEALING: "healing",
     HURT: "hurt",
     INVOKE: "invoke",
     STEALTH: "stealth",

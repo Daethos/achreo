@@ -140,7 +140,7 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
                     Create Prayer
                 </div>
             </button> */}
-            <Show when={state().computerEffects.length > 0}>
+            <Show when={state().computerEffects?.length > 0}>
                 <div class='combatEffects' style={{ position: 'fixed', right: '7vw', top: '14vh', 'height': '13vh', width: 'auto', transform: 'scale(0.5)' }}>
                     <For each={state().computerEffects}>{((effect) => ( 
                         <PrayerEffects combat={state} effect={effect} enemy={true} game={game} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 

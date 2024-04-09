@@ -4958,7 +4958,7 @@ export let Weapons = [
         attackType: 'Magic',
         damageType: ['Fire'],
         physicalDamage: 0,
-        magicalDamage: 11,
+        magicalDamage: 4,
         physicalPenetration: 0,
         magicalPenetration: 0,
         criticalChance: 1,

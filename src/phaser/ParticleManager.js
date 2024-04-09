@@ -52,20 +52,10 @@ class Particle {
             return direction;
         } else {
             if (scene.settings.difficulty.aim === true) {
-
                 const pointer = player.rightJoystick.pointer;
-    
-                // Convert screen coordinates to world coordinates
                 const worldX = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
                 const worldY = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
                 console.log(worldX, worldY);
-
-                // const x = player.rightJoystick.pointer.x;
-                // const y = player.rightJoystick.pointer.y;
-                // const x2 = this.scene.scale.width / 2;
-                // const y2 = this.scene.scale.height / 2;
-                // const worldX = (x > x2 ? x : -x) + player.x;
-                // const worldY = (y > y2 ? y : -y) + player.y;
                 const target = new Phaser.Math.Vector2(worldX, worldY);
                 // const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y) // player.rightJoystick.pointer.x, player.rightJoystick.pointer.y
                 const direction = target.subtract(player.position);
@@ -81,7 +71,7 @@ class Particle {
     };
 
     setTimer(action, id) {
-        const time = { attack: 1500, counter: 1000, posture: 1250, roll: 1250 };
+        const time = { attack: 1500, counter: 1000, posture: 1750, roll: 1250 };
         this.scene.time.addEvent({
             delay: time[action],
             callback: () => {

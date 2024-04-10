@@ -280,15 +280,16 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     opponent: data.computer?.level,
                     opponentExp: Math.min(experience, data?.player?.level! * 1000),
                 };
-                console.log(newState, 'Experience Gain Request')
                 const loot = { enemyID: data.enemyID, level: data.computer?.level as number };
-                console.log(loot, 'Loot Drop Request');
                 EventBus.emit('gain-experience', newState);
                 EventBus.emit('enemy-loot', loot);
             } else {
                 const health = { health: data.newPlayerHealth, id: ascean()._id };
                 updateHealth(health);
-                // if (ascean().tutorial.firstDeath) setTutorial('firstDeath');
+                if (ascean().tutorial.death) {
+                    setTutorial('death');
+                    setShowTutorial(true);
+                };
             };
         } catch (err: any) {
             console.log(err, 'Error Resolving Combat');
@@ -323,9 +324,9 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     usePhaserEvent('request-enemy', sendEnemyData);
     usePhaserEvent('request-settings', sendSettings); // requestSettings
     
-    // usePhaserEvent('clear-npc', clearNPC);  
-    // usePhaserEvent('show-dialog', showDialog);
-    // usePhaserEvent('update-sound', soundEffects);
+    // usePhaserEvent('clear-npc', clearNPC); 
+    // usePhaserEvent('show-dialog', showDialog); 
+    // usePhaserEvent('update-sound', soundEffects); 
 
     usePhaserEvent('remove-enemy', filterEnemies);
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));

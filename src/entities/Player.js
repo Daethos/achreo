@@ -19,7 +19,7 @@ export const PLAYER = {
         ACCELERATION: 0.1,
         DECELERATION: 0.05,
         CAERENIC: 0.5,
-        BLINK: 200,
+        BLINK: 250,
     },  
     SCALE: {
         SELF: 0.8,

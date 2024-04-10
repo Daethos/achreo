@@ -504,6 +504,19 @@ body {
     transform: translate(-50%, -50%);
 }
 
+.middleLeft {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+.middleRight {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+}
+
 .verticalBottom {
     position: absolute;
     bottom: 0;
@@ -515,6 +528,13 @@ body {
     top: 50%;
     transform: translateY(-50%);
 }
+.verticalTop {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 .right {
     position: absolute;
     left: 51%;

@@ -115,7 +115,7 @@ export function PrayerModal({ prayer, show, setShow }: { prayer: Accessor<Status
 
     async function consume() {
         console.log(`Consuming ${prayer().prayer}...`);
-        EventBus.emit('initiate-combat', { data: { prayerSacrifice: prayer().prayer, prayerSacrificeName: prayer().name }, type: 'Consume' });
+        EventBus.emit('initiate-combat', { data: { prayerSacrificeId: prayer().id }, type: 'Consume' });
     };
     return (
         <div class='modal' onClick={() => setShow(!show)}>

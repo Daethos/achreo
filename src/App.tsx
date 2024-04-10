@@ -84,8 +84,8 @@ export default function App() {
         const beast = asceanCompiler(pop);
         const menuAscean = menu()?.asceans?.length > 0 ? [...menu()?.asceans, beast?.ascean] : [beast?.ascean];
         console.log(menuAscean, 'Menu Asceans')
-        setAscean(beast?.ascean);
-        setMenu({ ...menu(), asceans: menuAscean, creatingCharacter: false });
+        setAscean(beast?.ascean as Ascean);
+        setMenu({ ...menu(), asceans: menuAscean as Ascean[], creatingCharacter: false });
     };
 
     async function deleteCharacter(id: string | undefined): Promise<void> {
@@ -108,7 +108,7 @@ export default function App() {
             const pop = await populate(asc);
             const beast = asceanCompiler(pop);
             const full = { ...beast?.ascean, inventory: inv };
-            setAscean(full);
+            setAscean(full as Ascean);
         } catch (err: any) {
             console.warn('Error fetching Ascean:', err);
         };
@@ -141,6 +141,15 @@ export default function App() {
         EventBus.emit('toggle-pause');
     };
 
+    async function quickAscean(vaEsai: Ascean): Promise<void> {
+        try {
+            console.log('Quickly Setting Ascean:', vaEsai);
+            setAscean(vaEsai);
+        } catch (err: any) {
+            console.warn('Error saving Ascean:', err);
+        };
+    };
+
     async function saveAscean(vaEsai: any): Promise<void> {
         try {
             const save = await updateAscean(vaEsai);
@@ -148,7 +157,7 @@ export default function App() {
             const beast = asceanCompiler(res);
             const inv = await getInventory(beast?.ascean?._id as string);
             const full = { ...beast?.ascean, inventory: inv };
-            setAscean(full);
+            setAscean(full as Ascean);
         } catch (err: any) {
             console.warn('Error saving Ascean:', err);
         };
@@ -161,7 +170,7 @@ export default function App() {
             const beast = asceanCompiler(res);
             const inv = await getInventory(beast?.ascean?._id as string);
             const full = { ...beast?.ascean, inventory: inv };
-            setAscean(full);
+            setAscean(full as Ascean);
         } catch (err: any) {
             console.warn('Error updating Ascean:', err);
         };
@@ -174,6 +183,7 @@ export default function App() {
     };
 
     usePhaserEvent('fetch-ascean', fetchAscean);
+    usePhaserEvent('quick-ascean', quickAscean);
     usePhaserEvent('save-ascean', saveAscean);
     usePhaserEvent('update-ascean', updateAscean);
     usePhaserEvent('update-pause', togglePause);

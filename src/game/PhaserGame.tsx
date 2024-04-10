@@ -93,31 +93,39 @@ export const PhaserGame = (props: IProps) => {
                 } 
             };
             console.log(update, 'New Level Update');
-            const hyd = asceanCompiler(update);
-            
+            let hyd = asceanCompiler(update);
+            const save: Ascean = {
+                ...hyd?.ascean,
+                health: {
+                    ...hyd?.ascean.health,
+                    current: hyd?.ascean.health.max as number,
+                    max: hyd?.ascean.health.max as number
+                },
+            } as Ascean;
+
             EventBus.emit('update-ascean-state', {
                 ...state(),
-                ascean: hyd?.ascean,
+                ascean: save,
                 experience: 0,
-                experienceNeeded: hyd?.ascean?.level as number * 1000,
-                level: hyd?.ascean.level,
+                experienceNeeded: save?.level as number * 1000,
+                level: save.level,
                 constitution: 0,
                 strength: 0,
                 agility: 0,
                 achre: 0,
                 caeren: 0,
                 kyosir: 0,
-                mastery: hyd?.ascean.mastery,
-                faith: hyd?.ascean.faith,
+                mastery: save.mastery,
+                faith: save.faith,
                 
             });                
-            EventBus.emit('update-ascean', update);
+            EventBus.emit('update-ascean', save);
 
             setCombat({
                 ...combat(),
-                player: hyd?.ascean,
-                playerHealth: hyd?.ascean.health.max as number,
-                newPlayerHealth: hyd?.ascean.health.current as number,
+                player: save,
+                playerHealth: save.health.max as number,
+                newPlayerHealth: save.health.current as number,
                 weapons: [hyd?.combatWeaponOne, hyd?.combatWeaponTwo, hyd?.combatWeaponThree],
                 weaponOne: hyd?.combatWeaponOne,
                 weaponTwo: hyd?.combatWeaponTwo,
@@ -199,19 +207,16 @@ export const PhaserGame = (props: IProps) => {
         const { type, item } = e;
         const oldEquipment = props.ascean()[type as keyof Ascean] as Equipment;
         const newEquipment = item;
-        const newAscean = { ...props.ascean(), [type]: newEquipment };
-
+        let newAscean = { ...props.ascean(), [type]: newEquipment };
         let inventory = [ ...game().inventory ];
         inventory = inventory.filter((inv) => inv._id !== newEquipment._id);
         if (!oldEquipment.name.includes('Empty') && !oldEquipment.name.includes('Starter')) {
             inventory.push(oldEquipment);
         } else {
-            console.log('No Equipment to Add -- Default and Destroyed');
             await deleteEquipment(oldEquipment?._id as string);
         };
         
-        const update = { ...newAscean, inventory: inventory };
-
+        newAscean = { ...newAscean, inventory: inventory };
         const res = asceanCompiler(newAscean);
         setCombat({
             ...combat(),
@@ -231,8 +236,9 @@ export const PhaserGame = (props: IProps) => {
         setStamina(res?.attributes?.stamina as number);
 
         EventBus.emit('speed', res?.ascean);
-        EventBus.emit('update-ascean', update);
-        EventBus.emit('update-full-request');
+        // EventBus.emit('quick-ascean', res?.ascean);
+        EventBus.emit('update-ascean', res?.ascean);
+        // EventBus.emit('update-full-request');
         EventBus.emit('equip-sound');
     };
 
@@ -495,7 +501,7 @@ export const PhaserGame = (props: IProps) => {
         });
         EventBus.on('toggle-pause', () => setGame({ ...game(), pauseState: !game().pauseState }));
         EventBus.on('blend-combat', (e: any) => setCombat({ ...combat(), ...e }));
-        EventBus.on('update-combat', (e: Combat) => setCombat(e));
+        // EventBus.on('update-combat', (e: Combat) => setCombat(e));
         EventBus.on('update-combat-player', (e: any) => setCombat({ ...combat(), player: e.ascean, playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, playerAttributes: e.attributes, playerDefense: e.defense, playerDefenseDefault: e.defense }));
         EventBus.on('update-combat-state', (e: { key: string; value: string }) => {
             setCombat({ ...combat(), [e.key]: e.value });
@@ -597,7 +603,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('blend-combat');
             EventBus.removeListener('update-combat-state');
             EventBus.removeListener('update-combat-timer');
-            EventBus.removeListener('update-combat');
+            // EventBus.removeListener('update-combat');
             EventBus.removeListener('update-health');
             EventBus.removeListener('update-lootdrops');
             EventBus.removeListener('update-caerenic');

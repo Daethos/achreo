@@ -14,9 +14,9 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         this.text = new Phaser.GameObjects.Text(scene, 0, 0, text, { 
             color: this.color, 
             fontFamily: 'Cinzel', 
-            fontSize: critical ? '24px' : '16px',
+            fontSize: critical ? '36px' : '24px',
             stroke: 'black',
-            strokeThickness: 1 
+            strokeThickness: 2 
         });
         this.visible = false;
         this.add(this.text);

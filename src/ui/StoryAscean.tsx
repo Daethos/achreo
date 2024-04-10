@@ -426,16 +426,16 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         setRemoveModalShow(false);
     };
 
-    // async function getMoney() {
-    //     const newAscean = { 
-    //         ...ascean(), 
-    //         currency: { 
-    //             ...ascean().currency, 
-    //             gold: ascean().currency.gold + 1000 
-    //         } 
-    //     };
-    //     EventBus.emit('update-ascean', newAscean);
-    // };
+    async function getMoney() {
+        const newAscean = { 
+            ...ascean(), 
+            currency: { 
+                ...ascean().currency, 
+                gold: ascean().currency.gold + 1000 
+            } 
+        };
+        EventBus.emit('update-ascean', newAscean);
+    };
 
     return (
         <div style={{ 'z-index': 1, position: 'fixed', top: 0, left: 0 }}>
@@ -474,7 +474,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
             <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
                 { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'hidden' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, }}>
                     {/* <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => freeInventory()}>
-                        <p>Get Gear</p>
+                        <p>Get Eqp</p>
                     </button> */}
                     {/* <button class='highlight cornerTR' style={{ 'background-color': 'green', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getMoney()}>
                         <p>Get Money</p>

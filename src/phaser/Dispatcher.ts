@@ -4,6 +4,7 @@ import { EventBus } from "../game/EventBus";
 const ActionTypes = {
     WEAPON: 'Weapon',
     INSTANT: 'Instant',
+    CONSUME: 'Consume',
     PRAYER: 'Prayer',
     PLAYER: 'Player',
     ENEMY: 'Enemy',
@@ -21,7 +22,8 @@ function instantAction(data: string): void {
 };
 
 function prayerAction(data: any[]): void {
-    EventBus.emit('initiate-combat', { data, type: ActionTypes.PRAYER });
+    console.log('Prayer action: ', data);
+    EventBus.emit('initiate-combat', { data: { prayerSacrificeId: data }, type: ActionTypes.CONSUME });
 };
 
 function playerAction(data: any): void {

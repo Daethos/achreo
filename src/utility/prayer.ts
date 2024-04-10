@@ -2,6 +2,7 @@ import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { Combat } from "../stores/combat";
 import { CombatAttributes } from "./combat";
+import { v4 as uuidv4 } from 'uuid';
 
 export type Effect = { 
     physicalDamage?: number;
@@ -97,8 +98,7 @@ export default class StatusEffect {
     [key: string]: any;
 
     setID = () => {
-        let id = this.name + '_' + this.startTime + '_' + this.endTime;
-        return id;
+        return uuidv4();
     };
     setSpecial = (prayer: string) => {
         const specials = ['Avarice', 'Denial', 'Dispel', 'Silence'];

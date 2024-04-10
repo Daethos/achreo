@@ -224,17 +224,16 @@ export default class Enemy extends Entity {
             this.height
         ), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
-                console.log('pointerdown')
                 this.scene.setupEnemy(this);
                 this.setTint(0x00FF00);
                 const newEnemy = this.isNewEnemy(this.scene.player);
                 if (newEnemy) {
                     this.scene.player.targets.push(this);
+                    this.scene.player.sendEnemies(this.scene.player.targets);
                 };
                 this.scene.player.currentTarget = this;
             })
             .on('pointerout', () => {
-                console.log('pointerout')
                 this.setTint(0x000000);
             });
     };
@@ -309,6 +308,7 @@ export default class Enemy extends Entity {
             objectA: [enemySensor],
             callback: other => {
                 if (this.ascean && other.gameObjectB && other.gameObjectB.name === 'player' && !other.gameObjectB.isStealthing && this.enemyStatusCheck()) { 
+                    console.log('creating combat!')
                     this.createCombat(other, 'start');
                 } else if (this.playerStatusCheck(other.gameObjectB) && !this.isDead && !this.isAggressive) {
                     console.log('enemyCollision - stealth: ', other.gameObjectB.isStealthing);
@@ -446,23 +446,28 @@ export default class Enemy extends Entity {
     createCombat = (combat, _when) => {
         const newEnemy = this.isNewEnemy(combat.gameObjectB);
         if (newEnemy) {
+            console.log('Creating Combat --- newEnemy: ', newEnemy)
             combat.gameObjectB.targets.push(this);
             this.attacking = combat.gameObjectB;
+            this.scene.setupEnemy(this);
             this.inCombat = true;
             if (this.healthbar) this.healthbar.setVisible(true);
             this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
             this.stateMachine.setState(States.CHASE); 
             this.actionTarget = combat;
-        };
+        } else {
 
-        if (!combat.gameObjectB.attacking || !combat.gameObjectB.inCombat) { // !inCombat
+            
+            // if (!combat.gameObjectB.attacking || !combat.gameObjectB.inCombat) { // !inCombat
+            console.log('Not attacking or in combat');
             if (this.scene.state.enemyID !== this.enemyID) this.scene.setupEnemy(this);
             combat.gameObjectB.attacking = this;
             combat.gameObjectB.currentTarget = this;
             combat.gameObjectB.inCombat = true;
             combat.gameObjectB.highlightTarget(this);
             this.scene.combatEngaged(true);
-        }; 
+        }
+        // }; 
     };
 
     checkDamage = (damage) => {

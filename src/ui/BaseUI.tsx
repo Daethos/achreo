@@ -108,8 +108,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 case 'Consume':  
                     const consume = { 
                         ...combat(), 
-                        prayerSacrifice: data.prayerSacrifice, 
-                        prayerSacrificeName: data.prayerSacrificeName, 
+                        prayerSacrificeId: data.prayerSacrificeId, 
                     };
 
                     res = consumePrayer(consume) as Combat;
@@ -205,9 +204,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     const newPlayerHealth = combat().newPlayerHealth + drained > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + drained;
                     const newComputerHealth = combat().newComputerHealth - drained < 0 ? 0 : combat().newComputerHealth - drained;
                     playerWin = newComputerHealth === 0;
-                    if (playerWin) {
-                        res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin };
-                    };
+                    res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin };
                     // console.log(drained, newPlayerHealth, newComputerHealth, playerWin, 'Tshaeral Drain');
                     EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, playerWin });
                     break;
@@ -256,6 +253,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 default:
                     break;
             };
+            if (type !== 'Health') EventBus.emit('update-combat', res);
+
             if (playerWin || computerWin) resolveCombat(res);
         } catch (err: any) {
             console.log(err, 'Error Initiating Combat');
@@ -349,6 +348,18 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
 
     // loot();
 
+    // async function getExperience() {
+    //     let experience: number = ascean().experience + 1000;
+    //     let ceiling: number = ascean().level * 1000;
+    //     const newState = { 
+    //         ...asceanState(), 
+    //         avarice: false, 
+    //         opponent: 4,
+    //         opponentExp: Math.min(experience, ceiling),
+    //     };
+    //     EventBus.emit('gain-experience', newState);
+    // };
+
     return (
         <div id='base-ui'>
         <Show when={game().scrollEnabled}>
@@ -376,6 +387,9 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         {/* { game().showDialog && game().dialogTag && (   
             <StoryDialog state={combat} deleteEquipment={deleteEquipment} />
         ) } */}
+        {/* <button class='highlight superCenter' onClick={() => getExperience()}>
+            Get Experience
+        </button> */}
         <Show when={showTutorial()}>
             <TutorialOverlay id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
         </Show>

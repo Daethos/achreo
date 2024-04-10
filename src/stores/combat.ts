@@ -10,6 +10,7 @@ export interface Combat {
     counterGuess: string;
     playerBlessing: string;
     prayerSacrifice: string;
+    prayerSacrificeId: string,
     prayerSacrificeName: string,
     playerHealth: number;
     newPlayerHealth: number;
@@ -133,6 +134,7 @@ export const initCombat: Combat = {
     counterGuess: '',
     playerBlessing: 'Buff',
     prayerSacrifice: '',
+    prayerSacrificeId: '',
     prayerSacrificeName: '',
     playerHealth: 0,
     newPlayerHealth: 0,

@@ -2257,6 +2257,7 @@ function newDataCompiler(combat: Combat): any {
         playerBlessing: combat.playerBlessing,
         computerBlessing: combat.computerBlessing,
         prayerSacrifice: combat.prayerSacrifice,
+        prayerSacrificeId: combat.prayerSacrificeId,
         prayerSacrificeName: combat.prayerSacrificeName,
         enemyPrayerConsumed: combat.enemyPrayerConsumed,
         combatInitiated: combat.combatInitiated,
@@ -2382,13 +2383,18 @@ function instantActionSplitter(combat: Combat): any {
 };
 
 function consumePrayerSplitter(combat: Combat): any {
-    if (combat.prayerSacrifice === '') combat.prayerSacrifice = combat.playerEffects[0].prayer;
-    if (combat.prayerSacrificeName === '') combat.prayerSacrificeName = combat.playerEffects[0].name;
+    if (combat.prayerSacrificeId === '') {
+        combat.prayerSacrifice = combat.playerEffects[0].prayer;
+        combat.prayerSacrificeId = combat.playerEffects[0].id;
+        combat.prayerSacrificeName = combat.playerEffects[0].name;
+    };
+    // if (combat.prayerSacrifice === '') combat.prayerSacrifice = combat.playerEffects[0].prayer;
+    // if (combat.prayerSacrificeName === '') combat.prayerSacrificeName = combat.playerEffects[0].name;
     combat.actionData.push('consume');
     combat.prayerData.push(combat.prayerSacrifice);
     console.log(`Sacrificing: ${combat.prayerSacrifice} - ${combat.prayerSacrificeName}?`);
     combat.playerEffects = combat.playerEffects.filter(effect => {
-        if (effect.prayer !== combat.prayerSacrifice || effect.name !== combat.prayerSacrificeName) return true; // || effect.enemyName !== combat.computer.name
+        if (effect.id !== combat.prayerSacrificeId) return true; // || effect.enemyName !== combat.computer.name
         console.log(`Sacrificing: ${combat.prayerSacrifice} - ${combat.prayerSacrificeName}!`);
         const matchingWeapon = combat.weapons.find(weapon => weapon?._id === effect.weapon.id);
         const matchingWeaponIndex = combat.weapons.indexOf(matchingWeapon);
@@ -2439,6 +2445,7 @@ function consumePrayerSplitter(combat: Combat): any {
 
     combat.playerAction = 'prayer';
     combat.prayerSacrifice = '';
+    combat.prayerSacrificeId = '';
     combat.prayerSacrificeName = '';
     combat.action = '';
     if (combat.prayerSacrifice !== 'Heal' && combat.realizedPlayerDamage > 0) combat.computerDamaged = true;
@@ -2461,6 +2468,7 @@ function consumePrayerSplitter(combat: Combat): any {
         playerWin: combat.playerWin,
         playerActionDescription: combat.playerActionDescription,
         prayerSacrifice: combat.prayerSacrifice,
+        prayerSacrificeId: combat.prayerSacrificeId,
         prayerSacrificeName: combat.prayerSacrificeName,
         
         computerDamaged: combat.computerDamaged,

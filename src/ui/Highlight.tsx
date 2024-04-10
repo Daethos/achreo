@@ -28,10 +28,13 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
 
     createEffect(() => {
         if (inventoryType() === 'weaponOne') {
+            console.log('Weapon', weaponCompared());
             setTrueType(weaponCompared());
         } else if (inventoryType() === 'ringOne') {
+            console.log('Ring', ringCompared());
             setTrueType(ringCompared());
         } else {
+            console.log('Else', inventoryType());
             setTrueType(inventoryType());
         };
         canUpgrade(pouch, highlighted()?.item?.name, highlighted()?.item?.rarity as string);
@@ -79,10 +82,13 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
         let type;
         console.log(inventoryType(), 'Inventory Type', weaponCompared(), 'Weapon Compared', ringCompared(), 'Ring Compared');
         if (inventoryType() === 'weaponOne') {
+            console.log('Weapon', weaponCompared());
             type = weaponCompared();
         } else if (inventoryType() === 'ringOne') {
             type = ringCompared();
+            console.log('Ring', ringCompared());
         } else {
+            console.log('Else', inventoryType());
             type = inventoryType();
         };
         EventBus.emit('set-equipper', { type, item: highlighted()?.item });

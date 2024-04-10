@@ -567,12 +567,14 @@ export default class Player extends Entity {
         this.sendEnemies(this.targets);
         this.scene.combatMachine.clear(enemy);
         if (this.targets.every(obj => !obj.inCombat)) {
-            this.inCombat = false;
-            this.attacking = undefined;
-            if (this.currentTarget) {
-                // this.currentTarget.clearTint();
-                this.currentTarget = undefined;
-            };
+            console.log('%c All Enemies Defeated!', 'color: #ffc700');
+            // this.inCombat = false;
+            // this.attacking = undefined;
+            // if (this.currentTarget) {
+            //     // this.currentTarget.clearTint();
+            //     this.currentTarget = undefined;
+            // };
+            this.disengage();
         } else {
             if (this.currentTarget.enemyID === enemy) { // Was targeting the enemy that was defeated
                 // this.currentTarget.clearTint();
@@ -667,7 +669,7 @@ export default class Player extends Entity {
                     console.log(other, 'Other')
                     const isNewEnemy = this.isNewEnemy(other.gameObjectB);
                     console.log(`%c Is New Enemy: ${isNewEnemy}`, 'color: #ff0000');
-                    if (!isNewEnemy) return;
+                    // if (!isNewEnemy) return;
                     // if (this.shouldPlayerEnterCombat(other.gameObjectB)) {
                     //     this.enterCombat(other);
                     // };
@@ -981,7 +983,7 @@ export default class Player extends Entity {
 
     onConsumeExit = () => {
         if (this.scene.state.playerEffects.length === 0) return;
-        this.scene.combatMachine.action({ type: 'Consume', data: this.scene.state.playerEffects });        
+        this.scene.combatMachine.action({ type: 'Consume', data: this.scene.state.playerEffects[0].id });        
         this.scene.useStamina(PLAYER.STAMINA.CONSUME);
     };
 
@@ -1451,6 +1453,7 @@ export default class Player extends Entity {
                 return false;
             };
             if (gameObject.npcType && playerCombat) {
+                console.log('NPC Type and Player in Combat')
                 this.scene.combatEngaged(false);
                 this.inCombat = false;
             };
@@ -1458,16 +1461,17 @@ export default class Player extends Entity {
         });
         this.sendEnemies(this.targets);
         if (!this.targets.length && this.scene.state.computer) {
-            console.log('!this.targets.length && this.scene.state.computer aka No Targets and a Computer')
+            console.log('No Targets and a Computer loaded in State, clearing State')
             this.scene.clearNAEnemy();
         };
 
         const someInCombat = this.targets.some(gameObject => gameObject.inCombat);
         if (someInCombat && !playerCombat) {
+            console.log('someInCombat && !playerCombat')
             this.scene.combatEngaged(true);
             this.inCombat = true;
-        } else if (!someInCombat && playerCombat && !this.isStealthing) {
-            console.log('!someInCombat && playerCombat && !this.isStealthing')
+        } else if (!someInCombat && playerCombat && !this.isStealthing && this.currentTarget === undefined) {
+            console.log('The player is not stealthed, in combat, and no enemies are in combat, clearing combat')
             this.scene.clearNAEnemy();
             this.scene.combatEngaged(false);
             this.inCombat = false;

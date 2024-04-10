@@ -144,7 +144,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     startingSpeed = (entity) => {
         let speed = (this.name === 'player' ? 1.5: 1.5); // PLAYER.SPEED.INITIAL
-        console.log(speed, 'starting speed')
         const helmet = entity.helmet.type;
         const chest = entity.chest.type;
         const legs = entity.legs.type;
@@ -171,7 +170,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         addModifier(chest);
         addModifier(legs);
         speed += modifier;
-        console.log(speed, 'ending speed')
         return speed;
     };
 
@@ -382,14 +380,17 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         // let body = other.pair.gameObjectB.body; 
         let offset = Phaser.Physics.Matter.Matter.Vector.mult(other.pair.collision.normal, other.pair.collision.depth); 
         let collisionPoint = Phaser.Physics.Matter.Matter.Vector.add(offset, bodyPosition);
-        this.knockbackDirection = this.flipX ? Phaser.Physics.Matter.Matter.Vector.sub(collisionPoint, bodyPosition) : Phaser.Physics.Matter.Matter.Vector.sub(bodyPosition, collisionPoint);
+        this.knockbackDirection = this.flipX 
+            ? Phaser.Physics.Matter.Matter.Vector.sub(collisionPoint, bodyPosition) 
+            : Phaser.Physics.Matter.Matter.Vector.sub(bodyPosition, collisionPoint);
         this.knockbackDirection = Phaser.Physics.Matter.Matter.Vector.normalise(this.knockbackDirection); 
         
         console.log(this.knockbackDirection, 'Knockback Direction');
 
         const enemy = this.scene.getEnemy(other.pair.gameObjectB.enemyID);
+        console.log(enemy, 'Enemy Knockback');
         const accelerationFrames = 10; 
-        const accelerationStep = this.knockbackForce / accelerationFrames; 
+        const accelerationStep = 0.1; // this.knockbackForce / accelerationFrames
         const dampeningFactor = 0.9; 
         const knockbackDuration = 500;
         let currentForce = 0; 
@@ -397,19 +398,20 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const knockbackLoop = (timestamp) => {
             if (!startTime) startTime = timestamp;
             const elapsed = timestamp - startTime;
-            console.log(`Knockback elapsed / knockbackDuration: ${elapsed} / ${knockbackDuration}`);
+            // console.log(`Knockback elapsed / knockbackDuration: ${elapsed} / ${knockbackDuration}`);
 
             if (elapsed >= knockbackDuration) {
                 return;
             };
 
             if (currentForce < this.knockbackForce) currentForce += accelerationStep;
-            const forceX = (this.knockbackDirection.x * currentForce) * (this.flipX ? -25 : 25);
-            const forceY = (this.knockbackDirection.y * currentForce) * (this.flipX ? -25 : 25);
+            const forceX = (this.knockbackDirection.x * currentForce) * (this.flipX ? -5 : 5);
+            const forceY = (this.knockbackDirection.y * currentForce) * (this.flipX ? -5 : 5);
             console.log(`Knockback forceX, forceY: ${forceX}, ${forceY}`);
-            enemy.setVelocityX(forceX);
-            enemy.setVelocityY(forceY);
-            console.log(`Knockback currentForce: ${currentForce}`);
+            // enemy.setVelocityX(forceX);
+            // enemy.setVelocityY(forceY);
+            enemy.applyForce({ x: forceX, y: forceY });
+            // console.log(`Knockback currentForce: ${currentForce}`);
             currentForce *= dampeningFactor;
             requestAnimationFrame(knockbackLoop);
         };
@@ -417,9 +419,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         let startTime = undefined;
         requestAnimationFrame(knockbackLoop);
         
-        // if ("vibrate" in navigator) {
-        //     navigator.vibrate(100);
-        // };
+        if ("vibrate" in navigator) {
+            navigator.vibrate(100);
+        };
         // screenShake(this.scene);
     };
 
@@ -451,7 +453,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     checkActionSuccess = (entity, target) => {
-        if (entity === 'player') console.log(`Checking if ${entity} action: ${this.scene.state.action} is successful: ${this.actionAvailable}`);
         if (entity === 'player' && this.actionAvailable && this.triggeredActionAvailable) {
             this.actionSuccess = true;
             this.attackedTarget = this.triggeredActionAvailable;

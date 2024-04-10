@@ -1563,9 +1563,8 @@ export default class Player extends Entity {
                 this.scene.combatMachine.action({ type: 'Player', data: { playerAction: { action: action, counter: this.scene.state.counterGuess }, enemyID: this.attackedTarget.enemyID, ascean: this.attackedTarget.ascean, damageType: this.attackedTarget.currentDamageType, combatStats: this.attackedTarget.combatStats, weapons: this.attackedTarget.weapons, health: this.attackedTarget.health, actionData: { action: this.attackedTarget.currentAction, counter: this.attackedTarget.counterAction }} });
             };
         };
-        if (this.actionTarget) this.knockback(this.actionTarget); // actionTarget
+        // if (this.actionTarget && !this.isRanged) this.knockback(this.actionTarget); // actionTarget
         if (this.isStealthing) {
-            console.log(`%c Exiting Stealth`, 'color: #ff0000');
             this.scene.stun(this.attackedTarget.enemyID);
             this.isStealthing = false;
             this.scene.combatEngaged(true);
@@ -1824,7 +1823,7 @@ export default class Player extends Entity {
                 this.scene.particleManager.update(this, this.particleEffect);
             };
         };
-        if (this.inCombat && !this.scene.combatTimer) this.scene.startCombatTimer();
+        // if (this.inCombat && !this.scene.combatTimer) this.scene.startCombatTimer();
         if (this.inCombat && !this.healthbar.visible) this.healthbar.setVisible(true);
         if (this.currentWeaponSprite !== this.assetSprite(this.scene.state.weapons[0])) {
             this.currentWeaponSprite = this.assetSprite(this.scene.state.weapons[0]);

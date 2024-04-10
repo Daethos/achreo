@@ -1,4 +1,4 @@
-import { Accessor, For, createEffect } from "solid-js";
+import { Accessor, For } from "solid-js";
 import { useResizeListener, DIMS } from "../utility/dimensions";
 import { Menu } from "../utility/screens";
 
@@ -13,10 +13,6 @@ export const MenuAscean = ({ menu, viewAscean, loadAscean }: IProps) => {
         const newDesc = desc.split(' ').slice(0, 3).join(' ') + (desc.length > 4 ? '...' : '');
         return newDesc;
     };
-    
-    createEffect(() => { 
-        console.log(dimensions());
-    });
 
     const style = (m: Accessor<Menu>, d: Accessor<DIMS>) => {
         return {

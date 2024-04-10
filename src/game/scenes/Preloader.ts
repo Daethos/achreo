@@ -64,6 +64,7 @@ export class Preloader extends Scene {
 
         this.load.audio('cymbal', '../assets/sounds/cymbal-long-2.wav');
         this.load.audio('background', '../assets/sounds/background.mp3');
+        this.load.audio('combat', '../assets/sounds/combat.mp3');
         this.load.audio('blink', '../assets/sounds/blink.wav');
         this.load.audio('caerenic', '../assets/sounds/caerenic.wav');
         this.load.audio('consume', '../assets/sounds/consume.wav');
@@ -92,6 +93,7 @@ export class Preloader extends Scene {
         this.load.audio('counter', '../assets/sounds/counter-success.mp3');
         this.load.audio('weaponOrder', '../assets/sounds/weapon-order.mp3');
         this.load.audio('phenomena', '../assets/sounds/phenomena.mp3');
+        this.load.audio('TV_Button_Press', '../assets/sounds/TV_Button_Press.wav');
         
         this.assets = sanitize();
 

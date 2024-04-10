@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { EventBus } from '../game/EventBus';
 
 const FORCE = {
-    MULTIPLIER: 0.075,
+    MULTIPLIER: 0.1,
 };
 
 export default class Joystick extends Phaser.GameObjects.Container {

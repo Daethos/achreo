@@ -78,18 +78,19 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 
     private addButtons = (scene: Game): void => {
-        const centerActionX = scene.cameras.main.width / 1.25; // X-coordinate of the center of the circle
-        const centerActionY = scene.cameras.main.height / 1.35; // Y-coordinate of the center of the circle
+        const { width, height } = scene.cameras.main;
+        const centerActionX = width * 0.825; // / 1.25
+        const centerActionY = height * 0.75; // / 1.35
+         
+        const centerSpecialX = width * 0.7675; // width * 0.725 || / 1.375
+        const centerSpecialY = height * 0.6125; // height * 0.6 || / 1.675
         
-        const centerSpecialX = scene.cameras.main.width / 1.375;
-        const centerSpecialY = scene.cameras.main.height / 1.675;
-        
-        const radius = scene.cameras.main.height / 1.75; // Radius of the circle
+        const radius = height / 2; // Radius of the circle || 1.75
         const startAngle = Math.PI; // Start angle (180 degrees) for the quarter circle
         const endAngle = Math.PI / 2; // End angle (90 degrees) for the quarter circle 
 
         ACTIONS.forEach((element, index) => {
-            const angle = startAngle - (index * (startAngle - endAngle)) / (3.57);
+            const angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
             const buttonX = centerActionX + radius * Math.cos(angle);
             const buttonY = centerActionY - radius * Math.sin(angle); // Negative sign for Y to start from top
             

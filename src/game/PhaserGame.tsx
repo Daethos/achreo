@@ -10,8 +10,8 @@ import { GameState, initGame } from '../stores/game';
 import Equipment, { getOneRandom, upgradeEquipment } from '../models/equipment';
 import Settings from '../models/settings';
 import BaseUI from '../ui/BaseUI';
-import { asceanCompiler } from '../utility/ascean';
-import { deleteEquipment, getInventory } from '../assets/db/db';
+import { Compiler, asceanCompiler } from '../utility/ascean';
+import { deleteEquipment, getAscean, getInventory, populate } from '../assets/db/db';
 
 export interface IRefPhaserGame {
     game: Phaser.Game | null;
@@ -121,20 +121,20 @@ export const PhaserGame = (props: IProps) => {
             });                
             EventBus.emit('update-ascean', save);
 
-            setCombat({
-                ...combat(),
-                player: save,
-                playerHealth: save.health.max as number,
-                newPlayerHealth: save.health.current as number,
-                weapons: [hyd?.combatWeaponOne, hyd?.combatWeaponTwo, hyd?.combatWeaponThree],
-                weaponOne: hyd?.combatWeaponOne,
-                weaponTwo: hyd?.combatWeaponTwo,
-                weaponThree: hyd?.combatWeaponThree,
-                playerAttributes: hyd?.attributes,
-                playerDefense: hyd?.defense,
-                playerDefenseDefault: hyd?.defense,
-            });
-            setStamina(hyd?.attributes?.stamina as number);
+            // setCombat({
+            //     ...combat(),
+            //     player: save,
+            //     playerHealth: save.health.max as number,
+            //     newPlayerHealth: save.health.current as number,
+            //     weapons: [hyd?.combatWeaponOne, hyd?.combatWeaponTwo, hyd?.combatWeaponThree],
+            //     weaponOne: hyd?.combatWeaponOne,
+            //     weaponTwo: hyd?.combatWeaponTwo,
+            //     weaponThree: hyd?.combatWeaponThree,
+            //     playerAttributes: hyd?.attributes,
+            //     playerDefense: hyd?.defense,
+            //     playerDefenseDefault: hyd?.defense,
+            // });
+            // setStamina(hyd?.attributes?.stamina as number);
         } catch (err: any) {
             console.log(err, '<- Error in the Controller Updating the Level!')
         };
@@ -217,47 +217,70 @@ export const PhaserGame = (props: IProps) => {
         };
         
         newAscean = { ...newAscean, inventory: inventory };
-        const res = asceanCompiler(newAscean);
+        
+        // const res = asceanCompiler(newAscean);
+        // setCombat({
+        //     ...combat(),
+        //     player: res?.ascean,
+        //     playerHealth: res?.ascean.health.max as number,
+        //     newPlayerHealth: res?.ascean.health.current as number,
+        //     weapons: [res?.combatWeaponOne, res?.combatWeaponTwo, res?.combatWeaponThree],
+        //     weaponOne: res?.combatWeaponOne,
+        //     weaponTwo: res?.combatWeaponTwo,
+        //     weaponThree: res?.combatWeaponThree,
+        //     playerAttributes: res?.attributes,
+        //     playerDefense: res?.defense,
+        //     playerDefenseDefault: res?.defense,
+        //     playerDamageType: res?.combatWeaponOne?.damageType?.[0] as string
+        // });
+        // setGame({ ...game(), inventory: inventory });
+        // setStamina(res?.attributes?.stamina as number);
+
+        EventBus.emit('equip-sound');
+        EventBus.emit('speed', newAscean);
+        EventBus.emit('update-ascean', newAscean);
+        // EventBus.emit('quick-ascean', newAscean);
+        // EventBus.emit('update-full-request');
+    };
+
+    function setPlayer(stats: Compiler) {
+        console.log(stats, 'Setting Player');
         setCombat({
             ...combat(),
-            player: res?.ascean,
-            playerHealth: res?.ascean.health.max as number,
-            newPlayerHealth: res?.ascean.health.current as number,
-            weapons: [res?.combatWeaponOne, res?.combatWeaponTwo, res?.combatWeaponThree],
-            weaponOne: res?.combatWeaponOne,
-            weaponTwo: res?.combatWeaponTwo,
-            weaponThree: res?.combatWeaponThree,
-            playerAttributes: res?.attributes,
-            playerDefense: res?.defense,
-            playerDefenseDefault: res?.defense,
-            playerDamageType: res?.combatWeaponOne?.damageType?.[0] as string
+            player: stats.ascean,
+            playerHealth: stats.ascean.health.max as number,
+            newPlayerHealth: stats.ascean.health.current as number,
+            weapons: [stats.combatWeaponOne, stats.combatWeaponTwo, stats.combatWeaponThree],
+            weaponOne: stats.combatWeaponOne,
+            weaponTwo: stats.combatWeaponTwo,
+            weaponThree: stats.combatWeaponThree,
+            playerAttributes: stats.attributes,
+            playerDefense: stats.defense,
+            playerDefenseDefault: stats.defense,
+            playerDamageType: stats.combatWeaponOne.damageType?.[0] as string,
         });
-        setGame({ ...game(), inventory: inventory });
-        setStamina(res?.attributes?.stamina as number);
+        setStamina(stats.attributes.stamina as number);
+        setGame({ ...game(), inventory: stats.ascean.inventory });
+    };
 
-        EventBus.emit('speed', res?.ascean);
-        // EventBus.emit('quick-ascean', res?.ascean);
-        EventBus.emit('update-ascean', res?.ascean);
-        // EventBus.emit('update-full-request');
-        EventBus.emit('equip-sound');
+    function requestCombat() {
+        try {
+            EventBus.emit('combat', combat())
+        } catch (err: any) {
+            console.warn(err, 'Error Requesting Combat');
+        };
     };
 
     async function upgradeItem(data: any) {
         try {
             const item: Equipment[] = await upgradeEquipment(data) as Equipment[];
-            console.log(item, 'Upgraded Equipment');
+            // console.log(item, 'Upgraded Equipment');
 
             let itemsToRemove = data.upgradeMatches;
-    
             if (itemsToRemove.length > 3) {
                 itemsToRemove = itemsToRemove.slice(0, 3);
             };
             const itemsIdsToRemove = itemsToRemove.map((itr: Equipment) => itr._id);
-
-            // let inventory: Equipment[] = 
-            //     props.ascean().inventory.length > 0 ? 
-            //     [ ...props.ascean().inventory, ...item ] : 
-            //     item as Equipment[];
 
             let inventory: Equipment[] = game().inventory?.length > 0 ? [ ...game().inventory ] : [];
             inventory.push(item[0]);
@@ -300,7 +323,9 @@ export const PhaserGame = (props: IProps) => {
     };
 
     async function createUi() {
-        const res = asceanCompiler(props.ascean());
+        const fresh = await getAscean(props.ascean()._id);
+        const pop = await populate(fresh);
+        const res = asceanCompiler(pop);
         const cleanCombat: Combat = { 
             ...combat(), 
             player: res?.ascean, 
@@ -344,6 +369,7 @@ export const PhaserGame = (props: IProps) => {
 
         EventBus.on('main-menu', (_sceneInstance: Phaser.Scene) => props.setMenu({ ...props?.menu, gameRunning: false }));
         EventBus.on('start-game', () => setLive(!live()));
+        EventBus.on('set-player', setPlayer);
 
         EventBus.on('add-item', (e: Equipment[]) => {
             const cleanInventory = [...game().inventory];
@@ -383,26 +409,10 @@ export const PhaserGame = (props: IProps) => {
 
         EventBus.on('fetch-enemy', fetchEnemy);
         EventBus.on('request-ascean', () => {
-            const res = asceanCompiler(props.ascean());
-            EventBus.emit('ascean', res?.ascean);
+            // const res = asceanCompiler(props.ascean());
+            EventBus.emit('ascean', props.ascean());
         });
-        EventBus.on('request-combat', () => {
-            const res = asceanCompiler(props.ascean());
-            const cleanCombat: Combat = { 
-                ...combat(), 
-                player: res?.ascean, 
-                weapons: [res?.combatWeaponOne, res?.combatWeaponTwo, res?.combatWeaponThree],
-                playerAttributes: res?.attributes,
-                playerDefense: res?.defense,
-                playerDefenseDefault: res?.defense,
-                weaponOne: res?.combatWeaponOne,
-                weaponTwo: res?.combatWeaponTwo,
-                weaponThree: res?.combatWeaponThree,
-            };
-            setCombat(cleanCombat);
-            setStamina(res?.attributes?.stamina as number);
-            EventBus.emit('combat', cleanCombat)
-        });
+        EventBus.on('request-combat', requestCombat);
         EventBus.on('request-game', () => EventBus.emit('game', game()));
 
         EventBus.on('setup-enemy', (e: any) => {
@@ -575,6 +585,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('current-scene-ready');
             EventBus.removeListener('main-menu');
             EventBus.removeListener('start-game');
+            EventBus.removeListener('set-player');
             EventBus.removeListener('add-item');
             EventBus.removeListener('clear-enemy');
             EventBus.removeListener('fetch-enemy'); 

@@ -231,6 +231,7 @@ export default class Enemy extends Entity {
                     this.scene.player.targets.push(this);
                     this.scene.player.sendEnemies(this.scene.player.targets);
                 };
+                this.scene.player.attacking = this;
                 this.scene.player.currentTarget = this;
             })
             .on('pointerout', () => {
@@ -449,6 +450,8 @@ export default class Enemy extends Entity {
             console.log('Creating Combat --- newEnemy: ', newEnemy)
             combat.gameObjectB.targets.push(this);
             this.attacking = combat.gameObjectB;
+            combat.gameObjectB.attacking = this;
+            combat.gameObjectB.currentTarget = this;
             this.scene.setupEnemy(this);
             this.inCombat = true;
             if (this.healthbar) this.healthbar.setVisible(true);

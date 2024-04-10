@@ -61,10 +61,11 @@ export type Compiler = {
 };
 
 const WEIGHTS = {
-    MAJOR: 2,
+    MAJOR: 4,
     MINOR: 8,
-    MODIFIER: 3,
-}
+    MODIFIER: 2,
+    ATTRIBUTE_START: 10,
+};
 
 // ================================== HELPER FUNCTIONS =================================== \\
 const attributeCompiler = (ascean: Ascean, rarities: { helmet: number; chest: number; legs: number; ringOne: number; ringTwo: number; amulet: number; shield: number; trinket: number }): CombatAttributes => {
@@ -143,12 +144,12 @@ const attributeCompiler = (ascean: Ascean, rarities: { helmet: number; chest: nu
     newAttributes.totalKyosir = Math.round(newAttributes.totalKyosir);
 
     // Attribute Modifier
-    newAttributes.strengthMod =  Math.floor((newAttributes.totalStrength - 10) / 2);
-    newAttributes.agilityMod =  Math.floor((newAttributes.totalAgility - 10) / 2);
-    newAttributes.constitutionMod =  Math.floor((newAttributes.totalConstitution - 10) / 2);
-    newAttributes.achreMod =  Math.floor((newAttributes.totalAchre - 10) / 2);
-    newAttributes.caerenMod =  Math.floor((newAttributes.totalCaeren - 10) / 2);
-    newAttributes.kyosirMod =  Math.floor((newAttributes.totalKyosir - 10) / 2);
+    newAttributes.strengthMod =  Math.floor((newAttributes.totalStrength - WEIGHTS.ATTRIBUTE_START) / WEIGHTS.MODIFIER);
+    newAttributes.agilityMod =  Math.floor((newAttributes.totalAgility - WEIGHTS.ATTRIBUTE_START) / WEIGHTS.MODIFIER);
+    newAttributes.constitutionMod =  Math.floor((newAttributes.totalConstitution - WEIGHTS.ATTRIBUTE_START) / WEIGHTS.MODIFIER);
+    newAttributes.achreMod =  Math.floor((newAttributes.totalAchre - WEIGHTS.ATTRIBUTE_START) / WEIGHTS.MODIFIER);
+    newAttributes.caerenMod =  Math.floor((newAttributes.totalCaeren - WEIGHTS.ATTRIBUTE_START) / WEIGHTS.MODIFIER);
+    newAttributes.kyosirMod =  Math.floor((newAttributes.totalKyosir - WEIGHTS.ATTRIBUTE_START) / WEIGHTS.MODIFIER);
     
     // Equipment CombatAttributes
     newAttributes.equipStrength = newAttributes.totalStrength - newAttributes.rawStrength;
@@ -224,32 +225,40 @@ function gripCompiler(weapon: Equipment, attributes: CombatAttributes, ascean: A
 
     if (weapon.grip === 'One Hand' || weapon.type === 'Bow') {
         weapon.physicalDamage += 
-            (((weapon.agility + attributes.agilityMod) / WEIGHTS.MAJOR) + ((weapon.strength + attributes.strengthMod) / WEIGHTS.MODIFIER)) 
+            ((weapon.agility / WEIGHTS.MODIFIER + attributes.agilityMod) 
+            + (weapon.strength / WEIGHTS.MINOR + attributes.strengthMod / WEIGHTS.MAJOR)) 
             * physicalMultiplier;
         weapon.magicalDamage += 
-            (((weapon.achre + attributes.achreMod) / WEIGHTS.MAJOR) + ((weapon.caeren + attributes.caerenMod) / WEIGHTS.MINOR)) 
+            ((weapon.achre / WEIGHTS.MODIFIER + attributes.achreMod) 
+            + (weapon.caeren / WEIGHTS.MINOR + attributes.caerenMod / WEIGHTS.MAJOR)) 
             * magicalMultiplier;
 
         weapon.physicalDamage *= 1 
-            + (((weapon.agility + attributes.agilityMod) / WEIGHTS.MAJOR) + ((weapon.strength + attributes.strengthMod) / WEIGHTS.MODIFIER)) 
+            + ((weapon.agility / WEIGHTS.MODIFIER + attributes.agilityMod) 
+            + (weapon.strength / WEIGHTS.MINOR + attributes.strengthMod / WEIGHTS.MAJOR)) 
             / (100 + (20 / ascean.level));
         weapon.magicalDamage *= 1 
-            + (((weapon.achre + attributes.achreMod) / WEIGHTS.MAJOR) + ((weapon.caeren + attributes.caerenMod) / WEIGHTS.MINOR)) 
+            + ((weapon.achre / WEIGHTS.MODIFIER + attributes.achreMod) 
+            + (weapon.caeren / WEIGHTS.MINOR + attributes.caerenMod / WEIGHTS.MAJOR)) 
             / (100 + (20 / ascean.level));
     };
     if (weapon.grip === 'Two Hand' && weapon.type !== 'Bow') {
         weapon.physicalDamage += 
-            (((weapon.strength + attributes.strengthMod) / WEIGHTS.MAJOR) + ((weapon.agility + attributes.agilityMod) / WEIGHTS.MODIFIER)) 
+            ((weapon.strength / WEIGHTS.MODIFIER + attributes.strengthMod) 
+            + (weapon.agility / WEIGHTS.MINOR + attributes.agilityMod / WEIGHTS.MAJOR)) 
             * physicalMultiplier;
         weapon.magicalDamage += 
-            (((weapon.caeren + attributes.caerenMod) / WEIGHTS.MAJOR) + ((weapon.achre + attributes.achreMod) / WEIGHTS.MINOR)) 
+            ((weapon.caeren / WEIGHTS.MODIFIER + attributes.caerenMod) 
+            + (weapon.achre / WEIGHTS.MINOR + attributes.achreMod / WEIGHTS.MAJOR)) 
             * magicalMultiplier;
 
         weapon.physicalDamage *= 1 
-            + (((weapon.strength + attributes.strengthMod) / WEIGHTS.MAJOR) + ((weapon.agility + attributes.agilityMod) / WEIGHTS.MODIFIER)) 
+            + ((weapon.strength / WEIGHTS.MODIFIER + attributes.strengthMod) 
+            + (weapon.agility / WEIGHTS.MINOR + attributes.agilityMod / WEIGHTS.MAJOR)) 
             / (100 + (20 / ascean.level));
         weapon.magicalDamage *= 1 
-            + (((weapon.caeren + attributes.caerenMod) / WEIGHTS.MAJOR) + ((weapon.achre + attributes.achreMod) / WEIGHTS.MINOR)) 
+            + ((weapon.caeren / WEIGHTS.MODIFIER + attributes.caerenMod) 
+            + (weapon.achre / WEIGHTS.MINOR + attributes.achreMod / WEIGHTS.MAJOR)) 
             / (100 + (20 / ascean.level));    
     };
     return weapon;
@@ -263,11 +272,23 @@ function penetrationCompiler(weapon: any, attributes: CombatAttributes, combatSt
 
 function critCompiler(weapon: Equipment, attributes: CombatAttributes, combatStats: { criticalChance: number; criticalDamage: number }): Equipment { 
     if (weapon.attackType === 'Physical') {
-        weapon.criticalChance += combatStats.criticalChance + attributes.agilityMod + (weapon.agility / WEIGHTS.MAJOR);
-        weapon.criticalDamage += (combatStats.criticalDamage / 10) + ((attributes.constitutionMod + attributes.strengthMod + ((weapon.strength) / WEIGHTS.MAJOR)) / 50);
+        weapon.criticalChance += 
+            combatStats.criticalChance 
+            + (attributes.agilityMod / WEIGHTS.MODIFIER) 
+            + (weapon.agility / WEIGHTS.MAJOR);
+        weapon.criticalDamage += 
+            (combatStats.criticalDamage / WEIGHTS.ATTRIBUTE_START) 
+            + (attributes.constitutionMod + attributes.strengthMod + (weapon.strength / WEIGHTS.MAJOR)) 
+            / 50;
     } else {
-        weapon.criticalChance += combatStats.criticalChance + attributes.achreMod + (weapon.achre / WEIGHTS.MAJOR);
-        weapon.criticalDamage += (combatStats.criticalDamage / 10) + ((attributes.constitutionMod + attributes.caerenMod + ((weapon.caeren) / WEIGHTS.MAJOR)) / 50);
+        weapon.criticalChance += 
+            combatStats.criticalChance 
+            + (attributes.achreMod / WEIGHTS.MODIFIER) 
+            + (weapon.achre / WEIGHTS.MAJOR);
+        weapon.criticalDamage += 
+            (combatStats.criticalDamage / WEIGHTS.ATTRIBUTE_START) 
+            + (attributes.constitutionMod + attributes.caerenMod + (weapon.caeren / WEIGHTS.MAJOR)) 
+            / 50;
     };
     // weapon.criticalChance += combatStats.criticalChance + ((attributes.agilityMod + attributes.achreMod + ((weapon.agility + weapon.achre) / 2)) / 3);
     // weapon.criticalDamage += (combatStats.criticalDamage / 10) + ((attributes.constitutionMod + attributes.strengthMod + attributes.caerenMod + ((weapon.strength + weapon.caeren) / 2)) / 50);

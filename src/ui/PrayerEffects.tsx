@@ -31,7 +31,7 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
             console.log(`%c Effect Refreshing from ${timer()}s remaining to ${effect.endTime - combat().combatTimer}s end time...`, 'color: green');
             setEffectTimer(effect.endTime - combat().combatTimer);
         } else {
-            console.log(`%c Effect ${effect.prayer} ticking... ${timer()}s left. End Time: ${effect.endtime} / Combat Time: ${combat().combatTimer}`, `color: gold`)
+            // console.log(`%c Effect ${effect.prayer} ticking... ${timer()}s left. End Time: ${effect.endtime} / Combat Time: ${combat().combatTimer}`, `color: gold`)
             setEffectTimer(time => time - 1);
         };
     };
@@ -43,7 +43,7 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
 
     function canTick(prayer: StatusEffect, prayerTimer: number, combatTimer: number) {
         const canTick = prayerTimer % 3 === 0 && prayer.startTime !== combatTimer && (prayer.prayer === 'Heal' || prayer.prayer === 'Damage');
-        console.log(`%c Can Tick? ${canTick}`, "color: '#fdf6d8");
+        // console.log(`%c Can Tick? ${canTick}`, "color: '#fdf6d8");
         return canTick;    
     }; 
 

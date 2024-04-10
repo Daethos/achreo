@@ -17,6 +17,16 @@ export interface KVI {
     id?: string; 
 };
 
+function valid(key: string, value: string, state: Combat): boolean {
+    if (key === 'action' && value === 'counter' && state.computerAction === '') {
+        return false;
+    };
+    if (key === 'computerAction' && value === 'counter' && state.action === '') {
+        return false;
+    };
+    return true;
+}
+
 export default class CombatMachine {
     private context: any;
     private actionQueue: Action[];
@@ -38,12 +48,8 @@ export default class CombatMachine {
     private actionHandlers: { [key: string]: ActionHandler } = {
         Weapon: (data: KVI) => {
             const { key, value } = data;
-            console.log(`Weapon action: ${key} with value: ${value}`);
-            if (key === 'action' && value === 'counter' && this.state.computerAction === '') {
+            if (!valid(key, value as string, this.context)) {
                 return; // Don't allow counter if computer hasn't acted yet. Null action.
-            };
-            if (key === 'computerAction' && value === 'counter' && this.state.action === '') {
-                return; // Don't allow counter if player hasn't acted yet. Null action.
             };
             Dispatcher.weaponAction(data);
         },

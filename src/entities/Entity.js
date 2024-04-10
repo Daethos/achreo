@@ -91,7 +91,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.touching = [];
         this.knockbackActive = false;
         this.knocedBack = false; 
-        this.knockbackForce = 1; // 0.1 is for Platformer, trying to lower it for Top Down
+        this.knockbackForce = 0.1; // 0.1 is for Platformer, trying to lower it for Top Down
         this.knockbackDirection = {};
         this.knockbackDuration = 250;
         
@@ -174,7 +174,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     setGlow = (object, glow, type = undefined) => {
-
         if (!glow) {
             switch (type) {
                 case 'shield':
@@ -296,8 +295,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     hurt = () => {
         this.clearAnimations();
+        this.clearTint();
         this.anims.play('player_hurt', true).on('animationcomplete', () => {
             this.isHurt = false;
+            this.setTint(0x000000);    
         }); 
     }; 
     
@@ -390,7 +391,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const enemy = this.scene.getEnemy(other.pair.gameObjectB.enemyID);
         console.log(enemy, 'Enemy Knockback');
         const accelerationFrames = 10; 
-        const accelerationStep = 0.1; // this.knockbackForce / accelerationFrames
+        const accelerationStep = this.knockbackForce / accelerationFrames; // this.knockbackForce / accelerationFrames
         const dampeningFactor = 0.9; 
         const knockbackDuration = 500;
         let currentForce = 0; 

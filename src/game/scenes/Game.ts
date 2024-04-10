@@ -49,7 +49,8 @@ export class Game extends Scene {
     thumbSprite: Phaser.GameObjects.Sprite;
     postFxPipeline: any;
 
-    music: Phaser.Sound.BaseSound;
+    musicBackground: Phaser.Sound.BaseSound;
+    musicCombat: Phaser.Sound.BaseSound;
     spooky: Phaser.Sound.BaseSound;
     righteous: Phaser.Sound.BaseSound;
     wild: Phaser.Sound.BaseSound;
@@ -224,9 +225,10 @@ export class Game extends Scene {
         
         // =========================== Music =========================== \\
 
-        this.music = this.sound.add('background', { volume: this?.settings?.volume ?? 0 / 2, loop: true });
-        this.music.play();
-        // this.volumeEvent = () => EventBus.on('update-volume', (e) => this.music.setVolume(e));
+        this.musicBackground = this.sound.add('background', { volume: this?.settings?.volume ?? 0 / 2, loop: true });
+        this.musicBackground.play();
+        this.musicCombat = this.sound.add('combat', { volume: this?.settings?.volume, loop: true });
+        // this.volumeEvent = () => EventBus.on('update-volume', (e) => this.musicBackground.setVolume(e));
         this.spooky = this.sound.add('spooky', { volume: this?.settings?.volume });
         this.righteous = this.sound.add('righteous', { volume: this?.settings?.volume });
         this.wild = this.sound.add('wild', { volume: this?.settings?.volume });
@@ -585,8 +587,14 @@ export class Game extends Scene {
         console.log(`Combat engaged: ${bool}`);
         if (bool) {
             this.combatTimerText.setVisible(true);
+            this.musicCombat.play();
+            this.musicBackground.pause();
+            this.startCombatTimer();
         } else {
             this.combatTimerText.setVisible(false);
+            this.musicCombat.pause();
+            this.musicBackground.resume();
+            this.stopCombatTimer();    
         };
         // this.dispatch(getCombatFetch(bool));
     };
@@ -660,10 +668,18 @@ export class Game extends Scene {
 
     pause() {
         this.scene.pause();
-        this.music.pause();
+        if (!this.combat) {
+            this.musicBackground.pause();
+        } else {
+            this.musicCombat.pause();
+        };
     };
     resume() {
         this.scene.resume();
-        this.music.resume();
+        if (!this.combat) {
+            this.musicBackground.resume();
+        } else {
+            this.musicCombat.resume();
+        };
     };
 };

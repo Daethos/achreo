@@ -4,7 +4,7 @@ import AsceanBuilder from './components/AsceanBuilder';
 import { AsceanView } from './components/AsceanView';
 import { MenuAscean } from './components/MenuAscean';
 import { Preview } from './components/Preview';
-import { MainMenu } from './game/scenes/MainMenu';
+import { Game } from './game/scenes/Game';
 import { PhaserGame } from './game/PhaserGame';
 import { useResizeListener } from './utility/dimensions';
 import { initSettings } from './models/settings';
@@ -130,12 +130,12 @@ export default function App() {
     };
 
     function togglePause(pause: boolean): void {
-        const scene = phaserRef.scene as MainMenu;
+        const scene = phaserRef.scene as Game;
         if (scene) {
             if (pause) {
-                scene.scene.pause();
+                scene.pause();
             } else {
-                scene.scene.resume();
+                scene.resume();
             };
         };
         EventBus.emit('toggle-pause');
@@ -153,11 +153,13 @@ export default function App() {
     async function saveAscean(vaEsai: any): Promise<void> {
         try {
             const save = await updateAscean(vaEsai);
-            const res = await populate(save);
-            const beast = asceanCompiler(res);
-            const inv = await getInventory(beast?.ascean?._id as string);
-            const full = { ...beast?.ascean, inventory: inv };
+            const pop = await populate(save);
+            let hydrate = asceanCompiler(pop);
+            const inv = await getInventory(hydrate?.ascean?._id as string);
+            const full = { ...hydrate?.ascean, inventory: inv };
+            hydrate = { ...hydrate, ascean: full as Ascean } as Compiler;
             setAscean(full as Ascean);
+            EventBus.emit('set-player', hydrate);
         } catch (err: any) {
             console.warn('Error saving Ascean:', err);
         };
@@ -166,11 +168,13 @@ export default function App() {
     async function updateAscean(vaEsai: Ascean): Promise<void> {
         try {
             const save = await scrub(vaEsai);
-            const res = await populate(save);
-            const beast = asceanCompiler(res);
-            const inv = await getInventory(beast?.ascean?._id as string);
-            const full = { ...beast?.ascean, inventory: inv };
+            const pop = await populate(save);
+            let hydrate = asceanCompiler(pop);
+            const inv = await getInventory(hydrate?.ascean?._id as string);
+            const full = { ...hydrate?.ascean, inventory: inv };
+            hydrate = { ...hydrate, ascean: full as Ascean } as Compiler;
             setAscean(full as Ascean);
+            EventBus.emit('set-player', hydrate);
         } catch (err: any) {
             console.warn('Error updating Ascean:', err);
         };

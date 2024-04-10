@@ -426,16 +426,16 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         setRemoveModalShow(false);
     };
 
-    async function getMoney() {
-        const newAscean = { 
-            ...ascean(), 
-            currency: { 
-                ...ascean().currency, 
-                gold: ascean().currency.gold + 1000 
-            } 
-        };
-        EventBus.emit('update-ascean', newAscean);
-    };
+    // async function getMoney() {
+    //     const newAscean = { 
+    //         ...ascean(), 
+    //         currency: { 
+    //             ...ascean().currency, 
+    //             gold: ascean().currency.gold + 1000 
+    //         } 
+    //     };
+    //     EventBus.emit('update-ascean', newAscean);
+    // };
 
     return (
         <div style={{ 'z-index': 1, position: 'fixed', top: 0, left: 0 }}>

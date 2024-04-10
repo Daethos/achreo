@@ -91,7 +91,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.touching = [];
         this.knockbackActive = false;
         this.knocedBack = false; 
-        this.knockbackForce = 0.1; // 0.1 is for Platformer, trying to lower it for Top Down
+        this.knockbackForce = 1; // 0.1 is for Platformer, trying to lower it for Top Down
         this.knockbackDirection = {};
         this.knockbackDuration = 250;
         
@@ -385,26 +385,31 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.knockbackDirection = this.flipX ? Phaser.Physics.Matter.Matter.Vector.sub(collisionPoint, bodyPosition) : Phaser.Physics.Matter.Matter.Vector.sub(bodyPosition, collisionPoint);
         this.knockbackDirection = Phaser.Physics.Matter.Matter.Vector.normalise(this.knockbackDirection); 
         
+        console.log(this.knockbackDirection, 'Knockback Direction');
+
         const enemy = this.scene.getEnemy(other.pair.gameObjectB.enemyID);
-        const accelerationFrames = 12; 
+        const accelerationFrames = 10; 
         const accelerationStep = this.knockbackForce / accelerationFrames; 
         const dampeningFactor = 0.9; 
-        const knockbackDuration = 350;
+        const knockbackDuration = 500;
         let currentForce = 0; 
 
         const knockbackLoop = (timestamp) => {
             if (!startTime) startTime = timestamp;
             const elapsed = timestamp - startTime;
-            // console.log(`Knockback: ${elapsed} / ${knockbackDuration}`);
+            console.log(`Knockback elapsed / knockbackDuration: ${elapsed} / ${knockbackDuration}`);
+
             if (elapsed >= knockbackDuration) {
                 return;
             };
 
             if (currentForce < this.knockbackForce) currentForce += accelerationStep;
-            const forceX = (this.knockbackDirection.x * currentForce) * (this.flipX ? -5 : 5);
-            const forceY = (this.knockbackDirection.y * currentForce) * (this.flipX ? -5 : 5);
+            const forceX = (this.knockbackDirection.x * currentForce) * (this.flipX ? -25 : 25);
+            const forceY = (this.knockbackDirection.y * currentForce) * (this.flipX ? -25 : 25);
+            console.log(`Knockback forceX, forceY: ${forceX}, ${forceY}`);
             enemy.setVelocityX(forceX);
             enemy.setVelocityY(forceY);
+            console.log(`Knockback currentForce: ${currentForce}`);
             currentForce *= dampeningFactor;
             requestAnimationFrame(knockbackLoop);
         };

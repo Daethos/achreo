@@ -2433,6 +2433,7 @@ function consumePrayerSplitter(combat: Combat): any {
                 break;
             default: break;
         };
+        console.log('Effect Sacrificed');
         return false;
     });
 
@@ -2444,28 +2445,28 @@ function consumePrayerSplitter(combat: Combat): any {
     if (combat.playerWin === true) statusEffectCheck(combat);
 
     const changes = {
-        'actionData': combat.actionData,
-        'prayerData': combat.prayerData,
+        actionData: combat.actionData,
+        prayerData: combat.prayerData,
 
-        'playerEffects': combat.playerEffects,
-        'computerEffects': combat.computerEffects,
-        'weapons': combat.weapons,
-        'computerWeapons': combat.computerWeapons,
-        'playerDefense': combat.playerDefense,
-        'computerDefense': combat.computerDefense,
+        playerEffects: combat.playerEffects,
+        computerEffects: combat.computerEffects,
+        weapons: combat.weapons,
+        computerWeapons: combat.computerWeapons,
+        playerDefense: combat.playerDefense,
+        computerDefense: combat.computerDefense,
 
-        'newPlayerHealth': combat.newPlayerHealth,
-        'newComputerHealth': combat.newComputerHealth,
+        newPlayerHealth: combat.newPlayerHealth,
+        newComputerHealth: combat.newComputerHealth,
 
-        'playerWin': combat.playerWin,
-        'playerActionDescription': combat.playerActionDescription,
-        'prayerSacrifice': combat.prayerSacrifice,
-        'prayerSacrificeName': combat.prayerSacrificeName,
+        playerWin: combat.playerWin,
+        playerActionDescription: combat.playerActionDescription,
+        prayerSacrifice: combat.prayerSacrifice,
+        prayerSacrificeName: combat.prayerSacrificeName,
         
-        'computerDamaged': combat.computerDamaged,
-        'realizedPlayerDamage': combat.realizedPlayerDamage,
-        'action': combat.action,
-        'playerAction': combat.playerAction,
+        computerDamaged: combat.computerDamaged,
+        realizedPlayerDamage: combat.realizedPlayerDamage,
+        action: combat.action,
+        playerAction: combat.playerAction,
     };
 
     return changes;

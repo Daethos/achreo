@@ -217,6 +217,26 @@ export default class Enemy extends Entity {
         this.enemyStateListener();
         this.enemySensor = enemySensor;
         this.enemyCollision(enemySensor);
+        this.setInteractive(new Phaser.Geom.Rectangle(
+            0,
+            0,
+            this.width,
+            this.height
+        ), Phaser.Geom.Rectangle.Contains)
+            .on('pointerdown', () => {
+                console.log('pointerdown')
+                this.scene.setupEnemy(this);
+                this.setTint(0x00FF00);
+                const newEnemy = this.isNewEnemy(this.scene.player);
+                if (newEnemy) {
+                    this.scene.player.targets.push(this);
+                };
+                this.scene.player.currentTarget = this;
+            })
+            .on('pointerout', () => {
+                console.log('pointerout')
+                this.setTint(0x000000);
+            });
     };
 
     cleanUp() {
@@ -609,14 +629,14 @@ export default class Enemy extends Entity {
     }; 
     onChaseUpdate = (_dt) => {
         if (!this.attacking) return;
-        const rangeMultiplier = this.rangedDistanceMultiplier(1.75);
+        const rangeMultiplier = this.rangedDistanceMultiplier(3);
         const direction = this.attacking.position.subtract(this.position);
         const distance = direction.length();
         if (Math.abs(this.originPoint.x - this.position.x) > RANGE.LEASH * rangeMultiplier || Math.abs(this.originPoint.y - this.position.y) > RANGE.LEASH * rangeMultiplier || !this.inCombat || distance > RANGE.LEASH * rangeMultiplier) {
             this.stateMachine.setState(States.LEASH);
             return;
         };  
-        if (distance >= 175 * rangeMultiplier) {
+        if (distance >= 75 * rangeMultiplier) {
             if (this.path && this.path.length > 1) {
                 this.setVelocity(this.pathDirection.x * (this.speed), this.pathDirection.y * (this.speed)); // 2.5
             } else {

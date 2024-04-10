@@ -105,32 +105,15 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     playerWin = res.playerWin;
                     computerWin = res.computerWin;
                     break;
-                case 'Consume': 
-                    // let enemy = randomEnemy(1, 2);
-                    // enemy = populateEnemy(enemy);
-                    // const hyd = asceanCompiler(enemy);
+                case 'Consume':  
                     const consume = { 
                         ...combat(), 
                         prayerSacrifice: data.prayerSacrifice, 
-                        prayerSacrificeName: data.prayerSacrificeName,
-                        // computer: hyd?.ascean as Ascean, 
-                        // computerAttributes: hyd?.attributes as CombatAttributes, 
-                        // computerWeaponOne: hyd?.combatWeaponOne,
-                        // computerWeaponTwo: hyd?.combatWeaponTwo,
-                        // computerWeaponThree: hyd?.combatWeaponThree,
-                        // computerWeapons: [
-                        //     hyd?.combatWeaponOne as Equipment, 
-                        //     hyd?.combatWeaponTwo as Equipment, 
-                        //     hyd?.combatWeaponThree as Equipment
-                        // ],
-                        // computerHealth: hyd?.ascean?.health?.max as number,
-                        // newComputerHealth: hyd?.ascean?.health?.current as number,
-                        // computerDefense: hyd?.defense,
-                        // computerDefenseDefault: hyd?.defense,
+                        prayerSacrificeName: data.prayerSacrificeName, 
                     };
 
                     res = consumePrayer(consume) as Combat;
-                    // console.log(res, 'Consume Action');
+                    console.log(res, '-- Consume Action --');
                     EventBus.emit('blend-combat', { 
                         newComputerHealth: res.newComputerHealth,
                         newPlayerHealth: res.newPlayerHealth, 

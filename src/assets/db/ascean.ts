@@ -1513,25 +1513,25 @@ export const Asceans: any[] = [
             name: 'Parma',
             rarity: 'Uncommon',
         },"helmet":{
-            name: "Ly'kyr Hood",
+            name: "Li'kyr Hood",
             rarity: 'Uncommon',
         },"chest":{
-            name: "Ly'kyr Robes",
+            name: "Li'kyr Robes",
             rarity: 'Uncommon',
         },"legs":{
-            name: "Ly'kyr Pants",
+            name: "Li'kyr Pants",
             rarity: 'Uncommon',
         },"ringOne":{
-            name: "Kyrnaic Ring",
+            name: "Kyrison Ring",
             rarity: 'Uncommon',
         },"ringTwo":{
-            name: "Kyrnaic Ring",
+            name: "Kyrison Ring",
             rarity: 'Uncommon',
         },"amulet":{
-            name: "Kyrnaic Amulet",
+            name: "Kyrison Amulet",
             rarity: 'Uncommon',
         },"trinket":    {
-            name: "Kyrnaic Trinket",
+            name: "Kyrison Trinket",
             rarity: 'Uncommon',
         },
         "faith":"adherent",

@@ -124,6 +124,9 @@ export interface Combat {
     startedAggressive: boolean;
     enemyPersuaded: boolean;
     playerLuckout: boolean;
+    persuasionScenario: boolean;
+    luckoutScenario: boolean;
+    playerTrait: string;
 };
 
 export const initCombat: Combat = {
@@ -248,4 +251,7 @@ export const initCombat: Combat = {
     startedAggressive: false,
     enemyPersuaded: false,
     playerLuckout: false,
+    persuasionScenario: false,
+    luckoutScenario: false,
+    playerTrait: '',
 };

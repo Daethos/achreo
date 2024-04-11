@@ -13,6 +13,7 @@ import ActionButtons from '../../phaser/ActionButtons';
 import { GameState } from '../../stores/game';
 import Settings, { initSettings } from '../../models/settings';
 import Equipment from '../../models/equipment';
+import { States } from '../../phaser/StateMachine';
 
 export class Game extends Scene {
     gameText: Phaser.GameObjects.Text;
@@ -146,12 +147,11 @@ export class Game extends Scene {
         camera.startFollow(this.player);
         camera.setLerp(0.1, 0.1);
         camera.setBounds(0, 0, 4096, 4096);
-        const darkOverlay = this.add.graphics();
-        darkOverlay.fillStyle(0x000000, 0.35); // Black with 50% opacity
-        darkOverlay.fillRect(0, 0, 4096, 4096);
+        // const darkOverlay = this.add.graphics();
+        // darkOverlay.fillStyle(0x000000, 0.35); // Black with 50% opacity
+        // darkOverlay.fillRect(0, 0, 4096, 4096);
 
         var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
-        console.log(this.settings, this.settings?.postFx?.scanlinesEnable, 'Settings');
         this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main, { 
             enable: this.settings?.postFx?.enable,
             bloomRadius: 25,
@@ -278,6 +278,7 @@ export class Game extends Scene {
         this.actionButtonEvent();
         this.postFxEvent();
         this.lootDropEvent();
+        this.aggressiveEvent();
     };
 
     asceanEvent():void {
@@ -312,9 +313,22 @@ export class Game extends Scene {
         });
     };
 
+    aggressiveEvent(): void {
+        EventBus.on('aggressive-enemy', (e: {id: string, isAggressive: boolean}) => {
+            let enemy = this.enemies.find((enemy: any) => enemy.enemyID === e.id);
+            enemy.isAggressive = e.isAggressive;
+            if (e.isAggressive === true) {
+                enemy.attacking = this.player;
+                enemy.inCombat = true;
+                enemy.originPoint = new Phaser.Math.Vector2(enemy.x, enemy.y).clone();
+                enemy.stateMachine.setState(States.CHASE);
+            }
+        });
+    };
+
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
-        console.log(type, val, 'Type and Value') 
+        // console.log(type, val, 'Type and Value') 
         if (type === 'bloom') {
             this.postFxPipeline.setBloomRadius(val);
         };
@@ -405,7 +419,7 @@ export class Game extends Scene {
     });
 
     setPostFx = (settings: any, enable: boolean) => { 
-        console.log(settings, 'PostFx Settings being Set in Phaser')
+        // console.log(settings, 'PostFx Settings being Set in Phaser')
         if (enable) this.postFxPipeline.setEnable();
         this.postFxPipeline.setBloomRadius(25);
         this.postFxPipeline.setBloomIntensity(0.5);
@@ -600,7 +614,11 @@ export class Game extends Scene {
     };
     drinkFlask = () => EventBus.emit('drink-firewater');
     setupEnemy = (enemy: any) => {
-        const data = { id: enemy.enemyID, game: enemy.ascean, enemy: enemy.combatStats, health: enemy.health, isAggressive: enemy.isAggressive, startedAggressive: enemy.startedAggressive, isDefeated: enemy.isDefeated, isTriumphant: enemy.isTriumphant };
+        const data = { id: enemy.enemyID, game: enemy.ascean, enemy: enemy.combatStats, health: enemy.health, 
+            isAggressive: enemy.isAggressive, startedAggressive: enemy.startedAggressive, 
+            isDefeated: enemy.isDefeated, isTriumphant: enemy.isTriumphant,
+            isLuckout: enemy.isLuckout, isPersuaded: enemy.isPersuaded, playerTrait: enemy.playerTrait
+        };
         EventBus.emit('setup-enemy', data);
     };
     setupNPC = (npc: any) => {

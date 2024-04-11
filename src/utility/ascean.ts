@@ -35,6 +35,26 @@ export const initCharacter: CharacterSheet = {
     preference: 'Leather-Cloth',
 };
 
+export type LevelSheet = {
+    ascean: Ascean;
+    avarice: boolean;
+    currentHealth: number;
+    currency: { gold: number; silver: number; };
+    experience: number;
+    experienceNeeded: number;
+    faith: string;
+    firewater: { current: number; max: number; };
+    mastery: string;
+    opponent: number;
+    opponentExp: number;
+    constitution: number;
+    strength: number;
+    agility: number;
+    achre: number;
+    caeren: number;
+    kyosir: number;
+};
+
 export type CombatStats = {
     combatAttributes: CombatAttributes;
     damagePhysical: number;

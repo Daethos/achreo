@@ -18,6 +18,8 @@ import createStamina from './Stamina';
 // import Equipment, { getOneRandom } from '../models/equipment';
 import EnemyPreview from './EnemyPreview';
 import TutorialOverlay from '../utility/tutorial';
+import Dialog from './Dialog';
+import { LevelSheet } from '../utility/ascean';
 // import Equipment, { getOneRandom } from '../models/equipment';
 // import { populateEnemy, randomEnemy } from '../assets/db/db';
 // import { asceanCompiler } from '../utility/ascean';
@@ -39,7 +41,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     const [enemies, setEnemies] = createSignal<any[]>([]);
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [tutorial, setTutorial] = createSignal<string>('');
-    const [asceanState, setAsceanState] = createSignal({
+    const [asceanState, setAsceanState] = createSignal<LevelSheet>({
         ascean: ascean(),
         currency: ascean().currency,
         currentHealth: ascean().health.current,
@@ -84,7 +86,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     // };  
 
     // const deleteEquipment = async (eqp) => await eqpAPI.deleteEquipment(eqp); 
-    // const showDialog = async (e) => dispatch(setDialogTag(e));
+    const showDialog = (e: boolean) => EventBus.emit('blend-game', { showDialog: e, dialogTag: e });
     // const updateCombatTimer = (e: number) => setCombat({...(combat), combatTimer: e}); 
 
     const sendEnemyData = async () => EventBus.emit('get-enemy', combat().computer);
@@ -325,7 +327,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     usePhaserEvent('request-settings', sendSettings); // requestSettings
     
     // usePhaserEvent('clear-npc', clearNPC); 
-    // usePhaserEvent('show-dialog', showDialog); 
+    usePhaserEvent('show-dialog', showDialog); 
     // usePhaserEvent('update-sound', soundEffects); 
 
     usePhaserEvent('remove-enemy', filterEnemies);
@@ -382,9 +384,9 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         <Show when={game().lootDrops.length > 0 && game().showLoot}>
             <LootDropUI ascean={ascean} game={game} />
         </Show>
-        {/* { game().showDialog && game().dialogTag && (   
-            <StoryDialog state={combat} deleteEquipment={deleteEquipment} />
-        ) } */}
+        { game().showDialog && ( // && game().dialogTag   
+            <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} />
+        ) }
         {/* <button class='highlight superCenter' onClick={() => getExperience()}>
             Get Experience
         </button> */}

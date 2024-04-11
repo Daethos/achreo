@@ -466,14 +466,14 @@ export default class Player extends Entity {
         this.health = e.newPlayerHealth;
         this.healthbar.setValue(this.health);
         if (this.healthbar.getTotal() < e.playerHealth) this.healthbar.setTotal(e.playerHealth);
-        if (e.newPlayerHealth <= 0) {
-            // this.isDead = true;
-            this.inCombat = false;
-            this.attacking = undefined;
-            this.anims.play('player_pray', true).on('animationcomplete', () => {
-                this.anims.play('player_idle', true);
-            });
-        };
+        // if (e.newPlayerHealth <= 0) {
+        //     // this.isDead = true;
+        //     this.inCombat = false;
+        //     this.attacking = undefined;
+        //     this.anims.play('player_pray', true).on('animationcomplete', () => {
+        //         this.anims.play('player_idle', true);
+        //     });
+        // };
         this.checkWeapons(e.weapons[0], e.playerDamageType.toLowerCase());
     };
 
@@ -502,6 +502,18 @@ export default class Player extends Entity {
             this.defeatedEnemyCheck(e.enemyID);
             
             this.winningCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Victory', 3000, 'effect', true);    
+        };
+        if (e.newPlayerHealth <= 0 || e.computerWin) {
+            console.log('-- Lost! --', e.newPlayerHealth, 'Player Health', e.computerWin, 'Computer Win')
+            this.isDead = true;
+            this.inCombat = false;
+            this.attacking = undefined;
+            this.anims.play('player_pray', true).on('animationcomplete', () => {
+                this.anims.play('player_idle', true);
+            });
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Defeat', 3000, 'damage', true);
+            // this.scene.combatEngaged(false);
+            this.disengage();    
         };
     };
 
@@ -1462,7 +1474,8 @@ export default class Player extends Entity {
         this.sendEnemies(this.targets);
         if (!this.targets.length && this.scene.state.computer) {
             console.log('No Targets and a Computer loaded in State, clearing State')
-            this.scene.clearNAEnemy();
+            // this.scene.clearNAEnemy();
+            this.disengage();
         };
 
         const someInCombat = this.targets.some(gameObject => gameObject.inCombat);

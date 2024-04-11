@@ -1,3 +1,5 @@
+import { DialogNode, DialogNodeOption } from "../utility/DialogNode";
+
 export interface GameState {
     player: any;
     dialog: any;
@@ -6,6 +8,9 @@ export interface GameState {
     characterViews: string;
     controlSetting: string;
     traits: {} | any;
+    primary: any;
+    secondary: any;
+    tertiary: any;
 
     currentGame: boolean;
     gameTimer: number;
@@ -19,12 +24,14 @@ export interface GameState {
     selectedHighlight: string;
     scrollEnabled: boolean;
 
+    dialogTag: boolean;
     showCombat: boolean;
     showDialog: boolean;
     showInventory: boolean;
     showLoot: boolean;
     showPlayer: boolean;
 
+    currentIntent: string;
     inventory: any[];
     lootDrops: any[];
     merchantEquipment: any[];
@@ -38,6 +45,11 @@ export interface GameState {
     vibration: number;
     joystickSpeed: number;
     soundEffectVolume: number;
+
+    currentNodeIndex: number;
+    currentNode: DialogNode | undefined;
+    renderedOptions: DialogNodeOption[];
+    renderedText: string;
 };
 
 export const initGame: GameState = {
@@ -48,6 +60,9 @@ export const initGame: GameState = {
     characterViews: 'Statistics',
     controlSetting: 'Buttons',
     traits: {},
+    primary: {},
+    secondary: {},
+    tertiary: {},
 
     currentGame: false,
     gameTimer: 0,
@@ -61,6 +76,8 @@ export const initGame: GameState = {
     selectedHighlight: 'Weapon',
     scrollEnabled: false,
 
+    dialogTag: false,
+    currentIntent: 'challenge',
     showCombat: false,
     showDialog: false,
     showInventory: false,
@@ -80,4 +97,9 @@ export const initGame: GameState = {
     vibration: 100,
     joystickSpeed: 0,
     soundEffectVolume: 0.3,
+
+    currentNodeIndex: 0,
+    currentNode: undefined,
+    renderedOptions: [],
+    renderedText: '',
 };

@@ -13,7 +13,7 @@ const DISTANCE = {
     ATTACK: 35,
     MOMENTUM: 2,
     THRESHOLD: 75,
-    CHASE: 200,
+    CHASE: 75,
     RANGED_ALIGNMENT: 10,
     RANGED_MULTIPLIER: 3,
     DODGE: 1152, // 2304
@@ -182,10 +182,13 @@ export default class Enemy extends Entity {
         this.combatThreshold = 0;
         this.attackIsLive = false;
         this.isEnemy = true;
-        this.isAggressive = Math.random() > 0.25; // Math.random() > 0.5 || false
+        this.isAggressive = Math.random() > 0.5; // Math.random() > 0.5 || false
         this.startedAggressive = this.isAggressive;
         this.isDefeated = false;
         this.isTriumphant = false;
+        this.isLuckout = false;
+        this.isPersuaded = false;
+        this.playerTrait = '';
         this.currentWeapon = undefined;
         this.isCurrentTarget = false;
         this.counterAction = '';
@@ -249,6 +252,8 @@ export default class Enemy extends Entity {
         EventBus.on('combat', this.combatDataUpdate);
         EventBus.on('update-combat', this.combatDataUpdate); 
         EventBus.on('personal-update', this.personalUpdate);
+        EventBus.on('enemy-persuasion', this.persuasionUpdate);
+        EventBus.on('enemy-luckout', this.luckoutUpdate);
     };
 
     personalUpdate = (e) => {
@@ -302,6 +307,26 @@ export default class Enemy extends Entity {
         if (e.newPlayerHealth <= 0) this.clearCombat();
         this.checkMeleeOrRanged(e.computerWeapons?.[0]);
         if (this.currentRound !== e.combatRound) this.currentRound = e.combatRound;
+    };
+
+    persuasionUpdate = (e) => {
+        if (this.enemyID !== e.enemy) return;
+        console.log('Persuasion Update: ', e)
+        if (e.persuaded) {
+            this.isPersuaded = true;
+            this.playerTrait = e.persuasion;
+        };
+    };
+
+    luckoutUpdate = (e) => {
+        if (this.enemyID !== e.enemy) return;
+        console.log('Luckout Update: ', e)
+        if (e.luckout) {
+            this.isLuckout = true;
+            this.playerTrait = e.luck;
+            this.stateMachine.setState(States.DEFEATED);
+        };
+
     };
     
     enemyCollision = (enemySensor) => {
@@ -459,8 +484,6 @@ export default class Enemy extends Entity {
             this.stateMachine.setState(States.CHASE); 
             this.actionTarget = combat;
         } else {
-
-            
             // if (!combat.gameObjectB.attacking || !combat.gameObjectB.inCombat) { // !inCombat
             console.log('Not attacking or in combat');
             if (this.scene.state.enemyID !== this.enemyID) this.scene.setupEnemy(this);

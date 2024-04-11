@@ -1,0 +1,259 @@
+{
+    "nodes": [
+      {
+        "id": "0001",
+        "text": "Apologies for my Caerenesis, it rings and rhymes--your language's genesis. Just a moment you shall see, words string and set to harmony. Not to belie my intents brief, to whom are we in your belief? ^500...It seems to stir your hand to sheath.",
+        "options": [
+          {
+            "text": "Perhaps its anticipation of raising it in your name. I, ${ascean.name}, serve my life for yours, ${enemy.name}.",
+            "next": "0002",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": "",
+            "keywords": ["Faithful"]
+          },
+          {
+            "text": "I am ${ascean.name}, and well, I'm not certain of whom I witness. And yet, you evoke the feeling of... ${enemy.name}?",
+            "next": "0002",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Compliant"]
+          },
+          {
+            "text": "That's not how this works, 'friend.' I do not answer to vague apparitions of my mind. Who are you?",
+            "next": "0003",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Disobedient"]
+          },
+          {
+            "text": "I haven't moved a flicker, seems though you sense some thing sure about myself. And I am to believe you know not what you are?",
+            "next": "0003",
+            "npcIds": ["Deity"],
+            "conditions": [{ "key": "mastery", "operator": ">=", "value": "20" }],
+            "action": null,
+            "keywords": ["Unfaithful"]
+          }
+        ],
+        "npcIds": ["Deity"],
+        "rootId": "0001"
+      },
+      {
+        "id": "0002",
+        "text": "${ascean.name}, I have not regaled thought with humans in some time. Forgive me, I require from you a gift, for our tether is ^500 limited.",
+        "options": [
+          {
+            "text": "My liege.",
+            "next": "0006",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "keywords": ["Faithful"]
+          },
+          {
+            "text": "Stands to reason you may need aid, ${enemy.name}. What am I to perform?",
+            "next": "0006",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Compliant"]
+          },
+          {
+            "text": "Truly? We seem to be communing well. Already you ask for a gift?",
+            "next": "0006",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Disobedient"]
+          },
+          {
+            "text": "Oh come now, already wishing blood, pleghm, and ${ascean.mastery}? Who are you, really?",
+            "next": "0005",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Unfaithful"]
+          }
+        ],
+        "npcIds": ["Deity"],
+        "rootId": "0001"
+      },
+      {
+        "id": "0003",
+        "text": "This certainty I find amusing, though such vagaries fade in time. Once more, to whom are we to one another? To lack conviction of meeting one's mind and speech arrests but oneself in all action true.",
+        "options": [
+          {
+            "text": "I am no one, ${ascean.name}... ^1000 ... ^1000 And you are ${enemy.name}, aren't you?",
+            "next": "0002",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": "",
+            "keywords": ["Faithful"]
+          },
+          {
+            "text": "Yes, again you speak, and without answer. No answer that slake's my thirst, nor pitches my camp, nor warm's my body over moonless nights. Simply a denizen like the others.",
+            "next": "0004",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Disobedient"]
+          }
+        ],
+        "npcIds": ["Deity"],
+        "rootId": "0001"
+      },
+      {
+        "id": "0004",
+        "text": "Do not mistake this entreatment with an absence of my Caer upon you. That you may witness me echoes its tendrils.",
+        "options": [
+          {
+            "text": "Forgive my concern, ${enemy.name}, I have witnessed all manner of Chiomic cruelty and Tshaeral mengaerie. I am ${ascean.name}, in service to you my liege. ",
+            "next": "0002",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null
+          },
+          {
+            "text": "${enemy.name}. That's who you appear to be, whether your design or mine, ${ascean.name}.",
+            "next": "0002",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Compliant"]
+          },
+          {
+            "text": "I fear these little wants shall grow in desire, akin to such ill denizens I seek and sunder. Yet those reveal themselves with courtesy. Again I say, what are you?",
+            "next": "0005",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Unfaithful"]
+          }
+        ],
+        "npcIds": ["Deity"],
+        "rootId": "0001"
+      },
+      {
+        "id": "0005",
+        "text": "[ Frothing wonder spills to fill the edges of your mind, writhing through it wreaks to sense your tendrils of design.]",
+        "options": [
+          {
+            "text": "[ Accept the feeling of ${enemy.name} presenting themself before you. ]",
+            "next": "0007",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Faithful"]
+          },
+          {
+            "text": "[ Rebuke the calling of ${enemy.name} presenting themself before you. ]",
+            "next": "0009",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Unfaithful"]
+          }
+        ],
+        "npcIds": ["Deity"],
+        "rootId": "0001"
+      },
+      {
+        "id": "0006",
+        "text": "Nothing you truly possess, fleeting caer which resonates and imbues to you from its source. That of the fallen which come cross your way. This is not thankless, as I have gifted you a boon to augur brilliance.",
+        "options": [
+          {
+            "text": "I shall seek it at once, my liege.",
+            "next": "0007",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Faithful"]
+          },
+          {
+            "text": "Seems as though I'm able to help you as I help myself. Can't imagine the issue here.",
+            "next": "0007",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Compliant"]
+          },
+          {
+            "text": "Again with your vagueries, what is it you wish to leech from me?",
+            "next": "0007",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Disobedient"]
+          },
+          {
+            "text": "Suckling on the sieve of my struggles for your strength, what is this?",
+            "next": "0007",
+            "npcIds": ["Deity"],
+            "conditions": [{ "key": "mastery", "operator": ">=", "value": "20" }],
+            "action": null,
+            "keywords": ["Unfaithful"]
+          }
+        ],
+        "npcIds": ["Deity"],
+        "rootId": "0001"
+      },
+      {
+        "id": "0007",
+        "text": "I simply require your touch, if it pleases you.",
+        "options": [
+          {
+            "text": "[Reach out and touch ${enemy.name}]",
+            "next": "0008",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": "giveExp",
+            "keywords": ["Faithful"]
+          },
+          {
+            "text": "[Shirk from ${enemy.name} and deny this communion]",
+            "next": "0009",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Unfaithful"]
+          }
+        ],
+        "npcIds": ["Deity"],
+        "rootId": "0001"
+      },
+      {
+        "id": "0008",
+        "text": "[ You felt a surge of your caer blend into ${enemy.name}. This violent, violet burst interrupts your communion, leaving you breathless. ]",
+        "options": [
+          {
+            "text": "Serenity pervades the area, glittering from the point of your connection to ${enemy.name}, yourself unsure of what's to come.",
+            "next": "",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": "resolveDeity",
+            "keywords": [""]
+          }
+        ],
+        "npcIds": ["Deity"],
+        "rootId": "0001"
+      },
+      {
+        "id": "0009",
+        "text": "[ You Rebuked Touching '${enemy.name}.' This communion has faded for now. ]",
+        "options": [
+          {
+            "text": "As sure as you were to witness true mystery in this world, it's gone. Perhaps for the best. Keep your ${ascean.mastery} sharp, ${ascean.name}.",
+            "next": "",
+            "npcIds": ["Deity"],
+            "conditions": [],
+            "action": "resolveDeity",
+            "keywords": ["Faithful"]
+          }
+        ],
+        "npcIds": ["Deity"],
+        "rootId": "0001"
+      }
+    ]
+  }
+  

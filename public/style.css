@@ -127,7 +127,7 @@ body {
 
 .playerPortrait {
     font-family: 'Cinzel Regular';
-    font-weight: 600;
+    font-weight: 700;
     text-align: center;
     z-index: 1;
 }
@@ -371,6 +371,13 @@ body {
 
 .borderCircle {
     border-radius: 50%;
+}
+
+.dialog-buttons {
+    color: green;
+    font-variant: small-caps;
+    font-weight: 550;
+    font-size: 0.65em;
 }
 
 .spritePosition {

@@ -12,6 +12,8 @@ import Settings from '../models/settings';
 import BaseUI from '../ui/BaseUI';
 import { Compiler, asceanCompiler } from '../utility/ascean';
 import { deleteEquipment, getAscean, getInventory, populate } from '../assets/db/db';
+import { getNpcDialog } from '../utility/dialog';
+import { getAsceanTraits } from '../utility/traits';
 
 export interface IRefPhaserGame {
     game: Phaser.Game | null;
@@ -140,6 +142,38 @@ export const PhaserGame = (props: IProps) => {
         };
     };
 
+    function purchaseItem(purchase: { ascean: Ascean; item: Equipment; cost: { silver: number; gold: number; }; }) {
+        try {
+            let inventory = [ ...game().inventory ];
+            inventory.push(purchase.item);
+            let cost = {
+                silver: props.ascean().currency.silver - purchase.cost.silver,
+                gold: props.ascean().currency.gold - purchase.cost.gold
+            };
+            rebalanceCurrency(cost);
+            const update = {
+                ...props.ascean(),
+                currency: cost,
+                inventory: inventory
+            };
+            EventBus.emit('update-ascean', update);
+            EventBus.emit('purchase-sound');
+        } catch (err: any) {
+            console.warn('Error Purchasing Item', err.message);
+        };
+    };
+
+    function rebalanceCurrency(currency: { silver: number; gold: number; }) {
+        while (currency.silver < 0) {
+          currency.gold -= 1;
+          currency.silver += 100;
+        };
+        while (currency.gold < 0) {
+          currency.gold += 1;
+          currency.silver -= 100;
+        };
+    };
+
     function saveChanges(state: any) {
         try {
             console.log(state, 'State to Save');
@@ -215,36 +249,16 @@ export const PhaserGame = (props: IProps) => {
         } else {
             await deleteEquipment(oldEquipment?._id as string);
         };
-        
         newAscean = { ...newAscean, inventory: inventory };
         
-        // const res = asceanCompiler(newAscean);
-        // setCombat({
-        //     ...combat(),
-        //     player: res?.ascean,
-        //     playerHealth: res?.ascean.health.max as number,
-        //     newPlayerHealth: res?.ascean.health.current as number,
-        //     weapons: [res?.combatWeaponOne, res?.combatWeaponTwo, res?.combatWeaponThree],
-        //     weaponOne: res?.combatWeaponOne,
-        //     weaponTwo: res?.combatWeaponTwo,
-        //     weaponThree: res?.combatWeaponThree,
-        //     playerAttributes: res?.attributes,
-        //     playerDefense: res?.defense,
-        //     playerDefenseDefault: res?.defense,
-        //     playerDamageType: res?.combatWeaponOne?.damageType?.[0] as string
-        // });
-        // setGame({ ...game(), inventory: inventory });
-        // setStamina(res?.attributes?.stamina as number);
-
         EventBus.emit('equip-sound');
         EventBus.emit('speed', newAscean);
         EventBus.emit('update-ascean', newAscean);
-        // EventBus.emit('quick-ascean', newAscean);
-        // EventBus.emit('update-full-request');
     };
 
     function setPlayer(stats: Compiler) {
         console.log(stats, 'Setting Player');
+        const traits = getAsceanTraits(stats.ascean);
         setCombat({
             ...combat(),
             player: stats.ascean,
@@ -260,7 +274,7 @@ export const PhaserGame = (props: IProps) => {
             playerDamageType: stats.combatWeaponOne.damageType?.[0] as string,
         });
         setStamina(stats.attributes.stamina as number);
-        setGame({ ...game(), inventory: stats.ascean.inventory });
+        setGame({ ...game(), inventory: stats.ascean.inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary });
     };
 
     function requestCombat() {
@@ -343,7 +357,8 @@ export const PhaserGame = (props: IProps) => {
         setCombat(cleanCombat);
         setStamina(res?.attributes?.stamina as number);
         const inventory = await getInventory(props.ascean()._id);
-        setGame({ ...game(), inventory: inventory });
+        const traits = getAsceanTraits(props.ascean());
+        setGame({ ...game(), inventory: inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary });
     };
     
     createUi();
@@ -358,7 +373,7 @@ export const PhaserGame = (props: IProps) => {
 
         EventBus.on('current-scene-ready', (sceneInstance: Phaser.Scene) => {
             if (props.currentActiveScene) {
-                props.currentActiveScene(sceneInstance);
+                // props.currentActiveScene(sceneInstance);
                 setInstance("scene", sceneInstance);
             };
 
@@ -401,6 +416,9 @@ export const PhaserGame = (props: IProps) => {
                 combatEngaged: false,
                 isAggressive: false,
                 startedAggressive: false,
+                persuasionScenario: false,
+                luckoutScenario: false,
+                playerTrait: '',
                 playerWin: false,
                 computerWin: false,
                 enemyID: ''
@@ -416,6 +434,7 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('request-game', () => EventBus.emit('game', game()));
 
         EventBus.on('setup-enemy', (e: any) => {
+            // console.log(e, 'Enemy Setup')
             setCombat({
                 ...combat(),
                 computer: e.game,
@@ -433,10 +452,17 @@ export const PhaserGame = (props: IProps) => {
                 npcType: '',
                 isAggressive: e.isAggressive,
                 startedAggressive: e.startedAggressive,
+                persuasionScenario: e.isPersuaded,
+                enemyPersuaded: e.isPersuaded,
+                luckoutScenario: e.isLuckout,
+                playerLuckout: e.isLuckout,
+                playerTrait: e.playerTrait,
                 playerWin: e.isDefeated,
                 computerWin: e.isTriumphant,
-                enemyID: e.id
-            })
+                enemyID: e.id,
+            });
+            const dialog = getNpcDialog(e.enemy.name);
+            setGame({ ...game(), dialog: dialog });
         });
 
         EventBus.on('changeDamageType', (e: string) => setCombat({ ...combat(), playerDamageType: e }));
@@ -511,6 +537,7 @@ export const PhaserGame = (props: IProps) => {
         });
         EventBus.on('toggle-pause', () => setGame({ ...game(), pauseState: !game().pauseState }));
         EventBus.on('blend-combat', (e: any) => setCombat({ ...combat(), ...e }));
+        EventBus.on('blend-game', (e: any) => setGame({ ...game(), ...e }));
         // EventBus.on('update-combat', (e: Combat) => setCombat(e));
         EventBus.on('update-combat-player', (e: any) => setCombat({ ...combat(), player: e.ascean, playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, playerAttributes: e.attributes, playerDefense: e.defense, playerDefenseDefault: e.defense }));
         EventBus.on('update-combat-state', (e: { key: string; value: string }) => {
@@ -575,6 +602,19 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('create-enemy-prayer', (e: any) => {
             setCombat({ ...combat(), computerEffects: combat().computerEffects.length > 0 ? [...combat().computerEffects, e] : [e] });
         });
+        EventBus.on('purchase-item', purchaseItem);
+        EventBus.on('luckout', (e: { luck: string, luckout: boolean }) => {
+            const { luck, luckout } = e;
+            console.log(luck, luckout, 'Luckout');
+            EventBus.emit('enemy-luckout', { enemy: combat().enemyID, luckout, luck });
+            setCombat({ ...combat(), playerLuckout: luckout, playerTrait: luck, luckoutScenario: true });
+        });
+        EventBus.on('persuasion', (e: { persuasion: string, persuaded: boolean }) => {
+            const { persuasion, persuaded } = e;
+            console.log(persuasion, persuaded, 'Persuasion');
+            EventBus.emit('enemy-persuasion', { enemy: combat().enemyID, persuaded, persuasion });
+            setCombat({ ...combat(), playerTrait: persuasion, enemyPersuaded: persuaded, persuasionScenario: true });   
+        });
 
         onCleanup(() => {
             if (instance.game) {
@@ -614,6 +654,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('blend-combat');
             EventBus.removeListener('update-combat-state');
             EventBus.removeListener('update-combat-timer');
+            EventBus.removeListener('blend-game');
             // EventBus.removeListener('update-combat');
             EventBus.removeListener('update-health');
             EventBus.removeListener('update-lootdrops');
@@ -624,6 +665,11 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('useScroll');
             EventBus.removeListener('create-prayer');
             EventBus.removeListener('create-enemy-prayer');
+            EventBus.removeListener('purchase-item');
+            EventBus.removeListener('upgrade-item');
+            EventBus.removeListener('luckout');
+            EventBus.removeListener('persuasion');
+            
         });
     });
 

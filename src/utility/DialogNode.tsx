@@ -1,0 +1,218 @@
+import { Accessor, Setter, createEffect, createSignal, onMount } from "solid-js";
+import Ascean from "../models/ascean";
+import { GameState } from "../stores/game";
+import DialogNodes from "./DialogNodes.json";
+import EnemyDialogNodes from './EnemyDialogNodes.json';
+import { NPC } from "./npc";
+import { EventBus } from "../game/EventBus";
+// import { Ascean, Enemy, GAME_ACTIONS, GameState, NPC } from "./GameStore";
+
+export interface DialogNodeOption {
+    text: string;
+    next: string | null;
+    npcIds?: Array<number | string>;
+    conditions?: { key: string; operator: string; value: string; }[];
+    action?: string | null;
+    keywords?: any[];
+};
+
+export interface DialogNode {
+    id: string;
+    text: string;
+    options: DialogNodeOption[] | [];
+    npcIds: any[];
+    rootId?: string;
+};
+
+interface NpcIds {
+    [key: string]: number;
+};
+
+export const npcIds: NpcIds = {
+    "Enemy": 0,
+    "Merchant-General": 1,
+    "Merchant-Weapon": 2,
+    "Merchant-Armor": 3,
+    "Merchant-Jewelry": 4,
+    "Merchant-Alchemy": 5,
+    "Merchant-Smith": 6,
+    "Merchant-Mystic": 7,
+    "Merchant-Tailor": 8,
+};
+
+export function getNodesForEnemy(enemy: Ascean): DialogNode[] {
+    const matchingNodes: DialogNode[] = [];
+    for (const node of EnemyDialogNodes.nodes) {
+        if (node.options.length === 0) {
+            continue;
+        };
+        const npcOptions = (node.options as any).filter((option: DialogNodeOption) => (option as DialogNodeOption)?.npcIds?.includes(enemy.name))
+        if (npcOptions.length > 0) {
+            const updatedNode = { ...node, options: npcOptions };
+            matchingNodes.push(updatedNode);
+        };
+    };
+    return matchingNodes;
+};
+
+export function getNodesForNPC(npcId: number): DialogNode[] {
+    const matchingNodes: DialogNode[] = [];
+    for (const node of DialogNodes.nodes) {
+        if (node.options.length === 0) {
+            continue;
+        };
+        const npcOptions = node.options.filter((option) => (option as DialogNodeOption)?.npcIds?.includes(npcId))
+        if (npcOptions.length > 0) {
+            const updatedNode = { ...node, options: npcOptions };
+            matchingNodes.push(updatedNode);
+        };
+    };
+
+    return matchingNodes;
+};
+
+export interface DialogOptionProps {
+    option: DialogNodeOption;
+    onClick: (nextNodeId: string | null) => void;
+    actions: { [key: string]: Function }
+};
+
+export const DialogOption = ({ option, onClick, actions }: DialogOptionProps) => {
+    const handleClick = async () => {
+        if (option.action && typeof option.action === 'string') {
+            const actionName = option.action.trim();
+            console.log(actionName, "Did we make it here?")
+            const actionFunction = actions[actionName];
+            if (actionFunction) {
+                actionFunction();
+                return;
+            };
+        };
+        onClick(option.next);
+    };
+
+    return (
+      <div>
+      <button onClick={handleClick} class='dialog-buttons inner' >
+        {option.text}
+      </button>
+      </div>
+    );
+};
+
+interface DialogTreeProps {
+  ascean: Ascean;
+  enemy: NPC | Ascean;
+  dialogNodes: DialogNode[];
+  engageCombat: () => Promise<void>;
+  getLoot: (type: string) => void;
+  refillFlask: () => void;
+  state: any;
+  game: Accessor<GameState>;
+  gameDispatch: Setter<GameState>;
+};
+
+const DialogTree = ({ ascean, enemy, engageCombat, getLoot, dialogNodes, game, gameDispatch, state, refillFlask }: DialogTreeProps) => {
+    const actions = {
+        getCombat: () => engageCombat(),
+        getArmor: () => getLoot('armor'),
+        getGeneral: () => getLoot('general'),
+        getJewelry: () => getLoot('jewelry'),
+        getMystic: () => getLoot('magical-weapon'),
+        getTailor: () => getLoot('cloth'),
+        getWeapon: () => getLoot('physical-weapon'),
+        getFlask: () => refillFlask()
+    };
+    const [currentNodeIndex, setCurrentNodeIndex] = createSignal(game()?.currentNodeIndex || 0);
+
+    onMount(() => {
+        setCurrentNodeIndex(game()?.currentNodeIndex || 0);
+    });
+
+    onMount(() => {
+        console.log("We made it here!", dialogNodes[currentNodeIndex()]);
+        // gameDispatch({
+        //     type: GAME_ACTIONS.SET_CURRENT_DIALOG_NODE,
+        //     payload: dialogNodes[currentNodeIndex()]
+        // });
+        // gameDispatch({
+        //     type: GAME_ACTIONS.SET_RENDERING,
+        //     payload: {
+        //     options: dialogNodes[currentNodeIndex()]?.options,
+        //     text: dialogNodes[currentNodeIndex()]?.text
+        //     },
+        // });
+    });
+
+    onMount(() => {
+        if (game()?.currentNode) {
+            let newText = game()?.currentNode?.text;
+            let newOptions: DialogNodeOption[] = [];
+            if (game()?.currentNode?.text) {
+                newText = game()?.currentNode?.text?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
+            };
+            if (game()?.currentNode?.options) {
+                newOptions = game()?.currentNode?.options.filter((option: any) => {
+                    if (option.conditions) {
+                        return option.conditions.every((condition: any) => {
+                            const { key, operator, value } = condition;
+                            const optionValue = ascean[key] !== undefined ? ascean[key] : state[key]; // Hopefully this works!
+                            switch (operator) {
+                            case '>':
+                                return optionValue > value;
+                            case '>=':
+                                return optionValue >= value;
+                            case '<':
+                                return optionValue < value;
+                            case '<=':
+                                return optionValue <= value;
+                            case '=':
+                                return optionValue === value;
+                            default:
+                                return false;
+                            }
+                        });
+                    } else {
+                        return true;
+                    };
+                }).map((option: { text: string; }) => {
+                    const renderedOption = option.text.replace(/\${(.*?)}/g, (_, g) => eval(g));
+                    return {
+                        ...option,
+                        text: renderedOption,
+                    };
+                }) as DialogNodeOption[];
+            };
+            EventBus.emit('blend-game', { renderedText: newText, renderedOptions: newOptions });
+            // gameDispatch({ type: GAME_ACTIONS.SET_RENDERING, payload: { text: newText, options: newOptions } });
+        };
+    });
+
+    const handleOptionClick = (nextNodeId: string | null) => {
+        if (nextNodeId === null) {
+            EventBus.emit('blend-game', { setCurrentNodeIndex: 0 });
+            //   gameDispatch({ type: GAME_ACTIONS.SET_CURRENT_NODE_INDEX, payload: 0 });
+        } else {
+            let nextNodeIndex = dialogNodes.findIndex((node) => node.id === nextNodeId);
+            if (nextNodeIndex === -1) nextNodeIndex = 0;
+            EventBus.emit('blend-game', { setCurrentNodeIndex: nextNodeIndex });
+            //   gameDispatch({ type: GAME_ACTIONS.SET_CURRENT_NODE_INDEX, payload: nextNodeIndex });
+        };
+    };
+
+    if (!game()?.currentNode) {
+        return null;
+    };
+
+    return (
+        <div>
+            <p>{game()?.renderedText}</p>
+            {game()?.renderedOptions?.map((option: DialogNodeOption) => (
+                <DialogOption option={option} onClick={handleOptionClick} actions={actions} />
+            ))}
+            <br />
+        </div>
+    );
+};
+
+export default DialogTree;

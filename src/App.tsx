@@ -83,14 +83,14 @@ export default function App() {
         const pop = await populate(res);
         const beast = asceanCompiler(pop);
         const menuAscean = menu()?.asceans?.length > 0 ? [...menu()?.asceans, beast?.ascean] : [beast?.ascean];
-        console.log(menuAscean, 'Menu Asceans')
+        // console.log(menuAscean, 'Menu Asceans')
         setAscean(beast?.ascean as Ascean);
         setMenu({ ...menu(), asceans: menuAscean as Ascean[], creatingCharacter: false });
     };
 
     async function deleteCharacter(id: string | undefined): Promise<void> {
         try {
-            console.log('Deleting Ascean:', id);
+            // console.log('Deleting Ascean:', id);
             const newAsceans = menu()?.asceans?.filter((asc: Ascean) => asc._id !== id);
             setMenu({ ...menu(), asceans: newAsceans, choosingCharacter: newAsceans.length > 0 });
             setAscean(undefined as unknown as Ascean);
@@ -102,7 +102,7 @@ export default function App() {
 
     async function fetchAscean(id: string): Promise<void> {
         try {
-            console.log('Fetching Ascean:', id);
+            // console.log('Fetching Ascean:', id);
             const asc = await getAscean(id);
             const inv = await getInventory(asc?._id as string);
             const pop = await populate(asc);
@@ -116,7 +116,7 @@ export default function App() {
 
     async function loadAscean(id: string): Promise<void> {
         try {
-            console.log('Loading Ascean:', id);
+            // console.log('Loading Ascean:', id);
             const set = await getSettings(id);
             setSettings(set);
             const asc: Ascean = menu()?.asceans?.find((asc: Ascean) => asc._id === id) as Ascean;
@@ -143,7 +143,7 @@ export default function App() {
 
     async function quickAscean(vaEsai: Ascean): Promise<void> {
         try {
-            console.log('Quickly Setting Ascean:', vaEsai);
+            // console.log('Quickly Setting Ascean:', vaEsai);
             setAscean(vaEsai);
         } catch (err: any) {
             console.warn('Error saving Ascean:', err);

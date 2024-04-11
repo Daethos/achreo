@@ -1760,6 +1760,391 @@ export const Asceans: any[] = [
     "health":{"current":115,"max":115}
     },
     {
+        "_id":"anashtre_6",
+        "origin":"Ashtre",
+        "sex":"Man",
+        "mastery":"constitution",
+        "level":6,
+        "experience":0,
+        "inventory":[],
+        "name":"Anashtre",
+        "description":"Soldier of the Astral Wastes",
+        "constitution":21,
+        "strength":23,
+        "agility":22,
+        "achre":17,
+        "caeren":10,
+        "kyosir":10,
+        "weaponOne":{
+            name: "Claymore",
+            rarity: 'Uncommon',
+        },"weaponTwo":{
+            name: "War Hammer",
+            rarity: 'Uncommon',
+        },"weaponThree":{
+            name: "Battle Axe",
+            rarity: 'Uncommon',
+        },"shield":{
+            name: 'Shaorahi',
+            rarity: 'Uncommon',
+        },"helmet":{
+            name: "Ashtre Helm",
+            rarity: 'Uncommon',
+        },"chest":{
+            name: "Ashtre Armor",
+            rarity: 'Uncommon',
+        },"legs":{
+            name: "Ashtre Greaves",
+            rarity: 'Uncommon',
+        },"ringOne":{
+            name: "Ashtre Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Ashtre Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Ashtre Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Ashtre Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":115,"max":115}
+    },
+    {
+        "_id":"firesword_6",
+        "origin":"Fyers",
+        "sex":"Man",
+        "mastery":"agility",
+        "level":6,
+        "experience":0,
+        "inventory":[],
+        "name":"Firesworn",
+        "description":"Warrior of the Firelands",
+        "constitution":20,
+        "strength":12,
+        "agility":24,
+        "achre":22,
+        "caeren":10,
+        "kyosir":14,
+        "weaponOne":{
+            name: "Lava Spit",
+            rarity: 'Uncommon',
+        },"weaponTwo":{
+            name: "Longsword",
+            rarity: 'Uncommon',
+        },"weaponThree":{
+            name: "Lava Spit",
+            rarity: 'Uncommon',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Uncommon',
+        },"helmet":{
+            name: "Fireland Helm",
+            rarity: 'Uncommon',
+        },"chest":{
+            name: "Fireland Cuirass",
+            rarity: 'Uncommon',
+        },"legs":{
+            name: "Fireland Greaves",
+            rarity: 'Uncommon',
+        },"ringOne":{
+            name: "Fireland Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Fireland Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Fireland Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Fireland Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":115,"max":115}
+    },
+    {
+        "_id":"li'ivigion_6",
+        "origin":"Li'ivi",
+        "sex":"Man",
+        "mastery":"constitution",
+        "level":6,
+        "experience":0,
+        "inventory":[],
+        "name":"Li'ivi Legionnaire",
+        "description":"Professional Military under General Peroumes",
+        "constitution":21,
+        "strength":21,
+        "agility":23,
+        "achre":20,
+        "caeren":20,
+        "kyosir":10,
+        "weaponOne":{
+            name: "Gladius",
+            rarity: 'Uncommon',
+        },"weaponTwo":{
+            name: "Pugio",
+            rarity: 'Uncommon',
+        },"weaponThree":{
+            name: "Spear",
+            rarity: 'Uncommon',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Uncommon',
+        },"helmet":{
+            name: "Licivitan Helm",
+            rarity: 'Uncommon',
+        },"chest":{
+            name: "Licivitan Cuirass",
+            rarity: 'Uncommon',
+        },"legs":{
+            name: "Licivitan Greaves",
+            rarity: 'Uncommon',
+        },"ringOne":{
+            name: "Dae Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Daethic Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Daethic Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Dae Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":115,"max":115}
+    },
+    {
+        "_id":"sedyreal_guard_6",
+        "origin":"Sedyreal",
+        "sex":"Man",
+        "mastery":"strength",
+        "level":6,
+        "experience":0,
+        "inventory":[],
+        "name":"Sedyreal Guard",
+        "description":"Iron Warriors of the Sedyren Sun",
+        "constitution":20,
+        "strength":26,
+        "agility":25,
+        "achre":10,
+        "caeren":10,
+        "kyosir":10,
+        "weaponOne":{
+            name: "War Hammer",
+            rarity: 'Uncommon',
+        },"weaponTwo":{
+            name: "Se'vasi Greatbow",
+            rarity: 'Uncommon',
+        },"weaponThree":{
+            name: "Caerenic Halberd",
+            rarity: 'Uncommon',
+        },"shield":{
+            name: 'Heater',
+            rarity: 'Uncommon',
+        },"helmet":{
+            name: "Chain-Knight Helm",
+            rarity: 'Uncommon',
+        },"chest":{
+            name: "Chain-Knight Cuirass",
+            rarity: 'Uncommon',
+        },"legs":{
+            name: "Chain-Knight Greaves",
+            rarity: 'Uncommon',
+        },"ringOne":{
+            name: "Shrieker's Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Marauder's Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Marauder's Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Shrieker's Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":115,"max":115}
+    },
+    {
+        "_id":"soverain_blood_cloak_6",
+        "origin":"Nothos",
+        "sex":"Man",
+        "mastery":"caeren",
+        "level":6,
+        "experience":0,
+        "inventory":[],
+        "name":"Soverain Blood Cloak",
+        "description":"Soldiers of the Soverains",
+        "constitution":22,
+        "strength":14,
+        "agility":10,
+        "achre":12,
+        "caeren":30,
+        "kyosir":16,
+        "weaponOne":{
+            name: "Caerenic Halberd",
+            rarity: 'Uncommon',
+        },"weaponTwo":{
+            name: "Sunshear",
+            rarity: 'Uncommon',
+        },"weaponThree":{
+            name: "Caerenic Shatter",
+            rarity: 'Uncommon',
+        },"shield":{
+            name: 'Heater',
+            rarity: 'Uncommon',
+        },"helmet":{
+            name: "Soverain Helm",
+            rarity: 'Uncommon',
+        },"chest":{
+            name: "Soverain Cuirass",
+            rarity: 'Uncommon',
+        },"legs":{
+            name: "Soverain Greaves",
+            rarity: 'Uncommon',
+        },"ringOne":{
+            name: "Soverain Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Soverain Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Soverain Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Soverain Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":115,"max":115}
+    },
+    {
+        "_id":"kingsman_6",
+        "origin":"Notheo",
+        "sex":"Man",
+        "mastery":"strength",
+        "level":6,
+        "experience":0,
+        "inventory":[],
+        "name":"Kingsman",
+        "description":"Knights of the Daethic Kingdom",
+        "constitution":20,
+        "strength":26,
+        "agility":12,
+        "achre":12,
+        "caeren":18,
+        "kyosir":12,
+        "weaponOne":{
+            name: "Daethic Halberd",
+            rarity: 'Uncommon',
+        },"weaponTwo":{
+            name: "Daethic Bow",
+            rarity: 'Uncommon',
+        },"weaponThree":{
+            name: "Hush of Daethos",
+            rarity: 'Uncommon',
+        },"shield":{
+            name: 'Heater',
+            rarity: 'Uncommon',
+        },"helmet":{
+            name: "Knight's Helm",
+            rarity: 'Uncommon',
+        },"chest":{
+            name: "Knight's Cuirass",
+            rarity: 'Uncommon',
+        },"legs":{
+            name: "Knight's Greaves",
+            rarity: 'Uncommon',
+        },"ringOne":{
+            name: "Knight's Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Knight's Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Knight's Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Knight's Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"devoted",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":115,"max":115}
+    },
+    {
+        "_id":"old_li'ivi_occultist_6",
+        "origin":"Li'ivi",
+        "sex":"Man",
+        "mastery":"constitution",
+        "level":6,
+        "experience":0,
+        "inventory":[],
+        "name":"Old Li'ivi Occultist",
+        "description":"Of the Old and Adherent, in a time before Daethos",
+        "constitution":26,
+        "strength":10,
+        "agility":10,
+        "achre":24,
+        "caeren":18,
+        "kyosir":20,
+        "weaponOne":{
+            name: "Blessed Dagger",
+            rarity: 'Uncommon',
+        },"weaponTwo":{
+            name: "Cursed Dagger",
+            rarity: 'Uncommon',
+        },"weaponThree":{
+            name: "Nightmare",
+            rarity: 'Uncommon',
+        },"shield":{
+            name: 'Heater',
+            rarity: 'Uncommon',
+        },"helmet":{
+            name: "Li'kyr Hood",
+            rarity: 'Uncommon',
+        },"chest":{
+            name: "Li'kyr Robes",
+            rarity: 'Uncommon',
+        },"legs":{
+            name: "Li'kyr Pants",
+            rarity: 'Uncommon',
+        },"ringOne":{
+            name: "Choimic Ring",
+            rarity: 'Uncommon',
+        },"ringTwo":{
+            name: "Kyrison Ring",
+            rarity: 'Uncommon',
+        },"amulet":{
+            name: "Kyrnaic Amulet",
+            rarity: 'Uncommon',
+        },"trinket":    {
+            name: "Kyrnaic Trinket",
+            rarity: 'Uncommon',
+        },
+        "faith":"devoted",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":115,"max":115}
+    },
+    {
     "_id":"evrio_lorian_peroumes_8",
     "origin":"Li'ivi",
     "sex":"Man",
@@ -1807,6 +2192,61 @@ export const Asceans: any[] = [
         rarity: 'Rare',
     },"trinket":    {
         name: "Dae Trinket",
+        rarity: 'Rare',
+    },
+    "faith":"devoted",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":497,"max":497}
+    },
+    {
+    "_id":"garris_ashenus_8",
+    "origin":"Fyers",
+    "sex":"Man",
+    "mastery":"agility",
+    "level":8,
+    "experience":0,
+    "inventory":[],
+    "name":"Garris Ashenus",
+    "description":"Merchant-Knight of the Firelands",
+    "constitution":25,
+    "strength":12,
+    "agility":32,
+    "achre":18,
+    "caeren":11,
+    "kyosir":12,
+    "weaponOne":{
+        name: "Shotel",
+        rarity: 'Rare',
+    },"weaponTwo":{
+        name: "Shotel",
+        rarity: 'Rare',
+    },"weaponThree":{
+        name: "Moontear",
+        rarity: 'Rare',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Rare',
+    },"helmet":{
+        name: "Fireland Helm",
+        rarity: 'Rare',
+    },"chest":{
+        name: "Fireland Cuirass",
+        rarity: 'Rare',
+    },"legs":{
+        name: "Fireland Greaves",
+        rarity: 'Rare',
+    },"ringOne":{
+        name: "Fireland Ring",
+        rarity: 'Rare',
+    },"ringTwo":{
+        name: "Fireland Ring",
+        rarity: 'Rare',
+    },"amulet":{
+        name: "Occult Amulet",
+        rarity: 'Rare',
+    },"trinket":    {
+        name: "Occult Trinket",
         rarity: 'Rare',
     },
     "faith":"devoted",

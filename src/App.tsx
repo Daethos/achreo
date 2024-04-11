@@ -288,10 +288,11 @@ export default function App() {
                     The Ascean v0.0.1
                 </div>
                 <div class='superCenter' style={{ 'font-family': 'Cinzel Regular', 'font-size': '1.25em' }}>
-                    <div class='center' style={{ 'font-size': '1.5em' }}>The Ascean </div>
-                    <button class='button' style={{ 'border-radius': '0.5em' }} onClick={() => setMenu({ ...menu(), creatingCharacter: true })}>
-                    Create Character
-                    </button>
+                    <div class='center' style={{ 'font-size': '1.5em' }}>The Ascean <br /> 
+                        <button class='center highlight' style={{ 'border-radius': '0.5em' }} onClick={() => setMenu({ ...menu(), creatingCharacter: true })}>
+                        Create Character
+                        </button>
+                    </div>
                 </div>
                 
                 </div>

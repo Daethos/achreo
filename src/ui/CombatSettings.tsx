@@ -34,7 +34,7 @@ export default function CombatSettings({ combat, game }: Props) {
         let newTypes = []; 
         for (let i = 0; i < types.length; i++) {
             newTypes.push(
-                <p class='shadow' style={{ color: borderColor(types[i]), display: 'inline-block', margin: '2%' }}>
+                <p style={{ color: borderColor(types[i]), display: 'inline-block', margin: '2%', 'text-shadow': '0.05em 0.05em 0.05em #fdf6d8' }}>
                     {/* {types[i]}{' <-> '}{types[i] === types[types.length - 1] ? types[0] : ''} */}
                     {types[i] !== types[types.length - 1] ? `${types[i]} <-> ${(i + 1) % 4 === 0 ? '\n\n' : ''}` : types[i]}
                 </p>
@@ -44,10 +44,10 @@ export default function CombatSettings({ combat, game }: Props) {
     };
 
     const highlightStyle: JSX.CSSProperties = {
-        color: 'gold', 'font-size': '1.25em', 'font-weight': 700, 'text-align': 'center'
+        color: 'gold', 'font-size': '1.15em', 'font-weight': 700, 'text-align': 'center', margin: '3%'
     };
     const optionStyle: JSX.CSSProperties = {
-        color: '#fdf6d8', 'font-size': '1em', 'font-weight': 700, 'text-align': 'center'
+        color: '#fdf6d8', 'font-size': '0.9em', 'font-weight': 700, 'text-align': 'center'
     };
 
     const Buttons = [
@@ -56,7 +56,7 @@ export default function CombatSettings({ combat, game }: Props) {
         {direction:'down', symbol:'v'},
         {direction:'right', symbol:'->'}, 
     ];
-
+// 1px 1px 2px red, 0 0 1em blue, 0 0 0.2em blue
     function handleButton(direction: string) {
         console.log('direction', direction);
         if (direction === 'up' || direction === 'down') {
@@ -100,7 +100,7 @@ export default function CombatSettings({ combat, game }: Props) {
      // shadow('black', 1), styles.center,
     return (
         <div class='center combatSettings' style={dimensions().ORIENTATION === 'landscape' ? {
-                width: "50%", top: '40%', left: '25%' 
+                height: '40%', width: "50%", top: '50%', left: '25%', background: '#000', 'border': '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.1em 0.1em gold'
             }: {
                 top: '70%', left: '10%'
         }}>
@@ -118,20 +118,20 @@ export default function CombatSettings({ combat, game }: Props) {
                 <Match when={game().selectedHighlight === 'Weapon'}>
                     <div>
                         <p class='shadow' style={highlightStyle}>Main Weapon: {combat()?.weapons?.[0]?.name}</p>
-                        <p class='shadow' style={optionStyle}>Up{' ->> '} {combat()?.weapons?.[1]?.name} {' <<- '}Up</p>
+                        <p style={optionStyle}>Up{' ->> '} {combat()?.weapons?.[1]?.name} {' <<- '}Up</p>
                         <Show when={combat()?.weapons?.[2]}><p class='shadow' style={optionStyle}>Down{' ->> '} {combat()?.weapons?.[2]?.name} {' <<- '}Down</p></Show> 
                     </div>
                 </Match>
                 <Match when={game().selectedHighlight === 'Damage'}>
                     <div>
                         <p class='shadow' style={highlightStyle}>Damage Style: {combat()?.weapons?.[0]?.damageType?.[game().selectedDamageTypeIndex]}</p>
-                        <p class='shadow' style={optionStyle}>{mapTypes(combat()?.weapons?.[0]?.damageType)}</p>
+                        <p style={optionStyle}>{mapTypes(combat()?.weapons?.[0]?.damageType)}</p>
                     </div>
                 </Match>
                 <Match when={game().selectedHighlight === 'Prayer'}>
                     <div class='center'>
                         <p class='shadow' style={highlightStyle}>Prayer: {prayers[game().selectedPrayerIndex]}</p>
-                        <div class='shadow' style={optionStyle}>{mapTypes(prayers)}</div>
+                        <div style={optionStyle}>{mapTypes(prayers)}</div>
                     </div>
                 </Match>
                 </Switch>

@@ -17,7 +17,6 @@ export default function HealthBar({ combat, enemy }: Props) {
             return;
         };
         const healthPercentage = Math.round((combat().newPlayerHealth/combat().playerHealth) * 100);
-        console.log(healthPercentage, 'Health Percentage');
         setPlayerHealthPercentage(healthPercentage);
     });
 

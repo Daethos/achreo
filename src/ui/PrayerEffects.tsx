@@ -11,8 +11,6 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
     var timeout: any = undefined;
     
     function tickEffect(timer: Accessor<number>) {
-        console.log(effect.endTime - combat().combatTimer > timer());
-        console.log(timer(), 'timer')
         if (!combat().combatEngaged || timer() <= 0) {
             console.log(`%c Effect ${effect.prayer} has expired...`, 'color: red');
             prayerRemoveTick(combat(), effect);
@@ -32,7 +30,7 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
             console.log(`%c Effect Refreshing from ${timer()}s remaining to ${effect.endTime - combat().combatTimer}s end time...`, 'color: green');
             setEffectTimer(effect.endTime - combat().combatTimer);
         } else {
-            console.log(`%c Effect ${effect.prayer} ticking... ${timer()}s left. End Time: ${effect.endtime} / Combat Time: ${combat().combatTimer}`, `color: gold`)
+            // console.log(`%c Effect ${effect.prayer} ticking... ${timer()}s left. End Time: ${effect.endTime} / Combat Time: ${combat().combatTimer}`, `color: gold`)
             setEffectTimer((prev) => prev - 1);
         };
     };

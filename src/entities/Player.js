@@ -519,7 +519,6 @@ export default class Player extends Entity {
 
     soundEffects(sfx) {
         try {
-            console.log(sfx.computerDamaged, 'Computer Damaged', sfx.playerDamaged, 'Player Damaged')
             const soundEffectMap = (type, weapon) => {
                 switch (type) {
                     case 'Spooky':

@@ -10,7 +10,6 @@ export default function ExperienceBar({ ascean }: Props) {
     const [experience, setExperience] = createSignal(0);
 
     createEffect(() => {
-        console.log(ascean(), 'ascean');
         let newPercentage = Math.round((ascean().experience/(ascean().level * 1000) * 100));
         setExperiencePercentage(newPercentage);
         setExperience(ascean().experience);

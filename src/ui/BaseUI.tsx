@@ -288,7 +288,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
             } else {
                 const health = { health: data.newPlayerHealth, id: ascean()._id };
                 updateHealth(health);
-                if (ascean().tutorial.death) {
+                if (!ascean().tutorial.death) {
                     setTutorial('death');
                     setShowTutorial(true);
                 };

@@ -1,3 +1,4 @@
+import { Accessor } from "solid-js";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { GameState } from "../stores/game";
@@ -581,8 +582,8 @@ const asceanCompiler = (ascean: any): Compiler | undefined => {
     };
 };
 
-async function playerTraits(game: GameState, setPlayerTraitWrapper: any) {
-    const fetchTrait = async (trait:  string): Promise<{ name: string; traitOneName: string; traitOneDescription: string; traitTwoName: string; traitTwoDescription: string; }> => {
+function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
+    const fetchTrait = (trait:  string): { name: string; traitOneName: string; traitOneDescription: string; traitTwoName: string; traitTwoDescription: string; } => {
         switch (trait) {
             case "Arbituous":
                 return {
@@ -715,9 +716,9 @@ async function playerTraits(game: GameState, setPlayerTraitWrapper: any) {
         };
     };
     setPlayerTraitWrapper({
-        'primary': await fetchTrait(game.traits.primary.name),
-        'secondary': await fetchTrait(game.traits.secondary.name),
-        'tertiary': await fetchTrait(game.traits.tertiary.name)
+        'primary': fetchTrait(game().traits.primary.name),
+        'secondary': fetchTrait(game().traits.secondary.name),
+        'tertiary': fetchTrait(game().traits.tertiary.name)
     });
 };
 

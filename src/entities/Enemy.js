@@ -669,11 +669,11 @@ export default class Enemy extends Entity {
         };  
         if (distance >= 75 * rangeMultiplier) {
             if (this.path && this.path.length > 1) {
-                this.setVelocity(this.pathDirection.x * (this.speed), this.pathDirection.y * (this.speed)); // 2.5
+                this.setVelocity(this.pathDirection.x * (this.speed + 0.25), this.pathDirection.y * (this.speed + 0.25)); // 2.5
             } else {
                 if (this.isPathing) this.isPathing = false;
                 direction.normalize();
-                this.setVelocity(direction.x * (this.speed), direction.y * (this.speed)); // 2.5
+                this.setVelocity(direction.x * (this.speed + 0.25), direction.y * (this.speed + 0.25)); // 2.5
             };
         } else {
             this.stateMachine.setState(States.COMBAT);

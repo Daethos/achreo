@@ -241,9 +241,11 @@ export const PhaserGame = (props: IProps) => {
         const { type, item } = e;
         const oldEquipment = props.ascean()[type as keyof Ascean] as Equipment;
         const newEquipment = item;
+        console.log(oldEquipment, newEquipment, 'Swapping Equipment');
         let newAscean = { ...props.ascean(), [type]: newEquipment };
         let inventory = [ ...game().inventory ];
         inventory = inventory.filter((inv) => inv._id !== newEquipment._id);
+        console.log(newAscean, 'New Ascean with new item')
         if (!oldEquipment.name.includes('Empty') && !oldEquipment.name.includes('Starter')) {
             inventory.push(oldEquipment);
         } else {
@@ -257,7 +259,7 @@ export const PhaserGame = (props: IProps) => {
     };
 
     function setPlayer(stats: Compiler) {
-        console.log(stats, 'Setting Player');
+        // console.log(stats, 'Setting Player');
         const traits = getAsceanTraits(stats.ascean);
         setCombat({
             ...combat(),

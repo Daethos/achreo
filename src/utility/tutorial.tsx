@@ -80,7 +80,7 @@ export default function TutorialOverlay({ id, tutorial, show, setShow }: { id: s
             { tutorial() === 'death' && <div>
                 <p class='cornerTL gold highlight' style={{ left: '0', top: '5em', 'font-weight': 700 }}>
                    Your Health {arrows.up} <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[It's 0 and Transparent. Get used to seeing that.]</span>
+                    <span class='super' style={{ color: '#fdf6d8' }}>[It's 0 and Red. Get used to seeing that.]</span>
                 </p>
                 <p class='verticalTop gold highlight' style={{ 'font-weight': 700 }}>
                     {arrows.left} Your Weapon <br />

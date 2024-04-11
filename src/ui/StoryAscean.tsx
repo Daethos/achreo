@@ -22,10 +22,7 @@ import { deleteEquipment, updateSettings } from '../assets/db/db';
 import SettingSetter from '../utility/settings';
 import TutorialOverlay from '../utility/tutorial';
 import LevelUp from './LevelUp';
-
-// import { updateInventory, updateSettings } from '../assets/db/db';
-// import { playerTraits } from '../utility/ascean';
-// import LevelUpModal from './LevelUpModal';
+import { playerTraits } from '../utility/ascean';
 
 export const viewCycleMap = {
     Character: 'Inventory',
@@ -79,7 +76,7 @@ interface Props {
 };
 
 const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatState }: Props) => {
-    // const [playerTraitWrapper, setPlayerTraitWrapper] = createSignal({});
+    const [playerTraitWrapper, setPlayerTraitWrapper] = createSignal<any>({});
     const [dragAndDropInventory, setDragAndDropInventory] = createSignal(game()?.inventory);
     const [canUpgrade, setCanUpgrade] = createSignal<boolean>(false);
     const [forgeModalShow, setForgeModalShow] = createSignal(false); 
@@ -94,7 +91,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         index: 0,
     });
     const [counterShow, setCounterShow] = createSignal<boolean>(false);
-    const [currentCounter, setCurrentCounter] = createSignal({ counter: '', index: 0 });
     const [specialShow, setSpecialShow] = createSignal<boolean>(false);
     const [currentSpecial, setCurrentSpecial] = createSignal({
         special: SPECIALS[0],
@@ -118,6 +114,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
     createEffect(() => {
         if (ascean) {
             setAsceanPic(`../assets/images/${ascean().origin}-${ascean().sex}.jpg`);
+            playerTraits(game, setPlayerTraitWrapper);
         };
     });
 
@@ -141,7 +138,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
     createEffect(() => {
         setDragAndDropInventory(game().inventory);
         checkHighlight();
-        //     EventBus.emit('refresh-inventory', dragAndDropInventory);
     }); 
 
     const getBackgroundStyle = () => {
@@ -165,7 +161,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
     const checkHighlight = () => {
         if (highlighted()?.item) {
             const item = game().inventory.find((item) => item?._id === highlighted()?.item?._id);
-            console.log(item, 'Item in checkHighlight')
             if (!item) setHighlighted({ item: undefined, comparing: false, type: '' });
         };
     }; 
@@ -179,11 +174,9 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
     };
 
     const currentCharacterView = async (e: string) => {
-        console.log(e, "Character div");
         const newSettings: Settings = { ...settings(), characterViews: e };
         setSettings(newSettings);
         await saveSettings(newSettings);
-        // EventBus.emit('settings', newSettings);
     };
 
     // const shake = (value, action) => setSettings({ ...settings(), shake: { ...settings().shake, [action]: value } });
@@ -195,41 +188,39 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
     const createCharacterInfo = (character: string) => {
         switch (character) {
             case CHARACTERS.STATISTICS:
-                // const highestDeity = Object.entries(ascean?.statistics?.combat?.deities).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
-                // const highestPrayer = Object.entries(ascean?.statistics?.combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
-                // let highestMastery = Object.entries(ascean?.statistics?.mastery).reduce((a, b) => a[1] > b[1] ? a : b);
-                // if (highestMastery?.[1] === 0) highestMastery = [ascean?.mastery, 0];
+                const highestDeity = Object.entries(ascean()?.statistics?.combat?.deities).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
+                const highestPrayer = Object.entries(ascean()?.statistics?.combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
+                let highestMastery = Object.entries(ascean()?.statistics?.mastery).reduce((a, b) => a[1] > b[1] ? a : b);
+                if (highestMastery?.[1] === 0) highestMastery = [ascean()?.mastery, 0];
                 return (
-                    <div>
-                        <div>Attacks</div>
-                            {/* Magical: <div class='gold'>{ascean?.statistics?.combat?.attacks?.magical}</div>{'\n'}
-                            Physical: <div class='gold'>{ascean?.statistics?.combat?.attacks?.physical}</div>{'\n'}
-                            Highest Damage: <div class='gold'>{Math.round(ascean?.statistics?.combat?.attacks?.total)}</div> */}
-                            <br /><br />
-                        <div>Combat</div>
-                            {/* Mastery: <div class='gold'>{highestMastery[0].charAt(0).toUpperCase() + highestMastery[0].slice(1)} - {highestMastery[1]}</div>{'\n'}
-                            Wins / Losses: <div class='gold'>{ascean?.statistics?.combat?.wins} / {ascean?.statistics?.combat?.losses}</div> */}
-                            <br /><br />
-                        <div>Prayers</div>
-                            {/* Consumed / Invoked: <div class='gold'>{ascean?.statistics?.combat?.actions?.consumes} / {ascean?.statistics?.combat?.actions?.prayers} </div>{'\n'}
-                            Highest Prayer: <div class='gold'>{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</div>{'\n'}
-                            Favored Deity: <div class='gold'>{highestDeity[0]}</div>{'\n'}
-                            Blessings: <div class='gold'>{highestDeity[1]}</div> */}
+                    <div class='creature-heading'>
+                        <h1 style={{ 'margin-bottom': '3%' }}>Attacks</h1>
+                            Magical: <span class='gold'>{ascean()?.statistics?.combat?.attacks?.magical}</span> <br />
+                            Physical: <span class='gold'>{ascean()?.statistics?.combat?.attacks?.physical}</span><br />
+                            Highest Damage: <span class='gold'>{Math.round(ascean()?.statistics?.combat?.attacks?.total)}</span>
+                        <h1 style={{ 'margin-bottom': '3%' }}>Combat</h1>
+                            Mastery: <span class='gold'>{highestMastery[0].charAt(0).toUpperCase() + highestMastery[0].slice(1)} - {highestMastery[1]}</span><br />
+                            Wins / Losses: <span class='gold'>{ascean()?.statistics?.combat?.wins} / {ascean()?.statistics?.combat?.losses}</span>
+                        <h1 style={{ 'margin-bottom': '3%' }}>Prayers</h1>
+                            Consumed / Invoked: <span class='gold'>{ascean()?.statistics?.combat?.actions?.consumes} / {ascean()?.statistics?.combat?.actions?.prayers} </span><br />
+                            Highest Prayer: <span class='gold'>{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</span><br />
+                            Favored Deity: <span class='gold'>{highestDeity[0]}</span><br />
+                            Blessings: <span class='gold'>{highestDeity[1]}</span>
                     </div>
                 );
             case CHARACTERS.TRAITS:
                 return (
-                    <div>
-                    <div>Traits</div>
-                    {/* <div>{playerTraitWrapper?.primary?.name}</div>
-                        <div>{playerTraitWrapper?.primary?.traitOneName} - {playerTraitWrapper?.primary?.traitOneDescription}</div>
-                        <div>{playerTraitWrapper?.primary?.traitTwoName} - {playerTraitWrapper?.primary?.traitTwoDescription}</div>
-                    <div>{playerTraitWrapper?.secondary?.name}</div>
-                        <div>{playerTraitWrapper?.secondary?.traitOneName} - {playerTraitWrapper?.secondary?.traitOneDescription}</div>
-                        <div>{playerTraitWrapper?.secondary?.traitTwoName} - {playerTraitWrapper?.secondary?.traitTwoDescription}</div>
-                    <div>{playerTraitWrapper?.tertiary?.name}</div>
-                        <div>{playerTraitWrapper?.tertiary?.traitOneName} - {playerTraitWrapper?.tertiary?.traitOneDescription}</div>
-                        <div>{playerTraitWrapper?.tertiary?.traitTwoName} - {playerTraitWrapper?.tertiary?.traitTwoDescription}</div> */}
+                    <div class='creature-heading' style={{  }}>
+                    {/* <div>Traits</div> */}
+                    <h1>{playerTraitWrapper()?.primary?.name}</h1>
+                        <h2> <span class='gold'>{playerTraitWrapper()?.primary?.traitOneName}</span> - {playerTraitWrapper()?.primary?.traitOneDescription}</h2>
+                        <h2> <span class='gold'>{playerTraitWrapper()?.primary?.traitTwoName}</span> - {playerTraitWrapper()?.primary?.traitTwoDescription}</h2>
+                    <h1>{playerTraitWrapper()?.secondary?.name}</h1>
+                        <h2> <span class='gold'>{playerTraitWrapper()?.secondary?.traitOneName}</span> - {playerTraitWrapper()?.secondary?.traitOneDescription}</h2>
+                        <h2> <span class='gold'>{playerTraitWrapper()?.secondary?.traitTwoName}</span> - {playerTraitWrapper()?.secondary?.traitTwoDescription}</h2>
+                    <h1>{playerTraitWrapper()?.tertiary?.name}</h1>
+                        <h2> <span class='gold'>{playerTraitWrapper()?.tertiary?.traitOneName}</span> - {playerTraitWrapper()?.tertiary?.traitOneDescription}</h2>
+                        <h2> <span class='gold'>{playerTraitWrapper()?.tertiary?.traitTwoName}</span> - {playerTraitWrapper()?.tertiary?.traitTwoDescription}</h2>
                     </div>
                 );
             default:
@@ -241,7 +232,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
     //     const newSettings: Settings = { ...settings(), volume: volume };
     //     setSettings(newSettings);
     //     // await saveSettings(newSettings);
-            // EventBus.emit('settings', newSettings);
     //     EventBus.emit('update-volume', volume);
     // };
 
@@ -249,38 +239,26 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         const newSettings: Settings = { ...settings(), control: e };
         setSettings(newSettings);
         await saveSettings(newSettings);
-        // EventBus.emit('settings', newSettings);
     };
 
     async function currentView(e: string) {
-        console.log(e, "Current Setting div");
         const newSettings: Settings = { ...settings(), settingViews: e };
-        console.log(newSettings, "New Settings");
-        // setSettingViews(createSettingInfo(settings().settingViews));
         setSettings(newSettings);
         await saveSettings(newSettings);
-        // EventBus.emit('settings', newSettings);
     };
 
     async function setNextView() {
         const nextView = viewCycleMap[settings().asceanViews as keyof typeof viewCycleMap];
         if (nextView) {
-            console.log(nextView, "Next div")
             const newSettings: Settings = { ...settings(), asceanViews: nextView };
             setSettings(newSettings);
             await saveSettings(newSettings);
-            // EventBus.emit('settings', newSettings);
         };
     }; 
 
     function actionModal(action: string, index: number) {
         setCurrentAction({ action: action, index: index });
         setActionShow(true);
-    };
-
-    function counterModal(counter: string, index: number) {
-        setCurrentCounter({ counter: counter, index: index });
-        setCounterShow(true);
     };
 
     function specialModal(special: string, index: number) {
@@ -298,20 +276,17 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         
         const newSettings: Settings = { ...settings(), actions: newActions };
         await saveSettings(newSettings);
-        // EventBus.emit('settings', newSettings);
         setSettings(newSettings);
         EventBus.emit('reorder-buttons', { list: newActions, type: 'action' }); 
     };
 
     function handleCounterButton(e: string) {
-        console.log(e, "Counter Button");
         setCounterShow(false);
         EventBus.emit('blend-combat', { counterGuess: e.toLowerCase() })
     };
 
     function handleCounterShow(e: string) {
         setCounterShow(true);
-        // EventBus.emit('blend-combat', { counterGuess: e })
     };
 
     async function handleSpecialButton(e: string, i: number) {
@@ -326,18 +301,14 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         const newSettings: Settings = { ...settings(), specials: newSpecials };
         setSettings(newSettings);
         await saveSettings(newSettings);
-        // EventBus.emit('settings', newSettings);
         EventBus.emit('reorder-buttons', { list: newSpecials, type: 'special' }); 
     };
 
     async function handlePostFx(type: string, val: any) {
-        console.log(type, val, "Post FX");
         EventBus.emit('update-postfx', { type, val });
         const newSettings = { ...settings(), postFx: { ...settings().postFx, [type]: val } };
-        console.log(newSettings.postFx, "New Post FX")
         await saveSettings(newSettings);
         setSettings(newSettings);
-        // EventBus.emit('settings', newSettings);
     };
 
     async function handleAim() {
@@ -397,9 +368,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
             setForgeModalShow(false);
             setCanUpgrade(false);
             setInspectModalShow(false);
-            // EventBus.emit('update-inventory-request');
-            // dispatch(setCurrency(res.currency));
-            
         } catch (err: any) {
             console.log(err, '<- Error upgrading item');
         };
@@ -407,7 +375,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
 
     function handleInspect(type: string) {
         try {
-            console.log(type, "Inspecting Item");
             if (type === 'weaponOne' || type === 'weaponTwo' || type === 'weaponThree') {
                 setWeaponCompared(type);
             } else if (type === 'ringOne' || type === 'ringTwo') {
@@ -424,6 +391,18 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         const newInventory = game().inventory.filter((item) => item._id !== id);
         EventBus.emit('refresh-inventory', newInventory);
         setRemoveModalShow(false);
+    };
+
+    async function getExperience() {
+        let experience: number = ascean().experience + 1000;
+        let ceiling: number = ascean().level * 1000;
+        const newState = { 
+            ...asceanState(), 
+            avarice: false, 
+            opponent: 4,
+            opponentExp: Math.min(experience, ceiling),
+        };
+        EventBus.emit('gain-experience', newState);
     };
 
     async function getMoney() {
@@ -478,6 +457,9 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
                     </button> */}
                     {/* <button class='highlight cornerTR' style={{ 'background-color': 'green', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getMoney()}>
                         <p>Get Money</p>
+                    </button> */}
+                    {/* <button class='highlight cornerTR' style={{ 'background-color': 'gold', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getExperience()}>
+                        <p>Get Exp</p>
                     </button> */}
                     { ascean().experience >= ascean().level * 1000 && (
                         <button class='highlight cornerTR' style={{ 'background-color': 'purple', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
@@ -712,7 +694,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
                 height: `${dimensions().HEIGHT * 0.31}px`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 'margin-top': '129%'
             }}>
                 { settings().asceanViews === VIEWS.CHARACTER ? (
-                    <div class='superCenter'> 
+                    <div class='center wrap'> 
                         {createCharacterInfo(settings()?.characterViews)}
                     </div>
                 ) : settings().asceanViews === VIEWS.INVENTORY ? ( 

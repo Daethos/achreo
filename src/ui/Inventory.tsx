@@ -1,8 +1,6 @@
 import { Accessor, JSX, Setter, createEffect, createSignal } from 'solid-js';
-import { EventBus } from '../game/EventBus';
-import { font, getRarityColor } from '../utility/styling';
+import { getRarityColor } from '../utility/styling';
 import Equipment from '../models/equipment';
-import { useResizeListener } from '../utility/dimensions';
 import Ascean from '../models/ascean';
 
 // import { checkPlayerTrait, checkTraits } from './PlayerTraits'; 
@@ -27,47 +25,6 @@ interface Props {
 
 const Inventory = ({ ascean, index, inventory, pouch, blacksmith = false, compare = false, inventoryType, setInventoryType, setRingCompared, setHighlighted, highlighted, scaleImage, setScaleImage, setWeaponCompared, inventorySwap }: Props) => {
     const [trueType, setTrueType] = createSignal('');
-    const [forgeModalShow, setForgeModalShow] = createSignal(false); 
-    const [inventoryTypeTwo, setInventoryTypeTwo] = createSignal<any>('');
-    const [inventoryTypeThree, setInventoryTypeThree] = createSignal<any>('');
-    const [inventoryRingType, setInventoryRingType] = createSignal<any>('');
-    const dimensions = useResizeListener();
-
-    // if (scaleImage !== 48 * 2) {
-        // setScaleImage({id: inventory._id, scale: 96});
-        // setInventorySwap({
-        //     ...inventorySwap,
-        //     start: { id: inventory._id, index: index },
-        // })
-        // scaleImage.value = scaleImage.value * 2;
-    // } else {
-        // console.log('Scale is now being set to 48');
-        // setScaleImage({id: inventory._id, scale: 48});
-        // setInventorySwap({
-        //     ...inventorySwap,
-        //     end: { id: inventory._id, index: index },
-        // });
-        // scaleImage.value = scaleImage.value / 2;
-    // };
-
-    // function handleTap(scale: number, id: string, index: number): void { // scaleImage.scale, inventory._id, index
-    //     console.log('Tapped', scale, id, index);
-    //     if (scale === 48) {
-    //         setScaleImage({ id, scale: scale * 2 });
-    //         console.log('Scale is now being set to 48');
-    //         setInventorySwap({
-    //             ...inventorySwap,
-    //             start: { id: id, index: index },
-    //         });
-    //     } else {
-    //         console.log('Scale is now being set to 96');                                
-    //         setScaleImage({ id, scale: scale / 2 });
-    //         setInventorySwap({
-    //             ...inventorySwap,
-    //             end: { id: id, index: index },
-    //         });
-    //     };
-    // };
     
     const [editState, setEditState] = createSignal<any>({
         weaponOne: ascean().weaponOne,
@@ -124,16 +81,9 @@ const Inventory = ({ ascean, index, inventory, pouch, blacksmith = false, compar
     function checkInventory() {
         try {
             let type = '';
-            let typeTwo = '';
-            let typeThree = '';
-            let ringType = '';
             if (inventory?.grip) {
                 type = 'weaponOne';
-                typeTwo = 'weaponTwo';
-                typeThree = 'weaponThree';
                 setInventoryType('weaponOne');
-                setInventoryTypeTwo('weaponTwo');
-                setInventoryTypeThree('weaponThree');
                 setWeaponCompared('weaponOne');
             };
             if (inventory?.name.includes('Hood') || inventory?.name.includes('Helm') || inventory?.name.includes('Mask')) {
@@ -154,9 +104,7 @@ const Inventory = ({ ascean, index, inventory, pouch, blacksmith = false, compar
             };
             if (inventory?.name.includes('Ring')) {
                 setInventoryType('ringOne');
-                setInventoryRingType('ringTwo');
                 type = 'ringOne';
-                ringType = 'ringTwo';
                 setRingCompared('ringOne');
             };
             if (inventory?.name.includes('Trinket')) {
@@ -175,7 +123,6 @@ const Inventory = ({ ascean, index, inventory, pouch, blacksmith = false, compar
 
     const getBackgroundStyle = () => {
         if (inventorySwap()?.start?.id === inventory?._id) {
-            console.log('ScaleImage is greater than 48');
             return 'gold';
         } else if (highlighted()?.item && (highlighted()?.item?._id === inventory?._id)) {
             return '#820303';

@@ -157,27 +157,24 @@ export class Game extends Scene {
             bloomRadius: 25,
             bloomIntensity: 0.5,
             bloomThreshold: 0.5,
-            // Chromatic abberation
+
             chromaticEnable: this.settings?.postFx?.chromaticEnable,
             chabIntensity: this.settings?.postFx?.chabIntensity,
-            // Vignette
+
             vignetteEnable: this.settings?.postFx?.vignetteEnable,
             vignetteStrength: this.settings?.postFx?.vignetteStrength,
             vignetteIntensity: this.settings?.postFx?.vignetteIntensity,
-            // Noise
+
             noiseEnable: this.settings?.postFx?.noiseEnable,
             noiseStrength: this.settings?.postFx?.noiseStrength,
             // seed: 0.5,
             
-            // VHS
             vhsEnable: this.settings?.postFx?.vhsEnable,
             vhsStrength: this.settings?.postFx?.vhsStrength,
 
-            // Scanlines
             scanLinesEnable: this.settings?.postFx?.scanlinesEnable,
             scanStrength: this.settings?.postFx?.scanStrength,
 
-            // CRT
             crtEnable: this.settings?.postFx?.crtEnable,
             crtWidth: this.settings?.postFx?.crtWidth,
         });

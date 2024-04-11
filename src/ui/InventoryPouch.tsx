@@ -46,61 +46,12 @@ function useDebounce(signal: { (): boolean; (): any; }, delay: number | undefine
 };
 export default function InventoryPouch({ ascean, inventoryType, setInventoryType, setHighlighted, highlighted, setRingCompared, setWeaponCompared, dragAndDropInventory, setDragAndDropInventory, scaleImage, setScaleImage }: Props) {
     const [inventorySwap, setInventorySwap] = createSignal<any>({ start: { id: null, index: -1 }, end: { id: null, index: -1 } });
-    const [activeItem, setActiveItem] = createSignal(null);
-    const [items, setItems] = createSignal([
-        ...dragAndDropInventory().map((item: Equipment) => { return { ...item, id: item._id } })
-    ]);
     const dimensions = useResizeListener();
-    const ids = () => dragAndDropInventory();
-    const [isOpen, setIsOpen] = createSignal(false);
-    const isOpenDebounced = useDebounce(isOpen, 400);
     const [doubleTapCount, setDoubleTapCount] = createSignal(0);
 
     createEffect(() => {
         if (dragAndDropInventory()?.length === 0) return;
-        setItems([...dragAndDropInventory().map((item: Equipment) => { return { ...item, id: item._id } })]);
     });
-
-    const onDragStart = ({ draggable }: { draggable: any; }) => {
-        console.log('Drag Start', draggable);
-        setActiveItem(draggable.id);
-
-        if (inventorySwap().start.id === draggable.id) {
-            console.log('Start ID is equal to draggable ID, same item, reset')
-            setInventorySwap({
-                ...inventorySwap(),
-                start: { id: null, index: -1 },
-            });
-            return;
-        } else if (inventorySwap().start.id !== null) {
-            console.log('Start ID is not null, set end ID');
-            setInventorySwap({
-                ...inventorySwap(),
-                end: { id: draggable.id, index: ids().indexOf(draggable.id) },
-            });
-        } else {   
-            console.log('Start ID is null, set start ID');
-            setInventorySwap({
-                ...inventorySwap(),
-                start: { id: draggable.id, index: ids().indexOf(draggable.id) },
-            });
-        };
-    };
-    const onDragEnd = ({ draggable, droppable }: { draggable: any; droppable: any; }) => {
-        console.log('Drag End', draggable, droppable);
-        if (draggable && droppable) {
-            console.log('Drag End', draggable, droppable);
-            const currentItems = ids();
-            const fromIndex = currentItems.indexOf(draggable.id);
-            const toIndex = currentItems.indexOf(droppable.id);
-            if (fromIndex !== toIndex) {
-                const updatedItems = currentItems.slice();
-                updatedItems.splice(toIndex, 0, ...updatedItems.splice(fromIndex, 1));
-                setDragAndDropInventory(updatedItems);
-            };
-        };
-        setActiveItem(null);
-    };
 
     createEffect(() => {
         if (inventorySwap().start.id === null || inventorySwap().end.id === null) return;
@@ -112,28 +63,28 @@ export default function InventoryPouch({ ascean, inventoryType, setInventoryType
     });
 
     function doubleTap(inventory: Equipment, index: Accessor<number>) {
-        console.log('Double Tap !!');
+        // console.log('Double Tap !!');
         setDoubleTapCount((prev) => prev + 1);
         if (doubleTapCount() ===1) {
-            console.log('Double Tap Count is 1');
+            // console.log('Double Tap Count is 1');
         };
         if (doubleTapCount() === 2) {
-            console.log(' -- DOUBLE TAP DETECTED -- Double Tap Count is 2 -- DOUBLE TAP DETECTED --');
+            // console.log(' -- DOUBLE TAP DETECTED -- Double Tap Count is 2 -- DOUBLE TAP DETECTED --');
             if (inventorySwap().start.id === inventory._id) {
-                console.log('Start ID is equal to inventory _ID, same item, reset')
+                // console.log('Start ID is equal to inventory _ID, same item, reset')
                 setInventorySwap({
                     ...inventorySwap(),
                     start: { id: null, index: -1 },
                 });
                 return;
             } else if (inventorySwap().start.id !== null) {
-                console.log('Start ID is not null, set end ID');
+                // console.log('Start ID is not null, set end ID');
                 setInventorySwap({
                     ...inventorySwap(),
                     end: { id: inventory._id, index: index() },
                 });
             } else {   
-                console.log('Start ID is null, set start ID');
+                // console.log('Start ID is null, set start ID');
                 setInventorySwap({
                     ...inventorySwap(),
                     start: { id: inventory._id, index: index() },
@@ -141,16 +92,10 @@ export default function InventoryPouch({ ascean, inventoryType, setInventoryType
             };
         };
         setTimeout(() => {
-            console.log('Double Tap Timeout Reset');
+            // console.log('Double Tap Timeout Reset');
             setDoubleTapCount(0);
         }, 600);
-    }
-
-    function handleDndEvent(e: any) {
-        const { dragAndDropInventory: newItems } = e.detail;
-        console.log(e, 'Event');
-        setDragAndDropInventory(newItems);
-     };
+    };
 
     function handleInventoryDrop() {
         const { start, end } = inventorySwap();
@@ -164,17 +109,6 @@ export default function InventoryPouch({ ascean, inventoryType, setInventoryType
         EventBus.emit('refresh-inventory', copy);
         EventBus.emit('equip-sound');
     }; 
-
-    const getBackgroundStyle = (inventory: Equipment) => {
-        if (scaleImage().scale > 48 && scaleImage().id === inventory?._id) {
-            console.log('ScaleImage is greater than 48');
-            return 'gold';
-        } else if (highlighted()?.item && (highlighted()?.item?._id === inventory?._id)) {
-            return '#820303';
-        } else {
-            return 'transparent';
-        };
-    };
 
     const getItemStyle = (inventory: Equipment): JSX.CSSProperties => {
         return {

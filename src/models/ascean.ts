@@ -180,8 +180,8 @@ async function createAscean(data: any, template?: boolean): Promise<Ascean> {
     const shield = data.shield;
 
     const weaponThree = Weapons.find(item => item.rarity === 'Default');
-    const ringOne = Rings.find(ring => ring.rarity === 'Default');
-    const ringTwo = Rings.find(ring => ring.rarity === 'Default');
+    const ringOne = Rings.find(ring => ring._id === 'ers_001');
+    const ringTwo = Rings.find(ring => ring._id === 'ers_002');
     const amulet = Amulets.find(amulet => amulet.rarity === 'Default');
     const trinket = Trinkets.find(trinket => trinket.rarity === 'Default');
 

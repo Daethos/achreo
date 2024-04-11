@@ -28,13 +28,13 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
 
     createEffect(() => {
         if (inventoryType() === 'weaponOne') {
-            console.log('Weapon', weaponCompared());
+            // console.log('Weapon', weaponCompared());
             setTrueType(weaponCompared());
         } else if (inventoryType() === 'ringOne') {
-            console.log('Ring', ringCompared());
+            // console.log('Ring', ringCompared());
             setTrueType(ringCompared());
         } else {
-            console.log('Else', inventoryType());
+            // console.log('Else', inventoryType());
             setTrueType(inventoryType());
         };
         canUpgrade(pouch, highlighted()?.item?.name, highlighted()?.item?.rarity as string);
@@ -91,6 +91,7 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
             console.log('Else', inventoryType());
             type = inventoryType();
         };
+        // console.log(type, highlighted()?.item, '------- Type -------');
         EventBus.emit('set-equipper', { type, item: highlighted()?.item });
         // setEquipModalShow(true);
     };
@@ -108,59 +109,11 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
 
     function canUpgrade(inventory: Accessor<Equipment[]>, name: string, rarity: string): void {
         const matches = inventory().filter(item => item?.name === name && item?.rarity === rarity);
-        console.log(matches.length, "Matches Length");
+        // console.log(matches.length, "Matches Length");
         const canUpgrade = matches.length >= 3;
-        console.log(canUpgrade, "canUpgrade");
+        // console.log(canUpgrade, "canUpgrade");
         setUpgrade(canUpgrade);
     };
-
-    // async function handleUpgradeItem() {
-    //     if (highlighted().item?.rarity === 'Common' && ascean()?.currency?.gold < 1) {
-    //         return;
-    //     } else if (highlighted().item?.rarity === 'Uncommon' && ascean()?.currency?.gold < 3) {
-    //         return;
-    //     } else if (highlighted().item?.rarity === 'Rare' && ascean()?.currency?.gold < 12) {
-    //         return;
-    //     } else if (highlighted().item?.rarity === 'Epic' && ascean()?.currency?.gold < 60) {
-    //         return;
-    //     } else if (highlighted().item?.rarity === 'Legendary' && ascean()?.currency?.gold < 300) {
-    //         return;
-    //     } else if (highlighted().item?.rarity === 'Mythic' && ascean()?.currency?.gold < 1500) {
-    //         return;
-    //     } else if (highlighted().item?.rarity === 'Divine' && ascean()?.currency?.gold < 7500) {
-    //         return;
-    //     } else if (highlighted().item?.rarity === 'Ascended' && ascean()?.currency?.gold < 37500) {
-    //         return;
-    //     } else if (highlighted().item?.rarity === 'Godly' && ascean()?.currency?.gold < 225000) {
-    //         return;
-    //     };
-    //     try {
-    //         console.log(`Upgrading ${highlighted().item?.name} of ${highlighted().item?.rarity} quality.`);
-    //         // setLoadingContent(`Forging A Greater ${highlighted().item?.name}`);
-    //         const matches = pouch().filter((item) => item.name === highlighted().item?.name && item?.rarity === highlighted().item?.rarity);
-    //         const data = {
-    //             asceanID: ascean()._id,
-    //             upgradeID: highlighted().item._id,
-    //             upgradeName: highlighted().item.name,
-    //             upgradeType: highlighted().item.itemType,
-    //             currentRarity: highlighted().item.rarity,
-    //             inventoryType: inventoryType,
-    //             upgradeMatches: matches,
-    //         };
-    //         console.log(data, "Upgrading Item?");
-
-    //         EventBus.emit('upgrade-item', data);
-    //         EventBus.emit('play-equip');
-
-    //         setForge(false);
-
-    //         // EventBus.emit('update-inventory-request');
-    //         // dispatch(setCurrency(res.currency));
-            
-    //     } catch (err: any) {
-    //         console.log(err, '<- Error upgrading item');
-    //     };
-    // };
 
     function responsiveSizeStyle(len: number): string {
         if (len >= 18) {
@@ -187,7 +140,7 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
     };
 
     const createTable = (inventoryType: Accessor<string>) => { 
-        console.log(inventoryType(), 'Inventory Type');
+        // console.log(inventoryType(), 'Inventory Type');
         const asceanName = ascean()[inventoryType()]?.name.includes('Starter') ? ascean()[inventoryType()]?.name.split(' ')[0] + ' ' + ascean()[inventoryType()]?.name.split(' ')[1] : ascean()[inventoryType()]?.name;
         const inventoryName = highlighted()?.item?.name.includes('Starter') ? highlighted()?.item?.name.split(' ')[0] + ' ' + highlighted()?.item?.name.split(' ')[1] : highlighted()?.item?.name;
         const asceanTypeGrip = ascean()[inventoryType()]?.grip && ascean()[inventoryType()]?.type ? <>

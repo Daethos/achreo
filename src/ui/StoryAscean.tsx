@@ -120,7 +120,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
 
     createEffect(() => {
         if (!ascean().tutorial.views) {
-            console.log('Tutorial Views');
             setShowTutorial(true);
             setTutorial('views');
         } else if (!ascean().tutorial.inventory && dragAndDropInventory().length && settings().asceanViews === 'Inventory') {
@@ -179,12 +178,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         await saveSettings(newSettings);
     };
 
-    // const shake = (value, action) => setSettings({ ...settings(), shake: { ...settings().shake, [action]: value } });
-    // const handleShakeDurationChange = (e) => shake(parseFloat(e.target.value), 'duration');
-    // const handleShakeIntensityChange = (e) => shake(parseFloat(e.target.value), 'intensity');
-    // const handleVibrationChange = (e) => setGameState({ ...game, vibration: parseFloat(e.target.value)});
-    // const handleVolumeChange = (e) => setGameState({ ...game, volume: parseFloat(e.target.value)});
-
     const createCharacterInfo = (character: string) => {
         switch (character) {
             case CHARACTERS.STATISTICS:
@@ -210,8 +203,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
                 );
             case CHARACTERS.TRAITS:
                 return (
-                    <div class='creature-heading' style={{  }}>
-                    {/* <div>Traits</div> */}
+                    <div class='creature-heading'>
                     <h1>{playerTraitWrapper()?.primary?.name}</h1>
                         <h2> <span class='gold'>{playerTraitWrapper()?.primary?.traitOneName}</span> - {playerTraitWrapper()?.primary?.traitOneDescription}</h2>
                         <h2> <span class='gold'>{playerTraitWrapper()?.primary?.traitTwoName}</span> - {playerTraitWrapper()?.primary?.traitTwoDescription}</h2>
@@ -234,6 +226,11 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
     //     // await saveSettings(newSettings);
     //     EventBus.emit('update-volume', volume);
     // };
+    // const shake = (value, action) => setSettings({ ...settings(), shake: { ...settings().shake, [action]: value } });
+    // const handleShakeDurationChange = (e) => shake(parseFloat(e.target.value), 'duration');
+    // const handleShakeIntensityChange = (e) => shake(parseFloat(e.target.value), 'intensity');
+    // const handleVibrationChange = (e) => setGameState({ ...game, vibration: parseFloat(e.target.value)});
+    // const handleVolumeChange = (e) => setGameState({ ...game, volume: parseFloat(e.target.value)});
 
     async function currentControl(e: string) {
         const newSettings: Settings = { ...settings(), control: e };
@@ -317,16 +314,6 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         await saveSettings(newSettings);
     };
 
-    async function freeInventory() {
-        try {
-            const item = await getOneRandom(ascean().level);
-            console.log('Item: ', item?.[0]?.name);
-            EventBus.emit('add-item', item);
-        } catch (err: any) {
-            console.warn(err, 'Error in Free Inventory');
-        };
-    };
-
     async function handleUpgradeItem() {
         if (highlighted().item?.rarity === 'Common' && ascean()?.currency?.gold < GET_FORGE_COST.Common) {
             return;
@@ -393,28 +380,37 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         setRemoveModalShow(false);
     };
 
-    async function getExperience() {
-        let experience: number = ascean().experience + 1000;
-        let ceiling: number = ascean().level * 1000;
-        const newState = { 
-            ...asceanState(), 
-            avarice: false, 
-            opponent: 4,
-            opponentExp: Math.min(experience, ceiling),
-        };
-        EventBus.emit('gain-experience', newState);
-    };
+    // async function getExperience() {
+    //     let experience: number = ascean().experience + 1000;
+    //     let ceiling: number = ascean().level * 1000;
+    //     const newState = { 
+    //         ...asceanState(), 
+    //         avarice: false, 
+    //         opponent: 4,
+    //         opponentExp: Math.min(experience, ceiling),
+    //     };
+    //     EventBus.emit('gain-experience', newState);
+    // };
 
-    async function getMoney() {
-        const newAscean = { 
-            ...ascean(), 
-            currency: { 
-                ...ascean().currency, 
-                gold: ascean().currency.gold + 1000 
-            } 
-        };
-        EventBus.emit('update-ascean', newAscean);
-    };
+    // async function getInventory() {
+    //     try {
+    //         const item = await getOneRandom(ascean().level);
+    //         EventBus.emit('add-item', item);
+    //     } catch (err: any) {
+    //         console.warn(err, 'Error in Free Inventory');
+    //     };
+    // };
+
+    // async function getMoney() {
+    //     const newAscean = { 
+    //         ...ascean(), 
+    //         currency: { 
+    //             ...ascean().currency, 
+    //             gold: ascean().currency.gold + 1000 
+    //         } 
+    //     };
+    //     EventBus.emit('update-ascean', newAscean);
+    // };
 
     return (
         <div style={{ 'z-index': 1, position: 'fixed', top: 0, left: 0 }}>
@@ -452,7 +448,7 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
         <Show when={settings().control !== CONTROLS.POST_FX || settings().asceanViews !== VIEWS.SETTINGS}>
             <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
                 { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'hidden' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, }}>
-                    {/* <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => freeInventory()}>
+                    {/* <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getInventory()}>
                         <p>Get Eqp</p>
                     </button> */}
                     {/* <button class='highlight cornerTR' style={{ 'background-color': 'green', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getMoney()}>

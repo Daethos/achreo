@@ -94,7 +94,9 @@ export class Preloader extends Scene {
         this.load.audio('weaponOrder', '../assets/sounds/weapon-order.mp3');
         this.load.audio('phenomena', '../assets/sounds/phenomena.mp3');
         this.load.audio('TV_Button_Press', '../assets/sounds/TV_Button_Press.wav');
-        
+        this.load.audio('combat-round', '../assets/sounds/combat-round.mp3');
+        this.load.audio('alien-whoosh', '../assets/sounds/alien-whoosh.mp3');
+
         this.assets = sanitize();
 
         this.assets.forEach((asset: { sprite: string; imgUrl: string; }) => {

@@ -961,6 +961,7 @@ export default class Player extends Entity {
             this.setTimeEvent('healingCooldown', 6000);  
             this.healingSuccess = false;
             EventBus.emit('initiate-combat', { data: { key: 'player', value: 25 }, type: 'Health' });
+            this.caerenicFx.play();
         };
         this.castbar.reset();
         if (!this.isCaerenic) {
@@ -1026,6 +1027,7 @@ export default class Player extends Entity {
         // screenShake(this.scene);
         this.prayerFx.play();
         this.scene.useStamina(PLAYER.STAMINA.INVOKE);
+        // this.scene.mysterious.play();
     };
 
     onRootingEnter = () => {
@@ -1252,6 +1254,7 @@ export default class Player extends Entity {
         this.isTshaering = true;
         this.attacking.isConsumed = true;
         this.scene.useStamina(PLAYER.STAMINA.TSHAER);
+        this.scene.tshaeral.play();
         // screenShake(this.scene);
         if (!this.isCaerenic) {
             this.setGlow(this, true);
@@ -1337,6 +1340,7 @@ export default class Player extends Entity {
             this.scene.fear(this.attacking?.enemyID);
             this.setTimeEvent('fearCooldown', 6000);  
             this.fearSuccess = false;
+            this.scene.mysterious.play();
         };
         this.castbar.reset();
         if (!this.isCaerenic) {
@@ -1371,6 +1375,7 @@ export default class Player extends Entity {
             this.scene.polymorph(this.attacking?.enemyID);
             this.setTimeEvent('polymorphCooldown', 4000);  
             this.polymorphSuccess = false;
+            this.scene.mysterious.play();
         };
         this.castbar.reset();
         if (!this.isCaerenic) {

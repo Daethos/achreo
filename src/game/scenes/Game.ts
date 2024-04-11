@@ -74,6 +74,8 @@ export class Game extends Scene {
     purchase: Phaser.Sound.BaseSound;
     treasure: Phaser.Sound.BaseSound;
     phenomena: Phaser.Sound.BaseSound;
+    mysterious: Phaser.Sound.BaseSound;
+    tshaeral: Phaser.Sound.BaseSound;
     fpsText: Phaser.GameObjects.Text;
     combatTimerText: Phaser.GameObjects.Text;
     volumeEvent: () => void;
@@ -248,6 +250,8 @@ export class Game extends Scene {
         this.purchase = this.sound.add('purchase', { volume: this?.settings?.volume });
         this.treasure = this.sound.add('treasure', { volume: this?.settings?.volume });
         this.phenomena = this.sound.add('phenomena', { volume: this?.settings?.volume });
+        this.mysterious = this.sound.add('combat-round', { volume: this?.settings?.volume });
+        this.tshaeral = this.sound.add('alien-whoosh', { volume: this?.settings?.volume });
 
         // =========================== FPS =========================== \\
 

@@ -683,8 +683,10 @@ export default class Enemy extends Entity {
         this.anims.stop('player_running');
         this.scene.navMesh.debugDrawClear();
         this.setVelocity(0, 0);
-        this.chaseTimer.destroy();
-        this.chaseTimer = undefined;
+        if (this.chaseTimer) {
+            this.chaseTimer.destroy();
+            this.chaseTimer = undefined;
+        };
     };
 
     onCombatEnter = () => {

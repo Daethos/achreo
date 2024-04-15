@@ -72,6 +72,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         scene.add.existing(this);
         const { width, height } = scene.cameras.main;
         this.setPosition(width / 5, height / 5); // 2.75, 1.5
+        this.setDepth(2);
         this.setScrollFactor(0);
         this.setVisible(true); // false
         this.reorder();
@@ -126,6 +127,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
             button.graphic.setScrollFactor(0);
             button.border.setScrollFactor(0);
+            button.graphic.setDepth(2);
 
             this.actionButtons.push(button);
             this.add(button.border);
@@ -168,6 +170,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             
             button.graphic.setScrollFactor(0);
             button.border.setScrollFactor(0);
+            button.graphic.setDepth(2);
 
             this.specialButtons.push(button);
             this.add(button.border);

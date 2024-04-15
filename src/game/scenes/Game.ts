@@ -271,7 +271,7 @@ export class Game extends Scene {
         this.combatTimerText = this.add.text(window.innerWidth / 2 - 40, window.innerHeight + 30, 'Combat Timer: ', { font: '16px Cinzel', color: '#fdf6d8' });
         this.combatTimerText.setScrollFactor(0);
         this.combatTimerText.setVisible(false);
-            
+
         this.equipEvent();
         this.unequipEvent();
         this.purchaseEvent();
@@ -649,6 +649,10 @@ export class Game extends Scene {
     };   
 
     startCombatTimer = () => {
+        if (this.combatTimer) {
+            this.combatTimer.destroy();
+            // this.combatTimer = undefined;
+        };
         this.combatTimer = this.time.addEvent({
             delay: 1000,
             callback: () => {
@@ -662,8 +666,10 @@ export class Game extends Scene {
     };
 
     stopCombatTimer = () => {
-        this.combatTimer.destroy();
-        // this.combatTimer = undefined;
+        if (this.combatTimer) {
+            this.combatTimer.destroy();
+            // this.combatTimer = undefined;
+        };
         this.combatTime = 0;
         EventBus.emit('update-combat-timer', this.combatTime);
     };

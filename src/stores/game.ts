@@ -25,6 +25,7 @@ export interface GameState {
     scrollEnabled: boolean;
 
     dialogTag: boolean;
+    lootTag: boolean;
     showCombat: boolean;
     showDialog: boolean;
     showInventory: boolean;
@@ -77,6 +78,7 @@ export const initGame: GameState = {
     scrollEnabled: false,
 
     dialogTag: false,
+    lootTag: false,
     currentIntent: 'challenge',
     showCombat: false,
     showDialog: false,

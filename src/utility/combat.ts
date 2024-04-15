@@ -1965,7 +1965,9 @@ function dualActionSplitter(combat: Combat): Combat {
     newCombat.playerStartDescription = 
         `You attempt to ${playerAction === '' ? 'defend' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1)}${playerCounter ? '-' + playerCounter.charAt(0).toUpperCase() + playerCounter.slice(1) : ''} against ${newCombat.computer.name}.`
     
-    if (playerAction === 'counter' && computerAction === 'counter') { 
+    // ========================== COUNTER LOGIC (PHASER) ========================== \\
+
+    if (playerAction === 'counter' && computerAction === 'counter') {
         if (playerCounter === computerCounter && playerCounter === 'counter') {
             if (playerInitiative > computerInitiative) {
                 newCombat.counterSuccess = true;
@@ -1976,45 +1978,73 @@ function dualActionSplitter(combat: Combat): Combat {
             };
             return newCombat;
         };
-        if (playerCounter === computerAction && computerCounter !== playerAction) {
-            newCombat.counterSuccess = true;
-            newCombat.playerSpecialDescription = `You successfully Countered ${newCombat.computer.name}'s Counter-${computerCounter.charAt(0).toUpperCase() + computerCounter.slice(1)}! Absolutely Brutal`;
-            return newCombat; 
-        };
-    
-        if (computerCounter === playerAction && playerCounter !== computerAction) {
-            newCombat.computerCounterSuccess = true;
-            newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully Countered your Counter-${playerCounter.charAt(0).toUpperCase() + playerCounter.slice(1)}! Absolutely Brutal`;
-            return newCombat; 
-        };
-    
-        if (playerCounter !== computerAction && computerCounter !== playerAction) {
-            newCombat.playerSpecialDescription = `You failed to Counter ${newCombat.computer.name}'s Counter! Heartbreaking`;
-            newCombat.computerSpecialDescription = `${newCombat.computer.name} fails to Counter your Counter! Heartbreaking`;
-            return newCombat;
-        };
     };
 
     if (playerAction === 'counter' && computerAction !== 'counter') {
-        if (playerCounter === computerAction) {
-            newCombat.counterSuccess = true;
-            newCombat.playerSpecialDescription = `You successfully Countered ${newCombat.computer.name}'s ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack.`;
-            return newCombat;
-        } else {
-            newCombat.playerSpecialDescription = 
-                `You failed to Counter ${newCombat.computer.name}'s ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack. Heartbreaking!`;
-        };
+        newCombat.counterSuccess = true;
+        newCombat.playerSpecialDescription = `You successfully Countered ${newCombat.computer.name}'s ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack.`;
+        return newCombat;
     };
 
     if (computerAction === 'counter' && playerAction !== 'counter') {
-        if (computerCounter === playerAction) {
-            newCombat.computerCounterSuccess = true;
-            newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully Countered your ${ newCombat.action === 'attack' ? 'Focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } Attack.`;
-            return newCombat;    
-        } else {
-            newCombat.computerSpecialDescription = `${newCombat.computer.name} fails to Counter your ${ playerAction === 'attack' ? 'Focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } Attack. Heartbreaking!`;
-        };
+        newCombat.computerCounterSuccess = true;
+        newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully Countered your ${ newCombat.action === 'attack' ? 'Focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } Attack.`;
+        return newCombat;    
     };
+
+
+    // ========================== COUNTER LOGIC (TURN BASED) ========================== \\
+
+    // if (playerAction === 'counter' && computerAction === 'counter') { 
+    //     if (playerCounter === computerCounter && playerCounter === 'counter') {
+    //         if (playerInitiative > computerInitiative) {
+    //             newCombat.counterSuccess = true;
+    //             newCombat.playerSpecialDescription = `You successfully Countered ${newCombat.computer.name}'s Counter-Counter! Absolutely Brutal`;
+    //         } else {
+    //             newCombat.computerCounterSuccess = true;
+    //             newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully Countered your Counter-Counter! Absolutely Brutal`; 
+    //         };
+    //         return newCombat;
+    //     };
+    //     if (playerCounter === computerAction && computerCounter !== playerAction) {
+    //         newCombat.counterSuccess = true;
+    //         newCombat.playerSpecialDescription = `You successfully Countered ${newCombat.computer.name}'s Counter-${computerCounter.charAt(0).toUpperCase() + computerCounter.slice(1)}! Absolutely Brutal`;
+    //         return newCombat; 
+    //     };
+    
+    //     if (computerCounter === playerAction && playerCounter !== computerAction) {
+    //         newCombat.computerCounterSuccess = true;
+    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully Countered your Counter-${playerCounter.charAt(0).toUpperCase() + playerCounter.slice(1)}! Absolutely Brutal`;
+    //         return newCombat; 
+    //     };
+    
+    //     if (playerCounter !== computerAction && computerCounter !== playerAction) {
+    //         newCombat.playerSpecialDescription = `You failed to Counter ${newCombat.computer.name}'s Counter! Heartbreaking`;
+    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} fails to Counter your Counter! Heartbreaking`;
+    //         return newCombat;
+    //     };
+    // };
+
+    // if (playerAction === 'counter' && computerAction !== 'counter') {
+    //     if (playerCounter === computerAction) {
+    //         newCombat.counterSuccess = true;
+    //         newCombat.playerSpecialDescription = `You successfully Countered ${newCombat.computer.name}'s ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack.`;
+    //         return newCombat;
+    //     } else {
+    //         newCombat.playerSpecialDescription = 
+    //             `You failed to Counter ${newCombat.computer.name}'s ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack. Heartbreaking!`;
+    //     };
+    // };
+
+    // if (computerAction === 'counter' && playerAction !== 'counter') {
+    //     if (computerCounter === playerAction) {
+    //         newCombat.computerCounterSuccess = true;
+    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully Countered your ${ newCombat.action === 'attack' ? 'Focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } Attack.`;
+    //         return newCombat;    
+    //     } else {
+    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} fails to Counter your ${ playerAction === 'attack' ? 'Focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } Attack. Heartbreaking!`;
+    //     };
+    // };
 
     if (playerAction === 'roll' && computerAction === 'roll') { // If both choose Roll
         doubleRollCompiler(newCombat, playerInitiative, computerInitiative, playerAction, computerAction);

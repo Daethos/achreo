@@ -86,11 +86,11 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     // };  
 
     // const deleteEquipment = async (eqp) => await eqpAPI.deleteEquipment(eqp); 
-    const showDialog = (e: boolean) => EventBus.emit('blend-game', { showDialog: e, dialogTag: e });
     // const updateCombatTimer = (e: number) => setCombat({...(combat), combatTimer: e}); 
-
+    
     const sendEnemyData = async () => EventBus.emit('get-enemy', combat().computer);
     const sendSettings = async () => EventBus.emit('get-settings', settings);
+    const showDialog = (e: boolean) => EventBus.emit('blend-game', { dialogTag: e }); // showDialog: e, 
     const updateStamina = (e: number) => setStaminaPercentage(staminaPercentage() - e <= 0 ? 0 : staminaPercentage() - e);
 
     function initiateCombat(data: any, type: string) {

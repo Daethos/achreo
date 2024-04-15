@@ -17,15 +17,15 @@ export interface KVI {
     id?: string; 
 };
 
-function valid(key: string, value: string, state: Combat): boolean {
-    if (key === 'action' && value === 'counter' && state.computerAction === '') {
-        return false;
-    };
-    if (key === 'computerAction' && value === 'counter' && state.action === '') {
-        return false;
-    };
-    return true;
-}
+// function valid(key: string, value: string, state: Combat): boolean {
+//     if (key === 'action' && value === 'counter' && state.computerAction === '') {
+//         return false;
+//     };
+//     if (key === 'computerAction' && value === 'counter' && state.action === '') {
+//         return false;
+//     };
+//     return true;
+// };
 
 export default class CombatMachine {
     private context: any;
@@ -48,9 +48,9 @@ export default class CombatMachine {
     private actionHandlers: { [key: string]: ActionHandler } = {
         Weapon: (data: KVI) => {
             const { key, value } = data;
-            if (!valid(key, value as string, this.context)) {
-                return; // Don't allow counter if computer hasn't acted yet. Null action.
-            };
+            // if (!valid(key, value as string, this.context)) {
+            //     return; // Don't allow counter if computer hasn't acted yet. Null action.
+            // };
             Dispatcher.weaponAction(data);
         },
         Health: (data: KVI) => Dispatcher.healthAction(data),

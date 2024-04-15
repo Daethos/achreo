@@ -510,14 +510,16 @@ export const PhaserGame = (props: IProps) => {
                 setGame({
                     ...game(),
                     showLootIds: [...game().showLootIds, e.loot],
-                    showLoot: true
+                    // showLoot: true,
+                    lootTag: true,
                 });
             } else {
                 const updatedShowLootIds = game().showLootIds.filter((id) => id !== e.loot);
                 setGame({ 
                     ...game(), 
                     showLootIds: updatedShowLootIds.length > 0 ? updatedShowLootIds : [],
-                    showLoot: updatedShowLootIds.length > 0
+                    // showLoot: updatedShowLootIds.length > 0,
+                    lootTag: updatedShowLootIds.length > 0,    
                 });
             };
         });
@@ -534,7 +536,9 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('show-combat-logs', (e: boolean) => setGame({ ...game(), showCombat: e }));
         EventBus.on('show-player', () => {
             // pause the game
-            EventBus.emit('update-pause', !game().showPlayer);
+            if (game().scrollEnabled === false) {
+                EventBus.emit('update-pause', !game().showPlayer);
+            };
             setGame({ ...game(), showPlayer: !game().showPlayer })
         });
         EventBus.on('toggle-pause', () => setGame({ ...game(), pauseState: !game().pauseState }));
@@ -570,6 +574,7 @@ export const PhaserGame = (props: IProps) => {
                 inventory: newInventory,
                 lootDrops: newLootDrops, 
                 showLoot: newLootIds.length > 0,
+                lootTag: newLootIds.length > 0,
                 showLootIds: newLootIds
             });
             const update = { ...props.ascean(), inventory: newInventory };
@@ -585,6 +590,7 @@ export const PhaserGame = (props: IProps) => {
                 ...game(),
                 lootDrops: updatedLootDrops,
                 showLoot: updatedLootIds.length > 0,
+                lootTag: updatedLootIds.length > 0,
                 showLootIds: updatedLootIds
             });
         });
@@ -593,10 +599,16 @@ export const PhaserGame = (props: IProps) => {
                 ...game(), 
                 lootDrops: game().lootDrops.length > 0 ? [...game().lootDrops, ...e] : e,
                 showLoot: e.length > 0,
+                lootTag: e.length > 0,
                 showLootIds: e.map((loot) => loot._id)
         }));
         EventBus.on('useHighlight', (e: string) => setGame({ ...game(), selectedHighlight: e }));
-        EventBus.on('useScroll', (e: boolean) => setGame({ ...game(), scrollEnabled: e }));
+        EventBus.on('useScroll', (e: boolean) => {
+            if (game().showPlayer === false) {
+                EventBus.emit('update-pause', e);
+            };
+            setGame({ ...game(), scrollEnabled: e });
+        });
 
         EventBus.on('create-prayer', (e: any) => {
             setCombat({ ...combat(), playerEffects: combat().playerEffects.length > 0 ? [...combat().playerEffects, e] : [e] });

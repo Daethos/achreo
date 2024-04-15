@@ -613,6 +613,22 @@ body {
     background-color: rgba(0, 0, 0, 0.75);
 } 
 
+.flash {
+    animation: 3s 1 invert;
+}
+
+@keyframes invert {
+    50% {
+        filter: invert(100%);
+        transform: scale(1.1);
+    }
+    100% {
+        filter: invert(0%);
+        transform: scale(1);
+    }
+}
+
+
 .shadow {
     /* box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5); */
     text-shadow: 0 0 0.5em rgba(0, 0, 0, 1);

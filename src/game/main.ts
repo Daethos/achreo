@@ -35,11 +35,11 @@ const config: Phaser.Types.Core.GameConfig = {
     physics: {
         default: 'matter',
         matter: {
-            // debug: true,
+            debug: true,
             gravity: { x: 0, y: 0 },
         }
     },
-    fps: { limit: 90, target: 60 },
+    fps: { limit: 90, target: 90 },
     fullscreenTarget: 'base-ui',
     plugins: {
         global: [{

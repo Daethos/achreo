@@ -10,7 +10,7 @@ import { getRandomNumStr } from "../models/equipment";
 
 const DISTANCE = {
     MIN: 0,
-    ATTACK: 35,
+    ATTACK: 25,
     MOMENTUM: 2,
     THRESHOLD: 75,
     CHASE: 75,
@@ -155,6 +155,7 @@ export default class Enemy extends Entity {
         this.metaMachine.setState(States.CLEAN);
         
         this.setScale(0.8);
+        this.setDepth(1);
         this.isAttacking = false;
         this.isCountering = false;
         this.isDodging = false;
@@ -182,7 +183,7 @@ export default class Enemy extends Entity {
         this.combatThreshold = 0;
         this.attackIsLive = false;
         this.isEnemy = true;
-        this.isAggressive = Math.random() > 0.5; // Math.random() > 0.5 || false
+        this.isAggressive = false; // Math.random() > 0.5 || false
         this.startedAggressive = this.isAggressive;
         this.isDefeated = false;
         this.isTriumphant = false;
@@ -220,10 +221,12 @@ export default class Enemy extends Entity {
         this.enemyStateListener();
         this.enemySensor = enemySensor;
         this.enemyCollision(enemySensor);
+        
+        // console.log(this.width, this.height)
         this.setInteractive(new Phaser.Geom.Rectangle(
+            48,
             0,
-            0,
-            this.width,
+            32,
             this.height
         ), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
@@ -231,11 +234,10 @@ export default class Enemy extends Entity {
                 this.setTint(0x00FF00);
                 const newEnemy = this.isNewEnemy(this.scene.player);
                 if (newEnemy) {
-                    this.scene.player.targets.push(this);
-                    this.scene.player.sendEnemies(this.scene.player.targets);
+                    this.scene.player.addEnemy(this);
                 };
-                this.scene.player.attacking = this;
-                this.scene.player.currentTarget = this;
+                this.scene.player.setAttacking(this);;
+                this.scene.player.setCurrentTarget(this);
             })
             .on('pointerout', () => {
                 this.setTint(0x000000);
@@ -709,13 +711,11 @@ export default class Enemy extends Entity {
     };
 
     onEvasionEnter = () => { 
-        const direction = Phaser.Math.Between(1, 100);
+        const x = Phaser.Math.Between(1, 100);
+        const y = Phaser.Math.Between(1, 100);
         const evade = Phaser.Math.Between(1, 100); 
-        if (direction > 50) {
-            this.evadeUp = true;
-        } else {
-            this.evadeUp = false;
-        };
+        this.evadeRight = x > 50 ? true : false;
+        this.evadeUp = y > 50 ? true : false;
         if (evade > 50) {
             this.isDodging = true; 
         } else {
@@ -729,7 +729,12 @@ export default class Enemy extends Entity {
         };
         if (this.isRolling) { 
             this.anims.play('player_roll', true);
-        }; 
+        };
+        if (this.evadeRight) {
+            this.setVelocityX(this.speed); // Was 2
+        } else {
+            this.setVelocityX(-this.speed); // Was 2
+        };
         if (this.evadeUp) {
             this.setVelocityY(this.speed); // Was 2
         } else {
@@ -1080,7 +1085,7 @@ export default class Enemy extends Entity {
     onStunEnter = () => {
         console.log('Stunned');
         this.stunDuration = DURATION.STUN;
-        this.setTint(0xFFFFFF); // 0x888888
+        this.setTint(0x888888); // 0x888888
         this.setStatic(true);
     };
     onStunUpdate = (dt) => {
@@ -1106,7 +1111,7 @@ export default class Enemy extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Rooted', DURATION.TEXT, 'effect');
         if (!this.isPolymorphed) this.clearAnimations();
         this.rootDuration = DURATION.ROOT;
-        this.setTint(0xFFFFFF); // 0x888888
+        this.setTint(0x888888); // 0x888888
         this.setStatic(true);
         this.scene.time.addEvent({
             delay: this.rootDuration,
@@ -1260,6 +1265,9 @@ export default class Enemy extends Entity {
         if (direction.length() >= DISTANCE.CHASE * multiplier) { // > 525
             this.stateMachine.setState(States.CHASE);
         } else if (this.isRanged) {
+            // ******************************************************************
+            // Contiually Checking Distance for RANGED ENEMIES.
+            // ******************************************************************
             if (!this.stateMachine.isCurrentState(States.COMBAT)) this.stateMachine.setState(States.COMBAT);
             if (distanceY > DISTANCE.RANGED_ALIGNMENT) {
                 this.anims.play('player_running', true);
@@ -1287,6 +1295,9 @@ export default class Enemy extends Entity {
                 this.setVelocityY(direction.y * (this.speed)); // 2.25
             };
         } else { // Melee
+            // ******************************************************************
+            // Contiually Maintaining Reach for MELEE ENEMIES.
+            // ******************************************************************
             if (!this.stateMachine.isCurrentState(States.COMBAT)) this.stateMachine.setState(States.COMBAT);
             if (direction.length() > DISTANCE.ATTACK) { 
                 this.anims.play('player_running', true);

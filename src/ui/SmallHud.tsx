@@ -1,6 +1,6 @@
 
 import { EventBus } from '../game/EventBus';
-import { Accessor, JSX, Show, createMemo, createSignal } from 'solid-js';
+import { Accessor, JSX, Show, createEffect, createMemo, createSignal, onMount } from 'solid-js';
 import { useResizeListener } from '../utility/dimensions';
 import { GameState } from '../stores/game';
 import { Combat } from '../stores/combat';
@@ -19,7 +19,22 @@ export default function SmallHud({ ascean, combat, game }: Props) {
     const [alert, setAlert] = createSignal<{ header: string; body: string } | undefined>(undefined);
     const [toastShow, setToastShow] = createSignal<boolean>(false);
     const [experience, setExperience] = createSignal<number>(ascean().experience as number); // ascean().experience as number
+    const [clicked, setClicked] = createSignal<any>({
+        caerenic: false,
+        combatSettings: false,
+        cursor: false,
+        dialog: false,
+        loot: false,
+        pause: false,
+        showPlayer: false,
+        stalwart: false,
+        stealth: false,
+    });
     const dimensions = useResizeListener(); 
+
+    createEffect(() => {
+        console.log(clicked())
+    });
 
     createMemo(() => {
         if (ascean().experience as number > experience()) {
@@ -35,41 +50,74 @@ export default function SmallHud({ ascean, combat, game }: Props) {
         setExperience(ascean().experience as number);
     });
 
-    const dialog = () => {
-        EventBus.emit('blend-game', { showDialog: !game().showDialog });
-        EventBus.emit('action-button-sound');
-    };
+    onMount(() => {
+        EventBus.on('combat-engaged', (e: boolean) => {
+            if (!e) return;
+            setClicked({ ...clicked(), dialog: false, loot: false });
+        });
+    });
+
     const combatSettings = () => {
         EventBus.emit('useScroll', !game().scrollEnabled);
         EventBus.emit('action-button-sound');
+        setClicked({ ...clicked(), combatSettings: !clicked().combatSettings });
     };
     const cursor = () => {
         console.log('cursor')
         EventBus.emit('action-button-sound');
         EventBus.emit('update-cursor');
+        setClicked({ ...clicked(), cursor: !clicked().cursor });
     };
-    
-    const caerenic = () => EventBus.emit('update-caerenic');
-    const stalwart = () => EventBus.emit('update-stalwart');
+    const dialog = () => {
+        EventBus.emit('blend-game', { showDialog: !game().showDialog });
+        EventBus.emit('action-button-sound');
+        setClicked({ ...clicked(), dialog: !clicked().dialog });
+    };
+    const loot = () => {
+        EventBus.emit('blend-game', { showLoot: !game().showLoot });
+        EventBus.emit('action-button-sound');
+        setClicked({ ...clicked(), loot: !clicked().loot });
+    };
+    const caerenic = () => {
+        EventBus.emit('update-caerenic');
+        setClicked({ ...clicked(), caerenic: !clicked().caerenic });
+    };
+    const stalwart = () => {
+        EventBus.emit('update-stalwart');
+        setClicked({ ...clicked(), stalwart: !clicked().stalwart });
+    };
     const stealth = () => {
         if (combat().combatEngaged) return;
         EventBus.emit('update-stealth');
+        setClicked({ ...clicked(), stealth: !clicked().stealth });
     };
 
-    const pause = () => EventBus.emit('update-pause', !game().pauseState);
+    const pause = () => {
+        EventBus.emit('update-pause', !game().pauseState)
+        setClicked({ ...clicked(), pause: !clicked().pause });
+    };
     const showButtons = () => setShow(!show());
-    const showPlayer = () => EventBus.emit('show-player', !game().showPlayer);
+    const showPlayer = () => {
+        EventBus.emit('show-player', !game().showPlayer);
+        setClicked({ ...clicked(), showPlayer: !clicked().showPlayer });
+    };
 
-    const icon = {
-        width: '2em',
+    const icon = (click: boolean) => {
+        return {
+            width: '2em',
+            'filter': click === true ? 'invert(100%)' : 'sepia(100%)',
+            border: '1px solid #fdf6d8',
+        };
     };
 
     const p: JSX.CSSProperties = {
-        color: '#fdf6d8',
+        color: clicked().caerenic === true ? 'gold' : '#fdf6d8',
         'font-size': '1.5em',
         'font-weight': 700,
         'align-items': 'center',
         'margin-top': '10%',
+        // width: '100%',
+        filter: 'sepia(100%)',
     };
 
     return (
@@ -93,8 +141,8 @@ export default function SmallHud({ ascean, combat, game }: Props) {
                 { height: '7.5%', width: '3.75%', right: '20.5%' } :
                 { height: '3.5%', width: '7.5%', right: '44%' }} 
                 onClick={caerenic}>
-                    <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center', height: 'auto', width: 'auto' }}>
-                        <img src={'../assets/images/caerenic.png'} style={icon} alt='Ce' />
+                    <div class='p-3' style={{ color: clicked().caerenic === true ? 'gold' : '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center', height: 'auto', width: 'auto' }}>
+                        <img src={'../assets/images/caerenic.png'} style={icon(clicked().caerenic)} alt='Ce' />
                     </div>
             </button>
             
@@ -102,8 +150,8 @@ export default function SmallHud({ ascean, combat, game }: Props) {
                 { height: '7.5%', width: '3.75%', right: '16.5%' } : 
                 { height: '3.5%', width: '7.5%', right: '36%' }} 
                 onClick={stalwart}>
-                    <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
-                        <img src={'../assets/images/stalwart.png'} style={icon} alt='St' />
+                    <div class='p-3' style={{ color: clicked().stalwart === true ? 'gold' : '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                        <img src={'../assets/images/stalwart.png'} style={icon(clicked().stalwart)} alt='St' />
                     </div>
             </button>
 
@@ -111,32 +159,32 @@ export default function SmallHud({ ascean, combat, game }: Props) {
                 { height: '7.5%', width: '3.75%', right: '12.5%' } : 
                 { height: '3.5%', width: '7.5%', right: '28%' }} 
                 onClick={stealth}>
-                    <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
-                        <img src={'../assets/images/stealth.png'} style={icon} alt='Sh' />
+                    <div class='p-3' style={{ color: clicked().stealth === true ? 'gold' : '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                        <img src={'../assets/images/stealth.png'} style={icon(clicked().stealth)} alt='Sh' />
+                    </div>
+            </button>
+            
+            <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ?
+                { height: '7.5%', width: '3.75%', right: '8.5%' } :
+                { height: '3.5%', width: '7.5%', right: '12%' }} 
+                onClick={pause}>
+                    <div class='p-3' style={{ color: clicked().pause === true ? 'gold' : '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                        <img src={'../assets/images/pause.png'} style={icon(clicked().pause)} alt='Sh' />
                     </div>
             </button>
 
             <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ?
-                { height: '7.5%', width: '3.75%', right: '8.5%' } : 
-                { height: '3.5%', width: '7.5%', right: '20%' }} 
+                { height: '7.5%', width: '3.75%', right: '4.5%' } :// , border: '1.5px solid #fdf6d8' 
+                { height: '3.5%', width: '7.5%', right: '20%' }} // , border: '1.5px solid #fdf6d8'
                 onClick={cursor}>
-                <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-12.5%', 'margin-top': '25%', 'text-align': 'center' }}>
+                <div class='p-3' style={{ color: clicked().caerenic === true ? 'gold' : '#fdf6d8', 'margin-left': '-12.5%', 'margin-top': '25%', 'text-align': 'center' }}>
                     <img class='p-3' src={'../assets/images/cursor.png'} />
                 </div>
             </button>
             
-            <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ?
-                { height: '7.5%', width: '3.75%', right: '4.5%' } :
-                { height: '3.5%', width: '7.5%', right: '12%' }} 
-                onClick={pause}>
-                    <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
-                        <img src={'../assets/images/pause.png'} style={icon} alt='Sh' />
-                    </div>
-            </button>
-            
             <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? 
-                { height: '7.5%', width: '3.75%', right: '0.5%' } : 
-                { height: '3.5%', width: '7.5%', right: '4%' }} 
+                { height: '7.5%', width: '3.75%', right: '0.5%' } :// , border: '1.5px solid #fdf6d8' 
+                { height: '3.5%', width: '7.5%', right: '4%' }} // , border: '1.5px solid #fdf6d8'
                 onClick={showButtons}>
                     <p class='p-3' style={p}>
                         !
@@ -148,8 +196,8 @@ export default function SmallHud({ ascean, combat, game }: Props) {
                     { height: '7.5%', width: '3.75%', right: '24.5%' } : // right: '4.5%', top: '82.5%' SECOND ROW
                     { height: '3.5%', width: '7.5%', right: '60%' }} // right: '12%', bottom: '4.75%' SECOND ROW
                     onClick={combatSettings}>
-                <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
-                    <img src={'../assets/images/settings.png'} style={icon} alt='Sh' />
+                <div class='p-3' style={{ color: clicked().combatSettings === true ? 'gold' : '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                    <img src={'../assets/images/settings.png'} style={icon(clicked().combatSettings)} alt='Sh' />
                 </div>
             </button>
 
@@ -157,18 +205,29 @@ export default function SmallHud({ ascean, combat, game }: Props) {
                     { height: '7.5%', width: '3.75%', right: '28.5%' } : // right: '8.5%', top: '82.5%' SECOND ROW
                     { height: '3.5%', width: '7.5%', right: '68%' }} // right: '20%', bottom: '4.75%' SECOND ROW
                     onClick={showPlayer}>
-                <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
-                    <img src={'../assets/images/info.png'} style={icon} alt='Sh' />
+                <div class='p-3' style={{ color: clicked().showPlayer === true ? 'gold' : '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                    <img src={'../assets/images/info.png'} style={icon(clicked().showPlayer)} alt='Sh' />
                 </div>
             </button> 
             
             <Show when={game().dialogTag}>
-            <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? 
+            <button class='smallHudButtons flash' style={dimensions().ORIENTATION === 'landscape' ? 
                 { height: '7.5%', width: '3.75%', right: '32.5%' } : // right: '0.5%', top: '82.5%' SECOND ROW
                 { height: '3.5%', width: '7.5%', right: '52%' }} // right: '4%', bottom: '4.75%' SECOND ROW
                 onClick={dialog}>
-            <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
-                <img src={'../assets/images/logs.png'} style={icon} alt='Sh' />
+            <div class='p-3' style={{ color: clicked().dialog === true ? 'gold' : '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                <img src={'../assets/images/dialog.png'} style={icon(clicked().dialog)} alt='Sh' />
+            </div>
+            </button>
+            </Show>
+
+            <Show when={game().lootTag}>
+            <button class='smallHudButtons flash' style={dimensions().ORIENTATION === 'landscape' ? 
+                { height: '7.5%', width: '3.75%', right: game().dialogTag ? '36.5%' : '32.5%' } : // right: game().dialogTag ? '4.5' : '0.5%', top: '82.5%' SECOND ROW
+                { height: '3.5%', width: '7.5%', right: game().dialogTag ? '56%' : '52%' }} // right: game().dialogTag ? '8%' : '4%', bottom: '4.75%' SECOND ROW
+                onClick={loot}>
+            <div class='p-3' style={{ color: clicked().loot === true ? 'gold' : '#fdf6d8', 'margin-left': '-50%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                <img src={'../assets/images/loot.png'} style={icon(clicked().loot)} alt='Sh' />
             </div>
             </button>
             </Show>

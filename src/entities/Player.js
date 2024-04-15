@@ -170,7 +170,7 @@ export default class Player extends Entity {
     constructor(data) {
         const { scene } = data;
         super({ ...data, name: 'player', ascean: scene.state.player, health: scene.state.newPlayerHealth }); 
-        this.setTint(0x000000);
+        this.setTint(0xFFC700, 0xFFC700, 0x0000FF, 0x0000FF);
         const weapon = scene?.state?.player?.weaponOne;
         this.currentWeaponSprite = this.assetSprite(weapon);
         this.ascean = scene.state.player;
@@ -1105,7 +1105,7 @@ export default class Player extends Entity {
             clearStealth(this);
             clearStealth(this.spriteWeapon);
             clearStealth(this.spriteShield);
-            this.setTint(0x000000);
+            this.setTint(0xFFC700, 0xFFC700, 0x0000FF, 0x0000FF);
         };
         this.stealthFx.play();    
     };
@@ -1403,7 +1403,7 @@ export default class Player extends Entity {
         this.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.scene.input.keyboard.enabled = true;
         // this.clearTint(); 
-        this.setTint(0x000000)
+        this.setTint(0xFFC700, 0xFFC700, 0x0000FF, 0x0000FF)
         this.setStatic(false);
     };
 
@@ -1505,6 +1505,16 @@ export default class Player extends Entity {
         this.checkTargets();
     };
 
+    addEnemy = (enemy) => {
+        this.targets.push(enemy);
+        this.sendEnemies(this.targets);
+    };
+
+    removeEnemy = (enemy) => {
+        this.targets = this.targets.filter(gameObject => gameObject.enemyID !== enemy.enemyID);
+        this.sendEnemies(this.targets);
+    };
+
     sendEnemies = (enemies) => {
         //
         const data = enemies.map(enemy => {
@@ -1516,10 +1526,21 @@ export default class Player extends Entity {
                 isAggressive: enemy.isAggressive, 
                 startedAggressive: enemy.startedAggressive, 
                 isDefeated: enemy.isDefeated, 
-                isTriumphant: enemy.isTriumphant 
+                isTriumphant: enemy.isTriumphant,
+                playerTrait: enemy.playerTrait,
+                isPersuaded: enemy.isPersuaded,
+                isLuckout: enemy.isLuckout,
             };
         });
         EventBus.emit('update-enemies', data);
+    };
+
+    setAttacking = (enemy) => {
+        this.attacking = enemy;
+    };
+
+    setCurrentTarget = (enemy) => {
+        this.currentTarget = enemy;
     };
     
     zeroOutVelocity = (velocityDirection, deceleration) => {
@@ -1560,7 +1581,7 @@ export default class Player extends Entity {
         );
     };
 
-    playerActionSuccess = async () => {
+    playerActionSuccess = () => {
         const match = this.enemyIdMatch();
         if (this.particleEffect) {
             if (match) {

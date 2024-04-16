@@ -503,15 +503,18 @@ export class Game extends Scene {
 
     // ============================ Combat ============================ \\ 
     fear = (id: string) => {
+        if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         enemy.isFeared = true;
     };
     polymorph = (id: string) => {
+        if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         enemy.isPolymorphed = true;
     };
     root = () => {
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === this.state.enemyID);
+        if (!enemy) return;
         enemy.isRooted = true;
 
         // const { worldX, worldY } = this.input.activePointer;
@@ -575,12 +578,20 @@ export class Game extends Scene {
         });
     };
     snare = (id: string): void => {
+        if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         enemy.isSnared = true;
     };
     stun = (id: string): void => {
+        if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         enemy.isBlindsided = true;
+    };
+    stunned = (id: string): void => {
+        if (id === '') return;
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        console.log(enemy, 'Enemy Stunned');
+        enemy.isStunned = true;
     };
 
     // ============================ Game ============================ \\

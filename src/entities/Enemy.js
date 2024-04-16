@@ -276,7 +276,7 @@ export default class Enemy extends Entity {
             if (this.inCombat && this.attacking && e.newPlayerHealth <= 0 && e.computerWin) this.clearCombat();
             return;
         };
-        if (e.counterSuccess && !this.stateMachine.isCurrentState(States.STUN) && this.currentRound !== e.combatRound) this.setStun();
+        // if (e.counterSuccess && !this.stateMachine.isCurrentState(States.STUN) && this.currentRound !== e.combatRound) this.setStun();
 
         if (this.health > e.newComputerHealth) { 
             const damage = Math.round(this.health - e.newComputerHealth);
@@ -1090,13 +1090,16 @@ export default class Enemy extends Entity {
     };
 
     onStunEnter = () => {
-        console.log('Stunned');
+        console.log('-- Stunned --');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', 2500, 'effect', true);
         this.stunDuration = DURATION.STUN;
+        this.anims.play('player_idle', true);
         this.setTint(0x888888); // 0x888888
         this.setStatic(true);
     };
     onStunUpdate = (dt) => {
         this.setVelocity(0);
+        this.anims.play('player_idle', true);
         if (!this.isStunned) this.evaluateCombatDistance(); // Wasn't if (!this.isStunned)
         this.stunDuration -= dt;
         if (this.stunDuration <= 0) {
@@ -1270,6 +1273,9 @@ export default class Enemy extends Entity {
         const distanceY = Math.abs(direction.y);
         const multiplier = this.rangedDistanceMultiplier(DISTANCE.RANGED_MULTIPLIER);
         if (direction.length() >= DISTANCE.CHASE * multiplier) { // > 525
+            // ******************************************************************
+            // Switch to CHASE MODE.
+            // ******************************************************************
             this.stateMachine.setState(States.CHASE);
         } else if (this.isRanged) {
             // ******************************************************************
@@ -1295,6 +1301,9 @@ export default class Enemy extends Entity {
                 this.setVelocityX(direction.x * -this.speed); // -2.25 | -2 | -1.75
                 this.setVelocityY(direction.y * -this.speed); // -1.5 | -1.25
             } else if (distanceY < 7) { // Comfy
+                // ******************************************************************
+                // The Sweet Spot for RANGED ENEMIES.
+                // ******************************************************************
                 this.setVelocity(0);
                 this.anims.play('player_idle', true);
             } else { // Between 75 and 225 and outside y-distance
@@ -1390,6 +1399,7 @@ export default class Enemy extends Entity {
         };
         if (this.isStunned && !this.stateMachine.isCurrentState(States.STUN)) {
             console.log('Stunned OG')
+            // this.setStun();
             this.stateMachine.setState(States.STUN);
             return;
         };
@@ -1407,7 +1417,7 @@ export default class Enemy extends Entity {
         };
         if (this.isBlindsided && !this.stateMachine.isCurrentState(States.STUN)) {
             console.log('Blindsided')
-            this.setStun();
+            // this.setStun();
             this.stateMachine.setState(States.STUN);
             this.isBlindsided = false;
             return;

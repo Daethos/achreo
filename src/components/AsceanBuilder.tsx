@@ -28,24 +28,43 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
             <Show when={dimensions()?.ORIENTATION === 'landscape'} fallback={ 
                 <Switch>
                     <Match when={menu().screen === SCREENS.CHARACTER.KEY}>
-                        <Character newAscean={newAscean} setNewAscean={setNewAscean} />
-                        <Sex newAscean={newAscean} setNewAscean={setNewAscean} />
+                        <div class='border superCenter center' style={{ height: '70%', width: '85%', 'margin-top': '10%' }}>
+                            <div class='superCenter' style={{ width: '90%' }}>
+                            <Character newAscean={newAscean} setNewAscean={setNewAscean} />
+                            <br /><br />
+                            <Sex newAscean={newAscean} setNewAscean={setNewAscean} />
+                            </div>
+                        </div>
                     </Match>
                     <Match when={menu().screen === SCREENS.ORIGIN.KEY}>
-                        <Origin newAscean={newAscean} setNewAscean={setNewAscean} />
-                        <br /><br />
-                        <Faith newAscean={newAscean} setNewAscean={setNewAscean} />
+                        <div class='border superCenter center' style={{ height: '70%', width: '85%', 'margin-top': '10%' }}>
+                            <div class='superCenter' style={{ width: '90%' }}>
+                            <Origin newAscean={newAscean} setNewAscean={setNewAscean} />
+                            <br /><br />
+                            <Faith newAscean={newAscean} setNewAscean={setNewAscean} />
+                            </div>
+                        </div>
                     </Match>
                     <Match when={menu().screen === SCREENS.PREFERENCE.KEY}>
+                        <div class='border superCenter center' style={{ height: '70%', width: '85%', 'margin-top': '10%' }}>
+                        <div class='superCenter' style={{ width: '90%' }}>
                         <Mastery newAscean={newAscean} setNewAscean={setNewAscean} />
                         <br /><br />
                         <Preference newAscean={newAscean} setNewAscean={setNewAscean} />
+                        </div>
+                        </div>
                     </Match>
                     <Match when={menu().screen === SCREENS.ATTRIBUTES.KEY}>
-                        <AttributesCreate newAscean={newAscean} setNewAscean={setNewAscean} prevMastery={prevMastery} setPrevMastery={setPrevMastery} />
+                        <div class='border superCenter center' style={{ height: '70%', width: '85%', 'margin-top': '10%' }}>
+                            <div class='superCenter' style={{ width: '90%'}}>
+                            <AttributesCreate newAscean={newAscean} setNewAscean={setNewAscean} prevMastery={prevMastery} setPrevMastery={setPrevMastery} />
+                            </div>
+                        </div>
                     </Match>
                     <Match when={menu().screen === SCREENS.COMPLETE.KEY}>
-                        <Review newAscean={newAscean} />
+                        <div class='border superCenter center' style={{ height: '80%', width: '85%', 'margin-top': '0%' }}>
+                            <Review newAscean={newAscean} />
+                        </div>
                     </Match>
                 </Switch>
             }> 

@@ -213,6 +213,15 @@ export default function App() {
         setSettings(set);
     };
 
+    function enterMenu(): void {
+        if (menu()?.asceans?.length > 0) {
+            setMenu({ ...menu(), choosingCharacter: true });
+        } else {
+            setMenu({ ...menu(), creatingCharacter: true });
+        };
+    };
+
+    usePhaserEvent('enter-menu', enterMenu);
     usePhaserEvent('fetch-ascean', fetchAscean);
     usePhaserEvent('quick-ascean', quickAscean);
     usePhaserEvent('save-ascean', saveAscean);
@@ -308,8 +317,8 @@ export default function App() {
                         </div>
                     </Show>
                     <Show when={show()}>
-                        <div class='modal' style={{ background: 'rgba(0, 0, 0, 0.95)' }}>
-                            <div class='superCenter' style={{ 'margin-bottom': '10%', "z-index": 1 }}>
+                        <div class='modal' style={{ background: 'rgba(0, 0, 0, 1)' }}>
+                            <div class='superCenter center' style={{ "z-index": 1, transform: 'scale(2)' }}>
                                 <Puff color="gold" />
                             </div>
                         </div>
@@ -322,7 +331,7 @@ export default function App() {
                 <div class="cornerTL super">
                     The Ascean v0.0.1
                 </div>
-                <div class='superCenter' style={{ 'font-family': 'Cinzel Regular', 'font-size': '1.25em' }}>
+                {/* <div class='superCenter' style={{ 'font-family': 'Cinzel Regular', 'font-size': '1.25em' }}>
                     <div class='center' style={{ 'font-size': '3.875em' }}>The Ascean <br /> 
                         { menu()?.asceans?.length > 0 ? (
                             <button class='center highlight' style={{ 'border-radius': '0.5em' }} onClick={() => menuOption('chooseCharacter')}>
@@ -334,7 +343,7 @@ export default function App() {
                             </button>
                         ) }
                     </div>
-                </div>
+                </div> */}
                 </div>
             ) }
             </>)}

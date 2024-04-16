@@ -2210,7 +2210,7 @@ function weaponActionSplitter(combat: Combat): Combat {
 };
 
 function newDataCompiler(combat: Combat): any {
-    const newData = {
+    const newData: Combat = {
         player: combat.player, // The player's Ascean
         action: combat.action, // The player's action
         playerAction: combat.action,
@@ -2232,6 +2232,9 @@ function newDataCompiler(combat: Combat): any {
         computerAction: combat.computerAction, // Action Chosen By Computer
         computerCounterGuess: combat.computerCounterGuess, // Comp's Counter Guess if Action === 'Counter'
         computerWeapons: combat.computerWeapons,  // All 3 Weapons
+        computerWeaponOne: combat.computerWeaponOne, // Clean Slate of Weapon One
+        computerWeaponTwo: combat.computerWeaponTwo, // Clean Slate of Weapon Two
+        computerWeaponThree: combat.computerWeaponThree, // Clean Slate of Weapon Three
         computerDamageType: combat.computerDamageType,
         potentialPlayerDamage: 0, // All the Damage that is possible on hit for a player
         potentialComputerDamage: 0, // All the Damage that is possible on hit for a computer
@@ -2312,6 +2315,11 @@ function newDataCompiler(combat: Combat): any {
         isEnemy: combat.isEnemy,
         isAggressive: combat.isAggressive,
         startedAggressive: combat.startedAggressive,
+        isStealth: combat.isStealth,
+        persuasionScenario: combat.persuasionScenario,
+        luckoutScenario: combat.luckoutScenario,
+        playerTrait: combat.playerTrait,
+        soundEffects: combat.soundEffects,
     };
     return newData;
 };
@@ -2654,7 +2662,9 @@ function computerCombatSplitter(data: { computerOne: Combat, computerTwo: Combat
 // ================================= VALIDATOR - SPLITTERS ===================================== \\
 
 function validate(combat: Combat): boolean {
-    if (combat.player !== undefined && combat.computer !== undefined) return true;
+    if (combat.player != undefined && combat.computer != undefined && combat.player != null && combat.computer != null && combat.player !== undefined && combat.computer !== null && combat.player !== undefined && combat.computer !== null) {
+        return true;
+    };
     return false;
 };
 
@@ -2720,7 +2730,7 @@ function prayerEffectTick(data: {
 
 function prayerRemoveTick(combat: Combat, statusEffect: StatusEffect): Combat | undefined {
     try {
-        if (validate(combat) === false) return combat;
+        // if (validate(combat) === false) return combat;
         const res = prayerRemoveTickSplitter(combat, statusEffect);
         return res;
     } catch (err) {

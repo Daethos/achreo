@@ -501,6 +501,7 @@ export default class Player extends Entity {
         };
         if (e.counterSuccess) {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Counter', 1500, 'heal', e.criticalSuccess);
+            this.scene.stunned(e.enemyID);
         };
         if (e.computerRollSuccess) {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Roll', 1500, 'damage', e.computerCriticalSuccess);
@@ -1448,49 +1449,60 @@ export default class Player extends Entity {
             this[cooldown] = limit;
         };
         const type = cooldown.split('Cooldown')[0];
-        const interval = 200;
-        let time = 0;
-        this.scene.actionBar.setCurrent(time, limit, type);
-        const timer = this.scene.time.addEvent({
-            delay: interval,
-            callback: () => {
-                time += interval;
-                // this.scene.actionBar.setCurrent(time, limit, type);
-                if (time >= limit || this.offCombatTimer(type)) {
-                    if (!this.inCombat) this.scene.actionBar.setCurrent(limit, limit, type);
-                    if (!evasion) {
-                        this[cooldown] = 0;
-                    };
-                    timer.remove(false);
-                    timer.destroy();
+        // const interval = 100;
+        // let time = 0;
+        this.scene.actionBar.setCurrent(0, limit, type);
+
+        if (!this.inCombat) {
+            this.scene.time.delayedCall(limit, () => {
+                this.scene.actionBar.setCurrent(limit, limit, type);
+                if (!evasion) {
+                    this[cooldown] = 0;
                 };
-            },
-            callbackScope: this,
-            loop: true,
-        });
+            }, undefined, this);
+        };
+
+        // const timer = this.scene.time.addEvent({
+        //     delay: limit,
+        //     callback: () => {
+        //         // time += interval;
+        //         // this.scene.actionBar.setCurrent(time, limit, type);
+        //         // if (time >= limit || this.offCombatTimer(type)) {
+        //             // if (!this.inCombat) 
+        //             this.scene.actionBar.setCurrent(limit, limit, type);
+        //             if (!evasion) {
+        //                 this[cooldown] = 0;
+        //             };
+        //             timer.remove(false);
+        //             timer.destroy();
+        //         // };
+        //     },
+        //     callbackScope: this,
+        //     loop: false,
+        // });
     };
 
     swingReset = (type) => {
         this.canSwing = false;
+        this.scene.actionBar.setCurrent(0, this.swingTimer, type);
         this.scene.time.delayedCall(this.swingTimer, () => {
             this.canSwing = true;
+            this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, type);
         }, undefined, this);
-        let time = 0;
-        this.scene.actionBar.setCurrent(time, this.swingTimer, type);
-        const swingTime = this.scene.time.addEvent({
-            delay: 16.667,
-            callback: () => {
-                if (time >= this.swingTimer) {
-                    swingTime.remove(false);
-                    swingTime.destroy();
-                    return;
-                };
-                time += this.scene.game.loop.delta; // 16.667ms~ / this.swingTimer ?? 
-                this.scene.actionBar.setCurrent(time, this.swingTimer, type);
-            },
-            callbackScope: this,
-            loop: true,
-        });
+        // let time = 0;
+        // const swingTime = this.scene.time.addEvent({
+        //     delay: this.swingTimer, // 16.667
+        //     callback: () => {
+        //         // if (time >= this.swingTimer) {
+        //             swingTime.remove(false);
+        //             swingTime.destroy();
+        //             return;
+        //         // };
+        //         // time += this.scene.game.loop.delta; // 16.667ms~ / this.swingTimer ?? 
+        //     },
+        //     callbackScope: this,
+        //     loop: false, // true
+        // });
     };
 
     checkTargets = () => {

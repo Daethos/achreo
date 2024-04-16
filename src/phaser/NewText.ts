@@ -48,9 +48,14 @@ export default class NewText {
         };
         switch (key.toLowerCase()) {
             case 'title':
-                style.fontSize = 84;
+                style.fontSize = 96;
                 style.strokeThickness = 4;
                 style.shadow.blur = 4;
+                break;
+            case 'subtitle':
+                style.fontSize = 72;
+                style.strokeThickness = 2;
+                style.shadow.blur = 2;
                 break;
             case 'preload':
                 style.fontSize = 48;

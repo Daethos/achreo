@@ -17,8 +17,8 @@ export const FRAME_COUNT = {
     DISTANCE_CLEAR: 51,
 }; 
 
-export const SWING_TIME = { 'One Hand': 1250, 'Two Hand': 1750 }; // 750, 1250 [old]
-export const ENEMY_SWING_TIME = { 'One Hand': 750, 'Two Hand': 1250 }; // 750, 1250 [old]
+export const SWING_TIME = { 'One Hand': 1250, 'Two Hand': 1500 }; // 750, 1250 [old]
+export const ENEMY_SWING_TIME = { 'One Hand': 1000, 'Two Hand': 1250 }; // 750, 1250 [old]
 
 export default class Entity extends Phaser.Physics.Matter.Sprite {
 
@@ -441,6 +441,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     checkMeleeOrRanged = (weapon) => {
+        if (weapon === undefined) return;
         this.isRanged = weapon?.attackType === 'Magic' || weapon?.type === 'Bow' || weapon?.type === 'Greatbow';
         if (this.name === 'player') {
             this.swingTimer = SWING_TIME[weapon?.grip] || 1500;

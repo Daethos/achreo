@@ -82,6 +82,20 @@ export default function App() {
         setScene(scene.scene.key);
     };
 
+    function menuOption(option: string): void {
+        EventBus.emit('full-screen');
+        switch (option) {
+            case 'createCharacter':
+                setMenu({ ...menu(), creatingCharacter: true });
+                break;
+            case 'chooseCharacter':
+                setMenu({ ...menu(), choosingCharacter: true });
+                break;
+            default:
+                break;
+        };
+    };
+
     async function createCharacter(character: CharacterSheet): Promise<void> {
         const res = await createAscean(character);
         const pop = await populate(res);
@@ -311,11 +325,11 @@ export default function App() {
                 <div class='superCenter' style={{ 'font-family': 'Cinzel Regular', 'font-size': '1.25em' }}>
                     <div class='center' style={{ 'font-size': '3.875em' }}>The Ascean <br /> 
                         { menu()?.asceans?.length > 0 ? (
-                            <button class='center highlight' style={{ 'border-radius': '0.5em' }} onClick={() => setMenu({ ...menu(), choosingCharacter: true })}>
+                            <button class='center highlight' style={{ 'border-radius': '0.5em' }} onClick={() => menuOption('chooseCharacter')}>
                             Main Menu
                             </button>
                         ) : (
-                            <button class='center highlight' style={{ 'border-radius': '0.5em' }} onClick={() => setMenu({ ...menu(), creatingCharacter: true })}>
+                            <button class='center highlight' style={{ 'border-radius': '0.5em' }} onClick={() => menuOption('createCharacter')}>
                             Create Character
                             </button>
                         ) }

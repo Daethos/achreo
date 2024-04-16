@@ -9,11 +9,13 @@ export class MainMenu extends Scene {
     logoTween: Phaser.Tweens.Tween | null;
     centerX: number;
     centerY: number;
+    fullscreen: boolean;
 
     constructor () {
         super('MainMenu');
         this.centerX = window.innerWidth / 2;
         this.centerY = window.innerHeight / 2;
+        this.fullscreen = false;    
     };
 
     create () {
@@ -32,6 +34,15 @@ export class MainMenu extends Scene {
 
         EventBus.emit('current-scene-ready', this);
         EventBus.on('enter-game', this.changeScene, this);
+        EventBus.on('full-screen', () => {
+            if (this.scale.isFullscreen) {
+                this.scale.stopFullscreen();
+                this.fullscreen = false;
+            } else {
+                this.scale.startFullscreen();
+                this.fullscreen = true;
+            };
+        });
     };
     
     changeScene () {

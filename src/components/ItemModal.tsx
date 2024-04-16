@@ -73,15 +73,15 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                     <Show when={stalwart}>
                         <p class='gold' style={{ 'font-size': '0.75em' }}>
                             Stalwart - You are engaged in combat with your shield raised, adding it to your passive defense. 
-                            You receive 50% less poise damage. 
-                            You receive 10% less damage. 
+                            {/* You receive 50% less poise damage.  */}
+                            You receive 15% less damage. 
                             You cannot dodge or roll.
                         </p>
                     </Show>
                     <Show when={caerenic}>
                         <p class='gold' style={{ 'font-size': '0.75em' }}>
                             Caerenic - You attempt to harnass your caer with your achre, increasing your damage by 15%. 
-                            You move 15% faster. 
+                            You move significantly faster. 
                             You receive 25% more damage. 
                         </p>
                     </Show>

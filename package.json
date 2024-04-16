@@ -36,6 +36,7 @@
         "solid-bootstrap": "^1.0.19",
         "solid-dnd-directive": "^0.2.0",
         "solid-js": "^1.8.15",
+        "solid-spinner": "^0.2.0",
         "typed.js": "^2.1.0",
         "uuid": "^9.0.1"
     },

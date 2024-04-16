@@ -17,20 +17,21 @@ export class MainMenu extends Scene {
     };
 
     create () {
-        this.title = this.add.text(this.centerX, this.centerY / 1.5, 'The Ascean', {
-                fontFamily: 'Cinzel Regular', fontSize: 76, color: '#fdf6d8',
-                stroke: '#000000', strokeThickness: 8,
-                align: 'center'
-        }).setOrigin(0.5).setDepth(100);
-        this.text = this.add.text(window.innerWidth / 2, window.innerHeight / 1.5, 'Enter Game', {
-            fontFamily: 'Cinzel Regular', fontSize: 38, color: '#fdf6d8',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        }).setOrigin(0.5).setDepth(100);
-        this.text.setInteractive();
-        this.text.on('pointerup', this.changeScene, this);
+        // this.title = this.add.text(this.centerX, this.centerY / 1.5, 'The Ascean', {
+        //         fontFamily: 'Cinzel Regular', fontSize: 76, color: '#fdf6d8',
+        //         stroke: '#000000', strokeThickness: 8,
+        //         align: 'center'
+        // }).setOrigin(0.5).setDepth(100);
+        // this.text = this.add.text(window.innerWidth / 2, window.innerHeight / 1.5, 'Enter Game', {
+        //     fontFamily: 'Cinzel Regular', fontSize: 38, color: '#fdf6d8',
+        //     stroke: '#000000', strokeThickness: 8,
+        //     align: 'center'
+        // }).setOrigin(0.5).setDepth(100);
+        // this.text.setInteractive();
+        // this.text.on('pointerup', this.changeScene, this);
 
         EventBus.emit('current-scene-ready', this);
+        EventBus.on('enter-game', this.changeScene, this);
     };
     
     changeScene () {

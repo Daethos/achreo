@@ -18,7 +18,7 @@ export class Preloader extends Scene {
     width: number = window.innerWidth;
     height: number = window.innerHeight;
 
-    constructor () {
+    constructor() {
         super('Preloader');
         this.centerX = window.innerWidth / 2;
         this.centerY = window.innerHeight / 2;
@@ -26,32 +26,10 @@ export class Preloader extends Scene {
         this.width = this.centerX * 1.5;
     };
 
-    init () {
-        // //  We loaded this image in our Boot Scene, so we can display it here
-        // this.add.image(window.innerWidth / 2, window.innerHeight / 1.5, 'background');
+    init() {};
 
-        // //  A simple progress bar. This is the outline of the bar.
-        // this.add.rectangle(window.innerWidth / 2, window.innerHeight / 1.5, window.innerHeight / 1.5, 32).setStrokeStyle(1, 0xffffff);
-
-        // //  This is the progress bar itself. It will increase in size from the left based on the % of progress.
-        // const bar = this.add.rectangle(window.innerWidth / 2, window.innerHeight / 1.5, 4, 28, 0xffffff);
-
-        // //  Use the 'progress' event emitted by the LoaderPlugin to update the loading bar
-        // this.load.on('progress', (progress: number) => {
-
-        //     //  Update the progress bar (our bar is 464px wide, so 100% = 464px)
-        //     bar.width = 4 + (460 * progress);
-
-        // }); 
-    };
-
-    preload () {
+    preload() {
         // this.load.setPath('assets/images');
-        // this.load.image('logo', 'logo.png');
-        // this.load.image('star', 'star.png');
-        // this.bg = this.add.graphics({ x: 0, y: 0 });
-        // this.bg.fillStyle(0x000000, 1);
-        // this.bg.fillRect(0, 0, window.innerWidth, window.innerHeight);
         ParticleManager.preload(this);
         Entity.preload(this);
         // Treasure.preload(this);
@@ -59,7 +37,6 @@ export class Preloader extends Scene {
         this.load.tilemapTiledJSON('ascean_test', '../assets/gui/ascean_test.json');
         this.load.plugin('rexvirtualjoystickplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexvirtualjoystickplugin.min.js', true); 
         this.load.plugin('rexglowfilterpipelineplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexglowfilterpipelineplugin.min.js', true);
-        // this.load.plugin('rexhorrifipipelineplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexhorrifipipelineplugin.min.js', true);
         this.load.scenePlugin({ key: 'rexuiplugin', url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', sceneKey: 'rexUI' });
 
         this.load.audio('cymbal', '../assets/sounds/cymbal-long-2.wav');
@@ -96,6 +73,7 @@ export class Preloader extends Scene {
         this.load.audio('TV_Button_Press', '../assets/sounds/TV_Button_Press.wav');
         this.load.audio('combat-round', '../assets/sounds/combat-round.mp3');
         this.load.audio('alien-whoosh', '../assets/sounds/alien-whoosh.mp3');
+        this.load.audio('39_Absorb_04', '../assets/sounds/39_Absorb_04.wav');
 
         this.assets = sanitize();
 
@@ -113,13 +91,6 @@ export class Preloader extends Scene {
     };
 
     create () {
-        //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
-        //  For example, you can define global animations here, so we can use them in other scenes.
-
-        //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        // this.scene.start('MainMenu');
-        // play drum_roll
-
         this.time.addEvent({
             delay: 500,
             callback: () => { 

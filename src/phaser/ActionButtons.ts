@@ -51,6 +51,7 @@ type ActionButton = {
 };
 
 export default class ActionButtons extends Phaser.GameObjects.Container {
+    private context: Game;
     private actionButtons: ActionButton[];
     private specialButtons: ActionButton[];
     private buttonWidth: number;
@@ -62,6 +63,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     constructor(scene: Game) {
         super(scene);
+        this.context = scene;
         this.actionButtons = [];
         this.specialButtons = [];
         this.buttonWidth = 24;
@@ -345,8 +347,11 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 
     public reorder = () => {
+        console.log(this.context.settings, 'Sesttings in Action Buttons');
         EventBus.on('reorder-buttons', (order: { list: string[], type: string }) => {
+            console.log('Reordering buttons...', order);
             const { list, type } = order;
+            console.log('Reordering buttons...', list, type);
             switch (type) {
                 case 'action': {
                     this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
@@ -407,6 +412,8 @@ const scaleButton = (button: ActionButton, scale: number): void => {
         button.border.strokeCircle(button.x, button.y, (SETTINGS.BUTTON_WIDTH + 2) * SETTINGS.SCALE * scale * button.current / button.total);
         button.graphic.setInteractive();
     } else {
-        button.graphic.fillStyle(0xFFC700, SETTINGS.OPACITY);
+        // button.graphic.fillStyle(0xFFC700, SETTINGS.OPACITY);
+        button.border.clear();
+        button.graphic.clear();
     };
 };

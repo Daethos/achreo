@@ -611,7 +611,20 @@ body {
     overflow: auto;
     /* overflow: auto; */
     background-color: rgba(0, 0, 0, 0.75);
-} 
+}
+
+.realize {
+    animation: 1.5s 1 visible;
+}
+
+@keyframes visible {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 
 .flash {
     animation: 3s 1 invert;

@@ -1,7 +1,7 @@
 import { Accessor, Setter, Show, createEffect, createSignal, onMount } from 'solid-js';
 import CombatUI from './CombatUI';
 import EnemyUI from './EnemyUI';
-import StoryAscean from './StoryAscean';
+import Character from './Character';
 import { EventBus } from "../game/EventBus";
 import { Combat } from "../stores/combat";
 import CombatSettings from './CombatSettings';
@@ -317,6 +317,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     };
 
     usePhaserEvent('fetch-button-reorder', () => {
+        console.log(settings(), 'Settings');
         EventBus.emit('reorder-buttons', { list: settings().actions, type: 'action' });
         EventBus.emit('reorder-buttons', { list: settings().specials, type: 'special' });
     });
@@ -375,7 +376,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 </Show> 
             </div>
         }>
-            <StoryAscean settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} game={game} combatState={combat} />
+            <Character settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} game={game} combatState={combat} />
         </Show>
         <Show when={game().showCombat}>
             <CombatText combat={combat} />

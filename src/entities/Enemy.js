@@ -183,7 +183,7 @@ export default class Enemy extends Entity {
         this.combatThreshold = 0;
         this.attackIsLive = false;
         this.isEnemy = true;
-        this.isAggressive = false; // Math.random() > 0.5 || false
+        this.isAggressive = this.setAggression(); // Math.random() > 0.5 || false
         this.startedAggressive = this.isAggressive;
         this.isDefeated = false;
         this.isTriumphant = false;
@@ -330,6 +330,12 @@ export default class Enemy extends Entity {
         };
 
     };
+
+    setAggression = () => {
+        const percent = this.scene.settings.difficulty.aggression;
+        // console.log('Aggression: ', percent);
+        return percent > Math.random() || false;
+    };
     
     enemyCollision = (enemySensor) => {
         this.scene.matterCollision.addOnCollideStart({
@@ -433,8 +439,9 @@ export default class Enemy extends Entity {
     };
 
     createEnemy = () => {
+        // console.log(this.scene.player.ascean, 'Creating Enemy');
         EventBus.on('enemy-fetched', this.enemyFetchedOn);
-        const fetch = { enemyID: this.enemyID, level: this.scene.state.player.level };
+        const fetch = { enemyID: this.enemyID, level: this.scene.player.ascean.level };
         EventBus.emit('fetch-enemy', fetch);
     };
 

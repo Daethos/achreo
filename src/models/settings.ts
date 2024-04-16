@@ -63,6 +63,7 @@ export default class Settings {
         this.characterViews = 'Statistics';
         this.control = 'Buttons';
         this.difficulty = {
+            aggression: 0.5,
             aim: false,
         };
         this.postFx = {

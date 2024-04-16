@@ -10,7 +10,6 @@ export default function Character({ newAscean, setNewAscean }: { newAscean: Acce
                 <h1>Name</h1>
                 <Form.Control style={font('1em', 'black')} type="text" placeholder="Enter Name Here" id="ascean" name="ascean" value={newAscean()?.name} oninput={(e) => setNewAscean({ ...newAscean(), name: e.currentTarget.value })} /><br />
             </Form.Group>
-                {/* <br /> */}
             <Form.Group>
                 <h2>Description</h2>
                 <Form.Control style={font('1em', 'black')} type="text" placeholder="What are they like?" id="description" name="description" value={newAscean()?.description} oninput={(e) => setNewAscean({ ...newAscean(), description: e.currentTarget.value })} /><br />    

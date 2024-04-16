@@ -75,7 +75,7 @@ interface Props {
     combatState: Accessor<Combat>;
 };
 
-const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatState }: Props) => {
+const Character = ({ settings, setSettings, ascean, asceanState, game, combatState }: Props) => {
     const [playerTraitWrapper, setPlayerTraitWrapper] = createSignal<any>({});
     const [dragAndDropInventory, setDragAndDropInventory] = createSignal(game()?.inventory);
     const [canUpgrade, setCanUpgrade] = createSignal<boolean>(false);
@@ -310,6 +310,12 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
 
     async function handleAim() {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, aim: !settings().difficulty.aim } };
+        setSettings(newSettings);
+        await saveSettings(newSettings);
+    };
+
+    async function handleAggression(e: any) {
+        const newSettings = { ...settings(), difficulty: { ...settings().difficulty, aggression: e.target.value } };
         setSettings(newSettings);
         await saveSettings(newSettings);
     };
@@ -620,6 +626,12 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
                                     Aim: <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'True' : 'False'}</button>
                                 </div>
                                 <div style={font('0.5em')}>[Toggle: True = Manual Aim, False = Auto Aim]</div>
+                                <br />
+                                <div style={font('1em', '#fdf6d8')}>
+                                    Aggression: <span class='gold'>{settings().difficulty.aggression}</span> <br />
+                                    <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.aggression} onChange={(e) => handleAggression(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                                </div>
+                                <div style={font('0.5em')}>[Aggressive AI Range: 0 - 100%]</div>
                             </div>
                         </Match>
                     </Switch>
@@ -813,4 +825,4 @@ const StoryAscean = ({ settings, setSettings, ascean, asceanState, game, combatS
     );
 }; 
 
-export default StoryAscean;
+export default Character;

@@ -281,7 +281,8 @@ export const PhaserGame = (props: IProps) => {
 
     function requestCombat() {
         try {
-            EventBus.emit('combat', combat())
+            console.log(combat(), 'Requesting Combat');
+            EventBus.emit('request-combat-ready', combat());
         } catch (err: any) {
             console.warn(err, 'Error Requesting Combat');
         };
@@ -338,8 +339,9 @@ export const PhaserGame = (props: IProps) => {
         };
     };
 
-    async function createUi() {
-        const fresh = await getAscean(props.ascean()._id);
+    async function createUi(id: string): Promise<void> {
+        console.log(id, 'Creating UI')
+        const fresh = await getAscean(id);
         const pop = await populate(fresh);
         const res = asceanCompiler(pop);
         const cleanCombat: Combat = { 
@@ -362,8 +364,20 @@ export const PhaserGame = (props: IProps) => {
         const traits = getAsceanTraits(props.ascean());
         setGame({ ...game(), inventory: inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary });
     };
-    
-    createUi();
+
+    async function enterGame() {
+        try  {
+            console.log(combat().player, props.ascean(), 'Entering Game');
+            if (combat().player === undefined) {
+                console.log('Create UI did not create itself before Entering Game -- MAIN ISSUE');
+                // await createUi(props.ascean()._id);
+            };
+
+            setLive(!live());
+        } catch (err: any) {
+            console.warn(err, 'Error Entering Game');
+        };
+    };
 
     onMount(() => {
         const gameInstance = StartGame("game-container");
@@ -375,7 +389,7 @@ export const PhaserGame = (props: IProps) => {
 
         EventBus.on('current-scene-ready', (sceneInstance: Phaser.Scene) => {
             if (props.currentActiveScene) {
-                // props.currentActiveScene(sceneInstance);
+                props.currentActiveScene(sceneInstance);
                 setInstance("scene", sceneInstance);
             };
 
@@ -385,7 +399,8 @@ export const PhaserGame = (props: IProps) => {
         });
 
         EventBus.on('main-menu', (_sceneInstance: Phaser.Scene) => props.setMenu({ ...props?.menu, gameRunning: false }));
-        EventBus.on('start-game', () => setLive(!live()));
+        EventBus.on('enter-game', enterGame);
+        EventBus.on('preload-ascean', createUi)
         EventBus.on('set-player', setPlayer);
 
         EventBus.on('add-item', (e: Equipment[]) => {
@@ -638,7 +653,7 @@ export const PhaserGame = (props: IProps) => {
             
             EventBus.removeListener('current-scene-ready');
             EventBus.removeListener('main-menu');
-            EventBus.removeListener('start-game');
+            EventBus.removeListener('enter-game');
             EventBus.removeListener('set-player');
             EventBus.removeListener('add-item');
             EventBus.removeListener('clear-enemy');

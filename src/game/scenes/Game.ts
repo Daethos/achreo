@@ -91,18 +91,15 @@ export class Game extends Scene {
         let camera = this.cameras.main;
         camera.zoom = 0.8;
 
-        // ================== Event Bus ================== \\
-
-        EventBus.emit('current-scene-ready', this);
 
         this.asceanEvent();
         this.getAscean();
         this.combatEvent();
-        this.getCombat();
+        this.state = this.getCombat();
         this.gameEvent();
         this.getGame();
         this.settingsEvent();
-        this.getSettings();
+        this.settings = this.getSettings();
 
         // ================== Add Multiple Inputs ================== \\
         this.input.addPointer(3);
@@ -154,32 +151,7 @@ export class Game extends Scene {
         // darkOverlay.fillRect(0, 0, 4096, 4096);
 
         var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
-        this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main, { 
-            enable: this.settings?.postFx?.enable,
-            bloomRadius: 25,
-            bloomIntensity: 0.5,
-            bloomThreshold: 0.5,
-
-            chromaticEnable: this.settings?.postFx?.chromaticEnable,
-            chabIntensity: this.settings?.postFx?.chabIntensity,
-
-            vignetteEnable: this.settings?.postFx?.vignetteEnable,
-            vignetteStrength: this.settings?.postFx?.vignetteStrength,
-            vignetteIntensity: this.settings?.postFx?.vignetteIntensity,
-
-            noiseEnable: this.settings?.postFx?.noiseEnable,
-            noiseStrength: this.settings?.postFx?.noiseStrength,
-            // seed: 0.5,
-            
-            vhsEnable: this.settings?.postFx?.vhsEnable,
-            vhsStrength: this.settings?.postFx?.vhsStrength,
-
-            scanLinesEnable: this.settings?.postFx?.scanlinesEnable,
-            scanStrength: this.settings?.postFx?.scanStrength,
-
-            crtEnable: this.settings?.postFx?.crtEnable,
-            crtWidth: this.settings?.postFx?.crtWidth,
-        });
+        this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
 
         this.setPostFx(this.settings?.postFx, this.settings?.postFx.enable);
 
@@ -251,7 +223,7 @@ export class Game extends Scene {
         this.treasure = this.sound.add('treasure', { volume: this?.settings?.volume });
         this.phenomena = this.sound.add('phenomena', { volume: this?.settings?.volume });
         this.mysterious = this.sound.add('combat-round', { volume: this?.settings?.volume });
-        this.tshaeral = this.sound.add('alien-whoosh', { volume: this?.settings?.volume });
+        this.tshaeral = this.sound.add('39_Absorb_04', { volume: this?.settings?.volume });
 
         // =========================== FPS =========================== \\
 
@@ -280,41 +252,47 @@ export class Game extends Scene {
         this.postFxEvent();
         this.lootDropEvent();
         this.aggressiveEvent();
+
+
+        // ================== Event Bus ================== \\
+
+        EventBus.emit('current-scene-ready', this);
     };
 
-    asceanEvent():void {
+    asceanEvent = ():void => {
         EventBus.on('ascean', (ascean: Ascean) => {
             this.ascean = ascean;
         });
     };
 
-    combatEvent():void {
+    combatEvent = ():void => {
         EventBus.on('combat', (combat: any) => {
             this.state = combat;
         });
     };
 
-    gameEvent():void {
+    gameEvent = ():void => {
         EventBus.on('game', (game: GameState) => {
             this.gameState = game;
         });
     };
 
-    settingsEvent():void {
+    settingsEvent = ():void => {
         EventBus.on('settings', (settings: Settings) => {
+            console.log(settings, 'SEttings Event')
             this.settings = settings;
         });
     };
 
-    lootDropEvent(): void {
+    lootDropEvent = (): void => {
         EventBus.on('enemyLootDrop', (drops: any) => {
             drops.drops.forEach((drop: Equipment) => {
                 this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop }))
-            })
+            });
         });
     };
 
-    aggressiveEvent(): void {
+    aggressiveEvent = (): void => {
         EventBus.on('aggressive-enemy', (e: {id: string, isAggressive: boolean}) => {
             let enemy = this.enemies.find((enemy: any) => enemy.enemyID === e.id);
             enemy.isAggressive = e.isAggressive;
@@ -413,6 +391,7 @@ export class Game extends Scene {
         if (type === 'enable') {
             if (val === true) {
                 this.setPostFx(this.settings?.postFx, true);
+                // this.postFxPipeline.setEnable();
             } else {
                 this.postFxPipeline.setEnable(false);
             };
@@ -420,8 +399,12 @@ export class Game extends Scene {
     });
 
     setPostFx = (settings: any, enable: boolean) => { 
-        // console.log(settings, 'PostFx Settings being Set in Phaser')
-        if (enable) this.postFxPipeline.setEnable();
+        if (enable === true) {
+            this.postFxPipeline.setEnable();
+        } else {
+            this.postFxPipeline.setEnable(false);
+            return;    
+        };
         this.postFxPipeline.setBloomRadius(25);
         this.postFxPipeline.setBloomIntensity(0.5);
         this.postFxPipeline.setBloomThreshold(0.5);
@@ -439,6 +422,7 @@ export class Game extends Scene {
         this.postFxPipeline.setCRTEnable(settings.crtEnable);
         this.postFxPipeline.crtHeight = settings.crtHeight;
         this.postFxPipeline.crtWidth = settings.crtWidth;
+
     };
 
     equipEvent():void {
@@ -472,19 +456,29 @@ export class Game extends Scene {
     };
 
     getAscean(): void {
+        console.log('Requesting Ascean');
         EventBus.emit('request-ascean');
     };
 
-    getCombat(): void {
+    getCombat = (): Combat => {
+        EventBus.once('request-combat-ready', (combat: Combat) => {
+            this.state = combat;
+        });
         EventBus.emit('request-combat');
+        return this.state;
     };
 
     getGame(): void {
         EventBus.emit('request-game');
     };
 
-    getSettings(): void {
+    getSettings = (): Settings => {
+        // EventBus.once('request-settings-ready', (settings: Settings) => {
+        //     console.log(settings, 'Settings in Game.ts');
+        //     this.settings = settings;
+        // });
         EventBus.emit('request-settings');
+        return this.settings;
     };
 
     handleJoystickUpdate() {

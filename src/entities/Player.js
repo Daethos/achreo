@@ -170,11 +170,15 @@ export default class Player extends Entity {
     constructor(data) {
         const { scene } = data;
         super({ ...data, name: 'player', ascean: scene.state.player, health: scene.state.newPlayerHealth }); 
+
+        this.ascean = this.getAscean();
+        this.playerID = this.ascean._id;
+        const weapon = this.ascean.weaponOne;
         this.setTint(0xFFC700, 0xFFC700, 0x0000FF, 0x0000FF);
-        const weapon = scene?.state?.player?.weaponOne;
+        // const weapon = scene?.state?.player?.weaponOne;
         this.currentWeaponSprite = this.assetSprite(weapon);
-        this.ascean = scene.state.player;
-        this.playerID = scene.state.player._id;
+        // this.ascean = scene.state.player;
+        // this.playerID = scene.state.player._id;
         this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, this.currentWeaponSprite);
         if (weapon.grip === 'One Hand') {
             this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
@@ -206,7 +210,7 @@ export default class Player extends Entity {
         this.strafingLeft = false;
         this.strafingRight = false;
 
-        this.currentShieldSprite = this.assetSprite(scene?.state?.player?.shield);
+        this.currentShieldSprite = this.assetSprite(this.ascean?.shield);
         this.spriteShield = this.createSprite(this.currentShieldSprite, 0, 0, PLAYER.SCALE.SHIELD, ORIGIN.SHIELD.X, ORIGIN.SHIELD.Y);
 
         // this.currentHelmSprite = this.assetSprite(scene?.state?.player?.helmet);
@@ -334,7 +338,7 @@ export default class Player extends Entity {
         this.sensorDisp = PLAYER.SENSOR.DISPLACEMENT;
         this.colliderDisp = PLAYER.COLLIDER.DISPLACEMENT;
         this.stealthFx = this.scene.sound.add('stealth', { volume: this.scene.gameState.soundEffectVolume, loop: false });
-        this.caerenicFx = this.scene.sound.add('caerenic', { volume: this.scene.gameState.soundEffectVolume, loop: false });
+        this.caerenicFx = this.scene.sound.add('blink', { volume: this.scene.gameState.soundEffectVolume / 3, loop: false });
         this.stalwartFx = this.scene.sound.add('stalwart', { volume: this.scene.gameState.soundEffectVolume, loop: false });
         this.prayerFx = this.scene.sound.add('prayer', { volume: this.scene.gameState.soundEffectVolume, loop: false });
 
@@ -381,6 +385,15 @@ export default class Player extends Entity {
         this.tabListener();
         this.speedListener();
     };   
+
+    getAscean = () => {
+        EventBus.once('player-ascean-ready', (ascean) => {
+            this.ascean = ascean;
+        });
+        EventBus.emit('player-ascean');
+        return this.ascean;
+    };
+
 
     speedListener = () => {
         EventBus.on('speed', (ascean) => {
@@ -474,7 +487,7 @@ export default class Player extends Entity {
         //         this.anims.play('player_idle', true);
         //     });
         // };
-        this.checkWeapons(e.weapons[0], e.playerDamageType.toLowerCase());
+        this.checkGear(e.player.shield, e.weapons[0], e.playerDamageType.toLowerCase());
     };
 
     eventUpdate = (e) => {
@@ -567,10 +580,25 @@ export default class Player extends Entity {
         };
     };
 
-    checkWeapons = (weapon, damage) => {
+    checkGear = (shield, weapon, damage) => {
         this.currentDamageType = damage;    
         this.hasMagic = this.checkDamageType(damage, 'magic');
         this.checkMeleeOrRanged(weapon);
+        if (this.currentWeaponSprite !== this.assetSprite(weapon)) {
+            this.currentWeaponSprite = this.assetSprite(weapon);
+            this.spriteWeapon.setTexture(this.currentWeaponSprite);
+            if (weapon.grip === 'One Hand') {
+                this.staminaModifier = 0;
+                this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
+            } else {
+                this.staminaModifier = 5;
+                this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
+            };
+        };
+        if (this.currentShieldSprite !== this.assetSprite(shield)) {
+            this.currentShieldSprite = this.assetSprite(shield);
+            this.spriteShield.setTexture(this.currentShieldSprite);
+        };
     };
 
     defeatedEnemyCheck = (enemy) => {
@@ -958,10 +986,11 @@ export default class Player extends Entity {
     };
     onHealingExit = () => {
         if (this.healingSuccess) {
-            this.setTimeEvent('healingCooldown', 6000);  
+        this.setTimeEvent('healingCooldown', 6000);  
             this.healingSuccess = false;
             EventBus.emit('initiate-combat', { data: { key: 'player', value: 25 }, type: 'Health' });
-            this.caerenicFx.play();
+            this.scene.sound.play('phenomena', { volume: this.scene.gameState.soundEffectVolume });
+        // this.caerenicFx.play();
         };
         this.castbar.reset();
         if (!this.isCaerenic) {
@@ -1000,6 +1029,7 @@ export default class Player extends Entity {
     };
 
     onInvokeEnter = () => {
+        if (!this.inCombat) return;
         this.isPraying = true;
         this.setStatic(true);
         if (!this.isCaerenic) {
@@ -1017,6 +1047,7 @@ export default class Player extends Entity {
         this.combatChecker(this.isPraying);
     };
     onInvokeExit = () => {
+        if (!this.inCombat) return;
         this.setStatic(false);
         if (!this.isCaerenic) {
             this.setGlow(this, false);
@@ -1205,7 +1236,7 @@ export default class Player extends Entity {
         });
     };
     onBlinkEnter = () => {
-        this.scene.sound.play('blink', { volume: this.scene.gameState.soundEffectVolume / 3 });
+        this.scene.sound.play('caerenic', { volume: this.scene.gameState.soundEffectVolume });
         if (!this.isCaerenic) {
             this.setGlow(this, true);
             this.setGlow(this.spriteWeapon, true, 'weapon');
@@ -1417,14 +1448,14 @@ export default class Player extends Entity {
             this[cooldown] = limit;
         };
         const type = cooldown.split('Cooldown')[0];
-        const interval = 50;
+        const interval = 200;
         let time = 0;
         this.scene.actionBar.setCurrent(time, limit, type);
         const timer = this.scene.time.addEvent({
             delay: interval,
             callback: () => {
                 time += interval;
-                this.scene.actionBar.setCurrent(time, limit, type);
+                // this.scene.actionBar.setCurrent(time, limit, type);
                 if (time >= limit || this.offCombatTimer(type)) {
                     if (!this.inCombat) this.scene.actionBar.setCurrent(limit, limit, type);
                     if (!evasion) {
@@ -1863,21 +1894,6 @@ export default class Player extends Entity {
         };
         // if (this.inCombat && !this.scene.combatTimer) this.scene.startCombatTimer();
         if (this.inCombat && !this.healthbar.visible) this.healthbar.setVisible(true);
-        if (this.currentWeaponSprite !== this.assetSprite(this.scene.state.weapons[0])) {
-            this.currentWeaponSprite = this.assetSprite(this.scene.state.weapons[0]);
-            this.spriteWeapon.setTexture(this.currentWeaponSprite);
-            if (this.scene.state.weapons[0].grip === 'One Hand') {
-                this.staminaModifier = 0;
-                this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
-            } else {
-                this.staminaModifier = 5;
-                this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
-            };
-        };
-        if (this.currentShieldSprite !== this.assetSprite(this.scene.state.player.shield)) {
-            this.currentShieldSprite = this.assetSprite(this.scene.state.player.shield);
-            this.spriteShield.setTexture(this.currentShieldSprite);
-        };
         // if (this.currentHelmSprite !== this.assetSprite(this.scene.state.player.helmet)) {
         //     this.currentHelmSprite = this.assetSprite(this.scene.state.player.helmet);
         //     this.spriteHelm.setTexture(this.currentHelmSprite);

@@ -32,10 +32,6 @@ export default function SmallHud({ ascean, combat, game }: Props) {
     });
     const dimensions = useResizeListener(); 
 
-    createEffect(() => {
-        console.log(clicked())
-    });
-
     createMemo(() => {
         if (ascean().experience as number > experience()) {
             setToastShow(true);
@@ -123,7 +119,7 @@ export default function SmallHud({ ascean, combat, game }: Props) {
     return (
         <>
         <Show when={toastShow()}>
-            <div class='cornerBL' style={{ width: '30%' }}>
+            <div class='cornerBL realize' style={{ width: '30%' }}>
                 <ExperienceToast show={toastShow} setShow={setToastShow} alert={alert} setAlert={setAlert} />
             </div>
         </Show>

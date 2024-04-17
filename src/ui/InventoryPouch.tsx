@@ -46,6 +46,7 @@ function useDebounce(signal: { (): boolean; (): any; }, delay: number | undefine
 };
 export default function InventoryPouch({ ascean, inventoryType, setInventoryType, setHighlighted, highlighted, setRingCompared, setWeaponCompared, dragAndDropInventory, setDragAndDropInventory, scaleImage, setScaleImage }: Props) {
     const [inventorySwap, setInventorySwap] = createSignal<any>({ start: { id: null, index: -1 }, end: { id: null, index: -1 } });
+    const [prospectiveId, setProspectiveId] = createSignal<string | null>(null);
     const dimensions = useResizeListener();
     const [doubleTapCount, setDoubleTapCount] = createSignal(0);
 
@@ -67,6 +68,7 @@ export default function InventoryPouch({ ascean, inventoryType, setInventoryType
         setDoubleTapCount((prev) => prev + 1);
         if (doubleTapCount() ===1) {
             // console.log('Double Tap Count is 1');
+            setProspectiveId(inventory._id as string);
         };
         if (doubleTapCount() === 2) {
             // console.log(' -- DOUBLE TAP DETECTED -- Double Tap Count is 2 -- DOUBLE TAP DETECTED --');
@@ -83,7 +85,7 @@ export default function InventoryPouch({ ascean, inventoryType, setInventoryType
                     ...inventorySwap(),
                     end: { id: inventory._id, index: index() },
                 });
-            } else {   
+            } else if (prospectiveId() === inventory._id) {   
                 // console.log('Start ID is null, set start ID');
                 setInventorySwap({
                     ...inventorySwap(),
@@ -92,7 +94,6 @@ export default function InventoryPouch({ ascean, inventoryType, setInventoryType
             };
         };
         setTimeout(() => {
-            // console.log('Double Tap Timeout Reset');
             setDoubleTapCount(0);
         }, 600);
     };
@@ -110,19 +111,12 @@ export default function InventoryPouch({ ascean, inventoryType, setInventoryType
         EventBus.emit('equip-sound');
     }; 
 
-    const getItemStyle = (inventory: Equipment): JSX.CSSProperties => {
-        return {
-            // 'background-color': getBackgroundStyle(inventory),
-            margin: '5.5%',
-        };
-    };
-
     return (
         <div class='playerInventoryBag'> 
             <For each={dragAndDropInventory()}>{(item, index) => {
                 if (item === undefined || item === null) return;
                 return (
-                    <div onClick={() => doubleTap(item, index)} class='sortable' style={dimensions().ORIENTATION === 'landscape' ? getItemStyle(item) : { margin: '2.5%' }}>
+                    <div onClick={() => doubleTap(item, index)} class='sortable' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5.5%' } : { margin: '2.5%' }}>
                         <Inventory ascean={ascean} index={index()} 
                             setRingCompared={setRingCompared} setWeaponCompared={setWeaponCompared} 
                             highlighted={highlighted} setHighlighted={setHighlighted} 

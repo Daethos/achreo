@@ -241,7 +241,7 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
         const clean = styleHTML(check);
         const typedContent = {
             strings: [clean],
-            typeSpeed: 25,
+            typeSpeed: 20,
             backSpeed: 0,
             showCursor: false,
             onComplete: () => {

@@ -382,22 +382,22 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 };
 
-const scaleStrafe = (button: ActionButton, scale: number): void => {
-    button.graphic.clear();
-    button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
-    button.graphic.fillRoundedRect(
-        button.x, 
-        button.y, 
-        button.width * scale as number, 
-        button.height * scale as number);
-    button.border.clear();
-    button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
-    button.border.strokeRoundedRect(
-        button.x, 
-        button.y, 
-        button?.width * scale as number, 
-        button?.height * scale as number);
-};
+// const scaleStrafe = (button: ActionButton, scale: number): void => {
+//     button.graphic.clear();
+//     button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
+//     button.graphic.fillRoundedRect(
+//         button.x, 
+//         button.y, 
+//         button.width * scale as number, 
+//         button.height * scale as number);
+//     button.border.clear();
+//     button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
+//     button.border.strokeRoundedRect(
+//         button.x, 
+//         button.y, 
+//         button?.width * scale as number, 
+//         button?.height * scale as number);
+// };
 
 const scaleButton = (button: ActionButton, scale: number): void => {
     if (button.current / button.total >= 1) {

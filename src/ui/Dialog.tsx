@@ -1,4 +1,4 @@
-import { createSignal, createEffect, Setter, Accessor, Show, onMount } from 'solid-js'
+import { createSignal, createEffect, Setter, Accessor, Show, onMount, For, JSX } from 'solid-js'
 import { EventBus } from '../game/EventBus';
 import { Combat } from '../stores/combat';
 import Ascean from '../models/ascean';
@@ -13,6 +13,8 @@ import Currency from '../utility/Currency';
 import MerchantTable from './MerchantTable';
 import { getArmorEquipment, getClothEquipment, getJewelryEquipment, getMagicalWeaponEquipment, getMerchantEquipment, getPhysicalWeaponEquipment } from '../models/equipment';
 import { LevelSheet } from '../utility/ascean';
+import { useResizeListener } from '../utility/dimensions';
+import { getRarityColor } from '../utility/styling';
 
 const named = [
     "Achreus", "Ashreu'ul", "Caelan Greyne", "Chios Dachreon", "Cyrian Shyne", "Daetheus", 
@@ -242,6 +244,8 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [enemyArticle, setEnemyArticle] = createSignal<any>('');
     const [merchantTable, setMerchantTable] = createSignal<any>({});
     const [region, setRegion] = createSignal<any>(regionInformation['Astralands']);
+    const [showSell, setShowSell] = createSignal<boolean>(false);
+    const dimensions = useResizeListener();
 
     createEffect(() => { 
         checkEnemy(combat()?.computer as Ascean);
@@ -547,6 +551,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         // dispatch(setPhaserAggression(true));
         EventBus.emit('aggressive-enemy', { id, isAggressive: true });
         EventBus.emit('blend-game', { showDialog: false });
+        EventBus.emit('update-pause', false);
         // dispatch(setShowDialog(false));
     };
 
@@ -587,19 +592,26 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             console.warn(err, '--- Error Getting Loot! ---');
         };
     };
-
+    const getItemStyle = (rarity: string): JSX.CSSProperties => {
+        return {
+            border: `0.15em solid ${getRarityColor(rarity)}`,
+            'background-color': 'black',
+        };
+    };
     const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     // {combat()?.computer?.alive ? '' : '[Deceased]'}
     return (
         <Show when={combat().computer}>
-        <div class='' style={{ position: 'absolute', height: '40%', width: '60%', left: '20%', background: '#000', top: '50%', border: '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', display: 'inline-flex', overflow: 'scroll' }}>
+        <div class='' style={{ position: 'absolute', height: '50%', width: '60%', left: '20%', background: '#000', top: '40%', border: '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', display: 'inline-flex', overflow: 'scroll' }}>
             {/* <img src={dialogWindow} alt='Dialog Window' style={{ transform: "scale(1.1)" }} /> */}
             <div class='wrap' style={{ width: combat().isEnemy ? '75%' : '100%', padding: '3%', height: 'auto' }}> 
             {/* <ToastAlert error={error} setError={setError} /> */}
             <div style={{ color: 'gold', 'font-size': '1em', 'margin-bottom': "5%" }}>
                 <div style={{ display: 'inline' }}>
-                    <img src={`../assets/images/${combat()?.computer?.origin}-${combat()?.computer?.sex}.jpg`} alt={combat()?.computer?.name} style={{ width: '15%', 'border-radius': '50%', border: '0.1em solid #fdf6d8' }} class='origin-pic' />
-                    {' '}<div style={{ display: 'inline' }}>{combat()?.computer?.name} <p style={{ display: 'inline', 'font-size': '0.75em' }}>[Level {combat()?.computer?.level}]</p><br /></div>
+                    <img src={`../assets/images/${combat()?.computer?.origin}-${combat()?.computer?.sex}.jpg`} alt={combat()?.computer?.name} style={{ width: '10%', 'border-radius': '50%', border: '0.1em solid #fdf6d8' }} class='origin-pic' />
+                    {' '}<div style={{ display: 'inline' }}>{combat()?.computer?.name} <p style={{ display: 'inline', 'font-size': '0.75em' }}>[Level {combat()?.computer?.level}]</p>
+                    <br />
+                    </div>
                 </div>
             </div>
             { combat().npcType === 'Merchant-Smith' ? (
@@ -845,7 +857,12 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 <Currency ascean={ascean} />
             ) : ( '' ) }
             { merchantTable()?.length > 0 ? (
+                <>
+                <button class='highlight' onClick={() => setShowSell(!showSell())}>
+                    Sell to {combat().computer?.name}?
+                </button>
                 <MerchantTable table={merchantTable} game={game} ascean={combat().player as Ascean}  />
+                </>
             ) : ( '' ) }
             </div>
             { combat().isEnemy ? (
@@ -854,6 +871,27 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 </div>
             ) : ( '' ) }
         </div>
+        <Show when={showSell()}>
+            <div class='modal' style={{ background: 'rgba(0, 0, 0, 1)' }}>
+                <div class='superCenter'>
+                <div class='playerInventoryBag'> 
+                    <For each={game()?.inventory}>{(item, _index) => {
+                        if (item === undefined || item === null) return;
+                        return (
+                            <div style={dimensions().ORIENTATION === 'landscape' ? { margin: '5.5%' } : { margin: '2.5%' }}>
+                                <div class='playerInventory' style={getItemStyle(item?.rarity as string)}>
+                                    <img src={item?.imgUrl} alt={item?.name} />
+                                </div>
+                            </div>
+                        );
+                    }}</For>
+                </div>
+                </div>
+                <button class='cornerBR highlight' onClick={() => setShowSell(false)} style={{ 'background-color': 'red' }}>
+                    X
+                </button>
+            </div>
+        </Show>
         </Show> 
     );
 };

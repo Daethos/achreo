@@ -17,11 +17,11 @@ const dimensions = useResizeListener();
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
-    width: dimensions()?.ORIENTATION === 'landscape' ? (dimensions().WIDTH) : dimensions().HEIGHT,
+    width: dimensions()?.ORIENTATION === 'landscape' ? dimensions().WIDTH : dimensions().HEIGHT,
     height: dimensions()?.ORIENTATION === 'landscape' ? dimensions().HEIGHT : dimensions().WIDTH,
     scale: {
         mode: Phaser.Scale.RESIZE, // FIT
-        autoCenter: Phaser.Scale.CENTER_BOTH
+        autoCenter: Phaser.Scale.CENTER_BOTH,
     },
     parent: 'game-container',
     backgroundColor: '#000',
@@ -39,7 +39,7 @@ const config: Phaser.Types.Core.GameConfig = {
             gravity: { x: 0, y: 0 },
         }
     },
-    fps: { limit: 90, target: 90 },
+    // fps: { limit: 90, target: 90 },
     fullscreenTarget: 'base-ui',
     plugins: {
         global: [{

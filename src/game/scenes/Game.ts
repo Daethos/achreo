@@ -607,6 +607,7 @@ export class Game extends Scene {
             this.musicCombat.play();
             this.musicBackground.pause();
             this.startCombatTimer();
+            // if (this.scene.isPaused()) this.scene.resume();
         } else {
             this.combatTimerText.setVisible(false);
             this.musicCombat.pause();

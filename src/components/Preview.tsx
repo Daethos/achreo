@@ -1,6 +1,7 @@
 import { Accessor, For, createEffect, createSignal } from "solid-js";
 import { useResizeListener } from "../utility/dimensions";
 import { CharacterSheet } from "../utility/ascean";
+import { font } from "../utility/styling";
 
 export function Preview({ newAscean }: { newAscean: Accessor<CharacterSheet> }) {
     const dimensions = useResizeListener();
@@ -43,17 +44,9 @@ export function Preview({ newAscean }: { newAscean: Accessor<CharacterSheet> }) 
         return false;
     };
     return (
-        <div class={dimensions().ORIENTATION === 'landscape' ? 
-        'creature-heading cornerTL' : 
-        'creature-heading center'} style={dimensions().ORIENTATION === 'landscape' ? 
-        { 
-            'margin': '-0.5% 1%',
-        } 
-        : {}}>
+        <div class={dimensions().ORIENTATION === 'landscape' ? 'creature-heading cornerTL' : 'creature-heading center'} style={dimensions().ORIENTATION === 'landscape' ?  { 'margin': '-0.5% 1%', } : {}}>
             <h1>{newAscean().name}</h1>
-            <h2 style={{ 
-                    margin:  dimensions().ORIENTATION === 'landscape' ? '-4% 0' : '' 
-                }}>
+            <h2 style={{ margin:  dimensions().ORIENTATION === 'landscape' ? '-4% 0' : '' }}>
                 <For each={description().split('\n')}>
                     {(line, index) => {
                         if (index() !== 0) return;
@@ -64,14 +57,14 @@ export function Preview({ newAscean }: { newAscean: Accessor<CharacterSheet> }) 
                 </For>
             </h2>
             { dimensions().ORIENTATION === 'landscape' ? (
-                <div style={{ color: 'gold', 'font-size': '1em' }}>
+                <div style={font('1em', 'gold')}>
                     {newAscean().faith.charAt(0).toUpperCase() + newAscean().faith.slice(1)} [Faith]
                     <p style={{ 'margin-top': '3%' }}>
                     {newAscean().mastery.charAt(0).toUpperCase() + newAscean().mastery.slice(1)} [Mastery]
                     </p>
                 </div>
             ) : (
-                <p style={{ color: 'gold', 'font-size': '1em' }}>
+                <p style={font('1em', 'gold')}>
                     {newAscean().faith.charAt(0).toUpperCase() + newAscean().faith.slice(1)} [Faith] | {newAscean().mastery.charAt(0).toUpperCase() + newAscean().mastery.slice(1)} [Mastery]
                 </p>
             )}

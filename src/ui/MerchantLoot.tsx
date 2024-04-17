@@ -1,4 +1,4 @@
-import { Accessor, Setter, Show, createEffect, createSignal } from 'solid-js'
+import { Accessor, Setter, createEffect, createSignal } from 'solid-js'
 import Equipment from '../models/equipment';
 import Ascean from '../models/ascean';
 import { getRarityColor } from '../utility/styling';
@@ -108,17 +108,12 @@ const MerchantLoot = ({ item, ascean, show, setShow, setHighlight }: Props) => {
         asceanTotal = ascean.currency.silver + (ascean.currency.gold * 100);
         costTotal = purchaseSetting().cost.silver + (purchaseSetting().cost.gold * 100);
         if (asceanTotal < costTotal) {
-            // TODO:FIXME: GameToast emit alert
             EventBus.emit('alert', { header: 'Insufficient Funds', body: 'You do not have enough currency to purchase this item.' });
             return;
         };
         try {
-            // dispatch(getPurchaseFetch(purchaseSetting()));
             EventBus.emit('alert', { header: `Purchasing ${item?.name}`, body: `You have purchased the ${item?.name} for ${purchaseSetting().cost.gold}g, ${purchaseSetting().cost.silver}s.`});
             EventBus.emit('purchase-item', purchaseSetting());
-            // EventBus.emit('blend-game', { merchantEquipment: table().filter((i: any) => i._id !== item._id) });
-
-            // dispatch(setMerchantEquipment(table.filter((i: any) => i._id !== item._id)));
         } catch (err: any) {
             console.log(err.message, 'Error Purchasing Item!');
         };

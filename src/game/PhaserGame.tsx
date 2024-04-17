@@ -14,6 +14,10 @@ import { Compiler, asceanCompiler } from '../utility/ascean';
 import { deleteEquipment, getAscean, getInventory, populate } from '../assets/db/db';
 import { getNpcDialog } from '../utility/dialog';
 import { getAsceanTraits } from '../utility/traits';
+import { getNodesForNPC, npcIds } from '../utility/DialogNode';
+import { fetchNpc } from '../utility/npc';
+import { checkDeificConcerns } from '../utility/deities';
+import { Statistics } from '../utility/statistics';
 
 export interface IRefPhaserGame {
     game: Phaser.Game | null;
@@ -142,6 +146,27 @@ export const PhaserGame = (props: IProps) => {
         };
     };
 
+    async function deleteMerchantEquipment() {
+        try {
+            if (game().merchantEquipment.length === 0) return;
+            // await Promise.all(game().merchantEquipment.map(
+            //     async (eqp) => await deleteEquipment(eqp)
+            // ));
+            // for await (let eqp of game().merchantEquipment) {
+            //     console.log(eqp, 'Deleting Merchant Equipment');
+            //     await deleteEquipment(eqp);
+            // };
+            
+            game().merchantEquipment.forEach(async (eqp) => {
+                console.log(eqp, 'Deleting Merchant Equipment')
+                await deleteEquipment(eqp._id);
+            });
+            // setGame({ ...game(), merchantEquipment: [] });
+        } catch (err: any) {
+            console.warn(err, 'Error Deleting Merchant Equipment');
+        };
+    };
+
     function purchaseItem(purchase: { ascean: Ascean; item: Equipment; cost: { silver: number; gold: number; }; }) {
         try {
             let inventory = [ ...game().inventory ];
@@ -156,6 +181,9 @@ export const PhaserGame = (props: IProps) => {
                 currency: cost,
                 inventory: inventory
             };
+            let merchantEquipment = [ ...game().merchantEquipment ];
+            merchantEquipment = merchantEquipment.filter((eqp) => eqp._id !== purchase.item._id);
+            setGame({ ...game(), merchantEquipment });
             EventBus.emit('update-ascean', update);
             EventBus.emit('purchase-sound');
         } catch (err: any) {
@@ -172,6 +200,69 @@ export const PhaserGame = (props: IProps) => {
           currency.gold += 1;
           currency.silver -= 100;
         };
+    };
+
+    const recordCombat = (stats: any) => {
+        let { wins, losses, total, actionData, typeAttackData, typeDamageData, totalDamageData, prayerData, deityData } = stats;
+        let statistic = props.ascean().statistics.combat;
+        statistic.wins += wins;
+        statistic.losses += losses;
+        statistic.total += total;
+        statistic.actions.attacks += actionData.reduce((count: number, action: string) => action === 'attack' ? count + 1 : count, 0);
+        statistic.actions.parries += actionData.reduce((count: number, action: string) => action === 'parry' ? count + 1 : count, 0);
+        statistic.actions.dodges += actionData.reduce((count: number, action: string) => action === 'dodge' ? count + 1 : count, 0);
+        statistic.actions.postures += actionData.reduce((count: number, action: string) => action === 'posture' ? count + 1 : count, 0);
+        statistic.actions.rolls += actionData.reduce((count: number, action: string) => action === 'roll' ? count + 1 : count, 0);
+        statistic.actions.invokes += actionData.reduce((count: number, action: string) => action === 'invoke' ? count + 1 : count, 0);
+        statistic.actions.prayers += actionData.reduce((count: number, action: string) => action === 'prayer' ? count + 1 : count, 0);
+        statistic.actions.consumes += actionData.reduce((count: number, action: string) => action === 'consume' ? count + 1 : count, 0);
+        statistic.prayers.buff += prayerData.reduce((count: number, prayer: string) => prayer === 'Buff' ? count + 1 : count, 0);
+        statistic.prayers.heal += prayerData.reduce((count: number, prayer: string) => prayer === 'Heal' ? count + 1 : count, 0);
+        statistic.prayers.damage += prayerData.reduce((count: number, prayer: string) => prayer === 'Damage' ? count + 1 : count, 0);
+        statistic.prayers.debuff += prayerData.reduce((count: number, prayer: string) => prayer === 'Debuff' ? count + 1 : count, 0);
+        statistic.attacks.magical += typeAttackData.reduce((count: number, type: string) => type === 'Magic' ? count + 1 : count, 0);
+        statistic.attacks.physical += typeAttackData.reduce((count: number, type: string) => type === 'Physical' ? count + 1 : count, 0);
+        statistic.attacks.blunt += typeDamageData.reduce((count: number, type: string) => type === 'Blunt' ? count + 1 : count, 0);
+        statistic.attacks.pierce += typeDamageData.reduce((count: number, type: string) => type === 'Pierce' ? count + 1 : count, 0);
+        statistic.attacks.slash += typeDamageData.reduce((count: number, type: string) => type === 'Slash' ? count + 1 : count, 0);
+        statistic.attacks.earth += typeDamageData.reduce((count: number, type: string) => type === 'Earth' ? count + 1 : count, 0);
+        statistic.attacks.fire += typeDamageData.reduce((count: number, type: string) => type === 'Fire' ? count + 1 : count, 0);
+        statistic.attacks.frost += typeDamageData.reduce((count: number, type: string) => type === 'Frost' ? count + 1 : count, 0);
+        statistic.attacks.lightning += typeDamageData.reduce((count: number, type: string) => type === 'Lightning' ? count + 1 : count, 0);
+        statistic.attacks.righteous += typeDamageData.reduce((count: number, type: string) => type === 'Righteous' ? count + 1 : count, 0);
+        statistic.attacks.spooky += typeDamageData.reduce((count: number, type: string) => type === 'Spooky' ? count + 1 : count, 0);
+        statistic.attacks.sorcery += typeDamageData.reduce((count: number, type: string) => type === 'Sorcery' ? count + 1 : count, 0);
+        statistic.attacks.wild += typeDamageData.reduce((count: number, type: string) => type === 'Wild' ? count + 1 : count, 0);
+        statistic.attacks.wind += typeDamageData.reduce((count: number, type: string) => type === 'Wind' ? count + 1 : count, 0);
+        statistic.attacks.total = Math.max(totalDamageData, statistic.attacks.total); 
+        statistic.deities.Daethos += deityData.reduce((count: number, deity: string) => deity === 'Daethos' ? count + 1 : count, 0);
+        statistic.deities.Achreo += deityData.reduce((count: number, deity: string) => deity === 'Achreo' ? count + 1 : count, 0);
+        statistic.deities.Ahnve += deityData.reduce((count: number, deity: string) => deity === "Ahn've" ? count + 1 : count, 0);
+        statistic.deities.Astra += deityData.reduce((count: number, deity: string) => deity === 'Astra' ? count + 1 : count, 0);
+        statistic.deities.Cambire += deityData.reduce((count: number, deity: string) => deity === 'Cambire' ? count + 1 : count, 0);
+        statistic.deities.Chiomyr += deityData.reduce((count: number, deity: string) => deity === 'Chiomyr' ? count + 1 : count, 0);
+        statistic.deities.Fyer += deityData.reduce((count: number, deity: string) => deity === 'Fyer' ? count + 1 : count, 0);
+        statistic.deities.Ilios += deityData.reduce((count: number, deity: string) => deity === 'Ilios' ? count + 1 : count, 0);
+        statistic.deities.Kyngi += deityData.reduce((count: number, deity: string) => deity === "Kyn'gi" ? count + 1 : count, 0);
+        statistic.deities.Kyrisos += deityData.reduce((count: number, deity: string) => deity === 'Kyrisos' ? count + 1 : count, 0);
+        statistic.deities.Kyrna += deityData.reduce((count: number, deity: string) => deity === "Kyr'na" ? count + 1 : count, 0);
+        statistic.deities.Lilos += deityData.reduce((count: number, deity: string) => deity === 'Lilos' ? count + 1 : count, 0);
+        statistic.deities.Maanre += deityData.reduce((count: number, deity: string) => deity === "Ma'anre" ? count + 1 : count, 0);
+        statistic.deities.Nyrolus += deityData.reduce((count: number, deity: string) => deity === 'Nyrolus' ? count + 1 : count, 0);
+        statistic.deities.Quorei += deityData.reduce((count: number, deity: string) => deity === "Quor'ei" ? count + 1 : count, 0);
+        statistic.deities.Rahvre += deityData.reduce((count: number, deity: string) => deity === 'Rahvre' ? count + 1 : count, 0);
+        statistic.deities.Senari += deityData.reduce((count: number, deity: string) => deity === 'Senari' ? count + 1 : count, 0);
+        statistic.deities.Sedyro += deityData.reduce((count: number, deity: string) => deity === "Se'dyro" ? count + 1 : count, 0);
+        statistic.deities.Sevas += deityData.reduce((count: number, deity: string) => deity === "Se'vas" ? count + 1 : count, 0);
+        statistic.deities.Shrygei += deityData.reduce((count: number, deity: string) => deity === "Shrygei" ? count + 1 : count, 0);
+        statistic.deities.Tshaer += deityData.reduce((count: number, deity: string) => deity === 'Tshaer' ? count + 1 : count, 0);
+        
+        let newStatistics: Statistics = { ...props.ascean().statistics, combat: statistic };
+        if (wins > losses && props.ascean().statistics.relationships.deity.name !== '') {
+            newStatistics = checkDeificConcerns(props.ascean().statistics, props.ascean().statistics.relationships.deity.name, 'combat', 'value') as Statistics;
+        };
+
+        return newStatistics;
     };
 
     function saveChanges(state: any) {
@@ -229,23 +320,36 @@ export const PhaserGame = (props: IProps) => {
                 firewater: firewater,
                 inventory: game().inventory
             };
-            console.log(newAscean, 'New Ascean Changes Saved');
-
             EventBus.emit('update-ascean', newAscean);
         } catch (err: any) {
             console.log(err, 'Error Saving Experience');
         };
     };
 
+    const statFiler = (data: Combat) => {
+        let stat = {
+            wins: data.playerWin ? 1 : 0,
+            losses: data.playerWin ? 0 : 1,
+            total: 1,
+            actionData: data.actionData,
+            typeAttackData: data.typeAttackData,
+            typeDamageData: data.typeDamageData,
+            totalDamageData: data.totalDamageData,
+            prayerData: data.prayerData,
+            deityData: data.deityData,
+        };
+        const newStats = recordCombat(stat);
+        const update = { ...props.ascean(), statistics: newStats };
+        EventBus.emit('update-ascean', update);
+    };
+
     async function swapEquipment(e: { type: string; item: Equipment }) {
         const { type, item } = e;
         const oldEquipment = props.ascean()[type as keyof Ascean] as Equipment;
         const newEquipment = item;
-        console.log(oldEquipment, newEquipment, 'Swapping Equipment');
         let newAscean = { ...props.ascean(), [type]: newEquipment };
         let inventory = [ ...game().inventory ];
         inventory = inventory.filter((inv) => inv._id !== newEquipment._id);
-        console.log(newAscean, 'New Ascean with new item')
         if (!oldEquipment.name.includes('Empty') && !oldEquipment.name.includes('Starter')) {
             inventory.push(oldEquipment);
         } else {
@@ -281,7 +385,6 @@ export const PhaserGame = (props: IProps) => {
 
     function requestCombat() {
         try {
-            console.log(combat(), 'Requesting Combat');
             EventBus.emit('request-combat-ready', combat());
         } catch (err: any) {
             console.warn(err, 'Error Requesting Combat');
@@ -291,7 +394,6 @@ export const PhaserGame = (props: IProps) => {
     async function upgradeItem(data: any) {
         try {
             const item: Equipment[] = await upgradeEquipment(data) as Equipment[];
-            // console.log(item, 'Upgraded Equipment');
 
             let itemsToRemove = data.upgradeMatches;
             if (itemsToRemove.length > 3) {
@@ -302,17 +404,11 @@ export const PhaserGame = (props: IProps) => {
             let inventory: Equipment[] = game().inventory?.length > 0 ? [ ...game().inventory ] : [];
             inventory.push(item[0]);
 
-            console.log(inventory, 'Current Inventory');
-
             itemsIdsToRemove.forEach(async (itemID: string) => {
-                console.log(itemID, 'Item ID to Remove and Delete');
                 const itemIndex = inventory.findIndex((item: Equipment) => item._id === itemID);
-                console.log(itemIndex, 'Item Index')
                 inventory.splice(itemIndex, 1);
                 await deleteEquipment(itemID);
             });
-
-            console.log(inventory, 'New Inventory');
 
             let gold = 0;
             if (item?.[0].rarity === 'Uncommon') {
@@ -327,7 +423,6 @@ export const PhaserGame = (props: IProps) => {
 
             const update = { ...props.ascean(), inventory: inventory, currency: { ...props.ascean().currency, gold: props.ascean().currency.gold - gold } };
 
-            console.log(update, 'New Ascean With Upgraded Item');
             setGame({ ...game(), inventory: inventory });
             setCombat({
                 ...combat(),
@@ -340,7 +435,6 @@ export const PhaserGame = (props: IProps) => {
     };
 
     async function createUi(id: string): Promise<void> {
-        console.log(id, 'Creating UI')
         const fresh = await getAscean(id);
         const pop = await populate(fresh);
         const res = asceanCompiler(pop);
@@ -367,12 +461,10 @@ export const PhaserGame = (props: IProps) => {
 
     async function enterGame() {
         try  {
-            console.log(combat().player, props.ascean(), 'Entering Game');
             if (combat().player === undefined) {
                 console.log('Create UI did not create itself before Entering Game -- MAIN ISSUE');
                 // await createUi(props.ascean()._id);
             };
-
             setLive(!live());
         } catch (err: any) {
             console.warn(err, 'Error Entering Game');
@@ -441,8 +533,46 @@ export const PhaserGame = (props: IProps) => {
                 enemyID: ''
             });
         });
+        EventBus.on('clear-npc', async () => {
+            setCombat({
+                ...combat(),
+                computer: undefined,
+                computerHealth: 0,
+                newComputerHealth: 0,
+                computerWeapons: [],
+                computerAttributes: undefined,
+                computerDefense: undefined,
+                computerDamageType: '',
+                isEnemy: false,
+                npcType: '',
+                enemyPersuaded: false,
+                playerLuckout: false,
+                combatEngaged: false,
+                isAggressive: false,
+                startedAggressive: false,
+                persuasionScenario: false,
+                luckoutScenario: false,
+                playerTrait: '',
+                playerWin: false,
+                computerWin: false,
+                enemyID: ''
+            });
+            await deleteMerchantEquipment();
+            setGame({ ...game(), merchantEquipment: [], dialogTag: false, currentNode: undefined, currentNodeIndex: 0 });    
+            // if (game().merchantEquipment.length > 0) {
+            //     // for await (let eqp of game().merchantEquipment) {
+            //     //     console.log(eqp, 'Deleting Merchant Equipment')
+            //     //     await deleteEquipment(eqp);
+            //     // };
+            //     game().merchantEquipment.forEach(async (eqp) => {
+            //         console.log(eqp, 'Deleting Merchant Equipment')
+            //         await deleteEquipment(eqp);
+            //     });
+            // };
+        });
 
         EventBus.on('fetch-enemy', fetchEnemy);
+        EventBus.on('fetch-npc', fetchNpc);
         EventBus.on('request-ascean', () => {
             // const res = asceanCompiler(props.ascean());
             EventBus.emit('ascean', props.ascean());
@@ -481,6 +611,36 @@ export const PhaserGame = (props: IProps) => {
             const dialog = getNpcDialog(e.enemy.name);
             setGame({ ...game(), dialog: dialog });
         });
+        EventBus.on('setup-npc', (e: any) => {
+            console.log(e, 'Setting Up NPC');
+            setCombat({
+                ...combat(),
+                computer: e.game,
+                computerHealth: e.enemy.attributes.healthTotal,
+                newComputerHealth: e.health,
+                computerWeapons: [e.enemy.combatWeaponOne, e.enemy.combatWeaponTwo, e.enemy.combatWeaponThree],
+                computerWeaponOne: e.enemy.combatWeaponOne,
+                computerWeaponTwo: e.enemy.combatWeaponTwo,
+                computerWeaponThree: e.enemy.combatWeaponThree,
+                computerAttributes: e.enemy.attributes,
+                computerDefense: e.enemy.defense,
+                computerDefenseDefault: e.enemy.defense,
+                computerDamageType: e.enemy.combatWeaponOne.damageType[0],
+                isEnemy: false,
+                isAggressive: false,
+                startedAggressive: false,
+                persuasionScenario: false,
+                luckoutScenario: false,
+                playerLuckout: false,
+                playerTrait: '',
+                playerWin: false,
+                computerWin: false,
+                enemyID: e.id,
+                npcType: e.type,
+            });
+            const dialog = getNodesForNPC(npcIds[e.type]);
+            setGame({ ...game(), dialog: dialog });    
+        });
 
         EventBus.on('changeDamageType', (e: string) => setCombat({ ...combat(), playerDamageType: e }));
         EventBus.on('changePrayer', (e: string) => setCombat({ ...combat(), playerBlessing: e }));
@@ -491,7 +651,7 @@ export const PhaserGame = (props: IProps) => {
         });
 
         EventBus.on('combat-engaged', (e: boolean) => setCombat({ ...combat(), combatEngaged: e }));
-
+        EventBus.on('delete-merchant-equipment', deleteMerchantEquipment);
         EventBus.on('drink-firewater', () => {
             const newHealth = (combat().newPlayerHealth + (combat().playerHealth * 0.4)) > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + (combat().playerHealth * 0.4);
             const newCharges = props.ascean().firewater.current > 0 ? props.ascean().firewater.current - 1 : 0;
@@ -516,7 +676,7 @@ export const PhaserGame = (props: IProps) => {
             setGame({ 
                 ...game(), 
                 inventory: newInventory,
-            })
+            });
         });
         EventBus.on('clear-loot', () => setGame({ ...game(), lootDrops: [], showLoot: false, showLootIds: [] }));
         EventBus.on('enemy-loot', (e: { enemyID: string; level: number }) => lootDrop(e));
@@ -645,6 +805,8 @@ export const PhaserGame = (props: IProps) => {
             setCombat({ ...combat(), playerTrait: persuasion, enemyPersuaded: persuaded, persuasionScenario: true });   
         });
 
+        EventBus.on('record-statistics', (e: Combat) => statFiler(e));
+
         onCleanup(() => {
             if (instance.game) {
                 instance.game.destroy(true);
@@ -657,8 +819,13 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('set-player');
             EventBus.removeListener('add-item');
             EventBus.removeListener('clear-enemy');
-            EventBus.removeListener('fetch-enemy'); 
+            EventBus.removeListener('clear-npc');
+            EventBus.removeListener('fetch-enemy');
+            EventBus.removeListener('fetch-npc');
+            EventBus.removeListener('setup-enemy');  
+            EventBus.removeListener('setup-npc');
             EventBus.removeListener('combat-engaged');  
+            EventBus.removeListener('delete-merchant-equipment');
             EventBus.removeListener('drink-firewater'); 
             EventBus.removeListener('gain-experience');
             EventBus.removeListener('add-lootdrop');
@@ -669,7 +836,6 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('request-game');
             EventBus.removeListener('request-ascean');    
             EventBus.removeListener('request-combat');  
-            EventBus.removeListener('setup-enemy');  
             EventBus.removeListener('changeDamageType');
             EventBus.removeListener('changePrayer');
             EventBus.removeListener('changeWeapon');
@@ -698,6 +864,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('upgrade-item');
             EventBus.removeListener('luckout');
             EventBus.removeListener('persuasion');
+            EventBus.removeListener('record-statistics');
             
         });
     });

@@ -1,6 +1,21 @@
 import { populateEnemy, randomEnemy } from "../assets/db/db";
 import { EventBus } from "../game/EventBus";
-import { asceanCompiler } from "./ascean";
+import Ascean from "../models/ascean";
+import { Compiler, asceanCompiler } from "./ascean";
+
+export type EnemySheet = {
+    id: string;
+    game: Ascean;
+    enemy: Compiler;
+    health: number;
+    isAggressive: boolean;
+    startedAggressive: boolean;
+    isDefeated: boolean;
+    isTriumphant: boolean;
+    isLuckout: boolean;
+    isPersuaded: boolean;
+    playerTrait: string;
+};
 
 const levelRanges = [
     { range: [1, 2], minLevel: 1, maxLevel: 2 },

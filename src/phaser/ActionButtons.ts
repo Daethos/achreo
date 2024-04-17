@@ -8,7 +8,7 @@ const ACTIONS = [
     { POSTURE: 0x800080 }, // 0x005100 
     { ROLL: 0x800080 }, // 0x0000FA 
     { DODGE: 0x800080 }, // 0xFAFA00 
-    { COUNTER: 0x800080 }
+    { PARRY: 0x800080 }
 ];
 
 const SPECIALS = [
@@ -123,7 +123,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 buttonX, buttonY, 
                 button.width), 
                 Phaser.Geom.Circle.Contains)
-                    .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
+                    .on('pointerdown', (_pointer: any, _localX: any, _localY: any, event: any) => {
+                        event?.stopPropagation()
                         this.pressButton(button, scene);
                     }); 
 
@@ -166,7 +167,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 buttonX, buttonY, 
                 button.width), 
                 Phaser.Geom.Circle.Contains)
-                    .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
+                    .on('pointerdown', (_pointer: any, _localX: any, _localY: any, event: any) => {
+                        event?.stopPropagation()
                         this.pressButton(button, scene);
                     }); 
             
@@ -347,11 +349,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 
     public reorder = () => {
-        console.log(this.context.settings, 'Sesttings in Action Buttons');
         EventBus.on('reorder-buttons', (order: { list: string[], type: string }) => {
-            console.log('Reordering buttons...', order);
             const { list, type } = order;
-            console.log('Reordering buttons...', list, type);
             switch (type) {
                 case 'action': {
                     this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {

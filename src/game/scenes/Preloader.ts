@@ -67,7 +67,7 @@ export class Preloader extends Scene {
         this.load.audio('blunt', '../assets/sounds/blunt-attack.mp3');
         this.load.audio('pierce', '../assets/sounds/sword-stab.mp3');
         this.load.audio('roll', '../assets/sounds/roll-success.mp3');
-        this.load.audio('counter', '../assets/sounds/counter-success.mp3');
+        this.load.audio('parry', '../assets/sounds/counter-success.mp3');
         this.load.audio('weaponOrder', '../assets/sounds/weapon-order.mp3');
         this.load.audio('phenomena', '../assets/sounds/phenomena.mp3');
         this.load.audio('TV_Button_Press', '../assets/sounds/TV_Button_Press.wav');

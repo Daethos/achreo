@@ -57,6 +57,7 @@ export default function App() {
     createEffect(() => {
         fetchAsceans();
     });
+
     
     function fetchAsceans(): void {
         const fetch = async () => {
@@ -82,19 +83,19 @@ export default function App() {
         setScene(scene.scene.key);
     };
 
-    function menuOption(option: string): void {
-        EventBus.emit('full-screen');
-        switch (option) {
-            case 'createCharacter':
-                setMenu({ ...menu(), creatingCharacter: true });
-                break;
-            case 'chooseCharacter':
-                setMenu({ ...menu(), choosingCharacter: true });
-                break;
-            default:
-                break;
-        };
-    };
+    // function menuOption(option: string): void {
+    //     EventBus.emit('full-screen');
+    //     switch (option) {
+    //         case 'createCharacter':
+    //             setMenu({ ...menu(), creatingCharacter: true });
+    //             break;
+    //         case 'chooseCharacter':
+    //             setMenu({ ...menu(), choosingCharacter: true });
+    //             break;
+    //         default:
+    //             break;
+    //     };
+    // };
 
     async function createCharacter(character: CharacterSheet): Promise<void> {
         const res = await createAscean(character);
@@ -147,10 +148,15 @@ export default function App() {
             setSettings(set);
             setTimeout(() => {
                 EventBus.emit('enter-game');
-            }, 3000);
+            }, 2500);
         } catch (err: any) {
             console.warn('Error loading Ascean:', err);
         };
+    };
+
+    const makeToast = (header: string, body: string): void => {
+        setAlert({ header, body });
+        setShow(true);    
     };
     
     function togglePause(pause: boolean): void {
@@ -221,6 +227,7 @@ export default function App() {
         };
     };
 
+    usePhaserEvent('alert', (payload: { header: string, body: string }) => makeToast(payload.header, payload.body));
     usePhaserEvent('enter-menu', enterMenu);
     usePhaserEvent('fetch-ascean', fetchAscean);
     usePhaserEvent('quick-ascean', quickAscean);
@@ -318,7 +325,7 @@ export default function App() {
                     </Show>
                     <Show when={show()}>
                         <div class='modal' style={{ background: 'rgba(0, 0, 0, 1)' }}>
-                            <div class='superCenter center' style={{ "z-index": 1, transform: 'scale(2)' }}>
+                            <div class='superCenter center' style={{ "z-index": 1 }}>
                                 <Puff color="gold" />
                             </div>
                         </div>

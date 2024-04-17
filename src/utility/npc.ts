@@ -1,3 +1,4 @@
+import { EventBus } from "../game/EventBus";
 import Equipment from "../models/equipment";
 import { asceanCompiler } from "./ascean";
 
@@ -39,12 +40,41 @@ export type NPC = {
     dialogId: string;
 };
 
+function findFaith() {
+    const chance = Math.floor(Math.random() * 101);
+    if (chance > 50) {
+        return "devoted";
+    } else {
+        return "adherent";
+    };
+};
+
 function findSex() {
-    const chance = Math.floor(Math.random() * 2);
-    if (chance === 0) {
+    const chance = Math.floor(Math.random() * 101);
+    if (chance > 25) {
         return "Man";
     } else {
         return "Woman";
+    };
+};
+
+function findMastery() {
+    const chance = Math.floor(Math.random() * 101);
+    if (chance > 50) {
+        return "achre";
+    } else {
+        return "kyosir";
+    };
+};
+
+function findOrigin() {
+    const chance = Math.floor(Math.random() * 101);
+    if (chance > 60) {
+        return "Li'ivi";
+    } else if (chance > 30) {
+        return "Fyers";
+    } else {
+        return "Quor'eite";
     };
 };
 
@@ -360,10 +390,10 @@ export const Merchant: NPC = {
     ringOne: Simple_Ring,
     ringTwo: Simple_Ring,
     trinket: Dae_Trinket,
-    faith: 'devoted',
-    mastery: 'Achre',
-    origin: "Li'ivi",
-    sex: findSex(),
+    faith: '',
+    mastery: '',
+    origin: '',
+    sex: '',
     health: { current: 100, max: 100 },
     currency: { gold: Math.floor(Math.random() * 50) + 1, silver: Math.floor(Math.random() * 100) + 1},
     experience: 0,
@@ -388,12 +418,15 @@ export function fetchNpc(e: { enemyID: string; npcType: string; }): void {
         const getNPC = () => {
             let npc: NPC = Object.assign({}, Merchant);
             npc.name = 'Traveling ' + CITY_OPTIONS[e.npcType as keyof typeof CITY_OPTIONS];
+            npc.faith = findFaith();
+            npc.mastery = findMastery();
+            npc.origin = findOrigin();
+            npc.sex = findSex();
             const res = asceanCompiler(npc);
             return { game: npc, combat: res, enemyID: e.enemyID };
         };
         const npc = getNPC();
-        // EventEmitter.emit('npc-fetched', npc); 
-        console.log(npc);
+        EventBus.emit('npc-fetched', npc); 
     } catch (err: any) {
         console.log("Error Getting an NPC");
     };

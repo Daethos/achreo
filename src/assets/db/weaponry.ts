@@ -3671,7 +3671,7 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Ilios"],
+        influences: ["Se'vas"],
         imgUrl: '../assets/images/claymore.png'
     },
     {
@@ -3696,7 +3696,7 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Ilios"],
+        influences: ["Se'vas"],
         imgUrl: '../assets/images/claymore.png'
     },
     {
@@ -3721,7 +3721,7 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Ilios"],
+        influences: ["Se'vas"],
         imgUrl: '../assets/images/claymore.png'
     },
     {
@@ -6121,7 +6121,7 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Ilios"],
+        influences: ["Se'vas"],
         imgUrl: '../assets/images/claymore.png'
     },
     {
@@ -6146,7 +6146,7 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Ilios"],
+        influences: ["Se'vas"],
         imgUrl: '../assets/images/claymore.png'
     },
     {

@@ -14,6 +14,7 @@ import { GameState } from '../../stores/game';
 import Settings, { initSettings } from '../../models/settings';
 import Equipment from '../../models/equipment';
 import { States } from '../../phaser/StateMachine';
+import { EnemySheet } from '../../utility/enemy';
 
 export class Game extends Scene {
     gameText: Phaser.GameObjects.Text;
@@ -66,7 +67,7 @@ export class Game extends Scene {
     blunt: Phaser.Sound.BaseSound;
     pierce: Phaser.Sound.BaseSound;
     roll: Phaser.Sound.BaseSound;
-    counter: Phaser.Sound.BaseSound;
+    parry: Phaser.Sound.BaseSound;
     weaponOrder: Phaser.Sound.BaseSound;
     actionButton: Phaser.Sound.BaseSound;
     equip: Phaser.Sound.BaseSound;
@@ -173,7 +174,7 @@ export class Game extends Scene {
             left: this?.input?.keyboard?.addKeys('A,LEFT'),
             right: this?.input?.keyboard?.addKeys('D,RIGHT'),
             attack: this?.input?.keyboard?.addKeys('ONE'),
-            counter: this?.input?.keyboard?.addKeys('FIVE'),
+            parry: this?.input?.keyboard?.addKeys('FIVE'),
             dodge: this?.input?.keyboard?.addKeys('FOUR'),
             posture: this?.input?.keyboard?.addKeys('TWO'),
             roll: this?.input?.keyboard?.addKeys('THREE'), 
@@ -214,7 +215,7 @@ export class Game extends Scene {
         this.blunt = this.sound.add('blunt', { volume: this?.settings?.volume });
         this.pierce = this.sound.add('pierce', { volume: this?.settings?.volume });
         this.roll = this.sound.add('roll', { volume: this?.settings?.volume });
-        this.counter = this.sound.add('counter', { volume: this?.settings?.volume });
+        this.parry = this.sound.add('parry', { volume: this?.settings?.volume });
         this.weaponOrder = this.sound.add('weaponOrder', { volume: this?.settings?.volume });
         this.actionButton = this.sound.add('action-button', { volume: this?.settings?.volume });
         this.equip = this.sound.add('equip', { volume: this?.settings?.volume });
@@ -279,7 +280,6 @@ export class Game extends Scene {
 
     settingsEvent = ():void => {
         EventBus.on('settings', (settings: Settings) => {
-            console.log(settings, 'SEttings Event')
             this.settings = settings;
         });
     };
@@ -456,7 +456,6 @@ export class Game extends Scene {
     };
 
     getAscean(): void {
-        console.log('Requesting Ascean');
         EventBus.emit('request-ascean');
     };
 
@@ -484,9 +483,7 @@ export class Game extends Scene {
     handleJoystickUpdate() {
         var cursorKeys = this.joystick.createCursorKeys();
         for (let name in cursorKeys) {
-           console.log(name,  'Name of Cursor Key')
             if (cursorKeys[name].isDown) {
-                console.log(name, 'IS DOWN')
                 if (name === 'up') this.player.setVelocityY(-1.5);
                 if (name === 'down') this.player.setVelocityY(1.5);
                 if (name === 'left') this.player.setVelocityX(-1.5);
@@ -531,14 +528,14 @@ export class Game extends Scene {
         const worldY = (y > y2 ? y : -y) + this.player.y;
         // const worldX = this.player.rightJoystick.pointer.x;
         // const worldY = this.player.rightJoystick.pointer.y;
-        console.log(worldX, worldY, 'World X and Y');
+        // console.log(worldX, worldY, 'World X and Y');
         const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, worldX, worldY);
         const duration = 2 * distance;
         const rise = 0.5 * distance;
-        console.log(distance, duration, rise, 'Distance, Duration, Rise');
+        // console.log(distance, duration, rise, 'Distance, Duration, Rise');
         const sensorRadius = 25;
         const sensorBounds = new Phaser.Geom.Circle(worldX, worldY, sensorRadius);
-        console.log(this.player.x, this.player.y, 'Player x and y')
+        // console.log(this.player.x, this.player.y, 'Player x and y')
         const rootTween = this.add.tween({
             targets: this.target,
             props: {
@@ -597,14 +594,14 @@ export class Game extends Scene {
     // ============================ Game ============================ \\
 
     checkPlayerSuccess = () => {
-        if (!this.player.actionSuccess && (this.state.action !== 'counter' && this.state.action !== 'roll' && this.state.action !== '')) this.combatMachine.input('action', '');
+        if (!this.player.actionSuccess && (this.state.action !== 'parry' && this.state.action !== 'roll' && this.state.action !== '')) this.combatMachine.input('action', '');
     };
     clearNAEnemy = () => EventBus.emit('clear-enemy');
     clearNPC = () => EventBus.emit('clear-npc'); 
     combatEngaged = (bool: boolean) => {
         this.combat = bool;
         EventBus.emit('combat-engaged', bool);
-        console.log(`Combat engaged: ${bool}`);
+        // console.log(`Combat engaged: ${bool}`);
         if (bool) {
             this.combatTimerText.setVisible(true);
             this.musicCombat.play();
@@ -620,10 +617,18 @@ export class Game extends Scene {
     };
     drinkFlask = () => EventBus.emit('drink-firewater');
     setupEnemy = (enemy: any) => {
-        const data = { id: enemy.enemyID, game: enemy.ascean, enemy: enemy.combatStats, health: enemy.health, 
-            isAggressive: enemy.isAggressive, startedAggressive: enemy.startedAggressive, 
-            isDefeated: enemy.isDefeated, isTriumphant: enemy.isTriumphant,
-            isLuckout: enemy.isLuckout, isPersuaded: enemy.isPersuaded, playerTrait: enemy.playerTrait
+        const data: EnemySheet = { 
+            id: enemy.enemyID, 
+            game: enemy.ascean, 
+            enemy: enemy.combatStats, 
+            health: enemy.health, 
+            isAggressive: enemy.isAggressive, 
+            startedAggressive: enemy.startedAggressive, 
+            isDefeated: enemy.isDefeated, 
+            isTriumphant: enemy.isTriumphant,
+            isLuckout: enemy.isLuckout, 
+            isPersuaded: enemy.isPersuaded, 
+            playerTrait: enemy.playerTrait
         };
         EventBus.emit('setup-enemy', data);
     };

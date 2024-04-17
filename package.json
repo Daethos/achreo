@@ -1,5 +1,6 @@
 {
     "name": "template-solidjs",
+    "orientation": "landscape",
     "version": "1.0.1",
     "repository": {
         "type": "git",

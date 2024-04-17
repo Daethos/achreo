@@ -55,7 +55,7 @@ export function DynamicButton({ style, text, callback, opacity, setOpacity, left
 };
 
                            
-export function ActionButtonModal({ currentAction, actions, handleAction, handleCounter, special }: { currentAction: Accessor<any>, actions: string[], handleAction: (action: string, index: number) => void, handleCounter?: (counter: string) => void, special?: boolean }) {
+export function ActionButtonModal({ currentAction, actions, handleAction, handleParry, special }: { currentAction: Accessor<any>, actions: string[], handleAction: (action: string, index: number) => void, handleParry?: (counter: string) => void, special?: boolean }) {
     return (
         <div class='border superCenter' style={{ width: '40%', height: '75%', overflow: 'scroll' }}>
         <div class='creature-heading'>
@@ -65,8 +65,8 @@ export function ActionButtonModal({ currentAction, actions, handleAction, handle
                 return (
                     <button class='highlight' onClick={() => handleAction(action, currentAction().index)} style={{ 'background-color': 'black', margin: '5% auto', width: '75%', display: 'block' }}>
                         <div style={font('1.25em', '#fdf6d8')}>{action}</div>
-                        { (currentAction().action === 'Counter' && handleCounter) && ( 
-                            <button class='highlight cornerBR' style={{ margin: '1%' }} onClick={() => handleCounter(action)}>Choose Counter</button> 
+                        { (currentAction().action === 'Counter' && handleParry) && ( 
+                            <button class='highlight cornerBR' style={{ margin: '1%' }} onClick={() => handleParry(action)}>Choose Counter</button> 
                         ) }
                     </button>
                 );

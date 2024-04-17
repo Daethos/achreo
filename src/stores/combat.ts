@@ -7,7 +7,7 @@ export interface Combat {
     player: Ascean | undefined;
     action: string;
     playerAction: string;
-    counterGuess: string;
+    parryGuess: string;
     playerBlessing: string;
     prayerSacrifice: string;
     prayerSacrificeId: string,
@@ -39,7 +39,7 @@ export interface Combat {
     playerDeathDescription: string;
 
     criticalSuccess: boolean;
-    counterSuccess: boolean;
+    parrySuccess: boolean;
     dualWielding: boolean;
     glancingBlow: boolean;
     religiousSuccess: boolean;
@@ -48,7 +48,7 @@ export interface Combat {
 
     computer: Ascean | undefined;
     computerAction: string;
-    computerCounterGuess: string;
+    computerParryGuess: string;
     computerBlessing: string;
     computerHealth: number;
     newComputerHealth: number;
@@ -69,15 +69,15 @@ export interface Combat {
     computerDamaged: boolean;
 
     attackWeight: number;
-    counterWeight: number;
+    parryWeight: number;
     dodgeWeight: number;
     postureWeight: number;
     rollWeight: number;
-    counterAttackWeight: number;
-    counterCounterWeight: number;
-    counterDodgeWeight: number;
-    counterPostureWeight: number;
-    counterRollWeight: number;
+    parryAttackWeight: number;
+    parryParryWeight: number;
+    parryDodgeWeight: number;
+    parryPostureWeight: number;
+    parryRollWeight: number;
 
     computerStartDescription: string;
     computerSpecialDescription: string;
@@ -87,7 +87,7 @@ export interface Combat {
     computerDeathDescription: string;
 
     computerCriticalSuccess: boolean;
-    computerCounterSuccess: boolean;
+    computerParrySuccess: boolean;
     computerDualWielding: boolean;
     computerGlancingBlow: boolean;
     computerReligiousSuccess: boolean;
@@ -134,7 +134,7 @@ export const initCombat: Combat = {
     player: undefined,
     action: '',
     playerAction: '',
-    counterGuess: '',
+    parryGuess: '',
     playerBlessing: 'Buff',
     prayerSacrifice: '',
     prayerSacrificeId: '',
@@ -166,7 +166,7 @@ export const initCombat: Combat = {
     playerDeathDescription: '',
 
     criticalSuccess: false,
-    counterSuccess: false,
+    parrySuccess: false,
     dualWielding: false,
     glancingBlow: false,
     religiousSuccess: false,
@@ -175,7 +175,7 @@ export const initCombat: Combat = {
 
     computer: undefined,
     computerAction: '',
-    computerCounterGuess: '',
+    computerParryGuess: '',
     computerBlessing: '',
     computerHealth: 0,
     newComputerHealth: 0,
@@ -196,15 +196,15 @@ export const initCombat: Combat = {
     computerDamaged: false,
 
     attackWeight: 0,
-    counterWeight: 0,
+    parryWeight: 0,
     dodgeWeight: 0,
     postureWeight: 0,
     rollWeight: 0,
-    counterAttackWeight: 0,
-    counterCounterWeight: 0,
-    counterDodgeWeight: 0,
-    counterPostureWeight: 0,
-    counterRollWeight: 0,
+    parryAttackWeight: 0,
+    parryParryWeight: 0,
+    parryDodgeWeight: 0,
+    parryPostureWeight: 0,
+    parryRollWeight: 0,
 
     computerStartDescription: '',
     computerSpecialDescription: '',
@@ -214,7 +214,7 @@ export const initCombat: Combat = {
     computerDeathDescription: '',
 
     computerCriticalSuccess: false,
-    computerCounterSuccess: false,
+    computerParrySuccess: false,
     computerDualWielding: false,
     computerGlancingBlow: false,
     computerReligiousSuccess: false,

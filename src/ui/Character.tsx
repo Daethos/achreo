@@ -51,7 +51,7 @@ const CONTROLS = {
     DIFFICULTY: 'Difficulty',
     POST_FX: 'Post FX',
 };
-const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Counter'];
+const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
 const SPECIALS = ['Blink', 'Consume', 'Fear', 'Healing', 'Invoke', 'Polymorph', 'Root', 'Snare', 'Tshaeral']; // 'Charm', 'Confuse' 
 const GET_FORGE_COST = {
     Common: 1,
@@ -90,7 +90,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
         action: ACTIONS[0],
         index: 0,
     });
-    const [counterShow, setCounterShow] = createSignal<boolean>(false);
+    const [parryShow, setParryShow] = createSignal<boolean>(false);
     const [specialShow, setSpecialShow] = createSignal<boolean>(false);
     const [currentSpecial, setCurrentSpecial] = createSignal({
         special: SPECIALS[0],
@@ -277,13 +277,13 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
         EventBus.emit('reorder-buttons', { list: newActions, type: 'action' }); 
     };
 
-    function handleCounterButton(e: string) {
-        setCounterShow(false);
-        EventBus.emit('blend-combat', { counterGuess: e.toLowerCase() })
+    function handleParryButton(e: string) {
+        setParryShow(false);
+        EventBus.emit('blend-combat', { parryGuess: e.toLowerCase() })
     };
 
-    function handleCounterShow(e: string) {
-        setCounterShow(true);
+    function handleParryShow(e: string) {
+        setParryShow(true);
     };
 
     async function handleSpecialButton(e: string, i: number) {
@@ -502,6 +502,8 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                         <div>Level: <span class='gold'>{combatState()?.player?.level}</span>{'\n'}</div>
                         <div>Silver: <span class='gold'>{ascean().currency.silver}</span> Gold: <span class='gold'>{ascean().currency.gold} {'\n'}</span></div>
                         <div>Mastery: <span class='gold'>{combatState()?.player?.mastery?.charAt(0).toUpperCase() as string + combatState()?.player?.mastery.slice(1)}</span>{'\n'}</div>
+                        <div>Damage: <span class='gold'>{combatState()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class='gold'>{combatState()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
+                        <div>Critical: <span class='gold'>{combatState()?.weapons?.[0]?.criticalChance}%</span> | <span class='gold'>{combatState()?.weapons?.[0]?.criticalDamage}x</span></div>
                         <div>Magical Defense: <span class='gold'>{combatState()?.playerDefense?.magicalDefenseModifier}% / [{combatState()?.playerDefense?.magicalPosture}%]</span>{'\n'}</div>
                         <div>Physical Defense: <span class='gold'>{combatState()?.playerDefense?.physicalDefenseModifier}% / [{combatState()?.playerDefense?.physicalPosture}%]</span>{'\n'}</div>
                         <div>Stamina: <span class='gold'>{combatState()?.playerAttributes?.stamina}</span></div>
@@ -724,103 +726,103 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
         <button class='highlight cornerTR' style={{ transform: 'scale(0.85)', position: 'fixed', top: '-1.5%', right: '-0.5%' }} onClick={() => EventBus.emit('show-player')}>
             <p style={font('0.5em')}>X</p>
         </button>
-            <Show when={levelUpModalShow()}>
-                <LevelUp asceanState={asceanState} show={levelUpModalShow} setShow={setLevelUpModalShow} />
-            </Show>
-            <Show when={show()}>
-                <div class='modal' onClick={() => setShow(!show)}>
-                    <ItemModal item={equipment()} stalwart={combatState().isStalwart} caerenic={combatState().isCaerenic} /> 
-                </div> 
-            </Show>
-            <Show when={actionShow()}> <>
-                {/* <button onClick={() => setActionShow(!actionShow())}>
-                    <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
-                </button> */}
-                <div class='modal' onClick={() => setActionShow(!actionShow())}>
-                    <ActionButtonModal currentAction={currentAction} actions={ACTIONS}  handleAction={handleActionButton} handleCounter={handleCounterShow} /> 
-                </div>
-            </> </Show>
-            <Show when={attrShow()}>
-                <div class='modal' onClick={() => setAttrShow(!attrShow())}>
-                    <AttributeModal attribute={attribute()} />
-                </div> 
-            </Show>
-            <Show when={counterShow()}> <>
-                {/* <button onClick={() => setCounterShow(!counterShow())}>
-                    <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
-                </button> */}
-                <div class='modal'>
-                    <ActionButtonModal currentAction={currentAction} actions={ACTIONS.filter(actions => actions !== 'Dodge')}  handleAction={handleCounterButton} /> 
-                </div>
-            </> </Show>
-            <Show when={specialShow()}> <> 
-                <div class='modal' onClick={() => setSpecialShow(!specialShow())}>
-                    <ActionButtonModal currentAction={currentSpecial} actions={SPECIALS} handleAction={handleSpecialButton} special={true} /> 
-                </div>
-            </> </Show>
-            <Show when={(inspectModalShow() && inspectItems())}> 
-                <div class='modal'>
-                {/* <button onClick={() => setInspectModalShow(!inspectModalShow())}>
-                    <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
-                </button> */}
-                <div class='modal'>
-                    <Modal 
-                        items={inspectItems as Accessor<{ item: Equipment | undefined; type: string; }[]>} 
-                        inventory={highlighted().item} callback={handleInspect} 
-                        forge={forgeModalShow} setForge={setForgeModalShow} upgrade={canUpgrade} setUpgrade={setCanUpgrade} 
-                        show={inspectModalShow} setShow={setInspectModalShow} 
-                    />
-                </div>
-                </div> 
-            </Show>
-            <Show when={forgeModalShow()}> 
-                <div class='modal'>
-                {/* <button onClick={() => setForgeModalShow(!forgeModalShow())}>
-                    <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
-                </button> */}
-                <div class='modal'>
-                    <div class='border superCenter wrap' style={{ width: '50%' }}>
-                    <p class='center wrap' style={{ color: "red", 'font-size': "1.25em", margin: '3%' }}>
-                        Do You Wish To Collapse Three {highlighted()?.item?.name} into one of {GET_NEXT_RARITY[highlighted()?.item?.rarity as string as keyof typeof GET_NEXT_RARITY]} Quality for {GET_FORGE_COST[highlighted()?.item?.rarity as string as keyof typeof GET_FORGE_COST]} Gold?
-                    </p>
-                    <div>
-                        <button class='highlight' style={{ color: 'gold', 'font-weight': 600, 'font-size': "1.5em" }} onClick={() => handleUpgradeItem()}>
-                            {highlighted()?.item?.rarity && GET_FORGE_COST[highlighted()?.item?.rarity as string as keyof typeof GET_FORGE_COST]} Gold Forge
-                        </button>    
-                        <div style={{ color: "gold", 'font-weight': 600 }}>
-                            <p style={{ 'font-size': '2em' }}>
-                                (3) <img src={highlighted()?.item?.imgUrl} alt={highlighted()?.item?.name} style={currentItemStyle(highlighted()?.item?.rarity as string)} /> 
-                                {' => '} <img src={highlighted()?.item?.imgUrl} alt={highlighted()?.item?.name} style={currentItemStyle(GET_NEXT_RARITY[highlighted()?.item?.rarity as string as keyof typeof GET_NEXT_RARITY])} />
-                                </p> 
-                        </div>
-                    <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setForgeModalShow(false)}>x</button>
+        <Show when={levelUpModalShow()}>
+            <LevelUp asceanState={asceanState} show={levelUpModalShow} setShow={setLevelUpModalShow} />
+        </Show>
+        <Show when={show()}>
+            <div class='modal' onClick={() => setShow(!show)}>
+                <ItemModal item={equipment()} stalwart={combatState().isStalwart} caerenic={combatState().isCaerenic} /> 
+            </div> 
+        </Show>
+        <Show when={actionShow()}> <>
+            {/* <button onClick={() => setActionShow(!actionShow())}>
+                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
+            </button> */}
+            <div class='modal' onClick={() => setActionShow(!actionShow())}>
+                <ActionButtonModal currentAction={currentAction} actions={ACTIONS}  handleAction={handleActionButton} handleParry={handleParryShow} /> 
+            </div>
+        </> </Show>
+        <Show when={attrShow()}>
+            <div class='modal' onClick={() => setAttrShow(!attrShow())}>
+                <AttributeModal attribute={attribute()} />
+            </div> 
+        </Show>
+        <Show when={parryShow()}> <>
+            {/* <button onClick={() => setParryShow(!parryShow())}>
+                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
+            </button> */}
+            <div class='modal'>
+                <ActionButtonModal currentAction={currentAction} actions={ACTIONS.filter(actions => actions !== 'Dodge')}  handleAction={handleParryButton} /> 
+            </div>
+        </> </Show>
+        <Show when={specialShow()}> <> 
+            <div class='modal' onClick={() => setSpecialShow(!specialShow())}>
+                <ActionButtonModal currentAction={currentSpecial} actions={SPECIALS} handleAction={handleSpecialButton} special={true} /> 
+            </div>
+        </> </Show>
+        <Show when={(inspectModalShow() && inspectItems())}> 
+            <div class='modal'>
+            {/* <button onClick={() => setInspectModalShow(!inspectModalShow())}>
+                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
+            </button> */}
+            <div class='modal'>
+                <Modal 
+                    items={inspectItems as Accessor<{ item: Equipment | undefined; type: string; }[]>} 
+                    inventory={highlighted().item} callback={handleInspect} 
+                    forge={forgeModalShow} setForge={setForgeModalShow} upgrade={canUpgrade} setUpgrade={setCanUpgrade} 
+                    show={inspectModalShow} setShow={setInspectModalShow} 
+                />
+            </div>
+            </div> 
+        </Show>
+        <Show when={forgeModalShow()}> 
+            <div class='modal'>
+            {/* <button onClick={() => setForgeModalShow(!forgeModalShow())}>
+                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
+            </button> */}
+            <div class='modal'>
+                <div class='border superCenter wrap' style={{ width: '50%' }}>
+                <p class='center wrap' style={{ color: "red", 'font-size': "1.25em", margin: '3%' }}>
+                    Do You Wish To Collapse Three {highlighted()?.item?.name} into one of {GET_NEXT_RARITY[highlighted()?.item?.rarity as string as keyof typeof GET_NEXT_RARITY]} Quality for {GET_FORGE_COST[highlighted()?.item?.rarity as string as keyof typeof GET_FORGE_COST]} Gold?
+                </p>
+                <div>
+                    <button class='highlight' style={{ color: 'gold', 'font-weight': 600, 'font-size': "1.5em" }} onClick={() => handleUpgradeItem()}>
+                        {highlighted()?.item?.rarity && GET_FORGE_COST[highlighted()?.item?.rarity as string as keyof typeof GET_FORGE_COST]} Gold Forge
+                    </button>    
+                    <div style={{ color: "gold", 'font-weight': 600 }}>
+                        <p style={{ 'font-size': '2em' }}>
+                            (3) <img src={highlighted()?.item?.imgUrl} alt={highlighted()?.item?.name} style={currentItemStyle(highlighted()?.item?.rarity as string)} /> 
+                            {' => '} <img src={highlighted()?.item?.imgUrl} alt={highlighted()?.item?.name} style={currentItemStyle(GET_NEXT_RARITY[highlighted()?.item?.rarity as string as keyof typeof GET_NEXT_RARITY])} />
+                            </p> 
                     </div>
-                    </div>
-                </div>
-                </div> 
-            </Show>
-            <Show when={removeModalShow()}>
-                <div class='modal'>
-                <div class='button superCenter' style={{ 'background-color': 'black', width: '25%' }}>
-                    <div class=''>
-                    <div class='center' style={font('1.5em')}>Do You Wish To Remove and Destroy Your <span style={{ color: 'gold' }}>{highlighted()?.item?.name}?</span> <br /><br /><div>
-                        <img style={{ transform: 'scale(1.25)' }} src={highlighted()?.item?.imgUrl} alt={highlighted()?.item?.name} onClick={() => removeItem(highlighted()?.item?._id as string)} />
-                    </div>
-                    </div>
-                    </div>
-                    <br /><br /><br />
-                    <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '0', right: '0', 'background-color': 'red' }} onClick={() => setRemoveModalShow(!removeModalShow())}>
-                        <p style={font('0.5em')}>X</p>
-                    </button>
+                <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setForgeModalShow(false)}>x</button>
                 </div>
                 </div>
-            </Show>
-            <Show when={showTutorial()}>
-                <TutorialOverlay id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} /> 
-            </Show>
-            <Show when={showInventory()}>
-                <TutorialOverlay id={ascean()._id} tutorial={tutorial} show={showInventory} setShow={setShowInventory} /> 
-            </Show>
+            </div>
+            </div> 
+        </Show>
+        <Show when={removeModalShow()}>
+            <div class='modal'>
+            <div class='button superCenter' style={{ 'background-color': 'black', width: '25%' }}>
+                <div class=''>
+                <div class='center' style={font('1.5em')}>Do You Wish To Remove and Destroy Your <span style={{ color: 'gold' }}>{highlighted()?.item?.name}?</span> <br /><br /><div>
+                    <img style={{ transform: 'scale(1.25)' }} src={highlighted()?.item?.imgUrl} alt={highlighted()?.item?.name} onClick={() => removeItem(highlighted()?.item?._id as string)} />
+                </div>
+                </div>
+                </div>
+                <br /><br /><br />
+                <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '0', right: '0', 'background-color': 'red' }} onClick={() => setRemoveModalShow(!removeModalShow())}>
+                    <p style={font('0.5em')}>X</p>
+                </button>
+            </div>
+            </div>
+        </Show>
+        <Show when={showTutorial()}>
+            <TutorialOverlay id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} /> 
+        </Show>
+        <Show when={showInventory()}>
+            <TutorialOverlay id={ascean()._id} tutorial={tutorial} show={showInventory} setShow={setShowInventory} /> 
+        </Show>
         </div>
     );
 }; 

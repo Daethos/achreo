@@ -20,7 +20,7 @@ export const States = {
     
     EVADE: "evade",
     ATTACK: "attack",
-    COUNTER: "counter",
+    PARRY: "parry",
     DODGE: "dodge",
     POSTURE: "posture",
     ROLL: "roll",

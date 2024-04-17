@@ -70,6 +70,13 @@ export class MainMenu extends Scene {
         this.title.obj.destroy();
         this.text.destroy();
         EventBus.emit('enter-menu');
+        if (this.scale.isFullscreen) {
+            this.scale.stopFullscreen();
+            this.fullscreen = false;
+        } else {
+            this.scale.startFullscreen();
+            this.fullscreen = true;
+        };
     };
 
     moveLogo (vueCallback: ({ x, y }: { x: number, y: number }) => void) {

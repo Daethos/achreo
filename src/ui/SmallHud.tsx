@@ -48,7 +48,7 @@ export default function SmallHud({ ascean, combat, game }: Props) {
 
     onMount(() => {
         EventBus.on('combat-engaged', (e: boolean) => {
-            if (!e) return;
+            if (e === false) return;
             setClicked({ ...clicked(), dialog: false, loot: false });
         });
     });

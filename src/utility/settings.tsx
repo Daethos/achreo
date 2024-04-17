@@ -33,7 +33,7 @@ const CombatSettings = () => {
             <path d="M38.471,27.234c-0.287-1.164-1.336-2.293-2.588-2.517v5.343c1.252,0.225,2.301-0.863,2.588-2.027    h18.35v-0.799H38.471z"></path>
             <path d="M17.922,9.397c0.065,0.161,0.12,0.309,0.246,0.434c0.125,0.125,0.293,0.169,0.474,0.174    c-0.121,0.357-0.135,0.722,0.15,0.976s0.613,0.185,0.911,0c0.07,0.324,0.18,0.635,0.369,0.882c0.055,0.07,0.116,0.128,0.179,0.177    c0.048,0.187,0.084,0.376,0.115,0.565c-0.427,0.161-0.756,0.54-0.819,1.022c-0.093,0.699,0.399,1.339,1.099,1.432l8.325,1.098    c0.697,0.092,6.194-2.808,2.588-4.033c-1.405-0.478-3.051-0.412-4.619-0.187c-0.28-0.265-0.655-0.43-1.07-0.43h-2.676    c-0.757,0-1.387,0.541-1.529,1.257c-0.1-0.013-0.193-0.032-0.271-0.062c-0.036-0.282-0.086-0.561-0.156-0.835    c0.01-0.011,0.018-0.021,0.027-0.035c0.259-0.377,0.167-0.973,0.061-1.38c-0.174-0.67-0.626-1.257-1.151-1.69    c-0.1-0.083-0.207-0.117-0.31-0.12c-0.261-0.195-0.507-0.412-0.806-0.546c-0.402-0.181-0.822-0.151-1.239-0.049    c-0.297,0.073-0.467,0.499-0.274,0.748C17.696,8.985,17.844,9.2,17.922,9.397z"></path>
             </svg>{' '}
-            Counter - Your opponent, whether man or machine, will change its preference of attacks based on their own abilitiy and yours, in addition to your preference of actions. Successfully countering the specific action of the enemy rewards an attack thricefold in power.
+            Parry - Your opponent, whether man or machine, will change its preference of attacks based on their own abilitiy and yours, in addition to your preference of actions. Successfully parrying the specific action of the enemy stuns them for several seconds.
             </div>
             <br />
             <div style={{ color: 'gold' }}>

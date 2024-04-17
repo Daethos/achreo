@@ -25,7 +25,7 @@ export default class Joystick extends Phaser.GameObjects.Container {
             // forceMin: 0,
             // enable: true
         });
-        this.setInteractive();
+        // this.setInteractive();
         this.doubleTap();
     };
 

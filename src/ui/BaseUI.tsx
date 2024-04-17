@@ -11,7 +11,6 @@ import SmallHud from './SmallHud';
 import Ascean from '../models/ascean';
 import Settings from '../models/settings';
 import { consumePrayer, instantActionCompiler, weaponActionCompiler } from '../utility/combat';
-import { fetchNpc } from '../utility/npc';
 import { GameState } from '../stores/game';
 import { usePhaserEvent } from '../utility/hooks';
 import createStamina from './Stamina';
@@ -20,6 +19,10 @@ import EnemyPreview from './EnemyPreview';
 import TutorialOverlay from '../utility/tutorial';
 import Dialog from './Dialog';
 import { LevelSheet } from '../utility/ascean';
+import { deleteEquipment } from '../assets/db/db';
+import { EnemySheet } from '../utility/enemy';
+import { Statistics } from '../utility/statistics';
+import { checkDeificConcerns } from '../utility/deities';
 // import Equipment, { getOneRandom } from '../models/equipment';
 // import { populateEnemy, randomEnemy } from '../assets/db/db';
 // import { asceanCompiler } from '../utility/ascean';
@@ -38,7 +41,7 @@ interface Props {
 
 export default function BaseUI({ ascean, combat, game, settings, setSettings, stamina }: Props) {
     const { staminaPercentage, setStaminaPercentage } = createStamina(stamina);
-    const [enemies, setEnemies] = createSignal<any[]>([]);
+    const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [tutorial, setTutorial] = createSignal<string>('');
     const [asceanState, setAsceanState] = createSignal<LevelSheet>({
@@ -76,16 +79,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         };
     });
  
-    // const clearNPC = async () => {
-    //     if (game().merchantEquipment.length > 0) {
-    //         await deleteEquipment(game().merchantEquipment);
-            // dispatch(setMerchantEquipment([])); 
-        // };
-        // dispatch(clearNpc()); 
-        // dispatch(setCurrentNodeIndex(0));
-    // };  
-
-    // const deleteEquipment = async (eqp) => await eqpAPI.deleteEquipment(eqp); 
     // const updateCombatTimer = (e: number) => setCombat({...(combat), combatTimer: e}); 
     
     const sendEnemyData = async () => EventBus.emit('get-enemy', combat().computer);
@@ -148,7 +141,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     const { playerAction, enemyID, ascean, damageType, combatStats, weapons, health, actionData } = data;
                     let playerData = {
                         action: playerAction.action,
-                        counterGuess: playerAction.counter,
+                        parryGuess: playerAction.parry,
                         computer: ascean,
                         computerAttributes: combatStats.attributes,
                         computerWeaponOne: combatStats.combatWeaponOne,
@@ -159,7 +152,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                         computerDefense: combatStats.defense,
                         computerWeapons: weapons,
                         computerAction: actionData.action,
-                        computerCounterGuess: actionData.counter,
+                        computerParryGuess: actionData.parry,
                         computerDamageType: damageType,
                         computerEffects: [],
                         enemyID: enemyID, // Was ''
@@ -191,7 +184,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                         criticalSuccess: res.criticalSuccess,
                         religiousSuccess: res.religiousSuccess,
                         rollSuccess: res.rollSuccess,
-                        counterSuccess: res.counterSuccess,
+                        parrySuccess: res.parrySuccess,
                         glancingBlow: res.glancingBlow,
                         dualWielding: res.dualWielding,
                         playerEffects: res.playerEffects,
@@ -237,7 +230,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                         computerDefense: data.combatStats.defense,
                         computerWeapons: data.weapons,
                         computerAction: data.actionData.action,
-                        computerCounterGuess: data.actionData.counter,
+                        computerParryGuess: data.actionData.parry,
                         computerDamageType: data.damageType,
                         computerEffects: [],
                         enemyID: data.enemyID,
@@ -263,9 +256,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     async function resolveCombat(res: Combat) {
         try {
             const data = { ...combat(), ...res };
-            // const stat = statFiler(data, data.playerWin);
-            // const rec = recordCombat(stat);
-            // setStatistics(rec);
+            EventBus.emit('record-statistics', data);
             if (data.playerWin) {
                 let experience = 
                     ascean().experience +
@@ -296,15 +287,11 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         } catch (err: any) {
             console.log(err, 'Error Resolving Combat');
         };
-    };   
+    };    
 
     function updateHealth(health: { health: number; id: string }) {
         console.log('Permanent Health Update (Not Updated): ', health);
         // EventBus.emit('update-health', health.health);
-    };
-
-    function setupNpc(e: any) {
-        console.log(e, 'Setting Up NPC');
     };
 
     function filterEnemies(id: string) {
@@ -317,19 +304,13 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     };
 
     usePhaserEvent('fetch-button-reorder', () => {
-        console.log(settings(), 'Settings');
         EventBus.emit('reorder-buttons', { list: settings().actions, type: 'action' });
         EventBus.emit('reorder-buttons', { list: settings().specials, type: 'special' });
     });
-    usePhaserEvent('fetch-npc', fetchNpc);
-    usePhaserEvent('setup-npc', setupNpc);
     usePhaserEvent('initiate-combat', (payload: { data: any, type: string }) => initiateCombat(payload.data, payload.type));
     usePhaserEvent('request-enemy', sendEnemyData);
     usePhaserEvent('request-settings', sendSettings); // requestSettings
-    
-    // usePhaserEvent('clear-npc', clearNPC); 
     usePhaserEvent('show-dialog', showDialog); 
-    // usePhaserEvent('update-sound', soundEffects); 
 
     usePhaserEvent('remove-enemy', filterEnemies);
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));

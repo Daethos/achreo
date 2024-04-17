@@ -2,16 +2,15 @@ import Phaser from "phaser";
 import Entity from "./Entity"; 
 import StateMachine, { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";  
-import EventEmitter from "../phaser/EventEmitter";
-import { getRandomNumStr } from '../models/equipment';
 import { v4 as uuidv4 } from 'uuid';
+import { EventBus } from "../game/EventBus";
 let idCount = 0;
 
 export default class NPC extends Entity { 
 
     constructor(data) {
         let { scene } = data;
-        super({ ...data, name: "enemy", ascean: scene.state.computer, health: scene.state.newComputerHealth }); 
+        super({ ...data, name: "enemy", ascean: undefined, health: 0 }); 
         this.scene = scene;
         if (idCount >= 8) idCount = 0;
         this.id = idCount++;
@@ -64,17 +63,16 @@ export default class NPC extends Entity {
     }; 
 
     cleanUp() {
-        EventEmitter.off('npc-fetched', this.npcFetched);
+        EventBus.off('npc-fetched', this.npcFetched);
     };
 
     createNPC = () => {
-        EventEmitter.on('npc-fetched', this.npcFetched);
-        EventEmitter.emit('fetch-npc', { enemyID: this.enemyID, npcType: this.npcType });
+        EventBus.on('npc-fetched', this.npcFetched);
+        EventBus.emit('fetch-npc', { enemyID: this.enemyID, npcType: this.npcType });
     };
 
     npcFetched = (e) => {
         if (this.enemyID !== e.enemyID) return;
-        console.log(e, 'NPC Fetched');
         this.ascean = e.game;
         this.health = e.combat.attributes.healthTotal;
         this.combatStats = e.combat;

@@ -14,6 +14,7 @@ import Equipment from '../models/equipment';
 import StatusEffect from '../utility/prayer';
 import { PrayerModal } from '../utility/buttons';
 import { GameState } from '../stores/game';
+import { EnemySheet } from '../utility/enemy';
 
 function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: Accessor<boolean>, setShow: Setter<boolean> }) {
     const [enemy, setEnemy] = createSignal(state().computer);
@@ -61,7 +62,10 @@ function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: A
                 <div style={{ transform: 'scale(0.875)', 'margin-top': '5%' }}>
                     <HealthBar combat={state} enemy={true} />
                 </div>
-                <div style={{ transform: 'scale(0.875)', 'margin-top': '10%' }}>
+                <div style={{ color: '#fdf6d8', 'margin-top': '12.5%', 'font-size': '0.875em' }}>
+                    Level <span class='gold'>{state().computer?.level}</span> | Mastery <span class='gold'>{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
+                </div>
+                <div style={{ transform: 'scale(0.875)', 'margin-top': '0%' }}>
                     <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} />
                 </div>
                 <div style={{ 'margin-left': '0', 'margin-top': '-7.5%', transform: 'scale(0.8)' }}>
@@ -83,7 +87,7 @@ function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: A
     );
 };
 
-export default function EnemyUI({ state, game, enemies }: { state: Accessor<Combat>, game: Accessor<GameState>, enemies: Accessor<any[]> }) {
+export default function EnemyUI({ state, game, enemies }: { state: Accessor<Combat>, game: Accessor<GameState>, enemies: Accessor<EnemySheet[]> }) {
     const [playerEnemyPercentage, setEnemyHealthPercentage] = createSignal(0); 
     const [showModal, setShowModal] = createSignal(false);
     const [itemShow, setItemShow] = createSignal(false);
@@ -94,7 +98,7 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
         setEnemyHealthPercentage(Math.round((state().newComputerHealth/state().computerHealth) * 100));
     }); 
 
-    function fetchEnemy(enemy: any) {
+    function fetchEnemy(enemy: EnemySheet) {
         console.log(enemy.id, enemy.game.name, 'fetchEnemy');
         EventBus.emit('setup-enemy', enemy);
         EventBus.emit('tab-target', enemy);    

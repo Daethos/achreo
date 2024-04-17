@@ -1,4 +1,4 @@
-import { Accessor, Setter, createEffect, createSignal } from 'solid-js'
+import { Accessor, Setter, Show, createEffect, createSignal } from 'solid-js'
 import Equipment from '../models/equipment';
 import Ascean from '../models/ascean';
 import { getRarityColor } from '../utility/styling';
@@ -7,23 +7,12 @@ import { EventBus } from '../game/EventBus';
 interface Props {
     item: Equipment;
     ascean: Ascean;
-    error: Accessor<any>;
-    setError: Setter<any>;
-    table?: any;
-    stealItem: (purchaseSetting: {
-        ascean: Ascean;
-        item: Equipment;
-        cost: {
-            silver: number;
-            gold: number;
-        };
-    }) => Promise<void>;
-    thievery: Accessor<boolean>;
     show: Accessor<boolean>;
     setShow: Setter<boolean>;
+    setHighlight: Setter<Equipment | undefined>;
 };
 
-const MerchantLoot = ({ item, ascean, error, setError, table, stealItem, thievery, show, setShow }: Props) => {
+const MerchantLoot = ({ item, ascean, show, setShow, setHighlight }: Props) => {
     const [purchaseSetting, setPurchaseSetting] = createSignal({
         ascean: ascean,
         item: item,
@@ -31,7 +20,6 @@ const MerchantLoot = ({ item, ascean, error, setError, table, stealItem, thiever
     });
     
     createEffect(() => {
-        console.log(thievery, 'Thievery');
         determineCost(ascean, item?.rarity as string, item?.type);
     }); // , [item]
 
@@ -120,25 +108,25 @@ const MerchantLoot = ({ item, ascean, error, setError, table, stealItem, thiever
         asceanTotal = ascean.currency.silver + (ascean.currency.gold * 100);
         costTotal = purchaseSetting().cost.silver + (purchaseSetting().cost.gold * 100);
         if (asceanTotal < costTotal) {
-            setError({
-                title: 'Transaction User Error',
-                content: `You do not have enough money (${asceanTotal} total wealth), to purchase this: ${item.name}, at ${costTotal}.`
-            });
+            // TODO:FIXME: GameToast emit alert
+            EventBus.emit('alert', { header: 'Insufficient Funds', body: 'You do not have enough currency to purchase this item.' });
             return;
         };
         try {
             // dispatch(getPurchaseFetch(purchaseSetting()));
+            EventBus.emit('alert', { header: `Purchasing ${item?.name}`, body: `You have purchased the ${item?.name} for ${purchaseSetting().cost.gold}g, ${purchaseSetting().cost.silver}s.`});
             EventBus.emit('purchase-item', purchaseSetting());
-            EventBus.emit('blend-game', { merchantEquipment: table.filter((i: any) => i._id !== item._id) });
+            // EventBus.emit('blend-game', { merchantEquipment: table().filter((i: any) => i._id !== item._id) });
 
             // dispatch(setMerchantEquipment(table.filter((i: any) => i._id !== item._id)));
         } catch (err: any) {
             console.log(err.message, 'Error Purchasing Item!');
-            setError({
-                title: 'Transaction Error',
-                content: err.message
-            });
         };
+    };
+
+    const select = () => {
+        setHighlight(item);
+        setShow(true)
     };
 
     const getItemStyle = {
@@ -147,12 +135,15 @@ const MerchantLoot = ({ item, ascean, error, setError, table, stealItem, thiever
     };
     
     return (
-        <div>
-            <button onClick={() => setShow(!show())} class="my-3 mx-2 p-2" style={getItemStyle}><img src={process.env.PUBLIC_URL + item?.imgURL} alt={item?.name} /></button>
-            <p style={{ 'font-size': "11px", 'margin-top': "-14px" }}>
+        <div style={{ margin: '3%' }}>
+            <button onClick={select} class="my-3 mx-2 p-2" style={getItemStyle}><img src={item?.imgUrl} alt={item?.name} /></button>
+            <div style={{ 'font-size': "0.75em", 'margin-top': '4%', 'margin-bottom': '0' }}>
                 {purchaseSetting()?.cost?.gold ? `${purchaseSetting().cost.gold}g${' '}` : ''}
                 {purchaseSetting()?.cost?.silver ? `${purchaseSetting().cost.silver}s${' '}` : ''}
-            </p>
+            </div>
+            <button class='highlight super' onClick={purchaseItem} style={{ 'font-size': '', 'font-weight': 700, color: 'green', padding: '0.75em', 'z-index': 999 }}>
+                Purchase {item?.name}
+            </button>
         </div>
     );
 };

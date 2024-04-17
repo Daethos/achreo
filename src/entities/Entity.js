@@ -5,8 +5,8 @@ export const FRAME_COUNT = {
     ATTACK_LIVE: 16,
     ATTACK_SUCCESS: 39,
     
-    COUNTER_LIVE: 5, 
-    COUNTER_SUCCESS: 10,
+    PARRY_LIVE: 5, 
+    PARRY_SUCCESS: 10,
 
     POSTURE_LIVE: 16, // 11 for frameRate: 12
     POSTURE_SUCCESS: 17, // 11 for frameRate: 12
@@ -18,7 +18,7 @@ export const FRAME_COUNT = {
 }; 
 
 export const SWING_TIME = { 'One Hand': 1250, 'Two Hand': 1500 }; // 750, 1250 [old]
-export const ENEMY_SWING_TIME = { 'One Hand': 1000, 'Two Hand': 1250 }; // 750, 1250 [old]
+export const ENEMY_SWING_TIME = { 'One Hand': 850, 'Two Hand': 1100 }; // 750, 1250 [old]
 
 export default class Entity extends Phaser.Physics.Matter.Sprite {
 
@@ -52,7 +52,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.scene.add.existing(this);
         this.glowFilter = this.scene.plugins.get('rexGlowFilterPipeline');
         this.isAttacking = false;
-        this.isCountering = false;
+        this.isParrying = false;
         this.isDodging = false;
         this.isPosturing = false;
         this.isRolling = false;
@@ -78,7 +78,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.actionAvailable = false;
         this.actionSuccess = false;
         this.actionTarget = undefined;
-        this.actionCounterable = false;
+        this.actionParryable = false;
         this.dodgeCooldown = 0;
         this.invokeCooldown = 0;
         this.playerBlessing = '';
@@ -280,9 +280,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         }); 
     };
 
-    counter = () => { 
+    parry = () => { 
         this.anims.play('player_attack_2', true).on('animationcomplete', () => { 
-            this.isCountering = false; 
+            this.isParrying = false; 
             this.currentAction = '';
         });
     };
@@ -494,7 +494,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 }; 
             };
             this.frameCount += 1;
-        } else if (this.isCountering) { 
+        } else if (this.isParrying) { 
             // if (this.frameCount === FRAME_COUNT.COUNTER_LIVE) {
             //     if (entity === 'player' && this.inCombat && this.isRanged) {
             //         if (this.hasMagic) this.particleEffect = this.scene.particleManager.addEffect('counter', this, this.currentDamageType);
@@ -523,7 +523,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             if (entity === 'enemy' && this.frameCount === 0) {
                 this.setTint(0xFF0000);
             };
-            if (this.frameCount === FRAME_COUNT.COUNTER_SUCCESS) {
+            if (this.frameCount === FRAME_COUNT.PARRY_SUCCESS) {
                 this.checkActionSuccess(entity, target);
                 if (entity === 'enemy') this.setTint(0x000000);
             };

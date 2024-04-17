@@ -1,7 +1,8 @@
 import { Accessor, Show } from "solid-js";
+import { EnemySheet } from "../utility/enemy";
 
 interface Props {
-    enemies: Accessor<any[]>;
+    enemies: Accessor<EnemySheet[]>;
     fetchEnemy: (enemy: any) => void;
 };
 

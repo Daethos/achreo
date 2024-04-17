@@ -5,7 +5,7 @@ export type Statistics = {
         wins: number,
         actions: {
             attacks: number,
-            counters: number,
+            parries: number,
             dodges: number,
             postures: number,
             rolls: number,
@@ -198,7 +198,7 @@ export const initStatistics: Statistics = {
         wins: 0,
         actions: {
             attacks: 0,
-            counters: 0,
+            parries: 0,
             dodges: 0,
             postures: 0,
             rolls: 0,

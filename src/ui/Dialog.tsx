@@ -6,19 +6,13 @@ import { GameState } from '../stores/game';
 
 // import Currency from '../../components/GameCompiler/Currency';
 import { ProvincialWhispersButtons, Region, regionInformation } from '../utility/regions';
-import { LuckoutModal, PersuasionModal, checkTraits, traitStyle } from '../utility/traits';
+import { LuckoutModal, PersuasionModal, checkTraits } from '../utility/traits';
 import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds } from '../utility/DialogNode';
 import Typewriter from '../utility/Typewriter';
 import Currency from '../utility/Currency';
 import MerchantTable from './MerchantTable';
-import Equipment from '../models/equipment';
+import { getArmorEquipment, getClothEquipment, getJewelryEquipment, getMagicalWeaponEquipment, getMerchantEquipment, getPhysicalWeaponEquipment } from '../models/equipment';
 import { LevelSheet } from '../utility/ascean';
-
-// import ToastAlert from '../../components/ToastAlert/ToastAlert';
-// import Inventory from '../../components/GameCompiler/Inventory';
-// import MerchantTable from '../../components/GameCompiler/MerchantTable';
-// import { getGainExperienceFetch, getLootDropFetch, getRestoreFirewaterFetch, setCurrentDialogNode, setCurrentIntent, setCurrentNodeIndex, setMerchantEquipment, setRendering, setShowDialog } from '../reducers/gameState';
-
 
 const named = [
     "Achreus", "Ashreu'ul", "Caelan Greyne", "Chios Dachreon", "Cyrian Shyne", "Daetheus", 
@@ -68,11 +62,11 @@ const DialogOption = ({ option, onClick, actions, setPlayerResponses, setKeyword
 
     return (
       <div>
-      <button class='highlight dialog-buttons' onClick={handleClick} data-function-name='handleClick'>
         { showDialogOptions() && (
-            <Typewriter stringText={option.text} styling={{ 'overflow-y': 'auto' }} performAction={hollowClick} />
+            <button class='highlight dialog-buttons' onClick={handleClick} data-function-name='handleClick'>
+                <Typewriter stringText={option.text} styling={{ 'overflow-y': 'auto' }} performAction={hollowClick} />
+            </button>
         ) }
-      </button>
       </div>
     );
 };
@@ -90,25 +84,8 @@ interface DialogTreeProps {
 
 const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlayerResponses, setKeywordResponses }: DialogTreeProps) => {
     const [showDialogOptions, setShowDialogOptions] = createSignal<boolean>(false);
-
-    onMount(() => {
-        // setCurrentNodeIndex(game()?.currentNodeIndex || 0);
-        EventBus.emit('blend-game', { currentNodeIndex: game()?.currentNodeIndex || 0 });
-    });
-    
-    onMount(() => {
-        // setCurrentDialogNode(dialogNodes?.[game()?.currentNodeIndex]);
-        EventBus.emit('blend-game', { currentNode: dialogNodes?.[game()?.currentNodeIndex] });
-        // setRendering({ options: dialogNodes?.[game()?.currentNodeIndex]?.options, text: dialogNodes?.[game()?.currentNodeIndex]?.text });
-        EventBus.emit('blend-game', { renderedOptions: dialogNodes?.[game()?.currentNodeIndex]?.options, renderedText: dialogNodes?.[game()?.currentNodeIndex]?.text });
-        const dialogTimeout = setTimeout(() => {
-            setShowDialogOptions(true);
-        }, dialogNodes?.[game()?.currentNodeIndex]?.text.split('').reduce((a: number, s: string | any[]) => a + s.length * 50, 0));
-
-        return () => {
-            clearTimeout(dialogTimeout);
-        }; 
-    }); // , [game()?.currentNodeIndex]
+    const [renderedText, setRenderedText] = createSignal<string>('');
+    const [renderedOptions, setRenderedOptions] = createSignal<any>(undefined);
 
     const processText = (text: string, context: any): string => {
         if (!text) return '';
@@ -136,7 +113,7 @@ const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlay
                         return optionValue === value;
                     default:
                         return false;
-                }
+                };
             }))
             .map(option => ({
                 ...option,
@@ -144,16 +121,38 @@ const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlay
             }));
     };
     
-    createEffect(() => {
-        if (game()?.currentNode) {
-            const { text, options } = game().currentNode!;
-            const newText = processText(text, { ascean, enemy, combat });
-            const newOptions = processOptions(options, { ascean, enemy, combat });
-            // setRendering({ text: newText, options: newOptions });
-            EventBus.emit('blend-game', { renderedText: newText, renderedOptions: newOptions });
-        }
-    }); // , [dispatch, game().currentNode, ascean, enemy, combat]
-    
+    onMount(() => searchCurrentNode(game()?.currentNodeIndex));
+
+    function searchCurrentNode(index: number) {
+        let newText: string = '';
+        let newOptions: DialogNodeOption[] = [];
+        let currentNode = dialogNodes?.[index];
+        console.log(currentNode, '--- PINGING searchCurrentNode PINGING ---');
+        if (currentNode === undefined) return;
+        console.log('--- SUCCESS searchCurrentNode SUCCESS ---');
+
+        const { text, options } = currentNode as DialogNode;
+        newText = processText(text, { ascean, enemy, combat });
+        newOptions = processOptions(options, { ascean, enemy, combat });
+        console.log(newText, newOptions, '--- PINGING searchCurrentNode PINGING ---');
+        EventBus.emit('blend-game', { 
+            currentNode: currentNode,
+            currentNodeIndex: index || 0,
+            renderedOptions: newOptions, 
+            renderedText: newText
+        });
+        setRenderedOptions(newOptions);
+        setRenderedText(newText);
+        
+        const dialogTimeout = setTimeout(() => {
+            setShowDialogOptions(true);
+        }, currentNode?.text.split('').reduce((a: number, s: string | any[]) => a + s.length * 50, 0));
+        
+        return(() => {
+            clearTimeout(dialogTimeout);
+        }); 
+    };
+
 
     const getOptionKey = (ascean: Ascean, combat: any, key: string) => {
         const newKey = key === 'mastery' ? ascean[key].toLowerCase() : key;
@@ -167,19 +166,19 @@ const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlay
         } else {
             let nextNodeIndex = dialogNodes.findIndex((node: any) => node.id === nextNodeId);
             if (nextNodeIndex === -1) nextNodeIndex = 0;
-            // setCurrentNodeIndex(nextNodeIndex);
-            EventBus.emit('blend-game', { currentNodeIndex: nextNodeIndex });
+            searchCurrentNode(nextNodeIndex);
         };
     };
   
-    if (!game()?.currentNode) {
-      return null;
-    };
+    // if (!game()?.currentNode) {
+    //     console.log('--- PINGING !game().currentNode ---')
+    //   return null;
+    // };
   
     return (
         <div> 
-            <Typewriter stringText={game()?.renderedText} styling={{ 'overflow-y': 'auto' }} performAction={handleOptionClick} />
-            {game()?.renderedOptions?.map((option: DialogNodeOption) => (
+            <Typewriter stringText={renderedText} styling={{ 'overflow-y': 'auto' }} performAction={handleOptionClick} />
+            {renderedOptions()?.map((option: DialogNodeOption) => (
                 <DialogOption option={option} onClick={handleOptionClick} actions={actions} setPlayerResponses={setPlayerResponses} setKeywordResponses={setKeywordResponses} setShowDialogOptions={setShowDialogOptions} showDialogOptions={showDialogOptions} />
             ))}
             <br />
@@ -224,7 +223,6 @@ interface StoryDialogProps {
 
 export default function Dialog({ ascean, asceanState, combat, game }: StoryDialogProps) {
     const [influence, setInfluence] = createSignal(combat()?.weapons[0]?.influences?.[0]);
-    const [error, setError] = createSignal<any>({ title: '', content: '' });
     const [persuasionString, setPersuasionString] = createSignal<string>('');
     const [luckoutString, setLuckoutString] = createSignal<string>('');
     const [upgradeItems, setUpgradeItems] = createSignal<any | null>(null);
@@ -251,9 +249,9 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         checkPersuasion(game());
     });
 
-    onMount(() => {
-        // console.log('Merchant Table Effect!')
-        checkTable(game().merchantEquipment);
+    createEffect(() => {
+        console.log('Merchant Table Effect!')
+        setMerchantTable(game().merchantEquipment);
     });
     
     onMount(() => {
@@ -268,15 +266,14 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         };
     }); // [game().player.inventory]
 
-    
     const actions = {
         getCombat: () => engageCombat(combat()?.enemyID),
-        getArmor: () => getLoot('armor'),
-        getGeneral: () => getLoot('general'),
-        getJewelry: () => getLoot('jewelry'),
-        getMystic: () => getLoot('magical-weapon'),
-        getTailor: () => getLoot('cloth'),
-        getWeapon: () => getLoot('physical-weapon'),
+        getArmor: async () => await getLoot('armor'),
+        getGeneral: async () => await getLoot('general'),
+        getJewelry: async () => await getLoot('jewelry'),
+        getMystic: async () => await getLoot('magical-weapon'),
+        getTailor: async () => await getLoot('cloth'),
+        getWeapon: async () => await getLoot('physical-weapon'),
         getFlask: () => refillFlask()
     };
 
@@ -293,11 +290,8 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         };
     };
 
-    const checkTable = (table: Equipment[] | []) => {
-        // console.log('Checking Table!', table)
-        if (table) {
-            setMerchantTable(table);
-        };
+    const checkTable = () => {
+        setMerchantTable(game().merchantEquipment);
     };
     
     const hollowClick = () => console.log('Hollow Click');
@@ -476,7 +470,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         // EventBus.emit('blend-combat', { persuasionScenario: false });
     };
 
-    const checkMiniGame = async () => {
+    const checkMiniGame = () => {
         const traits = {
             primary: game()?.primary,
             secondary: game()?.secondary,
@@ -548,8 +542,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         // console.log(regionInformation[region], 'Region Information!')
     };
     
-    const fetchRegion = (region: Accessor<keyof Region>) => setRegion(regionInformation[region()]);
-
     const engageCombat = (id: string): void => {
         checkingLoot();
         // console.log("engageCombat in Dialog.tsx");
@@ -559,8 +551,9 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         // dispatch(setShowDialog(false));
     };
 
-    const clearDuel = async () => EventBus.emit('blend-game', { showDialog: false });
-    const refillFlask = async () => {
+    const clearDuel = () => EventBus.emit('blend-game', { showDialog: false });
+
+    const refillFlask = () => {
         console.log('refilling flask!')
         // restore firewater flask
         // deduct currency
@@ -570,34 +563,34 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const getLoot = async (type: string): Promise<void> => {
         if (game()?.merchantEquipment.length > 0) {
             // await deleteEquipment(game()?.merchantEquipment);
-            EventBus.emit('delete-equipment', { equipment: game()?.merchantEquipment });
+            EventBus.emit('delete-merchant-equipment', { equipment: game()?.merchantEquipment });
         };
         try {
             console.log(type, 'Type!');
-            // let res: any;
-            // if (type === 'physical-weapon') {
-            //     res = await eqpAPI.getPhysicalWeaponEquipment(combat()?.player?.level);
-            // } else if (type === 'magical-weapon') {
-            //     res = await eqpAPI.getMagicalWeaponEquipment(combat()?.player?.level);
-            // } else if (type === 'armor') {
-            //     res = await eqpAPI.getArmorEquipment(combat()?.player?.level);
-            // } else if (type === 'jewelry') {
-            //     res = await eqpAPI.getJewelryEquipment(combat()?.player?.level);
-            // } else if (type === 'general') {
-            //     res = await eqpAPI.getMerchantEquipment(combat()?.player?.level);
-            // } else if (type === 'cloth') {
-            //     res = await eqpAPI.getClothEquipment(combat()?.player?.level);
-            // };
-            // console.log(res.data, 'Res!');
-            // setMerchantEquipment(res.data);
-            // EventBus.emit('blend-game', { merchantEquipment: res.data });
+            let merchantEquipment: any;
+            if (type === 'physical-weapon') {
+                merchantEquipment = await getPhysicalWeaponEquipment(combat()?.player?.level as number);
+            } else if (type === 'magical-weapon') {
+                merchantEquipment = await getMagicalWeaponEquipment(combat()?.player?.level as number);
+            } else if (type === 'armor') {
+                merchantEquipment = await getArmorEquipment(combat()?.player?.level as number);
+            } else if (type === 'jewelry') {
+                merchantEquipment = await getJewelryEquipment(combat()?.player?.level as number);
+            } else if (type === 'general') {
+                merchantEquipment = await getMerchantEquipment(combat()?.player?.level as number);
+            } else if (type === 'cloth') {
+                merchantEquipment = await getClothEquipment(combat()?.player?.level as number);
+            };
+            console.log(merchantEquipment, 'Response for merchantEquipment!');
+            setMerchantTable(merchantEquipment);
+            EventBus.emit('blend-game', { merchantEquipment: merchantEquipment });
         } catch (err) {
-            console.log(err, 'Error Getting Loot!');
+            console.warn(err, '--- Error Getting Loot! ---');
         };
     };
 
     const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
-
+    // {combat()?.computer?.alive ? '' : '[Deceased]'}
     return (
         <Show when={combat().computer}>
         <div class='' style={{ position: 'absolute', height: '40%', width: '60%', left: '20%', background: '#000', top: '50%', border: '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', display: 'inline-flex', overflow: 'scroll' }}>
@@ -607,7 +600,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             <div style={{ color: 'gold', 'font-size': '1em', 'margin-bottom': "5%" }}>
                 <div style={{ display: 'inline' }}>
                     <img src={`../assets/images/${combat()?.computer?.origin}-${combat()?.computer?.sex}.jpg`} alt={combat()?.computer?.name} style={{ width: '15%', 'border-radius': '50%', border: '0.1em solid #fdf6d8' }} class='origin-pic' />
-                    {' '}<div style={{ display: 'inline' }}>{combat()?.computer?.name} <p style={{ display: 'inline', 'font-size': '0.75em' }}>[Level {combat()?.computer?.level}] {combat()?.computer?.alive ? '[Deceased]' : ''}</p><br /></div>
+                    {' '}<div style={{ display: 'inline' }}>{combat()?.computer?.name} <p style={{ display: 'inline', 'font-size': '0.75em' }}>[Level {combat()?.computer?.level}]</p><br /></div>
                 </div>
             </div>
             { combat().npcType === 'Merchant-Smith' ? (
@@ -621,7 +614,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                         <p class='darkorangeMarkup'>Sedyrus: 60g</p>`} 
                     styling={{ overflow: 'auto' }} performAction={hollowClick} />
                     <br />
-                    { upgradeItems ? (
+                    { upgradeItems() ? (
                         upgradeItems().map((item: any) => {
                             console.log(item, 'Item!');
                             return (
@@ -649,7 +642,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             { combat().isEnemy && combat().computer ? (
                 <div style={{ 'font-size': '0.75em' }}>
                     <DialogTree 
-                        game={game} combat={combat} ascean={combat()?.player as Ascean} enemy={combat().computer} dialogNodes={getNodesForEnemy(combat()?.computer as Ascean) as DialogNode[]} 
+                        game={game} combat={combat} ascean={ascean() as Ascean} enemy={combat().computer} dialogNodes={getNodesForEnemy(combat()?.computer as Ascean) as DialogNode[]} 
                         setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} 
                     />
                 { game().currentIntent === 'challenge' ? (
@@ -845,15 +838,15 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 </div>
             ) : combat().computer && combat().npcType !== 'Merchant-Alchemy' && combat().npcType !== 'Merchant-Smith' ? (
                 <DialogTree 
-                    game={game} combat={combat} ascean={game().player} enemy={combat().computer} dialogNodes={getNodesForNPC(npcIds[combat().npcType])} 
+                    game={game} combat={combat} ascean={ascean()} enemy={combat().computer} dialogNodes={getNodesForNPC(npcIds[combat().npcType])} 
                     setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions}
                 />
             ) : ( '' ) } 
-            { game()?.merchantEquipment.length > 0 ? (
-                <MerchantTable table={merchantTable} game={game} ascean={combat().player} error={error} setError={setError} />
-            ) : ( '' ) }
             { combat().npcType !== '' ? (
                 <Currency ascean={ascean} />
+            ) : ( '' ) }
+            { merchantTable()?.length > 0 ? (
+                <MerchantTable table={merchantTable} game={game} ascean={combat().player as Ascean}  />
             ) : ( '' ) }
             </div>
             { combat().isEnemy ? (

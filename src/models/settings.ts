@@ -42,7 +42,7 @@ export default class Settings {
         this.volume = 0.3;
         this.joystick = 0.5;
         this.vibration = 100;
-        this.actions = ['Attack', 'Posture', 'Roll', 'Dodge', 'Counter'];
+        this.actions = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
         this.specials = ['Consume', 'Invoke', 'Polymorph', 'Root', 'Tshaeral'];
         this.shake = { duration: 100, intensity: 0.05 };
         this.selected = {

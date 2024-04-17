@@ -1,4 +1,4 @@
-import { Accessor, JSX, createEffect, createMemo, createSignal, onMount } from 'solid-js';
+import { Accessor, JSX, createEffect, createSignal } from 'solid-js';
 import Typed from "typed.js";
 
 type StyleMap = { [key: string]: JSX.CSSProperties };
@@ -157,10 +157,7 @@ interface TypewriterProps {
 };
 
 const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => {
-    // let el: any | undefined = undefined;
     const [el, setEl] = createSignal<HTMLDivElement | null>(null);
-    const [count, setCount] = createSignal(0);
-    const [update, setUpdate] = createSignal(0);
 
     (window as any).handleButton = (button: string) => {
         console.log(button, "Button Clicked");
@@ -193,50 +190,10 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
     };
 
     createEffect(() => {
-        // const check = typeof stringText === 'function' ? stringText() : stringText;
-        // const clean = styleHTML(check);
-        // const typedContent = {
-        //     strings: [clean],
-        //     typeSpeed: 25,
-        //     backSpeed: 0,
-        //     showCursor: false,
-        //     onComplete: () => {
-        //         clearInterval(scrollInterval);
-        //         return;
-        //     }
-        // };
-        
-        // function scrollToBottom() {
-        //     if (el) {
-        //         el.scrollTop = el.scrollHeight;
-        //     };
-        // };
-
-        // const typed = new Typed(el, typedContent);
-        // const scrollInterval = setInterval(scrollToBottom, 1000); 
-        // return () => {
-        //     typed.destroy();
-        //     clearInterval(scrollInterval);
-        // };
-        // el = undefined;
         typewriter(stringText);
-        // if (update() !== count()) {
-        //     console.log(update(), count(), 'Update');
-        //     console.log('Update - Tear it up!');
-        //     el = undefined;
-        // };
     }); //  [stringText]
 
     function typewriter(text: string | Accessor<string>) {
-        // need to wipe out the old typed instance
-        // el = HTMLDivElement;
-        // if (el() !== undefined) {
-            // el.innerHTML = '';
-            // console.log(el, 'Element')
-            // el = undefined;
-            // console.log(el, 'Element')
-            // el = document.getElementById('typewriter');
-        // };
         const check = typeof text === 'function' ? text() : text;
         const clean = styleHTML(check);
         const typedContent = {
@@ -244,25 +201,14 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
             typeSpeed: 20,
             backSpeed: 0,
             showCursor: false,
-            onComplete: () => {
-                // clearInterval(scrollInterval);
-                return;
-            }
+            // onComplete: () => {
+            //     return;
+            // }
         };
         
-        // function scrollToBottom() {
-        //     const element = el();
-        //     if (element) {
-        //         element.scrollTop = element.scrollHeight;
-        //     };
-        // };
-
         const typed = new Typed(el(), typedContent);
-        // const scrollInterval = setInterval(scrollToBottom, 1000); 
-        setCount((prev) => prev + 1);
         return () => {
             typed.destroy();
-            // clearInterval(scrollInterval);
         };
     };
 

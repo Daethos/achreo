@@ -36,6 +36,7 @@ export interface GameState {
     inventory: any[];
     lootDrops: any[];
     merchantEquipment: any[];
+    repurchase: any[];
     showLootIds: any[];
 
     actionButtons: any[];
@@ -89,6 +90,7 @@ export const initGame: GameState = {
     inventory: [],
     lootDrops: [],
     merchantEquipment: [],
+    repurchase: [],
     showLootIds: [],
 
     actionButtons: ['Attack', 'Posture', 'Roll', 'Dodge', 'Counter'],

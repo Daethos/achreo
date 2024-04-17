@@ -3,18 +3,17 @@ import { EventBus } from '../game/EventBus';
 import { Combat } from '../stores/combat';
 import Ascean from '../models/ascean';
 import { GameState } from '../stores/game';
-
-// import Currency from '../../components/GameCompiler/Currency';
 import { ProvincialWhispersButtons, Region, regionInformation } from '../utility/regions';
 import { LuckoutModal, PersuasionModal, checkTraits } from '../utility/traits';
 import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds } from '../utility/DialogNode';
 import Typewriter from '../utility/Typewriter';
 import Currency from '../utility/Currency';
 import MerchantTable from './MerchantTable';
-import { getArmorEquipment, getClothEquipment, getJewelryEquipment, getMagicalWeaponEquipment, getMerchantEquipment, getPhysicalWeaponEquipment } from '../models/equipment';
+import Equipment, { getArmorEquipment, getClothEquipment, getJewelryEquipment, getMagicalWeaponEquipment, getMerchantEquipment, getPhysicalWeaponEquipment } from '../models/equipment';
 import { LevelSheet } from '../utility/ascean';
 import { useResizeListener } from '../utility/dimensions';
-import { getRarityColor } from '../utility/styling';
+import { getRarityColor, sellRarity } from '../utility/styling';
+import ItemModal from '../components/ItemModal';
 
 const named = [
     "Achreus", "Ashreu'ul", "Caelan Greyne", "Chios Dachreon", "Cyrian Shyne", "Daetheus", 
@@ -31,6 +30,8 @@ const nameCheck = (name: string) => {
         return false;
     };
 };
+
+
 
 interface DialogOptionProps {
     option: DialogNodeOption;
@@ -148,7 +149,7 @@ const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlay
         
         const dialogTimeout = setTimeout(() => {
             setShowDialogOptions(true);
-        }, currentNode?.text.split('').reduce((a: number, s: string | any[]) => a + s.length * 50, 0));
+        }, currentNode?.text.split('').reduce((a: number, s: string | any[]) => a + s.length * 35, 0));
         
         return(() => {
             clearTimeout(dialogTimeout);
@@ -231,8 +232,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [namedEnemy, setNamedEnemy] = createSignal<boolean>(false);
     const [playerResponses, setPlayerResponses] = createSignal<string[]>([]);
     const [keywordResponses, setKeywordResponses] = createSignal<string[]>([]);
-    // const { playReligion } = useGameSounds(gameState.soundEffectVolume);
-    const [province, setProvince] = createSignal<keyof typeof regionInformation>('Astralands');
+    // const [province, setProvince] = createSignal<keyof typeof regionInformation>('Astralands');
     const [luckoutModalShow, setLuckoutModalShow] = createSignal<boolean>(false);
     const [persuasionModalShow, setPersuasionModalShow] = createSignal<boolean>(false);
     const [luckout, setLuckout] = createSignal<boolean>(false);
@@ -245,12 +245,22 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [merchantTable, setMerchantTable] = createSignal<any>({});
     const [region, setRegion] = createSignal<any>(regionInformation['Astralands']);
     const [showSell, setShowSell] = createSignal<boolean>(false);
+    const [sellItem, setSellItem] = createSignal<Equipment | undefined>(undefined);
+    const [showItem, setShowItem] = createSignal<boolean>(false);
     const dimensions = useResizeListener();
+    const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
+    const getItemStyle = (rarity: string): JSX.CSSProperties => {
+        return {
+            border: `0.15em solid ${getRarityColor(rarity)}`,
+            'background-color': 'black',
+        };
+    };
 
     createEffect(() => { 
         checkEnemy(combat()?.computer as Ascean);
         checkLuckout(game());
         checkPersuasion(game());
+        checkInfluence(ascean);
     });
 
     createEffect(() => {
@@ -258,7 +268,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     });
     
     onMount(() => {
-        // console.log('Upgrade Items Effect!');
         if (game()?.inventory?.length > 2) {
             const matchedItem = canUpgrade(game()?.inventory);
             if (matchedItem) {
@@ -267,7 +276,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 setUpgradeItems(null);
             };
         };
-    }); // [game().player.inventory]
+    });
 
     const actions = {
         getCombat: () => engageCombat(combat()?.enemyID),
@@ -293,8 +302,8 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         };
     };
 
-    const checkTable = () => {
-        setMerchantTable(game().merchantEquipment);
+    const checkInfluence = (a: Accessor<Ascean>) => {
+        setInfluence(a()?.weaponOne?.influences?.[0]);
     };
     
     const hollowClick = () => console.log('Hollow Click');
@@ -460,7 +469,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         const mTraits = Object.values(traits).filter(trait => pTraits.includes(trait?.name));
         if (mTraits.length === 0) {
             setPersuasion(false);
-            // EventBus.emit('blend-combat', { persuasionScenario: true });
             return;
         };
         setPersuasion(true);
@@ -470,7 +478,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             const persuasionTrait = persuasionTraits().find((trait: { name: string; }) => trait.name === combat()?.playerTrait);
             setPersuasionString(`${persuasionTrait?.persuasion.success[num].replace('{enemy.name}', combat()?.computer?.name).replace('{ascean.weaponOne.influences[0]}', influence()).replace('{ascean.name}', combat()?.player?.name).replace('{enemy.weaponOne.influences[0]}', combat()?.computer?.weaponOne?.influences?.[0]).replace('{enemy.faith}', combat()?.computer?.faith)}`);
         };
-        // EventBus.emit('blend-combat', { persuasionScenario: false });
     };
 
     const checkMiniGame = () => {
@@ -541,18 +548,14 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     };
     const handleRegion = (region: keyof Region) => {
         setRegion(regionInformation[region]);
-        setProvince(region)
-        // console.log(regionInformation[region], 'Region Information!')
+        // setProvince(region)
     };
     
     const engageCombat = (id: string): void => {
         checkingLoot();
-        // console.log("engageCombat in Dialog.tsx");
-        // dispatch(setPhaserAggression(true));
         EventBus.emit('aggressive-enemy', { id, isAggressive: true });
         EventBus.emit('blend-game', { showDialog: false });
         EventBus.emit('update-pause', false);
-        // dispatch(setShowDialog(false));
     };
 
     const clearDuel = () => EventBus.emit('blend-game', { showDialog: false });
@@ -566,11 +569,10 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
 
     const getLoot = async (type: string): Promise<void> => {
         if (game()?.merchantEquipment.length > 0) {
-            // await deleteEquipment(game()?.merchantEquipment);
             EventBus.emit('delete-merchant-equipment', { equipment: game()?.merchantEquipment });
         };
         try {
-            console.log(type, 'Type!');
+            // console.log(type, 'Type!');
             let merchantEquipment: any;
             if (type === 'physical-weapon') {
                 merchantEquipment = await getPhysicalWeaponEquipment(combat()?.player?.level as number);
@@ -585,27 +587,33 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             } else if (type === 'cloth') {
                 merchantEquipment = await getClothEquipment(combat()?.player?.level as number);
             };
-            console.log(merchantEquipment, 'Response for merchantEquipment!');
+            // console.log(merchantEquipment, 'Response for merchantEquipment!');
             setMerchantTable(merchantEquipment);
             EventBus.emit('blend-game', { merchantEquipment: merchantEquipment });
         } catch (err) {
             console.warn(err, '--- Error Getting Loot! ---');
         };
     };
-    const getItemStyle = (rarity: string): JSX.CSSProperties => {
-        return {
-            border: `0.15em solid ${getRarityColor(rarity)}`,
-            'background-color': 'black',
-        };
+
+
+    function setItem(item: Equipment) {
+        setSellItem(item);
+        setShowItem(true);
     };
-    const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
+
+    function sellInventory() {
+        EventBus.emit('alert', { header: 'Selling Item In Inventory', body: `You have sold your ${sellItem()?.name} for ${sellRarity(sellItem()?.rarity as string)}` })
+        EventBus.emit('sell-item', sellItem());    
+    };
+
     // {combat()?.computer?.alive ? '' : '[Deceased]'}
     return (
         <Show when={combat().computer}>
-        <div class='' style={{ position: 'absolute', height: '50%', width: '60%', left: '20%', background: '#000', top: '40%', border: '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', display: 'inline-flex', overflow: 'scroll' }}>
-            {/* <img src={dialogWindow} alt='Dialog Window' style={{ transform: "scale(1.1)" }} /> */}
+        <div style={{ 
+            position: 'absolute', height: '50%', width: '60%', left: '20%', background: '#000', top: '40%', 
+            border: '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', display: 'inline-flex', overflow: 'scroll' 
+        }}>
             <div class='wrap' style={{ width: combat().isEnemy ? '75%' : '100%', padding: '3%', height: 'auto' }}> 
-            {/* <ToastAlert error={error} setError={setError} /> */}
             <div style={{ color: 'gold', 'font-size': '1em', 'margin-bottom': "5%" }}>
                 <div style={{ display: 'inline' }}>
                     <img src={`../assets/images/${combat()?.computer?.origin}-${combat()?.computer?.sex}.jpg`} alt={combat()?.computer?.name} style={{ width: '10%', 'border-radius': '50%', border: '0.1em solid #fdf6d8' }} class='origin-pic' />
@@ -861,7 +869,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 <button class='highlight' onClick={() => setShowSell(!showSell())}>
                     Sell to {combat().computer?.name}?
                 </button>
-                <MerchantTable table={merchantTable} game={game} ascean={combat().player as Ascean}  />
+                <MerchantTable table={merchantTable} game={game} ascean={ascean}  />
                 </>
             ) : ( '' ) }
             </div>
@@ -872,23 +880,53 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             ) : ( '' ) }
         </div>
         <Show when={showSell()}>
-            <div class='modal' style={{ background: 'rgba(0, 0, 0, 1)' }}>
-                <div class='superCenter'>
-                <div class='playerInventoryBag'> 
+            <div class='modal' style={{ background: 'rgba(0, 0, 0, 0.5)' }}>
+                <div class='creature-heading' style={{ 
+                    position: 'absolute',
+                    left: '50%',
+                    top: '65%',
+                    height: '50%',
+                    width: '60%',
+                    transform: 'translate(-50%, -50%)',
+                    background: '#000',
+                    border: '0.1em solid gold',
+                    'border-radius': '0.25em',
+                    'box-shadow': '0 0 0.5em #FFC700',
+                    overflow: 'scroll',
+                 }}>
+                    <h1 class='center' style={{ 'margin-bottom': '3%' }}>Sell Items</h1>
+                    {/* <svg height="5" width="100%" class="tapered-rule">
+                        <polyline points="0,0 400,2.5 0,5"></polyline>
+                    </svg><br /> */}
+                <div class='playerInventoryBag center' style={{ width: '65%', 'margin-bottom': '5%' }}> 
                     <For each={game()?.inventory}>{(item, _index) => {
                         if (item === undefined || item === null) return;
                         return (
-                            <div style={dimensions().ORIENTATION === 'landscape' ? { margin: '5.5%' } : { margin: '2.5%' }}>
-                                <div class='playerInventory' style={getItemStyle(item?.rarity as string)}>
-                                    <img src={item?.imgUrl} alt={item?.name} />
-                                </div>
+                            <div class='center' onClick={() => setItem(item)} style={{ 
+                                ...getItemStyle(item?.rarity as string), 
+                                margin: dimensions().ORIENTATION === 'landscape' ? '5.5%' : '2.5%',
+                                padding: '0.25em',
+                                width: 'auto', 
+                            }}>
+                                <img src={item?.imgUrl} alt={item?.name} />
                             </div>
                         );
                     }}</For>
                 </div>
+                <br /><br />
                 </div>
                 <button class='cornerBR highlight' onClick={() => setShowSell(false)} style={{ 'background-color': 'red' }}>
                     X
+                </button>
+            </div>
+        </Show>
+        <Show when={showItem()}>
+            <div class='modal' onClick={() => setShowItem(false)} style={{ background: 'rgba(0, 0, 0, 0)' }}> 
+                <ItemModal item={sellItem()} caerenic={false} stalwart={false} />
+                <button class='verticalBottom highlight' onClick={() => sellInventory()} style={{ 
+                    color: 'green', 'font-size': '1em', 'font-weight': 700, padding: '0.5em', 'box-shadow': '0 0 0.75em #00FF00',
+                }}>
+                    Sell {sellItem()?.name} for {sellRarity(sellItem()?.rarity as string)}
                 </button>
             </div>
         </Show>

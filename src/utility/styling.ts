@@ -87,4 +87,15 @@ const shadow = (color: string, intensity: number): Object => {
     };
 };
 
-export { getRarityColor, getShadowColor, borderColor, itemStyle, masteryColor, border, font, shadow };
+const sellRarity = (rarity: string): string => {
+    switch (rarity) {
+        case 'Common': return '10s';
+        case 'Uncommon': return '1g';
+        case 'Rare': return '3g';
+        case 'Epic': return '12g';
+        case 'Legendary': return '50g';
+        default: return '10s';
+    };
+};
+
+export { getRarityColor, getShadowColor, borderColor, itemStyle, masteryColor, border, font, shadow, sellRarity };

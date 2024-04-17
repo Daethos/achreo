@@ -1,22 +1,9 @@
 import Inventory from "./Inventory";
-import { Accessor, createEffect, createSignal, For, JSX, on, onCleanup, Setter } from 'solid-js';
+import { Accessor, createEffect, createSignal, For, Setter } from 'solid-js';
 import { EventBus } from "../game/EventBus";
 import { useResizeListener } from "../utility/dimensions";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
-// import { dndzone } from "solid-dnd-directive";
-// import { SortableHorizontalListExample } from './Sortable';
-// import {
-//     DragDropProvider,
-//     DragDropSensors,
-//     DragOverlay,
-//     SortableProvider,
-//     createSortable,
-//     closestCenter,
-//     Id,
-//     DragEventHandler,
-//   } from "@thisbeyond/solid-dnd";
-import { getRarityColor } from "../utility/styling";
 
 interface Props {
     ascean: Accessor<Ascean>;
@@ -30,19 +17,6 @@ interface Props {
     setInventoryType: Setter<string>;
     scaleImage: Accessor<{ id: string; scale: number }>;
     setScaleImage: Setter<{ id: string; scale: number }>;
-};
-function useDebounce(signal: { (): boolean; (): any; }, delay: number | undefined) {
-    const [debouncedSignal, setDebouncedSignal] = createSignal(signal());
-    let timerHandle: string | number | NodeJS.Timeout | undefined;
-    createEffect(
-        on(signal, (s) => {
-            timerHandle = setTimeout(() => {
-            setDebouncedSignal(s);
-            }, delay);
-            onCleanup(() => clearTimeout(timerHandle));
-        })
-    );
-    return debouncedSignal;
 };
 export default function InventoryPouch({ ascean, inventoryType, setInventoryType, setHighlighted, highlighted, setRingCompared, setWeaponCompared, dragAndDropInventory, setDragAndDropInventory, scaleImage, setScaleImage }: Props) {
     const [inventorySwap, setInventorySwap] = createSignal<any>({ start: { id: null, index: -1 }, end: { id: null, index: -1 } });
@@ -104,7 +78,7 @@ export default function InventoryPouch({ ascean, inventoryType, setInventoryType
         const [reorderedItem] = copy.splice(start.index, 1);
         copy.splice(end.index, 0, reorderedItem);
         // copy[start.index] = drop; // ForPure Swap
-        console.log(copy, 'Copy');
+        // console.log(copy, 'Copy');
         setDragAndDropInventory(copy);
         setInventorySwap({ start: { id: null, index: -1 }, end: { id: null, index: -1 } }); 
         EventBus.emit('refresh-inventory', copy);

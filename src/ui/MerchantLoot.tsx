@@ -6,29 +6,26 @@ import { EventBus } from '../game/EventBus';
 
 interface Props {
     item: Equipment;
-    ascean: Ascean;
-    show: Accessor<boolean>;
+    ascean: Accessor<Ascean>;
     setShow: Setter<boolean>;
     setHighlight: Setter<Equipment | undefined>;
 };
 
-const MerchantLoot = ({ item, ascean, show, setShow, setHighlight }: Props) => {
+const MerchantLoot = ({ item, ascean, setShow, setHighlight }: Props) => {
     const [purchaseSetting, setPurchaseSetting] = createSignal({
-        ascean: ascean,
         item: item,
         cost: { silver: 0, gold: 0 }
     });
     
     createEffect(() => {
-        determineCost(ascean, item?.rarity as string, item?.type);
+        determineCost(item?.rarity as string, item?.type);
     }); // , [item]
 
-    const determineCost = async ( ascean: any, rarity: string, type: string ) => {
+    const determineCost = async (rarity: string, type: string) => {
         try {
             let cost = { silver: 0, gold: 0 };
             if (location.pathname.startsWith('/GameAdmin')) {
                 return setPurchaseSetting({
-                    ascean: ascean,
                     item: item,
                     cost: cost
                 });
@@ -36,7 +33,7 @@ const MerchantLoot = ({ item, ascean, show, setShow, setHighlight }: Props) => {
             switch (rarity) {
                 case 'Common': {
                     cost = {
-                        silver: Math.floor(Math.random() * 30) + 1,
+                        silver: Math.floor(Math.random() * 1) + 30,
                         gold: 0
                     };
                     break;
@@ -93,7 +90,6 @@ const MerchantLoot = ({ item, ascean, show, setShow, setHighlight }: Props) => {
             cost.gold = Math.floor(cost.gold);
             console.log(cost, 'How Much Does This Cost?');
             setPurchaseSetting({
-                ascean: ascean,
                 item: item,
                 cost: cost
             });
@@ -105,10 +101,10 @@ const MerchantLoot = ({ item, ascean, show, setShow, setHighlight }: Props) => {
     const purchaseItem = async (): Promise<void> => {
         let asceanTotal = 0;
         let costTotal = 0;
-        asceanTotal = ascean.currency.silver + (ascean.currency.gold * 100);
+        asceanTotal = ascean().currency.silver + (ascean().currency.gold * 100);
         costTotal = purchaseSetting().cost.silver + (purchaseSetting().cost.gold * 100);
         if (asceanTotal < costTotal) {
-            EventBus.emit('alert', { header: 'Insufficient Funds', body: 'You do not have enough currency to purchase this item.' });
+            EventBus.emit('alert', { header: 'Insufficient Funds', body: `You do not have enough money. You require ${costTotal - asceanTotal} more silver to purchase the ${item.name}.` });
             return;
         };
         try {

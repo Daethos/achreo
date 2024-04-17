@@ -149,27 +149,19 @@ export const PhaserGame = (props: IProps) => {
     async function deleteMerchantEquipment() {
         try {
             if (game().merchantEquipment.length === 0) return;
-            // await Promise.all(game().merchantEquipment.map(
-            //     async (eqp) => await deleteEquipment(eqp)
-            // ));
-            // for await (let eqp of game().merchantEquipment) {
-            //     console.log(eqp, 'Deleting Merchant Equipment');
-            //     await deleteEquipment(eqp);
-            // };
             
             game().merchantEquipment.forEach(async (eqp) => {
-                console.log(eqp, 'Deleting Merchant Equipment')
+                // console.log(eqp, 'Deleting Merchant Equipment')
                 await deleteEquipment(eqp._id);
             });
-            // setGame({ ...game(), merchantEquipment: [] });
         } catch (err: any) {
             console.warn(err, 'Error Deleting Merchant Equipment');
         };
     };
 
-    function purchaseItem(purchase: { ascean: Ascean; item: Equipment; cost: { silver: number; gold: number; }; }) {
+    function purchaseItem(purchase: { item: Equipment; cost: { silver: number; gold: number; }; }) {
         try {
-            let inventory = [ ...game().inventory ];
+            let inventory = Array.from(game().inventory);
             inventory.push(purchase.item);
             let cost = {
                 silver: props.ascean().currency.silver - purchase.cost.silver,
@@ -188,6 +180,39 @@ export const PhaserGame = (props: IProps) => {
             EventBus.emit('purchase-sound');
         } catch (err: any) {
             console.warn('Error Purchasing Item', err.message);
+        };
+    };
+
+    function sellItem(item: Equipment) {
+        try {
+            console.log('selling item', item);
+            let inventory = Array.from(game().inventory);
+            inventory = inventory.filter((eqp) => eqp._id !== item._id);
+            let gold: number = 0, silver: number = 0;
+            switch (item.rarity) {
+                case 'Common': silver = 10; break;
+                case 'Uncommon': gold = 1; break;
+                case 'Rare': gold = 3; break;
+                case 'Epic': gold = 12; break;
+                case 'Legendary': gold = 50; break;
+                default: break;
+            };
+            let currency = { gold: props.ascean().currency.gold + gold, silver: props.ascean().currency.silver + silver };
+            rebalanceCurrency(currency);
+            const update = {
+                ...props.ascean(),
+                currency: currency,
+                inventory: inventory
+            };
+            
+            setGame({
+                ...game(),
+                merchantEquipment: [ ...game().merchantEquipment, item ]
+            });
+            EventBus.emit('update-ascean', update);
+            EventBus.emit('purchase-sound');
+        } catch(err: any) {
+            console.warn(err, 'Error Selling Item');
         };
     };
 
@@ -801,6 +826,7 @@ export const PhaserGame = (props: IProps) => {
             setCombat({ ...combat(), computerEffects: combat().computerEffects.length > 0 ? [...combat().computerEffects, e] : [e] });
         });
         EventBus.on('purchase-item', purchaseItem);
+        EventBus.on('sell-item', sellItem);
         EventBus.on('luckout', (e: { luck: string, luckout: boolean }) => {
             const { luck, luckout } = e;
             console.log(luck, luckout, 'Luckout');
@@ -871,6 +897,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('create-prayer');
             EventBus.removeListener('create-enemy-prayer');
             EventBus.removeListener('purchase-item');
+            EventBus.removeListener('sell-item');
             EventBus.removeListener('upgrade-item');
             EventBus.removeListener('luckout');
             EventBus.removeListener('persuasion');

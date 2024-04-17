@@ -138,7 +138,7 @@ export default function App() {
             // console.log('Loading Ascean:', id);
             EventBus.emit('preload-ascean', id);
             const asc: Ascean = menu()?.asceans?.find((asc: Ascean) => asc._id === id) as Ascean;
-            setAlert({ header: 'Loading Game', body: `Preparing to enter game world now.` });
+            setAlert({ header: 'Loading Game', body: `Preparing ${asc.name}. Good luck.` });
             setShow(true);
             const inv = await getInventory(asc?._id as string);
             const full = { ...asc, inventory: inv };

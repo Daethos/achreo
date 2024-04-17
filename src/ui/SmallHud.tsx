@@ -1,6 +1,6 @@
 
 import { EventBus } from '../game/EventBus';
-import { Accessor, JSX, Show, createEffect, createMemo, createSignal, onMount } from 'solid-js';
+import { Accessor, JSX, Show, createMemo, createSignal, onMount } from 'solid-js';
 import { useResizeListener } from '../utility/dimensions';
 import { GameState } from '../stores/game';
 import { Combat } from '../stores/combat';

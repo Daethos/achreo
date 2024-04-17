@@ -123,8 +123,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 buttonX, buttonY, 
                 button.width), 
                 Phaser.Geom.Circle.Contains)
-                    .on('pointerdown', (_pointer: any, _localX: any, _localY: any, event: any) => {
-                        event?.stopPropagation()
+                    .on('pointerup', (_pointer: any, _localX: any, _localY: any, _event: any) => {
                         this.pressButton(button, scene);
                     }); 
 
@@ -167,8 +166,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 buttonX, buttonY, 
                 button.width), 
                 Phaser.Geom.Circle.Contains)
-                    .on('pointerdown', (_pointer: any, _localX: any, _localY: any, event: any) => {
-                        event?.stopPropagation()
+                    .on('pointerup', (_pointer: any, _localX: any, _localY: any, _event: any) => {
                         this.pressButton(button, scene);
                     }); 
             
@@ -220,7 +218,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         //     strafeLeft.width, 
         //     strafeLeft.height), Phaser.Geom.Rectangle.Contains)
         // // strafeLeft.graphic.setInteractive(new Phaser.Geom.Circle(strafeLeft.x, strafeLeft.y, strafeLeft.circle), Phaser.Geom.Circle.Contains)
-        //         .on('pointerdown', function(_pointer: any, _localX: any, _localY: any, _event: any) {
+        //         .on('pointerup', function(_pointer: any, _localX: any, _localY: any, _event: any) {
         //             console.log('Strafing Left - Pointer Down');
         //             scene.player.strafingLeft = true;
         //             scaleStrafe(strafeLeft, 1.1);
@@ -280,7 +278,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         //     strafeRight.width, 
         //     strafeRight.height), Phaser.Geom.Rectangle.Contains)
         // // strafeRight.graphic.setInteractive(new Phaser.Geom.Circle(strafeRight.x, strafeRight.y, strafeRight.circle), Phaser.Geom.Circle.Contains)
-        //         .on('pointerdown', function(_pointer: any, _localX: any, _localY: any, _event: any) {
+        //         .on('pointerup', function(_pointer: any, _localX: any, _localY: any, _event: any) {
         //             console.log('Strafing Right - Pointer Down');
         //             scene.player.strafingRight = true;
         //             scaleStrafe(strafeRight, 1.1);    
@@ -357,7 +355,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                         button.graphic.removeAllListeners();
                         const newButton = { ...button, name: list[index].toUpperCase() as string };
                         newButton.graphic.setInteractive(new Phaser.Geom.Circle(newButton.x, newButton.y, newButton.width), Phaser.Geom.Circle.Contains)
-                            .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
+                            .on('pointerup', (_pointer: any, _localX: any, _localY: any, _event: any) => {
                                 this.pressButton(newButton, this.scene);
                             });
                         return newButton;
@@ -369,7 +367,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                         button.graphic.removeAllListeners();
                         const newButton = { ...button, name: list[index].toUpperCase() as string };
                         newButton.graphic.setInteractive(new Phaser.Geom.Circle(newButton.x, newButton.y, newButton.width), Phaser.Geom.Circle.Contains)
-                            .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
+                            .on('pointerup', (_pointer: any, _localX: any, _localY: any, _event: any) => {
                                 this.pressButton(newButton, this.scene);
                             });
                         return newButton;

@@ -454,7 +454,7 @@ export const PhaserGame = (props: IProps) => {
         };
         setCombat(cleanCombat);
         setStamina(res?.attributes?.stamina as number);
-        const inventory = await getInventory(props.ascean()._id);
+        const inventory = await getInventory(id);
         const traits = getAsceanTraits(props.ascean());
         setGame({ ...game(), inventory: inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary });
     };
@@ -709,16 +709,25 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('selectWeapon', (e: any) => setGame({ ...game(), selectedWeaponIndex: e.index, selectedHighlight: e.highlight }));
         EventBus.on('set-equipper', (e: any) => swapEquipment(e));
         EventBus.on('show-combat-logs', (e: boolean) => setGame({ ...game(), showCombat: e }));
+        EventBus.on('show-dialogue', () => {
+            // pause the game
+            if (game().scrollEnabled === false && game().showPlayer === false) {
+                EventBus.emit('update-pause', !game().showDialog);
+            };
+            setGame({ ...game(), showDialog: !game().showDialog })
+        });
         EventBus.on('show-player', () => {
             // pause the game
-            if (game().scrollEnabled === false) {
+            if (game().scrollEnabled === false && game().showDialog === false) {
                 EventBus.emit('update-pause', !game().showPlayer);
             };
             setGame({ ...game(), showPlayer: !game().showPlayer })
         });
         EventBus.on('toggle-pause', () => setGame({ ...game(), pauseState: !game().pauseState }));
         EventBus.on('blend-combat', (e: any) => setCombat({ ...combat(), ...e }));
-        EventBus.on('blend-game', (e: any) => setGame({ ...game(), ...e }));
+        EventBus.on('blend-game', (e: any) => {
+            setGame({ ...game(), ...e });
+        });
         // EventBus.on('update-combat', (e: Combat) => setCombat(e));
         EventBus.on('update-combat-player', (e: any) => setCombat({ ...combat(), player: e.ascean, playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, playerAttributes: e.attributes, playerDefense: e.defense, playerDefenseDefault: e.defense }));
         EventBus.on('update-combat-state', (e: { key: string; value: string }) => {
@@ -779,7 +788,7 @@ export const PhaserGame = (props: IProps) => {
         }));
         EventBus.on('useHighlight', (e: string) => setGame({ ...game(), selectedHighlight: e }));
         EventBus.on('useScroll', (e: boolean) => {
-            if (game().showPlayer === false) {
+            if (game().showPlayer === false && game().showDialog === false) {
                 EventBus.emit('update-pause', e);
             };
             setGame({ ...game(), scrollEnabled: e });
@@ -844,6 +853,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('selectWeapon');
             EventBus.removeListener('set-equipper');
             EventBus.removeListener('show-combat-logs');
+            EventBus.removeListener('show-dialogue');
             EventBus.removeListener('show-player');
             EventBus.removeListener('toggle-pause');
             EventBus.removeListener('blend-combat');

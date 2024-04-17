@@ -23,7 +23,6 @@ export function Preview({ newAscean }: { newAscean: Accessor<CharacterSheet> }) 
                 return char;
             };
         }).join('');
-        console.log(desc, 'Description');
         setDescription(desc);
     };
 

@@ -250,7 +250,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     });
 
     createEffect(() => {
-        console.log('Merchant Table Effect!')
         setMerchantTable(game().merchantEquipment);
     });
     

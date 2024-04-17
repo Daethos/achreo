@@ -65,7 +65,7 @@ export default function SmallHud({ ascean, combat, game }: Props) {
         setClicked({ ...clicked(), cursor: !clicked().cursor });
     };
     const dialog = () => {
-        EventBus.emit('blend-game', { showDialog: !game().showDialog });
+        EventBus.emit('show-dialogue');
         EventBus.emit('action-button-sound');
         setClicked({ ...clicked(), dialog: !clicked().dialog });
     };
@@ -94,7 +94,7 @@ export default function SmallHud({ ascean, combat, game }: Props) {
     };
     const showButtons = () => setShow(!show());
     const showPlayer = () => {
-        EventBus.emit('show-player', !game().showPlayer);
+        EventBus.emit('show-player');
         setClicked({ ...clicked(), showPlayer: !clicked().showPlayer });
     };
 

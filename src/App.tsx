@@ -27,6 +27,7 @@ export default function App() {
         choosingCharacter: false,   
         creatingCharacter: false,
         gameRunning: false,
+        loaded: false,
         loading: true,
         screen: SCREENS.CHARACTER.KEY,
         deleteModal: false,
@@ -83,19 +84,18 @@ export default function App() {
         setScene(scene.scene.key);
     };
 
-    // function menuOption(option: string): void {
-    //     EventBus.emit('full-screen');
-    //     switch (option) {
-    //         case 'createCharacter':
-    //             setMenu({ ...menu(), creatingCharacter: true });
-    //             break;
-    //         case 'chooseCharacter':
-    //             setMenu({ ...menu(), choosingCharacter: true });
-    //             break;
-    //         default:
-    //             break;
-    //     };
-    // };
+    function menuOption(option: string): void {
+        switch (option) {
+            case 'createCharacter':
+                setMenu({ ...menu(), creatingCharacter: true });
+                break;
+            case 'chooseCharacter':
+                setMenu({ ...menu(), choosingCharacter: true });
+                break;
+            default:
+                break;
+        };
+    };
 
     async function createCharacter(character: CharacterSheet): Promise<void> {
         const res = await createAscean(character);
@@ -221,9 +221,9 @@ export default function App() {
 
     function enterMenu(): void {
         if (menu()?.asceans?.length > 0) {
-            setMenu({ ...menu(), choosingCharacter: true });
+            setMenu({ ...menu(), choosingCharacter: true, loaded: true });
         } else {
-            setMenu({ ...menu(), creatingCharacter: true });
+            setMenu({ ...menu(), loaded: true });
         };
     };
 
@@ -338,8 +338,10 @@ export default function App() {
                 <div class="cornerTL super">
                     The Ascean v0.0.1
                 </div>
-                {/* <div class='superCenter' style={{ 'font-family': 'Cinzel Regular', 'font-size': '1.25em' }}>
-                    <div class='center' style={{ 'font-size': '3.875em' }}>The Ascean <br /> 
+                <Show when={menu().loaded}>
+                <div class='superCenter' style={{ 'font-family': 'Cinzel Regular', 'font-size': '1.25em' }}>
+                    <div class='center' style={{ 'font-size': '3.875em' }}>
+                        The Ascean <br /> 
                         { menu()?.asceans?.length > 0 ? (
                             <button class='center highlight' style={{ 'border-radius': '0.5em' }} onClick={() => menuOption('chooseCharacter')}>
                             Main Menu
@@ -350,7 +352,8 @@ export default function App() {
                             </button>
                         ) }
                     </div>
-                </div> */}
+                </div>
+                </Show>
                 </div>
             ) }
             </>)}

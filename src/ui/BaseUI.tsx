@@ -68,6 +68,10 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         EventBus.emit('combat', combat());
     });  
 
+    // createEffect(() => {
+    //     EventBus.emit('game', game());
+    // });  
+
     createEffect(() => {
         EventBus.emit('settings', settings());
     });

@@ -17,6 +17,10 @@ body {
     align-items: center;
 }
 
+#base-ui {
+    z-index: 99;
+}
+
 #overlay {
     display: flex;
     position: absolute;

@@ -457,8 +457,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     checkActionSuccess = (entity, target) => {
         if (entity === 'player' && this.actionAvailable && this.triggeredActionAvailable) {
+            // console.log('Action Success')
+            this.attackedTarget = this.triggeredActionAvailable;
             this.actionSuccess = true;
-            this.STU = this.triggeredActionAvailable;
         }; 
         if (entity === 'enemy' && target) {
             const direction = target.position.subtract(this.position);

@@ -128,8 +128,8 @@ export class Game extends Scene {
         layerC?.setCollisionByProperty({ collides: true });
         layer4?.setCollisionByProperty({ collides: true });
         layer5?.setCollisionByProperty({ collides: true });
-        layer4?.setDepth(3);
-        layer5?.setDepth(3);
+        layer4?.setDepth(2);
+        layer5?.setDepth(2);
         this.matter.world.convertTilemapLayer(layer0 as Phaser.Tilemaps.TilemapLayer);
         this.matter.world.convertTilemapLayer(layer1 as Phaser.Tilemaps.TilemapLayer);
         this.matter.world.convertTilemapLayer(layerC as Phaser.Tilemaps.TilemapLayer); 

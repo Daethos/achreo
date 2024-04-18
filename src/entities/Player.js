@@ -1604,6 +1604,7 @@ export default class Player extends Entity {
     };
 
     playerActionSuccess = () => {
+        // console.log('Player Action Success')
         // const match = this.enemyIdMatch();
         if (this.particleEffect) {
             // if (match) {
@@ -1899,7 +1900,6 @@ export default class Player extends Entity {
                 this.scene.particleManager.update(this, this.particleEffect);
             };
         };
-        // if (this.inCombat && !this.scene.combatTimer) this.scene.startCombatTimer();
         if (this.inCombat && !this.healthbar.visible) this.healthbar.setVisible(true);
         // if (this.currentHelmSprite !== this.assetSprite(this.scene.state.player.helmet)) {
         //     this.currentHelmSprite = this.assetSprite(this.scene.state.player.helmet);

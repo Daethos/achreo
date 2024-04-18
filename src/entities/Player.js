@@ -124,41 +124,41 @@ export const staminaCheck = (input, stamina) => {
             };
         case 'invoke':
             const invokeSuccess = stamina >= PLAYER.STAMINA.INVOKE;
-            console.log(`Invoke Success: ${invokeSuccess}`)
+            // console.log(`Invoke Success: ${invokeSuccess}`)
             return { 
                 success: invokeSuccess,
                 cost: PLAYER.STAMINA.INVOKE,
             };
         case 'polymorph':
             const polymorphSuccess = stamina >= PLAYER.STAMINA.POLYMORPH;
-            console.log(`Polymorph Success: ${polymorphSuccess}`)
+            // console.log(`Polymorph Success: ${polymorphSuccess}`)
             return {
                 success: polymorphSuccess,
                 cost: PLAYER.STAMINA.POLYMORPH,
             };
         case 'root':
             const rootSuccess = stamina >= PLAYER.STAMINA.ROOT;
-            console.log(`Root Success: ${rootSuccess}`)
+            // console.log(`Root Success: ${rootSuccess}`)
             return {
                 success: rootSuccess,
                 cost: PLAYER.STAMINA.ROOT,
             };
         case 'snare':
             const snareSuccess = stamina >= PLAYER.STAMINA.SNARE;
-            console.log(`Snare Success: ${snareSuccess}`)
+            // console.log(`Snare Success: ${snareSuccess}`)
             return {
                 success: snareSuccess,
                 cost: PLAYER.STAMINA.SNARE,
             };
         case 'tshaeral':
             const tshaerSuccess = stamina >= PLAYER.STAMINA.TSHAER;
-            console.log(`Tshaer Success: ${tshaerSuccess}`)
+            // console.log(`Tshaer Success: ${tshaerSuccess}`)
             return {
                 success: tshaerSuccess,
                 cost: PLAYER.STAMINA.TSHAER,
             };
         default:
-            console.log('No Input')
+            // console.log('No Input')
             return { 
                 success: false,
                 cost: 0,
@@ -378,12 +378,6 @@ export default class Player extends Entity {
         this.checkEnemyCollision(playerSensor);
         this.checkLootdropCollision(playerSensor);
         this.checkNpcCollision(playerSensor);
-        // this.stealthListener();
-        // this.caerenicListener();
-        // this.stalwartListener();
-        // this.enemyListener();
-        // this.tabListener();
-        // this.speedListener();
     };   
 
     getAscean = () => {
@@ -439,61 +433,45 @@ export default class Player extends Entity {
     };
 
     enemyUpdate = () => {
-        // EventBus.on('remove-enemy', (e) => {
-            console.log(`%c Targets: ${this.targets} Remaining" ${this.targets.length}`, 'color: #ff0000')
-            const index = this.targets.findIndex(obj => obj.enemyID === e);
-            console.log(`%c Removing Enemy: ${e} with index ${index}`, 'color: #ff0000')
-            this.targets = this.targets.filter(obj => obj.enemyID !== e);
-            // if (this.currentTarget) {
-            //     this.currentTarget.clearTint();
-            // };
-            if (this.targets.length > 0) {
-                const newTarg = this.targets[index] || this.targets[0];
-                console.log(`%c New Target: ${newTarg}`, 'color: #ff0000')
-                if (!newTarg) return;
-                this.currentTarget = newTarg;
-                this.highlightTarget(this.currentTarget);
-                // if (this.inCombat && !this.scene.state.computer) {
-                    this.scene.setupEnemy(this.currentTarget);
-                // };
-            };
-        // });
+        const index = this.targets.findIndex(obj => obj.enemyID === e);
+        this.targets = this.targets.filter(obj => obj.enemyID !== e);
+        if (this.targets.length > 0) {
+            const newTarg = this.targets[index] || this.targets[0];
+            // console.log(`%c New Target: ${newTarg}`, 'color: #ff0000')
+            if (!newTarg) return;
+            this.currentTarget = newTarg;
+            this.highlightTarget(this.currentTarget);
+            this.scene.setupEnemy(this.currentTarget);
+        };
     };
 
     tabUpdate = () => {
-        // EventBus.on('tab-target', (enemy) => {
-            if (this.currentTarget) {
-                this.currentTarget.clearTint();
-                this.currentTarget.setTint(0x000000);
+        if (this.currentTarget) {
+            this.currentTarget.clearTint();
+            this.currentTarget.setTint(0x000000);
+        };
+        const newTarget = this.targets.find(obj => obj.enemyID === enemy.id);
+        this.targetIndex = this.targets.findIndex(obj => obj.enemyID === enemy.id);
+        if (!newTarget) return;
+        if (newTarget.npcType) { // NPC
+            this.scene.setupNPC(newTarget);
+        } else { // Enemy
+            // this.scene.setupEnemy(newTarget);
+            this.attacking = newTarget;
+        };
+        this.currentTarget = newTarget;
+        this.targetID = newTarget.enemyID;
+        this.highlightTarget(newTarget);
+        if (this.currentTarget) {
+            this.highlightTarget(this.currentTarget); 
+            if (this.inCombat && !this.scene.state.computer) {
+                this.scene.setupEnemy(this.currentTarget);
+            }; 
+        } else {
+            if (this.highlight.visible) {
+                this.removeHighlight();
             };
-
-            const newTarget = this.targets.find(obj => obj.enemyID === enemy.id);
-            this.targetIndex = this.targets.findIndex(obj => obj.enemyID === enemy.id);
-
-            // const newTarget = this.targets[this.targetIndex];
-            // this.targetIndex = this.targetIndex + 1 >= this.targets.length ? 0 : this.targetIndex + 1;
-            if (!newTarget) return;
-            if (newTarget.npcType) { // NPC
-                // this.scene.setupNPC(newTarget);
-            } else { // Enemy
-                // this.scene.setupEnemy(newTarget);
-                this.attacking = newTarget;
-            };
-            this.currentTarget = newTarget;
-            this.targetID = newTarget.enemyID;
-            this.highlightTarget(newTarget);
-
-            if (this.currentTarget) {
-                this.highlightTarget(this.currentTarget); 
-                if (this.inCombat && !this.scene.state.computer) {
-                    this.scene.setupEnemy(this.currentTarget);
-                }; 
-            } else {
-                if (this.highlight.visible) {
-                    this.removeHighlight();
-                };
-            };
-        // });
+        };
     };
 
     createSprite = (imgUrl, x, y, scale, originX, originY) => {
@@ -564,36 +542,6 @@ export default class Player extends Entity {
     };
 
     constantUpdate = (e) => {
-        // if (this.health > e.newPlayerHealth) {
-        //     // this.isHurt = true;
-        //     // this.clearAnimations();
-        //     let damage = Math.round(this.health - e.newPlayerHealth);
-        //     this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.computerCriticalSuccess);
-        //     console.log(`%c ${damage} Damage Taken by ${e?.computer?.name}`, 'color: #ff0000')
-        // };
-        // if (this.health < e.newPlayerHealth) {
-        //     let heal = Math.round(e.newPlayerHealth - this.health);
-        //     this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, 1500, 'heal');
-        // }; 
-    
-        // if (this.currentRound !== e.combatRound && this.scene.combat) {
-        //     this.currentRound = e.combatRound;
-        //     if (this.targets.length) this.checkTargets(); // Was inside playerWin
-        //     if (e.computerDamaged || e.playerDamaged) {
-        //         this.soundEffects(e);
-        //     };
-        // };
-        // this.health = e.newPlayerHealth;
-        // this.healthbar.setValue(this.health);
-        // if (this.healthbar.getTotal() < e.playerHealth) this.healthbar.setTotal(e.playerHealth);
-        // if (e.newPlayerHealth <= 0) {
-        //     // this.isDead = true;
-        //     this.inCombat = false;
-        //     this.attacking = undefined;
-        //     this.anims.play('player_pray', true).on('animationcomplete', () => {
-        //         this.anims.play('player_idle', true);
-        //     });
-        // };
         this.checkGear(e.player.shield, e.weapons[0], e.playerDamageType.toLowerCase());
     };
 
@@ -603,7 +551,7 @@ export default class Player extends Entity {
             // this.clearAnimations();
             let damage = Math.round(this.health - e.newPlayerHealth);
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.computerCriticalSuccess);
-            console.log(`%c ${damage} Damage Taken by ${e?.computer?.name}`, 'color: #ff0000')
+            // console.log(`%c ${damage} Damage Taken by ${e?.computer?.name}`, 'color: #ff0000')
         };
         if (this.health < e.newPlayerHealth) {
             let heal = Math.round(e.newPlayerHealth - this.health);
@@ -613,7 +561,7 @@ export default class Player extends Entity {
         if (this.currentRound !== e.combatRound && this.scene.combat) {
             this.currentRound = e.combatRound;
             if (this.targets.length) this.checkTargets(); // Was inside playerWin
-            if (e.computerDamaged || e.playerDamaged) {
+            if (e.computerDamaged || e.playerDamaged || e.rollSuccess || e.parrySuccess || e.computerRollSuccess || e.computerParrySuccess) {
                 this.soundEffects(e);
             };
         };
@@ -650,7 +598,7 @@ export default class Player extends Entity {
             this.winningCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Victory', 3000, 'effect', true);    
         };
         if (e.newPlayerHealth <= 0 || e.computerWin) {
-            console.log('-- Lost! --', e.newPlayerHealth, 'Player Health', e.computerWin, 'Computer Win')
+            // console.log('-- Lost! --', e.newPlayerHealth, 'Player Health', e.computerWin, 'Computer Win')
             this.isDead = true;
             this.inCombat = false;
             this.attacking = undefined;
@@ -712,7 +660,7 @@ export default class Player extends Entity {
 
             EventBus.emit('blend-combat', { computerDamaged: false, playerDamaged: false });
         } catch (err) {
-            console.log(err.message, 'Error Setting Sound Effects');
+            console.warn(err.message, 'Error Setting Sound Effects');
         };
     };
 
@@ -742,7 +690,7 @@ export default class Player extends Entity {
         this.sendEnemies(this.targets);
         this.scene.combatMachine.clear(enemy);
         if (this.targets.every(obj => !obj.inCombat)) {
-            console.log('%c All Enemies Defeated!', 'color: #ffc700');
+            // console.log('%c All Enemies Defeated!', 'color: #ffc700');
             // this.inCombat = false;
             // this.attacking = undefined;
             // if (this.currentTarget) {
@@ -772,10 +720,10 @@ export default class Player extends Entity {
         const hasRemainingEnemies = this.scene.combat && this.scene.state.combatEngaged && this.inCombat;
     
         if (!hasRemainingEnemies && !this.isStealthing) {
-            console.log(`%c Should Player Enter Combat? YES`, 'color: #ff0000');
+            // console.log(`%c Should Player Enter Combat? YES`, 'color: #ff0000');
             this.enterCombat(other);
         } else if (this.isStealthing) {
-            console.log(`%c Should Player Prepare Combat? YES`, 'color: #ff0000');
+            // console.log(`%c Should Player Prepare Combat? YES`, 'color: #ff0000');
             this.prepareCombat(other);    
         };
     }; 
@@ -841,9 +789,9 @@ export default class Player extends Entity {
             objectA: [playerSensor],
             callback: (other) => {
                 if (this.isValidEnemyCollision(other)) {
-                    console.log(other, 'Other')
-                    const isNewEnemy = this.isNewEnemy(other.gameObjectB);
-                    console.log(`%c Is New Enemy: ${isNewEnemy}`, 'color: #ff0000');
+                    // const isNewEnemy = 
+                    this.isNewEnemy(other.gameObjectB);
+                    // console.log(`%c Is New Enemy: ${isNewEnemy}`, 'color: #ff0000');
                     // if (!isNewEnemy) return;
                     // if (this.shouldPlayerEnterCombat(other.gameObjectB)) {
                     //     this.enterCombat(other);
@@ -853,7 +801,7 @@ export default class Player extends Entity {
                     this.checkTargets();
                 } else if (this.isValidNeutralCollision(other)) {
                     const isNeutral = this.isNewEnemy(other.gameObjectB);
-                    console.log(`%c Is Neutral: ${isNeutral}`, 'color: #ff0000')
+                    // console.log(`%c Is Neutral: ${isNeutral}`, 'color: #ff0000')
                     if (!isNeutral) return;
                     this.touching.push(other.gameObjectB);
                     this.checkTargets();
@@ -927,12 +875,11 @@ export default class Player extends Entity {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [playerSensor],
             callback: (other) => {
-                if (other.gameObjectB && other.bodyB.label === 'npcCollider' && !this.inCombat) { 
+                if (other.gameObjectB && other.bodyB.label === 'npcSensor' && !this.inCombat) { 
                     const isNewNpc = !this.targets.some(obj => obj.enemyID === other.gameObjectB.enemyID);
                     if (isNewNpc && !isNewNpc.isDead) this.targets.push(other.gameObjectB);
                     this.currentTarget = other.gameObjectB;
                     this.targetID = other.gameObjectB.enemyID;
-                    if ((!this.scene.state.computer || this.scene.state.computer._id !== other.gameObjectB.ascean._id)) this.scene.setupNPC(other.gameObjectB);
                 };
             },
             context: this.scene,
@@ -941,7 +888,7 @@ export default class Player extends Entity {
         this.scene.matterCollision.addOnCollideEnd({
             objectA: [playerSensor],
             callback: (other) => {
-                if (other.gameObjectB && other.bodyB.label === 'npcCollider' && (!this.inCombat || this.currentTarget.enemyID === other.gameObjectB.enemyID || other.gameObjectB.interacting)) { 
+                if (other.gameObjectB && other.bodyB.label === 'npcSensor' && (!this.inCombat || this.currentTarget.enemyID === other.gameObjectB.enemyID || other.gameObjectB.interacting)) { 
                     this.targets = this.targets.filter(obj => obj.enemyID !== other.gameObjectB.enemyID);
                     this.scene.clearNPC();
                 };
@@ -1235,7 +1182,7 @@ export default class Player extends Entity {
     };
     onStealthUpdate = (_dt) => {
         if (!this.isStealthing || this.currentRound > 1 || this.scene.combat) {
-            console.log(`%c Exiting Stealth [onStealthUpdate]`, 'color: #ff0000')
+            // console.log(`%c Exiting Stealth [onStealthUpdate]`, 'color: #ff0000')
             this.metaMachine.setState(States.CLEAN); 
         };
     };
@@ -1535,20 +1482,6 @@ export default class Player extends Entity {
             this.canSwing = true;
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, type);
         }, undefined, this);
-        // let time = 0;
-        // const swingTime = this.scene.time.addEvent({
-        //     delay: this.swingTimer, // 16.667
-        //     callback: () => {
-        //         // if (time >= this.swingTimer) {
-        //             swingTime.remove(false);
-        //             swingTime.destroy();
-        //             return;
-        //         // };
-        //         // time += this.scene.game.loop.delta; // 16.667ms~ / this.swingTimer ?? 
-        //     },
-        //     callbackScope: this,
-        //     loop: false, // true
-        // });
     };
 
     checkTargets = () => {
@@ -1558,7 +1491,7 @@ export default class Player extends Entity {
                 return false;
             };
             if (gameObject.npcType && playerCombat) {
-                console.log('NPC Type and Player in Combat')
+                // console.log('NPC Type and Player in Combat')
                 this.scene.combatEngaged(false);
                 this.inCombat = false;
             };
@@ -1566,18 +1499,18 @@ export default class Player extends Entity {
         });
         this.sendEnemies(this.targets);
         if (this.targets.length === 0) { // && this.scene.state.computer
-            console.log('No Targets, clearing State')
+            // console.log('No Targets, clearing State')
             // this.scene.clearNAEnemy();
             this.disengage();
         };
 
         const someInCombat = this.targets.some(gameObject => gameObject.inCombat);
         if (someInCombat && !playerCombat) {
-            console.log('someInCombat && !playerCombat')
+            // console.log('someInCombat && !playerCombat')
             this.scene.combatEngaged(true);
             this.inCombat = true;
         } else if (!someInCombat && playerCombat && !this.isStealthing && this.currentTarget === undefined) {
-            console.log('The player is not stealthed, in combat, and no enemies are in combat, clearing combat')
+            // console.log('The player is not stealthed, in combat, and no enemies are in combat, clearing combat')
             this.scene.clearNAEnemy();
             this.scene.combatEngaged(false);
             this.inCombat = false;
@@ -1671,23 +1604,39 @@ export default class Player extends Entity {
     };
 
     playerActionSuccess = () => {
-        const match = this.enemyIdMatch();
+        // const match = this.enemyIdMatch();
         if (this.particleEffect) {
-            if (match) {
-                this.scene.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: this.particleEffect.action } });
-            } else {
-                this.scene.combatMachine.action({ type: 'Player', data: { playerAction: { action: this.particleEffect.action, parry: this.scene.state.parryGuess },  enemyID: this.attackedTarget.enemyID, ascean: this.attackedTarget.ascean, damageType: this.attackedTarget.currentDamageType, combatStats: this.attackedTarget.combatStats, weapons: this.attackedTarget.weapons, health: this.attackedTarget.health, actionData: { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction } } });
-            };
+            // if (match) {
+                //     this.scene.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: this.particleEffect.action } });
+            // } else {
+                //     this.scene.combatMachine.action({ type: 'Player', data: { playerAction: { action: this.particleEffect.action, parry: this.scene.state.parryGuess },  enemyID: this.attackedTarget.enemyID, ascean: this.attackedTarget.ascean, damageType: this.attackedTarget.currentDamageType, combatStats: this.attackedTarget.combatStats, weapons: this.attackedTarget.weapons, health: this.attackedTarget.health, actionData: { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction } } });
+            // };
             this.scene.particleManager.removeEffect(this.particleEffect.id);
             this.particleEffect.effect.destroy();
             this.particleEffect = undefined;
         } else {
             const action = this.checkPlayerAction();
             if (!action) return;
+            const match = this.enemyIdMatch();
             if (match) { // Target Player Attack
                 this.scene.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: action } });
             } else { // Blind Player Attack
-                this.scene.combatMachine.action({ type: 'Player', data: { playerAction: { action: action, parry: this.scene.state.parryGuess }, enemyID: this.attackedTarget.enemyID, ascean: this.attackedTarget.ascean, damageType: this.attackedTarget.currentDamageType, combatStats: this.attackedTarget.combatStats, weapons: this.attackedTarget.weapons, health: this.attackedTarget.health, actionData: { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction }} });
+                this.scene.combatMachine.action({ type: 'Player', data: { 
+                    playerAction: { 
+                        action: action, 
+                        parry: this.scene.state.parryGuess 
+                    }, 
+                    enemyID: this.attackedTarget.enemyID, 
+                    ascean: this.attackedTarget.ascean, 
+                    damageType: this.attackedTarget.currentDamageType, 
+                    combatStats: this.attackedTarget.combatStats, 
+                    weapons: this.attackedTarget.weapons, 
+                    health: this.attackedTarget.health, 
+                    actionData: { 
+                        action: this.attackedTarget.currentAction, 
+                        parry: this.attackedTarget.parryAction 
+                    }
+                }});
             };
         };
         // if (this.actionTarget && !this.isRanged) this.knockback(this.actionTarget); // actionTarget
@@ -1762,23 +1711,23 @@ export default class Player extends Entity {
     handleActions = () => {
         // ========================= Tab Targeting ========================= \\
         
-        if (Phaser.Input.Keyboard.JustDown(this.inputKeys.target.TAB) && this.targets.length) { // was > 1 More than 1 i.e. worth tabbing
-            // if (this.currentTarget) {
-            //     this.currentTarget.clearTint();
-            // };
-            const newTarget = this.targets[this.targetIndex];
-            this.targetIndex = this.targetIndex + 1 >= this.targets.length ? 0 : this.targetIndex + 1;
-            if (!newTarget) return;
-            if (newTarget.npcType) { // NPC
-                this.scene.setupNPC(newTarget);
-            } else { // Enemy
-                this.scene.setupEnemy(newTarget);
-                this.attacking = newTarget;
-            };
-            this.currentTarget = newTarget;
-            this.targetID = newTarget.enemyID;
-            this.highlightTarget(newTarget);
-        };
+        // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.target.TAB) && this.targets.length) { // was > 1 More than 1 i.e. worth tabbing
+        //     // if (this.currentTarget) {
+        //     //     this.currentTarget.clearTint();
+        //     // };
+        //     const newTarget = this.targets[this.targetIndex];
+        //     this.targetIndex = this.targetIndex + 1 >= this.targets.length ? 0 : this.targetIndex + 1;
+        //     if (!newTarget) return;
+        //     if (newTarget.npcType) { // NPC
+        //         this.scene.setupNPC(newTarget);
+        //     } else { // Enemy
+        //         this.scene.setupEnemy(newTarget);
+        //         this.attacking = newTarget;
+        //     };
+        //     this.currentTarget = newTarget;
+        //     this.targetID = newTarget.enemyID;
+        //     this.highlightTarget(newTarget);
+        // };
 
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
@@ -1794,18 +1743,18 @@ export default class Player extends Entity {
         // ========================= Player Combat Actions ========================= \\
 
         if (this.inCombat && this.attacking) {
-            if (this.stamina >= PLAYER.STAMINA.PARRY && this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.attack.ONE)) {
-                this.scene.combatMachine.input('parryGuess', 'attack');
-                this.stateMachine.setState(States.PARRY);              
-            };
-            if (this.stamina >= PLAYER.STAMINA.PARRY && this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.posture.TWO)) {
-                this.scene.combatMachine.input('parryGuess', 'posture');
-                this.stateMachine.setState(States.PARRY);
-            };
-            if (this.stamina >= PLAYER.STAMINA.PARRY && this.movementClear() && this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.roll.THREE)) {
-                this.scene.combatMachine.input('parryGuess', 'roll');
-                this.stateMachine.setState(States.PARRY);
-            };
+            // if (this.stamina >= PLAYER.STAMINA.PARRY && this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.attack.ONE)) {
+            //     this.scene.combatMachine.input('parryGuess', 'attack');
+            //     this.stateMachine.setState(States.PARRY);              
+            // };
+            // if (this.stamina >= PLAYER.STAMINA.PARRY && this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.posture.TWO)) {
+            //     this.scene.combatMachine.input('parryGuess', 'posture');
+            //     this.stateMachine.setState(States.PARRY);
+            // };
+            // if (this.stamina >= PLAYER.STAMINA.PARRY && this.movementClear() && this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.roll.THREE)) {
+            //     this.scene.combatMachine.input('parryGuess', 'roll');
+            //     this.stateMachine.setState(States.PARRY);
+            // };
         
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.attack.ONE) && this.stamina >= PLAYER.STAMINA.ATTACK && this.canSwing) {
                 this.stateMachine.setState(States.ATTACK);
@@ -1819,41 +1768,41 @@ export default class Player extends Entity {
                 this.scene.combatMachine.input('parryGuess', 'parry');
                 this.stateMachine.setState(States.PARRY);
             };
-            if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.snare.V) && this.rootCooldown === 0) {
-                this.scene.root();
-                this.setTimeEvent('rootCooldown', 6000);
-                // screenShake(this.scene);
-            };
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.snare.V) && this.snareCooldown === 0) {
-                this.scene.snare(this.attacking.enemyID);
-                this.setTimeEvent('snareCooldown', 6000);
-            };
-            if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.pray.R) && !this.isMoving && this.polymorphCooldown === 0) { // && this.polymorphCooldown === 0
-                this.stateMachine.setState(States.POLYMORPHING);
-            };
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.pray.R) && this.invokeCooldown === 0) {
-                if (this.scene.state.playerBlessing === '') return;
-                this.setTimeEvent('invokeCooldown');
-                this.stateMachine.setState(States.INVOKE);
-            };
-            if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.consume.F) && this.stamina >= PLAYER.STAMINA.TSHAER && this.tshaeralCooldown === 0) { // this.tshaeralCooldown === 0
-                this.stateMachine.setState(States.TSHAERAL);
-                this.setTimeEvent('tshaeralCooldown', 15000);
-                this.scene.time.addEvent({
-                    delay: 2000,
-                    callback: () => {
-                        this.isTshaering = false;
-                    },
-                    callbackScope: this,
-                    loop: false,
-                });
-            };
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.consume.F)) {
-                if (this.scene.state.playerEffects.length === 0) return;
-                this.isConsuming = true;
-                this.scene.combatMachine.action({ type: 'Consume', data: this.scene.state.playerEffects });
-                // screenShake(this.scene);
-            };
+            // if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.snare.V) && this.rootCooldown === 0) {
+            //     this.scene.root();
+            //     this.setTimeEvent('rootCooldown', 6000);
+            //     // screenShake(this.scene);
+            // };
+            // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.snare.V) && this.snareCooldown === 0) {
+            //     this.scene.snare(this.attacking.enemyID);
+            //     this.setTimeEvent('snareCooldown', 6000);
+            // };
+            // if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.pray.R) && !this.isMoving && this.polymorphCooldown === 0) { // && this.polymorphCooldown === 0
+            //     this.stateMachine.setState(States.POLYMORPHING);
+            // };
+            // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.pray.R) && this.invokeCooldown === 0) {
+            //     if (this.scene.state.playerBlessing === '') return;
+            //     this.setTimeEvent('invokeCooldown');
+            //     this.stateMachine.setState(States.INVOKE);
+            // };
+            // if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.consume.F) && this.stamina >= PLAYER.STAMINA.TSHAER && this.tshaeralCooldown === 0) { // this.tshaeralCooldown === 0
+            //     this.stateMachine.setState(States.TSHAERAL);
+            //     this.setTimeEvent('tshaeralCooldown', 15000);
+            //     this.scene.time.addEvent({
+            //         delay: 2000,
+            //         callback: () => {
+            //             this.isTshaering = false;
+            //         },
+            //         callbackScope: this,
+            //         loop: false,
+            //     });
+            // };
+            // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.consume.F)) {
+            //     if (this.scene.state.playerEffects.length === 0) return;
+            //     this.isConsuming = true;
+            //     this.scene.combatMachine.action({ type: 'Consume', data: this.scene.state.playerEffects });
+            //     // screenShake(this.scene);
+            // };
         };
 
         // ========================= Player Movement Actions ========================= \\
@@ -1868,21 +1817,21 @@ export default class Player extends Entity {
 
         // ========================= Player Utility Actions ========================= \\
 
-        if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.stalwart.G)) {
-            this.scene.caerenic();
-        };
+        // if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.stalwart.G)) {
+        //     this.scene.caerenic();
+        // };
 
-        if (Phaser.Input.Keyboard.JustDown(this.inputKeys.stalwart.G)) {
-            this.scene.stalwart();
-        }; 
+        // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.stalwart.G)) {
+        //     this.scene.stalwart();
+        // }; 
 
-        if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.firewater.T)) {
-            EventBus.emit('update-stealth');
-        };
+        // if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.firewater.T)) {
+        //     EventBus.emit('update-stealth');
+        // };
 
-        if (Phaser.Input.Keyboard.JustDown(this.inputKeys.firewater.T)) {
-            this.stateMachine.setState(States.HEAL);
-        };
+        // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.firewater.T)) {
+        //     this.stateMachine.setState(States.HEAL);
+        // };
     };
 
     handleAnimations = () => {

@@ -177,6 +177,23 @@ body {
     top: 5vh;
 }
 
+.lootDropWindow {
+    position: absolute;
+    font-family: 'Cinzel-Regular';
+    background-color: #000;
+    height: 40%;
+    width: 45%;
+    top: 45%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.5em;
+    border: 0.15em solid gold;
+    border-radius: 0.25em;
+    box-shadow: 0 0 0.5em rgba(255, 215, 0, 1);
+    overflow-y: scroll;
+    z-index: 2
+}
+
 .playerMenuHeading {
     /* position: absolute;
     top: 10;

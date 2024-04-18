@@ -63,7 +63,7 @@ export const PhaserGame = (props: IProps) => {
                 EventBus.emit('enemyLootDrop',{ enemyID, drops: res });
             };
         } catch (err: any) {
-            console.log(err, 'Error Dropping Loot');
+            console.warn(err, 'Error Dropping Loot');
         };
     };
 
@@ -98,7 +98,6 @@ export const PhaserGame = (props: IProps) => {
                     }
                 } 
             };
-            console.log(update, 'New Level Update');
             let hyd = asceanCompiler(update);
             const save: Ascean = {
                 ...hyd?.ascean,
@@ -126,32 +125,15 @@ export const PhaserGame = (props: IProps) => {
                 
             });                
             EventBus.emit('update-ascean', save);
-
-            // setCombat({
-            //     ...combat(),
-            //     player: save,
-            //     playerHealth: save.health.max as number,
-            //     newPlayerHealth: save.health.current as number,
-            //     weapons: [hyd?.combatWeaponOne, hyd?.combatWeaponTwo, hyd?.combatWeaponThree],
-            //     weaponOne: hyd?.combatWeaponOne,
-            //     weaponTwo: hyd?.combatWeaponTwo,
-            //     weaponThree: hyd?.combatWeaponThree,
-            //     playerAttributes: hyd?.attributes,
-            //     playerDefense: hyd?.defense,
-            //     playerDefenseDefault: hyd?.defense,
-            // });
-            // setStamina(hyd?.attributes?.stamina as number);
         } catch (err: any) {
-            console.log(err, '<- Error in the Controller Updating the Level!')
+            console.warn(err, '<- Error in the Controller Updating the Level!')
         };
     };
 
     async function deleteMerchantEquipment() {
         try {
             if (game().merchantEquipment.length === 0) return;
-            
             game().merchantEquipment.forEach(async (eqp) => {
-                // console.log(eqp, 'Deleting Merchant Equipment')
                 await deleteEquipment(eqp._id);
             });
         } catch (err: any) {
@@ -185,7 +167,6 @@ export const PhaserGame = (props: IProps) => {
 
     function sellItem(item: Equipment) {
         try {
-            console.log('selling item', item);
             let inventory = Array.from(game().inventory);
             inventory = inventory.filter((eqp) => eqp._id !== item._id);
             let gold: number = 0, silver: number = 0;
@@ -292,11 +273,9 @@ export const PhaserGame = (props: IProps) => {
 
     function saveChanges(state: any) {
         try {
-            console.log(state, 'State to Save');
             let silver: number = state.currency.silver, gold: number = state.currency.gold, 
                 experience: number = state.opponentExp, firewater = { ...props.ascean().firewater };
 
-            console.log(experience, 'Experience Gained');
             let computerLevel: number = state.opponent;
             if (state.avarice) experience *= 1.2;
             let health = state.currentHealth > props.ascean().health.max ? props.ascean().health.max : state.currentHealth;
@@ -347,7 +326,7 @@ export const PhaserGame = (props: IProps) => {
             };
             EventBus.emit('update-ascean', newAscean);
         } catch (err: any) {
-            console.log(err, 'Error Saving Experience');
+            console.warn(err, 'Error Saving Experience');
         };
     };
 
@@ -388,7 +367,6 @@ export const PhaserGame = (props: IProps) => {
     };
 
     function setPlayer(stats: Compiler) {
-        // console.log(stats, 'Setting Player');
         const traits = getAsceanTraits(stats.ascean);
         setCombat({
             ...combat(),
@@ -484,12 +462,8 @@ export const PhaserGame = (props: IProps) => {
         setGame({ ...game(), inventory: inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary });
     };
 
-    async function enterGame() {
+    function enterGame() {
         try  {
-            if (combat().player === undefined) {
-                console.log('Create UI did not create itself before Entering Game -- MAIN ISSUE');
-                // await createUi(props.ascean()._id);
-            };
             setLive(!live());
         } catch (err: any) {
             console.warn(err, 'Error Entering Game');
@@ -584,29 +558,17 @@ export const PhaserGame = (props: IProps) => {
             });
             await deleteMerchantEquipment();
             setGame({ ...game(), merchantEquipment: [], dialogTag: false, currentNode: undefined, currentNodeIndex: 0 });    
-            // if (game().merchantEquipment.length > 0) {
-            //     // for await (let eqp of game().merchantEquipment) {
-            //     //     console.log(eqp, 'Deleting Merchant Equipment')
-            //     //     await deleteEquipment(eqp);
-            //     // };
-            //     game().merchantEquipment.forEach(async (eqp) => {
-            //         console.log(eqp, 'Deleting Merchant Equipment')
-            //         await deleteEquipment(eqp);
-            //     });
-            // };
         });
 
         EventBus.on('fetch-enemy', fetchEnemy);
         EventBus.on('fetch-npc', fetchNpc);
         EventBus.on('request-ascean', () => {
-            // const res = asceanCompiler(props.ascean());
             EventBus.emit('ascean', props.ascean());
         });
         EventBus.on('request-combat', requestCombat);
         EventBus.on('request-game', () => EventBus.emit('game', game()));
 
         EventBus.on('setup-enemy', (e: any) => {
-            // console.log(e, 'Enemy Setup')
             setCombat({
                 ...combat(),
                 computer: e.game,
@@ -637,7 +599,6 @@ export const PhaserGame = (props: IProps) => {
             setGame({ ...game(), dialog: dialog });
         });
         EventBus.on('setup-npc', (e: any) => {
-            console.log(e, 'Setting Up NPC');
             setCombat({
                 ...combat(),
                 computer: e.game,
@@ -696,7 +657,6 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('gain-experience', (e: { state: any; }) => saveChanges(e));
         EventBus.on('level-up', (e: any) => levelUp(e));
         EventBus.on('add-loot', (e: Equipment[]) => {
-            console.log(e[0].name, e[0]._id, 'Loot Drop')
             const newInventory = game().inventory.length > 0 ? [...game().inventory, ...e] : e;
             setGame({ 
                 ...game(), 
@@ -718,7 +678,7 @@ export const PhaserGame = (props: IProps) => {
                 setGame({ 
                     ...game(), 
                     showLootIds: updatedShowLootIds.length > 0 ? updatedShowLootIds : [],
-                    // showLoot: updatedShowLootIds.length > 0,
+                    showLoot: updatedShowLootIds.length > 0,
                     lootTag: updatedShowLootIds.length > 0,    
                 });
             };
@@ -767,7 +727,6 @@ export const PhaserGame = (props: IProps) => {
             setCombat({ ...combat(), isStalwart: !combat().isStalwart })
         });      
         EventBus.on('update-stealth', () => {
-            console.log(combat().isStealth, 'Stealth');
             setCombat({ ...combat(), isStealth: !combat().isStealth });
             EventBus.emit('stealth-sound');
         });
@@ -777,7 +736,6 @@ export const PhaserGame = (props: IProps) => {
             const newLootIds = game().showLootIds.length > 0 ? [...game().showLootIds, ...e.map((loot) => loot._id)] : e.map((loot) => loot._id);
             const cleanInventory = [...game().inventory];
             const newInventory = cleanInventory.length > 0 ? [...cleanInventory, ...e] : e;
-            newInventory.forEach((item) => console.log(item.name, item._id, 'Item'));
             setGame({ 
                 ...game(), 
                 inventory: newInventory,

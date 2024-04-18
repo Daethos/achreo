@@ -1,6 +1,5 @@
 import { Toast } from 'solid-bootstrap'
 import { Accessor, Setter } from 'solid-js'
-import { font } from '../utility/styling';
 
 interface Props {
     show: Accessor<boolean>;
@@ -20,7 +19,6 @@ export default function ExperienceToast({ show, setShow, alert, setAlert }: Prop
         margin: '0.5em',
         border: '0.05em solid #00ff00',
         'border-radius': '0.5em',
-        // transform: 'scale(0.65)',
         bottom: '0',
     };
     return (

@@ -587,7 +587,6 @@ export class Game extends Scene {
     stunned = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        console.log(enemy, 'Enemy Stunned');
         enemy.isStunned = true;
     };
 
@@ -601,20 +600,17 @@ export class Game extends Scene {
     combatEngaged = (bool: boolean) => {
         this.combat = bool;
         EventBus.emit('combat-engaged', bool);
-        // console.log(`Combat engaged: ${bool}`);
         if (bool) {
             this.combatTimerText.setVisible(true);
             this.musicCombat.play();
             this.musicBackground.pause();
             this.startCombatTimer();
-            // if (this.scene.isPaused()) this.scene.resume();
         } else {
             this.combatTimerText.setVisible(false);
             this.musicCombat.pause();
             this.musicBackground.resume();
             this.stopCombatTimer();    
         };
-        // this.dispatch(getCombatFetch(bool));
     };
     drinkFlask = () => EventBus.emit('drink-firewater');
     setupEnemy = (enemy: any) => {

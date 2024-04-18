@@ -13,7 +13,7 @@ const DISTANCE = {
     ATTACK: 25,
     MOMENTUM: 2,
     THRESHOLD: 75,
-    CHASE: 75,
+    CHASE: 125,
     RANGED_ALIGNMENT: 10,
     RANGED_MULTIPLIER: 3,
     DODGE: 1152, // 2304
@@ -23,7 +23,7 @@ const DISTANCE = {
 const DURATION = {
     CONSUMED: 2000,
     ROOT: 3000,
-    STUN: 2000,
+    STUN: 3000,
     TEXT: 1500,
     DODGE: 288, // 288
     ROLL: 320, // 320
@@ -125,6 +125,7 @@ export default class Enemy extends Entity {
             .addState(States.HURT, {
                 onEnter: this.onHurtEnter,
                 onUpdate: this.onHurtUpdate,
+                onExit: this.onHurtExit,
             })
             .addState(States.DEATH, {
                 onEnter: this.onDeathEnter,
@@ -308,7 +309,7 @@ export default class Enemy extends Entity {
         
         if (e.newPlayerHealth <= 0) this.clearCombat();
         this.checkMeleeOrRanged(e.computerWeapons?.[0]);
-        if (this.currentRound !== e.combatRound) this.currentRound = e.combatRound;
+        this.currentRound = e.combatRound;
     };
 
     persuasionUpdate = (e) => {
@@ -435,7 +436,6 @@ export default class Enemy extends Entity {
     };
 
     createEnemy = () => {
-        // console.log(this.scene.player.ascean, 'Creating Enemy');
         EventBus.on('enemy-fetched', this.enemyFetchedOn);
         const fetch = { enemyID: this.enemyID, level: this.scene.player.ascean.level };
         EventBus.emit('fetch-enemy', fetch);
@@ -546,10 +546,16 @@ export default class Enemy extends Entity {
     };
 
     onHurtEnter = () => {
+        this.clearAnimations();
+        this.clearTint();
         this.isHurt = true;
-        this.hurt();
+        this.scene.time.delayedCall(500, () => {
+            this.isHurt = false;
+        });
+        // this.hurt();
     };
-    onHurtUpdate = (dt) => {
+    onHurtUpdate = (_dt) => {
+        this.anims.play('player_hurt', true);
         if (!this.isHurt) {
             if (this.inCombat) {
                 this.stateMachine.setState(States.COMBAT);
@@ -557,6 +563,10 @@ export default class Enemy extends Entity {
                 this.stateMachine.setState(States.IDLE);
             };
         };
+    };
+    onHurtExit = () => {
+        this.isHurt = false;
+        this.setTint(0x000000);
     };
 
     onIdleEnter = () => {
@@ -672,7 +682,7 @@ export default class Enemy extends Entity {
             this.stateMachine.setState(States.LEASH);
             return;
         };  
-        if (distance >= 75 * rangeMultiplier) {
+        if (distance >= 100 * rangeMultiplier) { // was 75
             if (this.path && this.path.length > 1) {
                 this.setVelocity(this.pathDirection.x * (this.speed + 0.25), this.pathDirection.y * (this.speed + 0.25)); // 2.5
             } else {
@@ -700,6 +710,7 @@ export default class Enemy extends Entity {
         // this.scene.time.delayedCall(this.swingTimer, () => {
         //     this.combat(this.attacking);
         // });
+        
         this.attackTimer = this.scene.time.addEvent({
             delay: this.swingTimer,
             callback: () => {
@@ -1411,7 +1422,7 @@ export default class Enemy extends Entity {
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this);
         if (!this.inCombat) return;
-        // // console.log('===================== Evaluating Enemy State =====================') 
+        // console.log('===================== Evaluating Enemy State =====================') 
 
         if (this.isFeared && !this.stateMachine.isCurrentState(States.FEAR)) {
             this.stateMachine.setState(States.FEAR);

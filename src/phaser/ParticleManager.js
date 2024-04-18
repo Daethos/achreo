@@ -19,24 +19,43 @@ class Particle {
         const effectSensor = Bodies.circle(player.x, player.y, 6, { isSensor: true, label: `effectSensor-${id}`}); 
         this.effect.setExistingBody(effectSensor); 
         scene.add.existing(this.effect);
-        this.sensorListener(player, this, effectSensor);
+        this.sensorListener(player, effectSensor);
     };
 
-    sensorListener(player, effect, sensor) {
+    sensorListener = (player, sensor) => {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [sensor],
             callback: (other) => {
                 if (other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && !other.gameObjectB.isDefeated && player.name === 'player') {
+                    const match = this.scene.state?.enemyID === other.gameObjectB.enemyID;
                     player.attackedTarget = other.gameObjectB;
-                    player.particleEffect.success = true;
-                    if (this.scene.state.action !== effect.action) {
-                        this.scene.combatMachine.input('action', effect.action);
+                    
+                    if (match) {
+                        // console.log(match, '--- MATCHED --- TARGETED WEAPON ACTION TRIGGERED ---');
+                        this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: this.action }});
+                    } else {
+                        // console.log(match, '--- NO MATCH --- BLIND PLAYER ACTION TRIGGERED ---');
+                        this.scene.combatMachine.action({ type: 'Player', data: { 
+                            playerAction: { 
+                                action: this.action, 
+                                parry: this.scene.state.parryGuess 
+                            },  
+                            enemyID: other.gameObjectB.enemyID, 
+                            ascean: other.gameObjectB.ascean, 
+                            damageType: other.gameObjectB.currentDamageType, 
+                            combatStats: other.gameObjectB.combatStats, 
+                            weapons: other.gameObjectB.weapons, 
+                            health: other.gameObjectB.health, 
+                            actionData: { 
+                                action: other.gameObjectB.currentAction, 
+                                parry: other.gameObjectB.parryAction 
+                            } 
+                        }});
                     };
+                    player.particleEffect.success = true;
                 };
                 if (other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy') {
-                    if (player.isCurrentTarget && this.scene.state.computerAction !== effect.action) {
-                        this.scene.combatMachine.input('computerAction', effect.action, player.enemyID);
-                    };
+                    // console.log('--- PARTICLE EFFECT TRIGGERED FOR ENEMY ---');
                     player.particleEffect.success = true;
                 };
             },
@@ -55,7 +74,7 @@ class Particle {
                 const pointer = player.rightJoystick.pointer;
                 const worldX = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
                 const worldY = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
-                console.log(worldX, worldY);
+                // console.log(worldX, worldY);
                 const target = new Phaser.Math.Vector2(worldX, worldY);
                 // const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y) // player.rightJoystick.pointer.x, player.rightJoystick.pointer.y
                 const direction = target.subtract(player.position);

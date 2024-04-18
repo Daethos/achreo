@@ -17,8 +17,8 @@ export const FRAME_COUNT = {
     DISTANCE_CLEAR: 51,
 }; 
 
-export const SWING_TIME = { 'One Hand': 1250, 'Two Hand': 1500 }; // 750, 1250 [old]
-export const ENEMY_SWING_TIME = { 'One Hand': 850, 'Two Hand': 1100 }; // 750, 1250 [old]
+export const SWING_TIME = { 'One Hand': 1050, 'Two Hand': 1350 }; // 750, 1250 [old]
+export const ENEMY_SWING_TIME = { 'One Hand': 750, 'Two Hand': 1050 }; // 750, 1250 [old]
 
 export default class Entity extends Phaser.Physics.Matter.Sprite {
 
@@ -458,7 +458,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     checkActionSuccess = (entity, target) => {
         if (entity === 'player' && this.actionAvailable && this.triggeredActionAvailable) {
             this.actionSuccess = true;
-            this.attackedTarget = this.triggeredActionAvailable;
+            this.STU = this.triggeredActionAvailable;
         }; 
         if (entity === 'enemy' && target) {
             const direction = target.position.subtract(this.position);

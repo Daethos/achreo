@@ -32,22 +32,16 @@ export default function LootDropUI({ ascean, game }: Props) {
     });
 
     return (
-        <div class='center lootDropWindow' style={{ 
-            // position: 'fixed', height: '100vh', width: '100vw', left: 0, top: 0, bottom: 0, right: 0, // 'z-index': 2
-        }}>
-            <div class='gold' style={{ position: 'absolute', 'font-family': 'Cinzel-Regular', 'background-color': '#000', height: '35%', width: '45%',
-                top: '70%', left: '50%', 'transform': 'translate(-50%, -50%)', 'padding': '0.5em', 'border': '0.15em solid #FFC700',
-                'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', 'overflow-y': 'scroll', 'z-index': 2
-            }}>
+        <div class='center'>
+            <div class='gold lootDropWindow'>
                 <Show when={visibleLoot()}>
-                    <For each={visibleLoot()}>
-                        {((lootDrop: Equipment) => {
-                            console.log(lootDrop, 'lootDrop');
-                            return (
-                                <LootDrop ascean={ascean} lootDrop={lootDrop} show={show} setShow={setShow} setLootDrop={setLootDrop} />
-                            ) 
-                        })}
-                    </For>
+                <For each={visibleLoot()}>
+                    {((lootDrop: Equipment) => {
+                        return (
+                            <LootDrop ascean={ascean} lootDrop={lootDrop} show={show} setShow={setShow} setLootDrop={setLootDrop} />
+                        ) 
+                    })}
+                </For>
                 </Show>
             </div>
             <Show when={show()}>

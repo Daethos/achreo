@@ -730,7 +730,13 @@ export const PhaserGame = (props: IProps) => {
             setCombat({ ...combat(), isStealth: !combat().isStealth });
             EventBus.emit('stealth-sound');
         });
-        EventBus.on('update-health', (e: number) => setCombat({ ...combat(), e }));
+        EventBus.on('update-health', (e: number) => {
+            const update = {
+                ...props.ascean(),
+                health: { ...props.ascean().health, current: e }
+            };
+            EventBus.emit('update-ascean', update);
+        });
         EventBus.on('add-lootdrop', (e: Equipment[]) => {
             const newLootDrops = game().lootDrops.length > 0 ? [...game().lootDrops, ...e] : e;
             const newLootIds = game().showLootIds.length > 0 ? [...game().showLootIds, ...e.map((loot) => loot._id)] : e.map((loot) => loot._id);

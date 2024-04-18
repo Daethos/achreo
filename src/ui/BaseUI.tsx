@@ -272,8 +272,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 EventBus.emit('gain-experience', newState);
                 EventBus.emit('enemy-loot', loot);
             } else {
-                const health = { health: data.newPlayerHealth, id: ascean()._id };
-                updateHealth(health);
+                updateHealth(data.newPlayerHealth);
                 if (!ascean().tutorial.death) {
                     setTutorial('death');
                     setShowTutorial(true);
@@ -284,9 +283,9 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         };
     };    
 
-    function updateHealth(health: { health: number; id: string }) {
-        console.log('Permanent Health Update (Not Updated): ', health);
-        // EventBus.emit('update-health', health.health);
+    function updateHealth(health: number) {
+        console.log('Permanent Health Update: ', health, ' / ', ascean().health.max);
+        EventBus.emit('update-health', health);
     };
 
     function filterEnemies(id: string) {

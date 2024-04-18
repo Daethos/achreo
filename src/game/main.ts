@@ -39,7 +39,7 @@ const config: Phaser.Types.Core.GameConfig = {
             gravity: { x: 0, y: 0 },
         }
     },
-    // fps: { limit: 90, target: 90 },
+    fps: { limit: 90, target: 90 },
     fullscreenTarget: 'base-ui',
     plugins: {
         global: [{

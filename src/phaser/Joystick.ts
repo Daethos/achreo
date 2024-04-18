@@ -24,8 +24,14 @@ export default class Joystick extends Phaser.GameObjects.Container {
             dir: '8dir',
             // forceMin: 0,
             // enable: true
-        });
-        // this.setInteractive();
+        })
+        .on('pointerdown', function(pointer: any,){
+            pointer.event.preventDefault();
+            pointer.event.stopPropagation();
+        })
+        // .on('pointerup', function(pointer: any){
+        //     // console.log(pointer, '--- pointerup ---');
+        // });
         this.doubleTap();
     };
 

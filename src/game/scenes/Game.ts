@@ -116,17 +116,25 @@ export class Game extends Scene {
         const layer0 = map.createLayer('Tile Layer 0 - Base', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
         const layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
         const layerC = map.createLayer('Tile Layer - Construction', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
+        const layer4 = map.createLayer('Tile Layer 4 - Primes', decorations as Phaser.Tilemaps.Tileset, 0, 0);
+        const layer5 = map.createLayer('Tile Layer 5 - Snags', decorations as Phaser.Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer 2 - Flowers', decorations as Phaser.Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer 3 - Plants', decorations as Phaser.Tilemaps.Tileset, 0, 0);
-        map.createLayer('Tile Layer 4 - Primes', decorations as Phaser.Tilemaps.Tileset, 0, 0);
-        map.createLayer('Tile Layer 5 - Snags', decorations as Phaser.Tilemaps.Tileset, 0, 0);
+        // map.createLayer('Tile Layer 4 - Primes', decorations as Phaser.Tilemaps.Tileset, 0, 0);
+        // map.createLayer('Tile Layer 5 - Snags', decorations as Phaser.Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer 6 - Camps', camps as Phaser.Tilemaps.Tileset, 0, 0);
         layer0?.setCollisionByProperty({ collides: true });
         layer1?.setCollisionByProperty({ collides: true });
         layerC?.setCollisionByProperty({ collides: true });
+        layer4?.setCollisionByProperty({ collides: true });
+        layer5?.setCollisionByProperty({ collides: true });
+        layer4?.setDepth(3);
+        layer5?.setDepth(3);
         this.matter.world.convertTilemapLayer(layer0 as Phaser.Tilemaps.TilemapLayer);
         this.matter.world.convertTilemapLayer(layer1 as Phaser.Tilemaps.TilemapLayer);
         this.matter.world.convertTilemapLayer(layerC as Phaser.Tilemaps.TilemapLayer); 
+        this.matter.world.convertTilemapLayer(layer4 as Phaser.Tilemaps.TilemapLayer);
+        this.matter.world.convertTilemapLayer(layer5 as Phaser.Tilemaps.TilemapLayer);
         // this.matter.world.createDebugGraphic(); 
 
         const objectLayer = map.getObjectLayer('navmesh');

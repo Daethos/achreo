@@ -194,8 +194,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                         default:
                             break;
                     };
-                    computerWin = res.newComputerHealth === 0;
-                    playerWin = res.newPlayerHealth === 0;
                     break;
                 case 'Enemy': // 'Enemy Blind Attack' i.e. an enemy not targeted hitting the player
                     // console.log(data, 'Data')

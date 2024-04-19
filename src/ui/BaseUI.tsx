@@ -1,34 +1,20 @@
 import { Accessor, Setter, Show, createEffect, createSignal, onMount } from 'solid-js';
-import CombatUI from './CombatUI';
-import EnemyUI from './EnemyUI';
-import Character from './Character';
-import { EventBus } from "../game/EventBus";
-import { Combat } from "../stores/combat";
-import CombatSettings from './CombatSettings';
-import CombatText from './CombatText';
-import LootDropUI from './LootDropUI';
-import SmallHud from './SmallHud';
 import Ascean from '../models/ascean';
-import Settings from '../models/settings';
-import { consumePrayer, instantActionCompiler, weaponActionCompiler } from '../utility/combat';
-import { GameState } from '../stores/game';
-import { usePhaserEvent } from '../utility/hooks';
+import Character from './Character';
+import CombatUI from './CombatUI';
 import createStamina from './Stamina';
-// import Equipment, { getOneRandom } from '../models/equipment';
 import EnemyPreview from './EnemyPreview';
+import EnemyUI from './EnemyUI';
+import Settings from '../models/settings';
+import SmallHud from './SmallHud';
 import TutorialOverlay from '../utility/tutorial';
-import Dialog from './Dialog';
-import { LevelSheet } from '../utility/ascean';
-import { deleteEquipment } from '../assets/db/db';
+import { Combat } from "../stores/combat";
 import { EnemySheet } from '../utility/enemy';
-import { Statistics } from '../utility/statistics';
-import { checkDeificConcerns } from '../utility/deities';
-// import Equipment, { getOneRandom } from '../models/equipment';
-// import { populateEnemy, randomEnemy } from '../assets/db/db';
-// import { asceanCompiler } from '../utility/ascean';
-// import createTimer from './Timer';
-// import StoryTutorial from '../../../seyr/src/game/ui/StoryTutorial';
-// import { StoryDialog } from '../../../seyr/src/game/ui/StoryDialog';
+import { EventBus } from "../game/EventBus";
+import { GameState } from '../stores/game';
+import { LevelSheet } from '../utility/ascean';
+import { usePhaserEvent } from '../utility/hooks';
+import { consumePrayer, instantActionCompiler, weaponActionCompiler } from '../utility/combat';
 
 interface Props {
     ascean: Accessor<Ascean>;
@@ -40,7 +26,7 @@ interface Props {
 };
 
 export default function BaseUI({ ascean, combat, game, settings, setSettings, stamina }: Props) {
-    const { staminaPercentage, setStaminaPercentage } = createStamina(stamina);
+    const { staminaPercentage } = createStamina(stamina);
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [tutorial, setTutorial] = createSignal<string>('');
@@ -69,8 +55,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     });  
 
     // createEffect(() => {
-    //     EventBus.emit('game', game());
-    // });  
+    //     console.log(game()?.inventory, 'Inventory')
+    // });
 
     createEffect(() => {
         EventBus.emit('settings', settings());
@@ -83,12 +69,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         };
     });
  
-    // const updateCombatTimer = (e: number) => setCombat({...(combat), combatTimer: e}); 
-    
-    const sendEnemyData = async () => EventBus.emit('get-enemy', combat().computer);
-    const sendSettings = async () => EventBus.emit('get-settings', settings);
-    const showDialog = (e: boolean) => EventBus.emit('blend-game', { dialogTag: e }); // showDialog: e, 
-    const updateStamina = (e: number) => setStaminaPercentage(staminaPercentage() - e <= 0 ? 0 : staminaPercentage() - e);
+    const sendEnemyData = () => EventBus.emit('get-enemy', combat().computer);
+    const sendSettings = () => EventBus.emit('get-settings', settings);
 
     function initiateCombat(data: any, type: string) {
         try {    
@@ -252,27 +234,25 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         };
     };
 
-    async function resolveCombat(res: Combat) {
+    function resolveCombat(res: Combat) {
         try {
-            const data = { ...combat(), ...res };
-            EventBus.emit('record-statistics', data);
-            if (data.playerWin) {
-                let experience = ascean().experience + Math.round((data.computer?.level as number) * 100 * 
-                    (data.computer?.level as number / data?.player?.level!) + (data?.playerAttributes?.rawKyosir as number));
+            EventBus.emit('record-statistics', res);
+            if (res.playerWin) {
+                let experience = ascean().experience + Math.round((res.computer?.level as number) * 100 * (res.computer?.level as number / res?.player?.level!) + (res?.playerAttributes?.rawKyosir as number));
                 const newState = { 
                     ...asceanState(), 
-                    avarice: data.prayerData.length > 0 ? data.prayerData.includes('Avarice') : false, 
+                    avarice: res.prayerData.length > 0 ? res.prayerData.includes('Avarice') : false, 
                     currency: ascean().currency,
                     firewater: ascean().firewater,
-                    currentHealth: data.newPlayerHealth,
-                    opponent: data.computer?.level,
-                    opponentExp: Math.min(experience, data?.player?.level! * 1000),
+                    currentHealth: res.newPlayerHealth,
+                    opponent: res.computer?.level,
+                    opponentExp: Math.min(experience, res?.player?.level! * 1000),
                 };
-                const loot = { enemyID: data.enemyID, level: data.computer?.level as number };
+                const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
                 EventBus.emit('gain-experience', newState);
                 EventBus.emit('enemy-loot', loot);
             } else {
-                updateHealth(data.newPlayerHealth);
+            EventBus.emit('update-health', res.newPlayerHealth);
                 if (!ascean().tutorial.death) {
                     setTutorial('death');
                     setShowTutorial(true);
@@ -282,11 +262,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
             console.log(err, 'Error Resolving Combat');
         };
     };    
-
-    function updateHealth(health: number) {
-        console.log('Permanent Health Update: ', health, ' / ', ascean().health.max);
-        EventBus.emit('update-health', health);
-    };
 
     function filterEnemies(id: string) {
         let newEnemies = enemies();
@@ -303,12 +278,10 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     });
     usePhaserEvent('initiate-combat', (payload: { data: any, type: string }) => initiateCombat(payload.data, payload.type));
     usePhaserEvent('request-enemy', sendEnemyData);
-    usePhaserEvent('request-settings', sendSettings); // requestSettings
-    usePhaserEvent('show-dialog', showDialog); 
+    usePhaserEvent('request-settings', sendSettings);
 
     usePhaserEvent('remove-enemy', filterEnemies);
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
-    usePhaserEvent('update-stamina', updateStamina);
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
 
     function fetchEnemy(enemy: any) {
@@ -316,31 +289,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         EventBus.emit('tab-target', enemy);    
     };
 
-    // async function loot() {
-    //     const loot = await getOneRandom(ascean().level *4);
-    //     console.log(loot, 'Loot Drop');
-    //     EventBus.emit('add-lootdrop', loot);
-    // };
-
-    // loot();
-
-    // async function getExperience() {
-    //     let experience: number = ascean().experience + 1000;
-    //     let ceiling: number = ascean().level * 1000;
-    //     const newState = { 
-    //         ...asceanState(), 
-    //         avarice: false, 
-    //         opponent: 4,
-    //         opponentExp: Math.min(experience, ceiling),
-    //     };
-    //     EventBus.emit('gain-experience', newState);
-    // };
-
     return (
         <div id='base-ui'>
-        <Show when={game().scrollEnabled}>
-            <CombatSettings combat={combat} game={game} />
-        </Show> 
         <Show when={game().showPlayer} fallback={
             <div style={{ position: "absolute", 'z-index': 1 }}>
                 <CombatUI state={combat} staminaPercentage={staminaPercentage} game={game} stamina={stamina} />
@@ -353,19 +303,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         }>
             <Character settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} game={game} combatState={combat} />
         </Show>
-        <Show when={game().showCombat}>
-            <CombatText combat={combat} />
-        </Show>
-        <SmallHud ascean={ascean} combat={combat} game={game} /> 
-        <Show when={game().lootDrops.length > 0 && game().showLoot}>
-            <LootDropUI ascean={ascean} game={game} />
-        </Show>
-        { game().showDialog && ( // && game().dialogTag   
-            <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} />
-        ) }
-        {/* <button class='highlight superCenter' onClick={() => getExperience()}>
-            Get Experience
-        </button> */}
+        <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} /> 
         <Show when={showTutorial()}>
             <TutorialOverlay id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
         </Show>

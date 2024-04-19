@@ -53,16 +53,16 @@ function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: A
                 <p style={{ color: '#fdf6d8' }}>X</p>
             </button>
             <div class='creature-heading center' style={{ height: '100%', width: '100%' }}>
-                <h1 class='m-5' style={{ 'text-align': 'center', color: "gold", 'padding-top': '0.5em' }}>
+                <h1 style={{ 'text-align': 'center', color: "gold", 'padding-top': '0' }}>
                     {state().computer?.name}
                 </h1>
-                <h2>
+                <h2 style={{ margin: '2%' }}>
                     {state().computer?.description}
                 </h2>
-                <div style={{ transform: 'scale(0.875)', 'margin-top': '5%' }}>
+                <div style={{ transform: 'scale(0.875)', 'margin-top': '3%' }}>
                     <HealthBar combat={state} enemy={true} />
                 </div>
-                <div style={{ color: '#fdf6d8', 'margin-top': '12.5%', 'font-size': '0.875em' }}>
+                <div style={{ color: '#fdf6d8', 'margin-top': '9.5%', 'font-size': '0.875em' }}>
                     Level <span class='gold'>{state().computer?.level}</span> | Mastery <span class='gold'>{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
                 </div>
                 <div style={{ transform: 'scale(0.875)', 'margin-top': '0%' }}>
@@ -99,7 +99,7 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
     }); 
 
     function fetchEnemy(enemy: EnemySheet) {
-        console.log(enemy.id, enemy.game.name, 'fetchEnemy');
+        // console.log(enemy.id, enemy.game.name, 'fetchEnemy');
         EventBus.emit('setup-enemy', enemy);
         EventBus.emit('tab-target', enemy);    
     };
@@ -152,7 +152,7 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
                     ))}</For>
                 </div>
             </Show> 
-            {enemies()?.map((enemy, index) => {
+            {enemies()?.length > 0 && enemies()?.map((enemy, index) => {
                 const prevIdx = Number(index) - 1 === -1 ? enemies().length - 1 : Number(index) - 1;
                 const prevIdxMore = prevIdx - 1 < 0 ? enemies().length + (prevIdx - 1) : prevIdx - 1;
                 if (enemies().length < 2 || enemies()[prevIdx].id !== state().enemyID) return;
@@ -165,7 +165,6 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
                     <Show when={truePrev} fallback={
                         <div style={{ transform: 'scale(0.75)', 'background-color': '#000', position: 'absolute', height: 'auto', width: '10vw', top: '13.5vh', right: '0vw' }}>
                             <button class='center' style={{ width: 'auto', height: '100%', display: 'inline-block', 'background-color': '#000' }} onClick={() => fetchEnemy(enemy)}>
-                                {/* <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`Next >>`}</div> */}
                                 <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={cleanEnemy} id='deity-pic' />
                                 <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{cleanEnemy}</div>
                             </button>
@@ -173,12 +172,10 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
                     }>
                         <div style={{ transform: 'scale(0.75)', position: 'absolute', width: '20vw', top: '13.5vh', right: '-2vw' }}>
                             <button class='center' style={{ height: '100%', width: '50%', display: 'inline-block', 'background-color': '#000' }} onClick={() => fetchEnemy(enemies()[prevIdxMore])}>
-                                {/* <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`<< Prev`}</div> */}
                                 <img src={`../assets/images/${enemies()[prevIdxMore].game.origin}-${enemies()[prevIdxMore].game.sex}.jpg`} alt={enemies()[prevIdxMore].game.name} id='deity-pic' />
                                 <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{cleanName}</div>
                             </button>
                             <button class='center' style={{ width: '50%', height: '100%', display: 'inline-block', 'background-color': '#000' }} onClick={() => fetchEnemy(enemy)}>
-                                {/* <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{`Next >>`}</div> */}
                                 <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={cleanEnemy} id='deity-pic' />
                                 <div style={{ color: 'gold', 'text-align': 'center', 'font-size': '0.75em' }}>{cleanEnemy}</div>
                             </button>

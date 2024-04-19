@@ -315,6 +315,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const check = staminaCheck(input, scene.player.stamina);
         if (check.success === true && scene.player.stateMachine.isState(input)) {
             scene.player.stateMachine.setState(`${input}`);
+        } else if (check.success === true && scene.player.metaMachine.isState(input)) {
+            scene.player.metaMachine.setState(`${input}`);
         };
     };
 

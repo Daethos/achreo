@@ -6,15 +6,21 @@ import { GameState } from '../stores/game';
 import { Combat } from '../stores/combat';
 import ExperienceToast from './ExperienceToast';
 import Ascean from '../models/ascean';
+import CombatSettings from './CombatSettings';
+import LootDropUI from './LootDropUI';
+import CombatText from './CombatText';
+import Dialog from './Dialog';
+import { LevelSheet } from '../utility/ascean';
 
 
 interface Props {
     ascean: Accessor<Ascean>;
+    asceanState: Accessor<LevelSheet>;
     combat: Accessor<Combat>;
     game: Accessor<GameState>;
 };
 
-export default function SmallHud({ ascean, combat, game }: Props) { 
+export default function SmallHud({ ascean, asceanState, combat, game }: Props) { 
     const [show, setShow] = createSignal<boolean>(true);
     const [alert, setAlert] = createSignal<{ header: string; body: string } | undefined>(undefined);
     const [toastShow, setToastShow] = createSignal<boolean>(false);
@@ -112,7 +118,6 @@ export default function SmallHud({ ascean, combat, game }: Props) {
         'font-weight': 700,
         'align-items': 'center',
         'margin-top': '10%',
-        // width: '100%',
         filter: 'sepia(100%)',
     };
 
@@ -123,6 +128,18 @@ export default function SmallHud({ ascean, combat, game }: Props) {
                 <ExperienceToast show={toastShow} setShow={setToastShow} alert={alert} setAlert={setAlert} />
             </div>
         </Show>
+        <Show when={game().scrollEnabled}>
+            <CombatSettings combat={combat} game={game} />
+        </Show>
+        <Show when={game().lootDrops.length > 0 && game().showLoot}>
+            <LootDropUI ascean={ascean} game={game} />
+        </Show>
+       <Show when={game().showCombat}>
+            <CombatText combat={combat} />
+        </Show>
+        <Show when={game().showDialog}>
+            <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} />
+        </Show>   
         <Show when={show()} fallback={
             <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { 
                 height: '7.5%', width: '3.75%', right: '0.5%'

@@ -130,14 +130,11 @@ const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlay
         let newText: string = '';
         let newOptions: DialogNodeOption[] = [];
         let currentNode = dialogNodes?.[index];
-        console.log(currentNode, '--- PINGING searchCurrentNode PINGING ---');
         if (currentNode === undefined) return;
-        console.log('--- SUCCESS searchCurrentNode SUCCESS ---');
 
         const { text, options } = currentNode as DialogNode;
         newText = processText(text, { ascean, enemy, combat });
         newOptions = processOptions(options, { ascean, enemy, combat });
-        console.log(newText, newOptions, '--- PINGING searchCurrentNode PINGING ---');
         EventBus.emit('blend-game', { 
             currentNode: currentNode,
             currentNodeIndex: index || 0,

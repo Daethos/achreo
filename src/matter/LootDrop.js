@@ -5,7 +5,6 @@ export const { Bodies } = Phaser.Physics.Matter.Matter;
 
 export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.Matter.Image  
     constructor(data) {
-        // console.log(data, 'Data of Loot Drop');
         let { scene, enemyID, drop } = data;
         const texture = imgUrl(drop.imgUrl);
         const enemy = scene.enemies?.find((e) => e.enemyID === enemyID);
@@ -33,6 +32,30 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
         });
         this.setExistingBody(circleCollider);
         this.setStatic(true);
+
+        this.scene.matterCollision.addOnCollideStart({
+            objectA: [circleCollider],
+            callback: (other) => {
+                if (other.gameObjectB && other.bodyB.label === 'playerSensor') {
+                    other.gameObjectB.interacting.push(this);
+                    const interactingLoot = { loot: this._id, interacting: true };
+                    EventBus.emit('interacting-loot', interactingLoot);
+                };
+            },
+            context: this.scene,
+        }); 
+
+        this.scene.matterCollision.addOnCollideEnd({
+            objectA: [circleCollider],
+            callback: (other) => {
+                if (other.gameObjectB && other.bodyB.label === 'playerSensor') {
+                    other.gameObjectB.interacting = other.gameObjectB.interacting.filter(obj => obj.id !== this.id);
+                    const interactingLoot = { loot: this._id, interacting: false };
+                    EventBus.emit('interacting-loot', interactingLoot);
+                };
+            },
+            context: this.scene,
+        });
     };
 
 

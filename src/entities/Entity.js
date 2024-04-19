@@ -231,7 +231,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         switch (type) {
             case 'shield':
                 this.glowShield = this.scene.time.addEvent({
-                    delay: 125, // 125 Adjust the delay as needed
+                    delay: 200, // 125 Adjust the delay as needed
                     callback: () => updateGlow(this.scene.time.now),
                     loop: true,
                     callbackScope: this
@@ -239,7 +239,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 break;
             case 'weapon':
                 this.glowWeapon = this.scene.time.addEvent({
-                    delay: 125, // 125 Adjust the delay as needed
+                    delay: 200, // 125 Adjust the delay as needed
                     callback: () => updateGlow(this.scene.time.now),
                     loop: true,
                     callbackScope: this
@@ -247,7 +247,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 break;
             default:
                 this.glowTimer = this.scene.time.addEvent({
-                    delay: 125, // 125 Adjust the delay as needed
+                    delay: 200, // 125 Adjust the delay as needed
                     callback: () => updateGlow(this.scene.time.now),
                     loop: true,
                     callbackScope: this
@@ -464,7 +464,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if (entity === 'enemy' && target) {
             const direction = target.position.subtract(this.position);
             const distance = direction.length();
-            if (distance < FRAME_COUNT.DISTANCE_CLEAR) this.actionSuccess = true;
+            if (distance < FRAME_COUNT.DISTANCE_CLEAR && !target.isShielding) this.actionSuccess = true;
         };
     };
 

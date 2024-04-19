@@ -39,6 +39,18 @@ export const States = {
     ROOTING: "root",
     SNARING: "snare",
 
+    FREEZE: "freeze",
+    BURN_AOE: "burn_aoe",
+    FREEZE_CAST: "freeze_cast",
+    BURN_CAST: "burn_cast",
+    SLOWING: "slow",
+    BURN_INSTANT: "burn_instant",
+    RANGED_STUN: "ranged_stun",
+    SHIELD: "shield",
+    DESPERATION: "desperation",
+    SCREAM: "scream",
+
+
     CLEAN: "clean",
     FEAR: "fear",
     POLYMORPH: "polymorph",

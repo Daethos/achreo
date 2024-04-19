@@ -77,9 +77,13 @@ export class Game extends Scene {
     phenomena: Phaser.Sound.BaseSound;
     mysterious: Phaser.Sound.BaseSound;
     tshaeral: Phaser.Sound.BaseSound;
+    dungeon: Phaser.Sound.BaseSound;
+    frozen: Phaser.Sound.BaseSound;
+
     fpsText: Phaser.GameObjects.Text;
     combatTimerText: Phaser.GameObjects.Text;
     volumeEvent: () => void;
+    matterCollision: any;
 
     constructor () {
         super('Game');
@@ -128,8 +132,8 @@ export class Game extends Scene {
         layerC?.setCollisionByProperty({ collides: true });
         layer4?.setCollisionByProperty({ collides: true });
         layer5?.setCollisionByProperty({ collides: true });
-        layer4?.setDepth(2);
-        layer5?.setDepth(2);
+        layer4?.setDepth(3);
+        layer5?.setDepth(3);
         this.matter.world.convertTilemapLayer(layer0 as Phaser.Tilemaps.TilemapLayer);
         this.matter.world.convertTilemapLayer(layer1 as Phaser.Tilemaps.TilemapLayer);
         this.matter.world.convertTilemapLayer(layerC as Phaser.Tilemaps.TilemapLayer); 
@@ -197,7 +201,6 @@ export class Game extends Scene {
             stalwart: this?.input?.keyboard?.addKeys('G'),
         }; 
 
-
         // =========================== Lighting =========================== \\
 
         this.lights.enable();
@@ -233,6 +236,8 @@ export class Game extends Scene {
         this.phenomena = this.sound.add('phenomena', { volume: this?.settings?.volume });
         this.mysterious = this.sound.add('combat-round', { volume: this?.settings?.volume });
         this.tshaeral = this.sound.add('39_Absorb_04', { volume: this?.settings?.volume });
+        this.dungeon = this.sound.add('dungeon', { volume: this?.settings?.volume });
+        this.frozen = this.sound.add('freeze', { volume: this?.settings?.volume });
 
         // =========================== FPS =========================== \\
 
@@ -512,6 +517,12 @@ export class Game extends Scene {
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         enemy.isFeared = true;
     };
+    freeze = (id: string) => {
+        if (id === '') return;
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        enemy.isFrozen = true;
+    };
+
     polymorph = (id: string) => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
@@ -582,6 +593,11 @@ export class Game extends Scene {
             },
         });
     };
+    scream = (id: string) => {
+        if (id === '') return;
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        enemy.isFeared = true;
+    };
     snare = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
@@ -607,6 +623,7 @@ export class Game extends Scene {
     clearNPC = () => EventBus.emit('clear-npc'); 
     combatEngaged = (bool: boolean) => {
         this.combat = bool;
+        console.log(`Combat Engaged: ${bool}`);
         EventBus.emit('combat-engaged', bool);
         if (bool) {
             this.combatTimerText.setVisible(true);
@@ -641,7 +658,7 @@ export class Game extends Scene {
         const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType };
         EventBus.emit('setup-npc', data);    
     };
-    showDialog = (dialog: boolean) => EventBus.emit('show-dialog', dialog);
+    showDialog = (dialog: boolean) => EventBus.emit('blend-game', { dialogTag: dialog });
 
     // ============================ Player ============================ \\
 

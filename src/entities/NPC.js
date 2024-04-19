@@ -89,6 +89,14 @@ export default class NPC extends Entity {
                     this.scene.setupNPC(this);
                     this.npcTarget = other.gameObjectB;
                     this.stateMachine.setState(States.AWARE);
+
+                    other.gameObjectB.currentTarget = this;
+                    other.gameObjectB.targetID = this.enemyID;
+
+                    const isNewNPC = !other.gameObjectB.targets.some(obj => obj.enemyID === this.enemyID);
+                    if (isNewNPC) {
+                        other.gameObjectB.targets.push(this);
+                    };
                 };
             },
             context: this.scene,
@@ -100,6 +108,10 @@ export default class NPC extends Entity {
                     if (this.healthbar) this.healthbar.setVisible(false);
                     this.interacting = false;
                     this.stateMachine.setState(States.IDLE); 
+
+                    other.gameObjectB.targets = other.gameObjectB.targets.filter(obj => obj.enemyID !== this.enemyID);
+                    this.scene.clearNPC();
+                    other.gameObjectB.checkTargets();
                 };
             },
             context: this.scene,

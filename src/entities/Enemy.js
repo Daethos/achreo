@@ -22,6 +22,8 @@ const DISTANCE = {
 
 const DURATION = {
     CONSUMED: 2000,
+    FEAR: 3000,
+    FROZEN: 3000,
     ROOT: 3000,
     STUN: 3000,
     TEXT: 1500,
@@ -152,6 +154,16 @@ export default class Enemy extends Entity {
                 // onUpdate: this.onSnareUpdate,
                 onExit: this.onSnareExit,
             })
+            .addState(States.SLOW, {
+                onEnter: this.onSlowEnter,
+                // onUpdate: this.onSlowUpdate,
+                onExit: this.onSlowExit,
+            })
+            .addState(States.FREEZE_AOE, {
+                onEnter: this.onFrozenEnter,
+                onUpdate: this.onFrozenUpdate,
+                onExit: this.onFrozenExit,
+            })
 
         this.metaMachine.setState(States.CLEAN);
         
@@ -237,7 +249,7 @@ export default class Enemy extends Entity {
                 if (newEnemy) {
                     this.scene.player.addEnemy(this);
                 };
-                this.scene.player.setAttacking(this);;
+                this.scene.player.setAttacking(this);
                 this.scene.player.setCurrentTarget(this);
             })
             .on('pointerout', () => {
@@ -249,6 +261,8 @@ export default class Enemy extends Entity {
         EventBus.off('combat', this.combatDataUpdate);
         EventBus.off('update-combat', this.combatDataUpdate); 
         EventBus.off('personal-update', this.personalUpdate);    
+        EventBus.off('enemy-persuasion', this.persuasionUpdate);
+        EventBus.off('enemy-luckout', this.luckoutUpdate);
     };
 
     enemyStateListener() {
@@ -340,15 +354,15 @@ export default class Enemy extends Entity {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [enemySensor],
             callback: other => {
-                if (this.ascean && other.gameObjectB && other.gameObjectB.name === 'player' && !other.gameObjectB.isStealthing && this.enemyStatusCheck()) { 
+                if (!other.gameObjectB || other.gameObjectB.name !== 'player') return;
+                if (this.ascean && !other.gameObjectB.isStealthing && this.enemyAggressionCheck()) { 
                     this.createCombat(other, 'start');
-                } else if (this.playerStatusCheck(other.gameObjectB) && !this.isDead && !this.isAggressive) {
+                } else if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
                     const newEnemy = this.isNewEnemy(other.gameObjectB);
                     if (newEnemy) {
                         other.gameObjectB.targets.push(this);
                         other.gameObjectB.checkTargets();
                     } ;
-                    // if (this.healthbar) this.healthbar.setVisible(true);
                     if (this.scene.state.enemyID !== this.enemyID) this.scene.setupEnemy(this);
                     this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
                     if (this.stateMachine.isCurrentState(States.DEFEATED)) {
@@ -360,19 +374,21 @@ export default class Enemy extends Entity {
             },
             context: this.scene,
         });
-        this.scene.matterCollision.addOnCollideActive({
-            objectA: [enemySensor],
-            callback: other => {
-                if (this.playerStatusCheck(other.gameObjectB) && this.enemyStatusCheck() && !this.isAttacking) { 
-                    this.createCombat(other, 'Enemy Joined Combat that was already active');
-                };
-            },
-            context: this.scene,
-        }); 
+        // this.scene.matterCollision.addOnCollideActive({
+        //     objectA: [enemySensor],
+        //     callback: other => {
+        //         if (this.playerStatusCheck(other.gameObjectB) && this.enemyAggressionCheck() && !this.isAttacking) { 
+        //             console.log('--- DOES THIS EVER PING --- ')
+        //             this.createCombat(other, 'Enemy Joined Combat that was already active');
+        //         };
+        //     },
+        //     context: this.scene,
+        // }); 
         this.scene.matterCollision.addOnCollideEnd({
             objectA: [enemySensor],
             callback: other => {
-                if (this.playerStatusCheck(other.gameObjectB) && !this.isDead && !this.isAggressive) {
+                if (!other.gameObjectB || other.gameObjectB.name !== 'player') return;
+                if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
                     if (this.healthbar) this.healthbar.setVisible(false);
                     if (this.isDefeated) {
                         this.scene.showDialog(false);
@@ -412,11 +428,11 @@ export default class Enemy extends Entity {
         this.stateMachine.setState(States.CHASE); 
     };
 
-    playerStatusCheck = (other) => {
-        return (this.ascean && other && other.name === 'player' && !other.inCombat && !other.isStealthing);
+    playerStatusCheck = (player) => {
+        return (this.ascean && !player.inCombat && !player.isStealthing);
     };
 
-    enemyStatusCheck = () => {
+    enemyAggressionCheck = () => {
         return (!this.isDead && !this.isDefeated && !this.isTriumphant && !this.inCombat && this.isAggressive);
     };
 
@@ -474,28 +490,38 @@ export default class Enemy extends Entity {
         this.isAggressive = false; // Added to see if that helps with post-combat losses for the player
     };
 
-    createCombat = (combat, _when) => {
-        const newEnemy = this.isNewEnemy(combat.gameObjectB);
+    createCombat = (collision, _when) => {
+        const newEnemy = this.isNewEnemy(collision.gameObjectB);
         if (newEnemy) {
             // console.log('Creating Combat --- newEnemy: ', newEnemy)
-            combat.gameObjectB.targets.push(this);
-            this.attacking = combat.gameObjectB;
-            combat.gameObjectB.attacking = this;
-            combat.gameObjectB.currentTarget = this;
+            // collision.gameObjectB.targets.push(this);
+            // this.scene.player.shouldPlayerEnterCombat({ other: { gameObjectA: collision.gameObjectB, gameObjectB: this } });
+            this.scene.player.targets.push(this);
+            this.scene.player.checkTargets();
+            this.scene.player.setAttacking(this);
+            this.scene.player.setCurrentTarget(this);
+            this.scene.player.actionTarget = collision;
+            this.scene.player.targetID = this.enemyID;
+            this.scene.player.highlightTarget(this);
+            this.scene.player.inCombat = true;
+
+            this.attacking = collision.gameObjectB;
             this.scene.setupEnemy(this);
             this.inCombat = true;
             if (this.healthbar) this.healthbar.setVisible(true);
             this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
+            this.actionTarget = collision;
             this.stateMachine.setState(States.CHASE); 
-            this.actionTarget = combat;
+            
+            this.scene.combatEngaged(true);
         } else {
-            // if (!combat.gameObjectB.attacking || !combat.gameObjectB.inCombat) { // !inCombat
-            // console.log('Not attacking or in combat');
+            // if (!collision.gameObjectB.attacking || !collision.gameObjectB.inCombat) { // !inCombat
+            // console.log('Not attacking or in collision');
             if (this.scene.state.enemyID !== this.enemyID) this.scene.setupEnemy(this);
-            combat.gameObjectB.attacking = this;
-            combat.gameObjectB.currentTarget = this;
-            combat.gameObjectB.inCombat = true;
-            combat.gameObjectB.highlightTarget(this);
+            collision.gameObjectB.attacking = this;
+            collision.gameObjectB.currentTarget = this;
+            collision.gameObjectB.inCombat = true;
+            collision.gameObjectB.highlightTarget(this);
             this.scene.combatEngaged(true);
         }
         // }; 
@@ -587,48 +613,58 @@ export default class Enemy extends Entity {
     onPatrolEnter = () => {
         this.anims.play('player_running', true); 
         const patrolDirection = new Phaser.Math.Vector2(Math.random() - 0.5, Math.random() - 0.5).normalize();
-        if (patrolDirection.x < 0) { this.flipX = true };
+        if (patrolDirection.x < 0 && !this.flipX) {
+            this.setFlipX(true);
+        } else if (patrolDirection.x > 0 && this.flipX) {
+            this.setFlipX(false);
+        };
         const patrolSpeed = 0.75;
         this.patrolVelocity = { x: patrolDirection.x * patrolSpeed, y: patrolDirection.y * patrolSpeed };
         const delay = Phaser.Math.RND.between(2000, 4000); // 3500
-        this.patrolTimer = this.scene.time.addEvent({
-            delay: delay,
-            callback: () => {
-                this.setVelocity(0, 0);
-                if (this.stateMachine.isCurrentState(States.PATROL)) this.stateMachine.setState(States.IDLE);
-                // const wasX = this.flipX;
-                // this.scene.tweens.add({
-                //     delay: 1000,
-                //     targets: this,
-                //     x: this.originalPosition.x,
-                //     y: this.originalPosition.y,
-                //     duration: delay,
-                //     // onUpdate: () => {
-                //     //     if (this.flipX === wasX) this.flipX = !this.flipX;
-                //     //     this.anims.play('player_running', true);
-                //     //     // Need an if that's checking if the enemy has 'seen' the player through the AWARE state being in the stateMachine stack
-                //     //     if (this.changeStateQueue?.[0] === States.AWARE) {
-                //     //         console.log('Changing to Aware');
-                //     //         this.setVelocity(0, 0);
-                //     //         this.changeStateQueue.shift();
-                //     //         this.stateMachine.setState(States.AWARE);
-                //     //     };
-                //     // },
-                //     onComplete: () => { 
-                //         this.setVelocity(0, 0);
-                //         if (this.stateMachine.isCurrentState(States.PATROL)) this.stateMachine.setState(States.IDLE);
-                //     }
-                // });
-            },
-            callbackScope: this,
-            loop: false,
+
+        this.scene.time.delayedCall(delay, () => {
+            this.setVelocity(0, 0);
+            if (this.stateMachine.isCurrentState(States.PATROL)) this.stateMachine.setState(States.IDLE);
         });
+
+        // this.patrolTimer = this.scene.time.addEvent({
+        //     delay: delay,
+        //     callback: () => {
+        //         this.setVelocity(0, 0);
+        //         if (this.stateMachine.isCurrentState(States.PATROL)) this.stateMachine.setState(States.IDLE);
+        //         // const wasX = this.flipX;
+        //         // this.scene.tweens.add({
+        //         //     delay: 1000,
+        //         //     targets: this,
+        //         //     x: this.originalPosition.x,
+        //         //     y: this.originalPosition.y,
+        //         //     duration: delay,
+        //         //     // onUpdate: () => {
+        //         //     //     if (this.flipX === wasX) this.flipX = !this.flipX;
+        //         //     //     this.anims.play('player_running', true);
+        //         //     //     // Need an if that's checking if the enemy has 'seen' the player through the AWARE state being in the stateMachine stack
+        //         //     //     if (this.changeStateQueue?.[0] === States.AWARE) {
+        //         //     //         console.log('Changing to Aware');
+        //         //     //         this.setVelocity(0, 0);
+        //         //     //         this.changeStateQueue.shift();
+        //         //     //         this.stateMachine.setState(States.AWARE);
+        //         //     //     };
+        //         //     // },
+        //         //     onComplete: () => { 
+        //         //         this.setVelocity(0, 0);
+        //         //         if (this.stateMachine.isCurrentState(States.PATROL)) this.stateMachine.setState(States.IDLE);
+        //         //     }
+        //         // });
+        //     },
+        //     callbackScope: this,
+        //     loop: false,
+        // });
     }; 
     onPatrolUpdate = (_dt) => { 
         this.setVelocity(this.patrolVelocity.x, this.patrolVelocity.y);
     };
     onPatrolExit = () => {
-        this.patrolTimer.destroy();
+        // this.patrolTimer.destroy();
     };
 
     onAwarenessEnter = () => {
@@ -706,11 +742,6 @@ export default class Enemy extends Entity {
 
     onCombatEnter = () => {
         this.anims.play('player_running', true);
-        // this.combat(this.attacking);
-        // this.scene.time.delayedCall(this.swingTimer, () => {
-        //     this.combat(this.attacking);
-        // });
-        
         this.attackTimer = this.scene.time.addEvent({
             delay: this.swingTimer,
             callback: () => {
@@ -1144,14 +1175,42 @@ export default class Enemy extends Entity {
     onCleanEnter = () => {};
     onCleanExit = () => {};
 
+    onFrozenEnter = () => {
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Frozen', DURATION.TEXT, 'cast');
+        if (!this.isPolymorphed) this.clearAnimations();
+        this.anims.play('player_idle', true);
+        this.setTint(0x0000FF); // 0x888888
+        this.setStatic(true);
+        this.scene.time.addEvent({
+            delay: DURATION.FROZEN,
+            callback: () => {
+                this.isFrozen = false;
+                this.metaMachine.setState(States.CLEAN);
+            },
+            callbackScope: this,
+            loop: false,
+        });
+    };
+    onFrozenUpdate = (_dt) => {
+        if (!this.isPolymorphed) {
+            if (!this.checkIfAnimated()) this.anims.play('player_idle', true);
+            this.evaluateCombatDistance();
+        }; 
+    };
+    onFrozenExit = () => {
+        this.clearTint();
+        this.setTint(0x000000);
+        this.setStatic(false);
+    };
+
+
     onRootEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Rooted', DURATION.TEXT, 'effect');
         if (!this.isPolymorphed) this.clearAnimations();
-        this.rootDuration = DURATION.ROOT;
         this.setTint(0x888888); // 0x888888
         this.setStatic(true);
         this.scene.time.addEvent({
-            delay: this.rootDuration,
+            delay: DURATION.ROOT,
             callback: () => {
                 this.isRooted = false;
                 this.metaMachine.setState(States.CLEAN);
@@ -1171,26 +1230,39 @@ export default class Enemy extends Entity {
         this.setTint(0x000000);
         this.setStatic(false);
     };
+
+    onSlowEnter = () => {
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slowed', DURATION.TEXT, 'effect');
+        this.slowDuration = DURATION.SLOW;
+        this.setTint(0xFFC700); // 0x888888
+        this.adjustSpeed(-1.5);
+        this.scene.time.delayedcall(this.slowDuration, () =>{
+            this.isSlowed = false;
+            this.metaMachine.setState(States.CLEAN);
+        });
+    };
+
+    onSlowExit = () => {
+        this.clearTint();
+        this.setTint(0x000000);
+        this.adjustSpeed(1.5);
+    };
+
     onSnareEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snared', DURATION.TEXT, 'effect');
         this.snareDuration = 3000;
-        this.setTint(0xFF0000); // 0x888888
+        this.setTint(0x0000FF); // 0x888888
         this.adjustSpeed(-1.5);
-        this.scene.time.addEvent({
-            delay: this.snareDuration,
-            callback: () => {
-                this.isSnared = false;
-                this.metaMachine.setState(States.CLEAN);
-            },
-            callbackScope: this,
-            loop: false,
+        this.scene.time.delayedcall(this.snareDuration, () =>{
+            this.isSnared = false;
+            this.metaMachine.setState(States.CLEAN);
         });
     };
     // onSnareUpdate = (dt) => {};
     onSnareExit = () => { 
         this.clearTint();
         this.setTint(0x000000);
-        this.adjustSpeed(2);
+        this.adjustSpeed(1.5);
     };
 
     enemyActionSuccess = () => {
@@ -1444,6 +1516,14 @@ export default class Enemy extends Entity {
         };
         if (this.isRooted && !this.metaMachine.isCurrentState(States.ROOT)) {
             this.metaMachine.setState(States.ROOT);
+            return;
+        };
+        if (this.isFrozen && !this.metaMachine.isCurrentState(States.FROZEN)) {
+            this.metaMachine.setState(States.FROZEN);
+            return;
+        };
+        if (this.isSlowed && !this.metaMachine.isCurrentState(States.SLOW)) {
+            this.metaMachine.setState(States.SLOW);
             return;
         };
         if (this.isSnared && !this.metaMachine.isCurrentState(States.SNARE)) {

@@ -80,15 +80,15 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
 
     function setEquipper() {
         let type;
-        console.log(inventoryType(), 'Inventory Type', weaponCompared(), 'Weapon Compared', ringCompared(), 'Ring Compared');
+        // console.log(inventoryType(), 'Inventory Type', weaponCompared(), 'Weapon Compared', ringCompared(), 'Ring Compared');
         if (inventoryType() === 'weaponOne') {
-            console.log('Weapon', weaponCompared());
+            // console.log('Weapon', weaponCompared());
             type = weaponCompared();
         } else if (inventoryType() === 'ringOne') {
             type = ringCompared();
-            console.log('Ring', ringCompared());
+            // console.log('Ring', ringCompared());
         } else {
-            console.log('Else', inventoryType());
+            // console.log('Else', inventoryType());
             type = inventoryType();
         };
         // console.log(type, highlighted()?.item, '------- Type -------');

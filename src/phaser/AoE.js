@@ -18,7 +18,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             innerStrength: 1,
             glowColor: COLORS[type],
             intensity: 0.25,
-            // knockout: true,
+            knockout: true,
         });
         this.hit = [];    
         this.setupSensor(scene);

@@ -130,9 +130,9 @@ export const populate = async (ascean: any) => {
 
 export function indexEquipment(): Object[] {
     const weapons = Weapons.filter(weapon => weapon.rarity === 'Common');
-    const amulets = Amulets.filter(amulet => amulet.rarity === 'Common');
-    const rings = Rings.filter(ring => ring.rarity === 'Common');
-    const trinkets = Trinkets.filter(trinket => trinket.rarity === 'Common');
+    const amulets = Amulets.filter(amulet => amulet.rarity === 'Uncommon');
+    const rings = Rings.filter(ring => ring.rarity === 'Uncommon');
+    const trinkets = Trinkets.filter(trinket => trinket.rarity === 'Uncommon');
     const helmets = Helmets.filter(helmet => helmet.rarity === 'Common' || helmet.rarity === 'Default');
     const chests = Chests.filter(chest => chest.rarity === 'Common' || chest.rarity === 'Default');
     const legs = Legs.filter(leg => leg.rarity === 'Common' || leg.rarity === 'Default');

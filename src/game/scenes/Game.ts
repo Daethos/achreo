@@ -107,9 +107,9 @@ export class Game extends Scene {
         this.settings = this.getSettings();
 
         // ================== Add Multiple Inputs ================== \\
-        this.input.addPointer(3);
-        this.input.addPointer(4);
-        this.input.addPointer(5);
+        // this.input.addPointer(3);
+        // this.input.addPointer(4);
+        // this.input.addPointer(5);
 
         // ================== Ascean Test Map ================== \\
         const map = this.make.tilemap({ key: 'ascean_test' });

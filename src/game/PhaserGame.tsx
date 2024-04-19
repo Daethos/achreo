@@ -715,10 +715,7 @@ export const PhaserGame = (props: IProps) => {
         });
         // EventBus.on('update-combat', (e: Combat) => setCombat(e));
         EventBus.on('update-combat-player', (e: any) => setCombat({ ...combat(), player: { ...e.ascean, inventory: [] }, playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, playerAttributes: e.attributes, playerDefense: e.defense, playerDefenseDefault: e.defense }));
-        EventBus.on('update-combat-state', (e: { key: string; value: string }) => {
-            console.log('update-combat-state')
-            setCombat({ ...combat(), [e.key]: e.value });
-        });
+        EventBus.on('update-combat-state', (e: { key: string; value: string }) => setCombat({ ...combat(), [e.key]: e.value }));
         EventBus.on('update-combat-timer', (e: number) => setCombat({ ...combat(), combatTimer: e }));
 
         EventBus.on('update-caerenic', () => {

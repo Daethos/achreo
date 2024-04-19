@@ -31,10 +31,8 @@ class Particle {
                     player.attackedTarget = other.gameObjectB;
                     
                     if (match) {
-                        // console.log(match, '--- MATCHED --- TARGETED WEAPON ACTION TRIGGERED ---');
                         this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: this.action }});
                     } else {
-                        // console.log(match, '--- NO MATCH --- BLIND PLAYER ACTION TRIGGERED ---');
                         this.scene.combatMachine.action({ type: 'Player', data: { 
                             playerAction: { 
                                 action: this.action, 
@@ -54,7 +52,7 @@ class Particle {
                     };
                     player.particleEffect.success = true;
                 };
-                if (other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy') {
+                if (other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy' && !other.gameObjectB.isShielding) {
                     // console.log('--- PARTICLE EFFECT TRIGGERED FOR ENEMY ---');
                     player.particleEffect.success = true;
                 };

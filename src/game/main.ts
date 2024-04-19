@@ -25,6 +25,9 @@ const config: Phaser.Types.Core.GameConfig = {
     },
     parent: 'game-container',
     backgroundColor: '#000',
+    input: {
+        activePointers: 10,
+    },
     scene: [
         Boot,
         Preloader,

@@ -29,9 +29,9 @@ export class Preloader extends Scene {
     init() {};
 
     preload() {
-        // this.load.setPath('assets/images');
         ParticleManager.preload(this);
         Entity.preload(this);
+        // this.load.setPath('assets/images');
         // Treasure.preload(this);
         
         this.load.tilemapTiledJSON('ascean_test', '../assets/gui/ascean_test.json');
@@ -77,6 +77,7 @@ export class Preloader extends Scene {
         this.load.audio('shield', '../assets/sounds/16_Atk_buff_04.wav');
         this.load.audio('freeze', '../assets/sounds/freeze.wav');
         this.load.audio('dungeon', '../assets/sounds/dungeon.mp3');
+        this.load.audio('debuff', '../assets/sounds/21_Debuff_01.wav');
 
         this.assets = sanitize();
 

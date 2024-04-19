@@ -65,6 +65,7 @@ const SPECIALS = [
     // 'Sacrifice',
     'Scream', 
     'Shield',
+    'Slow',
     // 'Shroud',
     'Snare', 
     'Tshaeral'

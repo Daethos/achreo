@@ -24,6 +24,8 @@ const DURATION = {
     CONSUMED: 2000,
     FEAR: 3000,
     FROZEN: 3000,
+    SLOW: 3000,
+    SNARE: 4000,
     ROOT: 3000,
     STUN: 3000,
     TEXT: 1500,
@@ -159,7 +161,7 @@ export default class Enemy extends Entity {
                 // onUpdate: this.onSlowUpdate,
                 onExit: this.onSlowExit,
             })
-            .addState(States.FREEZE_AOE, {
+            .addState(States.FREEZE, {
                 onEnter: this.onFrozenEnter,
                 onUpdate: this.onFrozenUpdate,
                 onExit: this.onFrozenExit,
@@ -889,6 +891,7 @@ export default class Enemy extends Entity {
             this.attacking.removeTarget(this.enemyID);
             this.attacking = undefined;
             this.inCombat = false;
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Leashing', 1500, 'effect');
         };
         this.leashTimer = this.scene.time.addEvent({
             delay: 500,
@@ -971,9 +974,8 @@ export default class Enemy extends Entity {
         this.isConsumed = false;
     };
 
-    onFearEnter = () => {
-        // this.isFeared = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Feared', DURATION.TEXT, 'effect');
+    onFearEnter = () => { 
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Feared', DURATION.TEXT, 'damage');
         this.spriteWeapon.setVisible(false);
         this.spriteShield.setVisible(false);
         this.fearDirection = 'down';
@@ -1135,7 +1137,7 @@ export default class Enemy extends Entity {
     };
 
     onStunEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', 2500, 'effect', true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', 2500, 'damage', true);
         this.stunDuration = DURATION.STUN;
         // this.anims.play('player_idle', true);
         this.isAttacking = false;
@@ -1205,7 +1207,7 @@ export default class Enemy extends Entity {
 
 
     onRootEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Rooted', DURATION.TEXT, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Rooted', DURATION.TEXT, 'damage');
         if (!this.isPolymorphed) this.clearAnimations();
         this.setTint(0x888888); // 0x888888
         this.setStatic(true);
@@ -1232,11 +1234,11 @@ export default class Enemy extends Entity {
     };
 
     onSlowEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slowed', DURATION.TEXT, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slowed', DURATION.TEXT, 'damage');
         this.slowDuration = DURATION.SLOW;
         this.setTint(0xFFC700); // 0x888888
         this.adjustSpeed(-1.5);
-        this.scene.time.delayedcall(this.slowDuration, () =>{
+        this.scene.time.delayedCall(this.slowDuration, () =>{
             this.isSlowed = false;
             this.metaMachine.setState(States.CLEAN);
         });
@@ -1249,11 +1251,11 @@ export default class Enemy extends Entity {
     };
 
     onSnareEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snared', DURATION.TEXT, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snared', DURATION.TEXT, 'damage');
         this.snareDuration = 3000;
         this.setTint(0x0000FF); // 0x888888
         this.adjustSpeed(-1.5);
-        this.scene.time.delayedcall(this.snareDuration, () =>{
+        this.scene.time.delayedCall(this.snareDuration, () =>{
             this.isSnared = false;
             this.metaMachine.setState(States.CLEAN);
         });

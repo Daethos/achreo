@@ -55,6 +55,7 @@ export const States = {
     FEAR: "fear",
     POLYMORPH: "polymorph",
     ROOT: "root",
+    SLOW: "slow",
     SNARE: "snare",
     STUN: "stun",
 };

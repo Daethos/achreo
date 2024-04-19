@@ -51,30 +51,24 @@ type ActionButton = {
 };
 
 export default class ActionButtons extends Phaser.GameObjects.Container {
-    private context: Game;
     private actionButtons: ActionButton[];
     private specialButtons: ActionButton[];
     private buttonWidth: number;
     private buttonHeight: number;
     // private strafeLeft: ActionButton;
     // private strafeRight: ActionButton;
-    // private centerX: number;
-    // private centerY: number;
 
     constructor(scene: Game) {
         super(scene);
-        this.context = scene;
         this.actionButtons = [];
         this.specialButtons = [];
         this.buttonWidth = 24;
         this.buttonHeight = 24;
-        // this.centerX = scene.cameras.main.width / 2;
-        // this.centerY = scene.cameras.main.height / 2;
         this.addButtons(scene);
         scene.add.existing(this);
         const { width, height } = scene.cameras.main;
         this.setPosition(width / 5, height / 5); // 2.75, 1.5
-        this.setDepth(2);
+        this.setDepth(3);
         this.setScrollFactor(0);
         this.setVisible(true); // false
         this.reorder();
@@ -129,7 +123,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
             button.graphic.setScrollFactor(0);
             button.border.setScrollFactor(0);
-            button.graphic.setDepth(2);
+            button.graphic.setDepth(3);
 
             this.actionButtons.push(button);
             this.add(button.border);
@@ -172,7 +166,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             
             button.graphic.setScrollFactor(0);
             button.border.setScrollFactor(0);
-            button.graphic.setDepth(2);
+            button.graphic.setDepth(3);
 
             this.specialButtons.push(button);
             this.add(button.border);

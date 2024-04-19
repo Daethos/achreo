@@ -598,6 +598,11 @@ export class Game extends Scene {
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         enemy.isFeared = true;
     };
+    slow = (id: string): void => {
+        if (id === '') return;
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        enemy.isSlowed = true;
+    };
     snare = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);

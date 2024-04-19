@@ -24,14 +24,7 @@ export default class Joystick extends Phaser.GameObjects.Container {
             dir: '8dir',
             // forceMin: 0,
             // enable: true
-        })
-        // .on('pointerdown', function(pointer: any,){
-        //     pointer.event.preventDefault();
-        //     pointer.event.stopPropagation();
-        // })
-        // .on('pointerup', function(pointer: any){
-        //     // console.log(pointer, '--- pointerup ---');
-        // });
+        });
         this.doubleTap();
     };
 
@@ -42,6 +35,7 @@ export default class Joystick extends Phaser.GameObjects.Container {
     createPointer(scene: any) {
         this.pointer = scene.add.image(scene.cameras.main.width / 2, scene.cameras.main.height / 2, 'cursor');
         this.pointer.setScrollFactor(0);
+        this.pointer.setDepth(3);
     };
 
     controlPointer() {

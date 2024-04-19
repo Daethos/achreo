@@ -343,7 +343,11 @@ export const PhaserGame = (props: IProps) => {
             deityData: data.deityData,
         };
         const newStats = recordCombat(stat);
-        const update = { ...props.ascean(), statistics: newStats };
+        const update = { 
+            ...props.ascean(), 
+            statistics: newStats, 
+            health: { ...props.ascean().health, current: data.newPlayerHealth } 
+        };
         EventBus.emit('update-ascean', update);
     };
 
@@ -641,8 +645,6 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('drink-firewater', () => {
             const newHealth = (combat().newPlayerHealth + (combat().playerHealth * 0.4)) > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + (combat().playerHealth * 0.4);
             const newCharges = props.ascean().firewater.current > 0 ? props.ascean().firewater.current - 1 : 0;
-            console.log(newHealth, newCharges, 'Firewater');
-            console.log(game().inventory, 'Current Inventory')
             const inventory = game()?.inventory?.length > 0 ? game().inventory.map((item) => item && item._id) : [];
             setCombat({ ...combat(), newPlayerHealth: newHealth, 
                 player: { ...combat().player as Ascean, health: { ...props.ascean().health, current: newHealth } } });
@@ -683,7 +685,7 @@ export const PhaserGame = (props: IProps) => {
                 });
             };
         });
-        EventBus.on('initiate-input', (e: { key: string; value: string; }) => { console.log(e, 'initiating input'); setCombat({ ...combat(), [e.key]: e.value })});
+        EventBus.on('initiate-input', (e: { key: string; value: string; }) =>  setCombat({ ...combat(), [e.key]: e.value }));
         EventBus.on('refresh-inventory', async (e: Equipment[]) => {
             setGame({ ...game(), inventory: e });
             const update = { ...props.ascean(), inventory: e };
@@ -714,7 +716,15 @@ export const PhaserGame = (props: IProps) => {
             setGame({ ...game(), ...e });
         });
         // EventBus.on('update-combat', (e: Combat) => setCombat(e));
-        EventBus.on('update-combat-player', (e: any) => setCombat({ ...combat(), player: { ...e.ascean, inventory: [] }, playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, playerAttributes: e.attributes, playerDefense: e.defense, playerDefenseDefault: e.defense }));
+        EventBus.on('update-combat-player', (e: any) => {
+            setCombat({ 
+                ...combat(), 
+                player: { ...e.ascean, inventory: [] }, 
+                playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, 
+                playerAttributes: e.attributes, 
+                playerDefense: e.defense, 
+                playerDefenseDefault: e.defense })
+        });
         EventBus.on('update-combat-state', (e: { key: string; value: string }) => setCombat({ ...combat(), [e.key]: e.value }));
         EventBus.on('update-combat-timer', (e: number) => setCombat({ ...combat(), combatTimer: e }));
 

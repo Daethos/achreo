@@ -62,14 +62,12 @@ const SPECIALS = [
     'Invoke', 
     'Polymorph', 
     'Root', 
-    // 'Sacrifice',
     'Scream', 
     'Shield',
     'Slow',
-    // 'Shroud',
     'Snare', 
     'Tshaeral'
-]; // 'Charm', 'Confuse' 
+]; // 'Charm', 'Confuse', 'Sacrifice', 'Shroud'
 const GET_FORGE_COST = {
     Common: 1,
     Uncommon: 3,

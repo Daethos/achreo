@@ -545,7 +545,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     };
     const handleRegion = (region: keyof Region) => {
         setRegion(regionInformation[region]);
-        // setProvince(region)
     };
     
     const engageCombat = (id: string): void => {
@@ -553,6 +552,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         EventBus.emit('aggressive-enemy', { id, isAggressive: true });
         EventBus.emit('blend-game', { showDialog: false });
         EventBus.emit('update-pause', false);
+        EventBus.emit('engage');
     };
 
     const clearDuel = () => EventBus.emit('blend-game', { showDialog: false });
@@ -584,7 +584,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             } else if (type === 'cloth') {
                 merchantEquipment = await getClothEquipment(combat()?.player?.level as number);
             };
-            // console.log(merchantEquipment, 'Response for merchantEquipment!');
             setMerchantTable(merchantEquipment);
             EventBus.emit('blend-game', { merchantEquipment: merchantEquipment });
         } catch (err) {
@@ -892,9 +891,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                     overflow: 'scroll',
                  }}>
                     <h1 class='center' style={{ 'margin-bottom': '3%' }}>Sell Items</h1>
-                    {/* <svg height="5" width="100%" class="tapered-rule">
-                        <polyline points="0,0 400,2.5 0,5"></polyline>
-                    </svg><br /> */}
                 <div class='playerInventoryBag center' style={{ width: '65%', 'margin-bottom': '5%' }}> 
                     <For each={game()?.inventory}>{(item, _index) => {
                         if (item === undefined || item === null) return;

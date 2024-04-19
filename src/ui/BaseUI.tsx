@@ -54,10 +54,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         EventBus.emit('combat', combat());
     });  
 
-    // createEffect(() => {
-    //     console.log(game()?.inventory, 'Inventory')
-    // });
-
     createEffect(() => {
         EventBus.emit('settings', settings());
     });
@@ -198,6 +194,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                         default:
                             break;
                     };
+                    computerWin = res.newComputerHealth === 0;
+                    playerWin = res.newPlayerHealth === 0;
                     break;
                 case 'Enemy': // 'Enemy Blind Attack' i.e. an enemy not targeted hitting the player
                     // console.log(data, 'Data')
@@ -228,7 +226,9 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     break;
             };
             EventBus.emit('update-combat', res);
-            if (playerWin || computerWin) resolveCombat(res);
+            if (playerWin === true || computerWin === true) {
+                resolveCombat(res);
+            };
         } catch (err: any) {
             console.log(err, 'Error Initiating Combat');
         };
@@ -237,7 +237,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     function resolveCombat(res: Combat) {
         try {
             EventBus.emit('record-statistics', res);
-            if (res.playerWin) {
+            if (res.playerWin === true) {
                 let experience = ascean().experience + Math.round((res.computer?.level as number) * 100 * (res.computer?.level as number / res?.player?.level!) + (res?.playerAttributes?.rawKyosir as number));
                 const newState = { 
                     ...asceanState(), 
@@ -252,7 +252,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 EventBus.emit('gain-experience', newState);
                 EventBus.emit('enemy-loot', loot);
             } else {
-            EventBus.emit('update-health', res.newPlayerHealth);
+                console.log(`Player Lost`)
+                // EventBus.emit('update-health', 0);
                 if (!ascean().tutorial.death) {
                     setTutorial('death');
                     setShowTutorial(true);

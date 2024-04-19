@@ -36,25 +36,25 @@ export const PLAYER = {
         EVADE: 21,
     },
     STAMINA: {
-        ATTACK: 30,
-        DODGE: 15, // 25
-        PARRY: 15,
-        POSTURE: 20,
-        ROLL: 15, // 25
-        BLINK: 15,
-        CONSUME: 15,
-        DESPERATION: 30,
-        FREEZE: 30,
-        FEARING: 20,
-        HEALING: 20,
-        INVOKE: -15,
-        POLYMORPH: 20,
-        ROOT: 20,
-        SCREAM: 30,
-        SHIELD: 30,
+        ATTACK: 25,
+        DODGE: 10, // 25
+        PARRY: 10,
+        POSTURE: 15,
+        ROLL: 10, // 25
+        BLINK: 10,
+        CONSUME: 10,
+        DESPERATION: 25,
+        FREEZE: 25,
+        FEARING: 15,
+        HEALING: 15,
+        INVOKE: -10,
+        POLYMORPH: 15,
+        ROOT: 15,
+        SCREAM: 25,
+        SHIELD: 25,
         SLOW: 10,
         SNARE: 10,
-        TSHAER: 30,
+        TSHAER: 25,
     },
     DURATIONS: {
         FEARING: 1000,
@@ -568,6 +568,7 @@ export default class Player extends Entity {
         EventBus.off('combat', this.constantUpdate);
         EventBus.off('update-combat', this.eventUpdate);
         EventBus.off('disengage', this.disengage);
+        EventBus.off('engage', this.engage);
         EventBus.off('speed', this.speedUpdate);
         EventBus.off('update-stealth', this.stealthUpdate);
         EventBus.off('update-caerenic', this.caerenicUpdate);
@@ -595,6 +596,7 @@ export default class Player extends Entity {
         EventBus.on('combat', this.constantUpdate); 
         EventBus.on('update-combat', this.eventUpdate);
         EventBus.on('disengage', this.disengage); 
+        EventBus.on('engage', this.engage);
         EventBus.on('speed', this.speedUpdate);
         EventBus.on('update-stealth', this.stealthUpdate);
         EventBus.on('update-caerenic', this.caerenicUpdate);
@@ -614,6 +616,11 @@ export default class Player extends Entity {
         this.scene.clearNAEnemy();
         this.removeHighlight();
         this.scene.combatEngaged(false);
+    };
+
+    engage = () => {
+        this.inCombat = true;
+        this.scene.combatEngaged(true);
     };
 
     constantUpdate = (e) => {
@@ -659,7 +666,7 @@ export default class Player extends Entity {
         if (e.computerRollSuccess) {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Roll', 1500, 'damage', e.computerCriticalSuccess);
         };
-        if (e.newComputerHealth <= 0 && e.playerWin) {
+        if (e.newComputerHealth <= 0 && e.playerWin === true) {
             if (this.isTshaering) this.isTshaering = false;
             if (this.tshaeringTimer) {
                 this.tshaeringTimer.remove(false);
@@ -670,7 +677,8 @@ export default class Player extends Entity {
             
             this.winningCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Victory', 3000, 'effect', true);    
         };
-        if (e.newPlayerHealth <= 0 || e.computerWin) {
+        if (e.newPlayerHealth <= 0 && e.computerWin === true) {
+            console.log(`%c Player Defeated: ${e.newPlayerHealth}, ${e.computerWin}`, 'color: #ff0000')
             this.isDead = true;
             this.inCombat = false;
             this.attacking = undefined;

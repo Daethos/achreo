@@ -24,7 +24,7 @@ const DURATION = {
     CONSUMED: 2000,
     FEAR: 3000,
     FROZEN: 3000,
-    SLOW: 3000,
+    SLOW: 2500,
     SNARE: 4000,
     ROOT: 3000,
     STUN: 3000,
@@ -290,7 +290,7 @@ export default class Enemy extends Entity {
     combatDataUpdate = (e) => {
         if (this.enemyID !== e.enemyID) {
             if (this.inCombat) this.currentRound = e.combatRound;
-            if (this.inCombat && this.attacking && e.newPlayerHealth <= 0 && e.computerWin) this.clearCombat();
+            if (this.inCombat && this.attacking && e.newPlayerHealth <= 0 && e.computerWin === true) this.clearCombat();
             return;
         };
         // if (e.counterSuccess && !this.stateMachine.isCurrentState(States.STUN) && this.currentRound !== e.combatRound) this.setStun();
@@ -495,9 +495,7 @@ export default class Enemy extends Entity {
     createCombat = (collision, _when) => {
         const newEnemy = this.isNewEnemy(collision.gameObjectB);
         if (newEnemy) {
-            // console.log('Creating Combat --- newEnemy: ', newEnemy)
-            // collision.gameObjectB.targets.push(this);
-            // this.scene.player.shouldPlayerEnterCombat({ other: { gameObjectA: collision.gameObjectB, gameObjectB: this } });
+            // console.log('Creating Combat --- newEnemy: ', newEnemy)  
             this.scene.player.targets.push(this);
             this.scene.player.checkTargets();
             this.scene.player.setAttacking(this);
@@ -1237,7 +1235,7 @@ export default class Enemy extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slowed', DURATION.TEXT, 'damage');
         this.slowDuration = DURATION.SLOW;
         this.setTint(0xFFC700); // 0x888888
-        this.adjustSpeed(-1.5);
+        this.adjustSpeed(-1);
         this.scene.time.delayedCall(this.slowDuration, () =>{
             this.isSlowed = false;
             this.metaMachine.setState(States.CLEAN);
@@ -1247,7 +1245,7 @@ export default class Enemy extends Entity {
     onSlowExit = () => {
         this.clearTint();
         this.setTint(0x000000);
-        this.adjustSpeed(1.5);
+        this.adjustSpeed(1);
     };
 
     onSnareEnter = () => {

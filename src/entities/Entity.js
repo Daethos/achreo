@@ -18,7 +18,7 @@ export const FRAME_COUNT = {
 }; 
 
 export const SWING_TIME = { 'One Hand': 1050, 'Two Hand': 1350 }; // 750, 1250 [old]
-export const ENEMY_SWING_TIME = { 'One Hand': 750, 'Two Hand': 1050 }; // 750, 1250 [old]
+export const ENEMY_SWING_TIME = { 'One Hand': 850, 'Two Hand': 1150 }; // 750, 1250 [old]
 
 export default class Entity extends Phaser.Physics.Matter.Sprite {
 

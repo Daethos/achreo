@@ -43,7 +43,7 @@ export default class Settings {
         this.joystick = 0.5;
         this.vibration = 100;
         this.actions = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
-        this.specials = ['Consume', 'Invoke', 'Polymorph', 'Root', 'Tshaeral'];
+        this.specials = ['Healing', 'Invoke', 'Consume', 'Blink', 'Scream'];
         this.shake = { duration: 100, intensity: 0.05 };
         this.selected = {
             prayer: 0,

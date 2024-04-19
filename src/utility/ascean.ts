@@ -495,7 +495,7 @@ function rarityCompiler(ascean: Ascean) {
 // ================================== CONTROLLER - SERVICE ================================= \\
 
 function setHealth(ascean: Ascean, max: number, current?: number): Ascean {
-    if (current) {
+    if (current !== undefined) {
         ascean.health = {current, max};
     } else {
         ascean.health = {current:max, max};

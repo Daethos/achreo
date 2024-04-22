@@ -6,14 +6,14 @@ const FORCE = {
 };
 
 export default class Joystick extends Phaser.GameObjects.Container {
-    public play: any;
-    private pointer: any;
-    private joystick: any;
+    public scene: any;
+    public pointer: any;
+    public joystick: any;
 
     constructor(scene: any, x: number, y: number) {
         super(scene, x, y);
-        this.play = scene;
-        this.play.add.existing(this);
+        this.scene = scene;
+        this.scene.add.existing(this);
         this.pointer = null;
         this.joystick = scene.plugins.get('rexVirtualJoystick').add(scene, {
             x: x,
@@ -45,8 +45,8 @@ export default class Joystick extends Phaser.GameObjects.Container {
     doubleTap() {
         EventBus.on('update-cursor', () => {
             if (!this.pointer) return;
-            this.pointer.x = this.play.cameras.main.width / 2;
-            this.pointer.y = this.play.cameras.main.height / 2;
+            this.pointer.x = this.scene.cameras.main.width / 2;
+            this.pointer.y = this.scene.cameras.main.height / 2;
         });
     };
 

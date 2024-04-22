@@ -161,7 +161,7 @@ export default class Enemy extends Entity {
                 // onUpdate: this.onSlowUpdate,
                 onExit: this.onSlowExit,
             })
-            .addState(States.FREEZE, {
+            .addState(States.FROZEN, {
                 onEnter: this.onFrozenEnter,
                 onUpdate: this.onFrozenUpdate,
                 onExit: this.onFrozenExit,

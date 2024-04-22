@@ -413,9 +413,6 @@ export default class Player extends Entity {
         this.stalwartFx = this.scene.sound.add('stalwart', { volume: this.scene.gameState.soundEffectVolume, loop: false });
         this.prayerFx = this.scene.sound.add('prayer', { volume: this.scene.gameState.soundEffectVolume, loop: false });
 
-        this.joystick = new Joystick(this.scene, window.innerWidth * 0.05, window.innerHeight * 0.8);
-        this.rightJoystick = new Joystick(this.scene, window.innerWidth * 0.95, window.innerHeight * 0.8);
-        this.rightJoystick.createPointer(this.scene); 
 
         this.setScale(PLAYER.SCALE.SELF);   
         const { Body, Bodies } = Phaser.Physics.Matter.Matter;
@@ -2047,26 +2044,25 @@ export default class Player extends Entity {
 
     handleMovement = () => {
         let speed = this.speed;
-        const keys = this.joystick.createCursorKeys();
-        this.rightJoystick.update();
+        this.scene.rightJoystick.update();
 
         // =================== MOVEMENT ================== \\
 
-        if (this.inputKeys.right.D.isDown || this.inputKeys.right.RIGHT.isDown || keys.right.isDown) {
+        if (this.inputKeys.right.D.isDown || this.inputKeys.right.RIGHT.isDown || this.scene.joystickKeys.right.isDown) {
             this.playerVelocity.x += this.acceleration;
             if (this.flipX) this.flipX = false;
         };
 
-        if (this.inputKeys.left.A.isDown || this.inputKeys.left.LEFT.isDown || keys.left.isDown) {
+        if (this.inputKeys.left.A.isDown || this.inputKeys.left.LEFT.isDown || this.scene.joystickKeys.left.isDown) {
             this.playerVelocity.x -= this.acceleration;
             this.flipX = true;
         };
 
-        if ((this.inputKeys.up.W.isDown || this.inputKeys.up.UP.isDown) || keys.up.isDown) {
+        if ((this.inputKeys.up.W.isDown || this.inputKeys.up.UP.isDown) || this.scene.joystickKeys.up.isDown) {
             this.playerVelocity.y -= this.acceleration;
         }; 
 
-        if (this.inputKeys.down.S.isDown || this.inputKeys.down.DOWN.isDown || keys.down.isDown) {
+        if (this.inputKeys.down.S.isDown || this.inputKeys.down.DOWN.isDown || this.scene.joystickKeys.down.isDown) {
             this.playerVelocity.y += this.acceleration;
         };
 
@@ -2091,16 +2087,16 @@ export default class Player extends Entity {
 
         // =================== DECELERATION ================== \\
 
-        if (!this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.strafe.E.isDown && !this.inputKeys.strafe.Q.isDown && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && !keys.left.isDown && !keys.right.isDown) {
+        if (!this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.strafe.E.isDown && !this.inputKeys.strafe.Q.isDown && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && !this.scene.joystickKeys.left.isDown && !this.scene.joystickKeys.right.isDown) {
             this.playerVelocity.x = this.zeroOutVelocity(this.playerVelocity.x, this.deceleration);
         };
-        if (!this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.strafe.E.isDown && !this.inputKeys.strafe.Q.isDown && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && !keys.right.isDown && !keys.left.isDown) {
+        if (!this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.strafe.E.isDown && !this.inputKeys.strafe.Q.isDown && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && !this.scene.joystickKeys.right.isDown && !this.scene.joystickKeys.left.isDown) {
             this.playerVelocity.x = this.zeroOutVelocity(this.playerVelocity.x, this.deceleration);
         };
-        if (!this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && !keys.down.isDown && !keys.up.isDown) {
+        if (!this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && !this.scene.joystickKeys.down.isDown && !this.scene.joystickKeys.up.isDown) {
             this.playerVelocity.y = this.zeroOutVelocity(this.playerVelocity.y, this.deceleration);
         };
-        if (!this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && !keys.up.isDown && !keys.down.isDown) {
+        if (!this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && !this.scene.joystickKeys.up.isDown && !this.scene.joystickKeys.down.isDown) {
             this.playerVelocity.y = this.zeroOutVelocity(this.playerVelocity.y, this.deceleration);
         };
 

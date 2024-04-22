@@ -53,6 +53,7 @@ export const States = {
 
     CLEAN: "clean",
     FEAR: "fear",
+    FROZEN: "frozen",
     POLYMORPH: "polymorph",
     ROOT: "root",
     SLOW: "slow",

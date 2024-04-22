@@ -15,6 +15,7 @@ import Settings, { initSettings } from '../../models/settings';
 import Equipment from '../../models/equipment';
 import { States } from '../../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
+import Joystick from '../../phaser/Joystick';
 
 export class Game extends Scene {
     gameText: Phaser.GameObjects.Text;
@@ -43,12 +44,15 @@ export class Game extends Scene {
     map: Phaser.Tilemaps.Tilemap;
     background: Phaser.GameObjects.Image;
     camera: Phaser.Cameras.Scene2D.Camera;
+    minimap: Phaser.Cameras.Scene2D.Camera;
+    minimapBorder: Phaser.GameObjects.Rectangle;
+    minimapReset: Phaser.GameObjects.Rectangle;
     rexUI: any;
     navMesh: any;
     navMeshPlugin: any;
-    joystick: any;
-    baseSprite: Phaser.GameObjects.Sprite;
-    thumbSprite: Phaser.GameObjects.Sprite;
+    // joystick: any;
+    // baseSprite: Phaser.GameObjects.Sprite;
+    // thumbSprite: Phaser.GameObjects.Sprite;
     postFxPipeline: any;
 
     musicBackground: Phaser.Sound.BaseSound;
@@ -82,6 +86,9 @@ export class Game extends Scene {
 
     fpsText: Phaser.GameObjects.Text;
     combatTimerText: Phaser.GameObjects.Text;
+    joystick: Joystick;
+    rightJoystick: Joystick;
+    joystickKeys: any;
     volumeEvent: () => void;
     matterCollision: any;
 
@@ -105,6 +112,7 @@ export class Game extends Scene {
         this.getGame();
         this.settingsEvent();
         this.settings = this.getSettings();
+
 
         // ================== Add Multiple Inputs ================== \\
         // this.input.addPointer(3);
@@ -266,7 +274,73 @@ export class Game extends Scene {
         this.postFxEvent();
         this.lootDropEvent();
         this.aggressiveEvent();
+        this.minimapEvent();
 
+        // ================== Joystick ================== \\
+
+        this.joystick = new Joystick(this, window.innerWidth * 0.05, window.innerHeight * 0.8);
+        this.rightJoystick = new Joystick(this, window.innerWidth * 0.95, window.innerHeight * 0.8);
+        this.rightJoystick.createPointer(this); 
+        this.joystickKeys = this.joystick.createCursorKeys();
+
+        // ================== Mini Map ================== \\
+        this.minimap = this.cameras.add((this.scale.width * 0.5) - (this.scale.width * 0.1171875), this.scale.height * 0.75, this.scale.width * 0.234375, this.scale.height * 0.234375).setName('mini');
+        this.minimap.setOrigin(0.5); 
+        this.minimap.setBounds(0, 0, 4096, 4096);
+        // this.minimap.scrollX = 4096;
+        // this.minimap.scrollY = 4096;
+        this.minimap.zoom = 0.125;
+        this.minimap.startFollow(this.player);
+        this.minimap.setLerp(0.1, 0.1);
+        this.minimap.setBackgroundColor(0x000000); // Suggested
+        this.minimap.ignore(this.actionBar);
+        this.minimap.ignore(this.fpsText);
+        this.minimap.ignore(this.combatTimerText);
+        this.minimap.ignore(this.target);
+        this.minimap.ignore(this.joystick.joystick.base);
+        this.minimap.ignore(this.joystick.joystick.thumb);
+        this.minimap.ignore(this.rightJoystick.joystick.base);
+        this.minimap.ignore(this.rightJoystick.joystick.thumb);
+        this.minimap.ignore(this.rightJoystick.pointer);
+        console.log(this.joystick, this.rightJoystick, 'Joysticks');
+        this.minimap.setVisible(false);
+
+        this.minimap.on('pointerdown', (pointer: any) => {
+            console.log(pointer.worldX, pointer.worldY, 'World X and Y');
+            this.minimap.scrollX = pointer.worldX; 
+            this.minimap.scrollY = pointer.worldY; 
+        });
+
+        this.minimapReset = this.add.rectangle((this.scale.width * 0.3125), this.scale.height * 1.05 + 5, this.scale.width * 0.1 * (this.scale.height / this.scale.width), this.scale.height * 0.1);
+        this.minimapReset.setDepth(0);
+        this.minimapReset.setOrigin(0.5);
+        this.minimapReset.setFillStyle(0xFF0000, 1);
+        this.minimapReset.setStrokeStyle(2, 0x000000);
+        this.minimapReset.setScrollFactor(0);
+        this.minimapReset.setInteractive();
+        this.minimapReset.on('pointerdown', () => {
+            this.minimap.startFollow(this.player);
+            this.minimapReset.setVisible(false);
+        });
+        this.minimapReset.setVisible(false);
+        this.minimap.ignore(this.minimapReset);
+
+        this.minimapBorder = this.add.rectangle((this.scale.width * 0.5 + 1) , this.scale.height * 0.95 + 5, this.scale.width * 0.234375 + 4 , this.scale.height * 0.234375 + 4);
+        this.minimapBorder.setDepth(0);
+        this.minimapBorder.setOrigin(0.5); 
+        this.minimapBorder.setFillStyle(0x000000, 0.5);
+        this.minimapBorder.setStrokeStyle(2, 0x000000);
+        this.minimapBorder.setScrollFactor(0);
+        this.minimapBorder.setScale(1 / camera.zoom);
+        this.minimapBorder.setInteractive();
+        this.minimapBorder.setVisible(false);
+        this.minimapBorder.on('pointerdown', (pointer: any) => {
+            this.minimap.stopFollow();
+            this.minimapReset.setVisible(true);
+            const world = this.minimap.getWorldPoint(pointer.x, pointer.y);
+            this.minimap.setScroll(world.x, world.y);
+        });
+        this.minimap.ignore(this.minimapBorder);
 
         // ================== Event Bus ================== \\
 
@@ -302,6 +376,20 @@ export class Game extends Scene {
             drops.drops.forEach((drop: Equipment) => {
                 this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop }))
             });
+        });
+    };
+
+    minimapEvent = (): void => {
+        EventBus.on('minimap', () => {
+            if (this.minimap.visible === true) {
+                this.minimap.setVisible(false);
+                this.minimapBorder.setVisible(false);
+                this.minimapReset.setVisible(false);
+            } else {
+                this.minimap.setVisible(true);
+                this.minimapBorder.setVisible(true);
+                this.minimap.startFollow(this.player);
+            };
         });
     };
 

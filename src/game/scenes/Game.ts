@@ -818,7 +818,7 @@ export class Game extends Scene {
         this.combatMachine.processor();
 
         this.playerLight.setPosition(this.player.x, this.player.y);
-        this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2));
+        this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2) + '\n' + 'Height: ' + this.cameras.main.height + '\n' + 'Width: ' + this.cameras.main.width);
         this.combatTimerText.setText('Combat Timer: ' + this.combatTime);
     };
 

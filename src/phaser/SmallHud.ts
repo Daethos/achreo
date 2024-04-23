@@ -1,11 +1,30 @@
 import { EventBus } from "../game/EventBus";
 import { Game } from "../game/scenes/Game";
 
+function xModifier(x: number, index: number, offset = 40.75) {
+    const mod = x + 125 * 1.15 + (index * offset);
+    return mod;
+};
+
 export default class SmallHud extends Phaser.GameObjects.Container {
     public scene: Game;
     public bar: Phaser.GameObjects.Image[];
     public x: number;
     public y: number;
+    public controls: Phaser.GameObjects.Container
+    public closed: boolean;
+    public switches: {
+        info: boolean;
+        settings: boolean;
+        caerenic: boolean;
+        stalwart: boolean;
+        stealth: boolean;
+        minimap: boolean;
+        pause: boolean;
+        cursor: boolean;
+        closed: boolean;
+        open: boolean;
+    };
 
     constructor(scene: Game) {
         const x = scene.cameras.main.width / 2;
@@ -16,125 +35,174 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.y = y;
         this.scene.add.existing(this);
         this.bar = [];
+        this.closed = true;
+        this.switches = {
+            info: false,
+            settings: false,
+            caerenic: false,
+            stalwart: false,
+            stealth: false,
+            minimap: false,
+            pause: false,
+            cursor: false,
+            closed: false,
+            open: false,
+        };
+
         this.createBar();
     };
 
     createBar = () => {
-        let open = this.scene.add.image(440, this.y * 2, 'open');
-
-        this.bar.push(open);
-        let closed = this.scene.add.image(400, this.y * 2, 'closed');
-        this.bar.push(closed);
-
-        let pause = this.scene.add.image(360, this.y * 2, 'pause');
-        this.bar.push(pause);
         
-        let minimap = this.scene.add.image(320, this.y * 2, 'minimap');
-        this.bar.push(minimap);
+        let open = this.scene.add.image(this.x, this.y * 2 + 10, 'closed');
+        let closed = this.scene.add.image(this.x, this.y * 2 + 10, 'open');
+        let pause = this.scene.add.image(this.x, this.y * 2 + 10, 'pause');
+        let minimap = this.scene.add.image(this.x, this.y * 2 + 10, 'minimap');
+        let cursor = this.scene.add.image(this.x, this.y * 2 + 10, 'cursor-reset');
+        let stealth = this.scene.add.image(this.x, this.y * 2 + 10, 'stealth');
+        let stalwart = this.scene.add.image(this.x, this.y * 2 + 10, 'stalwart');
+        let caerenic = this.scene.add.image(this.x, this.y * 2 + 10, 'caerenic');
+        let settings = this.scene.add.image(this.x, this.y * 2 + 10, 'settings');
+        let info = this.scene.add.image(this.x, this.y * 2 + 10, 'info');
+//        let dialog = this.scene.add.image(this.x, this.y * 2 + 5, 'dialog');
+//        let loot = this.scene.add.image(this.x, this.y * 2 + 5, 'loot');
         
-        let cursor = this.scene.add.image(280, this.y * 2, 'cursor-reset');
-        this.bar.push(cursor);
-        
-        let stealth = this.scene.add.image(240, this.y * 2, 'stealth');
-        this.bar.push(stealth);
-        
-        let stalwart = this.scene.add.image(200, this.y * 2, 'stalwart');
-        this.bar.push(stalwart);
-        
-        let caerenic = this.scene.add.image(160, this.y * 2, 'caerenic');
-        this.bar.push(caerenic);
-        
-        let settings = this.scene.add.image(120, this.y * 2, 'settings');
-        this.bar.push(settings);
-
-        let info = this.scene.add.image(80, this.y * 2, 'info');
+//        this.bar.push(loot);    
+//        this.bar.push(dialog);
         this.bar.push(info);
-
-        let dialog = this.scene.add.image(40, this.y * 2, 'dialog');
-        this.bar.push(dialog);
-
-        let loot = this.scene.add.image(0, this.y * 2, 'loot');
-        this.bar.push(loot);    
-
+        this.bar.push(settings);
+        this.bar.push(caerenic);
+        this.bar.push(stalwart);
+        this.bar.push(stealth);
+        this.bar.push(cursor);
+        this.bar.push(minimap);
+        this.bar.push(pause);
+        this.bar.push(closed);
+        this.bar.push(open);
 
         this.bar.forEach((item, index) => {
             item.setScrollFactor(0);
-            item.setDepth(1);
+            item.setDepth(3);
             item.setOrigin(0, 0);
             item.setInteractive();
-            item.setScale(0.1);
+            item.setScale(0.095);
+            if (this.closed === true) {
+                if (item.texture.key !== 'open') {
+                    item.setVisible(false);
+                };
+            };
+            item.x = xModifier(this.x, Math.min(index, 8));
             item.on('pointerdown', () => {
-                console.log(`Button ${index}, ${item.texture.key} clicked`, item);
-                // Need to invert the colors of the button clicked
-                // Need to emit an event to the game scene
                 this.pressButton(item);
             });
         });
 
-        EventBus.on('game-dialog-tag', (tag: boolean) => {
-            dialog.setVisible(tag);
+        EventBus.on('toggle-bar', () => {
+            this.closed = !this.closed;
+            if (this.closed === true) {
+                this.setVisible(false);
+            } else {
+                this.setVisible(true);
+            };
         });
-        EventBus.on('game-loot-tag', (tag: boolean) => {
-            loot.setVisible(tag);
+    };
+
+    draw = () => {
+        this.bar.forEach((item, index) => {
+            item.x = xModifier(this.x, Math.min(index, 8));
+            if (this.closed === true) {
+                if (item.texture.key !== 'open') {
+                    item.setVisible(false);
+                } else {
+                    item.setVisible(true);
+                };
+            } else {
+                if (item.texture.key !== 'open') {
+                    item.setVisible(true);
+                } else {
+                    item.setVisible(false);
+                };
+            };
         });
     };
 
     pressButton = (item: Phaser.GameObjects.Image) => {
         this.bar.forEach((button) => {
             if (button === item) {
-                button.setTint(0xffc700);
-                button.setBlendMode(Phaser.BlendModes.ADD);
                 switch (button.texture.key) {
                     case 'open':
+                        this.closed = false;
                         EventBus.emit('open');
+                        this.draw();
                         break;
                     case 'closed':
+                        this.closed = true;
                         EventBus.emit('closed');
+                        this.draw();
                         break;
                     case 'pause':
-                        EventBus.emit('update-pause'); // variable
+                        EventBus.emit('action-button-sound');
+                        EventBus.emit('update-pause', true); // variable
                         break;
                     case 'minimap':
+                        EventBus.emit('action-button-sound');
                         EventBus.emit('minimap');
+                        this.switches.minimap = !this.switches.minimap;
                         break;
-                    case 'cursor':
+                    case 'cursor-reset':
                         EventBus.emit('action-button-sound');
                         EventBus.emit('update-cursor');
                         break;
                     case 'stealth':
                         if (this.scene.combat === true) return;
+                        this.switches.stealth = !this.switches.stealth;
                         EventBus.emit('update-stealth');
                         break;
                     case 'stalwart':
-                        EventBus.emit('update-stalwart');
+                        this.switches.stalwart = !this.switches.stalwart;
+                        EventBus.emit('update-stalwart');                        
                         break;
                     case 'caerenic':
-                        EventBus.emit('update-caerenic');
+                        this.switches.caerenic = !this.switches.caerenic;
+                        EventBus.emit('update-caerenic');                
                         break;
                     case 'settings':
-                        EventBus.emit('scroll-enabled');
+                        EventBus.emit('action-button-sound');
+                        EventBus.emit('useScroll');
                         break;
                     case 'info':
                         EventBus.emit('action-button-sound');
                         EventBus.emit('show-player'); // variable
                         break;
-                    case 'dialog':
-                        EventBus.emit('action-button-sound');
-                        EventBus.emit('show-dialogue');
-                        break;
-                    case 'loot':
-                        EventBus.emit('action-button-sound');
-                        EventBus.emit('blend-game', { showLoot: true }); //  { showLoot: !game().showLoot }
-                        break;
+                    //case 'dialog':
+                        //EventBus.emit('action-button-sound');
+                        //EventBus.emit('show-dialogue');
+                        //break;
+                    //case 'loot':
+                        //EventBus.emit('action-button-sound');
+                        //EventBus.emit('blend-game', { showLoot: true }); //  { showLoot: !game().showLoot }
+                        //break;
                     default:
                         break;
-                
+                        
                 };
-                // button.setTint(0x000000);
+                if (this.switches[button.texture.key as keyof typeof this.switches] === true) {
+                    // button.setTint(0x000000);
+                    button.setBlendMode(Phaser.BlendModes.SCREEN);
+                } else {
+                    // button.clearTint();
+                    button.setBlendMode(Phaser.BlendModes.NORMAL);
+                };
             } else {
-                button.setTint(0xffffff);
-                button.setBlendMode(Phaser.BlendModes.NORMAL);    
+                if (this.switches[button.texture.key as keyof typeof this.switches] === true) {
+                    // button.setTint(0x000000);
+                    button.setBlendMode(Phaser.BlendModes.SCREEN);
+                } else {
+                    // button.clearTint();
+                    button.setBlendMode(Phaser.BlendModes.NORMAL);    
+                };
             };
         });
+        EventBus.emit('update-small-hud');
     };
 };

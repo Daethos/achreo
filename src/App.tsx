@@ -164,7 +164,7 @@ export default function App() {
                 scene.resume();
             };
         };
-        EventBus.emit('toggle-pause');
+        EventBus.emit('toggle-pause', pause);
     };
 
     async function quickAscean(vaEsai: Ascean): Promise<void> {

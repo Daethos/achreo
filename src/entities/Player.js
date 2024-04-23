@@ -21,6 +21,7 @@ export const PLAYER = {
         ACCELERATION: 0.1,
         DECELERATION: 0.05,
         CAERENIC: 0.5,
+        SPRINT: 1.5,
         BLINK: 250,
     },  
     SCALE: {
@@ -56,6 +57,7 @@ export const PLAYER = {
         SHIELD: 40,
         SLOW: 10,
         SNARE: 10,
+        SPRINT: 10,
         TSHAER: 40,
     },
     COOLDOWNS: {
@@ -71,6 +73,7 @@ export const PLAYER = {
         SCREAM: 1000,
         SHIELDING: 6000,
         SNARING: 1000,
+        SPRINT: 6000,
         STUNNED: 2500,
         TSHAERING: 2000,
     },
@@ -193,6 +196,12 @@ export const staminaCheck = (input, stamina) => {
             return {
                 success: snareSuccess,
                 cost: PLAYER.STAMINA.SNARE,
+            };
+        case 'sprint':
+            const sprintSuccess = stamina >= PLAYER.STAMINA.SPRINT;
+            return {
+                success: sprintSuccess,
+                cost: PLAYER.STAMINA.SPRINT,
             };
         case 'tshaeral':
             const tshaerSuccess = stamina >= PLAYER.STAMINA.TSHAER;
@@ -409,6 +418,11 @@ export default class Player extends Entity {
                 onEnter: this.onShieldEnter,
                 onUpdate: this.onShieldUpdate,
                 onExit: this.onShieldExit,
+            })
+            .addState(States.SPRINTING, {
+                onEnter: this.onSprintEnter,
+                onUpdate: this.onSprintUpdate,
+                onExit: this.onSprintExit,
             })
 
         this.metaMachine.setState(States.CLEAN);
@@ -681,15 +695,15 @@ export default class Player extends Entity {
             
             this.winningCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Victory', 3000, 'effect', true);    
         };
-        if (e.newPlayerHealth <= 0 && e.computerWin === true) {
+        if (e.computerWin === true) {
             console.log(`%c Player Defeated: ${e.newPlayerHealth}, ${e.computerWin}`, 'color: #ff0000')
-            this.isDead = true;
-            this.inCombat = false;
-            this.attacking = undefined;
             this.anims.play('player_pray', true).on('animationcomplete', () => {
                 this.anims.play('player_idle', true);
             });
             this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Defeat', 3000, 'damage', true);
+        };
+        if (e.newPlayerHealth <= 0) {
+            this.isDead = true;
             this.disengage();    
         };
         this.health = e.newPlayerHealth;
@@ -1170,6 +1184,25 @@ export default class Player extends Entity {
     onCleanEnter = () => {};
     onCleanExit = () => {};
 
+    onSprintEnter = () => {
+        this.isSprinting = true;
+        this.caerenicFx.play();
+        this.adjustSpeed(PLAYER.SPEED.SPRINT);
+        this.scene.useStamina(PLAYER.STAMINA.SPRINT);
+        this.setTimeEvent('sprintCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT, () => {
+            this.isSprinting = false;
+            if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
+            this.adjustSpeed(-PLAYER.SPEED.SPRINT);
+        });
+    };
+    onSprintUpdate = (_dt) => {
+        if (!this.isSprinting) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+
     onStealthEnter = () => {
         this.isStealthing = true; 
         this.stealthEffect(true);    
@@ -1247,6 +1280,7 @@ export default class Player extends Entity {
 
     onDesperationEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Desperation', PLAYER.DURATIONS.HEALING / 2, 'heal');
+        this.scene.useStamina(PLAYER.STAMINA.DESPERATION);
         if (!this.isCaerenic && !this.isGlowing) {
             this.checkCaerenic(true);
             this.scene.time.delayedCall(PLAYER.DURATIONS.HEALING, () => {

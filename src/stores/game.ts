@@ -24,6 +24,7 @@ export interface GameState {
     selectedHighlight: string;
     scrollEnabled: boolean;
 
+    smallHud: boolean;
     dialogTag: boolean;
     lootTag: boolean;
     showCombat: boolean;
@@ -78,6 +79,7 @@ export const initGame: GameState = {
     selectedHighlight: 'Weapon',
     scrollEnabled: false,
 
+    smallHud: false,
     dialogTag: false,
     lootTag: false,
     currentIntent: 'challenge',

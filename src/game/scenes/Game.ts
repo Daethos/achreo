@@ -114,6 +114,7 @@ export class Game extends Scene {
         this.getGame();
         this.settingsEvent();
         this.settings = this.getSettings();
+        this.rexUI = this.plugins.get('rexuiplugin');
 
 
         // ================== Add Multiple Inputs ================== \\
@@ -345,7 +346,7 @@ export class Game extends Scene {
         this.minimap.ignore(this.minimapBorder);
 
         // ================== Small Hud ================== \\
-        // this.smallHud = new SmallHud(this);
+        this.smallHud = new SmallHud(this);
 
         // ================== Event Bus ================== \\
 
@@ -756,7 +757,7 @@ export class Game extends Scene {
         const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType };
         EventBus.emit('setup-npc', data);    
     };
-    showDialog = (dialog: boolean) => EventBus.emit('blend-game', { dialogTag: dialog });
+    showDialog = (dialog: boolean) => EventBus.emit('blend-game', { dialogTag: dialog, smallHud: dialog });
 
     // ============================ Player ============================ \\
 

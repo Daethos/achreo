@@ -66,6 +66,7 @@ const SPECIALS = [
     'Shield',
     'Slow',
     'Snare', 
+    'Sprint',
     'Tshaeral'
 ]; // 'Charm', 'Confuse', 'Sacrifice', 'Shroud'
 const GET_FORGE_COST = {

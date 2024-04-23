@@ -38,6 +38,7 @@ export const States = {
     POLYMORPHING: "polymorph",
     ROOTING: "root",
     SNARING: "snare",
+    SPRINTING: "sprint",
 
     FREEZE: "freeze",
     BURN_AOE: "burn_aoe",

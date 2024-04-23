@@ -38,7 +38,7 @@ export class Preloader extends Scene {
         this.load.plugin('rexvirtualjoystickplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexvirtualjoystickplugin.min.js', true); 
         this.load.plugin('rexglowfilterpipelineplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexglowfilterpipelineplugin.min.js', true);
         this.load.scenePlugin({ key: 'rexuiplugin', url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', sceneKey: 'rexUI' });
-
+     
         this.load.audio('cymbal', '../assets/sounds/cymbal-long-2.wav');
         this.load.audio('background', '../assets/sounds/background.mp3');
         this.load.audio('combat', '../assets/sounds/combat.mp3');

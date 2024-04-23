@@ -674,6 +674,7 @@ export const PhaserGame = (props: IProps) => {
                     showLootIds: [...game().showLootIds, e.loot],
                     // showLoot: true,
                     lootTag: true,
+                    // smallHud: true,
                 });
             } else {
                 const updatedShowLootIds = game().showLootIds.filter((id) => id !== e.loot);
@@ -682,6 +683,7 @@ export const PhaserGame = (props: IProps) => {
                     showLootIds: updatedShowLootIds.length > 0 ? updatedShowLootIds : [],
                     showLoot: updatedShowLootIds.length > 0,
                     lootTag: updatedShowLootIds.length > 0,    
+                    // smallHud: updatedShowLootIds.length > 0,    
                 });
             };
         });
@@ -701,16 +703,16 @@ export const PhaserGame = (props: IProps) => {
             if (game().scrollEnabled === false && game().showPlayer === false) {
                 EventBus.emit('update-pause', !game().showDialog);
             };
-            setGame({ ...game(), showDialog: !game().showDialog })
+            setGame({ ...game(), showDialog: !game().showDialog, smallHud: (!game().showDialog || game().scrollEnabled || game().showPlayer) });
         });
         EventBus.on('show-player', () => {
             // pause the game
             if (game().scrollEnabled === false && game().showDialog === false) {
                 EventBus.emit('update-pause', !game().showPlayer);
             };
-            setGame({ ...game(), showPlayer: !game().showPlayer })
+            setGame({ ...game(), showPlayer: !game().showPlayer, smallHud: (!game().showPlayer || game().scrollEnabled || game().showDialog) });
         });
-        EventBus.on('toggle-pause', () => setGame({ ...game(), pauseState: !game().pauseState }));
+        EventBus.on('toggle-pause', (e: boolean) => setGame({ ...game(), pauseState: e, smallHud: e }));
         EventBus.on('blend-combat', (e: any) => setCombat({ ...combat(), ...e }));
         EventBus.on('blend-game', (e: any) => {
             setGame({ ...game(), ...e });
@@ -784,11 +786,11 @@ export const PhaserGame = (props: IProps) => {
                 showLootIds: e.map((loot) => loot._id)
         }));
         EventBus.on('useHighlight', (e: string) => setGame({ ...game(), selectedHighlight: e }));
-        EventBus.on('useScroll', (e: boolean) => {
+        EventBus.on('useScroll', () => {
             if (game().showPlayer === false && game().showDialog === false) {
-                EventBus.emit('update-pause', e);
+                EventBus.emit('update-pause', !game().scrollEnabled);
             };
-            setGame({ ...game(), scrollEnabled: e });
+            setGame({ ...game(), scrollEnabled: !game().scrollEnabled, smallHud: (!game().scrollEnabled || game().showPlayer || game().showDialog) });
         });
 
         EventBus.on('create-prayer', (e: any) => {

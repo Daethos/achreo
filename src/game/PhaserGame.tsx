@@ -674,7 +674,6 @@ export const PhaserGame = (props: IProps) => {
                     showLootIds: [...game().showLootIds, e.loot],
                     // showLoot: true,
                     lootTag: true,
-                    // smallHud: true,
                 });
             } else {
                 const updatedShowLootIds = game().showLootIds.filter((id) => id !== e.loot);
@@ -683,7 +682,6 @@ export const PhaserGame = (props: IProps) => {
                     showLootIds: updatedShowLootIds.length > 0 ? updatedShowLootIds : [],
                     showLoot: updatedShowLootIds.length > 0,
                     lootTag: updatedShowLootIds.length > 0,    
-                    // smallHud: updatedShowLootIds.length > 0,    
                 });
             };
         });
@@ -699,14 +697,16 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('set-equipper', (e: any) => swapEquipment(e));
         EventBus.on('show-combat-logs', (e: boolean) => setGame({ ...game(), showCombat: e }));
         EventBus.on('show-dialogue', () => {
-            // pause the game
             if (game().scrollEnabled === false && game().showPlayer === false) {
                 EventBus.emit('update-pause', !game().showDialog);
             };
-            setGame({ ...game(), showDialog: !game().showDialog });
+            setGame({ 
+                ...game(), 
+                showDialog: !game().showDialog, 
+                smallHud: (!game().showDialog || game().scrollEnabled || game().showPlayer) 
+            });
         });
         EventBus.on('show-player', () => {
-            // pause the game
             if (game().scrollEnabled === false && game().showDialog === false) {
                 EventBus.emit('update-pause', !game().showPlayer);
             };
@@ -722,9 +722,7 @@ export const PhaserGame = (props: IProps) => {
             smallHud: e 
         }));
         EventBus.on('blend-combat', (e: any) => setCombat({ ...combat(), ...e }));
-        EventBus.on('blend-game', (e: any) => {
-            setGame({ ...game(), ...e });
-        });
+        EventBus.on('blend-game', (e: any) => setGame({ ...game(), ...e }));
         // EventBus.on('update-combat', (e: Combat) => setCombat(e));
         EventBus.on('update-combat-player', (e: any) => {
             setCombat({ 

@@ -127,21 +127,21 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         EventBus.emit('update-pause', !game().pauseState)
         EventBus.emit('action-button-sound');
         setClicked({ ...clicked(), pause: !clicked().pause });
+        EventBus.emit('toggle-bar', true);
         // if (!clicked().pause === true) {
-            EventBus.emit('toggle-bar', true);
         // };
     };
     const showButtons = () => {
         setShow(!show());
-        EventBus.emit('blend-game', { smallHud: !game().smallHud });
+        EventBus.emit('blend-game', { smallHud: false}); // !game().smallHud 
         EventBus.emit('action-button-sound');
     };
     const showPlayer = () => {
         EventBus.emit('show-player');
         EventBus.emit('action-button-sound');
         setClicked({ ...clicked(), showPlayer: !clicked().showPlayer });
+        EventBus.emit('toggle-bar', true);
         // if (!clicked().showPlayer === true) {
-            EventBus.emit('toggle-bar', true);
         // };
     };
 
@@ -173,11 +173,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
             <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} />
         </Show>   
         <Show when={show()} fallback={
-            <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { 
-                height: '7.5%', width: '3.75%', right: '0.5%'
-            } : { 
-                height: '3.5%', width: '7.5%', right: '4%' }} 
-            onClick={showButtons}>
+            <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '0.5%' } : { height: '3.5%', width: '7.5%', right: '4%' }} onClick={showButtons}>
                 <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
                     <img src={'../assets/images/closed.png'} style={icon(clicked().closed)} alt='!' />
                 </div>
@@ -190,74 +186,50 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
                     </div>
                 </button>
                 
-                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? 
-                    { height: '7.5%', width: '3.75%', right: '20.5%' } : 
-                    { height: '3.5%', width: '7.5%', right: '36%' }} 
-                    onClick={stalwart}>
-                        <div class='p-3' style={{ color: clicked().stalwart === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
-                            <img src={'../assets/images/stalwart.png'} style={icon(clicked().stalwart)} alt='St' />
-                        </div>
+                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '20.5%' } : { height: '3.5%', width: '7.5%', right: '36%' }} onClick={stalwart}>
+                    <div class='p-3' style={{ color: clicked().stalwart === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                        <img src={'../assets/images/stalwart.png'} style={icon(clicked().stalwart)} alt='St' />
+                    </div>
                 </button>
 
-                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? 
-                    { height: '7.5%', width: '3.75%', right: '16.5%' } : 
-                    { height: '3.5%', width: '7.5%', right: '28%' }} 
-                    onClick={stealth}>
-                        <div class='p-3' style={{ color: clicked().stealth === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
-                            <img src={'../assets/images/stealth.png'} style={icon(clicked().stealth)} alt='Sh' />
-                        </div>
+                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '16.5%' } : { height: '3.5%', width: '7.5%', right: '28%' }} onClick={stealth}>
+                    <div class='p-3' style={{ color: clicked().stealth === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                        <img src={'../assets/images/stealth.png'} style={icon(clicked().stealth)} alt='Sh' />
+                    </div>
                 </button>
 
-                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ?
-                    { height: '7.5%', width: '3.75%', right: '12.5%' } :// , border: '1.5px solid #fdf6d8' 
-                    { height: '3.5%', width: '7.5%', right: '20%' }} // , border: '1.5px solid #fdf6d8'
-                    onClick={cursor}>
+                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '12.5%' } : { height: '3.5%', width: '7.5%', right: '20%' }} onClick={cursor}>
                     <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
                         <img class='p-3' style={icon(false)} src={'../assets/images/cursor-reset.png'} />
                     </div>
                 </button>
                 
-                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ?
-                    { height: '7.5%', width: '3.75%', right: '8.5%' } :// , border: '1.5px solid #fdf6d8' 
-                    { height: '3.5%', width: '7.5%', right: '20%' }} // , border: '1.5px solid #fdf6d8'
-                    onClick={map}>
+                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '8.5%' } : { height: '3.5%', width: '7.5%', right: '20%' }} onClick={map}>
                     <div class='p-3' style={{ color: clicked().map === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
                         <img src={'../assets/images/minimap.png'} style={icon(clicked().map)} alt='M' />
                     </div>
                 </button>
                 
-                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ?
-                    { height: '7.5%', width: '3.75%', right: '4.5%' } :
-                    { height: '3.5%', width: '7.5%', right: '12%' }} 
-                    onClick={pause}>
-                        <div class='p-3' style={{ color: clicked().pause === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
-                            <img src={'../assets/images/pause.png'} style={icon(clicked().pause)} alt='Sh' />
-                        </div>
+                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '4.5%' } : { height: '3.5%', width: '7.5%', right: '12%' }} onClick={pause}>
+                    <div class='p-3' style={{ color: clicked().pause === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                        <img src={'../assets/images/pause.png'} style={icon(clicked().pause)} alt='Sh' />
+                    </div>
                 </button>
 
-                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? 
-                    { height: '7.5%', width: '3.75%', right: '0.5%' } :// , border: '1.5px solid #fdf6d8' 
-                    { height: '3.5%', width: '7.5%', right: '4%' }} // , border: '1.5px solid #fdf6d8'
-                    onClick={showButtons}>
-                        <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
-                            <img src={'../assets/images/open.png'} style={icon(clicked().open)} alt='?' />
-                        </div>
+                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '0.5%' } : { height: '3.5%', width: '7.5%', right: '4%' }}>
+                    <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                        <img src={'../assets/images/open.png'} style={icon(clicked().open)} alt='?' />
+                    </div>
                 </button>
 
                 
-                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? 
-                        { height: '7.5%', width: '3.75%', right: '28.5%' } : // right: '4.5%', top: '82.5%' SECOND ROW
-                        { height: '3.5%', width: '7.5%', right: '60%' }} // right: '12%', bottom: '4.75%' SECOND ROW
-                        onClick={combatSettings}>
+                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '28.5%' } : { height: '3.5%', width: '7.5%', right: '60%' }} onClick={combatSettings}>
                     <div class='p-3' style={{ color: clicked().combatSettings === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
                         <img src={'../assets/images/settings.png'} style={icon(clicked().combatSettings)} alt='Sh' />
                     </div>
                 </button>
 
-                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? 
-                        { height: '7.5%', width: '3.75%', right: '32.5%' } : // right: '8.5%', top: '82.5%' SECOND ROW
-                        { height: '3.5%', width: '7.5%', right: '68%' }} // right: '20%', bottom: '4.75%' SECOND ROW
-                        onClick={showPlayer}>
+                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '32.5%' } : { height: '3.5%', width: '7.5%', right: '68%' }} onClick={showPlayer}>
                     <div class='p-3' style={{ color: clicked().showPlayer === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
                         <img src={'../assets/images/info.png'} style={icon(clicked().showPlayer)} alt='Sh' />
                     </div>

@@ -1,6 +1,6 @@
 
 import { EventBus } from '../game/EventBus';
-import { Accessor, JSX, Show, createMemo, createSignal, onMount } from 'solid-js';
+import { Accessor, Show, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
 import { useResizeListener } from '../utility/dimensions';
 import { GameState } from '../stores/game';
 import { Combat } from '../stores/combat';
@@ -70,7 +70,15 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
                 combatSettings: game().scrollEnabled,
                 pause: game().pauseState,
             });
+            if (game().smallHud === true) {
+                EventBus.emit('toggle-bar', false);
+            };
         });
+    });
+
+    onCleanup(() => {
+        EventBus.off('combat-engaged');
+        EventBus.off('update-small-hud');
     });
 
     const map = () => {
@@ -82,6 +90,9 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         EventBus.emit('useScroll');
         EventBus.emit('action-button-sound');
         setClicked({ ...clicked(), combatSettings: !clicked().combatSettings });
+        if (!clicked().combatSettings === true) {
+            EventBus.emit('toggle-bar', true);
+        };
     };
     const cursor = () => {
         EventBus.emit('action-button-sound');
@@ -114,16 +125,24 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
     const pause = () => {
         if (game().showPlayer || game().scrollEnabled || game().showDialog) return;
         EventBus.emit('update-pause', !game().pauseState)
+        EventBus.emit('action-button-sound');
         setClicked({ ...clicked(), pause: !clicked().pause });
+        if (!clicked().pause === true) {
+            EventBus.emit('toggle-bar', true);
+        };
     };
     const showButtons = () => {
         setShow(!show());
-        EventBus.emit('action-button-sound');
         EventBus.emit('blend-game', { smallHud: !game().smallHud });
+        EventBus.emit('action-button-sound');
     };
     const showPlayer = () => {
         EventBus.emit('show-player');
+        EventBus.emit('action-button-sound');
         setClicked({ ...clicked(), showPlayer: !clicked().showPlayer });
+        if (!clicked().showPlayer === true) {
+            EventBus.emit('toggle-bar', true);
+        };
     };
 
     const icon = (click: boolean) => {
@@ -132,15 +151,6 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
             'filter': click === true ? 'invert(100%)' : 'sepia(100%)',
             border: '1px solid #fdf6d8',
         };
-    };
-
-    const p: JSX.CSSProperties = {
-        color: clicked().caerenic === true ? 'gold' : '#fdf6d8',
-        'font-size': '1.5em',
-        'font-weight': 700,
-        'align-items': 'center',
-        'margin-top': '10%',
-        filter: 'sepia(100%)',
     };
 
     return (

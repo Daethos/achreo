@@ -1,8 +1,8 @@
 import { EventBus } from "../game/EventBus";
 import { Game } from "../game/scenes/Game";
 
-function xModifier(x: number, index: number, offset = 40.75) {
-    const mod = x + 125 * 1.15 + (index * offset);
+function xModifier(x: number, index: number, offset = 43.75) {
+    const mod = x * 1.35 + (index * offset);
     return mod;
 };
 
@@ -50,6 +50,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         };
 
         this.createBar();
+        this.listener();
     };
 
     createBar = () => {
@@ -96,15 +97,6 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                 this.pressButton(item);
             });
         });
-
-        EventBus.on('toggle-bar', () => {
-            this.closed = !this.closed;
-            if (this.closed === true) {
-                this.setVisible(false);
-            } else {
-                this.setVisible(true);
-            };
-        });
     };
 
     draw = () => {
@@ -126,6 +118,22 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         });
     };
 
+    listener = () => {
+        EventBus.on('toggle-bar', (e: boolean) => {
+            if (e === true) {
+                this.setVisible(true);
+                this.bar.forEach((item) => {
+                    item.setVisible(true);
+                });
+            } else {
+                this.setVisible(false);
+                this.bar.forEach((item) => {
+                    item.setVisible(false);
+                });
+            };
+        });
+    };
+
     pressButton = (item: Phaser.GameObjects.Image) => {
         this.bar.forEach((button) => {
             if (button === item) {
@@ -133,16 +141,19 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     case 'open':
                         this.closed = false;
                         EventBus.emit('open');
+                        EventBus.emit('action-button-sound');
                         this.draw();
                         break;
                     case 'closed':
                         this.closed = true;
                         EventBus.emit('closed');
+                        EventBus.emit('action-button-sound');
                         this.draw();
                         break;
                     case 'pause':
                         EventBus.emit('action-button-sound');
                         EventBus.emit('update-pause', true); // variable
+                        this.setVisible(false);
                         break;
                     case 'minimap':
                         EventBus.emit('action-button-sound');
@@ -169,10 +180,12 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     case 'settings':
                         EventBus.emit('action-button-sound');
                         EventBus.emit('useScroll');
+                        this.setVisible(false);
                         break;
                     case 'info':
                         EventBus.emit('action-button-sound');
                         EventBus.emit('show-player'); // variable
+                        this.setVisible(false);
                         break;
                     //case 'dialog':
                         //EventBus.emit('action-button-sound');

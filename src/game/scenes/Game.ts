@@ -305,11 +305,9 @@ export class Game extends Scene {
         this.minimap.ignore(this.rightJoystick.joystick.base);
         this.minimap.ignore(this.rightJoystick.joystick.thumb);
         this.minimap.ignore(this.rightJoystick.pointer);
-        console.log(this.joystick, this.rightJoystick, 'Joysticks');
         this.minimap.setVisible(false);
 
         this.minimap.on('pointerdown', (pointer: any) => {
-            console.log(pointer.worldX, pointer.worldY, 'World X and Y');
             this.minimap.scrollX = pointer.worldX; 
             this.minimap.scrollY = pointer.worldY; 
         });
@@ -818,7 +816,8 @@ export class Game extends Scene {
         this.combatMachine.processor();
 
         this.playerLight.setPosition(this.player.x, this.player.y);
-        this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2) + '\n' + 'Height: ' + this.cameras.main.height + '\n' + 'Width: ' + this.cameras.main.width);
+        //  + '\n' + 'Height: ' + this.cameras.main.height + '\n' + 'Width: ' + this.cameras.main.width
+        this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2)); 
         this.combatTimerText.setText('Combat Timer: ' + this.combatTime);
     };
 

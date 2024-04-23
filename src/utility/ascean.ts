@@ -235,13 +235,13 @@ function gripCompiler(weapon: Equipment, attributes: CombatAttributes, ascean: A
     let magicalMultiplier: number = 1;
 
     if (weapon.attackType === 'Physical') {
-        physicalMultiplier = 1.1;
-        magicalMultiplier = 0.8;
+        physicalMultiplier = 1.05;
+        magicalMultiplier = 0.95;
     };
 
     if (weapon.attackType === 'Magic') {
-        physicalMultiplier = 0.8;
-        magicalMultiplier = 1.1;
+        physicalMultiplier = 0.95;
+        magicalMultiplier = 1.05;
     };
 
     if (weapon.grip === 'One Hand' || weapon.type === 'Bow') {

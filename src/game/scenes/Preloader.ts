@@ -90,6 +90,18 @@ export class Preloader extends Scene {
         this.load.image('AncientForestMain', '../assets/gui/AncientForestMainLev.png');
         this.load.image('AncientForestDecorative', '../assets/gui/AncientForestDecorative.png');
         this.load.image('Camp_Graves', '../assets/gui/Camp_Graves.png');
+        this.load.image('closed', '../assets/images/closed.png');
+        this.load.image('open', '../assets/images/open.png');
+        this.load.image('caerenic', '../assets/images/caerenic.png');
+        this.load.image('stalwart', '../assets/images/stalwart.png');
+        this.load.image('minimap', '../assets/images/minimap.png');
+        this.load.image('pause', '../assets/images/pause.png');
+        this.load.image('stealth', '../assets/images/stealth.png');
+        this.load.image('info', '../assets/images/info.png');
+        this.load.image('settings', '../assets/images/settings.png');
+        this.load.image('dialog', '../assets/images/dialog.png');
+        this.load.image('loot', '../assets/images/loot.png');
+        this.load.image('cursor-reset', '../assets/images/cursor-reset.png');
 
         this.createLoadingBar();
     };

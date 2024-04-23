@@ -880,10 +880,10 @@ export const PhaserGame = (props: IProps) => {
 
     return (
         <>
+        <div class="flex-1" id="game-container" ref={gameContainer}></div>
         <Show when={live()}>
             <BaseUI ascean={props.ascean} combat={combat} game={game} settings={props.settings} setSettings={props.setSettings} stamina={stamina} />
         </Show>
-        <div class="flex-1" id="game-container" ref={gameContainer}></div>
         </>
     );
 };

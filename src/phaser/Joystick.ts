@@ -26,6 +26,7 @@ export default class Joystick extends Phaser.GameObjects.Container {
             // enable: true
         });
         this.doubleTap();
+        
     };
 
     createCursorKeys() {

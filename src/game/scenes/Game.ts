@@ -16,6 +16,7 @@ import Equipment from '../../models/equipment';
 import { States } from '../../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
 import Joystick from '../../phaser/Joystick';
+import SmallHud from '../../phaser/SmallHud';
 
 export class Game extends Scene {
     gameText: Phaser.GameObjects.Text;
@@ -91,6 +92,7 @@ export class Game extends Scene {
     joystickKeys: any;
     volumeEvent: () => void;
     matterCollision: any;
+    smallHud: SmallHud;
 
     constructor () {
         super('Game');
@@ -341,6 +343,9 @@ export class Game extends Scene {
             this.minimap.setScroll(world.x, world.y);
         });
         this.minimap.ignore(this.minimapBorder);
+
+        // ================== Small Hud ================== \\
+        // this.smallHud = new SmallHud(this);
 
         // ================== Event Bus ================== \\
 

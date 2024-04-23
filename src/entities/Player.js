@@ -884,11 +884,13 @@ export default class Player extends Entity {
             objectA: [playerSensor],
             callback: (other) => {
                 if (this.isValidEnemyCollision(other)) {
-                    // const collisionPoint = this.calculateCollisionPoint(other);
-                    // const attackDirection = this.getAttackDirection(collisionPoint);
+                    const collisionPoint = this.calculateCollisionPoint(other);
+                    const attackDirection = this.getAttackDirection(collisionPoint);
                     // console.log(`Are you properly oriented? ${attackDirection} ${this.flipX} ${attackDirection === this.flipX}`)
-                    // this.actionAvailable = true;
-                    // this.triggeredActionAvailable = other.gameObjectB;
+                    if (attackDirection) {
+                        this.actionAvailable = true;
+                        this.triggeredActionAvailable = other.gameObjectB;
+                    };
                     // if (!this.actionTarget) 
                     this.actionTarget = other;
                     if (!this.attacking) this.attacking = other.gameObjectB;
@@ -915,7 +917,7 @@ export default class Player extends Entity {
 
     calculateCollisionPoint(other) {
         if (!other) {
-            console.log('No Collision Point')
+            // console.log('No Collision Point')
             return false;
         };
         const bodyPosition = other.pair.gameObjectB.body.position;
@@ -925,7 +927,7 @@ export default class Player extends Entity {
     
     getAttackDirection(collisionPoint) {
         const sensorPosition = this.sensor.position;
-        console.log(`%c Sensor Position: ${sensorPosition.x} Collision Point: ${collisionPoint.x}`, 'color: #ff0000');
+        // console.log(`%c Sensor Position: ${sensorPosition.x} Collision Point: ${collisionPoint.x}`, 'color: #ff0000');
         return collisionPoint.x < sensorPosition.x;
     };
 
@@ -1090,7 +1092,7 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Healing', PLAYER.DURATIONS.HEALING / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.HEALING);
         this.isPolymorphing = true;
-        this.checkCaerenic(true);
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
     };
     onHealingUpdate = (dt) => {
         if (this.isMoving) this.isPolymorphing = false;
@@ -1110,7 +1112,7 @@ export default class Player extends Entity {
             this.scene.sound.play('phenomena', { volume: this.scene.gameState.soundEffectVolume });
         };
         this.castbar.reset();
-        this.checkCaerenic(false);
+        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
     };
 
     onConsumeEnter = () => {
@@ -1132,7 +1134,7 @@ export default class Player extends Entity {
         if (!this.inCombat) return;
         this.isPraying = true;
         this.setStatic(true);
-        this.checkCaerenic(true);
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.setTimeEvent('invokeCooldown', PLAYER.COOLDOWNS.LONG);
         this.invokeCooldown = 30;
         if (this.playerBlessing === '' || this.playerBlessing !== this.scene.state.playerBlessing) {
@@ -1145,7 +1147,7 @@ export default class Player extends Entity {
     onInvokeExit = () => {
         if (!this.inCombat) return;
         this.setStatic(false);
-        this.checkCaerenic(false);
+        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
         this.scene.combatMachine.action({ type: 'Instant', data: this.scene.state.playerBlessing });
         this.prayerFx.play();
         this.scene.useStamina(PLAYER.STAMINA.INVOKE);
@@ -1215,7 +1217,6 @@ export default class Player extends Entity {
 
     onBlinkEnter = () => {
         this.scene.sound.play('caerenic', { volume: this.scene.gameState.soundEffectVolume });
-        this.checkCaerenic(true);
         if (this.velocity.x > 0) {
             this.setVelocityX(PLAYER.SPEED.BLINK);
         } else if (this.velocity.x < 0) {
@@ -1231,16 +1232,11 @@ export default class Player extends Entity {
         };
         const blinkCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
         this.setTimeEvent('blinkCooldown', blinkCooldown);
-        if (!this.blinkEvent) {
-            this.blinkEvent = this.scene.time.addEvent({
-                delay: 750,
-                callback: () => {
-                    this.checkCaerenic(false);
-                    this.blinkEvent.remove(false);
-                    this.blinkEvent = undefined;
-                },
-                callbackScope: this,
-                loop: false,
+
+        if (!this.isCaerenic && !this.isGlowing) {
+            this.checkCaerenic(true);
+            this.scene.time.delayedCall(750, () => {
+                if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
             });
         };
     };
@@ -1251,10 +1247,12 @@ export default class Player extends Entity {
 
     onDesperationEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Desperation', PLAYER.DURATIONS.HEALING / 2, 'heal');
-        this.checkCaerenic(true);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.HEALING, () => {
-            this.checkCaerenic(false);
-        });
+        if (!this.isCaerenic && !this.isGlowing) {
+            this.checkCaerenic(true);
+            this.scene.time.delayedCall(PLAYER.DURATIONS.HEALING, () => {
+                if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
+            });
+        };
     };
     onDesperationUpdate = (_dt) => {
         this.combatChecker(this.isFreezing);
@@ -1271,7 +1269,7 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Fearing', PLAYER.DURATIONS.FEARING / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.FEARING);
         this.isFearing = true;
-        this.checkCaerenic(true);
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
     };
     onFearingUpdate = (dt) => {
         if (this.isMoving) this.isFearing = false;
@@ -1291,7 +1289,7 @@ export default class Player extends Entity {
             this.scene.useStamina(PLAYER.STAMINA.FEARING);    
         };
         this.castbar.reset();
-        this.checkCaerenic(false);
+        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
     };
 
     onFreezeEnter = () => {
@@ -1318,7 +1316,7 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Freezing', PLAYER.DURATIONS.FREEZING / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.FREEZING);
         this.isFreezing = true;
-        this.checkCaerenic(true);
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
     };
     onFreezeCastUpdate = (dt) => {
         if (this.isMoving) this.isFreezing = false;
@@ -1338,7 +1336,7 @@ export default class Player extends Entity {
             this.scene.mysterious.play();
         };
         this.castbar.reset();
-        this.checkCaerenic(false);
+        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
     };
 
     onScreamEnter = () => {
@@ -1357,7 +1355,7 @@ export default class Player extends Entity {
     };
     onScreamExit = () => {
         if (!this.inCombat) return;
-        this.setTimeEvent('screamCooldown', 3000);  
+        this.setTimeEvent('screamCooldown', PLAYER.COOLDOWNS.SHORT);  
     };
 
     onSlowInstantEnter = () => {
@@ -1368,9 +1366,9 @@ export default class Player extends Entity {
         this.scene.slow(this.attacking.enemyID);
         this.scene.useStamina(PLAYER.STAMINA.SLOW);
         
-        this.checkCaerenic(true);
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.scene.time.delayedCall(500, () => {
-            this.checkCaerenic(false);
+            if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
             this.isSlowing = false;
         });
         
@@ -1389,6 +1387,7 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snaring', PLAYER.DURATIONS.SNARING, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.SNARING);
         this.isSnaring = true;
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
     };
     onSnaringUpdate = (dt) => {
         if (this.isMoving) this.isSnaring = false;
@@ -1409,7 +1408,7 @@ export default class Player extends Entity {
             this.scene.sound.play('debuff', { volume: this.scene.gameState.soundEffectVolume });
         };
         this.castbar.reset();
-        this.checkCaerenic(false);
+        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
     };
 
     onRangedStunEnter = () => {};
@@ -1448,7 +1447,7 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphing', PLAYER.DURATIONS.POLYMORPHING / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.POLYMORPHING);
         this.isPolymorphing = true;
-        this.checkCaerenic(true);
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
     };
     onPolymorphingUpdate = (dt) => {
         if (this.isMoving) this.isPolymorphing = false;
@@ -1468,7 +1467,7 @@ export default class Player extends Entity {
             this.scene.mysterious.play();
         };
         this.castbar.reset();
-        this.checkCaerenic(false);
+        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
     };
 
     onStunEnter = () => {
@@ -1498,7 +1497,7 @@ export default class Player extends Entity {
         this.attacking.isConsumed = true;
         this.scene.useStamina(PLAYER.STAMINA.TSHAER);
         this.scene.tshaeral.play();
-        this.checkCaerenic(true);
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAERING / 2, 'damage');
         this.castbar.setTotal(PLAYER.DURATIONS.TSHAERING);
         this.castbar.setTime(PLAYER.DURATIONS.TSHAERING);
@@ -1534,7 +1533,7 @@ export default class Player extends Entity {
     };
     onTshaeralExit = () => {
         this.castbar.reset();
-        this.checkCaerenic(false);
+        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
         this.setStatic(false);
         if (this.tshaeringTimer) {
             this.tshaeringTimer.remove(false);
@@ -1581,18 +1580,11 @@ export default class Player extends Entity {
     };
 
     checkCaerenic = (caerenic) => {
-        console.log('Checking Caerenic:', caerenic)
-        if (this.isCaerenic === false) {
-            console.log('--- Caerenic is false, setting Glow to TRUE ---')
-            this.setGlow(this, caerenic);
-            this.setGlow(this.spriteWeapon, caerenic, 'weapon');
-            this.setGlow(this.spriteShield, caerenic, 'shield');
-        } else {
-            console.log('--- Caerenic is true, setting Glow to FALSE ---')
-            this.setGlow(this, false);
-            this.setGlow(this.spriteWeapon, false, 'weapon');
-            this.setGlow(this.spriteShield, false, 'shield');
-        };
+        // console.log('--- Caerenic is false, setting Glow to TRUE ---')
+        this.isGlowing = caerenic;
+        this.setGlow(this, caerenic);
+        this.setGlow(this.spriteWeapon, caerenic, 'weapon');
+        this.setGlow(this.spriteShield, caerenic, 'shield');
     };
 
     checkTargets = () => {

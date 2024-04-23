@@ -121,6 +121,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.leashTimer = undefined;
         this.canSwing = true;
         this.swingTimer = 0; 
+        this.isGlowing = false;
         this.glowing = false;
         this.glowWeapon = undefined;
         this.glowHelm = undefined;
@@ -175,64 +176,39 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     setGlow = (object, glow, type = undefined) => {
-        switch (type) {
-            case 'shield':
-                if (this.glowShield) {
-                    this.glowShield.remove();
-                    this.glowShield = undefined;
-                };
-            case 'weapon':
-                if (this.glowWeapon) {
-                    this.glowWeapon.remove();
-                    this.glowWeapon = undefined;
-                };
-            default:
-                if (this.glowTimer) {
-                    this.glowTimer.remove();
-                    this.glowTimer = undefined;
-                };
-            break;        
-        };
+        this.glowFilter.remove(object);
         if (!glow) {
-            return this.glowFilter.remove(object);
+            switch (type) {
+                case 'shield':
+                    if (this.glowShield !== undefined) {
+                        this.glowShield.remove(false);
+                        this.glowShield.destroy();
+                        this.glowShield = undefined;
+                    };
+                case 'weapon':
+                    if (this.glowWeapon !== undefined) {
+                        this.glowWeapon.remove(false);
+                        this.glowWeapon.destroy();
+                        this.glowWeapon = undefined;
+                    };
+                default:
+                    if (this.glowTimer !== undefined) {
+                        this.glowTimer.remove(false);
+                        this.glowTimer.destroy();
+                        this.glowTimer = undefined;
+                    };
+                    break;        
+            };
+            return; 
         };
             
-        const setColor = (mastery) => {
-            switch (mastery) {
-                case 'constitution': return 0xFDF6D8;
-                case 'strength': return 0xFF0000;
-                case 'agility': return 0x00FF00;
-                case 'achre': return 0x0000FF;
-                case 'caeren': return 0x800080;
-                case 'kyosir': return 0xFFD700;
-                default: return 0xFFFFFF;
-            };
-        };
-
-        let glowColor = setColor(this.ascean.mastery);
-
-        const updateGlow = (time) => {
-            this.glowFilter.remove(object);
-            const outerStrength = 2 + Math.sin(time * 0.005) * 2; // Adjust the frequency and amplitude as needed
-            const innerStrength = 2 + Math.cos(time * 0.005) * 2;
-            const intensity = 0.25;
-
-            this.glowFilter.add(object, {
-                outerStrength,
-                innerStrength,
-                glowColor,
-                intensity,
-                knockout: true
-            });
-        }; 
-
-        updateGlow(this.scene.time.now);
+        this.updateGlow(object);
 
         switch (type) {
             case 'shield':
                 this.glowShield = this.scene.time.addEvent({
                     delay: 200, // 125 Adjust the delay as needed
-                    callback: () => updateGlow(this.scene.time.now),
+                    callback: () => this.updateGlow(object),
                     loop: true,
                     callbackScope: this
                 });
@@ -240,7 +216,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             case 'weapon':
                 this.glowWeapon = this.scene.time.addEvent({
                     delay: 200, // 125 Adjust the delay as needed
-                    callback: () => updateGlow(this.scene.time.now),
+                    callback: () => this.updateGlow(object),
                     loop: true,
                     callbackScope: this
                 });
@@ -248,13 +224,42 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             default:
                 this.glowTimer = this.scene.time.addEvent({
                     delay: 200, // 125 Adjust the delay as needed
-                    callback: () => updateGlow(this.scene.time.now),
+                    callback: () => this.updateGlow(object),
                     loop: true,
                     callbackScope: this
                 });
                 break;
         };
     };
+
+    setColor = (mastery) => {
+        switch (mastery) {
+            case 'constitution': return 0xFDF6D8;
+            case 'strength': return 0xFF0000;
+            case 'agility': return 0x00FF00;
+            case 'achre': return 0x0000FF;
+            case 'caeren': return 0x800080;
+            case 'kyosir': return 0xFFD700;
+            default: return 0xFFFFFF;
+        };
+    };
+
+    updateGlow = (object) => {
+        let glowColor = this.setColor(this.ascean.mastery);
+        this.glowFilter.remove(object);
+        const outerStrength = 2 + Math.sin(this.scene.time.now * 0.005) * 2; // Adjust the frequency and amplitude as needed
+        const innerStrength = 2 + Math.cos(this.scene.time.now * 0.005) * 2;
+        const intensity = 0.25;
+
+        this.glowFilter.add(object, {
+            outerStrength,
+            innerStrength,
+            glowColor,
+            intensity,
+            knockout: true
+        });
+    }; 
+
 
     adjustSpeed = (speed) => {
         return this.speed += speed;
@@ -457,32 +462,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     checkActionSuccess = (entity, target) => {
         if (this.inCombat === false && this.isStealthing === false) return;
-        if (entity === 'player') { // && this.actionAvailable && this.triggeredActionAvailable
-            const left = this.x < target.x;
-            if (left) {
-                if (this.flipX === false) {
-                    console.log('Not the Correct Attack Direction: --- LEFT ---');
-                    return;
-                };
-            } else {
-                if (this.flipX === true) {
-                    console.log('Not the Correct Attack Direction: --- RIGHT ---');
-                    return;
-                };
-            };
-            // console.log('Action Success')
-            // const collisionPoint = this.calculateCollisionPoint(this.actionTarget);
-            // if (collisionPoint === false) {
-            //     console.log('No Collision Point');
-            //     return;
-            // };
-            // const attackDirection = this.getAttackDirection(collisionPoint);
-            // if (attackDirection === false) {
-            //     console.log('Not the Correct Attack Direction');
-            //     return;
-            // };
-            // console.log(`Are you properly oriented? ${attackDirection} ${this.flipX} ${attackDirection === this.flipX}`)
-            this.triggeredActionAvailable = target;
+        if (entity === 'player' && this.actionAvailable && this.triggeredActionAvailable) { // 
+            console.log('--- SUCCESS ---')
             this.attackedTarget = target;
             this.actionAvailable = true;
             this.actionSuccess = true;

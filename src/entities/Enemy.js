@@ -1431,7 +1431,7 @@ export default class Enemy extends Entity {
         const particleVector = new Phaser.Math.Vector2(particle.effect.x, particle.effect.y);
         const enemyVector = new Phaser.Math.Vector2(this.x, this.y);
         const distance = particleVector.subtract(enemyVector);
-        if (distance.length() < DISTANCE.THRESHOLD) { // 50 || 100
+        if (distance.length() < (DISTANCE.THRESHOLD - 25)) { // 50 || 100
             return true;
         };
         return false;

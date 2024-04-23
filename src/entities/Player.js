@@ -36,36 +36,43 @@ export const PLAYER = {
         EVADE: 21,
     },
     STAMINA: {
+        // Physical
         ATTACK: 25,
         DODGE: 10, // 25
         PARRY: 10,
         POSTURE: 15,
         ROLL: 10, // 25
-        BLINK: 10,
+        // Magical
+        BLINK: 10,  
         CONSUME: 10,
-        DESPERATION: 25,
+        DESPERATION: 40,
         FREEZE: 25,
-        FEARING: 15,
-        HEALING: 15,
-        INVOKE: -10,
-        POLYMORPH: 15,
-        ROOT: 15,
+        FEARING: 10,
+        HEALING: 25,
+        INVOKE: -25,
+        POLYMORPH: 10,
+        ROOT: 10,
         SCREAM: 25,
-        SHIELD: 25,
+        SHIELD: 40,
         SLOW: 10,
         SNARE: 10,
-        TSHAER: 25,
+        TSHAER: 40,
+    },
+    COOLDOWNS: {
+        SHORT: 6000,
+        MODERATE: 10000,
+        LONG: 15000,
     },
     DURATIONS: {
-        FEARING: 1000,
-        SHIELDING: 100,
+        FEARING: 1500,
         FREEZING: 750,
         HEALING: 1500,
         POLYMORPHING: 1500,
+        SCREAM: 1000,
+        SHIELDING: 6000,
         SNARING: 1000,
         STUNNED: 2500,
         TSHAERING: 2000,
-        SCREAM: 1000,
     },
 };
 
@@ -880,9 +887,10 @@ export default class Player extends Entity {
                     // const collisionPoint = this.calculateCollisionPoint(other);
                     // const attackDirection = this.getAttackDirection(collisionPoint);
                     // console.log(`Are you properly oriented? ${attackDirection} ${this.flipX} ${attackDirection === this.flipX}`)
-                    this.actionAvailable = true;
-                    this.triggeredActionAvailable = other.gameObjectB;
-                    if (!this.actionTarget) this.actionTarget = other;
+                    // this.actionAvailable = true;
+                    // this.triggeredActionAvailable = other.gameObjectB;
+                    // if (!this.actionTarget) 
+                    this.actionTarget = other;
                     if (!this.attacking) this.attacking = other.gameObjectB;
                     if (!this.currentTarget) this.currentTarget = other.gameObjectB;
                     if (!this.targetID) this.targetID = other.gameObjectB.enemyID;    
@@ -906,6 +914,10 @@ export default class Player extends Entity {
     };
 
     calculateCollisionPoint(other) {
+        if (!other) {
+            console.log('No Collision Point')
+            return false;
+        };
         const bodyPosition = other.pair.gameObjectB.body.position;
         const offset = Phaser.Physics.Matter.Matter.Vector.mult(other.pair.collision.normal, other.pair.collision.depth);
         return Phaser.Physics.Matter.Matter.Vector.add(bodyPosition, offset);
@@ -913,6 +925,7 @@ export default class Player extends Entity {
     
     getAttackDirection(collisionPoint) {
         const sensorPosition = this.sensor.position;
+        console.log(`%c Sensor Position: ${sensorPosition.x} Collision Point: ${collisionPoint.x}`, 'color: #ff0000');
         return collisionPoint.x < sensorPosition.x;
     };
 
@@ -1090,7 +1103,7 @@ export default class Player extends Entity {
     };
     onHealingExit = () => {
         if (this.healingSuccess) {
-            this.setTimeEvent('healingCooldown', 6000);  
+            this.setTimeEvent('healingCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.scene.useStamina(PLAYER.STAMINA.HEALING);
             this.healingSuccess = false;
             EventBus.emit('initiate-combat', { data: { key: 'player', value: 25 }, type: 'Health' });
@@ -1104,7 +1117,7 @@ export default class Player extends Entity {
         if (this.scene.state.playerEffects.length === 0) return;
         this.isConsuming = true;
         this.scene.sound.play('consume', { volume: this.scene.gameState.soundEffectVolume });
-        this.setTimeEvent('consumeCooldown', 3000);
+        this.setTimeEvent('consumeCooldown', PLAYER.COOLDOWNS.SHORT);
     };
     onConsumeUpdate = (_dt) => {
         this.combatChecker(this.isConsuming);
@@ -1120,7 +1133,7 @@ export default class Player extends Entity {
         this.isPraying = true;
         this.setStatic(true);
         this.checkCaerenic(true);
-        this.setTimeEvent('invokeCooldown', 15000);
+        this.setTimeEvent('invokeCooldown', PLAYER.COOLDOWNS.LONG);
         this.invokeCooldown = 30;
         if (this.playerBlessing === '' || this.playerBlessing !== this.scene.state.playerBlessing) {
             this.playerBlessing = this.scene.state.playerBlessing;
@@ -1141,7 +1154,7 @@ export default class Player extends Entity {
     onRootingEnter = () => {
         if (!this.inCombat) return;
         this.isHealing = true;
-        this.setTimeEvent('rootCooldown', 6000);
+        this.setTimeEvent('rootCooldown', PLAYER.COOLDOWNS.SHORT);
     };
     onRootingUpdate = (_dt) => {
         this.combatChecker(this.isHealing);
@@ -1216,7 +1229,8 @@ export default class Player extends Entity {
         if (Math.abs(this.velocity.x) || Math.abs(this.velocity.y)) {
             this.scene.useStamina(PLAYER.STAMINA.BLINK);
         };
-        this.setTimeEvent('blinkCooldown', 1500);
+        const blinkCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
+        this.setTimeEvent('blinkCooldown', blinkCooldown);
         if (!this.blinkEvent) {
             this.blinkEvent = this.scene.time.addEvent({
                 delay: 750,
@@ -1246,7 +1260,8 @@ export default class Player extends Entity {
         this.combatChecker(this.isFreezing);
     };
     onDesperationExit = () => {
-        this.setTimeEvent('desperationCooldown', 15000);  
+        const desperationCooldown = this.inCombat ? PLAYER.COOLDOWNS.LONG : PLAYER.COOLDOWNS.SHORT;
+        this.setTimeEvent('desperationCooldown', desperationCooldown);  
         EventBus.emit('initiate-combat', { data: { key: 'player', value: 50 }, type: 'Health' });
         this.scene.sound.play('phenomena', { volume: this.scene.gameState.soundEffectVolume });
     };
@@ -1270,7 +1285,7 @@ export default class Player extends Entity {
     onFearingExit = () => {
         if (this.fearSuccess) {
             this.scene.fear(this.attacking?.enemyID);
-            this.setTimeEvent('fearCooldown', 6000);  
+            this.setTimeEvent('fearCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.fearSuccess = false;
             this.scene.mysterious.play();
             this.scene.useStamina(PLAYER.STAMINA.FEARING);    
@@ -1317,7 +1332,7 @@ export default class Player extends Entity {
     onFreezeCastExit = () => {
         if (this.freezeSuccess) {
             // this.scene.freeze(this.attacking?.enemyID);
-            this.setTimeEvent('freezeCooldown', 6000);  
+            this.setTimeEvent('freezeCooldown', PLAYER.COOLDOWNS.MODERATE);  
         this.scene.useStamina(PLAYER.STAMINA.FREEZE_CAST);
         this.freezeSuccess = false;
             this.scene.mysterious.play();
@@ -1366,7 +1381,7 @@ export default class Player extends Entity {
     };
     onSlowInstantExit = () => {
         if (!this.inCombat) return;
-        this.setTimeEvent('slowCooldown', 6000);
+        this.setTimeEvent('slowCooldown', PLAYER.COOLDOWNS.SHORT);
     };
 
     onSnaringEnter = () => {
@@ -1387,7 +1402,7 @@ export default class Player extends Entity {
     onSnaringExit = () => {
         // if (!this.inCombat) return;
         if (this.snaringSuccess) {
-            this.setTimeEvent('snareCooldown', 6000);
+            this.setTimeEvent('snareCooldown', PLAYER.DURATIONS.SHORT);
             this.scene.useStamina(PLAYER.STAMINA.SNARE);
             this.scene.snare(this.attacking.enemyID);
             this.snaringSuccess = false;
@@ -1407,9 +1422,9 @@ export default class Player extends Entity {
         this.scene.sound.play('shield', { volume: this.scene.gameState.soundEffectVolume });
         this.isShielding = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shielding', 750, 'heal');
-        this.shieldBubble = new Bubble(this.scene, this.x, this.y, 'bone', 6000);
-        this.setTimeEvent('shieldCooldown', 15000);
-        this.scene.time.delayedCall(6000, () => {
+        this.shieldBubble = new Bubble(this.scene, this.x, this.y, 'bone', PLAYER.DURATIONS.SHIELDING);
+        this.setTimeEvent('shieldCooldown', PLAYER.COOLDOWNS.SHIELDING);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.SHIELDING, () => {
             this.isShielding = false;    
         });
     };
@@ -1447,7 +1462,7 @@ export default class Player extends Entity {
     onPolymorphingExit = () => {
         if (this.polymorphSuccess) {
             this.scene.polymorph(this.attacking?.enemyID);
-            this.setTimeEvent('polymorphCooldown', 4000);  
+            this.setTimeEvent('polymorphCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.scene.useStamina(PLAYER.STAMINA.POLYMORPH);
             this.polymorphSuccess = false;
             this.scene.mysterious.play();
@@ -1502,7 +1517,7 @@ export default class Player extends Entity {
             callbackScope: this,
             repeat: 8,
         });
-        this.setTimeEvent('tshaeralCooldown', 15000);
+        this.setTimeEvent('tshaeralCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.addEvent({
             delay: 2000,
             callback: () => {
@@ -1566,10 +1581,17 @@ export default class Player extends Entity {
     };
 
     checkCaerenic = (caerenic) => {
-        if (!this.isCaerenic) {
+        console.log('Checking Caerenic:', caerenic)
+        if (this.isCaerenic === false) {
+            console.log('--- Caerenic is false, setting Glow to TRUE ---')
             this.setGlow(this, caerenic);
             this.setGlow(this.spriteWeapon, caerenic, 'weapon');
             this.setGlow(this.spriteShield, caerenic, 'shield');
+        } else {
+            console.log('--- Caerenic is true, setting Glow to FALSE ---')
+            this.setGlow(this, false);
+            this.setGlow(this.spriteWeapon, false, 'weapon');
+            this.setGlow(this.spriteShield, false, 'shield');
         };
     };
 
@@ -1708,7 +1730,7 @@ export default class Player extends Entity {
     };
 
     enemyIdMatch = () => {
-        return this.attackedTarget.enemyID === this.scene.state.enemyID;
+        return this?.attackedTarget?.enemyID === this.scene.state?.enemyID;
     };
 
     checkPlayerAction = () => {

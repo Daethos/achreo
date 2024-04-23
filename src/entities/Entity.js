@@ -175,25 +175,25 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     setGlow = (object, glow, type = undefined) => {
+        switch (type) {
+            case 'shield':
+                if (this.glowShield) {
+                    this.glowShield.remove();
+                    this.glowShield = undefined;
+                };
+            case 'weapon':
+                if (this.glowWeapon) {
+                    this.glowWeapon.remove();
+                    this.glowWeapon = undefined;
+                };
+            default:
+                if (this.glowTimer) {
+                    this.glowTimer.remove();
+                    this.glowTimer = undefined;
+                };
+            break;        
+        };
         if (!glow) {
-            switch (type) {
-                case 'shield':
-                    if (this.glowShield) {
-                        this.glowShield.remove();
-                        this.glowShield = undefined;
-                    };
-                case 'weapon':
-                    if (this.glowWeapon) {
-                        this.glowWeapon.remove();
-                        this.glowWeapon = undefined;
-                    };
-                default:
-                    if (this.glowTimer) {
-                        this.glowTimer.remove();
-                        this.glowTimer = undefined;
-                    };
-                    break;        
-            };
             return this.glowFilter.remove(object);
         };
             
@@ -456,9 +456,35 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     checkActionSuccess = (entity, target) => {
-        if (entity === 'player' && this.actionAvailable && this.triggeredActionAvailable) {
+        if (this.inCombat === false && this.isStealthing === false) return;
+        if (entity === 'player') { // && this.actionAvailable && this.triggeredActionAvailable
+            const left = this.x < target.x;
+            if (left) {
+                if (this.flipX === false) {
+                    console.log('Not the Correct Attack Direction: --- LEFT ---');
+                    return;
+                };
+            } else {
+                if (this.flipX === true) {
+                    console.log('Not the Correct Attack Direction: --- RIGHT ---');
+                    return;
+                };
+            };
             // console.log('Action Success')
-            this.attackedTarget = this.triggeredActionAvailable;
+            // const collisionPoint = this.calculateCollisionPoint(this.actionTarget);
+            // if (collisionPoint === false) {
+            //     console.log('No Collision Point');
+            //     return;
+            // };
+            // const attackDirection = this.getAttackDirection(collisionPoint);
+            // if (attackDirection === false) {
+            //     console.log('Not the Correct Attack Direction');
+            //     return;
+            // };
+            // console.log(`Are you properly oriented? ${attackDirection} ${this.flipX} ${attackDirection === this.flipX}`)
+            this.triggeredActionAvailable = target;
+            this.attackedTarget = target;
+            this.actionAvailable = true;
             this.actionSuccess = true;
         }; 
         if (entity === 'enemy' && target) {
@@ -525,7 +551,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.setTint(0xFF0000);
             };
             if (this.frameCount === FRAME_COUNT.PARRY_SUCCESS) {
-                this.checkActionSuccess(entity, target);
+                if (this.isRanged === false) this.checkActionSuccess(entity, target);
                 if (entity === 'enemy') this.setTint(0x000000);
             };
             
@@ -753,7 +779,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     };
                     if (this.frameCount === 39) {
                         this.spriteWeapon.setAngle(-170);
-                        this.checkActionSuccess(entity, target);
+                        if (this.isRanged === false) this.checkActionSuccess(entity, target);
                         if (entity === 'enemy') this.setTint(0x000000);
                     };
                     if (this.frameCount === 40) {
@@ -816,7 +842,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     };
                     if (this.frameCount === 39) {
                         this.spriteWeapon.setAngle(90);
-                        this.checkActionSuccess(entity, target);
+                        if (this.isRanged === false) this.checkActionSuccess(entity, target);
                         if (entity === 'enemy') this.setTint(0x000000);
                     };
                     if (this.frameCount === 40) {
@@ -903,7 +929,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.frameCount === 17) { // 11
                         this.spriteWeapon.setAngle(-250);
                         this.spriteShield.setOrigin(1, 0.15);
-                        this.checkActionSuccess(entity, target);
+                        if (this.isRanged === false) this.checkActionSuccess(entity, target);
                         if (entity === 'enemy') this.setTint(0x000000);
                     }; 
                 } else {
@@ -935,7 +961,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.frameCount === 17) { // 11
                         this.spriteWeapon.setAngle(-175);
                         this.spriteShield.setOrigin(0, 0.15);
-                        this.checkActionSuccess(entity, target);
+                        if (this.isRanged === false) this.checkActionSuccess(entity, target);
                         if (entity === 'enemy') this.setTint(0x000000);
                     };
                 };

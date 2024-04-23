@@ -755,7 +755,7 @@ export class Game extends Scene {
         const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType };
         EventBus.emit('setup-npc', data);    
     };
-    showDialog = (dialog: boolean) => EventBus.emit('blend-game', { dialogTag: dialog, smallHud: dialog });
+    showDialog = (dialog: boolean) => EventBus.emit('blend-game', { dialogTag: dialog }); // smallHud: dialog
 
     // ============================ Player ============================ \\
 

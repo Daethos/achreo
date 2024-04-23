@@ -494,23 +494,19 @@ export default class Player extends Entity {
     };
 
     caerenicUpdate = () => {
-        // EventBus.on('update-caerenic', () => {
-            this.isCaerenic = this.isCaerenic ? false : true;
-            this.caerenicFx.play();
-            if (this.isCaerenic) {
-                this.setGlow(this, true);
-                this.setGlow(this.spriteWeapon, true, 'weapon');
-                this.setGlow(this.spriteShield, true, 'shield'); 
-
-                this.adjustSpeed(PLAYER.SPEED.CAERENIC);
-            } else {
-                this.setGlow(this, false);
-                this.setGlow(this.spriteWeapon, false, 'weapon')
-                this.setGlow(this.spriteShield, false, 'shield'); 
-
-                this.adjustSpeed(-PLAYER.SPEED.CAERENIC);
-            };
-        // });
+        this.isCaerenic = this.isCaerenic ? false : true;
+        this.caerenicFx.play();
+        if (this.isCaerenic) {
+            this.setGlow(this, true);
+            this.setGlow(this.spriteWeapon, true, 'weapon');
+            this.setGlow(this.spriteShield, true, 'shield'); 
+            this.adjustSpeed(PLAYER.SPEED.CAERENIC);
+        } else {
+            this.setGlow(this, false);
+            this.setGlow(this.spriteWeapon, false, 'weapon')
+            this.setGlow(this.spriteShield, false, 'shield'); 
+            this.adjustSpeed(-PLAYER.SPEED.CAERENIC);
+        };
     };
 
     stalwartUpdate = () => {
@@ -1269,7 +1265,8 @@ export default class Player extends Entity {
         if (!this.isCaerenic && !this.isGlowing) {
             this.checkCaerenic(true);
             this.scene.time.delayedCall(750, () => {
-                if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
+                // if (!this.isCaerenic && this.isGlowing) 
+                this.checkCaerenic(false);
             });
         };
     };
@@ -1284,7 +1281,8 @@ export default class Player extends Entity {
         if (!this.isCaerenic && !this.isGlowing) {
             this.checkCaerenic(true);
             this.scene.time.delayedCall(PLAYER.DURATIONS.HEALING, () => {
-                if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
+                // if (!this.isCaerenic && this.isGlowing) 
+                this.checkCaerenic(false);
             });
         };
     };

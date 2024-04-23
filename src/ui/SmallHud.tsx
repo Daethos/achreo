@@ -90,9 +90,9 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         EventBus.emit('useScroll');
         EventBus.emit('action-button-sound');
         setClicked({ ...clicked(), combatSettings: !clicked().combatSettings });
-        if (!clicked().combatSettings === true) {
+        // if (!clicked().combatSettings === true) {
             EventBus.emit('toggle-bar', true);
-        };
+        // };
     };
     const cursor = () => {
         EventBus.emit('action-button-sound');
@@ -109,17 +109,17 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         setClicked({ ...clicked(), loot: !clicked().loot });
     };
     const caerenic = () => {
-        EventBus.emit('update-caerenic');
-        setClicked({ ...clicked(), caerenic: !clicked().caerenic });
+        // EventBus.emit('update-caerenic');
+        // setClicked({ ...clicked(), caerenic: !clicked().caerenic });
     };
     const stalwart = () => {
-        EventBus.emit('update-stalwart');
-        setClicked({ ...clicked(), stalwart: !clicked().stalwart });
+        // EventBus.emit('update-stalwart');
+        // setClicked({ ...clicked(), stalwart: !clicked().stalwart });
     };
     const stealth = () => {
-        if (combat().combatEngaged) return;
-        EventBus.emit('update-stealth');
-        setClicked({ ...clicked(), stealth: !clicked().stealth });
+        // if (combat().combatEngaged) return;
+        // EventBus.emit('update-stealth');
+        // setClicked({ ...clicked(), stealth: !clicked().stealth });
     };
 
     const pause = () => {
@@ -127,9 +127,9 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         EventBus.emit('update-pause', !game().pauseState)
         EventBus.emit('action-button-sound');
         setClicked({ ...clicked(), pause: !clicked().pause });
-        if (!clicked().pause === true) {
+        // if (!clicked().pause === true) {
             EventBus.emit('toggle-bar', true);
-        };
+        // };
     };
     const showButtons = () => {
         setShow(!show());
@@ -140,9 +140,9 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         EventBus.emit('show-player');
         EventBus.emit('action-button-sound');
         setClicked({ ...clicked(), showPlayer: !clicked().showPlayer });
-        if (!clicked().showPlayer === true) {
+        // if (!clicked().showPlayer === true) {
             EventBus.emit('toggle-bar', true);
-        };
+        // };
     };
 
     const icon = (click: boolean) => {
@@ -263,28 +263,27 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
                     </div>
                 </button> 
                 
-                <Show when={game().dialogTag}>
-                <button class='smallHudButtons flash' style={dimensions().ORIENTATION === 'landscape' ? 
-                    { height: '7.5%', width: '3.75%', right: '36.5%' } : // right: '0.5%', top: '82.5%' SECOND ROW
-                    { height: '3.5%', width: '7.5%', right: '52%' }} // right: '4%', bottom: '4.75%' SECOND ROW
-                    onClick={dialog}>
-                <div class='p-3' style={{ color: clicked().dialog === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
-                    <img src={'../assets/images/dialog.png'} style={icon(clicked().dialog)} alt='Sh' />
-                </div>
-                </button>
-                </Show>
-
-                <Show when={game().lootTag}>
-                <button class='smallHudButtons flash' style={dimensions().ORIENTATION === 'landscape' ? 
-                    { height: '7.5%', width: '3.75%', right: game().dialogTag ? '40.5%' : '32.5%' } : // right: game().dialogTag ? '4.5' : '0.5%', top: '82.5%' SECOND ROW
-                    { height: '3.5%', width: '7.5%', right: game().dialogTag ? '56%' : '52%' }} // right: game().dialogTag ? '8%' : '4%', bottom: '4.75%' SECOND ROW
-                    onClick={loot}>
-                <div class='p-3' style={{ color: clicked().loot === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
-                    <img src={'../assets/images/loot.png'} style={icon(clicked().loot)} alt='Sh' />
-                </div>
-                </button>
-                </Show>
             </Show>
+        </Show>
+        <Show when={game().dialogTag}>
+        <button class='smallHudButtons flash' style={dimensions().ORIENTATION === 'landscape' ? 
+            { height: '7.5%', width: '3.75%', right: '36.5%' } : // right: '0.5%', top: '82.5%' SECOND ROW
+            { height: '3.5%', width: '7.5%', right: '52%' }} // right: '4%', bottom: '4.75%' SECOND ROW
+            onClick={dialog}>
+        <div class='p-3' style={{ color: clicked().dialog === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+            <img src={'../assets/images/dialog.png'} style={icon(clicked().dialog)} alt='Sh' />
+        </div>
+        </button>
+        </Show>
+        <Show when={game().lootTag}>
+        <button class='smallHudButtons flash' style={dimensions().ORIENTATION === 'landscape' ? 
+            { height: '7.5%', width: '3.75%', right: game().dialogTag ? '40.5%' : '32.5%' } : // right: game().dialogTag ? '4.5' : '0.5%', top: '82.5%' SECOND ROW
+            { height: '3.5%', width: '7.5%', right: game().dialogTag ? '56%' : '52%' }} // right: game().dialogTag ? '8%' : '4%', bottom: '4.75%' SECOND ROW
+            onClick={loot}>
+        <div class='p-3' style={{ color: clicked().loot === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+            <img src={'../assets/images/loot.png'} style={icon(clicked().loot)} alt='Sh' />
+        </div>
+        </button>
         </Show>
         </>
     );

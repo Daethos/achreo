@@ -56,11 +56,13 @@ const SPECIALS = [
     'Blink', 
     'Consume', 
     'Desperation',
+    'Envelop',
     'Fear', 
     'Freeze',
     'Healing', 
     'Invoke', 
-    'Polymorph', 
+    'Polymorph',
+    'Protect', 
     'Root', 
     'Scream', 
     'Shield',
@@ -336,6 +338,13 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
         await saveSettings(newSettings);
     };
 
+    async function handleVolume(e: number) {
+        const newSettings = { ...settings(), volume: e };
+        setSettings(newSettings);
+        await saveSettings(newSettings);
+        EventBus.emit('update-volume', e);
+    };
+
     async function handleUpgradeItem() {
         if (highlighted().item?.rarity === 'Common' && ascean()?.currency?.gold < GET_FORGE_COST.Common) {
             return;
@@ -548,12 +557,12 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 <div class='center' style={{ display: 'flex', 'flex-direction': 'row' }}>
                     <div class='gold' style={{ position: 'absolute', top: '2%', 'font-size': '1.25em', display: 'inline' }}>Gameplay Controls <br />
                         <button class='highlight' style={{ 'font-size': '0.4em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.BUTTONS ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Buttons</button>
-                        <button class='highlight' style={{ 'font-size': '0.4em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.DIFFICULTY ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Difficulty</button>
                         <button class='highlight' style={{ 'font-size': '0.4em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.POST_FX ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
+                        <button class='highlight' style={{ 'font-size': '0.4em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.DIFFICULTY ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
                     </div>
                     <Switch>
                         <Match when={settings().control === CONTROLS.BUTTONS}>
-                            <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '30%' } : { 'margin-top': '50%' }}>
+                            <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
                             <div style={font('1em', '#fdf6d8')}>Action Buttons<br /></div>
                             {settings().actions?.map((action: string, index: number) =>
                                 <button class='highlight' onClick={() => actionModal(action, index)}>
@@ -561,7 +570,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                                 </button>
                             )}
                             </div>
-                            <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '30%' } : { 'margin-top': '50%' }}>
+                            <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
                                 <div style={font('1em', '#fdf6d8')}>Special Buttons<br /></div>
                                 {settings().specials?.map((special: string, index: number) => 
                                     <button  class='highlight' onClick={() => specialModal(special, index)}>
@@ -571,7 +580,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                             </div>
                         </Match>
                         <Match when={settings().control === CONTROLS.POST_FX}>
-                            <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '30%' } : { 'margin-top': '50%' }}>
+                            <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
                                 <div style={font('0.75em', '#fdf6d8')}>PostFx
                                 <button class='highlight' onClick={() => handlePostFx('enable', !settings().postFx?.enable)}>
                                     {settings().postFx?.enable ? 'On' : 'Off'}
@@ -639,7 +648,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                                 </div>
                         </Match>
                         <Match when={settings().control === CONTROLS.DIFFICULTY}>
-                            <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '30%' } : { 'margin-top': '50%' }}>
+                            <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
                                 <div style={font('1em', '#fdf6d8')}>
                                     Aim: <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'True' : 'False'}</button>
                                 </div>
@@ -650,6 +659,10 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                                     <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.aggression} onChange={(e) => handleAggression(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                                 </div>
                                 <div style={font('0.5em')}>[Aggressive AI Range: 0 - 100%]</div>
+                                <br />
+                                <div style={font('1em', '#fdf6d8')}>Sound</div>
+                                <div style={font('0.75em', '#fdf6d8')}>Volume ({settings().volume})</div>
+                                <Form.Range min={0} max={1} step={0.1} value={settings().volume} onChange={(e) => handleVolume(Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                             </div>
                         </Match>
                     </Switch>

@@ -9,11 +9,13 @@ const COLORS = {
 
 export default class Bubble extends Phaser.GameObjects.Graphics {
     glowFilter: any;
+    charges: number;
     color: number;
     warp: Phaser.Time.TimerEvent;
     constructor(scene: Phaser.Scene, x: number, y: number, type: string, time: number) {
         super(scene);
         this.setPosition(x, y + 6);
+        this.charges = 6;
         this.color = COLORS[type as keyof typeof COLORS];
         this.glowFilter = scene.plugins.get('rexGlowFilterPipeline');
         this.glowFilter.add(this, {
@@ -37,16 +39,27 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
         scene.add.existing(this);
         this.warp = this.scene.time.addEvent({
             delay: 125, // 125 Adjust the delay as needed
-            callback: () => this.updateGlow(scene.time.now),
+            callback: () => {
+                if (this.charges === 0) {
+                    this.warp.destroy();
+                    this.destroy();
+                    return;
+                };
+                this.updateGlow(scene.time.now);
+            },
             loop: true,
             callbackScope: this
         });
     };
 
+    setCharges = (charges: number) => {
+        this.charges = charges;
+    };
+
     updateGlow = (time: number) => {
         this.glowFilter.remove(this);
-        const outerStrength = 3 + Math.sin(time * 0.005) * 3; // Adjust the frequency and amplitude as needed
-        const innerStrength = 3 + Math.cos(time * 0.005) * 3;
+        const outerStrength = (this.charges) + Math.sin(time * 0.005) * (this.charges); // Adjust the frequency and amplitude as needed
+        const innerStrength = (this.charges) + Math.cos(time * 0.005) * (this.charges);
         const intensity = 0.25;
         const glowColor = this.color;
 
@@ -57,7 +70,7 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
             intensity,
             knockout: true
         });
-    }; 
+    };
 
     update(x: number, y: number) {
         this.setPosition(x, y + 6);

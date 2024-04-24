@@ -40,6 +40,7 @@ export const States = {
     SNARING: "snare",
     SPRINTING: "sprint",
 
+    ENVELOP: "envelop",
     FREEZE: "freeze",
     BURN_AOE: "burn_aoe",
     FREEZE_CAST: "freeze_cast",
@@ -47,6 +48,7 @@ export const States = {
     SLOWING: "slow",
     BURN_INSTANT: "burn_instant",
     RANGED_STUN: "ranged_stun",
+    PROTECT: "protect",
     SHIELD: "shield",
     DESPERATION: "desperation",
     SCREAM: "scream",

@@ -1,4 +1,4 @@
-import * as Phaser from 'phaser';
+import Phaser from 'phaser';
 
 export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     private color: string;
@@ -20,6 +20,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         });
         this.visible = false;
         this.add(this.text);
+        this.setDepth(100);
         scene.add.existing(this);
         this.duration = duration;
         this.timerTime = 0;
@@ -35,6 +36,8 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
 
     private setColor = (context: string) => {
         switch (context) {
+            case 'buff':
+                return '#fdf6d8';
             case 'cast':
                 return 'blue';
             case 'damage':

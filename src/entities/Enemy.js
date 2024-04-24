@@ -1267,6 +1267,20 @@ export default class Enemy extends Entity {
 
     enemyActionSuccess = () => {
         if (this.isRanged) this.scene.checkPlayerSuccess();
+        if (this.scene.player.isShielding || this.scene.player.isEnveloping) {
+            if (this.scene.player.isShielding) {
+                this.scene.player.shieldHit();
+            };
+            if (this.scene.player.isEnveloping) {
+                this.scene.player.envelopHit();
+            }
+            if (this.particleEffect) {
+                this.scene.particleManager.removeEffect(this.particleEffect.id);
+                this.particleEffect.effect.destroy();
+                this.particleEffect = undefined;
+            };
+            return;
+        };
         if (this.particleEffect) {
             if (this.isCurrentTarget) {
                 this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: this.particleEffect.action, id: this.enemyID } });

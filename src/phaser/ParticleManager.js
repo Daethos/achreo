@@ -52,7 +52,7 @@ class Particle {
                     };
                     player.particleEffect.success = true;
                 };
-                if (other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy' && !other.gameObjectB.isShielding) {
+                if (other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy' && !other.gameObjectB.isProtecting) {
                     // console.log('--- PARTICLE EFFECT TRIGGERED FOR ENEMY ---');
                     player.particleEffect.success = true;
                 };

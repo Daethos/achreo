@@ -37,6 +37,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         showPlayer: false,
         stalwart: false,
         stealth: false,
+        phaser: false,
     });
     const dimensions = useResizeListener(); 
 
@@ -74,11 +75,19 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
                 EventBus.emit('toggle-bar', false);
             };
         });
+        EventBus.on('open', () => {
+            setClicked({ ...clicked(), phaser: true });
+        });
+        EventBus.on('closed', () => {
+            setClicked({ ...clicked(), phaser: false });
+        });
     });
 
     onCleanup(() => {
         EventBus.off('combat-engaged');
         EventBus.off('update-small-hud');
+        EventBus.off('open');
+        EventBus.off('closed');    
     });
 
     const map = () => {
@@ -104,7 +113,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         setClicked({ ...clicked(), dialog: !clicked().dialog });
     };
     const loot = () => {
-        EventBus.emit('blend-game', { showLoot: !game().showLoot, smallHud:!game().showLoot });
+        EventBus.emit('blend-game', { showLoot: !game().showLoot });
         EventBus.emit('action-button-sound');
         setClicked({ ...clicked(), loot: !clicked().loot });
     };
@@ -239,8 +248,8 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         </Show>
         <Show when={game().dialogTag}>
         <button class='smallHudButtons flash' style={dimensions().ORIENTATION === 'landscape' ? 
-            { height: '7.5%', width: '3.75%', right: '36.5%' } : // right: '0.5%', top: '82.5%' SECOND ROW
-            { height: '3.5%', width: '7.5%', right: '52%' }} // right: '4%', bottom: '4.75%' SECOND ROW
+            { height: '7.5%', width: '3.75%', right: (game().smallHud !== true && !clicked().phaser) ? '4.5%' : '36.5%' } : // if game().smallHud === true ? right: '4.5%'
+            { height: '3.5%', width: '7.5%', right: '52%' }} 
             onClick={dialog}>
         <div class='p-3' style={{ color: clicked().dialog === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
             <img src={'../assets/images/dialog.png'} style={icon(clicked().dialog)} alt='Sh' />
@@ -249,7 +258,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         </Show>
         <Show when={game().lootTag}>
         <button class='smallHudButtons flash' style={dimensions().ORIENTATION === 'landscape' ? 
-            { height: '7.5%', width: '3.75%', right: game().dialogTag ? '40.5%' : '32.5%' } : // right: game().dialogTag ? '4.5' : '0.5%', top: '82.5%' SECOND ROW
+            { height: '7.5%', width: '3.75%', right: (game().smallHud !== true && !clicked().phaser) ? '8.5%' : '40.5%' } : // right: game().smallHud === true ? '4.5' : '0.5%', top: '82.5%' SECOND ROW
             { height: '3.5%', width: '7.5%', right: game().dialogTag ? '56%' : '52%' }} // right: game().dialogTag ? '8%' : '4%', bottom: '4.75%' SECOND ROW
             onClick={loot}>
         <div class='p-3' style={{ color: clicked().loot === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>

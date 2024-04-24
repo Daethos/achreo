@@ -59,6 +59,11 @@ export default class HealthBar extends Phaser.GameObjects.Container {
         this.draw();
     };
 
+    public shield = (value: number): void => {
+        this.fillColor = 0xfdf6d8;
+        this.setValue(value);
+    };
+
 
     public update = (player: any): void => {
         if (player.attacking && player.inCombat) {

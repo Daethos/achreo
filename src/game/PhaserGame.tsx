@@ -149,7 +149,7 @@ export const PhaserGame = (props: IProps) => {
                 silver: props.ascean().currency.silver - purchase.cost.silver,
                 gold: props.ascean().currency.gold - purchase.cost.gold
             };
-            rebalanceCurrency(cost);
+            cost = rebalanceCurrency(cost);
             const update = {
                 ...props.ascean(),
                 currency: cost,
@@ -178,8 +178,11 @@ export const PhaserGame = (props: IProps) => {
                 case 'Legendary': gold = 50; break;
                 default: break;
             };
-            let currency = { gold: props.ascean().currency.gold + gold, silver: props.ascean().currency.silver + silver };
-            rebalanceCurrency(currency);
+            let currency = { 
+                silver: props.ascean().currency.silver + silver,
+                gold: props.ascean().currency.gold + gold, 
+            };
+            currency = rebalanceCurrency(currency);
             const update = {
                 ...props.ascean(),
                 currency: currency,
@@ -197,15 +200,21 @@ export const PhaserGame = (props: IProps) => {
         };
     };
 
-    function rebalanceCurrency(currency: { silver: number; gold: number; }) {
-        while (currency.silver < 0) {
-          currency.gold -= 1;
-          currency.silver += 100;
+    function rebalanceCurrency(currency: { silver: number; gold: number; }): { silver: number; gold: number; } {
+        // while (currency.silver < 0) {
+        //     currency.gold -= 1;
+        //     currency.silver += 100;
+        // };
+        // while (currency.gold < 0) {
+        //     currency.gold += 1;
+        //     currency.silver -= 100;
+        // };
+        let { silver, gold } = currency;
+        if (silver > 99) {
+            gold += Math.floor(silver / 100);
+            silver = silver % 100;
         };
-        while (currency.gold < 0) {
-          currency.gold += 1;
-          currency.silver -= 100;
-        };
+        return { silver, gold };
     };
 
     const recordCombat = (stats: any) => {
@@ -301,10 +310,12 @@ export const PhaserGame = (props: IProps) => {
             silver += state.currency.silver;
             gold += state.currency.gold;
 
-            if (silver > 99) {
-                gold += Math.floor(silver / 100);
-                silver = silver % 100;
-            };
+            let currency = rebalanceCurrency({ silver, gold });
+
+            // if (silver > 99) {
+            //     gold += Math.floor(silver / 100);
+            //     silver = silver % 100;
+            // };
 
             if (props.ascean().firewater.current < 5 && props.ascean().level <= state.opponent) {
                 firewater = {
@@ -317,10 +328,7 @@ export const PhaserGame = (props: IProps) => {
                 ...props.ascean(),
                 experience: experience,
                 health: { ...props.ascean().health, current: health },
-                currency: {
-                    silver: silver,
-                    gold: gold
-                },
+                currency: currency,
                 firewater: firewater,
                 inventory: game().inventory
             };

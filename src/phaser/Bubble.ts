@@ -5,13 +5,14 @@ const COLORS = {
     'gold': 0xFFD700,
     'green': 0x00FF00,
     'red': 0xFF0000,
+    'purple': 0x800080,
 };
 
 export default class Bubble extends Phaser.GameObjects.Graphics {
     glowFilter: any;
     charges: number;
     color: number;
-    warp: Phaser.Time.TimerEvent;
+    warp: Phaser.Time.TimerEvent | undefined;
     constructor(scene: Phaser.Scene, x: number, y: number, type: string, time: number) {
         super(scene);
         this.setPosition(x, y + 6);
@@ -25,11 +26,9 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
             intensity: 0.25,
             // knockout: true,
         });
-        this.drawBubble(scene);    
-        scene.time.delayedCall(time, () => {
-            this.warp.destroy();
-            this.destroy();
-        });
+        this.drawBubble(scene);
+        this.setDelay(scene, time);    
+
     };
 
     drawBubble = (scene: Phaser.Scene) => {
@@ -40,7 +39,9 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
         this.warp = this.scene.time.addEvent({
             delay: 125, // 125 Adjust the delay as needed
             callback: () => {
+                if (!this || !this.warp) return;
                 if (this.charges === 0) {
+                    this.glowFilter.remove(this);
                     this.warp.destroy();
                     this.destroy();
                     return;
@@ -56,7 +57,18 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
         this.charges = charges;
     };
 
+    setDelay = (scene: Phaser.Scene, time: number) => {
+        scene.time.delayedCall(time, () => {
+            this.glowFilter.remove(this);
+            this?.warp?.remove(false);
+            this?.warp?.destroy();
+            this.warp = undefined;
+            this.destroy();
+        });
+    };
+
     updateGlow = (time: number) => {
+        if (!this.glowFilter || !this || !this.warp) return;
         this.glowFilter.remove(this);
         const outerStrength = (this.charges) + Math.sin(time * 0.005) * (this.charges); // Adjust the frequency and amplitude as needed
         const innerStrength = (this.charges) + Math.cos(time * 0.005) * (this.charges);

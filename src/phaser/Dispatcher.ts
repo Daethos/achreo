@@ -9,6 +9,7 @@ const ActionTypes = {
     PLAYER: 'Player',
     ENEMY: 'Enemy',
     INPUT: 'Input',
+    CHIOMIC: 'Chiomic',
     TSHAERAL: 'Tshaeral',
     HEALTH: 'Health',
 };
@@ -39,12 +40,16 @@ function actionInput({ key, value }: { key: string, value: string | number | boo
     EventBus.emit('update-combat-state', { key, value });
 };
 
-function tshaeralAction(): void {
-    EventBus.emit('initiate-combat', { data: null, type: ActionTypes.TSHAERAL });
+function chiomicAction(data: number): void {
+    EventBus.emit('initiate-combat', { data, type: ActionTypes.CHIOMIC });
+};
+
+function tshaeralAction(data: number): void {
+    EventBus.emit('initiate-combat', { data, type: ActionTypes.TSHAERAL });
 };
 
 function healthAction(data: KVI): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.HEALTH });
 };
 
-export { weaponAction, instantAction, prayerAction, playerAction, enemyAction, actionInput, tshaeralAction, healthAction };
+export { weaponAction, instantAction, prayerAction, playerAction, enemyAction, actionInput, chiomicAction, tshaeralAction, healthAction };

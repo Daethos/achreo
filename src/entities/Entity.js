@@ -551,7 +551,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.setTint(0xFF0000);
                 };
             };
-            if (this.frameCount >= FRAME_COUNT.ROLL_LIVE && this.frameCount <= FRAME_COUNT.ROLL_SUCCESS && entity === 'enemy') {
+            if (this.frameCount === (FRAME_COUNT.ROLL_SUCCESS - 2) && entity === 'enemy') {
                 this.checkActionSuccess(entity, target);
                 this.setTint(0x000000);
             };

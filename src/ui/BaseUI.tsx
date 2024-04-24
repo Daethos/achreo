@@ -169,13 +169,20 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     computerWin = res.computerWin;
                     playerWin = res.playerWin;
                     break;
-                case 'Tshaeral': // Lifedrain
-                    const drained = Math.round(combat().playerHealth * (3 / 100));
-                    const newPlayerHealth = combat().newPlayerHealth + drained > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + drained;
-                    const newComputerHealth = combat().newComputerHealth - drained < 0 ? 0 : combat().newComputerHealth - drained;
+                case 'Chiomic': // Mindflay
+                    const suture = Math.round(combat().playerHealth * (data / 100));
+                    const newComputerHealth = combat().newComputerHealth - suture < 0 ? 0 : combat().newComputerHealth - suture;
                     playerWin = newComputerHealth === 0;
-                    res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin };
-                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, playerWin });
+                    res = { ...combat(), newComputerHealth, playerWin };
+                    EventBus.emit('blend-combat', { newComputerHealth, playerWin });
+                    break;
+                case 'Tshaeral': // Lifedrain
+                    const drained = Math.round(combat().playerHealth * (data / 100));
+                    const newPlayerHealth = combat().newPlayerHealth + drained > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + drained;
+                    const newHealth = combat().newComputerHealth - drained < 0 ? 0 : combat().newComputerHealth - drained;
+                    playerWin = newHealth === 0;
+                    res = { ...combat(), newPlayerHealth, newComputerHealth: newHealth, playerWin };
+                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth: newHealth, playerWin });
                     break;
                 case 'Health': // Either Enemy or Player gaining health
                     let { key, value } = data;

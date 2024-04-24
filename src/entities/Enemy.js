@@ -265,6 +265,7 @@ export default class Enemy extends Entity {
         EventBus.off('personal-update', this.personalUpdate);    
         EventBus.off('enemy-persuasion', this.persuasionUpdate);
         EventBus.off('enemy-luckout', this.luckoutUpdate);
+        EventBus.off('update-enemy-health', this.healthUpdate);
     };
 
     enemyStateListener() {
@@ -273,6 +274,7 @@ export default class Enemy extends Entity {
         EventBus.on('personal-update', this.personalUpdate);
         EventBus.on('enemy-persuasion', this.persuasionUpdate);
         EventBus.on('enemy-luckout', this.luckoutUpdate);
+        EventBus.on('update-enemy-health', this.healthUpdate);
     };
 
     personalUpdate = (e) => {
@@ -285,6 +287,17 @@ export default class Enemy extends Entity {
             default:
                 break;
         };
+    };
+
+    healthUpdate = (e) => {
+        if (this.enemyID !== e.id) return;
+        console.log('Enemy Health Update: ', e);
+        if (e.id === this.scene.state?.enemyID) {
+            EventBus.emit('blend-combat', { newComputerHealth: e.health });
+        };
+        this.health = e.health;
+        this.healthbar.setValue(e.health);
+        this.updateHealthBar(e.health);
     };
     
     combatDataUpdate = (e) => {
@@ -1267,13 +1280,20 @@ export default class Enemy extends Entity {
 
     enemyActionSuccess = () => {
         if (this.isRanged) this.scene.checkPlayerSuccess();
-        if (this.scene.player.isShielding || this.scene.player.isEnveloping) {
+        const shimmer = Math.random() * 101;
+        if (this.scene.player.isEnveloping || this.scene.player.isShielding || (this.scene.player.isShimmering && shimmer > 50) || this.scene.player.isWarding) {
+            if (this.scene.player.isEnveloping) {
+                this.scene.player.envelopHit();
+            };
             if (this.scene.player.isShielding) {
                 this.scene.player.shieldHit();
             };
-            if (this.scene.player.isEnveloping) {
-                this.scene.player.envelopHit();
-            }
+            if (this.scene.player.isShimmering) {
+                this.scene.player.shimmerHit();
+            };
+            if (this.scene.player.isWarding) {
+                this.scene.player.wardHit();
+            };
             if (this.particleEffect) {
                 this.scene.particleManager.removeEffect(this.particleEffect.id);
                 this.particleEffect.effect.destroy();

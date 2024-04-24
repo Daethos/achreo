@@ -54,8 +54,10 @@ const CONTROLS = {
 const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
 const SPECIALS = [
     'Blink', 
+    'Chiomism',
     'Consume', 
     'Desperation',
+    'Disease',
     'Envelop',
     'Fear', 
     'Freeze',
@@ -66,11 +68,14 @@ const SPECIALS = [
     'Root', 
     'Scream', 
     'Shield',
+    'Shimmer',
     'Slow',
     'Snare', 
     'Sprint',
-    'Tshaeral'
-]; // 'Charm', 'Confuse', 'Sacrifice', 'Shroud'
+    'Suture',
+    'Tshaeral',
+    'Ward',
+]; // 'Charm', 'Confuse', 'Counter', 'Sacrifice', 'Shroud'
 const GET_FORGE_COST = {
     Common: 1,
     Uncommon: 3,

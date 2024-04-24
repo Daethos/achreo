@@ -1,5 +1,3 @@
-// import { CombatData } from "../../components/GameCompiler/CombatStore";
-// import { StatusEffect } from "../../components/GameCompiler/StatusEffects";
 import { EventBus } from "../game/EventBus";
 import * as Dispatcher from "./Dispatcher";
 import { Combat } from "../stores/combat";
@@ -47,7 +45,7 @@ export default class CombatMachine {
     
     private actionHandlers: { [key: string]: ActionHandler } = {
         Weapon: (data: KVI) => {
-            const { key, value } = data;
+            // const { key, value } = data;
             // if (!valid(key, value as string, this.context)) {
             //     return; // Don't allow counter if computer hasn't acted yet. Null action.
             // };
@@ -56,7 +54,8 @@ export default class CombatMachine {
         Health: (data: KVI) => Dispatcher.healthAction(data),
         Instant: (data: string) => Dispatcher.instantAction(data),
         Consume: (data: any[]) => Dispatcher.prayerAction(data),
-        Tshaeral: (_data: KVI) => Dispatcher.tshaeralAction(),
+        Chiomic: (data: number) => Dispatcher.chiomicAction(data),
+        Tshaeral: (data: number) => Dispatcher.tshaeralAction(data),
         Player: (data: any) => Dispatcher.playerAction(data),
         Enemy: (data: any) => Dispatcher.enemyAction(data),
     };

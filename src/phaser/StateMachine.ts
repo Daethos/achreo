@@ -40,6 +40,8 @@ export const States = {
     SNARING: "snare",
     SPRINTING: "sprint",
 
+    CHIOMIC: "chiomism",
+    DISEASE: "disease",
     ENVELOP: "envelop",
     FREEZE: "freeze",
     BURN_AOE: "burn_aoe",
@@ -50,9 +52,12 @@ export const States = {
     RANGED_STUN: "ranged_stun",
     PROTECT: "protect",
     SHIELD: "shield",
+    SHIMMER: "shimmer",
     DESPERATION: "desperation",
     SCREAM: "scream",
-
+    SHROUD: "shroud",
+    SUTURE: "suture",
+    WARD: "ward",
 
     CLEAN: "clean",
     FEAR: "fear",

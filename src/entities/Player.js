@@ -45,9 +45,11 @@ export const PLAYER = {
         ROLL: 10, // 25
         // Magical
         BLINK: 10,  
+        CHIOMIC: 25,
         CONSUME: 10,
         DESPERATION: 40,
-        ENVELOP: 25,
+        DISEASE: 25,
+        ENVELOP: 10,
         FREEZE: 25,
         FEARING: 10,
         HEALING: 25,
@@ -57,10 +59,13 @@ export const PLAYER = {
         ROOT: 10,
         SCREAM: 25,
         SHIELD: 25,
+        SHIMMER: 10,
         SLOW: 10,
         SNARE: 10,
         SPRINT: 10,
+        SUTURE: 25,
         TSHAER: 40,
+        WARD: 25,
     },
     COOLDOWNS: {
         SHORT: 6000,
@@ -68,6 +73,8 @@ export const PLAYER = {
         LONG: 15000,
     },
     DURATIONS: {
+        CHIOMIC: 3000,
+        DISEASE: 6000,
         ENVELOPING: 10000,
         FEARING: 1500,
         FREEZING: 750,
@@ -76,10 +83,12 @@ export const PLAYER = {
         POLYMORPHING: 1500,
         SCREAM: 1000,
         SHIELDING: 10000,
+        SHIMMERING: 10000,
         SNARING: 1000,
         SPRINT: 6000,
         STUNNED: 2500,
         TSHAERING: 2000,
+        WARDING: 10000,
     },
 };
 
@@ -129,6 +138,12 @@ export const staminaCheck = (input, stamina) => {
                 success: blinkSuccess,
                 cost: PLAYER.STAMINA.BLINK,
             };
+        case 'chiomism':
+            const chiomicSuccess = stamina >= PLAYER.STAMINA.CHIOMIC;
+            return {
+                success: chiomicSuccess,
+                cost: PLAYER.STAMINA.CHIOMIC,
+            };
         case 'consume':
             const consumeSuccess = stamina >= PLAYER.STAMINA.CONSUME;
             return {
@@ -140,6 +155,12 @@ export const staminaCheck = (input, stamina) => {
             return {
                 success: desperationSuccess,
                 cost: PLAYER.STAMINA.DESPERATION,
+            };
+        case 'disease':
+            const diseaseSuccess = stamina >= PLAYER.STAMINA.DISEASE;
+            return {
+                success: diseaseSuccess,
+                cost: PLAYER.STAMINA.DISEASE,
             };
         case 'envelop':
             const envelopSuccess = stamina >= PLAYER.STAMINA.ENVELOP;
@@ -201,6 +222,12 @@ export const staminaCheck = (input, stamina) => {
                 success: shieldSuccess,
                 cost: PLAYER.STAMINA.SHIELD,
             };
+        case 'shimmer':
+            const shimmerSuccess = stamina >= PLAYER.STAMINA.SHIMMER;
+            return {
+                success: shimmerSuccess,
+                cost: PLAYER.STAMINA.SHIMMER,
+            };
         case 'slow':
             const slowSuccess = stamina >= PLAYER.STAMINA.SLOW;
             return {
@@ -219,11 +246,23 @@ export const staminaCheck = (input, stamina) => {
                 success: sprintSuccess,
                 cost: PLAYER.STAMINA.SPRINT,
             };
+        case 'suture':
+            const sutureSuccess = stamina >= PLAYER.STAMINA.SUTURE;
+            return {
+                success: sutureSuccess,
+                cost: PLAYER.STAMINA.SUTURE,
+            };
         case 'tshaeral':
             const tshaerSuccess = stamina >= PLAYER.STAMINA.TSHAER;
             return {
                 success: tshaerSuccess,
                 cost: PLAYER.STAMINA.TSHAER,
+            };
+        case 'ward':
+             const wardSuccess = stamina >= PLAYER.STAMINA.WARD;
+             return {
+                success: wardSuccess,
+                cost: PLAYER.STAMINA.WARD,  
             };
         default:
             return { 
@@ -333,21 +372,6 @@ export default class Player extends Entity {
                 onUpdate: this.onFlaskUpdate,
                 onExit: this.onFlaskExit,
             })
-            .addState(States.HEALING, {
-                onEnter: this.onHealingEnter,
-                onUpdate: this.onHealingUpdate,
-                onExit: this.onHealingExit,
-            })
-            .addState(States.CONSUME, {
-                onEnter: this.onConsumeEnter,
-                onUpdate: this.onConsumeUpdate,
-                onExit: this.onConsumeExit,
-            })
-            .addState(States.INVOKE, {
-                onEnter: this.onInvokeEnter,
-                onUpdate: this.onInvokeUpdate,
-                onExit: this.onInvokeExit,
-            })
             .addState(States.STUN, {
                 onEnter: this.onStunEnter,
                 onUpdate: this.onStunUpdate,
@@ -358,20 +382,50 @@ export default class Player extends Entity {
                 onUpdate: this.onBlinkUpdate,
                 onExit: this.onBlinkExit,
             })
-            .addState(States.TSHAERAL, {
-                onEnter: this.onTshaeralEnter,
-                onUpdate: this.onTshaeralUpdate,
-                onExit: this.onTshaeralExit,
+            .addState(States.CHIOMIC, {
+                onEnter: this.onChiomicEnter,
+                onUpdate: this.onChiomicUpdate,
+                onExit: this.onChiomicExit,
+            })
+            .addState(States.CONSUME, {
+                onEnter: this.onConsumeEnter,
+                onUpdate: this.onConsumeUpdate,
+                onExit: this.onConsumeExit,
+            })
+            .addState(States.DESPERATION, {
+                onEnter: this.onDesperationEnter,
+                onUpdate: this.onDesperationUpdate,
+                onExit: this.onDesperationExit,
             })
             .addState(States.FEARING, {
                 onEnter: this.onFearingEnter,
                 onUpdate: this.onFearingUpdate,
                 onExit: this.onFearingExit,
             })
+            .addState(States.FREEZE_CAST, {
+                onEnter: this.onFreezeCastEnter,
+                onUpdate: this.onFreezeCastUpdate,
+                onExit: this.onFreezeCastExit,
+            })
+            .addState(States.HEALING, {
+                onEnter: this.onHealingEnter,
+                onUpdate: this.onHealingUpdate,
+                onExit: this.onHealingExit,
+            })
+            .addState(States.INVOKE, {
+                onEnter: this.onInvokeEnter,
+                onUpdate: this.onInvokeUpdate,
+                onExit: this.onInvokeExit,
+            })
             .addState(States.POLYMORPHING, {
                 onEnter: this.onPolymorphingEnter,
                 onUpdate: this.onPolymorphingUpdate,
                 onExit: this.onPolymorphingExit,
+            })
+            .addState(States.RANGED_STUN, {
+                onEnter: this.onRangedStunEnter,
+                onUpdate: this.onRangedStunUpdate,
+                onExit: this.onRangedStunExit,
             })
             .addState(States.ROOTING, {
                 onEnter: this.onRootingEnter,
@@ -383,40 +437,20 @@ export default class Player extends Entity {
                 onUpdate: this.onSnaringUpdate,
                 onExit: this.onSnaringExit,
             })
-            .addState(States.SCREAM, {
-                onEnter: this.onScreamEnter,
-                onUpdate: this.onScreamUpdate,
-                onExit: this.onScreamExit,
-            })
-            .addState(States.FREEZE, {
-                onEnter: this.onFreezeEnter,
-                onUpdate: this.onFreezeUpdate,
-                onExit: this.onFreezeExit,
-            })
-            .addState(States.FREEZE_CAST, {
-                onEnter: this.onFreezeCastEnter,
-                onUpdate: this.onFreezeCastUpdate,
-                onExit: this.onFreezeCastExit,
+            .addState(States.SUTURE, {
+                onEnter: this.onSutureEnter,
+                onUpdate: this.onSutureUpdate,
+                onExit: this.onSutureExit,
             })
             .addState(States.SLOWING, {
                 onEnter: this.onSlowInstantEnter,
                 onUpdate: this.onSlowInstantUpdate,
                 onExit: this.onSlowInstantExit,
             })
-            .addState(States.DESPERATION, {
-                onEnter: this.onDesperationEnter,
-                onUpdate: this.onDesperationUpdate,
-                onExit: this.onDesperationExit,
-            })
-            // .addState(States.SHIELD, {
-            //     onEnter: this.onProtectEnter,
-            //     onUpdate: this.onProtectUpdate,
-            //     onExit: this.onProtectExit,
-            // })
-            .addState(States.RANGED_STUN, {
-                onEnter: this.onRangedStunEnter,
-                onUpdate: this.onRangedStunUpdate,
-                onExit: this.onRangedStunExit,
+            .addState(States.TSHAERAL, {
+                onEnter: this.onTshaeralEnter,
+                onUpdate: this.onTshaeralUpdate,
+                onExit: this.onTshaeralExit,
             })
         this.stateMachine.setState(States.NONCOMBAT);
 
@@ -426,10 +460,20 @@ export default class Player extends Entity {
                 onEnter: this.onCleanEnter,
                 onExit: this.onCleanExit,
             })
+            .addState(States.DISEASE, {
+                onEnter: this.onDiseaseEnter,
+                onUpdate: this.onDiseaseUpdate,
+                onExit: this.onDiseaseExit,
+            })
             .addState(States.ENVELOP, {
                 onEnter: this.onEnvelopEnter,
                 onUpdate: this.onEnvelopUpdate,
                 onExit: this.onEnvelopExit,
+            })
+            .addState(States.FREEZE, {
+                onEnter: this.onFreezeEnter,
+                onUpdate: this.onFreezeUpdate,
+                onExit: this.onFreezeExit,
             })
             .addState(States.STEALTH, {
                 onEnter: this.onStealthEnter,
@@ -441,15 +485,30 @@ export default class Player extends Entity {
                 onUpdate: this.onProtectUpdate,
                 onExit: this.onProtectExit,
             })
+            .addState(States.SCREAM, {
+                onEnter: this.onScreamEnter,
+                onUpdate: this.onScreamUpdate,
+                onExit: this.onScreamExit,
+            })
             .addState(States.SHIELD, {
                 onEnter: this.onShieldEnter,
                 onUpdate: this.onShieldUpdate,
                 onExit: this.onShieldExit,
             })
+            .addState(States.SHIMMER, {
+                onEnter: this.onShimmerEnter,
+                onUpdate: this.onShimmerUpdate,
+                onExit: this.onShimmerExit,
+            })
             .addState(States.SPRINTING, {
                 onEnter: this.onSprintEnter,
                 onUpdate: this.onSprintUpdate,
                 onExit: this.onSprintExit,
+            })
+            .addState(States.WARD, {
+                onEnter: this.onWardEnter,
+                onUpdate: this.onWardUpdate,
+                onExit: this.onWardExit,
             })
 
         this.metaMachine.setState(States.CLEAN);
@@ -477,11 +536,17 @@ export default class Player extends Entity {
         this.isCaerenic = false;
         this.isStalwart = false;
         this.isStealthing = false;
+        this.isChioimc = false;
+        this.isEnveloping = false;
+        this.isHealing = false;
         this.isPolymorphed = false;
         this.isProtecting = false;
         this.isShielding = false;
+        this.isShimmering = false;
         this.isSprinting = false;
+        this.isSuturing = false;
         this.isTshaering = false;
+        this.isWarding = false;
         this.tshaeringTimer = undefined; 
         this.highlight = this.scene.add.graphics()
             .lineStyle(4, 0xFF0000) // 3
@@ -498,7 +563,6 @@ export default class Player extends Entity {
         this.playerStateListener();
         this.setFixedRotation();   
         this.checkEnemyCollision(playerSensor);
-        // this.checkLootdropCollision(playerSensor);
     };   
 
     getAscean = () => {
@@ -510,25 +574,20 @@ export default class Player extends Entity {
     };
 
     speedUpdate = (e) => {
-        // EventBus.on('speed', (ascean) => {
-            this.speed = this.startingSpeed(e);
-        // });
+        this.speed = this.startingSpeed(e);
     };
 
     
     stealthUpdate = () => {
-        // EventBus.on('update-stealth', () => {
-            if (this.isStealthing) {
-                this.isStealthing = false;
-            } else {
-                this.metaMachine.setState(States.STEALTH);
-            };
-        // })
+        if (this.isStealthing) {
+            this.isStealthing = false;
+        } else {
+            this.metaMachine.setState(States.STEALTH);
+        };
     };
 
     caerenicUpdate = () => {
         this.isCaerenic = this.isCaerenic ? false : true;
-        // this.caerenicFx.play();
         this.scene.sound.play('blink', { volume: this.scene.settings.volume / 3 });
         if (this.isCaerenic) {
             this.setGlow(this, true);
@@ -544,11 +603,8 @@ export default class Player extends Entity {
     };
 
     stalwartUpdate = () => {
-        // EventBus.on('update-stalwart', () => {
-            this.isStalwart = this.isStalwart ? false : true;
-            // this.stalwartFx.play();
-            this.scene.sound.play('stalwart', { volume: this.scene.settings.volume });
-        // });
+        this.isStalwart = this.isStalwart ? false : true;
+        this.scene.sound.play('stalwart', { volume: this.scene.settings.volume });
     };
 
     enemyUpdate = (e) => {
@@ -1148,155 +1204,6 @@ export default class Player extends Entity {
         this.setStatic(false);
     };
 
-    onHealingEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Healing', PLAYER.DURATIONS.HEALING / 2, 'cast');
-        this.castbar.setTotal(PLAYER.DURATIONS.HEALING);
-        this.isPolymorphing = true;
-        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
-    };
-    onHealingUpdate = (dt) => {
-        if (this.isMoving) this.isPolymorphing = false;
-        this.combatChecker(this.isPolymorphing);
-        if (this.castbar.time >= PLAYER.DURATIONS.HEALING) {
-            this.healingSuccess = true;
-            this.isPolymorphing = false;
-        };
-        if (this.isPolymorphing) this.castbar.update(dt, 'cast');
-    };
-    onHealingExit = () => {
-        if (this.healingSuccess) {
-            this.setTimeEvent('healingCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
-            this.scene.useStamina(PLAYER.STAMINA.HEALING);
-            this.healingSuccess = false;
-            EventBus.emit('initiate-combat', { data: { key: 'player', value: 25 }, type: 'Health' });
-            this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
-        };
-        this.castbar.reset();
-        if (this.isGlowing) this.checkCaerenic(false); // !this.isCaerenic && 
-    };
-
-    onConsumeEnter = () => {
-        if (this.scene.state.playerEffects.length === 0) return;
-        this.isConsuming = true;
-        this.scene.sound.play('consume', { volume: this.scene.settings.volume });
-        this.setTimeEvent('consumeCooldown', PLAYER.COOLDOWNS.SHORT);
-    };
-    onConsumeUpdate = (_dt) => {
-        this.combatChecker(this.isConsuming);
-    };
-    onConsumeExit = () => {
-        if (this.scene.state.playerEffects.length === 0) return;
-        this.scene.combatMachine.action({ type: 'Consume', data: this.scene.state.playerEffects[0].id });        
-        this.scene.useStamina(PLAYER.STAMINA.CONSUME);
-    };
-
-    onInvokeEnter = () => {
-        if (!this.inCombat) return;
-        this.isPraying = true;
-        this.setStatic(true);
-        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
-        this.setTimeEvent('invokeCooldown', PLAYER.COOLDOWNS.LONG);
-        this.invokeCooldown = 30;
-        if (this.playerBlessing === '' || this.playerBlessing !== this.scene.state.playerBlessing) {
-            this.playerBlessing = this.scene.state.playerBlessing;
-        };
-    };
-    onInvokeUpdate = (_dt) => {
-        this.combatChecker(this.isPraying);
-    };
-    onInvokeExit = () => {
-        if (!this.inCombat) return;
-        this.setStatic(false);
-        if (this.isGlowing) this.checkCaerenic(false); // !this.isCaerenic && 
-        this.scene.combatMachine.action({ type: 'Instant', data: this.scene.state.playerBlessing });
-        // this.prayerFx.play();
-        this.scene.sound.play('prayer', { volume: this.scene.settings.volume });
-        this.scene.useStamina(PLAYER.STAMINA.INVOKE);
-    };
-
-    onRootingEnter = () => {
-        if (!this.inCombat) return;
-        this.isHealing = true;
-        this.setTimeEvent('rootCooldown', PLAYER.COOLDOWNS.SHORT);
-    };
-    onRootingUpdate = (_dt) => {
-        this.combatChecker(this.isHealing);
-    };
-    onRootingExit = () => { 
-        if (!this.inCombat) return;
-        this.scene.root();
-        this.scene.useStamina(PLAYER.STAMINA.ROOT);
-    };
-
-    onCleanEnter = () => {};
-    onCleanExit = () => {};
-
-    onSprintEnter = () => {
-        this.isSprinting = true;
-        // this.caerenicFx.play();
-        this.scene.sound.play('blink', { volume: this.scene.settings.volume / 3 });
-        this.adjustSpeed(PLAYER.SPEED.SPRINT);
-        this.scene.useStamina(PLAYER.STAMINA.SPRINT);
-        this.setTimeEvent('sprintCooldown', PLAYER.COOLDOWNS.MODERATE);
-        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT, () => {
-            this.isSprinting = false;
-            if (this.isGlowing) this.checkCaerenic(false); // !this.isCaerenic && 
-            this.adjustSpeed(-PLAYER.SPEED.SPRINT);
-        });
-    };
-    onSprintUpdate = (_dt) => {
-        if (!this.isSprinting) {
-            this.metaMachine.setState(States.CLEAN);
-        };
-    };
-
-    onStealthEnter = () => {
-        this.isStealthing = true; 
-        this.stealthEffect(true);    
-    };
-    onStealthUpdate = (_dt) => {
-        if (!this.isStealthing || this.currentRound > 1 || this.scene.combat) {
-            this.metaMachine.setState(States.CLEAN); 
-        };
-    };
-    onStealthExit = () => { 
-        this.isStealthing = false;
-        this.stealthEffect(false);
-    };
-
-    stealthEffect(stealth) {
-        if (stealth) {
-            const getStealth = (object) => {
-                object.setAlpha(0.5); // 0.7
-                object.setBlendMode(Phaser.BlendModes.SCREEN);
-                this.scene.tweens.add({
-                    targets: object,
-                    tint: 0x00AAFF, // 0x00AAFF
-                    duration: 500,
-                    yoyo: true,
-                    repeat: -1,
-                }); 
-            };
-            getStealth(this);
-            getStealth(this.spriteWeapon);
-            getStealth(this.spriteShield);
-        } else {
-            const clearStealth = (object) => {
-                this.scene.tweens.killTweensOf(object);
-                object.setAlpha(1);
-                object.clearTint();
-                object.setBlendMode(Phaser.BlendModes.NORMAL);
-            };
-            clearStealth(this);
-            clearStealth(this.spriteWeapon);
-            clearStealth(this.spriteShield);
-            this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
-        };
-        // this.stealthFx.play();    
-        this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
-    };
-
     onBlinkEnter = () => {
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         if (this.velocity.x > 0) {
@@ -1327,6 +1234,21 @@ export default class Player extends Entity {
         this.combatChecker(this.isBlinking);
     };
     onBlinkExit = () => {};
+
+    onConsumeEnter = () => {
+        if (this.scene.state.playerEffects.length === 0) return;
+        this.isConsuming = true;
+        this.scene.sound.play('consume', { volume: this.scene.settings.volume });
+        this.setTimeEvent('consumeCooldown', PLAYER.COOLDOWNS.SHORT);
+    };
+    onConsumeUpdate = (_dt) => {
+        this.combatChecker(this.isConsuming);
+    };
+    onConsumeExit = () => {
+        if (this.scene.state.playerEffects.length === 0) return;
+        this.scene.combatMachine.action({ type: 'Consume', data: this.scene.state.playerEffects[0].id });        
+        this.scene.useStamina(PLAYER.STAMINA.CONSUME);
+    };
 
     onDesperationEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Desperation', PLAYER.DURATIONS.HEALING / 2, 'heal');
@@ -1377,25 +1299,6 @@ export default class Player extends Entity {
         if (this.isGlowing) this.checkCaerenic(false); // !this.isCaerenic && 
     };
 
-    onFreezeEnter = () => {
-        if (!this.inCombat) return;
-        this.aoe = new AoE(this.scene, 'freeze');
-        this.scene.sound.play('freeze', { volume: this.scene.settings.volume });
-        this.scene.useStamina(PLAYER.STAMINA.FREEZE);
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Freezing', PLAYER.DURATIONS.FREEZING, 'cast');
-        this.isFreezing = true;
-        this.scene.time.delayedCall(PLAYER.DURATIONS.FREEZING, () => {
-            this.isFreezing = false;
-        });
-    };
-    onFreezeUpdate = (_dt) => {
-        this.combatChecker(this.isFreezing);
-    };
-    onFreezeExit = () => {
-        if (!this.inCombat) return;
-        this.setTimeEvent('freezeCooldown', 3000);
-    };
-
     onFreezeCastEnter = () => {
         if (!this.inCombat) return;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Freezing', PLAYER.DURATIONS.FREEZING / 2, 'cast');
@@ -1424,23 +1327,101 @@ export default class Player extends Entity {
         if (this.isGlowing) this.checkCaerenic(false); // !this.isCaerenic && 
     };
 
-    onScreamEnter = () => {
-        if (!this.inCombat) return;
-        this.scene.useStamina(PLAYER.STAMINA.SCREAM);    
-        this.aoe = new AoE(this.scene, 'scream');    
-        this.scene.sound.play('dungeon', { volume: this.scene.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Screaming', 750, 'damage');
-        this.isScreaming = true;
-        this.scene.time.delayedCall(PLAYER.DURATIONS.SCREAM, () => {
-            this.isScreaming = false;
-        });
+    onHealingEnter = () => {
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Healing', PLAYER.DURATIONS.HEALING / 2, 'cast');
+        this.castbar.setTotal(PLAYER.DURATIONS.HEALING);
+        this.isPolymorphing = true;
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
     };
-    onScreamUpdate = (_dt) => {
-        this.combatChecker(this.isScreaming);
+    onHealingUpdate = (dt) => {
+        if (this.isMoving) this.isPolymorphing = false;
+        this.combatChecker(this.isPolymorphing);
+        if (this.castbar.time >= PLAYER.DURATIONS.HEALING) {
+            this.healingSuccess = true;
+            this.isPolymorphing = false;
+        };
+        if (this.isPolymorphing) this.castbar.update(dt, 'cast');
     };
-    onScreamExit = () => {
+    onHealingExit = () => {
+        if (this.healingSuccess) {
+            this.setTimeEvent('healingCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+            this.scene.useStamina(PLAYER.STAMINA.HEALING);
+            this.healingSuccess = false;
+            EventBus.emit('initiate-combat', { data: { key: 'player', value: 25 }, type: 'Health' });
+            this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
+        };
+        this.castbar.reset();
+        if (this.isGlowing) this.checkCaerenic(false); // !this.isCaerenic && 
+    };
+
+    onInvokeEnter = () => {
         if (!this.inCombat) return;
-        this.setTimeEvent('screamCooldown', PLAYER.COOLDOWNS.SHORT);  
+        this.isPraying = true;
+        this.setStatic(true);
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+        this.setTimeEvent('invokeCooldown', PLAYER.COOLDOWNS.LONG);
+        this.invokeCooldown = 30;
+        if (this.playerBlessing === '' || this.playerBlessing !== this.scene.state.playerBlessing) {
+            this.playerBlessing = this.scene.state.playerBlessing;
+        };
+    };
+    onInvokeUpdate = (_dt) => {
+        this.combatChecker(this.isPraying);
+    };
+    onInvokeExit = () => {
+        if (!this.inCombat) return;
+        this.setStatic(false);
+        if (this.isGlowing) this.checkCaerenic(false); // !this.isCaerenic && 
+        this.scene.combatMachine.action({ type: 'Instant', data: this.scene.state.playerBlessing });
+        // this.prayerFx.play();
+        this.scene.sound.play('prayer', { volume: this.scene.settings.volume });
+        this.scene.useStamina(PLAYER.STAMINA.INVOKE);
+    };
+
+    onPolymorphingEnter = () => {
+        if (!this.inCombat) return;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphing', PLAYER.DURATIONS.POLYMORPHING / 2, 'cast');
+        this.castbar.setTotal(PLAYER.DURATIONS.POLYMORPHING);
+        this.isPolymorphing = true;
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+    };
+    onPolymorphingUpdate = (dt) => {
+        if (this.isMoving) this.isPolymorphing = false;
+        this.combatChecker(this.isPolymorphing);
+        if (this.castbar.time >= PLAYER.DURATIONS.POLYMORPHING) {
+            this.polymorphSuccess = true;
+            this.isPolymorphing = false;
+        };
+        if (this.isPolymorphing) this.castbar.update(dt, 'cast');
+    };
+    onPolymorphingExit = () => {
+        if (this.polymorphSuccess) {
+            this.scene.polymorph(this.attacking?.enemyID);
+            this.setTimeEvent('polymorphCooldown', PLAYER.COOLDOWNS.SHORT);  
+            this.scene.useStamina(PLAYER.STAMINA.POLYMORPH);
+            this.polymorphSuccess = false;
+            this.scene.mysterious.play();
+        };
+        this.castbar.reset();
+        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
+    };
+
+    onRangedStunEnter = () => {};
+    onRangedStunUpdate = (_dt) => {};
+    onRangedStunExit = () => {};
+
+    onRootingEnter = () => {
+        if (!this.inCombat) return;
+        this.isHealing = true;
+        this.setTimeEvent('rootCooldown', PLAYER.COOLDOWNS.SHORT);
+    };
+    onRootingUpdate = (_dt) => {
+        this.combatChecker(this.isHealing);
+    };
+    onRootingExit = () => { 
+        if (!this.inCombat) return;
+        this.scene.root();
+        this.scene.useStamina(PLAYER.STAMINA.ROOT);
     };
 
     onSlowInstantEnter = () => {
@@ -1496,9 +1477,250 @@ export default class Player extends Entity {
         if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
     };
 
-    onRangedStunEnter = () => {};
-    onRangedStunUpdate = (_dt) => {};
-    onRangedStunExit = () => {};
+    onChiomicEnter = () => {
+        if (!this.inCombat) return;
+        console.log('Chiomic Enter')
+        this.isChiomic = true;
+        this.scene.useStamina(PLAYER.STAMINA.CHIOMIC);
+        this.scene.sound.play('39_Absorb_04', { volume: this.scene.settings.volume });
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Chiomism', PLAYER.DURATIONS.CHIOMIC / 2, 'damage');
+        this.castbar.setTotal(PLAYER.DURATIONS.CHIOMIC);
+        this.castbar.setTime(PLAYER.DURATIONS.CHIOMIC);
+        this.scene.snare(this.scene.state?.enemyID);
+        this.chiomicTimer = this.scene.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                if (!this.isChiomic || this.scene.state.playerWin || this.scene.state.newComputerHealth <= 0) {
+                    this.isChiomic = false;
+                    this.chiomicTimer.remove(false);
+                    this.chiomicTimer = undefined;
+                    return;
+                };
+                this.scene.combatMachine.action({ type: 'Chiomic', data: 10 });
+                // updateBeam(this.scene.time.now);
+            },
+            callbackScope: this,
+            repeat: 3,
+        });
+        this.setTimeEvent('chiomismCooldown', PLAYER.COOLDOWNS.LONG);
+        this.scene.time.addEvent({
+            delay: 3000,
+            callback: () => {
+                this.isChiomic = false;
+            },
+            callbackScope: this,
+            loop: false,
+        });
+        this.setStatic(true);
+    };
+    onChiomicUpdate = (dt) => {
+        this.combatChecker(this.isChiomic);
+        if (this.isChiomic) this.castbar.update(dt, 'channel');
+    };
+    onChiomicExit = () => {
+        this.castbar.reset();
+        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
+        this.setStatic(false);
+        if (this.chiomicTimer) {
+            this.chiomicTimer.remove(false);
+            this.chiomicTimer = undefined;
+        };
+        // if (this.beamTimer) {
+        //     this.beamTimer.remove();
+        //     this.beamTimer = undefined;
+        // };
+        // this.chiomicGraphic.destroy();
+        // this.chiomicGraphic = undefined;
+    };
+
+    onSutureEnter = () => {
+        if (!this.inCombat) return;
+        this.isSuturing = true;
+        this.scene.sound.play('39_Absorb_04', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Suture', 750, 'effect');
+        this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
+        this.scene.useStamina(PLAYER.STAMINA.SUTURE);
+        this.scene.combatMachine.action({ type: 'Tshaeral', data: 15 });
+        
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+        this.scene.time.delayedCall(500, () => {
+            if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
+            this.isSuturing = false;
+        });
+        
+    };
+    onSutureUpdate = (_dt) => {
+        this.combatChecker(this.isSuturing);
+    };
+    onSutureExit = () => {
+        if (!this.inCombat) return;
+        this.setTimeEvent('sutureCooldown', PLAYER.COOLDOWNS.MODERATE);
+    };
+
+    onTshaeralEnter = () => {
+        if (!this.inCombat) return;
+        this.isTshaering = true;
+        this.attacking.isConsumed = true;
+        this.scene.useStamina(PLAYER.STAMINA.TSHAER);
+        this.scene.sound.play('39_Absorb_04', { volume: this.scene.settings.volume });
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAERING / 2, 'damage');
+        this.castbar.setTotal(PLAYER.DURATIONS.TSHAERING);
+        this.castbar.setTime(PLAYER.DURATIONS.TSHAERING);
+        this.tshaeringTimer = this.scene.time.addEvent({
+            delay: 250,
+            callback: () => {
+                if (!this.isTshaering || this.scene.state.playerWin || this.scene.state.newComputerHealth <= 0) {
+                    this.isTshaering = false;
+                    this.tshaeringTimer.remove(false);
+                    this.tshaeringTimer = undefined;
+                    return;
+                };
+                this.scene.combatMachine.action({ type: 'Tshaeral', data: 3 });
+            },
+            callbackScope: this,
+            repeat: 8,
+        });
+        this.setTimeEvent('tshaeralCooldown', PLAYER.COOLDOWNS.LONG);
+        this.scene.time.addEvent({
+            delay: 2000,
+            callback: () => {
+                this.isTshaering = false;
+            },
+            callbackScope: this,
+            loop: false,
+        });
+        this.setStatic(true);
+    };
+    onTshaeralUpdate = (dt) => {
+        this.combatChecker(this.isTshaering);
+        if (this.isTshaering) this.castbar.update(dt, 'channel');
+    };
+    onTshaeralExit = () => {
+        this.castbar.reset();
+        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
+        this.setStatic(false);
+        if (this.tshaeringTimer) {
+            this.tshaeringTimer.remove(false);
+            this.tshaeringTimer = undefined;
+        };
+    };
+
+    // ================= META MACHINE STATES ================= \\
+
+    onCleanEnter = () => {};
+    onCleanExit = () => {};
+
+    onDiseaseEnter = () => {
+        if (!this.inCombat) return;
+        this.isDiseasing = true;
+        this.scene.useStamina(PLAYER.STAMINA.DISEASE);    
+        this.aoe = new AoE(this.scene, 'tendril', 6);    
+        this.scene.sound.play('dungeon', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tendrils Swirl', 750, 'tendril');
+        this.setTimeEvent('diseaseCooldown', PLAYER.COOLDOWNS.MODERATE);  
+        this.scene.time.delayedCall(PLAYER.DURATIONS.DISEASE, () => {
+            this.isDiseasing = false;
+        });
+    };
+    onDiseaseUpdate = (_dt) => {
+        this.combatChecker(this.isDiseasing);
+        if (this.isDiseasing) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onDiseaseExit = () => {
+        if (!this.inCombat) return;
+    };
+
+    onShimmerEnter = () => {
+        this.isShimmering = true; 
+        this.scene.useStamina(PLAYER.STAMINA.SHIMMER);
+        this.setTimeEvent('shimmerCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.isStealthing) this.stealthEffect(true);    
+        this.scene.time.delayedCall(PLAYER.DURATIONS.SHIMMERING, () => {
+            this.isShimmering = false;
+        });
+    };
+    onShimmerUpdate = (_dt) => {
+        if (!this.isShimmering) {
+            this.metaMachine.setState(States.CLEAN); 
+        };
+    };
+    onShimmerExit = () => { 
+        this.stealthEffect(false);
+    };
+
+    shimmerHit = () => {
+        this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `You simply weren't there`, 500, 'effect');
+    };
+
+    onSprintEnter = () => {
+        this.isSprinting = true;
+        // this.caerenicFx.play();
+        this.scene.sound.play('blink', { volume: this.scene.settings.volume / 3 });
+        this.adjustSpeed(PLAYER.SPEED.SPRINT);
+        this.scene.useStamina(PLAYER.STAMINA.SPRINT);
+        this.setTimeEvent('sprintCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT, () => {
+            this.isSprinting = false;
+            if (this.isGlowing) this.checkCaerenic(false); // !this.isCaerenic && 
+            this.adjustSpeed(-PLAYER.SPEED.SPRINT);
+        });
+    };
+    onSprintUpdate = (_dt) => {
+        if (!this.isSprinting) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+
+    onStealthEnter = () => {
+        if (!this.isShimmering) this.isStealthing = true; 
+        this.stealthEffect(true);    
+    };
+    onStealthUpdate = (_dt) => {
+        if (!this.isStealthing || this.currentRound > 1 || this.scene.combat) {
+            this.metaMachine.setState(States.CLEAN); 
+        };
+    };
+    onStealthExit = () => { 
+        this.isStealthing = false;
+        this.stealthEffect(false);
+    };
+
+    stealthEffect(stealth) {
+        if (stealth) {
+            const getStealth = (object) => {
+                object.setAlpha(0.5); // 0.7
+                object.setBlendMode(Phaser.BlendModes.SCREEN);
+                this.scene.tweens.add({
+                    targets: object,
+                    tint: 0x00AAFF, // 0x00AAFF
+                    duration: 500,
+                    yoyo: true,
+                    repeat: -1,
+                }); 
+            };
+            getStealth(this);
+            getStealth(this.spriteWeapon);
+            getStealth(this.spriteShield);
+        } else {
+            const clearStealth = (object) => {
+                this.scene.tweens.killTweensOf(object);
+                object.setAlpha(1);
+                object.clearTint();
+                object.setBlendMode(Phaser.BlendModes.NORMAL);
+            };
+            clearStealth(this);
+            clearStealth(this.spriteWeapon);
+            clearStealth(this.spriteShield);
+            this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
+        };
+        this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
+    };
 
     onEnvelopEnter = () => {
         if (!this.inCombat) return;
@@ -1507,7 +1729,7 @@ export default class Player extends Entity {
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Enveloping', 750, 'cast');
         this.envelopBubble = new Bubble(this.scene, this.x, this.y, 'blue', PLAYER.DURATIONS.ENVELOPING);
-        this.setTimeEvent('envelopCooldown', PLAYER.COOLDOWNS.LONG);
+        this.setTimeEvent('envelopCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.ENVELOPING, () => {
             this.isEnveloping = false;    
         });
@@ -1522,6 +1744,9 @@ export default class Player extends Entity {
     };
     onEnvelopExit = () => {
         if (this.envelopBubble) {
+            this.envelopBubble.warp.remove(false);
+            this.envelopBubble.warp.destroy();
+            this.envelopBubble.warp = undefined;
             this.envelopBubble.destroy();
             this.envelopBubble = undefined;
         };
@@ -1529,13 +1754,35 @@ export default class Player extends Entity {
 
     envelopHit = () => {
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
-        // this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Enveloped', 500, 'effect');
-        this.scene.stunned(this.attacking?.enemyID);
-        this.envelopBubble.setCharges(this.envelopBubble.charges - 1);
-        if (this.envelopBubble.charges <= 4) {
-            this.envelopBubble.setCharges(0);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Enveloped', 500, 'effect');
+        console.log(this.stamina, 'Stamina before')
+        this.scene.useStamina(40);
+        console.log(this.stamina, 'Stamina after')
+        if (this.stamina - 40 <= 0) {
             this.isEnveloping = false;
         };
+    };
+
+    onFreezeEnter = () => {
+        if (!this.inCombat) return;
+        this.aoe = new AoE(this.scene, 'freeze', 1);
+        this.scene.sound.play('freeze', { volume: this.scene.settings.volume });
+        this.scene.useStamina(PLAYER.STAMINA.FREEZE);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Freezing', PLAYER.DURATIONS.FREEZING, 'cast');
+        this.isFreezing = true;
+        this.scene.time.delayedCall(PLAYER.DURATIONS.FREEZING, () => {
+            this.isFreezing = false;
+        });
+    };
+    onFreezeUpdate = (_dt) => {
+        this.combatChecker(this.isFreezing);
+        if (!this.isFreezing) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onFreezeExit = () => {
+        if (!this.inCombat) return;
+        this.setTimeEvent('freezeCooldown', PLAYER.COOLDOWNS.SHORT);
     };
 
     onProtectEnter = () => {
@@ -1565,12 +1812,34 @@ export default class Player extends Entity {
         };
     };
 
+    onScreamEnter = () => {
+        if (!this.inCombat) return;
+        this.scene.useStamina(PLAYER.STAMINA.SCREAM);    
+        this.aoe = new AoE(this.scene, 'scream', 1);    
+        this.scene.sound.play('dungeon', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Screaming', 750, 'damage');
+        this.isScreaming = true;
+        this.scene.time.delayedCall(PLAYER.DURATIONS.SCREAM, () => {
+            this.isScreaming = false;
+        });
+    };
+    onScreamUpdate = (_dt) => {
+        this.combatChecker(this.isScreaming);
+        if (!this.isScreaming) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onScreamExit = () => {
+        if (!this.inCombat) return;
+        this.setTimeEvent('screamCooldown', PLAYER.COOLDOWNS.SHORT);  
+    };
+
     onShieldEnter = () => {
         if (!this.inCombat) return;
         this.scene.useStamina(PLAYER.STAMINA.SHIELD);    
         this.scene.sound.play('shield', { volume: this.scene.settings.volume });
         this.isShielding = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shielding', 750, 'buff');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shielding', 750, 'hush');
         this.shieldBubble = new Bubble(this.scene, this.x, this.y, 'bone', PLAYER.DURATIONS.SHIELDING);
         this.setTimeEvent('shieldCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIELDING, () => {
@@ -1602,32 +1871,41 @@ export default class Player extends Entity {
         };
     };
 
-    onPolymorphingEnter = () => {
+    onWardEnter = () => {
         if (!this.inCombat) return;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphing', PLAYER.DURATIONS.POLYMORPHING / 2, 'cast');
-        this.castbar.setTotal(PLAYER.DURATIONS.POLYMORPHING);
-        this.isPolymorphing = true;
-        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+        this.isWarding = true;
+        this.scene.useStamina(PLAYER.STAMINA.WARD);    
+        this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Warding', 750, 'damage');
+        this.wardBubble = new Bubble(this.scene, this.x, this.y, 'red', PLAYER.DURATIONS.WARDING);
+        this.setTimeEvent('wardCooldown', PLAYER.COOLDOWNS.LONG);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.WARDING, () => {
+            this.isWarding = false;    
+        });
     };
-    onPolymorphingUpdate = (dt) => {
-        if (this.isMoving) this.isPolymorphing = false;
-        this.combatChecker(this.isPolymorphing);
-        if (this.castbar.time >= PLAYER.DURATIONS.POLYMORPHING) {
-            this.polymorphSuccess = true;
-            this.isPolymorphing = false;
+    onWardUpdate = (_dt) => {
+        this.combatChecker(this.isWarding);
+        if (this.isWarding) {
+            this.wardBubble.update(this.x, this.y);
+        } else {
+            this.metaMachine.setState(States.CLEAN);
         };
-        if (this.isPolymorphing) this.castbar.update(dt, 'cast');
     };
-    onPolymorphingExit = () => {
-        if (this.polymorphSuccess) {
-            this.scene.polymorph(this.attacking?.enemyID);
-            this.setTimeEvent('polymorphCooldown', PLAYER.COOLDOWNS.SHORT);  
-            this.scene.useStamina(PLAYER.STAMINA.POLYMORPH);
-            this.polymorphSuccess = false;
-            this.scene.mysterious.play();
+    onWardExit = () => {
+        if (this.wardBubble) {
+            this.wardBubble.destroy();
+            this.wardBubble = undefined;
         };
-        this.castbar.reset();
-        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
+    };
+
+    wardHit = () => {
+        this.scene.sound.play('parry', { volume: this.scene.settings.volume });
+        this.scene.stunned(this.attacking?.enemyID);
+        this.wardBubble.setCharges(this.wardBubble.charges - 1);
+        if (this.wardBubble.charges <= 3) {
+            this.wardBubble.setCharges(0);
+            this.isWarding = false;
+        };
     };
 
     onStunEnter = () => {
@@ -1649,62 +1927,6 @@ export default class Player extends Entity {
         this.scene.input.keyboard.enabled = true;
         this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF)
         this.setStatic(false);
-    };
-
-    onTshaeralEnter = () => {
-        if (!this.inCombat) return;
-        this.isTshaering = true;
-        this.attacking.isConsumed = true;
-        this.scene.useStamina(PLAYER.STAMINA.TSHAER);
-        this.scene.tshaeral.play();
-        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAERING / 2, 'damage');
-        this.castbar.setTotal(PLAYER.DURATIONS.TSHAERING);
-        this.castbar.setTime(PLAYER.DURATIONS.TSHAERING);
-        this.tshaeringTimer = this.scene.time.addEvent({
-            delay: 250,
-            callback: () => {
-                if (!this.isTshaering || this.scene.state.playerWin || this.scene.state.newComputerHealth <= 0) {
-                    this.isTshaering = false;
-                    this.tshaeringTimer.remove(false);
-                    this.tshaeringTimer = undefined;
-                    return;
-                };
-                this.scene.combatMachine.action({ type: 'Tshaeral', data: '' });
-                // updateBeam(this.scene.time.now);
-            },
-            callbackScope: this,
-            repeat: 8,
-        });
-        this.setTimeEvent('tshaeralCooldown', PLAYER.COOLDOWNS.LONG);
-        this.scene.time.addEvent({
-            delay: 2000,
-            callback: () => {
-                this.isTshaering = false;
-            },
-            callbackScope: this,
-            loop: false,
-        });
-        this.setStatic(true);
-    };
-    onTshaeralUpdate = (dt) => {
-        this.combatChecker(this.isTshaering);
-        if (this.isTshaering) this.castbar.update(dt, 'channel');
-    };
-    onTshaeralExit = () => {
-        this.castbar.reset();
-        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
-        this.setStatic(false);
-        if (this.tshaeringTimer) {
-            this.tshaeringTimer.remove(false);
-            this.tshaeringTimer = undefined;
-        };
-        // if (this.beamTimer) {
-        //     this.beamTimer.remove();
-        //     this.beamTimer = undefined;
-        // };
-        // this.tshaeringGraphic.destroy();
-        // this.tshaeringGraphic = undefined;
     };
 
     setTimeEvent = (cooldown, limit = 30000) => {
@@ -2158,8 +2380,8 @@ export default class Player extends Entity {
             this.anims.play('player_health', true).on('animationcomplete', () => this.isConsuming = false);
         } else if (this.isPolymorphing || this.isFearing || this.isFreezing || this.isSlowing || this.isSnaring) { 
             this.anims.play('player_health', true);
-        } else if (this.isTshaering) {
-            this.anims.play('player_health', true);
+        } else if (this.isChiomic || this.isTshaering) {
+            this.anims.play('player_pray', true);
         } else if (this.isHealing) {
             this.anims.play('player_pray', true).on('animationcomplete', () => this.isHealing = false);
         } else if (this.isPraying) {

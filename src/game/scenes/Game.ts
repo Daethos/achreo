@@ -710,6 +710,17 @@ export class Game extends Scene {
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         enemy.isStunned = true;
     };
+    tendril = (id: string): void => {
+        if (id === '') return;
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        if (enemy) {
+            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.2);
+            console.log(damage, enemy.health, 'Tendril Damage');
+            const health = enemy.health - damage;
+            console.log(health, 'Tendril Health');
+            EventBus.emit('update-enemy-health', { id, health });
+        };
+    };
 
     // ============================ Game ============================ \\
 

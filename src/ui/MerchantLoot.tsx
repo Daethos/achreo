@@ -33,7 +33,7 @@ const MerchantLoot = ({ item, ascean, setShow, setHighlight }: Props) => {
             switch (rarity) {
                 case 'Common': {
                     cost = {
-                        silver: Math.floor(Math.random() * 1) + 30,
+                        silver: Math.floor(Math.random() * 30),
                         gold: 0
                     };
                     break;

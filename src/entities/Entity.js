@@ -450,6 +450,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.isRanged = weapon?.attackType === 'Magic' || weapon?.type === 'Bow' || weapon?.type === 'Greatbow';
         if (this.name === 'player') {
             this.swingTimer = SWING_TIME[weapon?.grip] || 1500;
+            this.weaponHitbox.width = weapon?.grip === 'One Hand' ? 40 : 45;
         } else {
             this.swingTimer = ENEMY_SWING_TIME[weapon?.grip] || 1000;
         };
@@ -460,22 +461,45 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         return item.imgUrl.split('/')[3].split('.')[0];
     };
 
+    hitBoxCheck = (target) => {
+        const xOffset = this.flipX ? 16 : -16;
+        // let pointer = this.scene.add.graphics()
+        //     .lineStyle(1, 0xFF0000, 1)
+        //     .strokeRect(target.x + xOffset, target.y, 1, 1);
+
+        for (let i = -32; i < 32; i++) {
+            // pointer.clear();
+            // pointer.strokeRect(target.x + xOffset, target.y + i, 1, 1);
+            if (this.weaponHitbox.getBounds().contains(target.x + xOffset, target.y + i)) {
+                console.log('Hitbox Hit!', i);
+                this.attackedTarget = target;
+                this.actionSuccess = true;
+                return;
+            };
+        };
+    };
+
     checkActionSuccess = (entity, target) => {
-        if (this.inCombat === false && this.isStealthing === false) return;
+        // if (this.inCombat === false && this.isStealthing === false) return;
         if (entity === 'player') {
             if (this.flipX) {
                 this.weaponHitbox.setAngle(270);
             } else {
                 this.weaponHitbox.setAngle(0);
             };
-            this.weaponHitbox.x = this.x + (this.flipX ? -32 : 32);
-            this.weaponHitbox.y = this.y - 12;
+            this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
+            this.weaponHitbox.y = this.y - 8;
+            // if (this.currentTarget) {
+            //     this.hitBoxCheck(this.currentTarget);
+            // };
             // const bounds = this.weaponHitbox.getBounds().contains(target.x + (this.flipX ? -16 : 16), target.y);
             // console.log(bounds, 'Bounds');
-            if (this.weaponHitbox.getBounds().contains(target.x + (this.flipX ? -16 : 16), target.y)) {
-                this.attackedTarget = target;
-                this.actionSuccess = true;
-            };
+            if (target === undefined) return;
+            this.hitBoxCheck(target);
+            // if (this.weaponHitbox.getBounds().contains(target.x + (this.flipX ? -16 : 16), target.y)) {
+            //     this.attackedTarget = target;
+            //     this.actionSuccess = true;
+            // };
         };
 
         if (entity === 'enemy' && target) {

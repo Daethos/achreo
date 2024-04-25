@@ -51,9 +51,19 @@ const CONTROLS = {
     DIFFICULTY: 'Difficulty',
     POST_FX: 'Post FX',
 };
+const SPECIAL = {
+    'constitution': ['Consume', 'Desperation', 'Disease', 'Healing', 'Invoke', 'Protect', 'Shield', 'Ward'],
+    'strength': ['Chiomic', 'Consume','Invoke', 'Scream', 'Suture', 'Tshaeral', 'Ward'], // 'Arc', 'Leap'
+    'agility': ['Consume', 'Envelop', 'Invoke', 'Shimmer', 'Snare', 'Sprint'], // 'Rush', 'Writhe'
+    'achre': ['Blink', 'Consume', 'Envelop', 'Freeze', 'Invoke', 'Polymorph', 'Root', 'Slow'],
+    'caeren': ['Chiomism', 'Consume', 'Desperation', 'Healing', 'Invoke', 'Shield', 'Suture'],
+    'kyosir': ['Chiomic', 'Chiomism', 'Consume', 'Fear', 'Invoke', 'Protect', 'Scream', 'Tshaeral'],
+};
 const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
 const SPECIALS = [
+    'Arc', // Channel to power up attack 3x damage
     'Blink', 
+    'Chiomic', // Aoe that Stuns after 1s
     'Chiomism',
     'Consume', 
     'Desperation',
@@ -63,9 +73,12 @@ const SPECIALS = [
     'Freeze',
     'Healing', 
     'Invoke', 
+    'Leap', // Blink in cursor direction and deal weapon damage to all enemies if landed
+    'Mend', // Heal Bubble
     'Polymorph',
     'Protect', 
     'Root', 
+    'Rush', // Blink in cursor direction and deal weapon damage to all enemies in path
     'Scream', 
     'Shield',
     'Shimmer',
@@ -75,6 +88,7 @@ const SPECIALS = [
     'Suture',
     'Tshaeral',
     'Ward',
+    'Writhe', // AoE that does Weapon damage after 1s
 ]; // 'Charm', 'Confuse', 'Counter', 'Sacrifice', 'Shroud'
 const GET_FORGE_COST = {
     Common: 1,

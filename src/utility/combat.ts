@@ -1386,7 +1386,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     };
 
     // This is for the Focused Attack Action i.e. you chose to Attack over adding a defensive component
-    if (combat.action === 'attack') {
+    if (combat.action === 'attack' || combat.action === 'arc') {
         if (combat.weapons[0]?.grip === 'One Hand') {
             if (combat.weapons[0]?.attackType === 'Physical') {
                 if (combat.player?.mastery === 'agility' || combat.player?.mastery === 'constitution') {
@@ -1478,6 +1478,10 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     };
 
     // Checking For Player Actions
+    if (playerAction === 'arc') {
+        playerPhysicalDamage *= 2;
+        playerMagicalDamage *= 2;
+    };
     if (playerAction === 'parry') {
         if (combat.parrySuccess) {
             playerPhysicalDamage *= 3;

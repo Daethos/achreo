@@ -535,21 +535,25 @@ export class Game extends Scene {
             this.equip.play();
         });
     };
+
     unequipEvent():void {
         EventBus.on('unequip-sound', () => {
             this.unequip.play();
         });
     };
+
     purchaseEvent():void {
         EventBus.on('purchase-sound', () => {
             this.purchase.play();
         });
     };
+
     weaponEvent():void {
         EventBus.on('weapon-order-sound', () => {
             this.weaponOrder.play();
         });
     };
+
     actionButtonEvent():void {
         EventBus.on('action-button-sound', () => {
             this.actionButton.play();
@@ -601,6 +605,14 @@ export class Game extends Scene {
 
     getEnemy(id: string) {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
+    };
+
+    chiomic = (id: string) => {
+        if (id === '') return;
+        // This will be 'CONFUSE' eventually
+        // let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        // enemy.isChiomic = true;
+        this.stunned(id);
     };
 
     // ============================ Combat ============================ \\ 
@@ -719,6 +731,29 @@ export class Game extends Scene {
             EventBus.emit('update-enemy-health', { id, health });
         };
     };
+
+    writhe = (id: string): void => {
+        if (id === '') return;
+        let enemy = this.enemies.find((e: any) => e.enemyID === id);
+
+        const match = this.player.enemyIdMatch();
+        if (match) { // Target Player Attack
+            console.log('Matched Writhe')
+            this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: 'attack' } });
+        } else { // Blind Player Attack
+            console.log('Blind Writhe')
+            this.combatMachine.action({ type: 'Player', data: { 
+                playerAction: { action: 'attack', parry: this.state.parryGuess }, 
+                enemyID: enemy.enemyID, 
+                ascean: enemy.ascean, 
+                damageType: enemy.currentDamageType, 
+                combatStats: enemy.combatStats, 
+                weapons: enemy.weapons, 
+                health: enemy.health, 
+                actionData: { action: enemy.currentAction, parry: enemy.parryAction }
+            }});
+        };
+    }
 
     // ============================ Game ============================ \\
 

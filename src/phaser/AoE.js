@@ -1,9 +1,11 @@
 const { Bodies } = Phaser.Physics.Matter.Matter;
 
 const COLORS = {
+    'chiomic': 0xFFC700,
     'scream': 0xFF0000,
     'freeze': 0x0000FF,
-    'tendril': 0x080080,
+    'tendril': 0x00FF00,
+    'writhe': 0x080080,
 };
 
 export default class AoE extends Phaser.Physics.Matter.Sprite {
@@ -47,17 +49,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 this.setCount(scene, type);
             };
         });
-
-        // scene.time.addEvent({
-        //     delay: 1000,
-        //     callback: () => {
-        //         this.hit.forEach((target) => {
-        //             scene[type](target.enemyID);
-        //         });
-        //     },
-        //     callbackScope: this,
-        //     loop: this.count,
-        // });
     };
     
     setTimer = (scene) => {

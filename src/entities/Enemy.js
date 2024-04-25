@@ -361,7 +361,6 @@ export default class Enemy extends Entity {
 
     setAggression = () => {
         const percent = this.scene.settings.difficulty.aggression;
-        // console.log('Aggression: ', percent);
         return percent > Math.random() || false;
     };
     
@@ -389,16 +388,6 @@ export default class Enemy extends Entity {
             },
             context: this.scene,
         });
-        // this.scene.matterCollision.addOnCollideActive({
-        //     objectA: [enemySensor],
-        //     callback: other => {
-        //         if (this.playerStatusCheck(other.gameObjectB) && this.enemyAggressionCheck() && !this.isAttacking) { 
-        //             console.log('--- DOES THIS EVER PING --- ')
-        //             this.createCombat(other, 'Enemy Joined Combat that was already active');
-        //         };
-        //     },
-        //     context: this.scene,
-        // }); 
         this.scene.matterCollision.addOnCollideEnd({
             objectA: [enemySensor],
             callback: other => {
@@ -423,7 +412,6 @@ export default class Enemy extends Entity {
     };
 
     jumpIntoCombat = () => {
-        // console.log(this.enemyID, this.ascean.name, 'Jumping Into Combat');
         this.attacking = this.scene.player;
         this.inCombat = true;
         if (this.healthbar) this.healthbar.setVisible(true);
@@ -1303,6 +1291,7 @@ export default class Enemy extends Entity {
             };
             return;
         };
+        if (this.scene.player.isMending) this.scene.player.mendHit();
         if (this.particleEffect) {
             if (this.isCurrentTarget) {
                 this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: this.particleEffect.action, id: this.enemyID } });

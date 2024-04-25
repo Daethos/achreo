@@ -42,6 +42,7 @@ export class Preloader extends Scene {
         this.load.audio('cymbal', '../assets/sounds/cymbal-long-2.wav');
         this.load.audio('background', '../assets/sounds/background.mp3');
         this.load.audio('combat', '../assets/sounds/combat.mp3');
+        this.load.audio('death', '../assets/sounds/death-sound.mp3');
         this.load.audio('blink', '../assets/sounds/blink.wav');
         this.load.audio('caerenic', '../assets/sounds/caerenic.wav');
         this.load.audio('consume', '../assets/sounds/consume.wav');

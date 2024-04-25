@@ -69,7 +69,7 @@ class Particle {
             return direction;
         } else {
             if (scene.settings.difficulty.aim === true) {
-                const pointer = player.rightJoystick.pointer;
+                const pointer = scene.rightJoystick.pointer;
                 const worldX = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
                 const worldY = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
                 // console.log(worldX, worldY);

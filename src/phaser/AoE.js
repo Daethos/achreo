@@ -62,15 +62,18 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     
     setTimer = (scene) => {
         let scale = 0;
+        let count = 0;
         this.timer = scene.time.addEvent({
             delay: 50,
             callback: () => {
+                if (count >= 20) return;
                 if (this && this.timer) {
                     scale += 0.01875;
                     this.setScale(scale);
                     this.setVisible(true);
                     this.setPosition(scene.player.x, scene.player.y + 6);
                 };
+                count++;
             },
             callbackScope: this,
             loop: 20,
@@ -90,9 +93,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         scene.matterCollision.addOnCollideStart({
             objectA: [this.sensor],
             callback: (collision) => {
-                const { gameObjectB } = collision;
+                const { gameObjectB, bodyB } = collision;
                 if (gameObjectB instanceof Phaser.Physics.Matter.Sprite) {
-                    if (gameObjectB.name === 'enemy') {
+                    if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
                         this.hit.push(gameObjectB);    
                     };
                 };
@@ -102,9 +105,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         scene.matterCollision.addOnCollideEnd({
             objectA: [this.sensor],
             callback: (collision) => {
-                const { gameObjectB } = collision;
+                const { gameObjectB, bodyB } = collision;
                 if (gameObjectB instanceof Phaser.Physics.Matter.Sprite) {
-                    if (gameObjectB.name === 'enemy') {
+                    if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
                         this.hit = this.hit.filter((target) => target.enemyID !== gameObjectB.enemyID);
                     };
                 };

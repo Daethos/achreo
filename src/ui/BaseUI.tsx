@@ -195,8 +195,10 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                             break;
                         case 'enemy':
                             // console.log(`Enemy Health: ${value}`);
-                            res = { ...combat(), newComputerHealth: value };
-                            EventBus.emit('update-combat-state', { key: 'newComputerHealth',  value });
+                            const enemyHealth = value > 0 ? value : 0;
+                            playerWin = enemyHealth === 0;
+                            res = { ...combat(), newComputerHealth: enemyHealth, playerWin };
+                            EventBus.emit('update-combat-state', { key: 'newComputerHealth', value: enemyHealth });
                             break;
                         default:
                             break;

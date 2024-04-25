@@ -687,37 +687,35 @@ export class Game extends Scene {
     };
     scream = (id: string) => {
         if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.enemies.find((e: any) => e.enemyID === id);
         enemy.isFeared = true;
     };
     slow = (id: string): void => {
         if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.enemies.find((e: any) => e.enemyID === id);
         enemy.isSlowed = true;
     };
     snare = (id: string): void => {
         if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.enemies.find((e: any) => e.enemyID === id);
         enemy.isSnared = true;
     };
     stun = (id: string): void => {
         if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.enemies.find((e: any) => e.enemyID === id);
         enemy.isBlindsided = true;
     };
     stunned = (id: string): void => {
         if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.enemies.find((e: any) => e.enemyID === id);
         enemy.isStunned = true;
     };
     tendril = (id: string): void => {
         if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (enemy) {
+        let enemy = this.enemies.find((e: any) => e.enemyID === id);
+        if (enemy !== undefined && enemy.health > 0 && enemy.isAggressive === true) {
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.2);
-            console.log(damage, enemy.health, 'Tendril Damage');
             const health = enemy.health - damage;
-            console.log(health, 'Tendril Health');
             EventBus.emit('update-enemy-health', { id, health });
         };
     };

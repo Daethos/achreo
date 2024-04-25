@@ -291,13 +291,13 @@ export default class Enemy extends Entity {
 
     healthUpdate = (e) => {
         if (this.enemyID !== e.id) return;
-        console.log('Enemy Health Update: ', e);
         if (e.id === this.scene.state?.enemyID) {
-            EventBus.emit('blend-combat', { newComputerHealth: e.health });
+            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: e.health } });
+        } else {
+            this.health = e.health;
+            this.healthbar.setValue(e.health);
+            this.updateHealthBar(e.health);
         };
-        this.health = e.health;
-        this.healthbar.setValue(e.health);
-        this.updateHealthBar(e.health);
     };
     
     combatDataUpdate = (e) => {
@@ -454,7 +454,7 @@ export default class Enemy extends Entity {
     enemyFetchedOn = (e) => {
         if (this.enemyID !== e.enemyID) return;
         this.ascean = e.enemy;
-        this.health = e.enemy.health.max;
+        this.health = e.combat.attributes.healthTotal;
         this.combatStats = e.combat; 
         this.weapons = [e.combat.combatWeaponOne, e.combat.combatWeaponTwo, e.combat.combatWeaponThree];
         
@@ -582,30 +582,6 @@ export default class Enemy extends Entity {
         this.spriteWeapon.destroy();
         this.spriteShield.destroy();
         this.healthbar.destroy();
-    };
-
-    onHurtEnter = () => {
-        this.clearAnimations();
-        this.clearTint();
-        this.isHurt = true;
-        this.scene.time.delayedCall(500, () => {
-            this.isHurt = false;
-        });
-        // this.hurt();
-    };
-    onHurtUpdate = (_dt) => {
-        this.anims.play('player_hurt', true);
-        if (!this.isHurt) {
-            if (this.inCombat) {
-                this.stateMachine.setState(States.COMBAT);
-            } else {
-                this.stateMachine.setState(States.IDLE);
-            };
-        };
-    };
-    onHurtExit = () => {
-        this.isHurt = false;
-        this.setTint(0x000000);
     };
 
     onIdleEnter = () => {
@@ -953,6 +929,8 @@ export default class Enemy extends Entity {
         this.scene.navMesh.debugDrawClear(); 
     };
 
+    // ========================== STATUS EFFECT STATES ========================== \\
+
     onConsumedEnter = () => {
         this.consumedDuration = DURATION.CONSUMED;
         this.clearAnimations();
@@ -1060,6 +1038,57 @@ export default class Enemy extends Entity {
         this.setGlow(this, false);
     };
 
+    onFrozenEnter = () => {
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Frozen', DURATION.TEXT, 'cast');
+        if (!this.isPolymorphed) this.clearAnimations();
+        this.anims.play('player_idle', true);
+        this.setTint(0x0000FF); // 0x888888
+        this.setStatic(true);
+        this.scene.time.addEvent({
+            delay: DURATION.FROZEN,
+            callback: () => {
+                this.isFrozen = false;
+                this.metaMachine.setState(States.CLEAN);
+            },
+            callbackScope: this,
+            loop: false,
+        });
+    };
+    onFrozenUpdate = (_dt) => {
+        if (!this.isPolymorphed) {
+            if (!this.checkIfAnimated()) this.anims.play('player_idle', true);
+            this.evaluateCombatDistance();
+        }; 
+    };
+    onFrozenExit = () => {
+        this.clearTint();
+        this.setTint(0x000000);
+        this.setStatic(false);
+    };
+
+    onHurtEnter = () => {
+        this.clearAnimations();
+        this.clearTint();
+        this.isHurt = true;
+        this.scene.time.delayedCall(250, () => {
+            this.isHurt = false;
+        });
+    };
+    onHurtUpdate = (_dt) => {
+        this.anims.play('player_hurt', true);
+        if (!this.isHurt) {
+            if (this.inCombat) {
+                this.stateMachine.setState(States.COMBAT);
+            } else {
+                this.stateMachine.setState(States.IDLE);
+            };
+        };
+    };
+    onHurtExit = () => {
+        this.isHurt = false;
+        this.setTint(0x000000);
+    };
+
     onPolymorphEnter = () => {
         this.isPolymorphed = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphed', DURATION.TEXT, 'effect');
@@ -1115,12 +1144,14 @@ export default class Enemy extends Entity {
                     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '...thump', 1000, 'effect');
                     if (this.isCurrentTarget && this.health < this.ascean.health.max) {
                         this.health = (this.health + (this.ascean.health.max * 0.3)) > this.ascean.health.max ? this.ascean.health.max : (this.health + (this.ascean.health.max * 0.3));
-                        this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: this.health } });
+                        if (this.scene.state.enemyID === this.enemyID) {
+                            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: this.health } });
+                        };
                         // EventBus.emit('update-combat-state', { newComputerHealth: this.health });
                     } else if (this.health < this.ascean.health.max) {
                         this.health = this.health + (this.ascean.health.max * 0.3);
-                        this.updateHealthBar(this.health);
                         this.healthbar.setValue(this.health);
+                        this.updateHealthBar(this.health);
                     };
                 };
             },
@@ -1187,35 +1218,6 @@ export default class Enemy extends Entity {
 
     onCleanEnter = () => {};
     onCleanExit = () => {};
-
-    onFrozenEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Frozen', DURATION.TEXT, 'cast');
-        if (!this.isPolymorphed) this.clearAnimations();
-        this.anims.play('player_idle', true);
-        this.setTint(0x0000FF); // 0x888888
-        this.setStatic(true);
-        this.scene.time.addEvent({
-            delay: DURATION.FROZEN,
-            callback: () => {
-                this.isFrozen = false;
-                this.metaMachine.setState(States.CLEAN);
-            },
-            callbackScope: this,
-            loop: false,
-        });
-    };
-    onFrozenUpdate = (_dt) => {
-        if (!this.isPolymorphed) {
-            if (!this.checkIfAnimated()) this.anims.play('player_idle', true);
-            this.evaluateCombatDistance();
-        }; 
-    };
-    onFrozenExit = () => {
-        this.clearTint();
-        this.setTint(0x000000);
-        this.setStatic(false);
-    };
-
 
     onRootEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Rooted', DURATION.TEXT, 'damage');

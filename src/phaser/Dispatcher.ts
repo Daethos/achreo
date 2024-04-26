@@ -12,26 +12,28 @@ const ActionTypes = {
     CHIOMIC: 'Chiomic',
     TSHAERAL: 'Tshaeral',
     HEALTH: 'Health',
+    SACRIFICE: 'Sacrifice',
+    SUTURE: 'Suture',
 };
 
-function weaponAction(data: KVI): void {
+function weapon(data: KVI): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.WEAPON });
 };
 
-function instantAction(data: string): void {
+function instant(data: string): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.INSTANT });
 };
 
-function prayerAction(data: any[]): void {
+function prayer(data: any[]): void {
     console.log('Prayer action: ', data);
     EventBus.emit('initiate-combat', { data: { prayerSacrificeId: data }, type: ActionTypes.CONSUME });
 };
 
-function playerAction(data: any): void {
+function player(data: any): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.PLAYER });
 };
 
-function enemyAction(data: any): void {
+function enemy(data: any): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.ENEMY });
 };
 
@@ -40,16 +42,24 @@ function actionInput({ key, value }: { key: string, value: string | number | boo
     EventBus.emit('update-combat-state', { key, value });
 };
 
-function chiomicAction(data: number): void {
+function chiomic(data: number): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.CHIOMIC });
 };
 
-function tshaeralAction(data: number): void {
+function sacrifice(): void {
+    EventBus.emit('initiate-combat', { type: ActionTypes.SACRIFICE });
+};
+
+function suture(): void {
+    EventBus.emit('initiate-combat', { type: ActionTypes.SUTURE });
+};
+
+function tshaeral(data: number): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.TSHAERAL });
 };
 
-function healthAction(data: KVI): void {
+function health(data: KVI): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.HEALTH });
 };
 
-export { weaponAction, instantAction, prayerAction, playerAction, enemyAction, actionInput, chiomicAction, tshaeralAction, healthAction };
+export { weapon, instant, prayer, player, enemy, actionInput, chiomic, tshaeral, health, sacrifice, suture };

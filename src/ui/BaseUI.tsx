@@ -170,8 +170,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     playerWin = res.playerWin;
                     break;
                 case 'Chiomic': // Mindflay
-                    const suture = Math.round(combat().playerHealth * (data / 100));
-                    const newComputerHealth = combat().newComputerHealth - suture < 0 ? 0 : combat().newComputerHealth - suture;
+                    const chiomic = Math.round(combat().playerHealth * (data / 100));
+                    const newComputerHealth = combat().newComputerHealth - chiomic < 0 ? 0 : combat().newComputerHealth - chiomic;
                     playerWin = newComputerHealth === 0;
                     res = { ...combat(), newComputerHealth, playerWin };
                     EventBus.emit('blend-combat', { newComputerHealth, playerWin });
@@ -228,6 +228,31 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     playerWin = res.playerWin;
                     // console.log(res, 'Res in Enemy');
                     EventBus.emit('blend-combat', res);
+                    break;
+                case 'Sacrifice':
+                    const sacrifice = Math.round(combat()?.player?.[combat().player?.mastery as string])
+                    const playerSacrifice = combat().newPlayerHealth - (sacrifice / 2) < 0 ? 0 : combat().newPlayerHealth - (sacrifice / 2);
+                    const enemySacrifice = combat().newComputerHealth - sacrifice < 0 ? 0 : combat().newComputerHealth - sacrifice;
+                    res = { ...combat(),
+                        newPlayerHealth: playerSacrifice,
+                        newComputerHealth: enemySacrifice,
+                        playerWin: enemySacrifice === 0,
+                    };
+                    EventBus.emit('blend-combat', { newPlayerHealth: playerSacrifice, newComputerHealth: enemySacrifice, playerWin: enemySacrifice === 0 });
+                    playerWin = res.playerWin;
+                    break;
+                case 'Suture':
+                    const suture = Math.round(combat()?.player?.[combat().player?.mastery as string]) / 2;
+                    const playerSuture = combat().newPlayerHealth + suture > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + suture;
+                    const enemySuture = combat().newComputerHealth - suture < 0 ? 0 : combat().newComputerHealth - suture;
+                    res = {
+                        ...combat(),
+                        newPlayerHealth: playerSuture,
+                        newComputerHealth: enemySuture,
+                        playerWin: enemySuture === 0,
+                    };
+                    EventBus.emit('blend-combat', { newPlayerHealth: playerSuture, newComputerHealth: enemySuture, playerWin: enemySuture === 0 });
+                    playerWin = res.playerWin;
                     break;
                 default:
                     break;

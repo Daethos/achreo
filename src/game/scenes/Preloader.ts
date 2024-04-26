@@ -74,11 +74,13 @@ export class Preloader extends Scene {
         this.load.audio('TV_Button_Press', '../assets/sounds/TV_Button_Press.wav');
         this.load.audio('combat-round', '../assets/sounds/combat-round.mp3');
         this.load.audio('alien-whoosh', '../assets/sounds/alien-whoosh.mp3');
-        this.load.audio('39_Absorb_04', '../assets/sounds/39_Absorb_04.wav');
+        this.load.audio('absorb', '../assets/sounds/absorb.wav');
         this.load.audio('shield', '../assets/sounds/16_Atk_buff_04.wav');
         this.load.audio('freeze', '../assets/sounds/freeze.wav');
         this.load.audio('dungeon', '../assets/sounds/dungeon.mp3');
         this.load.audio('debuff', '../assets/sounds/21_Debuff_01.wav');
+        this.load.audio('howl', '../assets/sounds/howl.wav');
+        this.load.audio('scream', '../assets/sounds/scream.wav');
 
         this.assets = sanitize();
 

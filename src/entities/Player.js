@@ -50,15 +50,18 @@ export const PLAYER = {
         BLINK: 10,
         CHIOMIC: 25,  
         CHIOMISM: 25,
+        CONFUSE: 10,
         CONSUME: 10,
         DESPERATION: 40,
-        FEARING: 10,
+        FEAR: 10,
         HEALING: 25,
         INVOKE: -25,
         LEAP: 25,
         POLYMORPH: 10,
+        PURSUIT: 25,
         ROOT: 10,
         RUSH: 25,
+        SACRIFICE: 25,
         SLOW: 10,
         SNARE: 10,
         SUTURE: 25,
@@ -67,12 +70,17 @@ export const PLAYER = {
         DISEASE: 25,
         ENVELOP: 10,
         FREEZE: 25,
+        HOWL: 25,
+        MALICE: 25,
         MEND: 25,
         PROTECT: 40,
+        RECOVER: 10,
+        RENEWAL: 25,
         SCREAM: 25,
         SHIELD: 25,
         SHIMMER: 10,
         SPRINT: 10,
+        STORM: 25,
         WARD: 25,
         WRITHE: 25,
     },
@@ -85,25 +93,32 @@ export const PLAYER = {
         ARCING: 3000,
         CHIOMIC: 1000,
         CHIOMISM: 3000,
+        CONFUSE: 1000,
         DISEASE: 6000,
-        ENVELOPING: 10000,
-        FEARING: 1500,
-        FREEZING: 750,
+        ENVELOP: 10000,
+        FEAR: 1500,
+        FREEZE: 750,
         HEALING: 1500,
         LEAP: 750,
-        MENDING: 10000,
-        PROTECTING: 6000,
-        POLYMORPHING: 1500,
+        MALICE: 10000,
+        MEND: 10000,
+        PROTECT: 6000,
+        POLYMORPH: 1500,
+        PURSUIT: 750,
+        RECOVER: 10000,
+        RENEWAL: 6000,
         RUSH: 750,
+        SACRIFICE: 750,
         SCREAM: 1000,
-        SHIELDING: 10000,
-        SHIMMERING: 10000,
-        SNARING: 1000,
+        SHIELD: 10000,
+        SHIMMER: 10000,
+        SNARE: 1000,
         SPRINT: 6000,
+        STORM: 3000,
         STUNNED: 2500,
-        TSHAERING: 2000,
-        WARDING: 10000,
-        WRITHING: 1000,
+        TSHAER: 2000,
+        WARD: 10000,
+        WRITHE: 1000,
     },
 };
 
@@ -171,6 +186,12 @@ export const staminaCheck = (input, stamina) => {
                 success: chiomismSuccess,
                 cost: PLAYER.STAMINA.CHIOMISM,
             };
+        case 'confuse':
+            const confuseSuccess = stamina >= PLAYER.STAMINA.CONFUSE;
+            return {
+                success: confuseSuccess,
+                cost: PLAYER.STAMINA.CONFUSE,
+            };
         case 'consume':
             const consumeSuccess = stamina >= PLAYER.STAMINA.CONSUME;
             return {
@@ -196,10 +217,10 @@ export const staminaCheck = (input, stamina) => {
                 cost: PLAYER.STAMINA.ENVELOP,
             };
         case 'fear':
-            const fearingSuccess = stamina >= PLAYER.STAMINA.FEARING;
+            const fearingSuccess = stamina >= PLAYER.STAMINA.FEAR;
             return {
                 success: fearingSuccess,
-                cost: PLAYER.STAMINA.FEARING,
+                cost: PLAYER.STAMINA.FEAR,
             };
         case 'freeze':
             const freezingSuccess = stamina >= PLAYER.STAMINA.FREEZE;
@@ -213,6 +234,12 @@ export const staminaCheck = (input, stamina) => {
                 success: healingSuccess,
                 cost: PLAYER.STAMINA.HEALING,
             };
+        case 'howl':
+            const howlSuccess = stamina >= PLAYER.STAMINA.HOWL;
+            return {
+                success: howlSuccess,
+                cost: PLAYER.STAMINA.HOWL,
+            };
         case 'invoke':
             const invokeSuccess = stamina >= PLAYER.STAMINA.INVOKE;
             return { 
@@ -224,6 +251,12 @@ export const staminaCheck = (input, stamina) => {
             return {
                 success: leapSuccess,
                 cost: PLAYER.STAMINA.LEAP,
+            };
+        case 'malice':
+            const maliceSuccess = stamina >= PLAYER.STAMINA.MALICE;
+            return {
+                success: maliceSuccess,
+                cost: PLAYER.STAMINA.MALICE,
             };
         case 'mend':
             const mendSuccess = stamina >= PLAYER.STAMINA.MEND;
@@ -243,6 +276,24 @@ export const staminaCheck = (input, stamina) => {
                 success: protectSuccess,
                 cost: PLAYER.STAMINA.PROTECT,
             };
+        case 'pursuit':
+            const pursuitSuccess = stamina >= PLAYER.STAMINA.PURSUIT;
+            return {
+                success: pursuitSuccess,
+                cost: PLAYER.STAMINA.PURSUIT,
+            };
+        case 'recover':
+            const recoverSuccess = stamina >= PLAYER.STAMINA.RECOVER;
+            return {
+                success: recoverSuccess,
+                cost: PLAYER.STAMINA.RECOVER,
+            };
+        case 'renewal':
+            const renewalSuccess = stamina >= PLAYER.STAMINA.RENEWAL;
+            return {
+                success: renewalSuccess,
+                cost: PLAYER.STAMINA.RENEWAL,
+            };
         case 'root':
             const rootSuccess = stamina >= PLAYER.STAMINA.ROOT;
             return {
@@ -254,6 +305,12 @@ export const staminaCheck = (input, stamina) => {
             return {
                 success: rushSuccess,
                 cost: PLAYER.STAMINA.RUSH,
+            };
+        case 'sacrifice':
+            const sacrificeSuccess = stamina >= PLAYER.STAMINA.SACRIFICE;
+            return {
+                success: sacrificeSuccess,
+                cost: PLAYER.STAMINA.SACRIFICE,
             };
         case 'scream':
             const screamSuccess = stamina >= PLAYER.STAMINA.SCREAM;
@@ -291,6 +348,12 @@ export const staminaCheck = (input, stamina) => {
                 success: sprintSuccess,
                 cost: PLAYER.STAMINA.SPRINT,
             };
+        case 'storm':
+            const stormSuccess = stamina >= PLAYER.STAMINA.STORM;
+            return {
+                success: stormSuccess,
+                cost: PLAYER.STAMINA.STORM,
+            };
         case 'suture':
             const sutureSuccess = stamina >= PLAYER.STAMINA.SUTURE;
             return {
@@ -326,9 +389,10 @@ export const staminaCheck = (input, stamina) => {
 export default class Player extends Entity {
     constructor(data) {
         const { scene } = data;
-        super({ ...data, name: 'player', ascean: scene.state.player, health: scene.state.newPlayerHealth }); 
+        super({ ...data, name: 'player', ascean: scene.state.player, health: scene.state.player.health.current }); 
 
         this.ascean = this.getAscean();
+        this.health = this.ascean.health.current;
         this.playerID = this.ascean._id;
         const weapon = this.ascean.weaponOne;
         this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
@@ -418,11 +482,6 @@ export default class Player extends Entity {
                 onUpdate: this.onRollUpdate,
                 onExit: this.onRollExit,
             })
-            .addState(States.HEAL, {
-                onEnter: this.onFlaskEnter,
-                onUpdate: this.onFlaskUpdate,
-                onExit: this.onFlaskExit,
-            })
             .addState(States.STUN, {
                 onEnter: this.onStunEnter,
                 onUpdate: this.onStunUpdate,
@@ -443,6 +502,11 @@ export default class Player extends Entity {
                 onUpdate: this.onChiomismUpdate,
                 onExit: this.onChiomismExit,
             })
+            .addState(States.CONFUSE, {
+                onEnter: this.onConfuseEnter,
+                onUpdate: this.onConfuseUpdate,
+                onExit: this.onConfuseExit,
+            })
             .addState(States.CONSUME, {
                 onEnter: this.onConsumeEnter,
                 onUpdate: this.onConsumeUpdate,
@@ -453,7 +517,7 @@ export default class Player extends Entity {
                 onUpdate: this.onDesperationUpdate,
                 onExit: this.onDesperationExit,
             })
-            .addState(States.FEARING, {
+            .addState(States.FEAR, {
                 onEnter: this.onFearingEnter,
                 onUpdate: this.onFearingUpdate,
                 onExit: this.onFearingExit,
@@ -478,10 +542,15 @@ export default class Player extends Entity {
                 onUpdate: this.onLeapUpdate,
                 onExit: this.onLeapExit,
             })
-            .addState(States.POLYMORPHING, {
+            .addState(States.POLYMORPH, {
                 onEnter: this.onPolymorphingEnter,
                 onUpdate: this.onPolymorphingUpdate,
                 onExit: this.onPolymorphingExit,
+            })
+            .addState(States.PURSUIT, {
+                onEnter: this.onPursuitEnter,
+                onUpdate: this.onPursuitUpdate,
+                onExit: this.onPursuitExit,
             })
             .addState(States.RANGED_STUN, {
                 onEnter: this.onRangedStunEnter,
@@ -498,7 +567,12 @@ export default class Player extends Entity {
                 onUpdate: this.onRushUpdate,
                 onExit: this.onRushExit,
             })
-            .addState(States.SNARING, {
+            .addState(States.SACRIFICE, {
+                onEnter: this.onSacrificeEnter,
+                onUpdate: this.onSacrificeUpdate,
+                onExit: this.onSacrificeExit,
+            })
+            .addState(States.SNARE, {
                 onEnter: this.onSnaringEnter,
                 onUpdate: this.onSnaringUpdate,
                 onExit: this.onSnaringExit,
@@ -512,6 +586,11 @@ export default class Player extends Entity {
                 onEnter: this.onSlowInstantEnter,
                 onUpdate: this.onSlowInstantUpdate,
                 onExit: this.onSlowInstantExit,
+            })
+            .addState(States.STORM, {
+                onEnter: this.onStormEnter,
+                onUpdate: this.onStormUpdate,
+                onExit: this.onStormExit,
             })
             .addState(States.TSHAERAL, {
                 onEnter: this.onTshaeralEnter,
@@ -546,6 +625,16 @@ export default class Player extends Entity {
                 onUpdate: this.onFreezeUpdate,
                 onExit: this.onFreezeExit,
             })
+            .addState(States.HOWL, {
+                onEnter: this.onHowlEnter,
+                onUpdate: this.onHowlUpdate,
+                onExit: this.onHowlExit,
+            })
+            .addState(States.MALICE, {
+                onEnter: this.onMaliceEnter,
+                onUpdate: this.onMaliceUpdate,
+                onExit: this.onMaliceExit,
+            })
             .addState(States.MEND, {
                 onEnter: this.onMendEnter,
                 onUpdate: this.onMendUpdate,
@@ -560,6 +649,16 @@ export default class Player extends Entity {
                 onEnter: this.onProtectEnter,
                 onUpdate: this.onProtectUpdate,
                 onExit: this.onProtectExit,
+            })
+            .addState(States.RECOVER, {
+                onEnter: this.onRecoverEnter,
+                onUpdate: this.onRecoverUpdate,
+                onExit: this.onRecoverExit,
+            })
+            .addState(States.RENEWAL, {
+                onEnter: this.onRenewalEnter,
+                onUpdate: this.onRenewalUpdate,
+                onExit: this.onRenewalExit,
             })
             .addState(States.SCREAM, {
                 onEnter: this.onScreamEnter,
@@ -623,9 +722,11 @@ export default class Player extends Entity {
         this.isEnveloping = false;
         this.isHealing = false;
         this.isLeaping = false;
+        this.isMalicing = false;
         this.isMending = false;
         this.isPolymorphed = false;
         this.isProtecting = false;
+        this.isPursuing = false;
         this.isRushing = false;
         this.isShielding = false;
         this.isShimmering = false;
@@ -644,7 +745,7 @@ export default class Player extends Entity {
             intensity: 0.005, // 005
         });
         this.highlight.setVisible(false);
-        this.healthbar = new HealthBar(this.scene, this.x, this.y, scene.state.playerHealth, 'player');
+        this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health, 'player');
         this.castbar = new CastingBar(this.scene, this.x, this.y, 0, this);
         this.rushedEnemies = [];
         this.playerStateListener();
@@ -1217,7 +1318,7 @@ export default class Player extends Entity {
     };
 
     onDodgeEnter = () => {
-        if (this.isStalwart) return;
+        if (this.isStalwart || this.isStorming) return;
         this.isDodging = true;
         this.scene.useStamina(PLAYER.STAMINA.DODGE);
         this.swingReset(States.DODGE);
@@ -1236,6 +1337,7 @@ export default class Player extends Entity {
         this.combatChecker(this.isDodging);
     };
     onDodgeExit = () => {
+        if (this.isStorming) return;
         this.spriteWeapon.setVisible(true);
         this.dodgeCooldown = 0;
         this.isDodging = false;
@@ -1250,7 +1352,7 @@ export default class Player extends Entity {
     };
 
     onRollEnter = () => {
-        if (this.isStalwart) return;
+        if (this.isStalwart || this.isStorming) return;
         this.isRolling = true;
         this.scene.roll.play();
         this.swingReset(States.ROLL);
@@ -1268,6 +1370,7 @@ export default class Player extends Entity {
         this.combatChecker(this.isRolling);
     };
     onRollExit = () => {
+        if (this.isStorming) return;
         this.spriteWeapon.setVisible(true);
         this.rollCooldown = 0; 
         if (this.scene.state.action !== '') {
@@ -1375,7 +1478,7 @@ export default class Player extends Entity {
         console.log('Chiomic Enter')
         this.isChiomic = true;
         this.scene.useStamina(PLAYER.STAMINA.CHIOMISM);
-        this.scene.sound.play('39_Absorb_04', { volume: this.scene.settings.volume });
+        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Chiomism', PLAYER.DURATIONS.CHIOMISM / 2, 'damage');
         this.castbar.setTotal(PLAYER.DURATIONS.CHIOMISM);
@@ -1427,6 +1530,34 @@ export default class Player extends Entity {
         // this.chiomicGraphic = undefined;
     };
 
+    onConfuseEnter = () => {
+        if (!this.inCombat) return;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Confusing', PLAYER.DURATIONS.CONFUSE / 2, 'cast');
+        this.castbar.setTotal(PLAYER.DURATIONS.CONFUSE);
+        this.isConfusing = true;
+        if (!this.isGlowing) this.checkCaerenic(true); // !this.isCaerenic && 
+    };
+    onConfuseUpdate = (dt) => {
+        if (this.isMoving) this.isConfusing = false;
+        this.combatChecker(this.isConfusing);
+        if (this.castbar.time >= PLAYER.DURATIONS.CONFUSE) {
+            this.confuseSuccess = true;
+            this.isConfusing = false;
+        };
+        if (this.isConfusing) this.castbar.update(dt, 'cast');
+    };
+    onConfuseExit = () => {
+        if (this.confuseSuccess) {
+            this.scene.confuse(this.attacking?.enemyID);
+            this.setTimeEvent('confuseCooldown', PLAYER.COOLDOWNS.SHORT);  
+            this.confuseSuccess = false;
+            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+            this.scene.useStamina(PLAYER.STAMINA.CONFUSE);    
+        };
+        this.castbar.reset();
+        if (this.isGlowing) this.checkCaerenic(false); // !this.isCaerenic && 
+    };
+
     onConsumeEnter = () => {
         if (this.scene.state.playerEffects.length === 0) return;
         this.isConsuming = true;
@@ -1465,15 +1596,15 @@ export default class Player extends Entity {
 
     onFearingEnter = () => {
         if (!this.inCombat) return;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Fearing', PLAYER.DURATIONS.FEARING / 2, 'cast');
-        this.castbar.setTotal(PLAYER.DURATIONS.FEARING);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Fearing', PLAYER.DURATIONS.FEAR / 2, 'cast');
+        this.castbar.setTotal(PLAYER.DURATIONS.FEAR);
         this.isFearing = true;
         if (!this.isGlowing) this.checkCaerenic(true); // !this.isCaerenic && 
     };
     onFearingUpdate = (dt) => {
         if (this.isMoving) this.isFearing = false;
         this.combatChecker(this.isFearing);
-        if (this.castbar.time >= PLAYER.DURATIONS.FEARING) {
+        if (this.castbar.time >= PLAYER.DURATIONS.FEAR) {
             this.fearSuccess = true;
             this.isFearing = false;
         };
@@ -1484,8 +1615,8 @@ export default class Player extends Entity {
             this.scene.fear(this.attacking?.enemyID);
             this.setTimeEvent('fearCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.fearSuccess = false;
-            this.scene.mysterious.play();
-            this.scene.useStamina(PLAYER.STAMINA.FEARING);    
+            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+            this.scene.useStamina(PLAYER.STAMINA.FEAR);    
         };
         this.castbar.reset();
         if (this.isGlowing) this.checkCaerenic(false); // !this.isCaerenic && 
@@ -1493,15 +1624,15 @@ export default class Player extends Entity {
 
     onFreezeCastEnter = () => {
         if (!this.inCombat) return;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Freezing', PLAYER.DURATIONS.FREEZING / 2, 'cast');
-        this.castbar.setTotal(PLAYER.DURATIONS.FREEZING);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Freezing', PLAYER.DURATIONS.FREEZE / 2, 'cast');
+        this.castbar.setTotal(PLAYER.DURATIONS.FREEZE);
         this.isFreezing = true;
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
     };
     onFreezeCastUpdate = (dt) => {
         if (this.isMoving) this.isFreezing = false;
         this.combatChecker(this.isFreezing);
-        if (this.castbar.time >= PLAYER.DURATIONS.FREEZING) {
+        if (this.castbar.time >= PLAYER.DURATIONS.FREEZE) {
             this.freezeSuccess = true;
             this.isFreezing = false;
         };
@@ -1660,15 +1791,15 @@ export default class Player extends Entity {
 
     onPolymorphingEnter = () => {
         if (!this.inCombat) return;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphing', PLAYER.DURATIONS.POLYMORPHING / 2, 'cast');
-        this.castbar.setTotal(PLAYER.DURATIONS.POLYMORPHING);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphing', PLAYER.DURATIONS.POLYMORPH / 2, 'cast');
+        this.castbar.setTotal(PLAYER.DURATIONS.POLYMORPH);
         this.isPolymorphing = true;
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
     };
     onPolymorphingUpdate = (dt) => {
         if (this.isMoving) this.isPolymorphing = false;
         this.combatChecker(this.isPolymorphing);
-        if (this.castbar.time >= PLAYER.DURATIONS.POLYMORPHING) {
+        if (this.castbar.time >= PLAYER.DURATIONS.POLYMORPH) {
             this.polymorphSuccess = true;
             this.isPolymorphing = false;
         };
@@ -1685,6 +1816,37 @@ export default class Player extends Entity {
         this.castbar.reset();
         if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
     };
+
+    onPursuitEnter = () => {
+        this.scene.sound.play('wild', { volume: this.scene.settings.volume });
+        if (this.currentTarget) {
+            if (this.currentTarget.flipX) {
+                this.setPosition(this.currentTarget.x + 16, this.currentTarget.y);
+            } else {
+                this.setPosition(this.currentTarget.x - 16, this.currentTarget.y);
+            };
+        };
+
+        this.scene.useStamina(PLAYER.STAMINA.PURSUIT);
+        const pursuitCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
+        this.setTimeEvent('pursuitCooldown', pursuitCooldown);
+        if (!this.isCaerenic && !this.isGlowing) {
+            this.checkCaerenic(true);
+            this.scene.time.delayedCall(750, () => {
+                this.checkCaerenic(false);
+            });
+        };
+    };
+    onPursuitUpdate = (_dt) => {
+        this.combatChecker(this.isPursuing);
+    };
+    onPursuitExit = () => {
+        if (!this.inCombat && !this.isStealthing && !this.isShimmering) {
+            const button = this.scene.smallHud.bar.find(b => b.texture.key === 'stealth');
+            this.scene.smallHud.pressButton(button);
+        };
+    };
+
 
     onRangedStunEnter = () => {};
     onRangedStunUpdate = (_dt) => {};
@@ -1717,8 +1879,6 @@ export default class Player extends Entity {
             if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
             this.isSlowing = false;
         });
-        
-        // TODO:FIXME: Add Slow effect that shoots to enemy
     };
     onSlowInstantUpdate = (_dt) => {
         this.combatChecker(this.isSlowing);
@@ -1728,17 +1888,39 @@ export default class Player extends Entity {
         this.setTimeEvent('slowCooldown', PLAYER.COOLDOWNS.SHORT);
     };
 
+    onSacrificeEnter = () => {
+        if (!this.inCombat) return;
+        this.isSacrificing = true;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Sacrifice', 750, 'effect');
+        this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+        this.scene.useStamina(PLAYER.STAMINA.SACRIFICE);
+        this.scene.combatMachine.action({ type: 'Sacrifice', data: undefined });
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+        this.scene.time.delayedCall(500, () => {
+            if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
+            this.isSacrificing = false;
+        });
+        
+    };
+    onSacrificeUpdate = (_dt) => {
+        this.combatChecker(this.isSacrificing);
+    };
+    onSacrificeExit = () => {
+        if (!this.inCombat) return;
+        this.setTimeEvent('sacrificeCooldown', PLAYER.COOLDOWNS.MODERATE);
+    };
+
     onSnaringEnter = () => {
         if (!this.inCombat) return;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snaring', PLAYER.DURATIONS.SNARING, 'cast');
-        this.castbar.setTotal(PLAYER.DURATIONS.SNARING);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snaring', PLAYER.DURATIONS.SNARE, 'cast');
+        this.castbar.setTotal(PLAYER.DURATIONS.SNARE);
         this.isSnaring = true;
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
     };
     onSnaringUpdate = (dt) => {
         if (this.isMoving) this.isSnaring = false;
         this.combatChecker(this.isSnaring);
-        if (this.castbar.time >= PLAYER.DURATIONS.SNARING) {
+        if (this.castbar.time >= PLAYER.DURATIONS.SNARE) {
             this.snaringSuccess = true;
             this.isSnaring = false;
         };
@@ -1757,14 +1939,66 @@ export default class Player extends Entity {
         if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
     };
 
+    // Spins and attacks all enemies in range 3 times in 3 seconds
+    onStormEnter = () => {
+        this.isStorming = true;
+        this.originalLeapPosition = new Phaser.Math.Vector2(this.x, this.y);
+        this.stormPointer = this.scene.rightJoystick.pointer;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 750, 'effect');
+        const pointer = this.scene.rightJoystick.pointer;
+        const worldX = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
+        const worldY = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
+        console.log(`%c Leap Enter: ${worldX} ${worldY}`, 'color: #ff0000');
+        const target = new Phaser.Math.Vector2(worldX, worldY);
+        const direction = target.subtract(this.position);
+        const length = direction.length();
+        direction.normalize();
+        this.flipX = direction.x < 0;
+        console.log(`%c Direction: ${direction.x} ${direction.y} | Pointer: ${this.stormPointer.x} ${this.stormPointer.y} | Length: ${length}`, 'color: #ff0000');
+        if (!this.isCaerenic && !this.isGlowing) {
+            this.checkCaerenic(true);
+        };
+        this.isAttacking = true;
+        this.scene.useStamina(PLAYER.STAMINA.STORM);
+        this.scene.tweens.add({
+            targets: this,
+            angle: 360,
+            duration: 850,
+            onLoop: () => {
+                console.log('Storming!')
+                this.isAttacking = true;
+                this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 750, 'effect');
+                if (this.touching.length > 0) {
+                    this.touching.forEach(enemy => {
+                        // console.log(`%c Touched Enemy: ${enemy.enemyID}`, 'color: #ff0000');
+                        this.scene.storm(enemy.enemyID);
+                    });
+                };
+            },
+            onComplete: () => {
+                this.isStorming = false; 
+            },
+            loop: 2,
+        });  
+    };
+    onStormUpdate = (_dt) => {
+        this.combatChecker(this.isStorming);
+    };
+    onStormExit = () => {
+        this.originalLeapPosition = undefined;
+        this.stormPointer = undefined;
+        const stormCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
+        this.setTimeEvent('stormCooldown', stormCooldown);
+        this.checkCaerenic(false);
+    };
+
     onSutureEnter = () => {
         if (!this.inCombat) return;
         this.isSuturing = true;
-        this.scene.sound.play('39_Absorb_04', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Suture', 750, 'effect');
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.scene.useStamina(PLAYER.STAMINA.SUTURE);
-        this.scene.combatMachine.action({ type: 'Tshaeral', data: 15 });
+        this.scene.combatMachine.action({ type: 'Suture', data: undefined });
         
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.scene.time.delayedCall(500, () => {
@@ -1786,11 +2020,11 @@ export default class Player extends Entity {
         this.isTshaering = true;
         this.attacking.isConsumed = true;
         this.scene.useStamina(PLAYER.STAMINA.TSHAER);
-        this.scene.sound.play('39_Absorb_04', { volume: this.scene.settings.volume });
+        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAERING / 2, 'damage');
-        this.castbar.setTotal(PLAYER.DURATIONS.TSHAERING);
-        this.castbar.setTime(PLAYER.DURATIONS.TSHAERING);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAER / 2, 'damage');
+        this.castbar.setTotal(PLAYER.DURATIONS.TSHAER);
+        this.castbar.setTime(PLAYER.DURATIONS.TSHAER);
         this.tshaeringTimer = this.scene.time.addEvent({
             delay: 250,
             callback: () => {
@@ -1842,20 +2076,17 @@ export default class Player extends Entity {
         this.scene.sound.play('death', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Hah! Hah!', PLAYER.DURATIONS.CHIOMIC, 'effect');
         this.isChiomic = true;
+        this.setTimeEvent('chiomicCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.time.delayedCall(PLAYER.DURATIONS.CHIOMIC, () => {
             this.isChiomic = false;
         });
     };
     onChiomicUpdate = (_dt) => {
-        // this.combatChecker(this.isChiomic);
         if (!this.isChiomic) {
             this.metaMachine.setState(States.CLEAN);
         };
     };
-    onChioimicExit = () => {
-        if (!this.inCombat) return;
-        this.setTimeEvent('chiomicCooldown', PLAYER.COOLDOWNS.SHORT);  
-    };
+    onChioimicExit = () => {};
 
     onDiseaseEnter = () => {
         if (!this.inCombat) return;
@@ -1877,12 +2108,306 @@ export default class Player extends Entity {
     };
     onDiseaseExit = () => {};
 
+    onHowlEnter = () => {
+        if (!this.inCombat) return;
+        this.scene.useStamina(PLAYER.STAMINA.HOWL);    
+        this.aoe = new AoE(this.scene, 'howl', 1);    
+        this.scene.sound.play('howl', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Howling', PLAYER.DURATIONS.HOWL, 'damage');
+        this.isHowling = true;
+        this.setTimeEvent('chiomicCooldown', PLAYER.COOLDOWNS.SHORT);  
+        this.scene.time.delayedCall(PLAYER.DURATIONS.HOWL, () => {
+            this.isHowling = false;
+        });
+    };
+    onHowlUpdate = (_dt) => {
+        // this.combatChecker(this.isHowling);
+        if (!this.isHowling) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onHowlExit = () => {};
+
+    onEnvelopEnter = () => {
+        if (!this.inCombat) return;
+        this.isEnveloping = true;
+        this.scene.useStamina(PLAYER.STAMINA.ENVELOP);    
+        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Enveloping', 750, 'cast');
+        this.envelopBubble = new Bubble(this.scene, this.x, this.y, 'blue', PLAYER.DURATIONS.ENVELOP);
+        this.setTimeEvent('envelopCooldown', PLAYER.COOLDOWNS.MODERATE);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.ENVELOP, () => {
+            this.isEnveloping = false;    
+        });
+    };
+    onEnvelopUpdate = (_dt) => {
+        this.combatChecker(this.isEnveloping);
+        if (this.isEnveloping) {
+            this.envelopBubble.update(this.x, this.y);
+        } else {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onEnvelopExit = () => {
+        if (this.envelopBubble) {
+            // this.envelopBubble.warp.remove(false);
+            // this.envelopBubble.warp.destroy();
+            // this.envelopBubble.warp = undefined;
+            this.envelopBubble.destroy();
+            this.envelopBubble = undefined;
+        };
+    };
+
+    envelopHit = () => {
+        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Enveloped', 500, 'effect');
+        console.log(this.stamina, 'Stamina before')
+        this.scene.useStamina(40);
+        console.log(this.stamina, 'Stamina after')
+        if (this.stamina - 40 <= 0) {
+            this.isEnveloping = false;
+        };
+    };
+
+    onFreezeEnter = () => {
+        if (!this.inCombat) return;
+        this.aoe = new AoE(this.scene, 'freeze', 1);
+        this.scene.sound.play('freeze', { volume: this.scene.settings.volume });
+        this.scene.useStamina(PLAYER.STAMINA.FREEZE);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Freezing', PLAYER.DURATIONS.FREEZE, 'cast');
+        this.isFreezing = true;
+        this.scene.time.delayedCall(PLAYER.DURATIONS.FREEZE, () => {
+            this.isFreezing = false;
+        });
+    };
+    onFreezeUpdate = (_dt) => {
+        // this.combatChecker(this.isFreezing);
+        if (!this.isFreezing) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onFreezeExit = () => {
+        if (!this.inCombat) return;
+        this.setTimeEvent('freezeCooldown', PLAYER.COOLDOWNS.SHORT);
+    };
+
+    onMaliceEnter = () => {
+        if (!this.inCombat) return;
+        this.scene.useStamina(PLAYER.STAMINA.MALICE);    
+        this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
+        this.isMalicing = true;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush');
+        this.maliceBubble = new Bubble(this.scene, this.x, this.y, 'purple', PLAYER.DURATIONS.MALICE);
+        this.setTimeEvent('maliceCooldown', PLAYER.COOLDOWNS.LONG);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.MALICE, () => {
+            this.isMalicing = false;    
+        });
+    };
+    onMaliceUpdate = (_dt) => {
+        if (this.isMalicing) {
+            this.maliceBubble.update(this.x, this.y);
+        } else {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onMaliceExit = () => {
+        if (this.maliceBubble) {
+            this.maliceBubble.destroy();
+            this.maliceBubble = undefined;
+        };
+    };
+
+    maliceHit = () => {
+        this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush');
+        EventBus.emit('initiate-combat', { data: 10, type: 'Chiomic' });
+        this.maliceBubble.setCharges(this.maliceBubble.charges - 1);
+        if (this.maliceBubble.charges <= 0) {
+            this.isMalicing = false;
+        };
+    };
+
+    onMendEnter = () => {
+        if (!this.inCombat) return;
+        this.scene.useStamina(PLAYER.STAMINA.MEND);    
+        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
+        this.isMending = true;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 750, 'tendril');
+        this.mendBubble = new Bubble(this.scene, this.x, this.y, 'purple', PLAYER.DURATIONS.MEND);
+        this.setTimeEvent('mendCooldown', PLAYER.COOLDOWNS.LONG);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.MEND, () => {
+            this.isMending = false;    
+        });
+    };
+    onMendUpdate = (_dt) => {
+        // this.combatChecker(this.isMending);
+        if (this.isMending) {
+            this.mendBubble.update(this.x, this.y);
+        } else {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onMendExit = () => {
+        if (this.mendBubble) {
+            this.mendBubble.destroy();
+            this.mendBubble = undefined;
+        };
+    };
+
+    mendHit = () => {
+        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril');
+        EventBus.emit('initiate-combat', { data: { key: 'player', value: 15 }, type: 'Health' });
+        this.mendBubble.setCharges(this.mendBubble.charges - 1);
+        if (this.mendBubble.charges <= 0) {
+            this.isMending = false;
+        };
+    };
+
+    onProtectEnter = () => {
+        if (!this.inCombat) return;
+        this.isProtecting = true;
+        this.scene.useStamina(PLAYER.STAMINA.PROTECT);    
+        this.scene.sound.play('shield', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Protecting', 750, 'effect');
+        this.protectBubble = new Bubble(this.scene, this.x, this.y, 'gold', PLAYER.DURATIONS.PROTECT);
+        this.setTimeEvent('protectCooldown', PLAYER.COOLDOWNS.LONG);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.PROTECT, () => {
+            this.isProtecting = false;    
+        });
+    };
+    onProtectUpdate = (_dt) => {
+        // this.combatChecker(this.isProtecting);
+        if (this.isProtecting) {
+            this.protectBubble.update(this.x, this.y);
+        } else {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onProtectExit = () => {
+        if (this.protectBubble) {
+            this.protectBubble.destroy();
+            this.protectBubble = undefined;
+        };
+    };
+
+    onRecoverEnter = () => {
+        if (!this.inCombat) return;
+        this.isRecovering = true;
+        this.scene.useStamina(PLAYER.STAMINA.RECOVER);    
+        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Recovering', 750, 'effect');
+        this.recoverBubble = new Bubble(this.scene, this.x, this.y, 'green', PLAYER.DURATIONS.RECOVER);
+        this.setTimeEvent('recoverCooldown', PLAYER.COOLDOWNS.MODERATE);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.RECOVER, () => {
+            this.isRecovering = false;    
+        });
+    };
+    onRecoverUpdate = (_dt) => {
+        this.combatChecker(this.isRecovering);
+        if (this.isRecovering) {
+            this.recoverBubble.update(this.x, this.y);
+        } else {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onRecoverExit = () => {
+        if (this.recoverBubble) {
+            this.recoverBubble.destroy();
+            this.recoverBubble = undefined;
+        };
+    };
+
+    recoverHit = () => {
+        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Recovered', 500, 'effect');
+        this.scene.useStamina(-25);
+    };
+
+    onRenewalEnter = () => {
+        if (!this.inCombat) return;
+        this.isRenewing = true;
+        this.scene.useStamina(PLAYER.STAMINA.RENEWAL);    
+        this.aoe = new AoE(this.scene, 'renewal', 6, true);    
+        this.scene.sound.play('shield', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Hush Tears', 750, 'bone');
+        this.setTimeEvent('renewalCooldown', PLAYER.COOLDOWNS.MODERATE);  
+        this.scene.time.delayedCall(PLAYER.DURATIONS.RENEWAL, () => {
+            this.isRenewing = false;
+        });
+    };
+    onRenewalUpdate = (_dt) => {
+        if (this.isRenewing) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onRenewalExit = () => {};
+
+    onScreamEnter = () => {
+        if (!this.inCombat) return;
+        this.scene.useStamina(PLAYER.STAMINA.SCREAM);    
+        this.aoe = new AoE(this.scene, 'scream', 1);    
+        this.scene.sound.play('scream', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Screaming', 750, 'hush');
+        this.isScreaming = true;
+        this.scene.time.delayedCall(PLAYER.DURATIONS.SCREAM, () => {
+            this.isScreaming = false;
+        });
+    };
+    onScreamUpdate = (_dt) => {
+        // this.combatChecker(this.isScreaming);
+        if (!this.isScreaming) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onScreamExit = () => {
+        if (!this.inCombat) return;
+        this.setTimeEvent('screamCooldown', PLAYER.COOLDOWNS.SHORT);  
+    };
+
+    onShieldEnter = () => {
+        if (!this.inCombat) return;
+        this.scene.useStamina(PLAYER.STAMINA.SHIELD);    
+        this.scene.sound.play('shield', { volume: this.scene.settings.volume });
+        this.isShielding = true;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shielding', 750, 'bone');
+        this.shieldBubble = new Bubble(this.scene, this.x, this.y, 'bone', PLAYER.DURATIONS.SHIELD);
+        this.setTimeEvent('shieldCooldown', PLAYER.COOLDOWNS.LONG);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.SHIELD, () => {
+            this.isShielding = false;    
+        });
+    };
+    onShieldUpdate = (_dt) => {
+        // this.combatChecker(this.isShielding);
+        if (this.isShielding) {
+            this.shieldBubble.update(this.x, this.y);
+        } else {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onShieldExit = () => {
+        if (this.shieldBubble) {
+            this.shieldBubble.destroy();
+            this.shieldBubble = undefined;
+        };
+    };
+
+    shieldHit = () => {
+        this.scene.sound.play('shield', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shield Hit', 500, 'effect');
+        this.shieldBubble.setCharges(this.shieldBubble.charges - 1);
+        if (this.shieldBubble.charges <= 0) {
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shield Broken', 500, 'damage');
+            this.isShielding = false;
+        };
+    };
+
     onShimmerEnter = () => {
         this.isShimmering = true; 
         this.scene.useStamina(PLAYER.STAMINA.SHIMMER);
         this.setTimeEvent('shimmerCooldown', PLAYER.COOLDOWNS.MODERATE);
-        if (!this.isStealthing) this.stealthEffect(true);    
-        this.scene.time.delayedCall(PLAYER.DURATIONS.SHIMMERING, () => {
+        if (!this.isStealthing && !this.isShimmering) this.stealthEffect(true);    
+        this.scene.time.delayedCall(PLAYER.DURATIONS.SHIMMER, () => {
             this.isShimmering = false;
         });
     };
@@ -1902,7 +2427,6 @@ export default class Player extends Entity {
 
     onSprintEnter = () => {
         this.isSprinting = true;
-        // this.caerenicFx.play();
         this.scene.sound.play('blink', { volume: this.scene.settings.volume / 3 });
         this.adjustSpeed(PLAYER.SPEED.SPRINT);
         this.scene.useStamina(PLAYER.STAMINA.SPRINT);
@@ -1965,202 +2489,15 @@ export default class Player extends Entity {
         this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
     };
 
-    onEnvelopEnter = () => {
-        if (!this.inCombat) return;
-        this.isEnveloping = true;
-        this.scene.useStamina(PLAYER.STAMINA.ENVELOP);    
-        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Enveloping', 750, 'cast');
-        this.envelopBubble = new Bubble(this.scene, this.x, this.y, 'blue', PLAYER.DURATIONS.ENVELOPING);
-        this.setTimeEvent('envelopCooldown', PLAYER.COOLDOWNS.MODERATE);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.ENVELOPING, () => {
-            this.isEnveloping = false;    
-        });
-    };
-    onEnvelopUpdate = (_dt) => {
-        this.combatChecker(this.isEnveloping);
-        if (this.isEnveloping) {
-            this.envelopBubble.update(this.x, this.y);
-        } else {
-            this.metaMachine.setState(States.CLEAN);
-        };
-    };
-    onEnvelopExit = () => {
-        if (this.envelopBubble) {
-            this.envelopBubble.warp.remove(false);
-            this.envelopBubble.warp.destroy();
-            this.envelopBubble.warp = undefined;
-            this.envelopBubble.destroy();
-            this.envelopBubble = undefined;
-        };
-    };
-
-    envelopHit = () => {
-        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Enveloped', 500, 'effect');
-        console.log(this.stamina, 'Stamina before')
-        this.scene.useStamina(40);
-        console.log(this.stamina, 'Stamina after')
-        if (this.stamina - 40 <= 0) {
-            this.isEnveloping = false;
-        };
-    };
-
-    onFreezeEnter = () => {
-        if (!this.inCombat) return;
-        this.aoe = new AoE(this.scene, 'freeze', 1);
-        this.scene.sound.play('freeze', { volume: this.scene.settings.volume });
-        this.scene.useStamina(PLAYER.STAMINA.FREEZE);
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Freezing', PLAYER.DURATIONS.FREEZING, 'cast');
-        this.isFreezing = true;
-        this.scene.time.delayedCall(PLAYER.DURATIONS.FREEZING, () => {
-            this.isFreezing = false;
-        });
-    };
-    onFreezeUpdate = (_dt) => {
-        // this.combatChecker(this.isFreezing);
-        if (!this.isFreezing) {
-            this.metaMachine.setState(States.CLEAN);
-        };
-    };
-    onFreezeExit = () => {
-        if (!this.inCombat) return;
-        this.setTimeEvent('freezeCooldown', PLAYER.COOLDOWNS.SHORT);
-    };
-
-    onMendEnter = () => {
-        if (!this.inCombat) return;
-        this.scene.useStamina(PLAYER.STAMINA.MEND);    
-        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
-        this.isMending = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 750, 'tendril');
-        this.mendBubble = new Bubble(this.scene, this.x, this.y, 'purple', PLAYER.DURATIONS.MENDING);
-        this.setTimeEvent('mendCooldown', PLAYER.COOLDOWNS.LONG);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.MENDING, () => {
-            this.isMending = false;    
-        });
-    };
-    onMendUpdate = (_dt) => {
-        // this.combatChecker(this.isMending);
-        if (this.isMending) {
-            this.mendBubble.update(this.x, this.y);
-        } else {
-            this.metaMachine.setState(States.CLEAN);
-        };
-    };
-    onMendExit = () => {
-        if (this.mendBubble) {
-            this.mendBubble.destroy();
-            this.mendBubble = undefined;
-        };
-    };
-
-    mendHit = () => {
-        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'effect');
-        // this.scene.combatMachine.action({ type: 'Health', data: 15 });
-        EventBus.emit('initiate-combat', { data: { key: 'player', value: 15 }, type: 'Health' });
-        this.mendBubble.setCharges(this.mendBubble.charges - 1);
-        if (this.mendBubble.charges <= 0) {
-            this.isMending = false;
-        };
-    };
-
-    onProtectEnter = () => {
-        if (!this.inCombat) return;
-        this.isProtecting = true;
-        this.scene.useStamina(PLAYER.STAMINA.PROTECT);    
-        this.scene.sound.play('shield', { volume: this.scene.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Protecting', 750, 'effect');
-        this.protectBubble = new Bubble(this.scene, this.x, this.y, 'gold', PLAYER.DURATIONS.PROTECTING);
-        this.setTimeEvent('protectCooldown', PLAYER.COOLDOWNS.LONG);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.PROTECTING, () => {
-            this.isProtecting = false;    
-        });
-    };
-    onProtectUpdate = (_dt) => {
-        // this.combatChecker(this.isProtecting);
-        if (this.isProtecting) {
-            this.protectBubble.update(this.x, this.y);
-        } else {
-            this.metaMachine.setState(States.CLEAN);
-        };
-    };
-    onProtectExit = () => {
-        if (this.protectBubble) {
-            this.protectBubble.destroy();
-            this.protectBubble = undefined;
-        };
-    };
-
-    onScreamEnter = () => {
-        if (!this.inCombat) return;
-        this.scene.useStamina(PLAYER.STAMINA.SCREAM);    
-        this.aoe = new AoE(this.scene, 'scream', 1);    
-        this.scene.sound.play('dungeon', { volume: this.scene.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Screaming', 750, 'damage');
-        this.isScreaming = true;
-        this.scene.time.delayedCall(PLAYER.DURATIONS.SCREAM, () => {
-            this.isScreaming = false;
-        });
-    };
-    onScreamUpdate = (_dt) => {
-        // this.combatChecker(this.isScreaming);
-        if (!this.isScreaming) {
-            this.metaMachine.setState(States.CLEAN);
-        };
-    };
-    onScreamExit = () => {
-        if (!this.inCombat) return;
-        this.setTimeEvent('screamCooldown', PLAYER.COOLDOWNS.SHORT);  
-    };
-
-    onShieldEnter = () => {
-        if (!this.inCombat) return;
-        this.scene.useStamina(PLAYER.STAMINA.SHIELD);    
-        this.scene.sound.play('shield', { volume: this.scene.settings.volume });
-        this.isShielding = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shielding', 750, 'hush');
-        this.shieldBubble = new Bubble(this.scene, this.x, this.y, 'bone', PLAYER.DURATIONS.SHIELDING);
-        this.setTimeEvent('shieldCooldown', PLAYER.COOLDOWNS.LONG);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.SHIELDING, () => {
-            this.isShielding = false;    
-        });
-    };
-    onShieldUpdate = (_dt) => {
-        // this.combatChecker(this.isShielding);
-        if (this.isShielding) {
-            this.shieldBubble.update(this.x, this.y);
-        } else {
-            this.metaMachine.setState(States.CLEAN);
-        };
-    };
-    onShieldExit = () => {
-        if (this.shieldBubble) {
-            this.shieldBubble.destroy();
-            this.shieldBubble = undefined;
-        };
-    };
-
-    shieldHit = () => {
-        this.scene.sound.play('shield', { volume: this.scene.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shield Hit', 500, 'effect');
-        this.shieldBubble.setCharges(this.shieldBubble.charges - 1);
-        if (this.shieldBubble.charges <= 0) {
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shield Broken', 500, 'damage');
-            this.isShielding = false;
-        };
-    };
-
     onWardEnter = () => {
         if (!this.inCombat) return;
         this.isWarding = true;
         this.scene.useStamina(PLAYER.STAMINA.WARD);    
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Warding', 750, 'damage');
-        this.wardBubble = new Bubble(this.scene, this.x, this.y, 'red', PLAYER.DURATIONS.WARDING);
+        this.wardBubble = new Bubble(this.scene, this.x, this.y, 'red', PLAYER.DURATIONS.WARD);
         this.setTimeEvent('wardCooldown', PLAYER.COOLDOWNS.LONG);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.WARDING, () => {
+        this.scene.time.delayedCall(PLAYER.DURATIONS.WARD, () => {
             this.isWarding = false;    
         });
     };
@@ -2196,7 +2533,7 @@ export default class Player extends Entity {
         this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Writhing', 750, 'tendril');
         this.isWrithing = true;
-        this.scene.time.delayedCall(PLAYER.DURATIONS.WRITHING, () => {
+        this.scene.time.delayedCall(PLAYER.DURATIONS.WRITHE, () => {
             this.isWrithing = false;
         });
     };
@@ -2428,7 +2765,7 @@ export default class Player extends Entity {
             !this.stateMachine.isCurrentState(States.POSTURE) &&
             // !this.stateMachine.isCurrentState(States.INVOKE) &&
             // !this.stateMachine.isCurrentState(States.TSHAERAL) &&
-            // !this.stateMachine.isCurrentState(States.HEAL) &&
+            // !this.stateMachine.isCurrentState(States.HEALING) &&
             !this.isStalwart
         );
     };
@@ -2597,7 +2934,7 @@ export default class Player extends Entity {
             //     this.setTimeEvent('snareCooldown', 6000);
             // };
             // if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.pray.R) && !this.isMoving && this.polymorphCooldown === 0) { // && this.polymorphCooldown === 0
-            //     this.stateMachine.setState(States.POLYMORPHING);
+            //     this.stateMachine.setState(States.POLYMORPH);
             // };
             // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.pray.R) && this.invokeCooldown === 0) {
             //     if (this.scene.state.playerBlessing === '') return;
@@ -2649,7 +2986,7 @@ export default class Player extends Entity {
         // };
 
         // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.firewater.T)) {
-        //     this.stateMachine.setState(States.HEAL);
+        //     this.stateMachine.setState(States.HEALING);
         // };
     };
 

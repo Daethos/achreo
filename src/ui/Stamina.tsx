@@ -1,8 +1,9 @@
-import { createSignal, onCleanup, onMount } from "solid-js";
+import { Accessor, createSignal, onCleanup, onMount } from "solid-js";
 import { EventBus } from "../game/EventBus";
 
-function createStamina(stam: () => number) {
+function createStamina(stam: Accessor<number>) {
     const [staminaPercentage, setStaminaPercentage] = createSignal(0);
+    const [stamina, setStamina] = createSignal(stam());
     let interval: any | undefined = undefined;
 
     const recover = () => {
@@ -20,16 +21,20 @@ function createStamina(stam: () => number) {
             console.log('Stamina');
             interval = setInterval(recover, 200 - stam());
         };
-        setStaminaPercentage(staminaPercentage() - e <= 0 ? 0 : staminaPercentage() - e);
+        const newStamina = Math.max(0, (stamina() * staminaPercentage() / 100) - e);
+        const newStaminaPercentage = Math.max(0, Math.min(100, Math.round(newStamina / stamina() * 100)));
+        setStaminaPercentage(newStaminaPercentage);
     };
 
     onMount(() => {
         EventBus.on('update-stamina', updateStamina);
-        interval = setInterval(recover, 200 - stam());
+        EventBus.on('update-total-stamina', (e: number) => setStamina(e));
+        interval = setInterval(recover, 200 - stamina());
     });    
 
     onCleanup(() => {
         EventBus.off('update-stamina', updateStamina);
+        EventBus.off('update-total-stamina');
         clearInterval(interval);
         interval = undefined;
     });

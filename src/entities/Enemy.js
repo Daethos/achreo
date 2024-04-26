@@ -22,12 +22,12 @@ const DISTANCE = {
 
 const DURATION = {
     CONSUMED: 2000,
-    FEAR: 3000,
+    FEARED: 3000,
     FROZEN: 3000,
-    SLOW: 2500,
-    SNARE: 4000,
-    ROOT: 3000,
-    STUN: 3000,
+    SLOWED: 2500,
+    SNARED: 4000,
+    ROOTED: 3000,
+    STUNNED: 3000,
     TEXT: 1500,
     DODGE: 288, // 288
     ROLL: 320, // 320
@@ -106,7 +106,12 @@ export default class Enemy extends Entity {
                 onUpdate: this.onRollUpdate,
                 onExit: this.onRollExit,    
             })
-            .addState(States.FEAR, {
+            .addState(States.CONFUSED, {
+                onEnter: this.onConfusedEnter,
+                onUpdate: this.onConfusedUpdate,
+                onExit: this.onConfusedExit,
+            })
+            .addState(States.FEARED, {
                 onEnter: this.onFearEnter,
                 onUpdate: this.onFearUpdate,
                 onExit: this.onFearExit,
@@ -116,7 +121,7 @@ export default class Enemy extends Entity {
                 onUpdate: this.onPolymorphUpdate,
                 onExit: this.onPolymorphExit,
             })
-            .addState(States.STUN, {
+            .addState(States.STUNNED, {
                 onEnter: this.onStunEnter,
                 onUpdate: this.onStunUpdate,
                 onExit: this.onStunExit,
@@ -146,17 +151,17 @@ export default class Enemy extends Entity {
                 onEnter: this.onCleanEnter,
                 onExit: this.onCleanExit,
             })
-            .addState(States.ROOT, {
+            .addState(States.ROOTED, {
                 onEnter: this.onRootEnter,
                 onUpdate: this.onRootUpdate,
                 onExit: this.onRootExit,
             })
-            .addState(States.SNARE, {
+            .addState(States.SNARED, {
                 onEnter: this.onSnareEnter,
                 // onUpdate: this.onSnareUpdate,
                 onExit: this.onSnareExit,
             })
-            .addState(States.SLOW, {
+            .addState(States.SLOWED, {
                 onEnter: this.onSlowEnter,
                 // onUpdate: this.onSlowUpdate,
                 onExit: this.onSlowExit,
@@ -210,7 +215,9 @@ export default class Enemy extends Entity {
         this.parryAction = '';
         this.originalPosition = new Phaser.Math.Vector2(this.x, this.y);
         this.originPoint = {}; // For Leashing
+        this.isConfused = false;
         this.isConsumed = false;
+        this.isFeared = false;
         this.sensorDisp = 12;
         this.colliderDisp = 16; 
 
@@ -306,7 +313,7 @@ export default class Enemy extends Entity {
             if (this.inCombat && this.attacking && e.newPlayerHealth <= 0 && e.computerWin === true) this.clearCombat();
             return;
         };
-        // if (e.counterSuccess && !this.stateMachine.isCurrentState(States.STUN) && this.currentRound !== e.combatRound) this.setStun();
+        // if (e.counterSuccess && !this.stateMachine.isCurrentState(States.STUNNED) && this.currentRound !== e.combatRound) this.setStun();
 
         if (this.health > e.newComputerHealth) { 
             const damage = Math.round(this.health - e.newComputerHealth);
@@ -919,6 +926,85 @@ export default class Enemy extends Entity {
 
     // ========================== STATUS EFFECT STATES ========================== \\
 
+    onConfusedEnter = () => { 
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'c .OnFu`Se D~', DURATION.TEXT, 'effect');
+        this.spriteWeapon.setVisible(false);
+        this.spriteShield.setVisible(false);
+        this.confuseDirection = 'down';
+        this.confuseMovement = 'idle';
+        this.confuseVelocity = { x: 0, y: 0 };
+        this.isAttacking = false;
+        this.isParrying = false;
+        this.isPosturing = false;
+        this.isRolling = false;
+        this.currentAction = ''; 
+        this.setGlow(this, true);
+        let iteration = 0;
+        // let num = 0;
+        const randomDirection = () => {  
+            const move = Phaser.Math.Between(1, 100);
+            const directions = ['up', 'down', 'left', 'right'];
+            const direction = directions[Phaser.Math.Between(0, 3)];
+            // num = Phaser.Math.Between(0, 4);
+            if (move > 50) {
+                if (direction === 'up') {
+                    this.confuseVelocity = { x: 0, y: -1.25 };
+                } else if (direction === 'down') {
+                    this.confuseVelocity = { x: 0, y: 1.25 };
+                } else if (direction === 'right') {
+                    this.confuseVelocity = { x: -1.25, y: 0 };
+                } else if (direction === 'left') {
+                    this.confuseVelocity = { x: 1.25, y: 0 };
+                };
+                this.confuseMovement = 'move';
+            } else {
+                this.confuseVelocity = { x: 0, y: 0 };
+                this.confuseMovement = 'idle';                
+            };
+            this.confuseDirection = direction;
+        };
+        const confusions = ['~?  ? ?!', 'Hhwat?', 'Wh-wor; -e ma i?', 'Woh `re ewe?', '...'];
+
+        this.confuseTimer = this.scene.time.addEvent({
+            delay: 1500,
+            callback: () => {
+                iteration++;
+                if (iteration === 5) {
+                    iteration = 0;
+                    this.isConfused = false;
+                } else {   
+                    this.specialCombatText.destroy();
+                    randomDirection();
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, confusions[Math.floor(Math.random() * 5)], 1000, 'effect');
+                };
+            },
+            callbackScope: this,
+            repeat: 4,
+        }); 
+
+    };
+    onConfusedUpdate = (_dt) => {
+        if (!this.isConfused) this.evaluateCombatDistance();
+        this.setVelocity(this.confuseVelocity.x, this.confuseVelocity.y);
+        if (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0) {
+            this.getDirection();
+            this.anims.play(`player_running`, true);
+        } else {
+            this.anims.play(`player_idle`, true);
+        };
+    };
+    onConfusedExit = () => { 
+        if (this.isConfused) this.isConfused = false;
+        this.evaluateCombatDistance();
+        this.anims.play('player_running', true);
+        this.spriteWeapon.setVisible(true);
+        if (this.confuseTimer) {
+            this.confuseTimer.destroy();
+            this.confuseTimer = undefined;
+        };
+        this.setGlow(this, false);
+    };
+
     onConsumedEnter = () => {
         this.consumedDuration = DURATION.CONSUMED;
         this.clearAnimations();
@@ -952,7 +1038,7 @@ export default class Enemy extends Entity {
     };
 
     onFearEnter = () => { 
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Feared', DURATION.TEXT, 'damage');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'F̶e̷a̴r̷e̵d̴', DURATION.TEXT, 'damage');
         this.spriteWeapon.setVisible(false);
         this.spriteShield.setVisible(false);
         this.fearDirection = 'down';
@@ -965,10 +1051,13 @@ export default class Enemy extends Entity {
         this.currentAction = ''; 
         this.setGlow(this, true);
         let iteration = 0;
+        const fears = ['...ahhh!', 'c̶o̷m̷e̷ ̴h̴e̵r̶e̶', 'Stay Away!', 'Somebody HELP ME', 'g̴̠̊ͅu̷͝ͅṱ̶͐ṯ̶̆u̸̼̚̚r̶̰̔ȃ̴̫l̴͈͝ ̶̹̎͛s̸͎͋ḥ̶̛̙́r̵̡̤̋͠ì̶͈̓e̸̬͕̅̈́k̵͔͌ī̸̮̹̎n̷̰̟̂͒g̷̦̓'];
+        // let num = 0;
         const randomDirection = () => {  
             const move = Phaser.Math.Between(1, 100);
             const directions = ['up', 'down', 'left', 'right'];
             const direction = directions[Phaser.Math.Between(0, 3)];
+            // num = Phaser.Math.Between(0, 4);
             if (move > 50) {
                 if (direction === 'up') {
                     this.fearVelocity = { x: 0, y: -1.25 };
@@ -991,12 +1080,12 @@ export default class Enemy extends Entity {
             delay: 1500,
             callback: () => {
                 iteration++;
-                if (iteration === 3) {
+                if (iteration === 4) {
                     iteration = 0;
                     this.isFeared = false;
                 } else {   
                     randomDirection();
-                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '...ahhh!', 1000, 'effect');
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, fears[Math.floor(Math.random() * 5)], 1000, 'effect');
                 };
             },
             callbackScope: this,
@@ -1168,7 +1257,7 @@ export default class Enemy extends Entity {
 
     onStunEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', 2500, 'damage', true);
-        this.stunDuration = DURATION.STUN;
+        this.stunDuration = DURATION.STUNNED;
         // this.anims.play('player_idle', true);
         this.isAttacking = false;
         this.isParrying = false;
@@ -1213,7 +1302,7 @@ export default class Enemy extends Entity {
         this.setTint(0x888888); // 0x888888
         this.setStatic(true);
         this.scene.time.addEvent({
-            delay: DURATION.ROOT,
+            delay: DURATION.ROOTED,
             callback: () => {
                 this.isRooted = false;
                 this.metaMachine.setState(States.CLEAN);
@@ -1236,7 +1325,7 @@ export default class Enemy extends Entity {
 
     onSlowEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slowed', DURATION.TEXT, 'damage');
-        this.slowDuration = DURATION.SLOW;
+        this.slowDuration = DURATION.SLOWED;
         this.setTint(0xFFC700); // 0x888888
         this.adjustSpeed(-1);
         this.scene.time.delayedCall(this.slowDuration, () =>{
@@ -1291,7 +1380,9 @@ export default class Enemy extends Entity {
             };
             return;
         };
+        if (this.scene.player.isMalicing) this.scene.player.maliceHit();
         if (this.scene.player.isMending) this.scene.player.mendHit();
+        if (this.scene.player.isRecovering) this.scene.player.recoverHit();
         if (this.particleEffect) {
             if (this.isCurrentTarget) {
                 this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: this.particleEffect.action, id: this.enemyID } });
@@ -1520,45 +1611,48 @@ export default class Enemy extends Entity {
         if (this.specialCombatText) this.specialCombatText.update(this);
         if (!this.inCombat) return;
         // console.log('===================== Evaluating Enemy State =====================') 
-
-        if (this.isFeared && !this.stateMachine.isCurrentState(States.FEAR)) {
-            this.stateMachine.setState(States.FEAR);
+        if (this.isConfused && !this.stateMachine.isCurrentState(States.CONFUSED)) {
+            this.stateMachine.setState(States.CONFUSED);
+            return;
+        };
+        if (this.isFeared && !this.stateMachine.isCurrentState(States.FEARED)) {
+            this.stateMachine.setState(States.FEARED);
             return;
         };
         if (this.isPolymorphed && !this.stateMachine.isCurrentState(States.POLYMORPH)) {
             this.stateMachine.setState(States.POLYMORPH);
             return;
         };
-        if (this.isStunned && !this.stateMachine.isCurrentState(States.STUN)) {
+        if (this.isStunned && !this.stateMachine.isCurrentState(States.STUNNED)) {
             // console.log('Stunned OG')
             // this.setStun();
-            this.stateMachine.setState(States.STUN);
+            this.stateMachine.setState(States.STUNNED);
             return;
         };
         if (this.isConsumed && !this.stateMachine.isCurrentState(States.CONSUMED)) {
             this.stateMachine.setState(States.CONSUMED);
             return;
         };
-        if (this.isRooted && !this.metaMachine.isCurrentState(States.ROOT)) {
-            this.metaMachine.setState(States.ROOT);
+        if (this.isRooted && !this.metaMachine.isCurrentState(States.ROOTED)) {
+            this.metaMachine.setState(States.ROOTED);
             return;
         };
         if (this.isFrozen && !this.metaMachine.isCurrentState(States.FROZEN)) {
             this.metaMachine.setState(States.FROZEN);
             return;
         };
-        if (this.isSlowed && !this.metaMachine.isCurrentState(States.SLOW)) {
-            this.metaMachine.setState(States.SLOW);
+        if (this.isSlowed && !this.metaMachine.isCurrentState(States.SLOWED)) {
+            this.metaMachine.setState(States.SLOWED);
             return;
         };
-        if (this.isSnared && !this.metaMachine.isCurrentState(States.SNARE)) {
-            this.metaMachine.setState(States.SNARE); 
+        if (this.isSnared && !this.metaMachine.isCurrentState(States.SNARED)) {
+            this.metaMachine.setState(States.SNARED); 
             return;    
         };
-        if (this.isBlindsided && !this.stateMachine.isCurrentState(States.STUN)) {
+        if (this.isBlindsided && !this.stateMachine.isCurrentState(States.STUNNED)) {
             // console.log('Blindsided')
             // this.setStun();
-            this.stateMachine.setState(States.STUN);
+            this.stateMachine.setState(States.STUNNED);
             this.isBlindsided = false;
             return;
         };
@@ -1569,7 +1663,7 @@ export default class Enemy extends Entity {
         if (this.particleEffect) this.currentParticleCheck();
 
         if (this.attacking) {
-            if (!this.isPolymorphed && !this.isFeared) {
+            if (!this.isPolymorphed && !this.isFeared && !this.isConfused) {
                 if (this.isUnderRangedAttack()) {
                     this.stateMachine.setState(States.EVADE);
                     return;

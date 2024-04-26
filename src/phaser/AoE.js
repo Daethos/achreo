@@ -2,14 +2,17 @@ const { Bodies } = Phaser.Physics.Matter.Matter;
 
 const COLORS = {
     'chiomic': 0xFFC700,
-    'scream': 0xFF0000,
     'freeze': 0x0000FF,
+    'howl': 0xFF0000,
+    'renewal': 0xFDF6D8,
+    'scream': 0xFF00FF,
+    'shock': 0x00FFFF,
     'tendril': 0x00FF00,
     'writhe': 0x080080,
 };
 
 export default class AoE extends Phaser.Physics.Matter.Sprite {
-    constructor(scene, type, count = 1) {
+    constructor(scene, type, count = 1, positive = false) {
         super(scene.matter.world, scene.player.x, scene.player.y + 6, 'target');
         this.setVisible(false);
         this.setScale(0.375); // 375
@@ -25,30 +28,50 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         });
         this.count = count;
         this.hit = [];
+        this.bless = [];
         this.timer = undefined;    
         this.setupSensor(scene);
         this.setupListener(scene);
         this.setTimer(scene);
-        this.setCount(scene, type);
+        this.setCount(scene, type, positive);
     };
 
-    setCount = (scene, type) => {
-        scene.time.delayedCall(1000, () => {
-            this.hit.forEach((target) => {
-                scene[type](target.enemyID);
+    setCount = (scene, type, positive) => {
+        if (positive === true) {
+            scene.time.delayedCall(1000, () => {
+                this.bless.forEach((target) => {
+                    scene[type]();
+                });
+                this.count -= 1;
+                if (this.count === 0) {
+                    this.glowFilter.remove(this);
+                    this.bless = [];
+                    this.timer.destroy();
+                    this.timer.remove(false);
+                    this.timer = undefined;
+                    this.destroy();
+                } else {
+                    this.setCount(scene, type, positive);
+                };
             });
-            this.count -= 1;
-            if (this.count === 0) {
-                this.glowFilter.remove(this);
-                this.hit = [];
-                this.timer.destroy();
-                this.timer.remove(false);
-                this.timer = undefined;
-                this.destroy();    
-            } else {
-                this.setCount(scene, type);
-            };
-        });
+        } else {
+            scene.time.delayedCall(1000, () => {
+                this.hit.forEach((target) => {
+                    scene[type](target.enemyID);
+                });
+                this.count -= 1;
+                if (this.count === 0) {
+                    this.glowFilter.remove(this);
+                    this.hit = [];
+                    this.timer.destroy();
+                    this.timer.remove(false);
+                    this.timer = undefined;
+                    this.destroy();    
+                } else {
+                    this.setCount(scene, type);
+                };
+            });
+        };
     };
     
     setTimer = (scene) => {
@@ -88,6 +111,8 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 if (gameObjectB instanceof Phaser.Physics.Matter.Sprite) {
                     if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
                         this.hit.push(gameObjectB);    
+                    } else if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
+                        this.bless.push(gameObjectB);
                     };
                 };
             },
@@ -100,6 +125,8 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 if (gameObjectB instanceof Phaser.Physics.Matter.Sprite) {
                     if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
                         this.hit = this.hit.filter((target) => target.enemyID !== gameObjectB.enemyID);
+                    } else if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
+                        this.bless = this.bless.filter((target) => target === gameObjectB);
                     };
                 };
             },

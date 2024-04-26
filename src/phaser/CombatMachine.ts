@@ -49,15 +49,17 @@ export default class CombatMachine {
             // if (!valid(key, value as string, this.context)) {
             //     return; // Don't allow counter if computer hasn't acted yet. Null action.
             // };
-            Dispatcher.weaponAction(data);
+            Dispatcher.weapon(data);
         },
-        Health: (data: KVI) => Dispatcher.healthAction(data),
-        Instant: (data: string) => Dispatcher.instantAction(data),
-        Consume: (data: any[]) => Dispatcher.prayerAction(data),
-        Chiomic: (data: number) => Dispatcher.chiomicAction(data),
-        Tshaeral: (data: number) => Dispatcher.tshaeralAction(data),
-        Player: (data: any) => Dispatcher.playerAction(data),
-        Enemy: (data: any) => Dispatcher.enemyAction(data),
+        Health: (data: KVI) => Dispatcher.health(data),
+        Instant: (data: string) => Dispatcher.instant(data),
+        Consume: (data: any[]) => Dispatcher.prayer(data),
+        Chiomic: (data: number) => Dispatcher.chiomic(data),
+        Sacrifice: (_data: undefined) => Dispatcher.sacrifice(),
+        Suture: (_data: undefined) => Dispatcher.suture(),
+        Tshaeral: (data: number) => Dispatcher.tshaeral(data),
+        Player: (data: any) => Dispatcher.player(data),
+        Enemy: (data: any) => Dispatcher.enemy(data),
     };
 
     private listener = () => EventBus.on('combat', (e: Combat): Combat => (this.context = e));

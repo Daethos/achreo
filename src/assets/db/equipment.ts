@@ -6429,7 +6429,7 @@ export const Legs = [
         achre: 0,
         caeren: 1,
         kyosir: 0,
-        imgUrl: '../assets/images/daethic-legs.png'
+        imgUrl: '../assets/images/legion-legs.png'
     },
     {
         _id: '',

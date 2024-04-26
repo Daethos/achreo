@@ -396,6 +396,7 @@ export const PhaserGame = (props: IProps) => {
         });
         setStamina(stats.attributes.stamina as number);
         setGame({ ...game(), inventory: stats.ascean.inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary });
+        EventBus.emit('update-total-stamina', stats.attributes.stamina as number);    
     };
 
     function requestCombat() {
@@ -472,6 +473,7 @@ export const PhaserGame = (props: IProps) => {
         const inventory = await getInventory(id);
         const traits = getAsceanTraits(props.ascean());
         setGame({ ...game(), inventory: inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary });
+        EventBus.emit('update-total-stamina', res?.attributes.stamina as number);    
     };
 
     function enterGame() {

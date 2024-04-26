@@ -471,7 +471,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             // pointer.clear();
             // pointer.strokeRect(target.x + xOffset, target.y + i, 1, 1);
             if (this.weaponHitbox.getBounds().contains(target.x + xOffset, target.y + i)) {
-                console.log('Hitbox Hit!', i);
+                // console.log('Hitbox Hit!', i);
                 this.attackedTarget = target;
                 this.actionSuccess = true;
                 return;
@@ -480,8 +480,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     checkActionSuccess = (entity, target) => {
-        // if (this.inCombat === false && this.isStealthing === false) return;
-        if (entity === 'player') {
+        if (this.inCombat === false && this.isStealthing === false) return;
+        if (entity === 'player' && !this.isStorming && !this.isArcing) {
             if (this.flipX) {
                 this.weaponHitbox.setAngle(270);
             } else {
@@ -489,17 +489,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
             this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
             this.weaponHitbox.y = this.y - 8;
-            // if (this.currentTarget) {
-            //     this.hitBoxCheck(this.currentTarget);
-            // };
-            // const bounds = this.weaponHitbox.getBounds().contains(target.x + (this.flipX ? -16 : 16), target.y);
-            // console.log(bounds, 'Bounds');
             if (target === undefined) return;
             this.hitBoxCheck(target);
-            // if (this.weaponHitbox.getBounds().contains(target.x + (this.flipX ? -16 : 16), target.y)) {
-            //     this.attackedTarget = target;
-            //     this.actionSuccess = true;
-            // };
         };
 
         if (entity === 'enemy' && target) {

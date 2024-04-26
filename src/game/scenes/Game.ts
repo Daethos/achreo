@@ -246,7 +246,7 @@ export class Game extends Scene {
         this.treasure = this.sound.add('treasure', { volume: this?.settings?.volume });
         this.phenomena = this.sound.add('phenomena', { volume: this?.settings?.volume });
         this.mysterious = this.sound.add('combat-round', { volume: this?.settings?.volume });
-        this.tshaeral = this.sound.add('39_Absorb_04', { volume: this?.settings?.volume });
+        this.tshaeral = this.sound.add('absorb', { volume: this?.settings?.volume });
         this.dungeon = this.sound.add('dungeon', { volume: this?.settings?.volume });
         this.frozen = this.sound.add('freeze', { volume: this?.settings?.volume });
 
@@ -607,30 +607,45 @@ export class Game extends Scene {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };
 
+    // ============================ Combat Specials ============================ \\ 
+    
     chiomic = (id: string) => {
         if (id === '') return;
-        // This will be 'CONFUSE' eventually
-        // let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        // enemy.isChiomic = true;
-        this.stunned(id);
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        if (!enemy) return;
+        enemy.isConfused = true;
+    };
+    confuse = (id: string) => {
+        if (id === '') return;
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        if (!enemy) return;
+        enemy.isConfused = true;
     };
 
-    // ============================ Combat ============================ \\ 
     fear = (id: string) => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        if (!enemy) return;
         enemy.isFeared = true;
     };
     freeze = (id: string) => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        if (!enemy) return;
         enemy.isFrozen = true;
     };
-
+    howl = (id: string) => {
+        if (id === '') return;
+        this.stunned(id);
+    };
     polymorph = (id: string) => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        if (!enemy) return;
         enemy.isPolymorphed = true;
+    };
+    renewal = () => {
+        EventBus.emit('initiate-combat', { data: { key: 'player', value: 7.5 }, type: 'Health' });
     };
     root = () => {
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === this.state.enemyID);
@@ -700,26 +715,53 @@ export class Game extends Scene {
     scream = (id: string) => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
+        if (!enemy) return;
         enemy.isFeared = true;
     };
     slow = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
+        if (!enemy) return;
         enemy.isSlowed = true;
     };
     snare = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
+        if (!enemy) return;
         enemy.isSnared = true;
+    };
+    storm = (id: string): void => {
+        if (id === '') return;
+        let enemy = this.enemies.find((e: any) => e.enemyID === id);
+
+        const match = this.player.enemyIdMatch();
+        if (match) { // Target Player Attack
+            console.log('Matched Storm')
+            this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: 'storm' } });
+        } else { // Blind Player Attack
+            console.log('Blind Storm')
+            this.combatMachine.action({ type: 'Player', data: { 
+                playerAction: { action: 'storm', parry: this.state.parryGuess }, 
+                enemyID: enemy.enemyID, 
+                ascean: enemy.ascean, 
+                damageType: enemy.currentDamageType, 
+                combatStats: enemy.combatStats, 
+                weapons: enemy.weapons, 
+                health: enemy.health, 
+                actionData: { action: enemy.currentAction, parry: enemy.parryAction }
+            }});
+        };
     };
     stun = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
+        if (!enemy) return;
         enemy.isBlindsided = true;
     };
     stunned = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
+        if (!enemy) return;
         enemy.isStunned = true;
     };
     tendril = (id: string): void => {
@@ -731,7 +773,6 @@ export class Game extends Scene {
             EventBus.emit('update-enemy-health', { id, health });
         };
     };
-
     writhe = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
@@ -753,7 +794,7 @@ export class Game extends Scene {
                 actionData: { action: enemy.currentAction, parry: enemy.parryAction }
             }});
         };
-    }
+    };
 
     // ============================ Game ============================ \\
 

@@ -1702,28 +1702,28 @@ export default class Player extends Entity {
 
     onLeapEnter = () => {
         this.isLeaping = true;
-        this.originalLeapPosition = new Phaser.Math.Vector2(this.x, this.y);
-        this.leapPointer = this.scene.rightJoystick.pointer;
+        // this.originalLeapPosition = new Phaser.Math.Vector2(this.x, this.y);
+        // this.leapPointer = this.scene.rightJoystick.pointer;
         const pointer = this.scene.rightJoystick.pointer;
         const worldX = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
         const worldY = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
         console.log(`%c Leap Enter: ${worldX} ${worldY}`, 'color: #ff0000');
         const target = new Phaser.Math.Vector2(worldX, worldY);
         const direction = target.subtract(this.position);
-        const length = direction.length();
+        // const length = direction.length();
         direction.normalize();
         this.flipX = direction.x < 0;
-        console.log(`%c Direction: ${direction.x} ${direction.y} | Pointer: ${this.leapPointer.x} ${this.leapPointer.y} | Length: ${length}`, 'color: #ff0000');
+        // console.log(`%c Direction: ${direction.x} ${direction.y} | Pointer: ${this.leapPointer.x} ${this.leapPointer.y} | Length: ${length}`, 'color: #ff0000');
         if (!this.isCaerenic && !this.isGlowing) {
             this.checkCaerenic(true);
         };
         this.isAttacking = true;
         this.scene.tweens.add({
             targets: this,
-            x: this.x + (direction.x * 150),
-            y: this.y + (direction.y * 150),
+            x: this.x + (direction.x * 125),
+            y: this.y + (direction.y * 125),
             duration: 750,
-            ease: 'Elastic', // Elastic.Out
+            ease: 'Elastic',
             onComplete: () => { 
                 this.scene.useStamina(PLAYER.STAMINA.LEAP);
                 this.isLeaping = false; 
@@ -1740,8 +1740,8 @@ export default class Player extends Entity {
         this.combatChecker(this.isLeaping);
     };
     onLeapExit = () => {
-        this.originalLeapPosition = undefined;
-        this.leapPointer = undefined;
+        // this.originalLeapPosition = undefined;
+        // this.leapPointer = undefined;
         const leapCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
         this.setTimeEvent('leapCooldown', leapCooldown);
         this.checkCaerenic(false);
@@ -1749,11 +1749,14 @@ export default class Player extends Entity {
 
     onRushEnter = () => {
         this.isRushing = true;
-        this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
+        // this.originalRushPosition = new Phaser.Math.Vector2(this.x, this.y);
+        // this.leapPointer = this.scene.rightJoystick.pointer;
+        this.scene.sound.play('stealth', { volume: this.scene.settings.volume });        
         const pointer = this.scene.rightJoystick.pointer;
-        const { x, y } = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
-        const pointerPosition = new Phaser.Math.Vector2(x, y);
-        const direction = pointerPosition.subtract(this.position);
+        const worldX = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
+        const worldY = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
+        const target = new Phaser.Math.Vector2(worldX, worldY);
+        const direction = target.subtract(this.position);
         direction.normalize();
         this.flipX = direction.x < 0;
         if (!this.isCaerenic && !this.isGlowing) {
@@ -1762,8 +1765,8 @@ export default class Player extends Entity {
         this.isParrying = true;
         this.scene.tweens.add({
             targets: this,
-            x: this.x + (direction.x * 250),
-            y: this.y + (direction.y * 250),
+            x: this.x + (direction.x * 225),
+            y: this.y + (direction.y * 225),
             duration: 500,
             ease: 'Circ.easeOut',
             onComplete: () => {

@@ -6,6 +6,7 @@ import Ascean from '../../models/ascean';
 import { Asceans } from './ascean';
 import PseudoBase from './pseudo';
 import Equipment from '../../models/equipment';
+import { startingSpecials } from '../../utility/abilities';
 let db = new PseudoBase('db');
 
 const EQUIPMENT = 'Equipment';
@@ -86,7 +87,9 @@ export const getSettings = async (id: string) => {
     if (settings) {
         return settings;
     } else {
-        const newSettings = new Settings(id);
+        let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+        let newSettings = new Settings(id);
+        newSettings = { ...newSettings, specials: startingSpecials[ascean.mastery as keyof typeof startingSpecials] }
         await db.collection(SETTINGS).add(newSettings);
         return newSettings;
     };

@@ -272,13 +272,17 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         try {
             EventBus.emit('record-statistics', res);
             if (res.playerWin === true) {
-                let experience = ascean().experience + Math.round((res.computer?.level as number) * 100 * (res.computer?.level as number / res?.player?.level!) + (res?.playerAttributes?.rawKyosir as number));
-                // Need a better way to calculate experience
-                // It needs to be based on the level of the enemy and the level of the player
-                // But scale in a way where it's weighed to gain experience faster the low level the player is
-
+                let experience = 
+                    Math.round((res.computer?.level as number) 
+                    * 100 
+                    * (res.computer?.level as number / res?.player?.level!) 
+                    + (res?.playerAttributes?.rawKyosir as number));
+                    
+                console.log(experience, 'Pre Balance');
                 experience = balanceExperience(experience, res?.player?.level as number);
-                
+                console.log(experience, 'Post Balance');               
+                experience += ascean().experience;
+                console.log(experience, 'Post Add');
                 const newState = { 
                     ...asceanState(), 
                     avarice: res.prayerData.length > 0 ? res.prayerData.includes('Avarice') : false, 
@@ -305,9 +309,13 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     };    
 
     function balanceExperience(experience: number, level: number) {
-        experience *= 100 / (level * 2 + 98);
+        experience *= (105 - (level * 5)) / 100;
         experience = Math.round(experience);
-        // level 1 = * 1, 2 = * .98
+        // 3% drop off level 1 = * 1, 2 = * 0.97, 3 = * 0.94, 4 = * 0.91, 5 = * 0.88, 6 = * 0.85, 7 = * 0.82, 8 = * 0.79, 9 = * 0.76, 10 = * 0.73
+        // 4% drop off level 1 = * 1, 2 = * 0.96, 3 = * 0.92, 4 = * 0.88, 5 = * 0.84, 6 = * 0.80, 7 = * 0.76, 8 = * 0.72, 9 = * 0.68, 10 = * 0.64
+        // 5% drop off level 1 = * 1, 2 = * 0.95, 3 = * 0.90, 4 = * 0.85, 5 = * 0.80, 6 = * 0.75, 7 = * 0.70, 8 = * 0.65, 9 = * 0.60, 10 = * 0.55
+        // 6% drop off level 1 = * 1, 2 = * 0.94, 3 = * 0.88, 4 = * 0.82, 5 = * 0.76, 6 = * 0.70, 7 = * 0.64, 8 = * 0.58, 9 = * 0.52, 10 = * 0.46
+        // 7% drop off level 1 = * 1, 2 = * 0.93, 3 = * 0.86, 4 = * 0.79, 5 = * 0.72, 6 = * 0.65, 7 = * 0.58, 8 = * 0.51, 9 = * 0.44, 10 = * 0.37
         return experience;
     };
 
@@ -320,10 +328,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         setEnemies(newEnemies);
     };
 
-    usePhaserEvent('fetch-button-reorder', () => {
-        EventBus.emit('reorder-buttons', { list: settings().actions, type: 'action' });
-        EventBus.emit('reorder-buttons', { list: settings().specials, type: 'special' });
-    });
     usePhaserEvent('initiate-combat', (payload: { data: any, type: string }) => initiateCombat(payload.data, payload.type));
     usePhaserEvent('request-enemy', sendEnemyData);
     usePhaserEvent('request-settings', sendSettings);
@@ -335,7 +339,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     function fetchEnemy(enemy: any) {
         EventBus.emit('setup-enemy', enemy);
         EventBus.emit('tab-target', enemy);    
-    };
+    }; 
 
     return (
         <div id='base-ui'>

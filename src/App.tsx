@@ -253,7 +253,10 @@ export default function App() {
         scene.scene.sleep(key);
         scene.scene.setVisible(false, key);
     })
-
+    usePhaserEvent('fetch-button-reorder', () => {
+        EventBus.emit('reorder-buttons', { list: settings().actions, type: 'action' });
+        EventBus.emit('reorder-buttons', { list: settings().specials, type: 'special' });
+    });
     return (
         <div id="app">
             <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} settings={settings} setSettings={setSettings} scene={scene} />

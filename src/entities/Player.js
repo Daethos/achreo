@@ -65,7 +65,7 @@ export const PLAYER = {
         SLOW: 10,
         SNARE: 10,
         SUTURE: 25,
-        TSHAER: 40,
+        TSHAERAL: 40,
         
         DISEASE: 25,
         ENVELOP: 10,
@@ -116,7 +116,7 @@ export const PLAYER = {
         SPRINT: 6000,
         STORM: 3000,
         STUNNED: 2500,
-        TSHAER: 2000,
+        TSHAERAL: 2000,
         WARD: 10000,
         WRITHE: 1000,
     },
@@ -361,10 +361,10 @@ export const staminaCheck = (input, stamina) => {
                 cost: PLAYER.STAMINA.SUTURE,
             };
         case 'tshaeral':
-            const tshaerSuccess = stamina >= PLAYER.STAMINA.TSHAER;
+            const tshaerSuccess = stamina >= PLAYER.STAMINA.TSHAERAL;
             return {
                 success: tshaerSuccess,
-                cost: PLAYER.STAMINA.TSHAER,
+                cost: PLAYER.STAMINA.TSHAERAL,
             };
         case 'ward':
              const wardSuccess = stamina >= PLAYER.STAMINA.WARD;
@@ -2028,12 +2028,12 @@ export default class Player extends Entity {
         if (!this.inCombat) return;
         this.isTshaering = true;
         this.attacking.isConsumed = true;
-        this.scene.useStamina(PLAYER.STAMINA.TSHAER);
+        this.scene.useStamina(PLAYER.STAMINA.TSHAERAL);
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAER / 2, 'damage');
-        this.castbar.setTotal(PLAYER.DURATIONS.TSHAER);
-        this.castbar.setTime(PLAYER.DURATIONS.TSHAER);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAERAL / 2, 'damage');
+        this.castbar.setTotal(PLAYER.DURATIONS.TSHAERAL);
+        this.castbar.setTime(PLAYER.DURATIONS.TSHAERAL);
         this.tshaeringTimer = this.scene.time.addEvent({
             delay: 250,
             callback: () => {
@@ -2950,7 +2950,7 @@ export default class Player extends Entity {
             //     this.setTimeEvent('invokeCooldown');
             //     this.stateMachine.setState(States.INVOKE);
             // };
-            // if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.consume.F) && this.stamina >= PLAYER.STAMINA.TSHAER && this.tshaeralCooldown === 0) { // this.tshaeralCooldown === 0
+            // if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.consume.F) && this.stamina >= PLAYER.STAMINA.TSHAERAL && this.tshaeralCooldown === 0) { // this.tshaeralCooldown === 0
             //     this.stateMachine.setState(States.TSHAERAL);
             //     this.setTimeEvent('tshaeralCooldown', 15000);
             //     this.scene.time.addEvent({

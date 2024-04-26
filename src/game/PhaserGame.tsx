@@ -11,13 +11,14 @@ import Equipment, { getOneRandom, upgradeEquipment } from '../models/equipment';
 import Settings from '../models/settings';
 import BaseUI from '../ui/BaseUI';
 import { Compiler, asceanCompiler } from '../utility/ascean';
-import { deleteEquipment, getAscean, getInventory, populate } from '../assets/db/db';
+import { deleteEquipment, getAscean, getInventory, populate, updateSettings } from '../assets/db/db';
 import { getNpcDialog } from '../utility/dialog';
 import { getAsceanTraits } from '../utility/traits';
 import { getNodesForNPC, npcIds } from '../utility/DialogNode';
 import { fetchNpc } from '../utility/npc';
 import { checkDeificConcerns } from '../utility/deities';
 import { Statistics } from '../utility/statistics';
+import { startingSpecials } from '../utility/abilities';
 
 export interface IRefPhaserGame {
     game: Phaser.Game | null;
@@ -74,8 +75,7 @@ export const PhaserGame = (props: IProps) => {
         let achre = Number(state().achre);
         let caeren = Number(state().caeren);
         let kyosir = Number(state().kyosir);
-        let newMastery = state().mastery;
-        let statMastery = newMastery.toLowerCase();
+        let newMastery = state().mastery; 
         try {
             let update = {
                 ...props.ascean(),
@@ -94,7 +94,7 @@ export const PhaserGame = (props: IProps) => {
                     ...state().ascean.statistics,
                     mastery: {
                         ...state().ascean.statistics.mastery,
-                        [statMastery]: state().ascean.statistics.mastery[statMastery] + 1,
+                        [newMastery]: state().ascean.statistics.mastery[newMastery] + 1,
                     }
                 } 
             };
@@ -108,6 +108,14 @@ export const PhaserGame = (props: IProps) => {
                 },
             } as Ascean;
 
+            if (props.ascean().mastery !== newMastery) {
+                console.log('resetting special abilities');
+                const settings = { ...props.settings(), specials: startingSpecials[newMastery as keyof typeof startingSpecials] };
+                props.setSettings(settings);
+                await updateSettings(settings);
+                EventBus.emit('fetch-button-reorder');
+            };
+            
             EventBus.emit('update-ascean-state', {
                 ...state(),
                 ascean: save,
@@ -122,9 +130,9 @@ export const PhaserGame = (props: IProps) => {
                 kyosir: 0,
                 mastery: save.mastery,
                 faith: save.faith,
-                
             });                
             EventBus.emit('update-ascean', save);
+
         } catch (err: any) {
             console.warn(err, '<- Error in the Controller Updating the Level!')
         };

@@ -126,10 +126,10 @@ export const SPECIALS = [
 ]; // 'Charm', 'Counter', 'Shroud'
 
 export const startingSpecials = {
-    'constitution': ['Invoke', 'Consume', 'Healing', 'Mend', 'Sacrifice'],
-    'strength': ['Invoke', 'Consume', 'Arc', 'Leap', 'Storm'],
-    'agility': ['Invoke', 'Consume', 'Rush', 'Shimmer', 'Sprint'],
-    'achre': ['Invoke', 'Consume', 'Blink', 'Envelop', 'Polymorph'],
-    'caeren': ['Invoke', 'Consume', 'Desperation', 'Protect', 'Suture'],
-    'kyosir': ['Invoke', 'Consume', 'Chiomic', 'Confuse', 'Tshaeral'],
+    'constitution': ['Healing', 'Mend', 'Sacrifice', 'Shield', 'Ward'],
+    'strength': ['Arc', 'Howl', 'Arc', 'Leap', 'Writhe'],
+    'agility': ['Pursuit', 'Recover', 'Rush', 'Shimmer', 'Sprint'],
+    'achre': ['Blink', 'Envelop', 'Polymorph', 'Root', 'Slow'],
+    'caeren': ['Chiomism', 'Desperation', 'Fear', 'Protect', 'Suture'],
+    'kyosir': ['Chiomic', 'Confuse', 'Malice', 'Scream', 'Tshaeral'],
 };

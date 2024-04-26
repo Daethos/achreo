@@ -857,6 +857,7 @@ export default class Player extends Entity {
     };
 
     cleanUp() {
+        EventBus.off('set-player', this.setPlayer);
         EventBus.off('combat', this.constantUpdate);
         EventBus.off('update-combat', this.eventUpdate);
         EventBus.off('disengage', this.disengage);
@@ -885,6 +886,7 @@ export default class Player extends Entity {
     };
 
     playerStateListener = () => {
+        EventBus.on('set-player', this.setPlayer)
         EventBus.on('combat', this.constantUpdate); 
         EventBus.on('update-combat', this.eventUpdate);
         EventBus.on('disengage', this.disengage); 
@@ -899,6 +901,10 @@ export default class Player extends Entity {
             this.stamina = Math.round(this.scene.state.playerAttributes.stamina * percentage / 100);
         });
     }; 
+
+    setPlayer = (stats) => {
+        this.ascean = stats.ascean;
+    };
 
     disengage = () => {
         this.inCombat = false;

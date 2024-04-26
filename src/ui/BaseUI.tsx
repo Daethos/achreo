@@ -59,7 +59,9 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     });
 
     onMount(() => {
-        if (!ascean().tutorial.boot) {
+        if (!ascean().tutorial.intro) {
+            EventBus.emit('intro');
+        } else if (!ascean().tutorial.boot) {
             setTutorial('boot');
             setShowTutorial(true);
         };
@@ -271,6 +273,12 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
             EventBus.emit('record-statistics', res);
             if (res.playerWin === true) {
                 let experience = ascean().experience + Math.round((res.computer?.level as number) * 100 * (res.computer?.level as number / res?.player?.level!) + (res?.playerAttributes?.rawKyosir as number));
+                // Need a better way to calculate experience
+                // It needs to be based on the level of the enemy and the level of the player
+                // But scale in a way where it's weighed to gain experience faster the low level the player is
+
+                experience = balanceExperience(experience, res?.player?.level as number);
+                
                 const newState = { 
                     ...asceanState(), 
                     avarice: res.prayerData.length > 0 ? res.prayerData.includes('Avarice') : false, 
@@ -295,6 +303,13 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
             console.log(err, 'Error Resolving Combat');
         };
     };    
+
+    function balanceExperience(experience: number, level: number) {
+        experience *= 100 / (level * 2 + 98);
+        experience = Math.round(experience);
+        // level 1 = * 1, 2 = * .98
+        return experience;
+    };
 
     function filterEnemies(id: string) {
         let newEnemies = enemies();

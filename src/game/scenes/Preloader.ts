@@ -3,6 +3,7 @@ import { sanitize } from '../../stores/phaser';
 import NewText from '../../phaser/NewText' 
 import Entity from "../../entities/Entity";
 import ParticleManager from "../../phaser/ParticleManager";
+import { EventBus } from '../EventBus';
 
 export class Preloader extends Scene {
     assets: any;
@@ -37,6 +38,7 @@ export class Preloader extends Scene {
         this.load.tilemapTiledJSON('ascean_test', '../assets/gui/ascean_test.json');
         this.load.plugin('rexvirtualjoystickplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexvirtualjoystickplugin.min.js', true); 
         this.load.plugin('rexglowfilterpipelineplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexglowfilterpipelineplugin.min.js', true);
+        this.load.plugin('rextexttypingplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rextexttypingplugin.min.js', true);
         this.load.scenePlugin({ key: 'rexuiplugin', url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', sceneKey: 'rexUI' });
      
         this.load.audio('cymbal', '../assets/sounds/cymbal-long-2.wav');
@@ -71,6 +73,7 @@ export class Preloader extends Scene {
         this.load.audio('parry', '../assets/sounds/counter-success.mp3');
         this.load.audio('weaponOrder', '../assets/sounds/weapon-order.mp3');
         this.load.audio('phenomena', '../assets/sounds/phenomena.mp3');
+        this.load.audio('TV_Turn_On', '../assets/sounds/TV_Turn_On.wav');
         this.load.audio('TV_Button_Press', '../assets/sounds/TV_Button_Press.wav');
         this.load.audio('combat-round', '../assets/sounds/combat-round.mp3');
         this.load.audio('alien-whoosh', '../assets/sounds/alien-whoosh.mp3');
@@ -110,6 +113,7 @@ export class Preloader extends Scene {
     };
 
     create () {
+        this.introEvent();
         this.time.addEvent({
             delay: 500,
             callback: () => { 
@@ -178,4 +182,10 @@ export class Preloader extends Scene {
     onFileProgress(file: any) {
         this.txt_file.setText(`Loading: ${file.key}`);
     }; 
+
+    introEvent = ():void => {
+        EventBus.on('intro', () => {
+            this.scene.start('Intro');
+        });
+    };
 };

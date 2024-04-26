@@ -34,7 +34,8 @@ export default class HealthBar extends Phaser.GameObjects.Container {
         this.add(this.border);
 
         scene.add.existing(this);
-        this.visible = false;
+        this.setDepth(5);
+        this.visible = true;
     };
     
     private draw = (): void => {

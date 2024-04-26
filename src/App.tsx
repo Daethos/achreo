@@ -14,7 +14,7 @@ import { CharacterSheet, Compiler, asceanCompiler } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
 import type { IRefPhaserGame } from './game/PhaserGame';
 import { EventBus } from './game/EventBus';
-import { allEquipment, deleteAscean, getAscean, getAsceans, getInventory, getSettings, populate, scrub } from './assets/db/db'; 
+import { allEquipment, deleteAscean, getAscean, getAsceans, getInventory, getSettings, populate, saveTutorial, scrub } from './assets/db/db'; 
 import GameToast from './ui/GameToast';
 import { Puff } from 'solid-spinner';
 
@@ -235,10 +235,28 @@ export default function App() {
         // EventBus.emit('request-settings-ready', settings());
     });
     usePhaserEvent('player-ascean', () => EventBus.emit('player-ascean-ready', ascean()));
+    usePhaserEvent('save-intro', async () => {
+        await saveTutorial(ascean()?._id as string, 'intro');
+        await fetchAscean(ascean()?._id as string);
+
+        const scene = phaserRef.scene as Phaser.Scene; // 'intro'
+        scene.scene.stop('Intro');
+        scene.scene.wake('Game');
+        const game = scene.scene.get('Game') as Game;
+        game.musicBackground.resume();
+        EventBus.emit('current-scene-ready', game);
+    });
+    usePhaserEvent('sleep-scene', (key: string) => {
+        const scene = phaserRef.scene as Phaser.Scene;
+        const game = scene.scene.get('Game') as Game;
+        game.musicBackground.pause();
+        scene.scene.sleep(key);
+        scene.scene.setVisible(false, key);
+    })
 
     return (
         <div id="app">
-            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} settings={settings} setSettings={setSettings} />
+            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} settings={settings} setSettings={setSettings} scene={scene} />
             {/* // menu().gameRunning ? ( // && ascean()?.name !== 'Kreceus'
             //     <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} settings={settings} setSettings={setSettings} />
             // ) :  */}

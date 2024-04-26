@@ -37,9 +37,7 @@ export const deleteAscean = async (id: string) => {
 
 export const saveTutorial = async (id: string, type: string) => {
     const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
-    console.log(type, 'Tutorial saved')
     const update = { ...ascean, tutorial: { ...ascean.tutorial, [type]: true} };
-    console.log(update, 'Tutorial update')
     const save = await db.collection(ASCEANS).doc({ _id: id }).update(update);
     return save;
 };

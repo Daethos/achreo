@@ -98,6 +98,9 @@ export class Game extends Scene {
         super('Game');
     };
 
+    preload() {
+    };
+
     create () {
 
         // ================== Camera ================== \\
@@ -775,6 +778,7 @@ export class Game extends Scene {
     };
     writhe = (id: string): void => {
         if (id === '') return;
+        if (!this.player.inCombat) return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
 
         const match = this.player.enemyIdMatch();

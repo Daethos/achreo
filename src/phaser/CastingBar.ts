@@ -33,6 +33,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.add(this.border);
 
         scene.add.existing(this);
+        this.setDepth(5);
         this.visible = false;
     };
 

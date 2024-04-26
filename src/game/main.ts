@@ -11,6 +11,7 @@ import { MainMenu } from './scenes/MainMenu';
 import Phaser from 'phaser';
 import { Preloader } from './scenes/Preloader';
 import { useResizeListener } from '../utility/dimensions';
+import { Intro } from './scenes/Intro';
 
 const dimensions = useResizeListener();
 //  Find out more information about the Game Config at:
@@ -33,12 +34,13 @@ const config: Phaser.Types.Core.GameConfig = {
         Preloader,
         MainMenu,
         MainGame,
+        Intro,
         GameOver
     ],
     physics: {
         default: 'matter',
         matter: {
-            debug: true,
+            // debug: true,
             gravity: { x: 0, y: 0 },
         }
     },

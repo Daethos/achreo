@@ -31,7 +31,7 @@ const INTRO_NODES = {
         key: 4,
         prev: 3,
         next: 5,
-        text: "A great, distinguishing burden befall the Ascean who claim the mantle. \n\n King Mathyus Caderyn II, the Daethic, and Warden of the Eye; \n High Lord Theogeni Spiras, Ghost Hawk of Greyrock, and Fyers Protectorate of the Firelands; \n General Evrio Lorian Peroumes, Proconsul of Licivitas, and current va'Esai. \n\n Such titles achieved post coronation.",
+        text: "A great, distinguishing burden befall the Ascean who claim the mantle. \n King Mathyus Caderyn II, the Daethic, and Warden of the Eye; \n High Lord Theogeni Spiras, Ghost Hawk of Greyrock, and Fyers Protectorate of the Firelands; \n General Evrio Lorian Peroumes, Proconsul of Licivitas, and current va'Esai. \n Such titles achieved post coronation.",
     },
     5: {
         key: 5,
@@ -97,8 +97,8 @@ export class Intro extends Scene {
             fontFamily: 'Cinzel',
             fontSize: '18px',
             stroke: 'black',
-            align: 'center',
             strokeThickness: 2,
+            align: 'center',
         });
         this.nextText.setOrigin(0);
 
@@ -107,8 +107,8 @@ export class Intro extends Scene {
             fontFamily: 'Cinzel',
             fontSize: '18px',
             stroke: 'black',
-            align: 'center',
             strokeThickness: 2,
+            align: 'center',
         });
         this.prevText.setOrigin(0); 
 

@@ -137,7 +137,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     };
                     res = { ...combat(), ...playerData };
                     res = weaponActionCompiler(res) as Combat;
-                    // console.log(res, 'Player Action');
                     EventBus.emit('blend-combat', {
                         playerWin: res.playerWin,
                         computerWin: res.computerWin,
@@ -196,7 +195,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                             EventBus.emit('blend-combat', { newPlayerHealth });
                             break;
                         case 'enemy':
-                            // console.log(`Enemy Health: ${value}`);
                             const enemyHealth = value > 0 ? value : 0;
                             playerWin = enemyHealth === 0;
                             res = { ...combat(), newComputerHealth: enemyHealth, playerWin };
@@ -277,7 +275,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     * 100 
                     * (res.computer?.level as number / res?.player?.level!) 
                     + (res?.playerAttributes?.rawKyosir as number));
-                    
+
                 console.log(experience, 'Pre Balance');
                 experience = balanceExperience(experience, res?.player?.level as number);
                 console.log(experience, 'Post Balance');               
@@ -296,8 +294,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 EventBus.emit('gain-experience', newState);
                 EventBus.emit('enemy-loot', loot);
             } else {
-                console.log(`Player Lost`)
-                // EventBus.emit('update-health', 0);
                 if (!ascean().tutorial.death) {
                     setTutorial('death');
                     setShowTutorial(true);

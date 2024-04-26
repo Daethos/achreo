@@ -9,7 +9,7 @@ import { PhaserGame } from './game/PhaserGame';
 import { useResizeListener } from './utility/dimensions';
 import { initSettings } from './models/settings';
 import { LANDSCAPE_SCREENS, Menu, SCREENS } from './utility/screens';
-import Ascean, { createAscean, initAscean } from './models/ascean';
+import Ascean, { createAscean } from './models/ascean';
 import { CharacterSheet, Compiler, asceanCompiler } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
 import type { IRefPhaserGame } from './game/PhaserGame';
@@ -52,7 +52,6 @@ export default function App() {
     const dimensions = useResizeListener();
     const [alert, setAlert] = createSignal({ header: '', body: '' });
     const [show, setShow] = createSignal<boolean>(false);
-    // References to the PhaserGame component (game and scene are exposed)
     let phaserRef: IRefPhaserGame;
 
     createEffect(() => {
@@ -230,9 +229,7 @@ export default function App() {
     usePhaserEvent('update-ascean', updateAscean);
     usePhaserEvent('update-pause', togglePause);
     usePhaserEvent('request-settings', () => {
-        // console.log(settings(), 'Settings Requested');
         EventBus.emit('settings', settings());
-        // EventBus.emit('request-settings-ready', settings());
     });
     usePhaserEvent('player-ascean', () => EventBus.emit('player-ascean-ready', ascean()));
     usePhaserEvent('save-intro', async () => {
@@ -260,10 +257,6 @@ export default function App() {
     return (
         <div id="app">
             <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} settings={settings} setSettings={setSettings} scene={scene} />
-            {/* // menu().gameRunning ? ( // && ascean()?.name !== 'Kreceus'
-            //     <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} settings={settings} setSettings={setSettings} />
-            // ) :  */}
-
             {scene() === 'MainMenu' && (<>
             { menu().creatingCharacter ? (
                 <div id='overlay' class='superCenter'>

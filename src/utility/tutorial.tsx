@@ -188,9 +188,9 @@ export default function TutorialOverlay({ id, tutorial, show, setShow }: { id: s
                         Equipment can be clicked for more information]</span>
                 </p>
             </div> }
-            <p class='cornerBR gold highlight' style={{ bottom: '0', right: '0', 'font-weight': 700 }} onClick={() => exitTutorial()}>
+            <button class='cornerBR gold highlight' style={{ bottom: '0', right: '0', 'font-weight': 700 }} onClick={() => exitTutorial()}>
                 {arrows.right} Exit
-            </p>
+            </button>
         </div>
     );
 };

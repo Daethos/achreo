@@ -134,14 +134,6 @@ export default function TutorialOverlay({ id, tutorial, show, setShow }: { id: s
                     {arrows.down} Deific Concerns {arrows.down} <br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[Your conscious and othernatural connections with the deities of this world.]</span>
                 </p> 
-                {/* <p class='cornerTR gold highlight' style={{ right: '0%', top: '10%', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
-                    {arrows.up} Firewater {arrows.up} <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[Replenishes Health.]</span>
-                </p>  */}
-                {/* <p class='superCenter gold highlight' style={{ 'font-weight': 700, border: '0.1em solid #fdf6d8', 'left': '65%', 'width': '50%' }}>
-                {arrows.down} Click an Inventory Item to Compare {arrows.right} <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[Clicking on an inventory item will compare it to the like item you have equipped. <br /> You May Remove and Destroy, Equip such Items if you Qualify, or even Upgrade! <br /> You can Inspect to switch Rings and Weapons for Specific Comparison.]</span>
-                </p> */}
                 <p class='cornerBR gold highlight' style={{ bottom: '10%', right: '3.5%', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }} onClick={() => exitTutorial()}>
                     {arrows.up} Deity Display {arrows.up} <br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[Contains all the deities you may have heard about. <br /> Displays their favored and governed attribute.]</span>

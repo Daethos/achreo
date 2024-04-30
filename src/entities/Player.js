@@ -1039,14 +1039,14 @@ export default class Player extends Entity {
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Arcing', PLAYER.DURATIONS.ARCING / 2, 'damage');
-        this.castbar.setTotal(PLAYER.DURATIONS.ARCING, 0xFF0000);
+        this.castbar.setTotal(PLAYER.DURATIONS.ARCING);
         this.castbar.setTime(PLAYER.DURATIONS.ARCING, 0xFF0000);
         this.setStatic(true);
         this.castbar.setVisible(true); 
     };
     onArcUpdate = (dt) => {
         this.combatChecker(this.isArcing);
-        if (this.isArcing) this.castbar.update(dt, 'channel');
+        if (this.isArcing) this.castbar.update(dt, 'channel', 0xFF0000);
         if (this.castbar.time >= PLAYER.DURATIONS.ARCING * 0.25 && this.castbar.time <= PLAYER.DURATIONS.ARCING * 0.26) {
             this.isAttacking = true;
         };
@@ -1118,8 +1118,8 @@ export default class Player extends Entity {
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Chiomism', PLAYER.DURATIONS.CHIOMISM / 2, 'damage');
-        this.castbar.setTotal(PLAYER.DURATIONS.CHIOMISM, 0x080080);
-        this.castbar.setTime(PLAYER.DURATIONS.CHIOMISM, 0x080080);
+        this.castbar.setTotal(PLAYER.DURATIONS.CHIOMISM);
+        this.castbar.setTime(PLAYER.DURATIONS.CHIOMISM);
         this.scene.snare(this.scene.state?.enemyID);
         this.chiomicTimer = this.scene.time.addEvent({
             delay: 1000,
@@ -1151,7 +1151,7 @@ export default class Player extends Entity {
     };
     onChiomismUpdate = (dt) => {
         this.combatChecker(this.isChiomic);
-        if (this.isChiomic) this.castbar.update(dt, 'channel');
+        if (this.isChiomic) this.castbar.update(dt, 'channel', 0xFF00FF);
     };
     onChiomismExit = () => {
         this.castbar.reset();
@@ -1294,7 +1294,7 @@ export default class Player extends Entity {
 
     onHealingEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Healing', PLAYER.DURATIONS.HEALING / 2, 'cast');
-        this.castbar.setTotal(PLAYER.DURATIONS.HEALING, 0x00ff00);
+        this.castbar.setTotal(PLAYER.DURATIONS.HEALING);
         this.isHealing = true;
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.castbar.setVisible(true); 
@@ -1306,7 +1306,7 @@ export default class Player extends Entity {
             this.healingSuccess = true;
             this.isHealing = false;
         };
-        if (this.isHealing) this.castbar.update(dt, 'cast');
+        if (this.isHealing) this.castbar.update(dt, 'cast', 0x00ff00);
     };
     onHealingExit = () => {
         if (this.healingSuccess) {
@@ -1663,8 +1663,8 @@ export default class Player extends Entity {
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAERAL / 2, 'damage');
-        this.castbar.setTotal(PLAYER.DURATIONS.TSHAERAL, 0x080080);
-        this.castbar.setTime(PLAYER.DURATIONS.TSHAERAL, 0x080080);
+        this.castbar.setTotal(PLAYER.DURATIONS.TSHAERAL);
+        this.castbar.setTime(PLAYER.DURATIONS.TSHAERAL);
         this.tshaeringTimer = this.scene.time.addEvent({
             delay: 250,
             callback: () => {
@@ -1693,7 +1693,7 @@ export default class Player extends Entity {
     };
     onTshaeralUpdate = (dt) => {
         this.combatChecker(this.isTshaering);
-        if (this.isTshaering) this.castbar.update(dt, 'channel');
+        if (this.isTshaering) this.castbar.update(dt, 'channel', 0xFF00FF);
     };
     onTshaeralExit = () => {
         this.castbar.reset();

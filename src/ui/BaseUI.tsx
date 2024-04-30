@@ -276,11 +276,11 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     * (res.computer?.level as number / res?.player?.level!) 
                     + (res?.playerAttributes?.rawKyosir as number));
 
-                console.log(experience, 'Pre Balance');
+                // console.log(experience, 'Pre Balance');
                 experience = balanceExperience(experience, res?.player?.level as number);
-                console.log(experience, 'Post Balance');               
+                // console.log(experience, 'Post Balance');               
                 experience += ascean().experience;
-                console.log(experience, 'Post Add');
+                // console.log(experience, 'Post Add');
                 const newState = { 
                     ...asceanState(), 
                     avarice: res.prayerData.length > 0 ? res.prayerData.includes('Avarice') : false, 

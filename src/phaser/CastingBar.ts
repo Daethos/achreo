@@ -68,7 +68,6 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         // this.border.clear();
         // this.border.lineStyle(4, this.borderColor);
         // this.border.strokeRect(-this.barWidth / 2, -this.barHeight / 2, this.barWidth - 2, this.barHeight - 2);
-        console.log(color, 'color')
         this.bar.clear();
         this.bar.fillStyle(color);
         this.bar.fillRect(-this.barWidth / 2, -this.barHeight / 2, (this.time / this.total) * this.barWidth, this.barHeight);
@@ -88,19 +87,17 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     };
     
     public setTime = (time: number, color?: number): void => {
-        console.log(time, color, 'color in setTime')
         this.time = time > this.total ? this.total : time;
         this.draw(color || 0x0000FF);
     };
     
     public setTotal = (total: number, color?: number): void => {
-        console.log(total, color, 'color in setTotal')
         this.total = total;
         this.draw(color || 0x0000FF);
     };
 
-    public update = (dt: number, type: string): void => {
-        this.setTime(type === 'cast' ? this.time + dt : this.time - dt);
+    public update = (dt: number, type: string, color?: number): void => {
+        this.setTime(type === 'cast' ? this.time + dt : this.time - dt, color || 0x0000FF);
         // this position is right underneath the player at all times
         // this.setPosition(this.entity.x, this.entity.y + 35);
         

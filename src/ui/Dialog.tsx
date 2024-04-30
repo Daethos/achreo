@@ -552,10 +552,16 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         EventBus.emit('aggressive-enemy', { id, isAggressive: true });
         EventBus.emit('blend-game', { showDialog: false });
         EventBus.emit('update-pause', false);
+        EventBus.emit('action-button-sound');
         EventBus.emit('engage');
     };
 
-    const clearDuel = () => EventBus.emit('blend-game', { showDialog: false });
+    const clearDuel = () => {
+        // EventBus.emit('blend-game', { showDialog: false })
+        EventBus.emit('show-dialogue');
+        EventBus.emit('action-button-sound');
+        EventBus.emit('update-pause', false);
+    };
 
     const refillFlask = () => {
         console.log('refilling flask!')
@@ -621,11 +627,11 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             { combat().npcType === 'Merchant-Smith' ? (
                 <>
                     <Typewriter stringText={`"You've come for forging? I only handle chiomic quality and above. Check my rates and hand me anything you think worth's it. Elsewise I trade with the Armorer if you want to find what I've made already."
-                        <br /><br /> ^500
+                        <br /><br />
                         Hanging on the wall is a list of prices for the various items you can forge. The prices are based on the quality. <br /><br />
-                        <p class='greenMarkup'>Kyn'gian: 1g</p> |  
-                        <p class='blueMarkup'>Senic: 3g</p> | 
-                        <p class='purpleMarkup'>Kyris: 12g</p> |  
+                        <p class='greenMarkup'>Kyn'gian: 1g</p>  
+                        <p class='blueMarkup'>Senic: 3g</p> 
+                        <p class='purpleMarkup'>Kyris: 12g</p>  
                         <p class='darkorangeMarkup'>Sedyrus: 60g</p>`} 
                     styling={{ overflow: 'auto' }} performAction={hollowClick} />
                     <br />

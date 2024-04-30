@@ -158,6 +158,7 @@ interface TypewriterProps {
 
 const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => {
     const [el, setEl] = createSignal<HTMLDivElement | null>(null);
+    let typed: Typed | null = null;
 
     (window as any).handleButton = (button: string) => {
         console.log(button, "Button Clicked");
@@ -190,7 +191,14 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
     };
 
     createEffect(() => {
-        typewriter(stringText);
+        if (typed) {
+            console.log("Destroying Typed");
+            (typed as Typed).destroy();
+        };
+
+        if (el()) {
+            typewriter(stringText);
+        };
     }); //  [stringText]
 
     function typewriter(text: string | Accessor<string>) {
@@ -201,14 +209,11 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
             typeSpeed: 20,
             backSpeed: 0,
             showCursor: false,
-            // onComplete: () => {
-            //     return;
-            // }
         };
-        
-        const typed = new Typed(el(), typedContent);
+        // const
+        typed = new Typed(el(), typedContent);
         return () => {
-            typed.destroy();
+            (typed as Typed).destroy();
         };
     };
 

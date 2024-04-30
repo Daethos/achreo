@@ -5,7 +5,8 @@ body {
     height: 100vh;
     color: rgba(253, 246, 216, 0.87);
     background-color: #000000; 
-    font-family: "Cinzel Regular", Arial, Helvetica, sans-serif;
+    font-family: "Cinzel Regular", 'Cinzel', 'Cinzel Bold', Arial, Helvetica, sans-serif;
+    font-optical-sizing: auto;
 }
 
 #app {

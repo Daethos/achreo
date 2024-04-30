@@ -980,7 +980,6 @@ export default class Player extends Entity {
             this.winningCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Victory', 3000, 'effect', true);    
         };
         if (e.computerWin === true) {
-            console.log(`%c Player Defeated: ${e.newPlayerHealth}, ${e.computerWin}`, 'color: #ff0000')
             this.anims.play('player_pray', true).on('animationcomplete', () => {
                 this.anims.play('player_idle', true);
             });
@@ -1000,40 +999,28 @@ export default class Player extends Entity {
             const soundEffectMap = (type, weapon) => {
                 switch (type) {
                     case 'Spooky':
-                        // return this.scene.spooky.play();
                         return this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
                     case 'Righteous':
-                        // return this.scene.righteous.play();
                         return this.scene.sound.play('righteous', { volume: this.scene.settings.volume });
                     case 'Wild':
-                        // return this.scene.wild.play();
                         return this.scene.sound.play('wild', { volume: this.scene.settings.volume });
                     case 'Earth':
-                        // return this.scene.earth.play();
                         return this.scene.sound.play('earth', { volume: this.scene.settings.volume });
                     case 'Fire':
-                        // return this.scene.fire.play();
                         return this.scene.sound.play('fire', { volume: this.scene.settings.volume });
                     case 'Frost':
-                        // return this.scene.frost.play();
                         return this.scene.sound.play('frost', { volume: this.scene.settings.volume });
                     case 'Lightning':
-                        // return this.scene.lightning.play();
                         return this.scene.sound.play('lightning', { volume: this.scene.settings.volume });
                     case 'Sorcery':
-                        // return this.scene.sorcery.play();
                         return this.scene.sound.play('sorcery', { volume: this.scene.settings.volume });
                     case 'Wind':
-                        // return this.scene.wind.play();
                         return this.scene.sound.play('wind', { volume: this.scene.settings.volume });
                     case 'Pierce':
-                        // return (weapon === 'Bow' || weapon === 'Greatbow') ? this.scene.bow.play() : this.scene.pierce.play();
                         return (weapon === 'Bow' || weapon === 'Greatbow') ? this.scene.sound.play('bow', { volume: this.scene.settings.volume }) : this.scene.sound.play('pierce', { volume: this.scene.settings.volume });
                     case 'Slash':
-                        // return this.scene.slash.play();
                         return this.scene.sound.play('slash', { volume: this.scene.settings.volume });
                     case 'Blunt':
-                        // return this.scene.blunt.play();
                         return this.scene.sound.play('blunt', { volume: this.scene.settings.volume });
                 };
             };
@@ -1045,10 +1032,18 @@ export default class Player extends Entity {
                 const { computerDamageType } = sfx;
                 soundEffectMap(computerDamageType, sfx.computerWeapons[0]);
             };
-            if (sfx.religiousSuccess === true) this.scene.righteous.play();
-            if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.roll.play();
-            if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) this.scene.parry.play();
-            if (sfx.playerWin === true) this.scene.righteous.play();
+            if (sfx.religiousSuccess === true) {
+                this.scene.sound.play('religious', { volume: this.scene.settings.volume });
+            };
+            if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) {
+                this.scene.sound.play('roll', { volume: this.scene.settings.volume });
+            };
+            if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) {
+                this.scene.sound.play('parry', { volume: this.scene.settings.volume });
+            };
+            if (sfx.playerWin === true) {
+                this.scene.sound.play('victory', { volume: this.scene.settings.volume });
+            };
             // if (sfx.computerWin) this.scene.death.play();
             EventBus.emit('blend-combat', { computerDamaged: false, playerDamaged: false });
         } catch (err) {
@@ -1101,9 +1096,8 @@ export default class Player extends Entity {
     };
 
     shouldPlayerEnterCombat = (other) => {
-        console.log(`%c Should Player Enter Combat?`, 'color: #ff0000');
         const hasRemainingEnemies = this.scene.combat && this.scene.state.combatEngaged && this.inCombat;
-        if (!hasRemainingEnemies && !this.isStealthing) {
+        if (!hasRemainingEnemies && !this.isStealthing && this.scene.state.newPlayerHealth > 0) {
             this.enterCombat(other);
         } else if (this.isStealthing) {
             this.prepareCombat(other);    
@@ -1131,7 +1125,7 @@ export default class Player extends Entity {
     };
 
     isAttackTarget = (enemy) => {
-        console.log(`%c Is Attack Target: ${this.attacking?.enemyID === enemy.enemyID}`, 'color: #ff0000');
+        // console.log(`%c Is Attack Target: ${this.attacking?.enemyID === enemy.enemyID}`, 'color: #ff0000');
         if (this.attacking?.enemyID === enemy.enemyID) {
             return true;
         };
@@ -1139,11 +1133,8 @@ export default class Player extends Entity {
     };
 
     isNewEnemy = (enemy) => {
-        const newEnemy = !this.targets.some(obj => obj.enemyID === enemy.enemyID);
-        // console.log(`%c New Enemy: ${newEnemy}`, 'color: #ff0000');
+        const newEnemy = this.targets.every(obj => obj.enemyID !== enemy.enemyID);
         if (newEnemy) {
-            // this.targets.push(enemy);
-            // this.sendEnemies(this.targets);
             return true;
         };
         return false;
@@ -1165,6 +1156,16 @@ export default class Player extends Entity {
             other.gameObjectB.ascean
         );
     };
+
+    isValidRushEnemy = (enemy) => {
+        if (this.isRushing) {
+            const newEnemy =  this.rushedEnemies.every(obj => obj.enemyID !== enemy.enemyID);
+            if (newEnemy) {
+                console.log(`%c New Rushed Enemy: ${newEnemy}`, 'color: #00f');
+                this.rushedEnemies.push(enemy);
+            };
+        };
+    };
  
     checkEnemyCollision(playerSensor) {
         this.scene.matterCollision.addOnCollideStart({
@@ -1172,19 +1173,21 @@ export default class Player extends Entity {
             callback: (other) => {
                 if (this.isValidEnemyCollision(other)) {
                     this.touching.push(other.gameObjectB);
-                    if (this.isRushing) this.rushedEnemies.push(other.gameObjectB);
+                    this.isValidRushEnemy(other.gameObjectB);
+                    // if (this.isRushing) this.rushedEnemies.push(other.gameObjectB);
                     const isNewEnemy = this.isNewEnemy(other.gameObjectB);
-                    console.log(`%c Is New Enemy: ${isNewEnemy}`, 'color: #ff0000');
+                    // console.log(`%c Is New Enemy: ${isNewEnemy}`, 'color: #ff0000');
                     if (!isNewEnemy) return;
                     this.targets.push(other.gameObjectB);
                     this.shouldPlayerEnterCombat(other);
                     this.checkTargets();
                 } else if (this.isValidNeutralCollision(other)) {
                     this.touching.push(other.gameObjectB);
-                    if (this.isRushing) this.rushedEnemies.push(other.gameObjectB);
+                    this.isValidRushEnemy(other.gameObjectB);
+                    // if (this.isRushing) this.rushedEnemies.push(other.gameObjectB);
                     other.gameObjectB.originPoint = new Phaser.Math.Vector2(other.gameObjectB.x, other.gameObjectB.y).clone();
                     const isNewNeutral = this.isNewEnemy(other.gameObjectB);
-                    console.log(`%c Is New Neutral: ${isNewNeutral}`, 'color: #ff0000')
+                    // console.log(`%c Is New Neutral: ${isNewNeutral}`, 'color: #ff0000')
                     if (!isNewNeutral) return;
                     this.targets.push(other.gameObjectB);
                     this.checkTargets();
@@ -1199,6 +1202,7 @@ export default class Player extends Entity {
             callback: (other) => {
                 if (this.isValidEnemyCollision(other)) {
                     this.actionTarget = other;
+                    this.isValidRushEnemy(other.gameObjectB);
                     if (!this.attacking) this.attacking = other.gameObjectB;
                     if (!this.currentTarget) this.currentTarget = other.gameObjectB;
                     if (!this.targetID) this.targetID = other.gameObjectB.enemyID;    
@@ -1227,7 +1231,6 @@ export default class Player extends Entity {
 
     calculateCollisionPoint(other) {
         if (!other) {
-            // console.log('No Collision Point')
             return false;
         };
         const bodyPosition = other.pair.gameObjectB.body.position;
@@ -1237,7 +1240,6 @@ export default class Player extends Entity {
     
     getAttackDirection(collisionPoint) {
         const sensorPosition = this.sensor.position;
-        // console.log(`%c Sensor Position: ${sensorPosition.x} Collision Point: ${collisionPoint.x}`, 'color: #ff0000');
         return collisionPoint.x < sensorPosition.x;
     };
 
@@ -1299,10 +1301,8 @@ export default class Player extends Entity {
     };
     onParryExit = () => {
         if (this.scene.state.action !== '') {
-            console.log('Parry Exit')
             this.scene.combatMachine.input('action', '');
         };
-        // if (this.scene.state.parryGuess !== '') this.scene.combatMachine.input('parryGuess', '');
     };
 
     onPostureEnter = () => {
@@ -1402,7 +1402,6 @@ export default class Player extends Entity {
 
     onArcEnter = () => {
         // if (!this.inCombat) return;
-        console.log('Arc Enter')
         this.isArcing = true;
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
@@ -1415,7 +1414,6 @@ export default class Player extends Entity {
         this.combatChecker(this.isArcing);
         if (this.isArcing) this.castbar.update(dt, 'channel');
         if (this.castbar.time >= PLAYER.DURATIONS.ARCING * 0.25 && this.castbar.time <= PLAYER.DURATIONS.ARCING * 0.26) {
-            console.log('attacking!')
             this.isAttacking = true;
         };
         if (this.castbar.time <= 0) {
@@ -1481,7 +1479,6 @@ export default class Player extends Entity {
 
     onChiomismEnter = () => {
         if (!this.inCombat) return;
-        console.log('Chiomic Enter')
         this.isChiomic = true;
         this.scene.useStamina(PLAYER.STAMINA.CHIOMISM);
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
@@ -1708,18 +1705,13 @@ export default class Player extends Entity {
 
     onLeapEnter = () => {
         this.isLeaping = true;
-        // this.originalLeapPosition = new Phaser.Math.Vector2(this.x, this.y);
-        // this.leapPointer = this.scene.rightJoystick.pointer;
         const pointer = this.scene.rightJoystick.pointer;
         const worldX = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
         const worldY = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
-        console.log(`%c Leap Enter: ${worldX} ${worldY}`, 'color: #ff0000');
         const target = new Phaser.Math.Vector2(worldX, worldY);
         const direction = target.subtract(this.position);
-        // const length = direction.length();
         direction.normalize();
         this.flipX = direction.x < 0;
-        // console.log(`%c Direction: ${direction.x} ${direction.y} | Pointer: ${this.leapPointer.x} ${this.leapPointer.y} | Length: ${length}`, 'color: #ff0000');
         if (!this.isCaerenic && !this.isGlowing) {
             this.checkCaerenic(true);
         };
@@ -1735,7 +1727,6 @@ export default class Player extends Entity {
                 this.isLeaping = false; 
                 if (this.touching.length > 0) {
                     this.touching.forEach(enemy => {
-                        // console.log(`%c Touched Enemy: ${enemy.enemyID}`, 'color: #ff0000');
                         this.scene.writhe(enemy.enemyID);
                     });
                 };
@@ -2612,7 +2603,6 @@ export default class Player extends Entity {
     };
 
     checkCaerenic = (caerenic) => {
-        // console.log('--- Caerenic is false, setting Glow to TRUE ---')
         this.isGlowing = caerenic;
         this.setGlow(this, caerenic);
         this.setGlow(this.spriteWeapon, caerenic, 'weapon');
@@ -2636,7 +2626,6 @@ export default class Player extends Entity {
             if (this.triggeredActionAvailable) this.triggeredActionAvailable = undefined;
             if (this.actionAvailable) this.actionAvailable = false;
         };
-
         this.sendEnemies(this.targets);
         
         if (this.targets.length === 0) { // && this.scene.state.computer
@@ -2649,7 +2638,6 @@ export default class Player extends Entity {
             this.scene.combatEngaged(true);
             this.inCombat = true;
         } else if (!someInCombat && playerCombat && !this.isStealthing && this.currentTarget === undefined) {
-            console.log('The player is not stealthed, in combat, and no enemies are in combat, clearing combat')
             this.disengage();
         };
     };
@@ -2685,9 +2673,7 @@ export default class Player extends Entity {
         };
 
         const currentTargetIndex = this.targets.findIndex(obj => obj.enemyID === enemyID);
-        console.log('Current Target Index:', currentTargetIndex)
         const newTarget = this.targets[currentTargetIndex + 1] || this.targets[0];
-        console.log('New Target:', newTarget)
         if (!newTarget) return;
         if (newTarget.npcType) { // NPC
             this.scene.setupNPC(newTarget);

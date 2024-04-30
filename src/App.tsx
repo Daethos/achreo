@@ -180,7 +180,7 @@ export default function App() {
             const pop = await populate(save);
             let hydrate = asceanCompiler(pop);
             const inv = await getInventory(hydrate?.ascean?._id as string);
-            const full = { ...hydrate?.ascean, inventory: inv };
+            const full = { ...hydrate?.ascean, inventory: inv, weaponOne: hydrate?.combatWeaponOne, weaponTwo: hydrate?.combatWeaponTwo, weaponThree: hydrate?.combatWeaponThree };
             hydrate = { ...hydrate, ascean: full as Ascean } as Compiler;
             setAscean(full as Ascean);
             EventBus.emit('set-player', hydrate);
@@ -195,7 +195,7 @@ export default function App() {
             const pop = await populate(save);
             let hydrate = asceanCompiler(pop);
             const inv = await getInventory(hydrate?.ascean?._id as string);
-            const full = { ...hydrate?.ascean, inventory: inv };
+            const full = { ...hydrate?.ascean, inventory: inv, weaponOne: hydrate?.combatWeaponOne, weaponTwo: hydrate?.combatWeaponTwo, weaponThree: hydrate?.combatWeaponThree };
             hydrate = { ...hydrate, ascean: full as Ascean } as Compiler;
             setAscean(full as Ascean);
             EventBus.emit('set-player', hydrate);

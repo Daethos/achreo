@@ -344,7 +344,9 @@ export default class Enemy extends Entity {
         this.setWeapon(e.computerWeapons[0]); 
         this.checkDamage(e.computerDamageType.toLowerCase()); 
         
-        if (e.newPlayerHealth <= 0) this.clearCombatWin();
+        if (e.newPlayerHealth <= 0 && e.computerWin === true) {
+            this.clearCombatWin();
+        };
         this.checkMeleeOrRanged(e.computerWeapons?.[0]);
         this.currentRound = e.combatRound;
     };
@@ -377,7 +379,7 @@ export default class Enemy extends Entity {
             objectA: [enemySensor],
             callback: other => {
                 if (!other.gameObjectB || other.gameObjectB.name !== 'player') return;
-                if (this.ascean && !other.gameObjectB.isStealthing && this.enemyAggressionCheck()) { 
+                if (this.ascean && !other.gameObjectB.isStealthing && this.enemyAggressionCheck()) {
                     this.createCombat(other, 'start');
                 } else if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
                     const newEnemy = this.isNewEnemy(other.gameObjectB);
@@ -416,7 +418,8 @@ export default class Enemy extends Entity {
     }; 
 
     isNewEnemy = (player) => {
-        return !player.targets.some(obj => obj.enemyID === this.enemyID);
+        const newEnemy = player.targets.every(obj => obj.enemyID !== this.enemyID);
+        return newEnemy;
     };
 
     jumpIntoCombat = () => {
@@ -424,7 +427,7 @@ export default class Enemy extends Entity {
         this.inCombat = true;
         if (this.healthbar) this.healthbar.setVisible(true);
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
-        this.stateMachine.setState(States.CHASE); 
+        this.stateMachine.setState(States.CHASE);
     };
 
     checkEnemyCombatEnter = () => {

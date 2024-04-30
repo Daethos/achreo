@@ -605,7 +605,19 @@ const ControlSettings = () => {
                 (Right) Character Aim. Omnidirectional.
             </div><br />
             <div>
-                Player / Enemy UI - Name, Weapon, Shield, Prayers. Clickable / Interactive.
+                <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 8.4666669 8.4666669">
+                <g transform="translate(0,-288.53332)">
+                <path d="m 0.99467028,289.54243 v 4.41844 H 7.4399733 v -4.41844 z"></path>
+                <path d="m 0.99467028,293.96087 v 2.17937 H 7.4399733 v -2.17937 z"></path>
+                <path d="m 5.6446663,295.04999 h 0.644907"></path>
+                <path d="m 4.6442063,295.04999 h 0.19844"></path>
+                <path d="m 1.0640703,291.46319 h 1.885156 v 0 l 1.70819,0.98608 0.94166,-0.98608 h 1.616538"></path>
+                </g>
+                </svg>{" "}
+                Player / Enemy UI
+                </p>
+                Name, Weapon, Shield, Prayers. Clickable / Interactive.
             </div><br />
             <div>
                 {/*  Combat Logs,  */}
@@ -615,21 +627,21 @@ const ControlSettings = () => {
                 </svg>{' '}
                 Small HUD (Heads Up Display)
                 </p>
-                <img src={'../assets/images/info.png'} style={{ width: '1em' }} /> [Character Sheets] <br /> 
-                <img src={'../assets/images/settings.png'} style={{ width: '1em' }} /> [Combat Settings] <br /> 
-                <img src={'../assets/images/caerenic.png'} style={{ width: '1em' }} /> [Caerenic] <br /> 
-                <img src={'../assets/images/stalwart.png'} style={{ width: '1em' }} /> [Stalwart] <br /> 
-                <img src={'../assets/images/stealth.png'} style={{ width: '1em' }} /> [Stealth] <br /> 
-                <img src={'../assets/images/cursor-reset.png'} style={{ width: '1em' }} /> [Aim Reset] <br /> 
-                <img src={'../assets/images/minimap.png'} style={{ width: '1em' }} /> [Mini-map] <br /> 
-                <img src={'../assets/images/pause.png'} style={{ width: '1em' }} /> [Pause] <br /> 
-                <img src={'../assets/images/open.png'} style={{ width: '1em' }} /> / <img src={'../assets/images/closed.png'} style={{ width: '1em' }} /> [Collapse / Expand] <br />
+                <img src={'../assets/images/info.png'} style={{ width: '1.5em' }} /> [Character Sheets] <br /> 
+                <img src={'../assets/images/settings.png'} style={{ width: '1.5em' }} /> [Combat Settings] <br /> 
+                <img src={'../assets/images/caerenic.png'} style={{ width: '1.5em' }} /> [Caerenic] <br /> 
+                <img src={'../assets/images/stalwart.png'} style={{ width: '1.5em' }} /> [Stalwart] <br /> 
+                <img src={'../assets/images/stealth.png'} style={{ width: '1.5em' }} /> [Stealth] <br /> 
+                <img src={'../assets/images/cursor-reset.png'} style={{ width: '1.5em' }} /> [Aim Reset] <br /> 
+                <img src={'../assets/images/minimap.png'} style={{ width: '1.5em' }} /> [Mini-map] <br /> 
+                <img src={'../assets/images/pause.png'} style={{ width: '1.5em' }} /> [Pause] <br /> 
+                <img src={'../assets/images/open.png'} style={{ width: '1.5em' }} /> / <img src={'../assets/images/closed.png'} style={{ width: '1.5em' }} /> [Collapse / Expand] <br />
                 <br />
                 <span style={{ color: 'gold' }}>
                 (When in contact with either Loot or an NPC) <br />
                 </span>
-                <img src={'../assets/images/loot.png'} style={{ width: '1em' }} /> [Loot] 
-                <img src={'../assets/images/dialog.png'} style={{ width: '1em' }} /> [Dialog]
+                <img src={'../assets/images/loot.png'} style={{ width: '1.5em' }} /> [Loot] 
+                <img src={'../assets/images/dialog.png'} style={{ width: '1.5em' }} /> [Dialog]
             </div><br />
             <div>
                 <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>

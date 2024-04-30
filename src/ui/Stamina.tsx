@@ -18,7 +18,6 @@ function createStamina(stam: Accessor<number>) {
 
     const updateStamina = (e: number) => {
         if (interval === undefined) {
-            console.log('Stamina');
             interval = setInterval(recover, 200 - stam());
         };
         const newStamina = Math.max(0, (stamina() * staminaPercentage() / 100) - e);

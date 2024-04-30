@@ -422,30 +422,30 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
             </button>
             <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1 }}>
                 { settings().characterViews === CHARACTERS.STATISTICS ? (
-                    <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.TRAITS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>
-                        <div class='playerSetting'>Statistics</div>
+                    <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.TRAITS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
+                        <div>Statistics</div>
                     </button>
                 ) : (
-                    <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.STATISTICS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>
-                        <div class='playerSetting'>Traits</div>
+                    <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.STATISTICS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
+                        <div>Traits</div>
                     </button>
                 ) }     
             </div> 
         </> ) : settings().asceanViews === VIEWS.INVENTORY ? ( <>
             <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Inventory</div></button>
-            <button class='highlight p-3' onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em',position: 'fixed', top: 0, right: '10vh', 'z-index': 1 }}>
-                <div class='playerSetting' style={{ 'font-size': '1em' }}>{expandedCharacter() === true ? 'Stats' : 'Equipment'}</div>
+            <button class='highlight p-3' onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em',position: 'fixed', top: 0, right: '10vh', 'z-index': 1 }}>
+                <div>{expandedCharacter() === true ? 'Stats' : 'Equipment'}</div>
             </button>
             <Firewater ascean={ascean} />
         </> ) : settings().asceanViews === VIEWS.SETTINGS ? ( <>
             <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Gameplay</div></button>
             <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1 }}>
-                <button class='highlight p-3' onClick={() => currentView(SETTINGS.ACTIONS)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Actions</div></button>
-                <button class='highlight p-3' onClick={() => currentView(SETTINGS.SPECIALS)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Specials</div></button>
-                <button class='highlight p-3' onClick={() => currentView(SETTINGS.CONTROL)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Control</div></button>
-                <button class='highlight p-3' onClick={() => currentView(SETTINGS.GENERAL)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>General</div></button>
-                <button class='highlight p-3' onClick={() => currentView(SETTINGS.INVENTORY)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Inventory</div></button>
-                <button class='highlight p-3' onClick={() => currentView(SETTINGS.TACTICS)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Tactics</div></button>
+                <button class='highlight p-3' onClick={() => currentView(SETTINGS.ACTIONS)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Actions</div></button>
+                <button class='highlight p-3' onClick={() => currentView(SETTINGS.SPECIALS)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Specials</div></button>
+                <button class='highlight p-3' onClick={() => currentView(SETTINGS.CONTROL)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Control</div></button>
+                <button class='highlight p-3' onClick={() => currentView(SETTINGS.GENERAL)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>General</div></button>
+                <button class='highlight p-3' onClick={() => currentView(SETTINGS.INVENTORY)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Inventory</div></button>
+                <button class='highlight p-3' onClick={() => currentView(SETTINGS.TACTICS)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Tactics</div></button>
             </div>
         </> ) : ( '' ) }
         {/* <<----- WINDOW ONE ----->> */}

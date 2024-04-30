@@ -812,12 +812,12 @@ export class Game extends Scene {
         // console.log(`Combat Engaged: ${bool}`);
         EventBus.emit('combat-engaged', bool);
         if (bool) {
-            this.combatTimerText.setVisible(true);
+            // this.combatTimerText.setVisible(true);
             this.musicCombat.play();
             this.musicBackground.pause();
             this.startCombatTimer();
         } else {
-            this.combatTimerText.setVisible(false);
+            // this.combatTimerText.setVisible(false);
             this.musicCombat.pause();
             this.musicBackground.resume();
             this.stopCombatTimer();    
@@ -907,7 +907,7 @@ export class Game extends Scene {
         this.playerLight.setPosition(this.player.x, this.player.y);
         //  + '\n' + 'Height: ' + this.cameras.main.height + '\n' + 'Width: ' + this.cameras.main.width
         this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2)); 
-        this.combatTimerText.setText('Combat Timer: ' + this.combatTime);
+        // this.combatTimerText.setText('Combat Timer: ' + this.combatTime);
     };
 
     pause() {

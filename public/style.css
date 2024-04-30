@@ -223,7 +223,7 @@ body {
     position: fixed;
     background-color: #000;
     top: -0.5vh;
-    right: 5vw;
+    right: 0.5vw;
     border-radius: 5%;
 }
 
@@ -701,6 +701,14 @@ body {
     border-radius: 0.25rem;
     padding: 0.25rem 1rem;
     margin: 0.5rem;
+}
+
+.highlight:focus {
+    color: gold;
+}
+
+.highlight:hover {
+    color: gold;
 }
 
 .highlight-deity {

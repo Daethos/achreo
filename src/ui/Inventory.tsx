@@ -3,8 +3,6 @@ import { getRarityColor } from '../utility/styling';
 import Equipment from '../models/equipment';
 import Ascean from '../models/ascean';
 
-// import { checkPlayerTrait, checkTraits } from './PlayerTraits'; 
-
 interface Props {
     ascean: Accessor<Ascean>;
     index: number;

@@ -37,16 +37,14 @@ const INTRO_NODES = {
         key: 5,
         prev: 4,
         next: undefined, // undefined
-        text: "The Ascea may grants land, prestige, titles. The inert and the material. To become the Ascean, the va'Esai, to be Worthy. That is the offer. Do not listen to whispers otherwise. Do not be led astray. Do not fear the bleating of the fallen and beaten. There is no such c̷u̴r̷s̴e̴.",
+        text: "The Ascea may grant land, prestige, titles--the inert and the material. To become the Ascean, the va'Esai, to be Worthy. That is the offer. Do not listen to whispers otherwise. Do not be led astray. Do not fear the bleating of the fallen and beaten. There is no such c̷u̴r̷s̴e̴.",
     },
 };
 
 export class Intro extends Scene {
     private background: Phaser.GameObjects.Graphics;
-    // private introBox: Phaser.GameObjects.Container;
     private introText: Phaser.GameObjects.Text;
-    // private nextButton: Phaser.GameObjects.Rectangle;
-    // private prevButton: Phaser.GameObjects.Rectangle
+    private introTextBorder: Phaser.GameObjects.Rectangle;
     private nextText: Phaser.GameObjects.Text;    
     private prevText: Phaser.GameObjects.Text;
     private node: any;
@@ -79,12 +77,23 @@ export class Intro extends Scene {
                 align: 'center',
             });
         this.introText.setWordWrapWidth(this.game.canvas.width * 0.7);
+        
+        this.introTextBorder = new Phaser.GameObjects.Rectangle(this,
+            this.introText.x - this.introText.width * this.introText.originX,
+            this.introText.y - this.introText.height * this.introText.originY,
+            this.introText.width * 1.1,
+            this.introText.height * 1.1,
+        );
+        this.introTextBorder.setStrokeStyle(2, 0xfdf6d8);
+        this.introTextBorder.setDepth(5);
+        this.introText.setDepth(6);
+
         this.node = INTRO_NODES[0];
         var typing = new TextTyping(this.introText, {
             wrap: true,
             speed: 30, // type speed in ms
             typeMode: 0, //0|'left-to-right'|1|'right-to-left'|2|'middle-to-sides'|3|'sides-to-middle'
-            setTextCallback: function (text, isLastChar, insertIdx) { 
+            setTextCallback: function (text, _isLastChar, _insertIdx) { 
                 return text;
             }, // callback before set-text
             setTextCallbackScope: undefined,
@@ -163,7 +172,8 @@ export class Intro extends Scene {
                     this.nextText.setText('Next');
                     this.nextText.visible = true;
                 };
-                if (this.node.prev) {
+                if (this.node.prev !== undefined) {
+                    console.log(this.node.prev, 'This is not undefined')
                     this.node = INTRO_NODES[this.node.prev as keyof typeof INTRO_NODES];
                     typing.start(this.node.text);
                 };

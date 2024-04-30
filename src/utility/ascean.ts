@@ -595,7 +595,7 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                 };
             case "Chiomic":
                 return {
-                    name: "Choimic",
+                    name: "Chiomic",
                     traitOneName: "Luckout",
                     traitOneDescription: "Invoke the Ancient Chiomyr, reducing the enemy to a broken mind of mockery.",
                     traitTwoName: "Persuasion",
@@ -644,8 +644,8 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
             case "Ma'anreic":
                 return {
                     name: "Ma'anreic",
-                    traitOneName: "Negation",
-                    traitOneDescription: "You can negate the armor of your enemy.",
+                    traitOneName: "Stealth",
+                    traitOneDescription: "You can use your caeren to shimmer and stealth.",
                     traitTwoName: "Thievery",
                     traitTwoDescription: "You can steal items from anyone and anywhere."
                 };

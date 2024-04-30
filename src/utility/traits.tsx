@@ -155,9 +155,9 @@ export const TRAIT_DESCRIPTIONS = {
         }
     },
     "Ma'anreic": {
-        negation: {
-            description: "you can negate {enemy.name}'s armor in the on your next attack.",
-            action: "Bleed your weapon through the land of hush and tendril.",
+        stealth: {
+            description: "you can shimmer and become and translucent through use of your caeren.",
+            action: "Bleed through the land of hush and tendril.",
             success: "Success!",
             failure: "Failure!"
         },
@@ -302,7 +302,6 @@ export const getAsceanTraits = (ascean: Ascean) => {
         secondary: { ...traits.secondary, ...second },
         tertiary: { ...traits.tertiary, ...third } ,
     };
-    // console.log(newTraits, '--- New Traits ---')
     return newTraits;
 };
 
@@ -437,7 +436,7 @@ export const PersuasionModal = ({ traits, callback, name, influence, show, setSh
         <button class='dialog-buttons inner' style={{ color: "#fdf6d8", background: '#000', margin: '3%' }} onClick={() => setShow(!show())}>[ {'>>>'} Persuasive Alternative(s) {'<<<'} ]</button>
         {traits().map((trait: any) => {
             return (
-                <div style={{ margin: '3%' }}>
+                <div style={{ margin: '5%' }}>
                     <button class='dialog-buttons inner' style={{ color: traitStyle(trait.name), background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}]: {trait.persuasion.action.replace('{enemy.name}', name).replace('{ascean.weapon_one.influences[0]}', influence())}</button>
                 </div>
             )

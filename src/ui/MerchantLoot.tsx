@@ -19,7 +19,7 @@ const MerchantLoot = ({ item, ascean, setShow, setHighlight }: Props) => {
     
     createEffect(() => {
         determineCost(item?.rarity as string, item?.type);
-    }); // , [item]
+    });
 
     const determineCost = async (rarity: string, type: string) => {
         try {
@@ -33,28 +33,28 @@ const MerchantLoot = ({ item, ascean, setShow, setHighlight }: Props) => {
             switch (rarity) {
                 case 'Common': {
                     cost = {
-                        silver: Math.floor(Math.random() * 30),
+                        silver: Math.floor(Math.random() * 15) + 10,
                         gold: 0
                     };
                     break;
                 };
                 case 'Uncommon': {
                     cost = {
-                        silver: Math.floor(Math.random() * 35) + 15,
+                        silver: Math.floor(Math.random() * 30) + 20,
                         gold: Math.floor(Math.random() * 2) + 1
                     };
                     break;
                 };
                 case 'Rare': {
                     cost = {
-                        silver: Math.floor(Math.random() * 50) + 25,
+                        silver: Math.floor(Math.random() * 45) + 30,
                         gold: Math.floor(Math.random() * 6) + 2
                     };
                     break;
                 };
                 case 'Epic': {
                     cost = {
-                        silver: Math.floor(Math.random() * 50) + 50,
+                        silver: Math.floor(Math.random() * 60) + 40,
                         gold: Math.floor(Math.random() * 12) + 12
                     };
                     break;

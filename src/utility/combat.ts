@@ -2678,19 +2678,6 @@ function validate(combat: Combat): boolean {
 
 // ================================= CONTROLLER - SERVICE ===================================== \\
 
-function actionCompiler (combat: Combat): Combat | undefined {
-    try {
-        if (validate(combat) === false) return combat;
-        let res = actionSplitter(combat);
-        if (res.realizedComputerDamage > 0) res.playerDamaged = true;
-        if (res.realizedPlayerDamage > 0) res.computerDamaged = true;
-        if (res.playerWin || res.computerWin) statusEffectCheck(res);
-        return res;
-    } catch (err) {
-        console.log(err, 'Error in the Action Compiler of Game Services');
-    };
-};
-
 function instantActionCompiler(combat: Combat): Combat | undefined {
     try {
         if (validate(combat) === false) return combat;
@@ -2757,11 +2744,11 @@ function computerCombatCompiler(combat: { computerOne: Combat, computerTwo: Comb
 }
 
 export {
-    // actionCompiler,
     prayerSplitter,
     instantActionCompiler,
     consumePrayer,
     weaponActionCompiler,
     prayerEffectTick,
     prayerRemoveTick,
+    computerCombatCompiler
 };

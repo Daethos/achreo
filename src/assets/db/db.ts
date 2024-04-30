@@ -85,9 +85,9 @@ export const getSettings = async (id: string) => {
     if (settings) {
         return settings;
     } else {
-        let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
-        let newSettings = new Settings(id);
-        newSettings = { ...newSettings, specials: startingSpecials[ascean.mastery as keyof typeof startingSpecials] }
+        const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+        const newSettings = new Settings(id, ascean.mastery);
+        // newSettings = { ...newSettings, specials: startingSpecials[ascean.mastery as keyof typeof startingSpecials] }
         await db.collection(SETTINGS).add(newSettings);
         return newSettings;
     };

@@ -12,10 +12,12 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
     glowFilter: any;
     charges: number;
     color: number;
+    calling: boolean;
     warp: Phaser.Time.TimerEvent | undefined;
     constructor(scene: Phaser.Scene, x: number, y: number, type: string, time: number) {
         super(scene);
         this.setPosition(x, y + 6);
+        this.calling = false;  
         this.charges = 6;
         this.color = COLORS[type as keyof typeof COLORS];
         this.glowFilter = scene.plugins.get('rexGlowFilterPipeline');
@@ -37,13 +39,14 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
         this.setDepth(100);
         scene.add.existing(this);
         this.warp = this.scene.time.addEvent({
-            delay: 125, // 125 Adjust the delay as needed
+            delay: 250, // 125 Adjust the delay as needed
             callback: () => {
-                if (!this || !this.warp) return;
-                if (this.charges === 0) {
-                    this.glowFilter.remove(this);
-                    this.warp.destroy();
-                    this.destroy();
+                if (this.calling === true || this === undefined || this === null || this == undefined || this == null || this.warp === undefined || this.glowFilter === undefined) return;
+                this.calling = true;
+                if (this.charges <= 0) {
+                    this?.glowFilter?.remove(this);
+                    this?.warp?.destroy();
+                    this?.destroy();
                     return;
                 };
                 this.updateGlow(scene.time.now);
@@ -59,29 +62,37 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
 
     setDelay = (scene: Phaser.Scene, time: number) => {
         scene.time.delayedCall(time, () => {
-            this.glowFilter.remove(this);
+            if (this === undefined) return;
+
+            this?.glowFilter?.remove(this);
+
             this?.warp?.remove(false);
             this?.warp?.destroy();
-            this.warp = undefined;
-            this.destroy();
+
+            this?.destroy();
         });
     };
 
     updateGlow = (time: number) => {
-        if (!this.glowFilter || !this || !this.warp) return;
-        this.glowFilter.remove(this);
-        const outerStrength = (this.charges) + Math.sin(time * 0.005) * (this.charges); // Adjust the frequency and amplitude as needed
-        const innerStrength = (this.charges) + Math.cos(time * 0.005) * (this.charges);
-        const intensity = 0.25;
-        const glowColor = this.color;
-
-        this.glowFilter.add(this, {
+        if (this.calling === true || this.glowFilter === undefined || this === undefined || this.warp === undefined || time === undefined) return;
+        console.log(this, this.glowFilter, this.warp, time, 'updateGlow')
+        // if (this.glowFilter.isActive) {
+            // };
+            this?.glowFilter?.remove(this);
+            
+            const outerStrength = (this.charges) + Math.sin(time * 0.005) * (this.charges); // Adjust the frequency and amplitude as needed
+            const innerStrength = (this.charges) + Math.cos(time * 0.005) * (this.charges);
+            const intensity = 0.25;
+            const glowColor = this.color;
+            
+        this?.glowFilter?.add?.(this, {
             outerStrength,
             innerStrength,
             glowColor,
             intensity,
             knockout: true
         });
+        this.calling = false;
     };
 
     update(x: number, y: number) {

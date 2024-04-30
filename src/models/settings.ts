@@ -1,3 +1,5 @@
+import { startingSpecials } from "../utility/abilities";
+
 export default class Settings {
     public _id: string;
     public music: boolean;
@@ -35,7 +37,7 @@ export default class Settings {
         crtWidth: number;
     };
 
-    public constructor(id: string) {
+    public constructor(id: string, mastery: string) {
         this._id = id;
         this.music = true;
         this.sound = true;
@@ -43,7 +45,7 @@ export default class Settings {
         this.joystick = 0.5;
         this.vibration = 100;
         this.actions = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
-        this.specials = ['Healing', 'Invoke', 'Consume', 'Blink', 'Scream'];
+        this.specials = startingSpecials[mastery as keyof typeof startingSpecials];
         this.shake = { duration: 100, intensity: 0.05 };
         this.selected = {
             prayer: 0,

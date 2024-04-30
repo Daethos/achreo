@@ -38,29 +38,23 @@ export default function InventoryPouch({ ascean, inventoryType, setInventoryType
     });
 
     function doubleTap(inventory: Equipment, index: Accessor<number>) {
-        // console.log('Double Tap !!');
         setDoubleTapCount((prev) => prev + 1);
         if (doubleTapCount() ===1) {
-            // console.log('Double Tap Count is 1');
             setProspectiveId(inventory._id as string);
         };
         if (doubleTapCount() === 2) {
-            // console.log(' -- DOUBLE TAP DETECTED -- Double Tap Count is 2 -- DOUBLE TAP DETECTED --');
             if (inventorySwap().start.id === inventory._id) {
-                // console.log('Start ID is equal to inventory _ID, same item, reset')
                 setInventorySwap({
                     ...inventorySwap(),
                     start: { id: null, index: -1 },
                 });
                 return;
             } else if (inventorySwap().start.id !== null) {
-                // console.log('Start ID is not null, set end ID');
                 setInventorySwap({
                     ...inventorySwap(),
                     end: { id: inventory._id, index: index() },
                 });
             } else if (prospectiveId() === inventory._id) {   
-                // console.log('Start ID is null, set start ID');
                 setInventorySwap({
                     ...inventorySwap(),
                     start: { id: inventory._id, index: index() },
@@ -76,9 +70,7 @@ export default function InventoryPouch({ ascean, inventoryType, setInventoryType
         const { start, end } = inventorySwap();
         let copy: Equipment[] = Array.from(dragAndDropInventory());
         const [reorderedItem] = copy.splice(start.index, 1);
-        copy.splice(end.index, 0, reorderedItem);
-        // copy[start.index] = drop; // ForPure Swap
-        // console.log(copy, 'Copy');
+        copy.splice(end.index, 0, reorderedItem); // copy[start.index] = drop; // For Pure Swap
         setDragAndDropInventory(copy);
         setInventorySwap({ start: { id: null, index: -1 }, end: { id: null, index: -1 } }); 
         EventBus.emit('refresh-inventory', copy);

@@ -1659,17 +1659,17 @@ export default class Player extends Entity {
     onHealingEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Healing', PLAYER.DURATIONS.HEALING / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.HEALING);
-        this.isPolymorphing = true;
+        this.isHealing = true;
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
     };
     onHealingUpdate = (dt) => {
-        if (this.isMoving) this.isPolymorphing = false;
-        this.combatChecker(this.isPolymorphing);
+        if (this.isMoving) this.isHealing = false;
+        this.combatChecker(this.isHealing);
         if (this.castbar.time >= PLAYER.DURATIONS.HEALING) {
             this.healingSuccess = true;
-            this.isPolymorphing = false;
+            this.isHealing = false;
         };
-        if (this.isPolymorphing) this.castbar.update(dt, 'cast');
+        if (this.isHealing) this.castbar.update(dt, 'cast');
     };
     onHealingExit = () => {
         if (this.healingSuccess) {
@@ -2158,7 +2158,8 @@ export default class Player extends Entity {
         };
     };
     onEnvelopExit = () => {
-        if (this.envelopBubble) {
+        if (this.envelopBubble !== undefined) {
+            console.log('Envelop Bubble Destroyed', this.evelopBubble)
             // this.envelopBubble.warp.remove(false);
             // this.envelopBubble.warp.destroy();
             // this.envelopBubble.warp = undefined;
@@ -3027,7 +3028,7 @@ export default class Player extends Entity {
             this.anims.play('player_running', true);
         } else if (this.isConsuming) { 
             this.anims.play('player_health', true).on('animationcomplete', () => this.isConsuming = false);
-        } else if (this.isPolymorphing || this.isFearing || this.isFreezing || this.isSlowing || this.isSnaring) { 
+        } else if (this.isPolymorphing || this.isFearing || this.isFreezing || this.isHealing || this.isSlowing || this.isSnaring) { 
             this.anims.play('player_health', true);
         } else if (this.isChiomic || this.isTshaering) {
             this.anims.play('player_pray', true);

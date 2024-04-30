@@ -107,6 +107,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
     const [scaleImage, setScaleImage] = createSignal({ id: '', scale: 48 });
     const [tutorial, setTutorial] = createSignal<string>('');
     const [levelUpModalShow, setLevelUpModalShow] = createSignal<boolean>(false);
+    const [expandedCharacter, showExpandedCharacter] = createSignal<boolean>(false);
 
     const dimensions = useResizeListener();
  
@@ -219,18 +220,6 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
         };
     }; 
 
-    // async function setVolume(volume: number) { 
-    //     const newSettings: Settings = { ...settings(), volume: volume };
-    //     setSettings(newSettings);
-    //     // await saveSettings(newSettings);
-    //     EventBus.emit('update-volume', volume);
-    // };
-    // const shake = (value, action) => setSettings({ ...settings(), shake: { ...settings().shake, [action]: value } });
-    // const handleShakeDurationChange = (e) => shake(parseFloat(e.target.value), 'duration');
-    // const handleShakeIntensityChange = (e) => shake(parseFloat(e.target.value), 'intensity');
-    // const handleVibrationChange = (e) => setGameState({ ...game, vibration: parseFloat(e.target.value)});
-    // const handleVolumeChange = (e) => setGameState({ ...game, volume: parseFloat(e.target.value)});
-
     async function currentControl(e: string) {
         const newSettings: Settings = { ...settings(), control: e };
         setSettings(newSettings);
@@ -246,6 +235,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
     async function setNextView() {
         const nextView = viewCycleMap[settings().asceanViews as keyof typeof viewCycleMap];
         if (nextView) {
+            showExpandedCharacter(false);
             const newSettings: Settings = { ...settings(), asceanViews: nextView };
             setSettings(newSettings);
             await saveSettings(newSettings);
@@ -430,24 +420,26 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
             <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}>
                 <div class='playerMenuHeading'>Character</div>
             </button>
-            <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '10vh', 'z-index': 1 }}>
-            { settings().characterViews === CHARACTERS.STATISTICS ? (
-                <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.TRAITS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>
-                    <div class='playerSetting'>Statistics</div>
-                </button>
-            ) : (
-                <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.STATISTICS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>
-                    <div class='playerSetting'>Traits</div>
-                </button>
-            ) }     
+            <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1 }}>
+                { settings().characterViews === CHARACTERS.STATISTICS ? (
+                    <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.TRAITS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>
+                        <div class='playerSetting'>Statistics</div>
+                    </button>
+                ) : (
+                    <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.STATISTICS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>
+                        <div class='playerSetting'>Traits</div>
+                    </button>
+                ) }     
             </div> 
         </> ) : settings().asceanViews === VIEWS.INVENTORY ? ( <>
             <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Inventory</div></button>
+            <button class='highlight p-3' onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em',position: 'fixed', top: 0, right: '10vh', 'z-index': 1 }}>
+                <div class='playerSetting' style={{ 'font-size': '1em' }}>{expandedCharacter() === true ? 'Stats' : 'Equipment'}</div>
+            </button>
             <Firewater ascean={ascean} />
         </> ) : settings().asceanViews === VIEWS.SETTINGS ? ( <>
-            <button class='highlight' style={{ 'margin-left': '0.5%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Settings</div></button>
-
-            <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '10vh', 'z-index': 1 }}>
+            <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Gameplay</div></button>
+            <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1 }}>
                 <button class='highlight p-3' onClick={() => currentView(SETTINGS.ACTIONS)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Actions</div></button>
                 <button class='highlight p-3' onClick={() => currentView(SETTINGS.SPECIALS)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Specials</div></button>
                 <button class='highlight p-3' onClick={() => currentView(SETTINGS.CONTROL)}><div class='playerSetting' style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Control</div></button>
@@ -458,33 +450,88 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
         </> ) : ( '' ) }
         {/* <<----- WINDOW ONE ----->> */}
         <Show when={settings().control !== CONTROLS.POST_FX || settings().asceanViews !== VIEWS.SETTINGS}>
-            <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
-                { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'hidden' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, }}>
-                    {/* <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getInventory()}>
-                        <p>Get Eqp</p>
-                    </button> */}
-                    {/* <button class='highlight cornerTR' style={{ 'background-color': 'green', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getMoney()}>
-                        <p>Get Money</p>
-                    </button> */}
-                    {/* <button class='highlight cornerTR' style={{ 'background-color': 'gold', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getExperience()}>
-                        <p>Get Exp</p>
-                    </button> */}
-                    { ascean().experience >= ascean().level * 1000 && (
-                        <button class='highlight cornerTR' style={{ 'background-color': 'purple', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
-                            <p>Level++</p>
-                        </button>
-                    ) }
-                <div class='gold' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5%', 'text-align': 'center' } : { margin: '5%', 'text-align': 'center' }}>
-                    {combatState()?.player?.name}
+            <Switch>
+                <Match when={settings().asceanViews === VIEWS.SETTINGS}>
+                <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
+                    { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'hidden' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 
+                }}>
+                    <div class='' style={{ 'justify-content': 'center', 'align-items': 'center', 'text-align': 'center' }}>
+                        <p style={{ color: 'gold', 'font-size': '1.25em' }}>Feedback</p>
+                        <Form class='superCenter'>
+                        <Form.Group class="mb-3" controlId="formBasicEmail">
+                            {/* <Form.Control as="textarea" placeholder="This game stinks!" /> */}
+                            <a href="mailto:ascean@gmx.com">Send Gameplay Feedback </a>
+                            <br />
+                            <br />
+                            <Form.Text class="text-muted">
+                                [Bugs, Errors, Issues, or Suggestions]
+                            </Form.Text>
+                        </Form.Group>
+                        </Form>
+                    </div>
                 </div>
-                <HealthBar combat={combatState} />
-                <div style={dimensions().ORIENTATION === 'landscape' ? { 'margin-left': '0', 'margin-top': '7.5%', transform: 'scale(0.9)' } : { 'margin-left': '5%', transform: 'scale(0.75)', 'margin-top': '20%' }}>
-                    <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
+                </Match>    
+                <Match when={settings().asceanViews === VIEWS.INVENTORY && expandedCharacter() === true}>
+                <div class='playerWindow creature-heading' style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'scroll' }}>
+                    { dimensions().ORIENTATION === 'landscape' ? ( <>
+                        <img id='origin-pic' src={asceanPic()} alt={ascean().name} style={{ 'margin-top': '2.5%', 'margin-bottom': '2.5%' }} />
+                        <h2 style={{ margin: '2%' }}>{combatState()?.player?.description}</h2>
+                    </> ) : ( <>
+                        <h2 style={{ 'margin-top': '15%' }}>
+                            <span>
+                                <img id='origin-pic' src={asceanPic()} alt={ascean().name} style={{ position: 'absolute', left: '-75%', top: '50%' }} />
+                            </span>
+                            {combatState()?.player?.description}
+                        </h2>
+                    </> ) }
+
+                    <div class='propertyBlock' style={{ 'margin-bottom': '0%', 'font-size': '0.9em', 'font-family': 'Cinzel Regular' }}>
+                        <div>Level: <span class='gold'>{combatState()?.player?.level}</span>{'\n'}</div>
+                        <div>Silver: <span class='gold'>{ascean().currency.silver}</span> Gold: <span class='gold'>{ascean().currency.gold} {'\n'}</span></div>
+                        <div>Mastery: <span class='gold'>{combatState()?.player?.mastery?.charAt(0).toUpperCase() as string + combatState()?.player?.mastery.slice(1)}</span>{'\n'}</div>
+                        <div>Damage: <span class='gold'>{combatState()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class='gold'>{combatState()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
+                        <div>Critical: <span class='gold'>{combatState()?.weapons?.[0]?.criticalChance}%</span> | <span class='gold'>{combatState()?.weapons?.[0]?.criticalDamage}x</span></div>
+                        <div>Magical Defense: <span class='gold'>{combatState()?.playerDefense?.magicalDefenseModifier}% / [{combatState()?.playerDefense?.magicalPosture}%]</span>{'\n'}</div>
+                        <div>Physical Defense: <span class='gold'>{combatState()?.playerDefense?.physicalDefenseModifier}% / [{combatState()?.playerDefense?.physicalPosture}%]</span>{'\n'}</div>
+                        <div>Stamina: <span class='gold'>{combatState()?.playerAttributes?.stamina}</span></div>
+                    </div>
+                    <div style={{ transform: 'scale(0.9)' }}>
+                    <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
+                    </div>
                 </div>
-                <div style={{ 'margin-top': '-5%' }}>
-                    <ExperienceBar ascean={ascean} />
-                </div>
-            </div>
+                </Match>
+                <Match when={settings().asceanViews !== VIEWS.SETTINGS && expandedCharacter() !== true}>
+                    <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
+                        { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'hidden' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 
+                    }}>
+                            {/* <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getInventory()}>
+                                <p>Get Eqp</p>
+                            </button> */}
+                            {/* <button class='highlight cornerTR' style={{ 'background-color': 'green', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getMoney()}>
+                                <p>Get Money</p>
+                            </button> */}
+                            {/* <button class='highlight cornerTR' style={{ 'background-color': 'gold', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getExperience()}>
+                                <p>Get Exp</p>
+                            </button> */}
+                            { ascean().experience >= ascean().level * 1000 && (
+                                <button class='highlight cornerTR' style={{ 'background-color': 'purple', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
+                                    <p>Level++</p>
+                                </button>
+                            ) }
+                        <div class='gold' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5%', 'text-align': 'center' } : { margin: '5%', 'text-align': 'center' }}>
+                            {combatState()?.player?.name}
+                        </div>
+                        <HealthBar combat={combatState} />
+                        <div style={dimensions().ORIENTATION === 'landscape' ? { 'margin-left': '0', 'margin-top': '7.5%', transform: 'scale(0.9)' } : { 'margin-left': '5%', transform: 'scale(0.75)', 'margin-top': '20%' }}>
+                            <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
+                        </div>
+                        <div style={{ 'margin-top': '-5%' }}>
+                            <ExperienceBar ascean={ascean} />
+                        </div>
+                    </div>
+                </Match>
+
+            </Switch>
         </Show>
         {/* <<----- WINDOW TWO -----> */}
         <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? { height: `${dimensions().HEIGHT * 0.8}px`, left: '33.5vw', } : {
@@ -493,8 +540,8 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
             { settings().asceanViews === VIEWS.CHARACTER ? (
                 <div class='center creature-heading' style={{ overflow: 'scroll' }}>
                     { dimensions().ORIENTATION === 'landscape' ? ( <>
-                        <img id='origin-pic' src={asceanPic()} alt={ascean().name} style={{ 'margin-top': '5%', 'margin-bottom': '5%' }} />
-                        <h2>{combatState()?.player?.description}</h2>
+                        <img id='origin-pic' src={asceanPic()} alt={ascean().name} style={{ 'margin-top': '2.5%', 'margin-bottom': '2.5%' }} />
+                        <h2 style={{ margin: '2%' }}>{combatState()?.player?.description}</h2>
                     </> ) : ( <>
                         <h2 style={{ 'margin-top': '15%' }}>
                             <span>
@@ -529,15 +576,11 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                         forge={forgeModalShow} setForge={setForgeModalShow} 
                         upgrade={canUpgrade} setUpgrade={setCanUpgrade}
                     />
-
-                        // <Inventory pouch={dragAndDropInventory} inventory={highlighted} ascean={ascean} removeModalShow={removeModalShow} setRemoveModalShow={setRemoveModalShow} ringCompared={ringCompared} setRingCompared={setRingCompared} 
-                    //     weaponCompared={weaponCompared} setWeaponCompared={setWeaponCompared} setEquipModalShow={setEquipModalShow} equipModalShow={equipModalShow} setInspectItems={setInspectItems} inspectItems={inspectItems} 
-                    //     setInspectModalShow={setInspectModalShow} inspectModalShow={inspectModalShow} index={0} compare={true} setHighlighted={undefined} highlighted={undefined} />
                 )
             ) : settings().asceanViews === VIEWS.SETTINGS ? (
                 <div class='center' style={{ display: 'flex', 'flex-direction': 'row' }}>
-                    <div class='gold' style={{ position: 'absolute', top: '2%', 'font-size': '1.25em', display: 'inline' }}>Gameplay Controls <br />
-                        <button class='highlight' style={{ 'font-size': '0.4em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.BUTTONS ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Buttons</button>
+                    <div class='gold' style={{ position: 'absolute', top: '2%', 'font-size': '1.25em', display: 'inline' }}>Controls <br />
+                        <button class='highlight' style={{ 'font-size': '0.4em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.BUTTONS ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Actions</button>
                         <button class='highlight' style={{ 'font-size': '0.4em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.POST_FX ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
                         <button class='highlight' style={{ 'font-size': '0.4em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.DIFFICULTY ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
                     </div>
@@ -648,41 +691,6 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                         </Match>
                     </Switch>
 
-                    {/* <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '20%' } : { 'margin-top': '50%' }}>
-                        <div style={font('1em', '#fdf6d8')}>Action Buttons<br /></div>
-                        {settings().actions?.map((action: string, index: number) =>
-                            <button class='highlight' onClick={() => actionModal(action, index)}>
-                                <div style={{ width: '100%', 'font-size': '0.75em', margin: '3%' }}><span class='gold'>{index + 1} </span> {action}</div>
-                            </button>
-                        )}
-                    </div>
-                    <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '20%' } : { 'margin-top': '50%' }}>
-                        <div style={font('1em', '#fdf6d8')}>Special Buttons<br /></div>
-                        {settings().specials?.map((special: string, index: number) => 
-                            <button  class='highlight' onClick={() => specialModal(special, index)}>
-                                <div style={{ width: '100%', 'font-size': '0.75em', margin: '3%' }}><span class='gold'>{index + 1} </span> {special}</div>
-                            </button>
-                        )}
-                    </div> */}
-                {/* <div><div>
-                        Screenshake Duration <span class='gold'>({settings().shake.duration})</span>
-                    </div><br /><br />
-                    <Form.Range value={settings().shake.duration} onChange={handleShakeDurationChange} min={0} max={1000} step={50} />{'\n'}
-                    
-                    <div>
-                        Screenshake Intensity <span class='gold'>({settings().shake.intensity})</span>
-                    </div><br /><br />
-                    <Form.Range value={settings().shake.intensity} onChange={handleShakeIntensityChange} min={0} max={5} step={0.25} />{'\n'}
-                    <div>
-                        Sound Volume <div class='gold'>({settings().volume})</div>
-                    </div><br /><br /> 
-                    <Form.Range value={settings().volume} onChange={handleVolumeChange} min={0} max={1} step={0.1} />{'\n'}
-
-                    <div>
-                        Vibration Time <div class='gold'>({settings().vibration})</div>
-                    </div></div>     
-                */}
-                    {/* <Form.Range value={game().vibrationTime} onChange={handleVibrationChange} min={0} max={1000} step={50} /><br /><br /> */}
                     {/* <Pressable style={{ position: 'absolute', 'margin-left': '5%' }} onClick={() => setShow(true)}>
                         <div>Reset Scene</div>
                     </Pressable> */}
@@ -698,11 +706,6 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                             <Pressable style={{ color: 'red' }} onClick={() => restartGame()}>Yes</Pressable>
                         </Modal.Footer>
                     </Modal> */}
-                    {/* <Pressable style={[styles.stdInput, { 'margin-top': '80%' }]} onClick={returnHome}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-return-left" viewBox="0 0 16 16">
-                        <path fillRule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
-                    </svg><div>Return Home</div> 
-                    </Pressable> */}
                 </div>
             ) : ( undefined ) }
         </div>
@@ -733,9 +736,11 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
             </div>
         </Show>
 
-        <button class='highlight cornerTR' style={{ transform: 'scale(0.85)', position: 'fixed', top: '-1.5%', right: '-0.5%' }} onClick={() => EventBus.emit('show-player')}>
+        {/* <button class='highlight cornerTR' style={{ transform: 'scale(0.85)', position: 'fixed', top: '-1.5%', right: '-0.5%' }} onClick={() => EventBus.emit('show-player')}>
             <p style={font('0.5em')}>X</p>
-        </button>
+        </button> */}
+        {/* settings().asceanViews === VIEWS.INVENTORY */}
+
         <Show when={levelUpModalShow()}>
             <LevelUp asceanState={asceanState} show={levelUpModalShow} setShow={setLevelUpModalShow} />
         </Show>
@@ -744,37 +749,27 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 <ItemModal item={equipment()} stalwart={combatState().isStalwart} caerenic={combatState().isCaerenic} /> 
             </div> 
         </Show>
-        <Show when={actionShow()}> <>
-            {/* <button onClick={() => setActionShow(!actionShow())}>
-                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
-            </button> */}
+        <Show when={actionShow()}>
             <div class='modal' onClick={() => setActionShow(!actionShow())}>
                 <ActionButtonModal currentAction={currentAction} actions={ACTIONS}  handleAction={handleActionButton} handleParry={handleParryShow} /> 
             </div>
-        </> </Show>
+        </Show>
         <Show when={attrShow()}>
             <div class='modal' onClick={() => setAttrShow(!attrShow())}>
                 <AttributeModal attribute={attribute()} />
             </div> 
         </Show>
-        <Show when={parryShow()}> <>
-            {/* <button onClick={() => setParryShow(!parryShow())}>
-                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
-            </button> */}
+        <Show when={parryShow()}> 
             <div class='modal'>
                 <ActionButtonModal currentAction={currentAction} actions={ACTIONS.filter(actions => actions !== 'Dodge')}  handleAction={handleParryButton} /> 
             </div>
-        </> </Show>
-        <Show when={specialShow()}> <> 
+        </Show>
+        <Show when={specialShow()}>
             <div class='modal' onClick={() => setSpecialShow(!specialShow())}>
                 <ActionButtonModal currentAction={currentSpecial} actions={SPECIALS} handleAction={handleSpecialButton} special={true} /> 
             </div>
-        </> </Show>
+        </Show>
         <Show when={(inspectModalShow() && inspectItems())}> 
-            <div class='modal'>
-            {/* <button onClick={() => setInspectModalShow(!inspectModalShow())}>
-                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
-            </button> */}
             <div class='modal'>
                 <Modal 
                     items={inspectItems as Accessor<{ item: Equipment | undefined; type: string; }[]>} 
@@ -783,13 +778,8 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                     show={inspectModalShow} setShow={setInspectModalShow} 
                 />
             </div>
-            </div> 
         </Show>
         <Show when={forgeModalShow()}> 
-            <div class='modal'>
-            {/* <button onClick={() => setForgeModalShow(!forgeModalShow())}>
-                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, 'background-color': 'rgba(0, 0, 0, 0.75)' }} />
-            </button> */}
             <div class='modal'>
                 <div class='border superCenter wrap' style={{ width: '50%' }}>
                 <p class='center wrap' style={{ color: "red", 'font-size': "1.25em", margin: '3%' }}>
@@ -809,7 +799,6 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 </div>
                 </div>
             </div>
-            </div> 
         </Show>
         <Show when={removeModalShow()}>
             <div class='modal'>

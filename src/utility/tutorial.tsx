@@ -8,6 +8,7 @@ export type Tutorial = {
     controls: boolean,
     death: boolean,
     dialog: boolean,
+    faith: boolean,
     intro: boolean,
     inventory: boolean,
     loot: boolean,
@@ -22,6 +23,7 @@ export const initTutorial: Tutorial = {
     controls: false,
     death: false,
     dialog: false,
+    faith: false,
     intro: false,
     inventory: false,
     loot: false,
@@ -123,6 +125,28 @@ export default function TutorialOverlay({ id, tutorial, show, setShow }: { id: s
             { tutorial() === 'dialog' && <div class='border superCenter'>
                 This is the dialog tutorial
             </div> }
+            { tutorial() === 'faith' && <div>
+                <p class='cornerBL gold highlight' style={{ bottom: '15%', left: '3%', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
+                    {arrows.up} Blessing Display {arrows.up}<br />
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Displaying equipment to inspect their influence.]</span>
+                </p>
+                <p class='verticalTop gold highlight' style={{ left: '49%', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
+                    {arrows.down} Deific Concerns {arrows.down} <br />
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Your conscious and othernatural connections with the deities of this world.]</span>
+                </p> 
+                {/* <p class='cornerTR gold highlight' style={{ right: '0%', top: '10%', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
+                    {arrows.up} Firewater {arrows.up} <br />
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Replenishes Health.]</span>
+                </p>  */}
+                {/* <p class='superCenter gold highlight' style={{ 'font-weight': 700, border: '0.1em solid #fdf6d8', 'left': '65%', 'width': '50%' }}>
+                {arrows.down} Click an Inventory Item to Compare {arrows.right} <br />
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Clicking on an inventory item will compare it to the like item you have equipped. <br /> You May Remove and Destroy, Equip such Items if you Qualify, or even Upgrade! <br /> You can Inspect to switch Rings and Weapons for Specific Comparison.]</span>
+                </p> */}
+                <p class='cornerBR gold highlight' style={{ bottom: '10%', right: '3.5%', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }} onClick={() => exitTutorial()}>
+                    {arrows.up} Deity Display {arrows.up} <br />
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Contains all the deities you may have heard about. <br /> Displays their favored and governed attribute.]</span>
+                </p>
+            </div> }
             { tutorial() === 'inventory' && <div>
                 <p class='cornerTR gold highlight' style={{ right: '20%', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                     Click here to view your Equipment or Expanded Stats {arrows.right} <br />
@@ -185,7 +209,7 @@ export default function TutorialOverlay({ id, tutorial, show, setShow }: { id: s
                     <span class='super' style={{ color: '#fdf6d8' }}>[Your viewing postiion is saved.]</span>
                 </p>
                 <p class='cornerBL gold highlight' style={{ bottom: '0', left: '1.25%', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
-                    {arrows.up} Character Display <br />
+                    {arrows.up} Character Display {arrows.up}<br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[Displaying your name, health, equipment, and experience. <br />
                         Equipment can be clicked for more information]</span>
                 </p>

@@ -139,6 +139,9 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
         } else if (!ascean().tutorial.character && settings().asceanViews === 'Character') {
             setShowTutorial(true);
             setTutorial('character');
+        } else if (!ascean().tutorial.faith && settings().asceanViews === 'Faith') {
+            setShowTutorial(true);
+            setTutorial('faith');
         };
     });
 
@@ -241,16 +244,19 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
         return (
             <div class='creature-heading' style={{ padding: '5%' }}>
                 <h1 style={{ 'margin-bottom': '3%' }}>Influence</h1>
+                <h2>The influences of your equipment increase the likelihood of receiving a prayer from the associated deity.</h2>
                     {ascean().weaponOne.name}: <span class='gold'>[{ascean().weaponOne?.influences?.[0]}] +{weaponInfluenceStrength}%</span><br />
                     {ascean().amulet.name}: <span class='gold'>{ascean().amulet?.influences?.length as number > 0 ? [ascean().amulet?.influences?.[0]] : ''} +{amuletInfluenceStrength}%</span><br />
                     {ascean().trinket.name}: <span class='gold'>{ascean().amulet?.influences?.length as number > 0 ? [ascean().trinket?.influences?.[0]] : ''} +{trinketInfluenceStrength}%</span>        
                 <h1 style={{ 'margin-bottom': '3%' }}>Prayers</h1>
+                <h2>That which you seek in combat.</h2>
                     Mastery: <span class='gold'>{highestMastery[0].charAt(0).toUpperCase() + highestMastery[0].slice(1)} - {highestMastery[1]}</span><br />
                     Consumed / Invoked: <span class='gold'>{ascean()?.statistics?.combat?.actions?.consumes} / {ascean()?.statistics?.combat?.actions?.prayers} </span><br />
                     Highest Prayer: <span class='gold'>{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</span><br />
                     Favored Deity: <span class='gold'>{highestDeity[0]}</span><br />
                     Blessings: <span class='gold'>{highestDeity[1]}</span>
                 <h1 style={{ 'margin-bottom': '3%' }}>Traits</h1>
+                <h2>That which you invoke without intent.</h2>
                 {playerTraitWrapper()?.primary?.name} <span class='gold'>({playerTraitWrapper()?.primary?.traitOneName}, {playerTraitWrapper()?.primary?.traitTwoName})</span><br />
                 {playerTraitWrapper()?.secondary?.name} <span class='gold'>({playerTraitWrapper()?.secondary?.traitOneName}, {playerTraitWrapper()?.secondary?.traitTwoName})</span><br />
                 {playerTraitWrapper()?.tertiary?.name} <span class='gold'>({playerTraitWrapper()?.tertiary?.traitOneName}, {playerTraitWrapper()?.tertiary?.traitTwoName})</span>
@@ -277,17 +283,19 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
         };
         return (
             <div class='center' style={{ 'flex-wrap': 'wrap' }}>
+                <div class='creature-heading'>
                 <For each={deities}>
                     {(deity: any) => (
-                        <div class='creature-heading'>
-                            <h1 style={{ 'font-size': '1em' }}>{deity?.name}</h1>
+                            <div>
+                            <h1 style={{ 'font-size': '1.2em' }}>{deity?.name}</h1>
                             <h2>Favor: 
                                 {/* <span class='gold'></span> */}
                                 {deity?.favor}
                             </h2> 
-                        </div>
+                            </div>
                     )}
                 </For>
+                </div>
             </div>
         );
     };
@@ -629,7 +637,9 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                         { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'scroll' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 
                     }}>
                         <div style={dimensions().ORIENTATION === 'landscape' ? { 'margin-left': '0', 'margin-top': '7.5%', transform: 'scale(0.9)' } : { 'margin-left': '5%', transform: 'scale(0.75)', 'margin-top': '20%' }}>
-                            {/* <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} /> */}
+                            <div class='creature-heading' style={{ 'margin-top': '-5%' }}>
+                                <h1>Blessings</h1>
+                            </div>
                             <div class='' style={{ width: '70%', margin: 'auto', padding: '1em', display: 'grid' }}>
                             <div class='imageCardMiddle' style={{ 'left': '50%' }}>
                                 <div onClick={() =>info(ascean().weaponOne)} style={item(ascean().weaponOne.rarity as string)}>
@@ -827,7 +837,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 </div>
             ) : ( 
                 <div class='center' style={{ display: 'flex', 'flex-direction': 'row' }}>
-                    <div class='center wrap'> 
+                    <div class='center wrap' style={{ 'margin-top': '-2.5%' }}> 
                         {createPrayerInfo()}
                     </div>
                 </div>
@@ -858,7 +868,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                     </div>
                 ) : ( 
                     <div style={{ 'scrollbar-width': 'none', overflow: 'scroll' }}>
-                        <div class='center' style={{ padding: '5%' }}>
+                        <div class='center' style={{ padding: '2.5%' }}>
                         {createDeityScroll()}
                         </div>
                     </div>

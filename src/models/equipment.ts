@@ -2,8 +2,7 @@ import { Weapons } from '../assets/db/weaponry';
 import { Legs, Chests, Shields, Helmets } from '../assets/db/equipment';
 import { Amulets, Rings, Trinkets } from '../assets/db/jewelry';
 import { v4 as uuidv4 } from 'uuid';
-import { addEquipment, deleteEquipment, getAscean, updateAscean } from '../assets/db/db';
-import { EventBus } from '../game/EventBus';
+import { addEquipment } from '../assets/db/db';
 
 export default class Equipment {
     public _id: string | number[] = uuidv4();

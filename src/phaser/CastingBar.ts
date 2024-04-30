@@ -14,7 +14,8 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     private fillColor: number;
     private time: number;
     private total: number;
-    // private timeText: Phaser.GameObjects.Text;
+    private castbar: Phaser.GameObjects.Sprite;
+    private timeText: Phaser.GameObjects.Text;
 
     constructor(scene: Phaser.Scene, x: number, y: number, time: number, entity:Phaser.GameObjects.GameObject) {
         super(scene, x, y);
@@ -35,35 +36,44 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.bar.fillRect(-this.barWidth / 2, -this.barHeight / 2, this.barWidth, this.barHeight);
         this.add(this.bar);
 
-        this.border = new Phaser.GameObjects.Graphics(scene);
-        this.border.lineStyle(4, this.borderColor);
-        this.border.strokeRect(-this.barWidth / 2, -this.barHeight / 2, this.barWidth, this.barHeight);
-        this.add(this.border);
+        // this.border = new Phaser.GameObjects.Graphics(scene);
+        // this.border.lineStyle(4, this.borderColor);
+        // this.border.strokeRect(-this.barWidth / 2, -this.barHeight / 2, this.barWidth, this.barHeight);
+        // this.add(this.border);
 
-        // this.timeText = new Phaser.GameObjects.Text(this.scene, -this.barWidth / 4, -this.barHeight / 4, `${Math.round(this.time)} / ${this.total}`, { 
-        //     color: '#fdf6d8', fontSize: '1.5em', stroke: '#000', strokeThickness: 2, align: 'center' 
-        // });
-        // this.add(this.timeText);
-        // this.timeText.setOrigin(0.5);
-        // this.timeText.setDepth(10);
-        // this.timeText.setScrollFactor(0);
+        this.castbar = new Phaser.GameObjects.Sprite(scene, 0, 0, 'player-castbar');
+        this.castbar.setOrigin(0.5);
+        this.castbar.setDisplaySize(this.barWidth * 1.15, this.barHeight * 1.15 * (2));
+        this.add(this.castbar);
+
+        this.timeText = new Phaser.GameObjects.Text(this.scene, 0, 0, `${Math.round(this.time)} / ${this.total}`, { 
+            color: '#fdf6d8', fontSize: '1.75em', stroke: '#000', strokeThickness: 2, align: 'center' 
+        });
+        this.add(this.timeText);
+        this.timeText.setOrigin(0.5);
+        this.timeText.setDepth(10);
+        this.timeText.setScrollFactor(0);
 
         scene.add.existing(this);
         this.setDepth(5);
         this.setScrollFactor(0);
         this.visible = false;
+
+        
+        // this position is the bottom middle of the screen and more like 'ui' than 'world'
+        this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT);
     };
 
-    private draw = (): void => {
-        this.border.clear();
-        this.border.lineStyle(4, this.borderColor);
-        this.border.strokeRect(-this.barWidth / 2, -this.barHeight / 2, this.barWidth - 2, this.barHeight - 2);
-
+    private draw = (color: number): void => {
+        // this.border.clear();
+        // this.border.lineStyle(4, this.borderColor);
+        // this.border.strokeRect(-this.barWidth / 2, -this.barHeight / 2, this.barWidth - 2, this.barHeight - 2);
+        console.log(color, 'color')
         this.bar.clear();
-        this.bar.fillStyle(this.fillColor);
+        this.bar.fillStyle(color);
         this.bar.fillRect(-this.barWidth / 2, -this.barHeight / 2, (this.time / this.total) * this.barWidth, this.barHeight);
     
-        // this.timeText.setText(`${Math.round(this.time)} / ${this.total}`);
+        this.timeText.setText(`${Math.round(this.time / 100) / 10} / ${this.total / 1000}`);
     };
 
     public getTotal = (): number => this.total;
@@ -72,32 +82,29 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.time = 0;
         this.total = 0;
         this.setVisible(false);
-        this.border.clear();
+        // this.border.clear();
         this.bar.clear();
-        // this.timeText.setText('');
+        this.timeText.setText('');
     };
     
-    public setTime = (time: number): void => {
+    public setTime = (time: number, color?: number): void => {
+        console.log(time, color, 'color in setTime')
         this.time = time > this.total ? this.total : time;
-        this.draw();
+        this.draw(color || 0x0000FF);
     };
     
-    public setTotal = (total: number): void => {
+    public setTotal = (total: number, color?: number): void => {
+        console.log(total, color, 'color in setTotal')
         this.total = total;
-        this.draw();
+        this.draw(color || 0x0000FF);
     };
 
     public update = (dt: number, type: string): void => {
-        if (!this.visible) {
-            this.setVisible(true);
-        };
+        this.setTime(type === 'cast' ? this.time + dt : this.time - dt);
         // this position is right underneath the player at all times
         // this.setPosition(this.entity.x, this.entity.y + 35);
         
-        // this position is the bottom middle of the screen and more like 'ui' than 'world'
-        this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT);
 
-        this.setTime(type === 'cast' ? this.time + dt : this.time - dt);
         // console.log(`time: ${this.time}, total: ${this.total}`);
         // this.timeText.setText(`${Math.round(this.time)} / ${this.total}`);
         // this.timeText.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - 50);

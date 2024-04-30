@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { Game } from '../game/scenes/Game';
-import { staminaCheck } from '../entities/Player';
 import { EventBus } from '../game/EventBus';
+import { staminaCheck } from '../utility/player';
 
 const ACTIONS = [
     { ATTACK: 0x800080 }, // 0xFA0000 

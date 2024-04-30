@@ -108,6 +108,7 @@ export class Preloader extends Scene {
         this.load.image('dialog', '../assets/images/dialog.png');
         this.load.image('loot', '../assets/images/loot.png');
         this.load.image('cursor-reset', '../assets/images/cursor-reset.png');
+        this.load.image('player-castbar', '../assets/gui/player-castbar.png');
 
         this.createLoadingBar();
     };

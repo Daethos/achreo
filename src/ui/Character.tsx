@@ -1,4 +1,4 @@
-import { Accessor, JSX, Match, Setter, Show, Switch, createEffect, createSignal } from 'solid-js';
+import { Accessor, For, JSX, Match, Setter, Show, Switch, createEffect, createSignal } from 'solid-js';
 import { Form } from 'solid-bootstrap';
 import AsceanImageCard from '../components/AsceanImageCard';
 import AttributeModal, { AttributeCompiler } from '../components/Attributes';
@@ -26,11 +26,13 @@ import { playerTraits } from '../utility/ascean';
 import { ACTIONS, SPECIALS } from '../utility/abilities';
 import { OriginModal } from '../components/Origin';
 import { FaithModal } from '../components/Faith';
+import { DEITIES } from '../utility/deities';
 
 export const viewCycleMap = {
     Character: 'Inventory',
     Inventory: 'Settings',
-    Settings: 'Character'
+    Settings: 'Faith', // Character
+    Faith: 'Character',
 };
 const CHARACTERS = {
     STATISTICS: 'Statistics',
@@ -40,6 +42,7 @@ const VIEWS = {
     CHARACTER: 'Character',
     INVENTORY: 'Inventory',
     SETTINGS: 'Settings',
+    FAITH: 'Faith',
 };
 const SETTINGS = {
     ACTIONS: 'Actions',
@@ -112,6 +115,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
     const [expandedCharacter, showExpandedCharacter] = createSignal<boolean>(false);
     const [showOrigin, setShowOrigin] = createSignal<boolean>(false);
     const [showFaith, setShowFaith] = createSignal<boolean>(false);
+    const [deity, setDeity] = createSignal<any>(undefined);
 
     const dimensions = useResizeListener();
  
@@ -223,6 +227,70 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 return ('');
         };
     }; 
+
+    const createPrayerInfo = () => {
+        const highestDeity = Object.entries(ascean()?.statistics?.combat?.deities).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
+        const highestPrayer = Object.entries(ascean()?.statistics?.combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
+        let highestMastery = Object.entries(ascean()?.statistics?.mastery).reduce((a, b) => a[1] > b[1] ? a : b);
+        if (highestMastery?.[1] === 0) highestMastery = [ascean()?.mastery, 0];
+        const rarity = { 'Default': 0, 'Common': 1, 'Uncommon': 2, 'Rare': 3, 'Epic': 4, 'Legendary': 5 };
+        const weaponInfluenceStrength = rarity[ascean().weaponOne.rarity as keyof typeof rarity];
+        const amuletInfluenceStrength = rarity[ascean().amulet.rarity as keyof typeof rarity];
+        const trinketInfluenceStrength = rarity[ascean().trinket.rarity as keyof typeof rarity];
+
+        return (
+            <div class='creature-heading' style={{ padding: '5%' }}>
+                <h1 style={{ 'margin-bottom': '3%' }}>Influence</h1>
+                    {ascean().weaponOne.name}: <span class='gold'>[{ascean().weaponOne?.influences?.[0]}] +{weaponInfluenceStrength}%</span><br />
+                    {ascean().amulet.name}: <span class='gold'>{ascean().amulet?.influences?.length as number > 0 ? [ascean().amulet?.influences?.[0]] : ''} +{amuletInfluenceStrength}%</span><br />
+                    {ascean().trinket.name}: <span class='gold'>{ascean().amulet?.influences?.length as number > 0 ? [ascean().trinket?.influences?.[0]] : ''} +{trinketInfluenceStrength}%</span>        
+                <h1 style={{ 'margin-bottom': '3%' }}>Prayers</h1>
+                    Mastery: <span class='gold'>{highestMastery[0].charAt(0).toUpperCase() + highestMastery[0].slice(1)} - {highestMastery[1]}</span><br />
+                    Consumed / Invoked: <span class='gold'>{ascean()?.statistics?.combat?.actions?.consumes} / {ascean()?.statistics?.combat?.actions?.prayers} </span><br />
+                    Highest Prayer: <span class='gold'>{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</span><br />
+                    Favored Deity: <span class='gold'>{highestDeity[0]}</span><br />
+                    Blessings: <span class='gold'>{highestDeity[1]}</span>
+                <h1 style={{ 'margin-bottom': '3%' }}>Traits</h1>
+                {playerTraitWrapper()?.primary?.name} <span class='gold'>({playerTraitWrapper()?.primary?.traitOneName}, {playerTraitWrapper()?.primary?.traitTwoName})</span><br />
+                {playerTraitWrapper()?.secondary?.name} <span class='gold'>({playerTraitWrapper()?.secondary?.traitOneName}, {playerTraitWrapper()?.secondary?.traitTwoName})</span><br />
+                {playerTraitWrapper()?.tertiary?.name} <span class='gold'>({playerTraitWrapper()?.tertiary?.traitOneName}, {playerTraitWrapper()?.tertiary?.traitTwoName})</span>
+            </div>
+        );
+    };
+
+    const createDeityInfo = (deity: string) => {
+        const info = DEITIES[deity as keyof typeof DEITIES];
+        return (
+            <div class='creature-heading'>
+                <h1>{info?.name}</h1>
+                <h4 class='gold cinzel'>{info?.favor}</h4>
+                <h2>{info?.origin}</h2>
+                <p class='gold'>{info?.description}</p>
+            </div>
+        )
+    };
+
+    const createDeityScroll = () => {
+        const deities = [];
+        for (const deity in DEITIES) {
+            deities.push(DEITIES[deity as keyof typeof DEITIES]);
+        };
+        return (
+            <div class='center' style={{ 'flex-wrap': 'wrap' }}>
+                <For each={deities}>
+                    {(deity: any) => (
+                        <div class='creature-heading'>
+                            <h1 style={{ 'font-size': '1em' }}>{deity?.name}</h1>
+                            <h2>Favor: 
+                                {/* <span class='gold'></span> */}
+                                {deity?.favor}
+                            </h2> 
+                        </div>
+                    )}
+                </For>
+            </div>
+        );
+    };
 
     async function currentControl(e: string) {
         const newSettings: Settings = { ...settings(), control: e };
@@ -418,6 +486,21 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
     //     EventBus.emit('update-ascean', newAscean);
     // };
 
+    function item(rarity: string) {
+        return {
+            border: '0.2em solid ' + getRarityColor(rarity),
+            transform: 'scale(1.1)',
+            'background-color': 'black',
+            'margin-top': '0.25em',
+            'margin-bottom': '0.25em',
+            'padding-bottom': '-0.25em'
+        };
+    };
+
+    function info(item: Equipment) {
+        setDeity(item?.influences?.[0])
+    };
+
     return (
         <div style={{ 'z-index': 1, position: 'fixed', top: 0, left: 0 }}>
         { settings().asceanViews === VIEWS.CHARACTER ? ( <>
@@ -451,7 +534,9 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 <button class='highlight p-3' onClick={() => currentView(SETTINGS.INVENTORY)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Inventory</div></button>
                 <button class='highlight p-3' onClick={() => currentView(SETTINGS.TACTICS)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Tactics</div></button>
             </div>
-        </> ) : ( '' ) }
+        </> ) : ( <>
+            <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Faith</div></button>
+        </> ) }
         {/* <<----- WINDOW ONE ----->> */}
         <Show when={settings().control !== CONTROLS.POST_FX || settings().asceanViews !== VIEWS.SETTINGS}>
             <Switch>
@@ -461,9 +546,14 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 }}>
                     <div class='' style={{ 'justify-content': 'center', 'align-items': 'center', 'text-align': 'center' }}>
                         <p style={{ color: 'gold', 'font-size': '1.25em' }}>Feedback</p>
-                        <Form class='superCenter'>
+                        <Form class='verticalCenter' style={{ 'text-wrap': 'balance' }}>
                         <Form.Group class="mb-3" controlId="formBasicEmail">
                             {/* <Form.Control as="textarea" placeholder="This game stinks!" /> */}
+                            <Form.Text class="text-muted">
+                                Warning: This will prompt your browser to open up a mail service of your choice.
+                            </Form.Text>
+                            <br />
+                            <br />
                             <a href="mailto:ascean@gmx.com">Send Gameplay Feedback </a>
                             <br />
                             <br />
@@ -504,7 +594,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                     </div>
                 </div>
                 </Match>
-                <Match when={settings().asceanViews !== VIEWS.SETTINGS && expandedCharacter() !== true}>
+                <Match when={settings().asceanViews !== VIEWS.SETTINGS && settings().asceanViews !== VIEWS.FAITH && expandedCharacter() !== true}>
                     <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
                         { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'hidden' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 
                     }}>
@@ -534,7 +624,31 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                         </div>
                     </div>
                 </Match>
-
+                <Match when={settings().asceanViews === VIEWS.FAITH}>
+                    <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
+                        { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'scroll' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 
+                    }}>
+                        <div style={dimensions().ORIENTATION === 'landscape' ? { 'margin-left': '0', 'margin-top': '7.5%', transform: 'scale(0.9)' } : { 'margin-left': '5%', transform: 'scale(0.75)', 'margin-top': '20%' }}>
+                            {/* <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} /> */}
+                            <div class='' style={{ width: '70%', margin: 'auto', padding: '1em', display: 'grid' }}>
+                            <div class='imageCardMiddle' style={{ 'left': '50%' }}>
+                                <div onClick={() =>info(ascean().weaponOne)} style={item(ascean().weaponOne.rarity as string)}>
+                                    <img alt='item' style={{ height: '100%', width: '100%' }} src={ascean().weaponOne.imgUrl} />
+                                </div>
+                                <div onClick={() =>info(ascean().amulet)} style={item(ascean().amulet.rarity as string)}>
+                                    <img alt='item' style={{ height: '100%', width: '100%' }} src={ascean().amulet.imgUrl} />
+                                </div>
+                                <div onClick={() =>info(ascean().trinket)} style={item(ascean().trinket.rarity as string)}>
+                                    <img alt='item' style={{ height: '100%', width: '100%' }} src={ascean().trinket.imgUrl} />
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class='wrap'>
+                        {createDeityInfo(deity())}
+                        </div>
+                    </div>
+                </Match>    
             </Switch>
         </Show>
         {/* <<----- WINDOW TWO -----> */}
@@ -711,7 +825,13 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                         </Modal.Footer>
                     </Modal> */}
                 </div>
-            ) : ( undefined ) }
+            ) : ( 
+                <div class='center' style={{ display: 'flex', 'flex-direction': 'row' }}>
+                    <div class='center wrap'> 
+                        {createPrayerInfo()}
+                    </div>
+                </div>
+             ) }
         </div>
         {/* <<----- WINDOW THREE ----->> */}
         <Show when={settings().control !== CONTROLS.POST_FX || settings().asceanViews !== VIEWS.SETTINGS}>
@@ -736,15 +856,19 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                             <SettingSetter setting={settings} />
                         </div>
                     </div>
-                ) : ( undefined ) }
+                ) : ( 
+                    <div style={{ 'scrollbar-width': 'none', overflow: 'scroll' }}>
+                        <div class='center' style={{ padding: '5%' }}>
+                        {createDeityScroll()}
+                        </div>
+                    </div>
+                 ) }
             </div>
         </Show>
 
         {/* <button class='highlight cornerTR' style={{ transform: 'scale(0.85)', position: 'fixed', top: '-1.5%', right: '-0.5%' }} onClick={() => EventBus.emit('show-player')}>
             <p style={font('0.5em')}>X</p>
         </button> */}
-        {/* settings().asceanViews === VIEWS.INVENTORY */}
-
         <Show when={levelUpModalShow()}>
             <LevelUp asceanState={asceanState} show={levelUpModalShow} setShow={setLevelUpModalShow} />
         </Show>
@@ -773,7 +897,6 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 <FaithModal faith={ascean().faith} />
             </div>
         </Show>
-        
         <Show when={parryShow()}> 
             <div class='modal'>
                 <ActionButtonModal currentAction={currentAction} actions={ACTIONS.filter(actions => actions !== 'Dodge')}  handleAction={handleParryButton} /> 

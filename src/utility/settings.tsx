@@ -94,7 +94,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Consume
             </p>
-            Consume a prayer during combat to get receive a tendril of its essence. Instant. Short Cooldown. Low Stamina
+            Consume a prayer during combat to get receive steps into the land of hush and tendril tendril of its essence. Instant. Short Cooldown. Low Stamina
             </div>
             <br />
 
@@ -105,7 +105,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Arc
             </p>
-            Power up into an attack, hitting with four times the potential. Channel. Low Cooldown. Moderate Stamina.
+            Power up into an attack, hitting with four times the potential. Channel. Short Cooldown. Moderate Stamina.
             </div>
             <br />
             <div>
@@ -125,7 +125,7 @@ const SpecialSettings = () => {
             </svg>{" "}
             Chiomic
             </p>
-            An AoE that proliferates, confusing enemies caught in its mocking blast for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush steps into the land of hush and tendril proliferates, confusing enemies caught in its mocking blast for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
             </div>
             <br />
             <div>
@@ -135,7 +135,7 @@ const SpecialSettings = () => {
             </svg>{" "}
             Chiomism
             </p>
-            Belittle and mock your opponent of their caer, damaging and slowing them. Channel. Low Cooldown. Moderate Stamina.
+            Belittle and mock your opponent of their caer, damaging and slowing them. Channel. Short Cooldown. Moderate Stamina.
             </div>
             <br />
             <div>
@@ -155,7 +155,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Desperation
             </p>
-            Heals for a dramatic amount. Instant. Long cooldown. High Stamina.
+            Heals you for a dramatic amount. Instant. Long cooldown. High Stamina.
             </div>
             <br />
             <div>
@@ -165,7 +165,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Disease
             </p>
-            An AoE that proliferates, damaging enemies caught in its malice every second. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, damaging enemies caught in its malice every second. Instant. Moderate Cooldown. Moderate Stamina.
             </div>
             <br />
             <div>
@@ -175,7 +175,7 @@ const SpecialSettings = () => {
            </svg>{' '}
             Envelop
             </p>
-            A bubble that protects the player from melee and ranged attacks at the cost of stamina. Instant. Moderate Cooldown. Low Stamina.
+            A warped tendril wrapped round you that protects the player from melee and ranged attacks at the cost of stamina. Instant. Moderate Cooldown. Low Stamina.
             </div>
             <br />
             <div>
@@ -195,7 +195,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Freeze
             </p>
-            An AoE that proliferates, freezing enemies caught in its chilling blast for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, freezing enemies caught in its chilling blast for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
             </div>
             <br />
             <div>
@@ -215,7 +215,7 @@ const SpecialSettings = () => {
             </svg>{" "}
             Howl
             </p>
-            An AoE that proliferates, stunning enemies caught in its piercing blast for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, stunning enemies caught in its piercing blast for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
             </div>
             <br />
             <div>
@@ -235,7 +235,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Malice
             </p>
-            A bubble that damages the enemy through 6 successful attacks from them. Instant. Moderate Cooldown. Moderate Stamina.
+            A warped tendril wrapped round you that damages the enemy through 6 successful attacks from them. Instant. Moderate Cooldown. Moderate Stamina.
             </div>
             <br />
             <div>
@@ -245,7 +245,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Mend
             </p>
-            A bubble that heal through 6 successful attacks from the enemy. Instant. Moderate Cooldown. Moderate Stamina.
+            A warped tendril wrapped round you that heal through 6 successful attacks from the enemy. Instant. Moderate Cooldown. Moderate Stamina.
             </div>
             <br />
             <div>
@@ -265,7 +265,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Protect
             </p>
-            A bubble that protects the player from melee and ranged attacks for several seconds. Instant. Long Cooldown. High Stamina.
+            A warped tendril wrapped round you that protects the player from melee and ranged attacks for several seconds. Instant. Long Cooldown. High Stamina.
             </div>
             <br />
             <div> 
@@ -285,7 +285,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Recover
             </p>
-            A bubble that recovers stamina from melee and ranged attacks. Instant. Moderate Cooldown. Low Stamina.
+            A warped tendril wrapped round you that recovers stamina from melee and ranged attacks. Instant. Moderate Cooldown. Low Stamina.
             </div>
             <br />
             <div>
@@ -295,7 +295,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Renewal
             </p>
-            An AoE that proliferates, healing you with grace every second. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, healing you with grace every second. Instant. Moderate Cooldown. Moderate Stamina.
             </div>
             <br />
             <div>
@@ -335,7 +335,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Scream
             </p>
-            An AoE that proliferates, fearing enemies caught in its piercing howl for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, fearing enemies caught in its piercing howl for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
             </div>
             <br />
             <div>
@@ -345,7 +345,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Shield
             </p>
-            A bubble that absorbs 6 successful attacks from the enemy. Instant. Moderate Cooldown. Moderate Stamina.
+            A warped tendril wrapped round you that absorbs 6 successful attacks from the enemy. Instant. Moderate Cooldown. Moderate Stamina.
             </div>
             <br />
             <div>
@@ -355,7 +355,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Shimmer
             </p>
-            The player shimmers, attemping to evade the enemy attacks. Instant. Moderate Cooldown. Low Stamina.
+            You step into the land of hush and tendril, attemping to evade the enemy attacks. Instant. Moderate Cooldown. Low Stamina.
             </div>
             <br />
             <div>
@@ -365,7 +365,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Slow
             </p>
-            Weigh down your opponent's caer, slowing their movement speed moderately for several seconds. Instant. Low Cooldown. Low Stamina.
+            Weigh down your opponent's caer, slowing their movement speed moderately for several seconds. Instant. Short Cooldown. Low Stamina.
             </div>
             <br />
             <div> 
@@ -395,7 +395,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Storm
             </p>
-            An AoE that proliferates, damaging enemies caught in your contortions with your weapon / 2 every second for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, damaging enemies caught in your contortions with your weapon / 2 every second for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
             </div>
             <br />
             <div> 
@@ -425,7 +425,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Ward
             </p>
-            A bubble that protects the player from melee and ranged attacks, stunning the enemy. Instant. Long Cooldown. Moderate Stamina.
+            A warped tendril wrapped round you that protects the player from melee and ranged attacks, stunning the enemy. Instant. Long Cooldown. Moderate Stamina.
             </div>
             <br />
             <div>
@@ -435,7 +435,7 @@ const SpecialSettings = () => {
             </svg>{' '}
             Writhe
             </p>
-            An AoE that proliferates, damaging enemies caught in your contortions with your weapon. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, damaging enemies caught in your contortions with your weapon. Instant. Moderate Cooldown. Moderate Stamina.
             </div>
         </div>
     );

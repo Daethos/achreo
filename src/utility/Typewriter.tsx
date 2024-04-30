@@ -199,8 +199,7 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
         if (el()) {
             typewriter(stringText);
         };
-    }); //  [stringText]
-
+    });
     function typewriter(text: string | Accessor<string>) {
         const check = typeof text === 'function' ? text() : text;
         const clean = styleHTML(check);
@@ -210,7 +209,6 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
             backSpeed: 0,
             showCursor: false,
         };
-        // const
         typed = new Typed(el(), typedContent);
         return () => {
             (typed as Typed).destroy();

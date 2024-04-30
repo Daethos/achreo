@@ -176,8 +176,10 @@ const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlay
     // };
   
     return (
-        <div> 
+        <div class='wrap'> 
             <Typewriter stringText={renderedText} styling={{ 'overflow-y': 'auto' }} performAction={handleOptionClick} />
+            <br />
+            
             {renderedOptions()?.map((option: DialogNodeOption) => (
                 <DialogOption option={option} onClick={handleOptionClick} actions={actions} setPlayerResponses={setPlayerResponses} setKeywordResponses={setKeywordResponses} setShowDialogOptions={setShowDialogOptions} showDialogOptions={showDialogOptions} />
             ))}

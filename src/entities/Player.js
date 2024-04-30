@@ -1762,12 +1762,12 @@ export default class Player extends Entity {
         this.isParrying = true;
         this.scene.tweens.add({
             targets: this,
-            x: this.x + (direction.x * 225),
-            y: this.y + (direction.y * 225),
+            x: this.x + (direction.x * 250),
+            y: this.y + (direction.y * 250),
             duration: 500,
             ease: 'Circ.easeOut',
             onComplete: () => {
-                console.log(this.rushedEnemies, this.rushedEnemies.length, 'Rushed Enemies');
+                // console.log(this.rushedEnemies, this.rushedEnemies.length, 'Rushed Enemies');
                 if (this.rushedEnemies.length > 0) {
                     this.rushedEnemies.forEach(enemy => {
                         // console.log(`%c Rushed Enemy: ${enemy.enemyID}`, 'color: #ff0000');

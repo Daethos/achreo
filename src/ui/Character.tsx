@@ -24,6 +24,8 @@ import TutorialOverlay from '../utility/tutorial';
 import LevelUp from './LevelUp';
 import { playerTraits } from '../utility/ascean';
 import { ACTIONS, SPECIALS } from '../utility/abilities';
+import { OriginModal } from '../components/Origin';
+import { FaithModal } from '../components/Faith';
 
 export const viewCycleMap = {
     Character: 'Inventory',
@@ -108,6 +110,8 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
     const [tutorial, setTutorial] = createSignal<string>('');
     const [levelUpModalShow, setLevelUpModalShow] = createSignal<boolean>(false);
     const [expandedCharacter, showExpandedCharacter] = createSignal<boolean>(false);
+    const [showOrigin, setShowOrigin] = createSignal<boolean>(false);
+    const [showFaith, setShowFaith] = createSignal<boolean>(false);
 
     const dimensions = useResizeListener();
  
@@ -474,7 +478,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 <Match when={settings().asceanViews === VIEWS.INVENTORY && expandedCharacter() === true}>
                 <div class='playerWindow creature-heading' style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'scroll' }}>
                     { dimensions().ORIENTATION === 'landscape' ? ( <>
-                        <img id='origin-pic' src={asceanPic()} alt={ascean().name} style={{ 'margin-top': '2.5%', 'margin-bottom': '2.5%' }} />
+                        <img onClick={() => setShowOrigin(!showOrigin())} id='origin-pic' src={asceanPic()} alt={ascean().name} style={{ 'margin-top': '2.5%', 'margin-bottom': '2.5%' }} />
                         <h2 style={{ margin: '2%' }}>{combatState()?.player?.description}</h2>
                     </> ) : ( <>
                         <h2 style={{ 'margin-top': '15%' }}>
@@ -488,12 +492,12 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                     <div class='propertyBlock' style={{ 'margin-bottom': '0%', 'font-size': '0.9em', 'font-family': 'Cinzel Regular' }}>
                         <div>Level: <span class='gold'>{combatState()?.player?.level}</span>{'\n'}</div>
                         <div>Silver: <span class='gold'>{ascean().currency.silver}</span> Gold: <span class='gold'>{ascean().currency.gold} {'\n'}</span></div>
-                        <div>Mastery: <span class='gold'>{combatState()?.player?.mastery?.charAt(0).toUpperCase() as string + combatState()?.player?.mastery.slice(1)}</span>{'\n'}</div>
+                        <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class='gold'>{ascean().faith}</span> | Mastery: <span class='gold'>{combatState()?.player?.mastery?.charAt(0).toUpperCase() as string + combatState()?.player?.mastery.slice(1)}</span></div>
+                        <div>Health: <span class='gold'>{Math.round(combatState()?.newPlayerHealth)} / {combatState()?.playerHealth}</span> Stamina: <span class='gold'>{combatState()?.playerAttributes?.stamina}</span></div>
                         <div>Damage: <span class='gold'>{combatState()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class='gold'>{combatState()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
                         <div>Critical: <span class='gold'>{combatState()?.weapons?.[0]?.criticalChance}%</span> | <span class='gold'>{combatState()?.weapons?.[0]?.criticalDamage}x</span></div>
                         <div>Magical Defense: <span class='gold'>{combatState()?.playerDefense?.magicalDefenseModifier}% / [{combatState()?.playerDefense?.magicalPosture}%]</span>{'\n'}</div>
                         <div>Physical Defense: <span class='gold'>{combatState()?.playerDefense?.physicalDefenseModifier}% / [{combatState()?.playerDefense?.physicalPosture}%]</span>{'\n'}</div>
-                        <div>Stamina: <span class='gold'>{combatState()?.playerAttributes?.stamina}</span></div>
                     </div>
                     <div style={{ transform: 'scale(0.9)' }}>
                     <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
@@ -540,7 +544,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
             { settings().asceanViews === VIEWS.CHARACTER ? (
                 <div class='center creature-heading' style={{ overflow: 'scroll' }}>
                     { dimensions().ORIENTATION === 'landscape' ? ( <>
-                        <img id='origin-pic' src={asceanPic()} alt={ascean().name} style={{ 'margin-top': '2.5%', 'margin-bottom': '2.5%' }} />
+                        <img onClick={() => setShowOrigin(!showOrigin())} id='origin-pic' src={asceanPic()} alt={ascean().name} style={{ 'margin-top': '2.5%', 'margin-bottom': '2.5%' }} />
                         <h2 style={{ margin: '2%' }}>{combatState()?.player?.description}</h2>
                     </> ) : ( <>
                         <h2 style={{ 'margin-top': '15%' }}>
@@ -554,12 +558,12 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                     <div class='propertyBlock' style={{ 'margin-bottom': '0%', 'font-size': '0.9em', 'font-family': 'Cinzel Regular' }}>
                         <div>Level: <span class='gold'>{combatState()?.player?.level}</span>{'\n'}</div>
                         <div>Silver: <span class='gold'>{ascean().currency.silver}</span> Gold: <span class='gold'>{ascean().currency.gold} {'\n'}</span></div>
-                        <div>Mastery: <span class='gold'>{combatState()?.player?.mastery?.charAt(0).toUpperCase() as string + combatState()?.player?.mastery.slice(1)}</span>{'\n'}</div>
+                        <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class='gold'>{ascean().faith}</span> | Mastery: <span class='gold'>{combatState()?.player?.mastery?.charAt(0).toUpperCase() as string + combatState()?.player?.mastery.slice(1)}</span></div>
+                        <div>Health: <span class='gold'>{Math.round(combatState()?.newPlayerHealth)} / {combatState()?.playerHealth}</span> Stamina: <span class='gold'>{combatState()?.playerAttributes?.stamina}</span></div>
                         <div>Damage: <span class='gold'>{combatState()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class='gold'>{combatState()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
                         <div>Critical: <span class='gold'>{combatState()?.weapons?.[0]?.criticalChance}%</span> | <span class='gold'>{combatState()?.weapons?.[0]?.criticalDamage}x</span></div>
                         <div>Magical Defense: <span class='gold'>{combatState()?.playerDefense?.magicalDefenseModifier}% / [{combatState()?.playerDefense?.magicalPosture}%]</span>{'\n'}</div>
                         <div>Physical Defense: <span class='gold'>{combatState()?.playerDefense?.physicalDefenseModifier}% / [{combatState()?.playerDefense?.physicalPosture}%]</span>{'\n'}</div>
-                        <div>Stamina: <span class='gold'>{combatState()?.playerAttributes?.stamina}</span></div>
                     </div>
                     <div style={{ transform: 'scale(0.9)' }}>
                     <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
@@ -759,6 +763,17 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 <AttributeModal attribute={attribute()} />
             </div> 
         </Show>
+        <Show when={showOrigin()}>
+            <div class='modal' onClick={() => setShowOrigin(!showOrigin())}>
+                <OriginModal origin={ascean().origin} />
+            </div>
+        </Show>
+        <Show when={showFaith()}>
+            <div class='modal' onClick={() => setShowFaith(!showFaith())}>
+                <FaithModal faith={ascean().faith} />
+            </div>
+        </Show>
+        
         <Show when={parryShow()}> 
             <div class='modal'>
                 <ActionButtonModal currentAction={currentAction} actions={ACTIONS.filter(actions => actions !== 'Dodge')}  handleAction={handleParryButton} /> 

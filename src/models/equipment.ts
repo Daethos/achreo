@@ -461,7 +461,6 @@ async function getPhysicalWeaponEquipment(level: number): Promise<Equipment[] | 
             let equipment = await mutate([item], rarity) as Equipment[];
             equipment.forEach(item => new Equipment(item));
             merchantEquipment.push(equipment[0]);
-            // EventBus.emit('blend-game', { merchantEquipment });
         };
         return merchantEquipment;
     } catch (err) {
@@ -478,7 +477,6 @@ async function getMagicalWeaponEquipment(level: number): Promise<Equipment[] | u
             let equipment = await mutate([item], rarity) as Equipment[];
             equipment.forEach(item => new Equipment(item));
             merchantEquipment.push(equipment[0]);
-            // EventBus.emit('blend-game', { merchantEquipment });
         };
         return merchantEquipment;
     } catch (err) {
@@ -519,7 +517,6 @@ async function getArmorEquipment(level: number): Promise<Equipment[] | undefined
             let equipment = await mutate([item as Equipment], rarity) as Equipment[];
             equipment.forEach(item => new Equipment(item));
             merchantEquipment.push(equipment[0]);
-            // EventBus.emit('blend-game', { merchantEquipment });
         };
         return merchantEquipment;
     } catch (err) {
@@ -565,7 +562,6 @@ async function getMerchantEquipment(level: number): Promise<Equipment[] | undefi
             const item = await getOneRandom(level);
             merchantEquipment.push(item?.[0]);
         };
-        // EventBus.emit('blend-game', { merchantEquipment });
         return merchantEquipment as Equipment[];
     } catch (err) {
         console.warn(err, 'Error in Merchant Function');
@@ -580,22 +576,18 @@ async function getClothEquipment(level: number): Promise<Equipment[] | undefined
             let rarity;
             let types = ['Helmet', 'Chest', 'Legs'];
             rarity = determineRarityByLevel(level);
-            if (rarity === 'Common') {
-                rarity = 'Uncommon';
-            };
             type = types[Math.floor(Math.random() * types.length)];
             let item;
             if (type === 'Helmet') {
-                item = shuffleArray( Rings.filter((eq) => (eq.rarity === rarity && eq.type === 'Leather-Cloth' )))[0];
+                item = shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity && eq.type === 'Leather-Cloth' )))[0];
             } else if (type === 'Chest') {
-                item = shuffleArray(Amulets.filter((eq) => (eq.rarity === rarity && eq.type === 'Leather-Cloth' )))[0];
+                item = shuffleArray(Chests.filter((eq) => (eq.rarity === rarity && eq.type === 'Leather-Cloth' )))[0];
             } else if (type === 'Legs') {
-                item = shuffleArray(Trinkets.filter((eq) => (eq.rarity === rarity && eq.type === 'Leather-Cloth' )))[0]; 
+                item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type === 'Leather-Cloth' )))[0]; 
             };
             let equipment = await mutate([item as Equipment], rarity) as Equipment[];
             equipment.forEach(item => new Equipment(item));
             merchantEquipment.push(equipment[0]);
-            // EventBus.emit('blend-game', { merchantEquipment });
         };
         return merchantEquipment;
     } catch (err) {

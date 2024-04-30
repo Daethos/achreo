@@ -25,6 +25,20 @@ export const FAITHS = [{
     iconography: '../assets/images/godHand.png'
 }]; 
 
+export const FaithModal = ({ faith }: { faith: string }) => {
+    const dimensions = useResizeListener();
+    const religion = FAITHS.find((f) => f.worshipers === faith);
+    return (
+        <div class="border verticalCenter" style={dimensions()?.ORIENTATION === 'landscape' ? { position: 'absolute', left: '15%', width: '70%' } : { }}>
+            <div class="creature-heading border" style={{ 'text-wrap': 'balance' }}> 
+                <img src={religion?.iconography} alt={religion?.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === 'landscape' ? '15%' : '', 'margin-top': '3%' }} />
+                <p class='gold small wrap' style={{ margin: '3%' }}>{religion?.origin}</p>
+                <h2 class='gold wrap' style={{ margin: '3%' }}>{religion?.quote}</h2>
+            </div>
+        </div>
+    );
+};
+ 
 const FaithCard = ({ faith, newAscean, setNewAscean }: { faith: any; newAscean: Accessor<CharacterSheet>; setNewAscean: Setter<CharacterSheet>; }) => {
     const [show, setShow] = createSignal(false);
     const dimensions = useResizeListener();
@@ -39,8 +53,8 @@ const FaithCard = ({ faith, newAscean, setNewAscean }: { faith: any; newAscean: 
             <div class="border verticalCenter" style={dimensions()?.ORIENTATION === 'landscape' ?{ position: 'absolute', left: '15%', width: '70%' } : { }}>
             <div class="creature-heading border" style={{ 'text-wrap': 'balance' }}> 
                 <img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === 'landscape' ? '15%' : '', 'margin-top': '3%' }} />
-                <p class='gold small'>{faith.origin}</p>
-                <h2 class='gold'>{faith.quote}</h2>
+                <p class='gold small wrap' style={{ margin: '3%' }}>{faith.origin}</p>
+                <h2 class='gold wrap' style={{ margin: '3%' }}>{faith.quote}</h2>
             </div>
             </div>
             </div>

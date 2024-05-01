@@ -51,7 +51,7 @@ export default function LootDropUI({ ascean, game }: Props) {
             </Show> 
             <Show when={showTutorial()}>
                 <div class='modal'>
-                    <TutorialOverlay id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
+                    <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
                 </div>
             </Show> 
         </div>

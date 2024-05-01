@@ -55,8 +55,8 @@ export default class SmallHud extends Phaser.GameObjects.Container {
 
     createBar = () => {
         
-        let open = this.scene.add.image(this.x, this.y * 2 + 10, 'closed');
-        let closed = this.scene.add.image(this.x, this.y * 2 + 10, 'open');
+        let open = this.scene.add.image(this.x, this.y * 2 + 10, 'open');
+        let closed = this.scene.add.image(this.x, this.y * 2 + 10, 'closed');
         let pause = this.scene.add.image(this.x, this.y * 2 + 10, 'pause');
         let minimap = this.scene.add.image(this.x, this.y * 2 + 10, 'minimap');
         let cursor = this.scene.add.image(this.x, this.y * 2 + 10, 'cursor-reset');
@@ -65,11 +65,6 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         let caerenic = this.scene.add.image(this.x, this.y * 2 + 10, 'caerenic');
         let settings = this.scene.add.image(this.x, this.y * 2 + 10, 'settings');
         let info = this.scene.add.image(this.x, this.y * 2 + 10, 'info');
-//        let dialog = this.scene.add.image(this.x, this.y * 2 + 5, 'dialog');
-//        let loot = this.scene.add.image(this.x, this.y * 2 + 5, 'loot');
-        
-//        this.bar.push(loot);    
-//        this.bar.push(dialog);
         this.bar.push(info);
         this.bar.push(settings);
         this.bar.push(caerenic);
@@ -88,7 +83,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             item.setInteractive();
             item.setScale(0.095);
             if (this.closed === true) {
-                if (item.texture.key !== 'open') {
+                if (item.texture.key !== 'closed') {
                     item.setVisible(false);
                 };
             };
@@ -103,16 +98,16 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.bar.forEach((item, index) => {
             item.x = xModifier(this.x, Math.min(index, 8));
             if (this.closed === true) {
-                if (item.texture.key !== 'open') {
-                    item.setVisible(false);
+                if (item.texture.key === 'closed') {
+                    item.setVisible(true); // false
                 } else {
-                    item.setVisible(true);
+                    item.setVisible(false); // true
                 };
             } else {
-                if (item.texture.key !== 'open') {
-                    item.setVisible(true);
+                if (item.texture.key === 'closed') {
+                    item.setVisible(false); // true
                 } else {
-                    item.setVisible(false);
+                    item.setVisible(true); // false
                 };
             };
         });
@@ -123,7 +118,11 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             if (e === true) {
                 this.setVisible(true);
                 this.bar.forEach((item) => {
-                    item.setVisible(true);
+                    if (item.texture.key === 'closed') {
+                        item.setVisible(false);
+                    } else {
+                        item.setVisible(true);
+                    };
                 });
             } else {
                 this.setVisible(false);
@@ -139,14 +138,14 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             if (button === item) {
                 switch (button.texture.key) {
                     case 'open':
-                        this.closed = false;
-                        EventBus.emit('open');
+                        this.closed = true;
+                        EventBus.emit('closed');
                         EventBus.emit('action-button-sound');
                         this.draw();
                         break;
                     case 'closed':
-                        this.closed = true;
-                        EventBus.emit('closed');
+                        this.closed = false;
+                        EventBus.emit('open');
                         EventBus.emit('action-button-sound');
                         this.draw();
                         break;
@@ -187,31 +186,19 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                         EventBus.emit('show-player'); // variable
                         this.setVisible(false);
                         break;
-                    //case 'dialog':
-                        //EventBus.emit('action-button-sound');
-                        //EventBus.emit('show-dialogue');
-                        //break;
-                    //case 'loot':
-                        //EventBus.emit('action-button-sound');
-                        //EventBus.emit('blend-game', { showLoot: true }); //  { showLoot: !game().showLoot }
-                        //break;
                     default:
                         break;
                         
                 };
                 if (this.switches[button.texture.key as keyof typeof this.switches] === true) {
-                    // button.setTint(0x000000);
                     button.setBlendMode(Phaser.BlendModes.SCREEN);
                 } else {
-                    // button.clearTint();
                     button.setBlendMode(Phaser.BlendModes.NORMAL);
                 };
             } else {
                 if (this.switches[button.texture.key as keyof typeof this.switches] === true) {
-                    // button.setTint(0x000000);
                     button.setBlendMode(Phaser.BlendModes.SCREEN);
                 } else {
-                    // button.clearTint();
                     button.setBlendMode(Phaser.BlendModes.NORMAL);    
                 };
             };

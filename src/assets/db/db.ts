@@ -6,7 +6,6 @@ import Ascean from '../../models/ascean';
 import { Asceans } from './ascean';
 import PseudoBase from './pseudo';
 import Equipment from '../../models/equipment';
-import { startingSpecials } from '../../utility/abilities';
 let db = new PseudoBase('db');
 
 const EQUIPMENT = 'Equipment';
@@ -32,6 +31,84 @@ export const deleteAscean = async (id: string) => {
     if (settings) {
         console.log('deleting settings')
         await db.collection(SETTINGS).doc({ _id: id }).delete();
+    };
+};
+
+export const blessAscean = async (id: string) => {
+    try {
+        let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+        const blessing = ascean.mastery;
+        ascean[blessing] += 1;
+        ascean.health = { ...ascean.health, current: ascean.health.max };
+
+        ascean.statistics.relationships.deity.Faithful.occurrence += 1;
+        ascean.statistics.relationships.deity.Faithful.value += 2;
+        ascean.statistics.relationships.deity.value += 2;
+        ascean.statistics.relationships.deity.behaviors.push('Blessed');
+
+        await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
+    } catch (err) {
+        console.log(err, 'Error in Bless Ascean Controller');
+    };
+};
+
+export const curseAscean = async (id: string) => {
+    try {
+        let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+        ascean.firewater.charges = 0;
+        ascean.experience = 0;
+        ascean.health = { ...ascean.health, current: 1 };
+        
+        ascean.statistics.relationships.deity.Unfaithful.occurrence += 1;
+        ascean.statistics.relationships.deity.Unfaithful.value -= 2;
+        ascean.statistics.relationships.deity.value -= 2;
+        ascean.statistics.relationships.deity.behaviors.push('Cursed');
+
+        await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
+    } catch (err) {
+        console.log(err, 'Error in Curse Ascean Controller');
+    }
+};
+
+export const curseAsceanRandom = async (id: string) => {
+    let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+    const random = Math.floor(Math.random() * 4);
+    // Eventually add more curses, like removing inventory, or reducing stats
+    switch (random) {
+        case 0:
+            ascean.firewater.charges = 0;
+            break;
+        case 1:
+            ascean.experience = 0;
+            break;
+        case 2:
+            ascean.health = { ...ascean.health, current: 1 };
+            break;
+        case 3:
+            ascean.firewater.charges = 0;
+            ascean.experience = 0;
+            ascean.health = { ...ascean.health, current: 1 };
+            break;
+        default:
+            break;
+    };
+
+    ascean.statistics.relationships.deity.Unfaithful.occurrence += 1;
+    ascean.statistics.relationships.deity.Unfaithful.value -= 2;
+    ascean.statistics.relationships.deity.value -= 2;
+    ascean.statistics.relationships.deity.behaviors.push('Cursed');
+
+    await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
+};
+
+export const saveEntry = async (id: string, entry: any) => {
+    try {
+        let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+        console.log(ascean, 'Journal');
+        ascean.journal.entries.push(entry);
+        await db.collection(ASCEANS).doc({ _id: id }).update(ascean);
+    } catch (err: any) {
+        console.warn(err.message, "Error Adding Journal Entry");
     };
 };
 

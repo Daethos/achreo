@@ -102,7 +102,7 @@ export default function LevelUp({ asceanState, show, setShow }: Props) {
     
     return (
         <div class='modal'>
-                <div class='stat-block superCenter' style={{ width: '100%', background: 'rgba(0, 0, 0, 0.75' }}>
+                <div class='stat-block superCenter' style={{ width: '100%', background: 'rgba(0, 0, 0, 0.9' }}>
 
                 <div class='left center' style={{ height: '80%', width: '48%',  top: '10%',display: 'inline-block', border: '0.15em solid #fdf6d8' }}>
                     <h3 class='gold wrap' style={{ 'margin': '5%' }}>Congratulations {asceanState().ascean.name}, You Can Now Level Up To {asceanState().ascean.level + 1}</h3>

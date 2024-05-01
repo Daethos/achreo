@@ -1,16 +1,20 @@
-import { Accessor, Setter } from "solid-js";
-import { saveTutorial } from "../assets/db/db";
+import { Accessor, Setter, createEffect, createSignal, onMount } from "solid-js";
+import { blessAscean, curseAscean, saveEntry, saveTutorial } from "../assets/db/db";
 import { EventBus } from "../game/EventBus";
+import Typewriter from "./Typewriter";
+import Ascean from "../models/ascean";
 
 export type Tutorial = {
     boot: boolean,
     character: boolean,
     controls: boolean,
     death: boolean,
+    deity: boolean,
     dialog: boolean,
     faith: boolean,
     intro: boolean,
     inventory: boolean,
+    level: boolean,
     loot: boolean,
     merchant: boolean,
     settings: boolean,
@@ -22,10 +26,12 @@ export const initTutorial: Tutorial = {
     character: false,
     controls: false,
     death: false,
+    deity: false,
     dialog: false,
     faith: false,
     intro: false,
     inventory: false,
+    level: false,
     loot: false,
     merchant: false,
     settings: false,
@@ -39,7 +45,104 @@ const arrows = {
     right: '→',
 };
 
-export default function TutorialOverlay({ id, tutorial, show, setShow }: { id: string; tutorial: Accessor<string>; show: Accessor<boolean>; setShow: Setter<boolean>; }) {
+export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }: { ascean: Accessor<Ascean>; id: string; tutorial: Accessor<string>; show: Accessor<boolean>; setShow: Setter<boolean>; }) {
+    const [deity, setDeity] = createSignal<string>('');
+    function performAction(actionName: string) {
+        console.log(actionName, "Action Name of Perform Action Function")
+        const actionFunction = actions[actionName as keyof typeof actions];
+        if (actionFunction) {
+            actionFunction();
+        };
+    };
+    const actions = {
+        blessPlayer,
+        rebukePlayer,
+    };
+
+    createEffect(() => {
+        if (tutorial() === 'deity') {
+            setDeity(`<div class='typewriterContainer' key='phenomena'>
+                <button class='button' data-function-name='blessPlayer'>
+                <img src=${ascean()?.faith === 'Adherent' ? '../assets/images/achreo-rising.jpg' : ascean()?.faith === 'Devoted' ? '../assets/images/daethos-forming.jpg' : '../assets/images/' + ascean().origin + '-' + ascean().sex + '.jpg'} alt=${ascean().faith}  class=${'godBorder'+ascean().mastery.charAt(0).toUpperCase()+ascean().mastery.slice(1)} />
+                </button>
+                <br />
+                ${ ascean()?.faith === 'adherent' ? (
+                    `<p class='adherentText'>You feel the presence of... ^750 ${highestFaith()}^1000?</p>`
+                ) : ascean()?.faith === 'devoted' ? (
+                    `<p class='devotedText'>You feel the presence of... ^750 ${highestFaith()}^1000?</p>`
+                ) : (
+                    '<p>You feel the presence of an overwhelming power...</p>'
+                ) } <br />
+            
+                A tendril swirls soothing about your senses,<br /> its sweetness teasing as hush soon possesses. <br /><br />
+                Writhing, it warps to wrap round you, seething,<br /> forms of shade shimmer to dance upon your being. <br /><br />
+                Shape becoming silhouette of perish and delight,<br /> Gripping nerve seizes your caer to flourish in shrill light. <br /><br />
+                Harsh and willow, ceasing, follows twitching fascination,<br /> It shears and sutures you; a sheath of torrid satiation. <br /><br />
+                And yet perchance you seek to twist ${ascean()?.faith === 'Adherent' ? 'adherence' : 'devotion'} in its seams,<br /> To taste its ${ascean()?.mastery} burning the resin of your dreams. <br /><br />
+            
+                <p class='${ascean()?.faith === 'Adherent' ? 'adherentText' : ascean()?.faith === 'Devoted' ? 'devotedText' : 'otherText'}'>You become attuned to a halt and paltry whisper,<br /> it rings and stretches your soft edges,<br /> serenity begging you hither.</p>
+                <p class='whisperText'>
+                ^500 "Who are you?" 
+                </p>
+                <p class='journeyText'>
+                    [If you wish to peer into the land of Hush and Tendril and begin a journey of yourself and what you mean to this world, click upon the avatar. You may rebuke this ^500 calling.] 
+                </p>
+                <button class='rebukeButton' data-function-name='rebukePlayer'>X</button>
+                </div>`
+            );
+        };
+    });
+    function highestFaith() {
+        const influences = [ascean().weaponOne.influences?.[0], ascean()?.weaponTwo.influences?.[0], ascean()?.weaponThree.influences?.[0], ascean()?.amulet.influences?.[0], ascean().trinket.influences?.[0]];
+        const faithsCount = influences.reduce((acc: any, faith: any) => {
+            if (acc[faith]) { acc[faith]++; } else { acc[faith] = 1; };
+            return acc;
+        }, {});
+        const faithsArray = Object.entries(faithsCount).filter((faith: any) => faith[0] !== '');
+        const highestFaith = faithsArray.reduce((acc: any, faith: any) => {
+            if (acc[1] < faith[1]) acc = faith;
+            return acc;
+        }, faithsArray[0]);
+        return highestFaith[0];
+    };
+    async function blessPlayer(): Promise<void> {
+        try {
+            // console.log('blessing player!')
+            await blessAscean(ascean()._id);
+            const entry = {
+                title: 'Who am I?',
+                body: `You felt the presence of... ${highestFaith()}? \n\n You become attuned to a halt and paltry whisper, ringing, it stretches your soft edges, serenity begging you hither. \n\n "Who are you?"`,
+                footnote: `Seems you've been blessed by ${highestFaith()}, or some greater mimicry of them. It asked who you were, how would it not know?`,
+                date: Date.now(),
+                location: 'Unknown',
+            };
+            // console.log(entry, 'entry')
+            await saveEntry(ascean()._id, entry);
+            EventBus.emit('update-pause', false);
+            EventBus.off('update-small-hud');
+            await exitTutorial();
+        } catch (err: any) {
+            console.log(err, '%c <- You have an error in blessing a player', 'color: red')
+        };
+    };
+    async function rebukePlayer(): Promise<void> {
+        try {
+            await curseAscean(ascean()._id);
+            const entry = {
+                title: 'Who am I?',
+                body: `You felt the presence of... ${highestFaith()}? \n\n You become attuned to a halt and paltry whisper, ringing, it stretches your soft edges, serenity begging you hither. \n\n "Who are you?"`,
+                footnote: `Some mimicry of ${highestFaith()} asked who you were, as though the true incarnation would not know? Careful of what you rebuke, ${ascean().name}.`,
+                date: Date.now(),
+                location: 'Unknown',
+            };
+            await saveEntry(ascean()._id, entry);
+            EventBus.emit('update-pause', false);
+            EventBus.off('update-small-hud');
+            await exitTutorial();
+        } catch (err: any) {
+            console.log(err, '%c <- You have an error in rebuking a player', 'color: red');
+        };
+    };
     async function exitTutorial(): Promise<void> {
         try {
             await saveTutorial(id, tutorial());
@@ -206,9 +309,19 @@ export default function TutorialOverlay({ id, tutorial, show, setShow }: { id: s
                         Equipment can be clicked for more information]</span>
                 </p>
             </div> }
+            { tutorial() === 'deity' && <div 
+                style={{ 
+                    position: 'absolute', height: '50%', width: '60%', left: '20%', background: '#000', top: '40%', 
+                    border: '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', display: 'inline-flex', overflow: 'scroll' 
+            }}>
+                <Typewriter stringText={deity} styling={{ 'overflow-y': 'auto' }} performAction={performAction} />
+            </div> }
+
+            { tutorial() !== 'deity' &&
             <button class='cornerBR gold highlight' style={{ bottom: '0', right: '0', 'font-weight': 700 }} onClick={() => exitTutorial()}>
                 {arrows.right} Exit
             </button>
+            }
         </div>
     );
 };

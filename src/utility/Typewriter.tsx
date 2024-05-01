@@ -1,4 +1,4 @@
-import { Accessor, JSX, createEffect, createSignal } from 'solid-js';
+import { Accessor, JSX, createEffect, createSignal, on } from 'solid-js';
 import Typed from "typed.js";
 
 type StyleMap = { [key: string]: JSX.CSSProperties };
@@ -47,62 +47,64 @@ const styleMap: StyleMap = {
     typewriterContainer: {
         'z-index': 9999,
         color: "gold",
-        display: "inline-block",
+        // 'min-width': "60vw",
+        // width: "50%",
+        // display: "inline-block",
         'text-align': "center",
         'text-shadow': "1.5px 1.5px 1.5px darkgoldenrod",
         // maxHeight: '300px',
         // overflowY: "auto",
         // scrollbarWidth: 'none',
-        width: "100%",
+        margin: 'auto',
         'font-size': "16px",
-        padding: "10px",
+        padding: "1em",
         'font-variant': "small-caps",
     },
     godBorderConstitution: {
-        'margin-bottom': "15%",
+        'margin-bottom': "5%",
+        width: "10em",
         'margin-top': "5%",
         'border-radius': "50%",
-        'max-width': "50%",
         border: "2px solid #fdf6d8",
         'box-shadow': "0 0 3em #fdf6d8",
     },
     godBorderStrength: {
-        'margin-bottom': "15%",
+        'margin-bottom': "5%",
+        width: "10em",
         'margin-top': "5%",
         'border-radius': "50%",
-        'max-width': "50%",
         border: "2px solid #ff0000",
         'box-shadow': "0 0 3em #ff0000",
     },
     godBorderAgility: {
-        'margin-bottom': "15%",
+        'margin-bottom': "5%",
+        width: "10em",
         'margin-top': "5%",
         'border-radius': "50%",
-        'max-width': "50%",
         border: "2px solid #00ff00",
         'box-shadow': "0 0 3em #00ff00",
     },
     godBorderAchre: {
-        'margin-bottom': "15%",
+        'margin-bottom': "5%",
+        width: "10em",
         'margin-top': "5%",
         'border-radius': "50%",
-        'max-width': "50%",
         border: "2px solid blue",
         'box-shadow': "0 0 3em blue",
     },
     godBorderCaeren: {
-        'margin-bottom': "15%",
+        'margin-bottom': "5%",
+        width: "10em",
         'margin-top': "5%",
         'border-radius': "50%",
-        'max-width': "50%",
         border: "2px solid purple",
         'box-shadow': "0 0 3em purple",
     },
     godBorderKyosir: {
-        'margin-bottom': "15%",
+        'margin-bottom': "5%",
+        width: "10em",
         'margin-top': "5%",
         'border-radius': "50%",
-        'max-width': "50%",
         border: "2px solid gold",
         'box-shadow': "0 0 3em gold",
     },
@@ -165,8 +167,8 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
         performAction(button);
     };
 
-    const applyStyles = (element: HTMLElement, styles: JSX.CSSProperties): void => {
-        for (const [property, value] of Object.entries(styles)) {
+    const applyStyles = (element: any): void => {
+        for (const [property, value] of Object.entries(styleMap[element?.attributes?.class?.value])) {
             element.style[property as any] = value;
         };
     };
@@ -181,7 +183,7 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
         const doc = parser.parseFromString(html, "text/html");
 
         const traverseElement = (element: any): void => {
-            if (element?.attributes?.classname?.value) applyStyles(element as HTMLElement, styleMap[element?.attributes?.classname?.value]);
+            if (element?.attributes?.class?.value) applyStyles(element);
             if (element?.tagName === "BUTTON" && element?.attributes?.["data-function-name"]?.value) applyEventListeners(element as HTMLElement);
             
             for (const child of element.children as any) traverseElement(child);
@@ -192,7 +194,6 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
 
     createEffect(() => {
         if (typed) {
-            console.log("Destroying Typed");
             (typed as Typed).destroy();
         };
 
@@ -203,15 +204,21 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
     function typewriter(text: string | Accessor<string>) {
         const check = typeof text === 'function' ? text() : text;
         const clean = styleHTML(check);
+        const interval = setInterval(() => scrollToBottom(), 1000);
         const typedContent = {
             strings: [clean],
-            typeSpeed: 20,
+            typeSpeed: 25,
             backSpeed: 0,
             showCursor: false,
+            onComplete: () => clearInterval(interval),
         };
         typed = new Typed(el(), typedContent);
+        const scrollToBottom = () => {
+            (el() as any).scrollTop = el()?.scrollHeight;
+        };
         return () => {
             (typed as Typed).destroy();
+            clearInterval(interval);    
         };
     };
 

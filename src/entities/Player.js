@@ -596,7 +596,6 @@ export default class Player extends Entity {
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'posture');
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
-            
         };
         if (e.computerRollSuccess) {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Roll', 1500, 'damage', e.computerCriticalSuccess);
@@ -609,7 +608,6 @@ export default class Player extends Entity {
             };
             
             this.defeatedEnemyCheck(e.enemyID);
-            
             this.winningCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Victory', 3000, 'effect', true);    
         };
         if (e.computerWin === true) {
@@ -674,10 +672,6 @@ export default class Player extends Entity {
             if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) {
                 this.scene.sound.play('parry', { volume: this.scene.settings.volume });
             };
-            if (sfx.playerWin === true) {
-                this.scene.sound.play('victory', { volume: this.scene.settings.volume });
-            };
-            // if (sfx.computerWin) this.scene.death.play();
             EventBus.emit('blend-combat', { computerDamaged: false, playerDamaged: false });
         } catch (err) {
             console.warn(err.message, 'Error Setting Sound Effects');
@@ -1131,7 +1125,7 @@ export default class Player extends Entity {
                     return;
                 };
                 this.scene.combatMachine.action({ type: 'Chiomic', data: 10 });
-                this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, "your and idiot :D :D :D", PLAYER.DURATIONS.CHIOMISM / 2, 'damage');
+                this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `"I don't like you very much"`, 500, 'damage');
                 // updateBeam(this.scene.time.now);
             },
             callbackScope: this,
@@ -1151,7 +1145,7 @@ export default class Player extends Entity {
     };
     onChiomismUpdate = (dt) => {
         this.combatChecker(this.isChiomic);
-        if (this.isChiomic) this.castbar.update(dt, 'channel', 0xFF00FF);
+        if (this.isChiomic) this.castbar.update(dt, 'channel', 0xA700FF);
     };
     onChiomismExit = () => {
         this.castbar.reset();
@@ -1306,7 +1300,7 @@ export default class Player extends Entity {
             this.healingSuccess = true;
             this.isHealing = false;
         };
-        if (this.isHealing) this.castbar.update(dt, 'cast', 0x00ff00);
+        if (this.isHealing) this.castbar.update(dt, 'cast', 0x00C200);
     };
     onHealingExit = () => {
         if (this.healingSuccess) {
@@ -1693,7 +1687,7 @@ export default class Player extends Entity {
     };
     onTshaeralUpdate = (dt) => {
         this.combatChecker(this.isTshaering);
-        if (this.isTshaering) this.castbar.update(dt, 'channel', 0xFF00FF);
+        if (this.isTshaering) this.castbar.update(dt, 'channel', 0xA700FF);
     };
     onTshaeralExit = () => {
         this.castbar.reset();

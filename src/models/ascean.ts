@@ -42,6 +42,17 @@ export default class Ascean {
     trinket: Equipment;
     statistics: Statistics;
     tutorial: Tutorial;
+    journal: {
+        entries: [{
+            title: string,
+            body: string,
+            footnote: string,
+            date: Date,
+            location: string,
+        }] | [],
+        currentEntry: number,
+        lastEntry: number,
+    };
 
     constructor(ascean: Ascean) {
         this._id = ascean._id;
@@ -79,6 +90,11 @@ export default class Ascean {
         this.trinket = ascean.trinket;
         this.statistics = initStatistics;
         this.tutorial = initTutorial;
+        this.journal = {
+            entries: [],
+            currentEntry: 0,
+            lastEntry: 0,
+        };    
     };
     [key: string]: any;
 };

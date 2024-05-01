@@ -166,10 +166,7 @@ export type Statistics = {
     relationships: {
         deity: {
             name: string, // This occurs when you meet a deity a second time, you can reinforce you believe it's *that* deity and it'll name them then.
-            behaviors: {
-                type: [],
-                default: []
-            },
+            behaviors: [],
             Compliant: { 
                 occurrence: number,
                 value: number,
@@ -359,10 +356,7 @@ export const initStatistics: Statistics = {
     relationships: {
         deity: {
             name: '', // This occurs when you meet a deity a second time, you can reinforce you believe it's *that* deity and it'll name them then.
-            behaviors: {
-                type: [],
-                default: []
-            },
+            behaviors: [],
             Compliant: { 
                 occurrence: 0,
                 value: 0,

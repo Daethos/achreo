@@ -47,7 +47,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.add(this.castbar);
 
         this.timeText = new Phaser.GameObjects.Text(this.scene, 0, 0, `${Math.round(this.time)} / ${this.total}`, { 
-            color: '#fdf6d8', fontSize: '1.75em', stroke: '#000', strokeThickness: 2, align: 'center' 
+            color: '#fdf6d8', fontSize: '1.75em', stroke: '#000', strokeThickness: 3, align: 'center' 
         });
         this.add(this.timeText);
         this.timeText.setOrigin(0.5);

@@ -275,12 +275,8 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     * 100 
                     * (res.computer?.level as number / res?.player?.level!) 
                     + (res?.playerAttributes?.rawKyosir as number));
-
-                // console.log(experience, 'Pre Balance');
                 experience = balanceExperience(experience, res?.player?.level as number);
-                // console.log(experience, 'Post Balance');               
                 experience += ascean().experience;
-                // console.log(experience, 'Post Add');
                 const newState = { 
                     ...asceanState(), 
                     avarice: res.prayerData.length > 0 ? res.prayerData.includes('Avarice') : false, 
@@ -293,6 +289,17 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
                 EventBus.emit('gain-experience', newState);
                 EventBus.emit('enemy-loot', loot);
+                if (!ascean().tutorial.deity) {
+                    if (experience >= 1000 && ascean().level >= 2) {
+                        setTutorial('deity');
+                        setShowTutorial(true);  
+                        if (game().pauseState === false) {
+                            EventBus.emit('update-pause', true);
+                            EventBus.emit('toggle-bar', true);    
+                            EventBus.off('update-small-hud');
+                        };
+                    };
+                };
             } else {
                 if (!ascean().tutorial.death) {
                     setTutorial('death');
@@ -353,7 +360,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         </Show>
         <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} /> 
         <Show when={showTutorial()}>
-            <TutorialOverlay id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
+            <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
         </Show>
         </div>
     );

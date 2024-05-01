@@ -965,10 +965,10 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
             </div>
         </Show>
         <Show when={showTutorial()}>
-            <TutorialOverlay id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} /> 
+            <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} /> 
         </Show>
         <Show when={showInventory()}>
-            <TutorialOverlay id={ascean()._id} tutorial={tutorial} show={showInventory} setShow={setShowInventory} /> 
+            <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showInventory} setShow={setShowInventory} /> 
         </Show>
         </div>
     );

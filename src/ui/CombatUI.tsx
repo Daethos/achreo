@@ -34,7 +34,11 @@ export default function CombatUI({ state, staminaPercentage, game, stamina }: Pr
     });  
 
     const disengage = () => EventBus.emit('disengage');
-    const showPlayer = () => EventBus.emit('show-player');
+    const showPlayer = () => {
+        EventBus.emit('show-player');
+        EventBus.emit('action-button-sound');
+        EventBus.emit('update-small-hud');
+    };
 
     function caerenic(caerenic: boolean) {
         return {

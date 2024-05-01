@@ -48,7 +48,6 @@ const arrows = {
 export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }: { ascean: Accessor<Ascean>; id: string; tutorial: Accessor<string>; show: Accessor<boolean>; setShow: Setter<boolean>; }) {
     const [deity, setDeity] = createSignal<string>('');
     function performAction(actionName: string) {
-        console.log(actionName, "Action Name of Perform Action Function")
         const actionFunction = actions[actionName as keyof typeof actions];
         if (actionFunction) {
             actionFunction();

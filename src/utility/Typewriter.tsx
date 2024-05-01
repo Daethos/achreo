@@ -1,4 +1,4 @@
-import { Accessor, JSX, createEffect, createSignal, on } from 'solid-js';
+import { Accessor, JSX, createEffect, createSignal } from 'solid-js';
 import Typed from "typed.js";
 
 type StyleMap = { [key: string]: JSX.CSSProperties };
@@ -21,7 +21,7 @@ const styleMap: StyleMap = {
         'font-size': "0.9em",
     },
     whisperText: {
-        'fontr-size': "2em",
+        'font-size': "2em",
     },
     otherText: {
         'font-size': "1.1em",
@@ -47,14 +47,8 @@ const styleMap: StyleMap = {
     typewriterContainer: {
         'z-index': 9999,
         color: "gold",
-        // 'min-width': "60vw",
-        // width: "50%",
-        // display: "inline-block",
         'text-align': "center",
         'text-shadow': "1.5px 1.5px 1.5px darkgoldenrod",
-        // maxHeight: '300px',
-        // overflowY: "auto",
-        // scrollbarWidth: 'none',
         margin: 'auto',
         'font-size': "16px",
         padding: "1em",
@@ -163,7 +157,6 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
     let typed: Typed | null = null;
 
     (window as any).handleButton = (button: string) => {
-        console.log(button, "Button Clicked");
         performAction(button);
     };
 

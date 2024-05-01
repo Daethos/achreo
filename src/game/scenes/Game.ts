@@ -559,7 +559,8 @@ export class Game extends Scene {
 
     actionButtonEvent():void {
         EventBus.on('action-button-sound', () => {
-            this.actionButton.play();
+            // this.actionButton.play();
+            this.sound.play('TV_Button_Press', { volume: this?.settings?.volume * 2 });
         });
     };
 

@@ -953,6 +953,7 @@ export default class Player extends Entity {
     onDodgeEnter = () => {
         if (this.isStalwart || this.isStorming) return;
         this.isDodging = true;
+        this.scene.sound.play('dodge', { volume: this.scene.settings.volume });
         this.scene.useStamina(PLAYER.STAMINA.DODGE);
         this.swingReset(States.DODGE);
         this.swingReset(States.ROLL);
@@ -987,7 +988,7 @@ export default class Player extends Entity {
     onRollEnter = () => {
         if (this.isStalwart || this.isStorming) return;
         this.isRolling = true;
-        this.scene.roll.play();
+        this.scene.sound.play('roll', { volume: this.scene.settings.volume });
         this.swingReset(States.ROLL);
         this.swingReset(States.DODGE);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.ROLL);

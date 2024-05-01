@@ -15,6 +15,7 @@ import { GameState } from '../stores/game';
 import { LevelSheet } from '../utility/ascean';
 import { usePhaserEvent } from '../utility/hooks';
 import { consumePrayer, instantActionCompiler, weaponActionCompiler } from '../utility/combat';
+import { Deity } from './Deity';
 
 interface Props {
     ascean: Accessor<Ascean>;
@@ -30,6 +31,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [tutorial, setTutorial] = createSignal<string>('');
+    const [showDeity, setShowDeity] = createSignal<boolean>(false);
     const [asceanState, setAsceanState] = createSignal<LevelSheet>({
         ascean: ascean(),
         currency: ascean().currency,
@@ -271,8 +273,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
             EventBus.emit('record-statistics', res);
             if (res.playerWin === true) {
                 let experience = 
-                    Math.round((res.computer?.level as number) 
-                    * 100 
+                    Math.round((res.computer?.level as number) * 100 
                     * (res.computer?.level as number / res?.player?.level!) 
                     + (res?.playerAttributes?.rawKyosir as number));
                 experience = balanceExperience(experience, res?.player?.level as number);
@@ -290,14 +291,22 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 EventBus.emit('gain-experience', newState);
                 EventBus.emit('enemy-loot', loot);
                 if (!ascean().tutorial.deity) {
-                    if (experience >= 1000 && ascean().level >= 2) {
+                    if (experience >= 1000 && ascean().level >= 1) {
                         setTutorial('deity');
                         setShowTutorial(true);  
                         if (game().pauseState === false) {
                             EventBus.emit('update-pause', true);
                             EventBus.emit('toggle-bar', true);    
-                            EventBus.off('update-small-hud');
+                            EventBus.emit('update-small-hud');
                         };
+                    };
+                };
+                if (checkDeificInteractions()) {
+                    setShowDeity(true);
+                    if (game().pauseState === false) {
+                        EventBus.emit('update-pause', true);
+                        EventBus.emit('toggle-bar', true);    
+                        EventBus.emit('update-small-hud');
                     };
                 };
             } else {
@@ -312,7 +321,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     };    
 
     function balanceExperience(experience: number, level: number) {
-        experience *= (105 - (level * 5)) / 100;
+        experience *= (110 - (level * 10)) / 100;
         experience = Math.round(experience);
         // 3% drop off level 1 = * 1, 2 = * 0.97, 3 = * 0.94, 4 = * 0.91, 5 = * 0.88, 6 = * 0.85, 7 = * 0.82, 8 = * 0.79, 9 = * 0.76, 10 = * 0.73
         // 4% drop off level 1 = * 1, 2 = * 0.96, 3 = * 0.92, 4 = * 0.88, 5 = * 0.84, 6 = * 0.80, 7 = * 0.76, 8 = * 0.72, 9 = * 0.68, 10 = * 0.64
@@ -320,6 +329,13 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         // 6% drop off level 1 = * 1, 2 = * 0.94, 3 = * 0.88, 4 = * 0.82, 5 = * 0.76, 6 = * 0.70, 7 = * 0.64, 8 = * 0.58, 9 = * 0.52, 10 = * 0.46
         // 7% drop off level 1 = * 1, 2 = * 0.93, 3 = * 0.86, 4 = * 0.79, 5 = * 0.72, 6 = * 0.65, 7 = * 0.58, 8 = * 0.51, 9 = * 0.44, 10 = * 0.37
         return experience;
+    };
+
+    function checkDeificInteractions() {
+        console.log(ascean().interactions.deity, ascean().level, ascean().experience, 'Checking Deific Interactions');
+        return ascean().interactions.deity <= ascean().level - 1
+            && ascean().level >= 2 
+            && ascean().level * 500 <= ascean().experience;
     };
 
     function filterEnemies(id: string) {
@@ -338,6 +354,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     usePhaserEvent('remove-enemy', filterEnemies);
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
+    usePhaserEvent('show-deity', (e: boolean) => setShowDeity(e));
 
     function fetchEnemy(enemy: any) {
         EventBus.emit('setup-enemy', enemy);
@@ -361,6 +378,9 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} /> 
         <Show when={showTutorial()}>
             <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
+        </Show>
+        <Show when={showDeity()}>
+            <Deity ascean={ascean} combat={combat} game={game} />
         </Show>
         </div>
     );

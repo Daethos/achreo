@@ -119,7 +119,7 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
             // console.log(entry, 'entry')
             await saveEntry(ascean()._id, entry);
             EventBus.emit('update-pause', false);
-            EventBus.off('update-small-hud');
+            EventBus.emit('update-small-hud');
             await exitTutorial();
         } catch (err: any) {
             console.log(err, '%c <- You have an error in blessing a player', 'color: red')
@@ -137,7 +137,7 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
             };
             await saveEntry(ascean()._id, entry);
             EventBus.emit('update-pause', false);
-            EventBus.off('update-small-hud');
+            EventBus.emit('update-small-hud');
             await exitTutorial();
         } catch (err: any) {
             console.log(err, '%c <- You have an error in rebuking a player', 'color: red');

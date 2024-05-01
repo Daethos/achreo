@@ -49,10 +49,23 @@ export default class Ascean {
             footnote: string,
             date: Date,
             location: string,
+            keywords: string[],
         }] | [],
         currentEntry: number,
         lastEntry: number,
     };
+    interactions: {
+        deity: number,
+    };
+    capable: number;
+    // conversations: {
+    //     [key: string]: {
+    //         dialogue: string;
+    //         responses: {
+    //             [key: string]: string;
+    //         };
+    //     };
+    // };
 
     constructor(ascean: Ascean) {
         this._id = ascean._id;
@@ -95,6 +108,10 @@ export default class Ascean {
             currentEntry: 0,
             lastEntry: 0,
         };    
+        this.interactions = {
+            deity: 0,
+        };
+        this.capable = 0;
     };
     [key: string]: any;
 };

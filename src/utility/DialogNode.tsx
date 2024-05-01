@@ -1,4 +1,4 @@
-import { Accessor, Setter, createEffect, createSignal, onMount } from "solid-js";
+import { Accessor, Setter, createSignal, onMount } from "solid-js";
 import Ascean from "../models/ascean";
 import { GameState } from "../stores/game";
 import DialogNodes from "./DialogNodes.json";

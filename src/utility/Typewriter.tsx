@@ -21,7 +21,7 @@ const styleMap: StyleMap = {
         'font-size': "0.9em",
     },
     whisperText: {
-        'font-size': "2em",
+        'fontr-size': "2em",
     },
     otherText: {
         'font-size': "1.1em",

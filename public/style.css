@@ -574,6 +574,16 @@ body {
     /* border: 0.15em solid #fdf6d8; */
 }
 
+.fade-in {
+    opacity: 1;
+    transition: opacity 1s ease-in;
+}
+  
+.fade-out {
+    opacity: 0;
+    transition: opacity 1s ease-in;
+}
+
 .header {
     display: flex;
     justify-content: space-between;

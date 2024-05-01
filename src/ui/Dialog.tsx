@@ -31,8 +31,6 @@ const nameCheck = (name: string) => {
     };
 };
 
-
-
 interface DialogOptionProps {
     option: DialogNodeOption;
     onClick: (nextNodeId: string | null) => void;
@@ -85,7 +83,7 @@ interface DialogTreeProps {
     setKeywordResponses: Setter<string[]>;
 };
 
-const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlayerResponses, setKeywordResponses }: DialogTreeProps) => {
+export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlayerResponses, setKeywordResponses }: DialogTreeProps) => {
     const [showDialogOptions, setShowDialogOptions] = createSignal<boolean>(false);
     const [renderedText, setRenderedText] = createSignal<string>('');
     const [renderedOptions, setRenderedOptions] = createSignal<any>(undefined);
@@ -169,11 +167,6 @@ const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlay
             searchCurrentNode(nextNodeIndex);
         };
     };
-  
-    // if (!game()?.currentNode) {
-    //     console.log('--- PINGING !game().currentNode ---')
-    //   return null;
-    // };
   
     return (
         <div class='wrap'> 

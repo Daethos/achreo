@@ -1,3 +1,4 @@
+import { getAscean, updateAscean } from "../assets/db/db";
 import { Statistics } from "./statistics";
 
 export const DEITIES = {
@@ -426,6 +427,75 @@ const deities = {
     }, 
 };
 
+const keywords = {
+    'Daethos': 'Daethos',
+    'Daethic': 'Daethic',
+    'Daethos\'s': 'Daethos\'s',
+    'Ancient': 'Ancient',
+    'Ancients': 'Ancients',
+    'Ancient\'s': 'Ancient\'s',
+    
+    'Achreo': 'Achreo',
+    'Achreo\'s': 'Achreo\'s',
+    
+    'Ahn\'ve': 'Ahn\'ve',
+    'Ahn\'ve\'s': 'Ahn\'ve\'s',
+    
+    'Astra': 'Astra',
+    'Astra\'s': 'Astra\'s',
+    
+    'Cambire': 'Cambire',
+    'Cambire\'s': 'Cambire\'s',
+    
+    'Chiomyr': 'Chiomyr',
+    'Chiomyr\'s': 'Chiomyr\'s',
+
+    'Fyer': 'Fyer',
+    'Fyer\'s': 'Fyer\'s',
+
+    'Ilios': 'Ilios',
+    'Ilios\'s': 'Ilios\'s',
+    
+    'Kyn\'gi': 'Kyn\'gi',
+    'Kyn\'gi\'s': 'Kyn\'gi\'s',
+    
+    'Kyr\'na': 'Kyr\'na',
+    'Kyr\'na\'s': 'Kyr\'na\'s',
+
+    'Kyrisos': 'Kyrisos',
+    'Kyrisos\'s': 'Kyrisos\'s',
+
+    'Lilos': 'Lilos',
+    'Lilos\'s': 'Lilos\'s',
+
+    'Ma\'anre': 'Ma\'anre',
+    'Ma\'anre\'s': 'Ma\'anre\'s',
+
+    'Nyrolus': 'Nyrolus',
+    'Nyrolus\'s': 'Nyrolus\'s',
+    
+    'Quor\'ei': 'Quor\'ei',
+    'Quor\'ei\'s': 'Quor\'ei\'s',
+
+    'Rahvre': 'Rahvre',
+    'Rahvre\'s': 'Rahvre\'s',
+    
+    'Senari': 'Senari',
+    'Senari\'s': 'Senari\'s',
+    
+    'Se\'dyro': 'Se\'dyro',
+    'Se\'dyro\'s': 'Se\'dyro\'s',
+    
+    'Se\'vas': 'Se\'vas',
+    'Se\'vas\'s': 'Se\'vas\'s',
+
+    'Shrygei': 'Shrygei',
+    'Shrygei\'s': 'Shrygei\'s',
+    
+    'Tshaer': 'Tshaer',
+    'Tshaer\'s': 'Tshaer\'s',
+};
+
 export const checkDeificConcerns = (statistics: Statistics, worship: string, stat: string, innerStat: string) => {
     try {
         const deity = deities[worship as keyof typeof deities];
@@ -439,5 +509,195 @@ export const checkDeificConcerns = (statistics: Statistics, worship: string, sta
         return statistics;
     } catch (err) {
         console.warn(err, "Error Checking Deific stats");
+    };
+};
+
+export async function evaluateDeity(data: { asceanID: string, deity: string, entry: any }): Promise<void> {
+    try {
+        let { asceanID, deity, entry } = data;
+        let ascean = await getAscean(asceanID);
+
+        const keywordCount = {
+            'Compliant': {
+                occurrence: 0,
+                value: 0
+            },
+            'Faithful': {
+                occurrence: 0,
+                value: 0
+            },
+            'Unfaithful': {
+                occurrence: 0,
+                value: 0
+            },
+            'Disobedient': {
+                occurrence: 0,
+                value: 0
+            },
+        };
+
+        entry.body = entry.body.join('\n\n'); 
+ 
+        entry.keywords.forEach((keyword: string) => {
+            if (keywordCount[keyword as keyof typeof keywordCount]) {
+                keywordCount[keyword as keyof typeof keywordCount].occurrence += 1;
+            };
+        });
+        
+        keywordCount.Compliant.value = keywordCount.Compliant.occurrence;
+        keywordCount.Faithful.value = keywordCount.Faithful.occurrence * 2;
+        keywordCount.Unfaithful.value = -keywordCount.Unfaithful.occurrence * 2;
+        keywordCount.Disobedient.value = -keywordCount.Disobedient.occurrence;
+
+        const valueSum = keywordCount.Compliant.value + keywordCount.Faithful.value + keywordCount.Unfaithful.value + keywordCount.Disobedient.value;
+
+        const evaluateBehavior = (count: { [s: string]: unknown; } | ArrayLike<unknown>) => {
+            const sortCountOccurrence = Object.entries(count as { [key: string]: { occurrence: number, value: number } }).sort((a, b) => b[1].occurrence - a[1].occurrence);
+            const mostFrequentBehavior = sortCountOccurrence[0][0];
+
+            console.log(sortCountOccurrence, mostFrequentBehavior, "sortCountOccurrence, sortCountValue");
+
+            if (mostFrequentBehavior === 'Faithful') {
+                if (valueSum >= 4) {
+                    return 'Convicted';
+                } else if (valueSum >= 2) {
+                    return 'Faithful';
+                } else if (valueSum === 1) {
+                    return 'Somewhat Faithful';
+                } else {
+                    return 'Strained Faith';
+                };
+            } else if (mostFrequentBehavior === 'Compliant') {
+                if (valueSum >= 4) {
+                    return 'Zealous';
+                } else if (valueSum >= 2) {
+                    return 'Compliant';
+                } else if (valueSum >= 1) {
+                    return 'Somewhat Compliant';
+                } else {
+                    return 'Strained Compliance';
+                };
+            } else if (mostFrequentBehavior === 'Unfaithful') {
+                if (valueSum <= -4) {
+                    return 'Hostile';
+                } else if (valueSum <= -2) {
+                    return 'Unfaithful';
+                } else if (valueSum <= -1) {
+                    return 'Somewhat Unfaithful';
+                } else {
+                    return 'Waning Faith';
+                };
+            } else if (mostFrequentBehavior === 'Disobedient') {
+                if (valueSum <= -4) {
+                    return 'Rabid';
+                } else if (valueSum <= -2) {
+                    return 'Disobedient';
+                } else if (valueSum <= -1) {
+                    return 'Somewhat Disobedient';
+                } else {
+                    return 'Waning Compliance';
+                };
+            } else {
+                return 'Neutral';
+            };
+        };
+
+        const behavior = evaluateBehavior(keywordCount);
+
+        console.log(behavior, "Behavior");
+        if (ascean.statistics.relationships.deity.name === '') ascean.statistics.relationships.deity.name = deity;
+        ascean.statistics.relationships.deity.Compliant.occurrence += keywordCount.Compliant.occurrence;
+        ascean.statistics.relationships.deity.Faithful.occurrence += keywordCount.Faithful.occurrence;
+        ascean.statistics.relationships.deity.Unfaithful.occurrence += keywordCount.Unfaithful.occurrence;
+        ascean.statistics.relationships.deity.Disobedient.occurrence += keywordCount.Disobedient.occurrence;
+        ascean.statistics.relationships.deity.Compliant.value += keywordCount.Compliant.value;
+        ascean.statistics.relationships.deity.Faithful.value += keywordCount.Faithful.value;
+        ascean.statistics.relationships.deity.Unfaithful.value += keywordCount.Unfaithful.value;
+        ascean.statistics.relationships.deity.Disobedient.value += keywordCount.Disobedient.value;
+        ascean.statistics.relationships.deity.value += valueSum;
+        ascean.statistics.relationships.deity.behaviors.push(behavior);
+
+        if (ascean.capable < 5) {
+            ascean.capable += 1;
+        };
+
+        // const goodBehavior = ascean.statistics.relationships.deity.behaviors.filter(behavior => behavior === 'Faithful' || behavior === 'Compliant');
+        // const badBehavior = ascean.statistics.relationships.deity.behaviors.filter(behavior => behavior === 'Unfaithful' || behavior === 'Disobedient');
+        // const middlingBehavior = ascean.statistics.relationships.deity.behaviors.filter(behavior => behavior === 'Somewhat Faithful' || behavior === 'Somewhat Compliant' || behavior === 'Somewhat Unfaithful' || behavior === 'Somewhat Disobedient');
+        // const goodBehaviorCount = goodBehavior.length;
+        // const badBehaviorCount = badBehavior.length;
+        // const middlingBehaviorCount = middlingBehavior.length;
+
+        const presentTense = ascean.faith === 'adherent' ? 'adherence to' : ascean.faith === 'devoted' ? 'devotion to' : 'curiosity with';
+        const pastTense = ascean.faith === 'adherent' ? 'adherent toward' : ascean.faith === 'devoted' ? 'devoted toward' : 'curious with';
+
+        switch (behavior) {
+            case 'Convicted':
+                ascean[keywords[ascean.mastery as keyof typeof keywords]] += 1;
+                entry.footnote = `${ascean.name} seems convicted of their ${presentTense} ${deity}.`;
+                break;
+            case 'Zealous':
+                entry.footnote = `${ascean.name} seems zealous in their ${presentTense} ${deity}.`;
+                ascean[keywords[ascean.mastery as keyof typeof keywords]] += 0.75;
+                break;
+            case 'Faithful':
+                entry.footnote = `${ascean.name} seems faithful to ${deity}.`;
+                ascean[keywords[ascean.mastery as keyof typeof keywords]] += 0.5;
+                break;
+            case 'Somewhat Faithful':
+                entry.footnote = `${ascean.name} seems somewhat faithful to ${deity}.`;
+                ascean[keywords[ascean.mastery as keyof typeof keywords]] += 0.25;
+                break;
+            case 'Compliant':
+                entry.footnote = `${ascean.name}'s ${pastTense} ${deity}.`;
+                
+                break;
+            case 'Waning Faith':
+                entry.footnote = `${ascean.name}'s waning in their ${presentTense} ${deity}.`;
+                
+                break;
+            case 'Somewhat Compliant':
+                entry.footnote = `${ascean.name}'s somewhat ${pastTense} ${deity}.`;
+                
+                break;
+            case 'Strained Compliance':
+                entry.footnote = `${ascean.name}'s strained in their ${presentTense} ${deity}.`;
+                // It'll sense that the deity notices this behavior
+                break;
+            case 'Waning Compliance':
+                entry.footnote = `${ascean.name}'s waning in their ${presentTense} ${deity}.`;
+                // Over time, this will have another closure that writes the footnote based on the specific deity
+                break;
+            case 'Somewhat Disobedient':
+                entry.footnote = `${ascean.name} has been somewhat disobedient to ${deity}.`;
+                // This is where Chiomyr would mess with someone's inventory, etc...
+                break;
+            case 'Disobedient':
+                entry.footnote = `${ascean.name} has been disobedient to ${deity}.`;
+                // Or put their current health at level 1 as punishment
+                break;
+            case 'Somewhat Unfaithful':
+                entry.footnote = `${ascean.name} has been somewhat unfaithful to ${deity}.`;
+                ascean[keywords[ascean.mastery as keyof typeof keywords]] -= 0.25;
+                break;
+            case 'Unfaithful':
+                ascean[keywords[ascean.mastery as keyof typeof keywords]] -= 0.5;
+                entry.footnote = `${ascean.name} has been unfaithful to ${deity}.`;
+                break;
+            case 'Rabid':
+                ascean[keywords[ascean.mastery as keyof typeof keywords]] -= 0.75;
+                entry.footnote = `${ascean.name} has been rabid in their unfaithfulness to ${deity}.`;
+                break;
+            case 'Hostile':
+                ascean[keywords[ascean.mastery as keyof typeof keywords]] -= 1;
+                entry.footnote = `${ascean.name} has been hostile to ${deity}.`;
+                break;
+            default:
+                break;
+        };
+        ascean.journal.entries.push(entry);
+        await updateAscean(ascean);
+    } catch (err: any) {
+        console.log(err.message, "Error Evaluating Experience");
     };
 };

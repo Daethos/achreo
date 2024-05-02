@@ -512,7 +512,7 @@ export const checkDeificConcerns = (statistics: Statistics, worship: string, sta
     };
 };
 
-export async function evaluateDeity(data: { asceanID: string, deity: string, entry: any }): Promise<void> {
+export async function evaluateDeity(data: { asceanID: string, deity: string, entry: any }): Promise<any> {
     try {
         let { asceanID, deity, entry } = data;
         let ascean = await getAscean(asceanID);
@@ -604,6 +604,8 @@ export async function evaluateDeity(data: { asceanID: string, deity: string, ent
 
         const behavior = evaluateBehavior(keywordCount);
 
+        ascean.interactions.deity += 1;
+
         console.log(behavior, "Behavior");
         if (ascean.statistics.relationships.deity.name === '') ascean.statistics.relationships.deity.name = deity;
         ascean.statistics.relationships.deity.Compliant.occurrence += keywordCount.Compliant.occurrence;
@@ -628,8 +630,8 @@ export async function evaluateDeity(data: { asceanID: string, deity: string, ent
         // const badBehaviorCount = badBehavior.length;
         // const middlingBehaviorCount = middlingBehavior.length;
 
-        const presentTense = ascean.faith === 'adherent' ? 'adherence to' : ascean.faith === 'devoted' ? 'devotion to' : 'curiosity with';
-        const pastTense = ascean.faith === 'adherent' ? 'adherent toward' : ascean.faith === 'devoted' ? 'devoted toward' : 'curious with';
+        const presentTense = ascean.faith === 'Adherent' ? 'adherence to' : ascean.faith === 'Devoted' ? 'devotion to' : 'curiosity with';
+        const pastTense = ascean.faith === 'Adherent' ? 'adherent toward' : ascean.faith === 'Devoted' ? 'devoted toward' : 'curious with';
 
         switch (behavior) {
             case 'Convicted':
@@ -650,11 +652,9 @@ export async function evaluateDeity(data: { asceanID: string, deity: string, ent
                 break;
             case 'Compliant':
                 entry.footnote = `${ascean.name}'s ${pastTense} ${deity}.`;
-                
                 break;
             case 'Waning Faith':
                 entry.footnote = `${ascean.name}'s waning in their ${presentTense} ${deity}.`;
-                
                 break;
             case 'Somewhat Compliant':
                 entry.footnote = `${ascean.name}'s somewhat ${pastTense} ${deity}.`;
@@ -696,7 +696,8 @@ export async function evaluateDeity(data: { asceanID: string, deity: string, ent
                 break;
         };
         ascean.journal.entries.push(entry);
-        await updateAscean(ascean);
+        const update = await updateAscean(ascean);
+        return update;
     } catch (err: any) {
         console.log(err.message, "Error Evaluating Experience");
     };

@@ -34,69 +34,45 @@ export const deleteAscean = async (id: string) => {
     };
 };
 
-export const blessAscean = async (id: string) => {
+export const blessAscean = async (id: string, entry: any): Promise<any> => {
     try {
         let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
         const blessing = ascean.mastery;
         ascean[blessing] += 1;
         ascean.health = { ...ascean.health, current: ascean.health.max };
-
-        // ascean.statistics.relationships.deity.Faithful.occurrence += 1;
-        // ascean.statistics.relationships.deity.Faithful.value += 2;
-        // ascean.statistics.relationships.deity.value += 2;
-        // ascean.statistics.relationships.deity.behaviors.push('Blessed');
-
-        ascean.statistics = {
-            ...ascean.statistics,
-            relationships: {
-                ...ascean.statistics.relationships,
-                deity: {
-                    ...ascean.statistics.relationships.deity,
-                    Faithful: {
-                        occurrence: ascean.statistics.relationships.deity.Faithful.occurrence + 1,
-                        value: ascean.statistics.relationships.deity.Faithful.value + 2,
-                    },
-                    value: ascean.statistics.relationships.deity.value + 2,
-                    behaviors: ascean.statistics.relationships.deity.behaviors.concat('Blessed'),
-                },
-            }
-        };
-
-        await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
+        ascean.statistics.relationships.deity.Faithful.occurrence += 1;
+        ascean.statistics.relationships.deity.Faithful.value += 5;
+        ascean.statistics.relationships.deity.value += 5;
+        ascean.statistics.relationships.deity.behaviors.push('Blessed');
+        ascean.interactions.deity += 1;
+        ascean.journal.entries.push(entry);
+        
+        console.log(ascean, 'Bless Ascean');
+        // return ascean;
+        const update = await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
+        return update;
     } catch (err) {
         console.log(err, 'Error in Bless Ascean Controller');
     };
 };
 
-export const curseAscean = async (id: string) => {
+export const curseAscean = async (id: string, entry: any): Promise<any> => {
     try {
         let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
         ascean.firewater.charges = 0;
         ascean.experience = 0;
         ascean.health = { ...ascean.health, current: 1 };
         
-        // ascean.statistics.relationships.deity.Unfaithful.occurrence += 1;
-        // ascean.statistics.relationships.deity.Unfaithful.value -= 2;
-        // ascean.statistics.relationships.deity.value -= 2;
-        // ascean.statistics.relationships.deity.behaviors.push('Cursed');
+        ascean.statistics.relationships.deity.Unfaithful.occurrence += 1;
+        ascean.statistics.relationships.deity.Unfaithful.value -= 5;
+        ascean.statistics.relationships.deity.value -= 5;
+        ascean.statistics.relationships.deity.behaviors.push('Cursed');
+        ascean.interactions.deity += 1;
+        ascean.journal.entries.push(entry);
 
-        ascean.statistics = {
-            ...ascean.statistics,
-            relationships: {
-                ...ascean.statistics.relationships,
-                deity: {
-                    ...ascean.statistics.relationships.deity,
-                    Unfaithful: {
-                        occurrence: ascean.statistics.relationships.deity.Unfaithful.occurrence + 1,
-                        value: ascean.statistics.relationships.deity.Unfaithful.value - 2,
-                    },
-                    value: ascean.statistics.relationships.deity.value - 2,
-                    behaviors: ascean.statistics.relationships.deity.behaviors.concat('Cursed'),
-                },
-            }
-        };
-
-        await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
+        console.log(ascean, 'Curse Ascean');
+        const update =  await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
+        return update;
     } catch (err) {
         console.log(err, 'Error in Curse Ascean Controller');
     };
@@ -134,26 +110,10 @@ export const blessAsceanRandom = async (id: string) => {
             break;
     };
 
-    ascean.statistics = {
-        ...ascean.statistics,
-        relationships: {
-            ...ascean.statistics.relationships,
-            deity: {
-                ...ascean.statistics.relationships.deity,
-                Faithful: {
-                    occurrence: ascean.statistics.relationships.deity.Faithful.occurrence + 1,
-                    value: ascean.statistics.relationships.deity.Faithful.value + 5,
-                },
-                value: ascean.statistics.relationships.deity.value + 5,
-                behaviors: ascean.statistics.relationships.deity.behaviors.concat('Blessed'),
-            },
-        }
-    };
-
-    // ascean.statistics.relationships.deity.Faithful.occurrence += 1;
-    // ascean.statistics.relationships.deity.Faithful.value += 2;
-    // ascean.statistics.relationships.deity.value += 2;
-    // ascean.statistics.relationships.deity.behaviors.push('Blessed');
+    ascean.statistics.relationships.deity.Faithful.occurrence += 1;
+    ascean.statistics.relationships.deity.Faithful.value += 5;
+    ascean.statistics.relationships.deity.value += 5;
+    ascean.statistics.relationships.deity.behaviors.push('Blessed');
 
     await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
 };
@@ -190,26 +150,10 @@ export const curseAsceanRandom = async (id: string) => {
             break;
     };
 
-    ascean.statistics = {
-        ...ascean.statistics,
-        relationships: {
-            ...ascean.statistics.relationships,
-            deity: {
-                ...ascean.statistics.relationships.deity,
-                Unfaithful: {
-                    occurrence: ascean.statistics.relationships.deity.Unfaithful.occurrence + 1,
-                    value: ascean.statistics.relationships.deity.Unfaithful.value - 5,
-                },
-                value: ascean.statistics.relationships.deity.value - 5,
-                behaviors: ascean.statistics.relationships.deity.behaviors.concat('Cursed'),
-            },
-        }
-    };
-
-    // ascean.statistics.relationships.deity.Unfaithful.occurrence += 1;
-    // ascean.statistics.relationships.deity.Unfaithful.value -= 2;
-    // ascean.statistics.relationships.deity.value -= 2;
-    // ascean.statistics.relationships.deity.behaviors.push('Cursed');
+    ascean.statistics.relationships.deity.Unfaithful.occurrence += 1;
+    ascean.statistics.relationships.deity.Unfaithful.value -= 5;
+    ascean.statistics.relationships.deity.value -= 5;
+    ascean.statistics.relationships.deity.behaviors.push('Cursed');
 
     await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
 

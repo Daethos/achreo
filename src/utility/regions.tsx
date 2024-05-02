@@ -22,7 +22,7 @@ export const regionInformation = {
 };
 
 export const ProvincialWhispersButtons = ({ options, handleRegion }: { options: any, handleRegion: any }) => {
-    const buttons = Object.keys(options).map((o: any, i: number) => {
+    const buttons = Object.keys(options).map((o: any, _i: number) => {
         return (
             <button class='dialog-buttons' style={{ background: '#000', margin: '2%' }} onClick={() => handleRegion(o)}>{o}</button>
         );

@@ -2,7 +2,7 @@
     "nodes": [
       {
         "id": "0001",
-        "text": "Apologies for my Caerenesis, it rings and rhymes--your language's genesis. Just a moment you shall see, words string and set to harmony. Not to belie my intents brief, to whom are we in your belief? ^500...It seems to stir your hand to sheath.",
+        "text": "Apologies for my Caerenesis, \n it rings and rhymes--your language's genesis. \n Just a moment you shall see, \n words string and set to harmony. \n Not to belie my intents brief, \n to whom are we in your belief? \n ^500...It seems to stir your hand to sheath.",
         "options": [
           {
             "text": "Perhaps its anticipation of raising it in your name. I, ${ascean.name}, serve my life for yours, ${enemy.name}.",

@@ -130,11 +130,6 @@ export default class Player extends Entity {
                 onUpdate: this.onBlinkUpdate,
                 onExit: this.onBlinkExit,
             })
-            .addState(States.CHIOMISM, {
-                onEnter: this.onChiomismEnter,
-                onUpdate: this.onChiomismUpdate,
-                onExit: this.onChiomismExit,
-            })
             .addState(States.CONFUSE, {
                 onEnter: this.onConfuseEnter,
                 onUpdate: this.onConfuseUpdate,
@@ -169,6 +164,11 @@ export default class Player extends Entity {
                 onEnter: this.onInvokeEnter,
                 onUpdate: this.onInvokeUpdate,
                 onExit: this.onInvokeExit,
+            })
+            .addState(States.KYRNAICISM, {
+                onEnter: this.onKyrnaicismEnter,
+                onUpdate: this.onKyrnaicismUpdate,
+                onExit: this.onKyrnaicismExit,
             })
             .addState(States.LEAP, {
                 onEnter: this.onLeapEnter,
@@ -1106,16 +1106,16 @@ export default class Player extends Entity {
     };
     onBlinkExit = () => {};
 
-    onChiomismEnter = () => {
+    onKyrnaicismEnter = () => {
         if (!this.inCombat) return;
         this.isChiomic = true;
-        this.scene.useStamina(PLAYER.STAMINA.CHIOMISM);
+        this.scene.useStamina(PLAYER.STAMINA.KYRNAICISM);
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Chiomism', PLAYER.DURATIONS.CHIOMISM / 2, 'damage');
-        this.castbar.setTotal(PLAYER.DURATIONS.CHIOMISM);
-        this.castbar.setTime(PLAYER.DURATIONS.CHIOMISM);
-        this.scene.snare(this.scene.state?.enemyID);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Kyrnaicism', PLAYER.DURATIONS.KYRNAICISM / 2, 'damage');
+        this.castbar.setTotal(PLAYER.DURATIONS.KYRNAICISM);
+        this.castbar.setTime(PLAYER.DURATIONS.KYRNAICISM);
+        this.scene.slow(this.scene.state?.enemyID);
         this.chiomicTimer = this.scene.time.addEvent({
             delay: 1000,
             callback: () => {
@@ -1126,13 +1126,12 @@ export default class Player extends Entity {
                     return;
                 };
                 this.scene.combatMachine.action({ type: 'Chiomic', data: 10 });
-                this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `"I don't like you very much"`, 500, 'damage');
                 // updateBeam(this.scene.time.now);
             },
             callbackScope: this,
             repeat: 3,
         });
-        this.setTimeEvent('chiomismCooldown', PLAYER.COOLDOWNS.LONG);
+        this.setTimeEvent('kyrnaicismCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.addEvent({
             delay: 3000,
             callback: () => {
@@ -1144,11 +1143,11 @@ export default class Player extends Entity {
         this.setStatic(true);
         this.castbar.setVisible(true); 
     };
-    onChiomismUpdate = (dt) => {
+    onKyrnaicismUpdate = (dt) => {
         this.combatChecker(this.isChiomic);
         if (this.isChiomic) this.castbar.update(dt, 'channel', 0xA700FF);
     };
-    onChiomismExit = () => {
+  onKyrnaicismExit = () => {
         this.castbar.reset();
         if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
         this.setStatic(false);
@@ -2108,7 +2107,7 @@ export default class Player extends Entity {
                     repeat: -1,
                 }); 
             };
-            this.adjustSpeed(-0.5);
+            this.adjustSpeed(-PLAYER.SPEED.STEALTH);
             getStealth(this);
             getStealth(this.spriteWeapon);
             getStealth(this.spriteShield);
@@ -2119,7 +2118,7 @@ export default class Player extends Entity {
                 object.clearTint();
                 object.setBlendMode(Phaser.BlendModes.NORMAL);
             };
-            this.adjustSpeed(0.5);
+            this.adjustSpeed(PLAYER.SPEED.STEALTH);
             clearStealth(this);
             clearStealth(this.spriteWeapon);
             clearStealth(this.spriteShield);

@@ -197,7 +197,7 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
     function typewriter(text: string | Accessor<string>) {
         const check = typeof text === 'function' ? text() : text;
         const clean = styleHTML(check);
-        const interval = setInterval(() => scrollToBottom(), 1000);
+        const interval = setInterval(() => scrollToBottom(), 750);
         const typedContent = {
             strings: [clean],
             typeSpeed: 25,

@@ -90,4 +90,4 @@ export default class Settings {
     [key: string]: any;
 };
 
-export const initSettings: Settings = new Settings('settings');
+export const initSettings: Settings = new Settings('settings', 'constitution');

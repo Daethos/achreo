@@ -1,17 +1,17 @@
 export const SPECIAL = {
-
     'constitution': [
         'Consume', 
         'Desperation', 
         'Disease', 
         'Healing', 
         'Invoke', 
+        'Kyrnaicism', 
         'Mend', 
         'Renewal', 
         'Sacrifice', 
         'Shield', 
         'Ward'
-    ], // 10
+    ], // 11
 
     'strength': [
         'Arc', 
@@ -55,10 +55,10 @@ export const SPECIAL = {
         'Root', 
         'Sacrifice', 
         'Shimmer', 
-        'Slow'], // 12
+        'Slow'
+    ], // 12
         
     'caeren': [
-        'Chiomism', 
         'Consume', 
         'Desperation', 
         'Fear', 
@@ -69,14 +69,14 @@ export const SPECIAL = {
         'Sacrifice', 
         'Shield', 
         'Suture'
-    ], // 12
+    ], // 10
 
     'kyosir': [
         'Chiomic', 
-        'Chiomism', 
         'Confuse', 
         'Consume', 
         'Invoke', 
+        'Kyrnaicism', 
         'Malice', 
         'Protect', 
         'Scream', 
@@ -90,7 +90,6 @@ export const SPECIALS = [
     'Arc',
     'Blink', 
     'Chiomic', 
-    'Chiomism',
     'Confuse', 
     'Consume',
     'Desperation',
@@ -101,6 +100,7 @@ export const SPECIALS = [
     'Healing', 
     'Howl', 
     'Invoke', 
+    'Kyrnaicism',
     'Leap', 
     'Malice',
     'Mend', 
@@ -118,7 +118,7 @@ export const SPECIALS = [
     'Slow',
     'Snare', 
     'Sprint',
-    'Storm', // AoE that deals weapon damage on tick
+    'Storm',
     'Suture',
     'Tshaeral',
     'Ward',
@@ -126,10 +126,10 @@ export const SPECIALS = [
 ]; // 'Charm', 'Counter', 'Shroud'
 
 export const startingSpecials = {
-    'constitution': ['Healing', 'Mend', 'Sacrifice', 'Shield', 'Ward'],
-    'strength': ['Arc', 'Howl', 'Arc', 'Leap', 'Writhe'],
+    'constitution': ['Healing', 'Kyrnaicism', 'Mend', 'Shield', 'Ward'],
+    'strength': ['Arc', 'Howl', 'Leap', 'Storm', 'Writhe'],
     'agility': ['Pursuit', 'Recover', 'Rush', 'Shimmer', 'Sprint'],
     'achre': ['Blink', 'Envelop', 'Polymorph', 'Root', 'Slow'],
-    'caeren': ['Chiomism', 'Desperation', 'Fear', 'Protect', 'Suture'],
+    'caeren': ['Desperation', 'Fear', 'Protect', 'Sacrifice', 'Suture'],
     'kyosir': ['Chiomic', 'Confuse', 'Malice', 'Scream', 'Tshaeral'],
 };

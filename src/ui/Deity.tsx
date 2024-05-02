@@ -20,12 +20,15 @@ const colors = {
 
 const deityBorder = (mastery: string) => {
     return {
-        'border': `0.1em solid ${colors[mastery as keyof typeof colors]}`,
+        'border': `0.15em solid ${colors[mastery as keyof typeof colors]}`,
         'border-radius': '50%',
-        'box-shadow': `0 0 3em ${colors[mastery as keyof typeof colors]}`,
+        'box-shadow': `0 0 5em ${colors[mastery as keyof typeof colors]}`,
         'margin-bottom': '5%',
-        'margin-top': '5%',
-        'width': '10em',
+        'margin-top': '2.5%',
+        'width': '40%',
+        position: 'fixed',
+        left: '50%',
+        transform: 'translateX(-50%)',
     };
 };
 
@@ -64,7 +67,7 @@ export function Deity({ ascean, combat, game }: DeityProps) {
         name: '',
     });
     createEffect(() => {
-        console.log(ascean()?.statistics.relationships.deity.name, 'Deity Name', highestFaith(), 'Highest Faith')
+        console.log(ascean()?.statistics.relationships.deity, 'Deity Name', highestFaith(), 'Highest Faith')
         setDeity({
             name: ascean()?.statistics.relationships.deity.name === '' ? highestFaith() : ascean()?.statistics.relationships.deity.name,
         });
@@ -111,14 +114,16 @@ export function Deity({ ascean, combat, game }: DeityProps) {
                 deity: deity().name,
                 entry: {
                     title: 'Phenomenon',
-                    body: playerResponses,
+                    body: playerResponses(),
                     footnote: '',
                     date: Date.now(),
-                    keywords: keywordResponses,
+                    keywords: keywordResponses(),
                 },
             };
             console.log(data, "Data for Deity Encounter");
-            await evaluateDeity(data);
+            const res = await evaluateDeity(data);
+            console.log(res, "Response from Deity Encounter");
+            EventBus.emit('fetch-ascean', res.data._id);
             EventBus.emit('show-deity', false);
             if (game().pauseState) {
                 EventBus.emit('update-pause', false);
@@ -144,13 +149,14 @@ export function Deity({ ascean, combat, game }: DeityProps) {
     };
 
     return (
-        <div class='modal'>
+        <div class='modal' style={{ background: 'rgba(0, 0, 0, 1)' }} >
+        <img style={deityBorder(ascean().mastery as string)} class={showDeity() === true ? 'fade-in' : 'fade-out'} src={ascean()?.faith === 'Adherent' ? '../assets/images/achreo-rising.jpg' : ascean()?.faith === 'Devoted' ? '../assets/images/daethos-forming.jpg' : '../assets/images/' + ascean().origin + '-' + ascean().sex + '.jpg'} alt={ascean().faith} id={'godBorder-'+ascean().mastery} />
         <div style={{ 
-            position: 'absolute', height: '50%', width: '60%', left: '20%', background: '#000', top: '40%', 
+            position: 'absolute', height: '40%', width: '60%', left: '20%', background: 'rgba(0, 0, 0, 0.95)', top: '50%', 
             border: '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', display: 'inline-flex', overflow: 'scroll' 
         }}>
             <div class='wrap' style={{ width: '100%' }}>
-                <img style={deityBorder(ascean().mastery)} class={showDeity() === true ? 'fade-in' : 'fade-out'} src={ascean()?.faith === 'Adherent' ? '../assets/images/achreo-rising.jpg' : ascean()?.faith === 'Devoted' ? '../assets/images/daethos-forming.jpg' : '../assets/images/' + ascean().origin + '-' + ascean().sex + '.jpg'} alt={ascean().faith} id={'godBorder-'+ascean().mastery} />
+            <br />
             { dialogNodes().length > 0 ? (
                 <DialogTree combat={combat} game={game} ascean={ascean()} enemy={deity() as Ascean | NPC} dialogNodes={dialogNodes()} actions={actions} setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} />
             ) : ( '' ) }

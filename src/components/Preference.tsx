@@ -36,13 +36,19 @@ export default function Sex({ newAscean, setNewAscean }: { newAscean: Accessor<C
             </For>
             <Show when={show()}>
                 <div class='modal' onClick={handleShow}>
-                <div class='border superCenter' style={{ 'text-wrap': 'balance' }}>
-                    <h2 class='p-5' style={{ 'margin': '5%' }}>
+                <div class='border superCenter' style={{ 'text-wrap': 'balance', width: '60%' }}>
+                    <div class='creature-heading wrap'>
+                    <h1 style={{ 'margin': '5%' }}>{armor().name}</h1>
+                    <svg height="5" width="100%" class="tapered-rule" style={{ transform: 'translateX(10%)' }}>
+                        <polyline points="0,0 400,2.5 0,5"></polyline>
+                    </svg>
+                    <h2 style={{ 'margin': '5%' }}>
                         {armor().description}
                     </h2>
                     <p class='gold small'>
-                        Note: Magic carries a quality all its own, with its own concerns.
+                        Note: This is starter equipment--you may wear anything in this game. Also, magic damage is a quality that carries its own concerns.
                     </p>
+                    </div>
                 </div>
                 </div>
             </Show> 

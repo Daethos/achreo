@@ -24,12 +24,6 @@ const MerchantLoot = ({ item, ascean, setShow, setHighlight }: Props) => {
     const determineCost = async (rarity: string, type: string) => {
         try {
             let cost = { silver: 0, gold: 0 };
-            if (location.pathname.startsWith('/GameAdmin')) {
-                return setPurchaseSetting({
-                    item: item,
-                    cost: cost
-                });
-            };
             switch (rarity) {
                 case 'Common': {
                     cost = {
@@ -40,8 +34,8 @@ const MerchantLoot = ({ item, ascean, setShow, setHighlight }: Props) => {
                 };
                 case 'Uncommon': {
                     cost = {
-                        silver: Math.floor(Math.random() * 30) + 20,
-                        gold: Math.floor(Math.random() * 2) + 1
+                        silver: Math.floor(Math.random() * 30) + 30, // 30
+                        gold: Math.floor(Math.random() * 2) + 1 // 1
                     };
                     break;
                 };
@@ -88,7 +82,7 @@ const MerchantLoot = ({ item, ascean, setShow, setHighlight }: Props) => {
             };
             cost.silver = Math.floor(cost.silver);
             cost.gold = Math.floor(cost.gold);
-            console.log(cost, 'How Much Does This Cost?');
+            // console.log(cost, 'How Much Does This Cost?');
             setPurchaseSetting({
                 item: item,
                 cost: cost

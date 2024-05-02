@@ -32,7 +32,7 @@ export const States = {
     CONFUSE: "confuse",
     CONSUME: "consume",
     DESPERATION: "desperation",
-    CHIOMISM: "chiomism",
+    KYRNAICISM: "kyrnaicism",
     FEAR: "fear",
     FREEZE_CAST: "freeze_cast",
     HEALING: "healing",

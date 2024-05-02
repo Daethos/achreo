@@ -223,6 +223,10 @@ export const PhaserGame = (props: IProps) => {
             gold += Math.floor(silver / 100);
             silver = silver % 100;
         };
+        if (silver < 0) {
+            gold -= 1;
+            silver += 100;
+        };
         return { silver, gold };
     };
 

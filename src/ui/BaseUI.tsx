@@ -60,6 +60,11 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         EventBus.emit('settings', settings());
     });
 
+    
+    createEffect(() => {
+        console.log(ascean().statistics.relationships.deity, ascean().interactions.deity, ascean().journal, '--- The Ascean ---');
+    });
+
     onMount(() => {
         if (!ascean().tutorial.intro) {
             EventBus.emit('intro');
@@ -291,7 +296,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                 EventBus.emit('gain-experience', newState);
                 EventBus.emit('enemy-loot', loot);
                 if (!ascean().tutorial.deity) {
-                    if (experience >= 1000 && ascean().level >= 1) {
+                    if (newState.opponentExp >= 750 && ascean().level >= 1) { // 1000
                         setTutorial('deity');
                         setShowTutorial(true);  
                         if (game().pauseState === false) {
@@ -301,7 +306,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                         };
                     };
                 };
-                if (checkDeificInteractions()) {
+                if (checkDeificInteractions(newState.opponentExp)) {
                     setShowDeity(true);
                     if (game().pauseState === false) {
                         EventBus.emit('update-pause', true);
@@ -331,11 +336,11 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         return experience;
     };
 
-    function checkDeificInteractions() {
-        console.log(ascean().interactions.deity, ascean().level, ascean().experience, 'Checking Deific Interactions');
-        return ascean().interactions.deity <= ascean().level - 1
-            && ascean().level >= 2 
-            && ascean().level * 500 <= ascean().experience;
+    function checkDeificInteractions(currentExperience: number) {
+        console.log(ascean().interactions.deity, ascean().level, currentExperience, 'Checking Deific Interactions');
+        return ascean().interactions.deity <= ascean().level - 1 // <=
+            && ascean().level === 2 
+            && ascean().level * 750 <= currentExperience;
     };
 
     function filterEnemies(id: string) {

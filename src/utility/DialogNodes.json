@@ -20,7 +20,7 @@
                 },
                 {
                     "text": "You know we've had this conversation previously, yes?",
-                    "next": "0003",
+                    "next": "0018",
                     "npcIds": [
                         1,
                         2,
@@ -94,7 +94,7 @@
             "options": [
                 {
                     "text": "I'm interested in a bit of everything you can say.",
-                    "next": "0021",
+                    "next": "0017",
                     "npcIds": [
                         1
                     ]
@@ -124,7 +124,7 @@
                 },
                 {
                     "text": "I'm not sure what I'm looking for, if I'm being honest.",
-                    "next": "0020",
+                    "next": "0016",
                     "npcIds": [
                         5
                     ]
@@ -404,7 +404,7 @@
             ]
         },
         {
-            "id": "0020",
+            "id": "0016",
             "text": "[The Alchemist looks away to reach for some various vials] For one who isn't sure of what should strike them, I tend to have their soothe.",
             "options": [],
             "npcIds": [
@@ -412,12 +412,12 @@
             ]
         },
         {
-            "id": "0021",
+            "id": "0017",
             "text": "Good thing I carry a bit of every desire, have a chance look at my wares.",
             "options": [
                 {
                     "text": "See the merchant's wares.",
-                    "next": "0021",
+                    "next": "0017",
                     "npcIds": [
                         1
                     ],
@@ -426,6 +426,89 @@
             ],
             "npcIds": [
                 1
+            ]
+        },
+        {
+            "id": "0018",
+            "text": "Oh, yes, of course, a pleasure. Perchance coming round more often may aid my memory. Please, take a look at my wares.",
+            "options": [
+                {
+                    "text": "See the merchant's wares.",
+                    "next": "0017",
+                    "npcIds": [
+                        1
+                    ],
+                    "action": "getGeneral"
+                },
+                {
+                    "text": "See the martial weapons available.",
+                    "next": "0007",
+                    "npcIds": [
+                        2
+                    ],
+                    "action": "getWeapon"
+                },
+                {
+                    "text": "See what the local blacksmith has been supplying for the city.",
+                    "next": "0008",
+                    "npcIds": [
+                        3
+                    ],
+                    "action": "getArmor"
+                },
+                {
+                    "text": "See such bejeweled spectacles.",
+                    "next": "0009",
+                    "npcIds": [
+                        4
+                    ],
+                    "conditions": [
+                        {
+                            "key": "level",
+                            "operator": ">=",
+                            "value": "4"
+                        }
+                    ],
+                    "action": "getJewelry"
+                },
+                {
+                    "text": "Oh dear, you don't seem quite ready yet, come back in time and perchance I'll have something for you.",
+                    "next": "0001",
+                    "npcIds": [
+                        4
+                    ],
+                    "conditions": [
+                        {
+                            "key": "level",
+                            "operator": "<",
+                            "value": "4"
+                        }
+                    ]
+                },
+                {
+                    "text": "ee the mystic weapons available.",
+                    "next": "0007",
+                    "npcIds": [
+                        7
+                    ],
+                    "action": "getMystic"
+                },
+                {
+                    "text": "See what softer garb may be proper for your travels.",
+                    "next": "0008",
+                    "npcIds": [
+                        8
+                    ],
+                    "action": "getTailor"
+                }
+            ],
+            "npcIds": [
+                1,
+                2,
+                3,
+                4,
+                7,
+                8
             ]
         }
     ]

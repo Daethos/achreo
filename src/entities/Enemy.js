@@ -7,6 +7,7 @@ import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import { EventBus } from "../game/EventBus";
 import { v4 as uuidv4 } from 'uuid';
 import { getRandomNumStr } from "../models/equipment";
+import { PLAYER } from "../utility/player";
 
 const DISTANCE = {
     MIN: 0,
@@ -322,7 +323,7 @@ export default class Enemy extends Entity {
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.criticalSuccess);
             // console.log(`%c ${e.player.name} Dealt ${damage} Damage To ${this.ascean.name}`, 'color: #00ff00')
 
-            if (!this.isConsumed && !this.isHurt && !this.isFeared) this.stateMachine.setState(States.HURT);
+            if (!this.isConsumed && !this.isHurt && !this.isFeared && !this.isSlowed) this.stateMachine.setState(States.HURT);
             if (this.currentRound !== e.combatRound) {
                 if (this.isPolymorphed) this.isPolymorphed = false;
                 if (!this.inCombat && !this.isDefeated) {
@@ -1335,7 +1336,7 @@ export default class Enemy extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slowed', DURATION.TEXT, 'damage');
         this.slowDuration = DURATION.SLOWED;
         this.setTint(0xFFC700); // 0x888888
-        this.adjustSpeed(-1);
+        this.adjustSpeed(-PLAYER.SPEED.SLOW);
         this.scene.time.delayedCall(this.slowDuration, () =>{
             this.isSlowed = false;
             this.metaMachine.setState(States.CLEAN);
@@ -1345,14 +1346,14 @@ export default class Enemy extends Entity {
     onSlowExit = () => {
         this.clearTint();
         this.setTint(0x000000);
-        this.adjustSpeed(1);
+        this.adjustSpeed(PLAYER.SPEED.SLOW);
     };
 
     onSnareEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snared', DURATION.TEXT, 'damage');
         this.snareDuration = 3000;
         this.setTint(0x0000FF); // 0x888888
-        this.adjustSpeed(-1.5);
+        this.adjustSpeed(-PLAYER.SPEED.SNARE);
         this.scene.time.delayedCall(this.snareDuration, () =>{
             this.isSnared = false;
             this.metaMachine.setState(States.CLEAN);
@@ -1362,7 +1363,7 @@ export default class Enemy extends Entity {
     onSnareExit = () => { 
         this.clearTint();
         this.setTint(0x000000);
-        this.adjustSpeed(1.5);
+        this.adjustSpeed(PLAYER.SPEED.SNARE);
     };
 
     enemyActionSuccess = () => {

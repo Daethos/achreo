@@ -9,7 +9,10 @@ export const PLAYER = {
         ACCELERATION: 0.1,
         DECELERATION: 0.05,
         CAERENIC: 0.5,
+        SLOW: 1,
+        SNARE: 1.5,
         SPRINT: 1.5,
+        STEALTH: 0.5,
         LEAP: 300,
         BLINK: 250,
         RUSH: 300,
@@ -37,13 +40,13 @@ export const PLAYER = {
         ARC: 25,
         BLINK: 10,
         CHIOMIC: 25,  
-        CHIOMISM: 25,
         CONFUSE: 10,
         CONSUME: 10,
         DESPERATION: 40,
         FEAR: 10,
         HEALING: 25,
         INVOKE: -25,
+        KYRNAICISM: 25,
         LEAP: 25,
         POLYMORPH: 10,
         PURSUIT: 25,
@@ -80,13 +83,13 @@ export const PLAYER = {
     DURATIONS: {
         ARCING: 3000,
         CHIOMIC: 1000,
-        CHIOMISM: 3000,
         CONFUSE: 1000,
         DISEASE: 6000,
         ENVELOP: 10000,
         FEAR: 1500,
         FREEZE: 750,
         HEALING: 1500,
+        KYRNAICISM: 3000,
         LEAP: 750,
         MALICE: 10000,
         MEND: 10000,
@@ -160,12 +163,6 @@ export const staminaCheck = (input: string, stamina: number): { success: boolean
                 success: chiomicSuccess,
                 cost: PLAYER.STAMINA.CHIOMIC,
             };
-        case 'chiomism':
-            const chiomismSuccess = stamina >= PLAYER.STAMINA.CHIOMISM;
-            return {
-                success: chiomismSuccess,
-                cost: PLAYER.STAMINA.CHIOMISM,
-            };
         case 'confuse':
             const confuseSuccess = stamina >= PLAYER.STAMINA.CONFUSE;
             return {
@@ -225,6 +222,12 @@ export const staminaCheck = (input: string, stamina: number): { success: boolean
             return { 
                 success: invokeSuccess,
                 cost: PLAYER.STAMINA.INVOKE,
+            };
+        case 'kyrnaicism':
+            const kyrnaicismSuccess = stamina >= PLAYER.STAMINA.KYRNAICISM;
+            return {
+                success: kyrnaicismSuccess,
+                cost: PLAYER.STAMINA.KYRNAICISM,
             };
         case 'leap':
             const leapSuccess = stamina >= PLAYER.STAMINA.LEAP;

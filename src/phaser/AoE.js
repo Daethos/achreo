@@ -39,7 +39,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     setCount = (scene, type, positive) => {
         if (positive === true) {
             scene.time.delayedCall(1000, () => {
-                this.bless.forEach((target) => {
+                this.bless.forEach((_target) => {
                     scene[type]();
                 });
                 this.count -= 1;

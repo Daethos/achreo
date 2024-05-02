@@ -107,7 +107,7 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
     async function blessPlayer(): Promise<void> {
         try {
             // console.log('blessing player!')
-            await blessAscean(ascean()._id);
+            
             const entry = {
                 title: 'Who am I?',
                 body: `You felt the presence of... ${highestFaith()}? \n\n You become attuned to a halt and paltry whisper, ringing, it stretches your soft edges, serenity begging you hither. \n\n "Who are you?"`,
@@ -116,7 +116,10 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 location: 'Unknown',
             };
             // console.log(entry, 'entry')
-            await saveEntry(ascean()._id, entry);
+            // await saveEntry(ascean()._id, entry);
+            const res = await blessAscean(ascean()._id, entry);
+            console.log(res, 'res')
+            EventBus.emit('fetch-ascean', res.data._id);
             EventBus.emit('update-pause', false);
             EventBus.emit('update-small-hud');
             await exitTutorial();
@@ -126,7 +129,6 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
     };
     async function rebukePlayer(): Promise<void> {
         try {
-            await curseAscean(ascean()._id);
             const entry = {
                 title: 'Who am I?',
                 body: `You felt the presence of... ${highestFaith()}? \n\n You become attuned to a halt and paltry whisper, ringing, it stretches your soft edges, serenity begging you hither. \n\n "Who are you?"`,
@@ -134,7 +136,10 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 date: Date.now(),
                 location: 'Unknown',
             };
-            await saveEntry(ascean()._id, entry);
+            // await saveEntry(ascean()._id, entry);
+            const res = await curseAscean(ascean()._id, entry);
+            console.log(res, 'res');
+            EventBus.emit('fetch-ascean', res.data._id);
             EventBus.emit('update-pause', false);
             EventBus.emit('update-small-hud');
             await exitTutorial();

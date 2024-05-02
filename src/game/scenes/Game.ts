@@ -409,7 +409,7 @@ export class Game extends Scene {
                 enemy.inCombat = true;
                 enemy.originPoint = new Phaser.Math.Vector2(enemy.x, enemy.y).clone();
                 enemy.stateMachine.setState(States.CHASE);
-            }
+            };
         });
     };
 
@@ -559,7 +559,6 @@ export class Game extends Scene {
 
     actionButtonEvent():void {
         EventBus.on('action-button-sound', () => {
-            // this.actionButton.play();
             this.sound.play('TV_Button_Press', { volume: this?.settings?.volume * 2 });
         });
     };
@@ -585,25 +584,10 @@ export class Game extends Scene {
     };
 
     getSettings = (): Settings => {
-        // EventBus.once('request-settings-ready', (settings: Settings) => {
-        //     console.log(settings, 'Settings in Game.ts');
-        //     this.settings = settings;
-        // });
         EventBus.emit('request-settings');
         return this.settings;
     };
 
-    handleJoystickUpdate() {
-        var cursorKeys = this.joystick.createCursorKeys();
-        for (let name in cursorKeys) {
-            if (cursorKeys[name].isDown) {
-                if (name === 'up') this.player.setVelocityY(-1.5);
-                if (name === 'down') this.player.setVelocityY(1.5);
-                if (name === 'left') this.player.setVelocityX(-1.5);
-                if (name === 'right') this.player.setVelocityX(1.5);
-            };
-        };
-    };
 
     // ================== Combat ================== \\
 
@@ -822,6 +806,17 @@ export class Game extends Scene {
             this.musicCombat.pause();
             this.musicBackground.resume();
             this.stopCombatTimer();    
+        };
+    };
+    pauseMusic = () => {
+        this.musicBackground.pause();
+        this.musicCombat.pause();
+    };
+    resumeMusic = () => {
+        if (!this.combat) {
+            this.musicBackground.resume();
+        } else {
+            this.musicCombat.resume();
         };
     };
     drinkFlask = () => EventBus.emit('drink-firewater');

@@ -159,7 +159,6 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
   
     const handleOptionClick = (nextNodeId: string | null) => {
         if (nextNodeId === null) {
-            // setCurrentNodeIndex(0);
             EventBus.emit('blend-game', { currentNodeIndex: 0 });
         } else {
             let nextNodeIndex = dialogNodes.findIndex((node: any) => node.id === nextNodeId);
@@ -172,7 +171,6 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
         <div class='wrap'> 
             <Typewriter stringText={renderedText} styling={{ 'overflow-y': 'auto' }} performAction={handleOptionClick} />
             <br />
-            
             {renderedOptions()?.map((option: DialogNodeOption) => (
                 <DialogOption option={option} onClick={handleOptionClick} actions={actions} setPlayerResponses={setPlayerResponses} setKeywordResponses={setKeywordResponses} setShowDialogOptions={setShowDialogOptions} showDialogOptions={showDialogOptions} />
             ))}
@@ -224,7 +222,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [namedEnemy, setNamedEnemy] = createSignal<boolean>(false);
     const [playerResponses, setPlayerResponses] = createSignal<string[]>([]);
     const [keywordResponses, setKeywordResponses] = createSignal<string[]>([]);
-    // const [province, setProvince] = createSignal<keyof typeof regionInformation>('Astralands');
     const [luckoutModalShow, setLuckoutModalShow] = createSignal<boolean>(false);
     const [persuasionModalShow, setPersuasionModalShow] = createSignal<boolean>(false);
     const [luckout, setLuckout] = createSignal<boolean>(false);
@@ -592,7 +589,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         };
     };
 
-
     function setItem(item: Equipment) {
         setSellItem(item);
         setShowItem(true);
@@ -892,6 +888,9 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                     overflow: 'scroll',
                  }}>
                     <h1 class='center' style={{ 'margin-bottom': '3%' }}>Sell Items</h1>
+                <div class='center'>
+                <Currency ascean={ascean} />
+                </div>
                 <div class='playerInventoryBag center' style={{ width: '65%', 'margin-bottom': '5%' }}> 
                     <For each={game()?.inventory}>{(item, _index) => {
                         if (item === undefined || item === null) return;

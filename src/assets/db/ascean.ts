@@ -990,171 +990,6 @@ export const Asceans: any[] = [
         "health":{"current":33,"max":33}
     },
     {
-    "_id":"kreceus_8",
-    "origin":"Ashtre",
-    "sex":"Man",
-    "mastery":"achre",
-    "level":8,
-    "experience":0,
-    "inventory":[],
-    "name":"Kreceus",
-    "description":"Apostle of Astra",
-    "constitution":24,
-    "strength":10,
-    "agility":22,
-    "achre":32,
-    "caeren":10,
-    "kyosir":23,
-    "weaponOne":{
-        name: 'Astral Spear',
-        rarity: 'Rare',
-    },"weaponTwo":{
-        name: 'Astral Spear',
-        rarity: 'Rare',
-    },"weaponThree":{
-        name: 'Achreon Recurve',
-        rarity: 'Rare',
-    },"shield":{
-        name: 'Parma',
-        rarity: 'Rare',
-    },"helmet":{
-        name: 'Astral Hood',
-        rarity: 'Rare',
-    },"chest":{
-        name: 'Astral Robes',
-        rarity: 'Rare',
-    },"legs":{
-        name: 'Astral Pants',
-        rarity: 'Rare',
-    },"ringOne":{
-        name: 'Astral Ring',
-        rarity: 'Rare',
-    },"ringTwo":{
-        name: 'Astral Ring',
-        rarity: 'Rare',
-    },"amulet":{
-        name: 'Astral Amulet',
-        rarity: 'Rare',
-    },"trinket":    {
-        name: 'Astral Trinket',
-        rarity: 'Rare',
-    },
-    "faith":"adherent",
-    "currency":{"silver":0,"gold":0},
-    "firewater":{"current":5,"max":5},
-    "health":{"current":279,"max":279}
-    },
-    {
-     "_id":"fierous_8",
-    "origin":"Fyers",
-    "sex":"Man",
-    "mastery":"caeren",
-    "level":8,
-    "experience":0,
-    "inventory":[],
-    "name":"Fierous Ashfyre",
-    "description":"The Phoenix",
-    "constitution":25,
-    "strength":10,
-    "agility":11,
-    "achre":16,
-    "caeren":34,
-    "kyosir":21,
-    "weaponOne":{
-        name: 'Ashfyre',
-        rarity: 'Rare',
-    },"weaponTwo":{
-        name: 'Ashfyre',
-        rarity: 'Rare',
-    },"weaponThree":{
-        name: "Ahn've's Wing",
-        rarity: 'Rare',
-    },"shield":{
-        name: 'Parma',
-        rarity: 'Rare',
-    },"helmet":{
-        name: 'Fyers Hood',
-        rarity: 'Rare',
-    },"chest":{
-        name: 'Fyers Robes',
-        rarity: 'Rare',
-    },"legs":{
-        name: 'Fyers Pants',
-        rarity: 'Rare',
-    },"ringOne":{
-        name: 'Fyers Ring',
-        rarity: 'Rare',
-    },"ringTwo":{
-        name: 'Fyers Ring',
-        rarity: 'Rare',
-    },"amulet":{
-        name: 'Fyers Amulet',
-        rarity: 'Rare',
-    },"trinket":    {
-        name: 'Fyers Trinket',
-        rarity: 'Rare',
-    },
-    "faith":"adherent",
-    "currency":{"silver":0,"gold":0},
-    "firewater":{"current":5,"max":5},
-    "health":{"current":399,"max":399}
-    },
-    {
-    "_id":"vincere_8",
-    "origin":"Quor'eite",
-    "sex":"Man",
-    "mastery":"achre",
-    "level":8,
-    "experience":0,
-    "inventory":[],
-    "name":"Vincere",
-    "description":"Arbiter of the Ley",
-    "constitution":24,
-    "strength":11,
-    "agility":24,
-    "achre":30,
-    "caeren":12,
-    "kyosir":12,
-    "weaponOne":{
-        name: "Quor'eite Crush",
-        rarity: 'Rare',
-    },"weaponTwo":{
-        name: "Quor'eite Crush",
-        rarity: 'Rare',
-    },"weaponThree":{
-        name: 'Achreon Recurve',
-        rarity: 'Rare',
-    },"shield":{
-        name: 'Parma',
-        rarity: 'Rare',
-    },"helmet":{
-        name: "Quor'eite Hood",
-        rarity: 'Rare',
-    },"chest":{
-        name: "Quor'eite Robes",
-        rarity: 'Rare',
-    },"legs":{
-        name: "Quor'eite Pants",
-        rarity: 'Rare',
-    },"ringOne":{
-        name: "Quor'eite Ring",
-        rarity: 'Rare',
-    },"ringTwo":{
-        name: "Quor'eite Ring",
-        rarity: 'Rare',
-    },"amulet":{
-        name: "Quor'eite Amulet",
-        rarity: 'Rare',
-    },"trinket":    {
-        name: "Quor'eite Trinket",
-        rarity: 'Rare',
-    },
-    "faith":"adherent",
-    "currency":{"silver":0,"gold":0},
-    "firewater":{"current":5,"max":5},
-    "health":{"current":423,"max":423}
-    },
-    {
         "_id":"ahn'are_apostle_4",
         "origin":"Ashtre",
         "sex":"Woman",
@@ -2145,113 +1980,828 @@ export const Asceans: any[] = [
         "health":{"current":115,"max":115}
     },
     {
-    "_id":"evrio_lorian_peroumes_8",
-    "origin":"Li'ivi",
-    "sex":"Man",
-    "mastery":"kyosir",
-    "level":8,
-    "experience":0,
-    "inventory":[],
-    "name":"Evrio Lorian Peroumes",
-    "description":"General of Licivitas, current Ascean va'Esai of 140AE",
-    "constitution":21,
-    "strength":12,
-    "agility":24,
-    "achre":23,
-    "caeren":12,
-    "kyosir":27,
-    "weaponOne":{
-        name: "Gladius",
-        rarity: 'Rare',
-    },"weaponTwo":{
-        name: "Hush",
-        rarity: 'Rare',
-    },"weaponThree":{
-        name: "Daethic Bow",
-        rarity: 'Rare',
-    },"shield":{
-        name: 'Heater',
-        rarity: 'Rare',
-    },"helmet":{
-        name: "Licivitan Helm",
-        rarity: 'Rare',
-    },"chest":{
-        name: "Licivitan Cuirass",
-        rarity: 'Rare',
-    },"legs":{
-        name: "Licivitan Greaves",
-        rarity: 'Rare',
-    },"ringOne":{
-        name: "Daethic Ring",
-        rarity: 'Rare',
-    },"ringTwo":{
-        name: "Dae Ring",
-        rarity: 'Rare',
-    },"amulet":{
-        name: "Daethic Amulet",
-        rarity: 'Rare',
-    },"trinket":    {
-        name: "Dae Trinket",
-        rarity: 'Rare',
-    },
-    "faith":"devoted",
-    "currency":{"silver":0,"gold":0},
-    "firewater":{"current":5,"max":5},
-    "health":{"current":497,"max":497}
+        "_id":"cambiren_druid_8",
+        "origin":"Nothos",
+        "sex":"Woman",
+        "mastery":"caeren",
+        "level":8,
+        "experience":0,
+        "inventory":[],
+        "name":"Cambiren Druid",
+        "description":"Cambiren Druid of the Eye",
+        "constitution":24,
+        "strength":14,
+        "agility":10,
+        "achre":16,
+        "caeren":35,
+        "kyosir":20,
+        "weaponOne":{
+            name: 'Caerenic Shatter',
+            rarity: 'Rare',
+        },"weaponTwo":{
+            name: "Ahn've's Wing",
+            rarity: 'Rare',
+        },"weaponThree":{
+            name: 'Nyrolean Wave',
+            rarity: 'Rare',
+        },"shield":{
+            name: 'Pavise',
+            rarity: 'Rare',
+        },"helmet":{
+            name: 'Cambiren Helm',
+            rarity: 'Rare',
+        },"chest":{
+            name: 'Cambiren Armor',
+            rarity: 'Rare',
+        },"legs":{
+            name: 'Cambiren Greaves',
+            rarity: 'Rare',
+        },"ringOne":{
+            name: 'Cambiren Ring',
+            rarity: 'Rare',
+        },"ringTwo":{
+            name: "Cambiren Ring",
+            rarity: 'Rare',
+        },"amulet":{
+            name: 'Cambiren Amulet',
+            rarity: 'Rare',
+        },"trinket":    {
+            name: 'Cambiren Trinket',
+            rarity: 'Rare',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":279,"max":279}
     },
     {
-    "_id":"garris_ashenus_8",
-    "origin":"Fyers",
-    "sex":"Man",
-    "mastery":"agility",
-    "level":8,
-    "experience":0,
-    "inventory":[],
-    "name":"Garris Ashenus",
-    "description":"Merchant-Knight of the Firelands",
-    "constitution":25,
-    "strength":12,
-    "agility":32,
-    "achre":18,
-    "caeren":11,
-    "kyosir":12,
-    "weaponOne":{
-        name: "Shotel",
-        rarity: 'Rare',
-    },"weaponTwo":{
-        name: "Shotel",
-        rarity: 'Rare',
-    },"weaponThree":{
-        name: "Moontear",
-        rarity: 'Rare',
-    },"shield":{
-        name: 'Parma',
-        rarity: 'Rare',
-    },"helmet":{
-        name: "Fireland Helm",
-        rarity: 'Rare',
-    },"chest":{
-        name: "Fireland Cuirass",
-        rarity: 'Rare',
-    },"legs":{
-        name: "Fireland Greaves",
-        rarity: 'Rare',
-    },"ringOne":{
-        name: "Fireland Ring",
-        rarity: 'Rare',
-    },"ringTwo":{
-        name: "Fireland Ring",
-        rarity: 'Rare',
-    },"amulet":{
-        name: "Occult Amulet",
-        rarity: 'Rare',
-    },"trinket":    {
-        name: "Occult Trinket",
-        rarity: 'Rare',
+        "_id":"chiomic_jester_8",
+        "origin":"Fyers",
+        "sex":"Man",
+        "mastery":"kyosir",
+        "level":8,
+        "experience":0,
+        "inventory":[],
+        "name":"Chiomic Jester",
+        "description":"Traveling Jester of the West Fangs",
+        "constitution":22,
+        "strength":20,
+        "agility":20,
+        "achre":20,
+        "caeren":18,
+        "kyosir":32,
+        "weaponOne":{
+            name: 'Nightmare',
+            rarity: 'Rare',
+        },"weaponTwo":{
+            name: "Lava Spit",
+            rarity: 'Rare',
+        },"weaponThree":{
+            name: 'Wildstrike',
+            rarity: 'Rare',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Rare',
+        },"helmet":{
+            name: 'Achreon Helm',
+            rarity: 'Rare',
+        },"chest":{
+            name: 'Fireland Cuirass',
+            rarity: 'Rare',
+        },"legs":{
+            name: "Li'kyr Pants",
+            rarity: 'Rare',
+        },"ringOne":{
+            name: 'Fireland Ring',
+            rarity: 'Rare',
+        },"ringTwo":{
+            name: "Quor'eite Ring",
+            rarity: 'Rare',
+        },"amulet":{
+            name: 'Rahvric Necklace',
+            rarity: 'Rare',
+        },"trinket":    {
+            name: 'Achreon Trinket',
+            rarity: 'Rare',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":279,"max":279}
     },
-    "faith":"devoted",
-    "currency":{"silver":0,"gold":0},
-    "firewater":{"current":5,"max":5},
-    "health":{"current":497,"max":497}
-    }
+    {
+        "_id":"dorien_8",
+        "origin":"Notheo",
+        "sex":"Man",
+        "mastery":"strength",
+        "level":8,
+        "experience":0,
+        "inventory":[],
+        "name":"Dorien Caderyn",
+        "description":"Prince of the Daethic Kingdom",
+        "constitution":25,
+        "strength":29,
+        "agility":16,
+        "achre":14,
+        "caeren":20,
+        "kyosir":24,
+        "weaponOne":{
+            name: "Daethic Halberd",
+            rarity: 'Rare',
+        },"weaponTwo":{
+            name: "Daethic Bow",
+            rarity: 'Rare',
+        },"weaponThree":{
+            name: "Tendril of Daethos",
+            rarity: 'Rare',
+        },"shield":{
+            name: 'Shaorahi',
+            rarity: 'Rare',
+        },"helmet":{
+            name: "Daethic Helm",
+            rarity: 'Rare',
+        },"chest":{
+            name: "Daethic Cuirass",
+            rarity: 'Rare',
+        },"legs":{
+            name: "Daethic Greaves",
+            rarity: 'Rare',
+        },"ringOne":{
+            name: "Daethic Ring",
+            rarity: 'Rare',
+        },"ringTwo":{
+            name: "Daethic Ring",
+            rarity: 'Rare',
+        },"amulet":{
+            name: "Daethic Amulet",
+            rarity: 'Rare',
+        },"trinket":    {
+            name: "Daethic Trinket",
+            rarity: 'Rare',
+        },
+        "faith":"devoted",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":497,"max":497}
+    },
+    {
+        "_id":"evrio_lorian_peroumes_8",
+        "origin":"Li'ivi",
+        "sex":"Man",
+        "mastery":"kyosir",
+        "level":8,
+        "experience":0,
+        "inventory":[],
+        "name":"Evrio Lorian Peroumes",
+        "description":"General of Licivitas, current Ascean va'Esai of 140AE",
+        "constitution":21,
+        "strength":12,
+        "agility":24,
+        "achre":23,
+        "caeren":12,
+        "kyosir":27,
+        "weaponOne":{
+            name: "Gladius",
+            rarity: 'Rare',
+        },"weaponTwo":{
+            name: "Hush",
+            rarity: 'Rare',
+        },"weaponThree":{
+            name: "Daethic Bow",
+            rarity: 'Rare',
+        },"shield":{
+            name: 'Heater',
+            rarity: 'Rare',
+        },"helmet":{
+            name: "Licivitan Helm",
+            rarity: 'Rare',
+        },"chest":{
+            name: "Licivitan Cuirass",
+            rarity: 'Rare',
+        },"legs":{
+            name: "Licivitan Greaves",
+            rarity: 'Rare',
+        },"ringOne":{
+            name: "Daethic Ring",
+            rarity: 'Rare',
+        },"ringTwo":{
+            name: "Dae Ring",
+            rarity: 'Rare',
+        },"amulet":{
+            name: "Daethic Amulet",
+            rarity: 'Rare',
+        },"trinket":    {
+            name: "Dae Trinket",
+            rarity: 'Rare',
+        },
+        "faith":"devoted",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":497,"max":497}
+    },
+    {
+        "_id":"eugenes_8",
+        "origin":"Ashtre",
+        "sex":"Man",
+        "mastery":"caeren",
+        "level":8,
+        "experience":0,
+        "inventory":[],
+        "name":"Eugenes Ma'ier",
+        "description":"Southron Cultist of Ma'anre",
+        "constitution":20,
+        "strength":28,
+        "agility":23,
+        "achre":14,
+        "caeren":28,
+        "kyosir":13,
+        "weaponOne":{
+            name: "Whirlwind",
+            rarity: 'Rare',
+        },"weaponTwo":{
+            name: "Shotel",
+            rarity: 'Rare',
+        },"weaponThree":{
+            name: "Moontear",
+            rarity: 'Rare',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Rare',
+        },"helmet":{
+            name: "Occult Helm",
+            rarity: 'Rare',
+        },"chest":{
+            name: "Occult Armor",
+            rarity: 'Rare',
+        },"legs":{
+            name: "Occult Greaves",
+            rarity: 'Rare',
+        },"ringOne":{
+            name: "Occult Ring",
+            rarity: 'Rare',
+        },"ringTwo":{
+            name: "Occult Ring",
+            rarity: 'Rare',
+        },"amulet":{
+            name: "Occult Amulet",
+            rarity: 'Rare',
+        },"trinket":    {
+            name: "Occult Trinket",
+            rarity: 'Rare',
+        },
+        "faith":"devoted",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":497,"max":497}
+    },
+    {
+       "_id":"fierous_8",
+       "origin":"Fyers",
+       "sex":"Man",
+       "mastery":"caeren",
+       "level":8,
+       "experience":0,
+       "inventory":[],
+       "name":"Fierous Ashfyre",
+       "description":"The Phoenix",
+       "constitution":25,
+       "strength":10,
+       "agility":11,
+       "achre":16,
+       "caeren":34,
+       "kyosir":21,
+       "weaponOne":{
+           name: 'Ashfyre',
+           rarity: 'Rare',
+       },"weaponTwo":{
+           name: 'Ashfyre',
+           rarity: 'Rare',
+       },"weaponThree":{
+           name: "Ahn've's Wing",
+           rarity: 'Rare',
+       },"shield":{
+           name: 'Parma',
+           rarity: 'Rare',
+       },"helmet":{
+           name: 'Fyers Hood',
+           rarity: 'Rare',
+       },"chest":{
+           name: 'Fyers Robes',
+           rarity: 'Rare',
+       },"legs":{
+           name: 'Fyers Pants',
+           rarity: 'Rare',
+       },"ringOne":{
+           name: 'Fyers Ring',
+           rarity: 'Rare',
+       },"ringTwo":{
+           name: 'Fyers Ring',
+           rarity: 'Rare',
+       },"amulet":{
+           name: 'Fyers Amulet',
+           rarity: 'Rare',
+       },"trinket":    {
+           name: 'Fyers Trinket',
+           rarity: 'Rare',
+       },
+       "faith":"adherent",
+       "currency":{"silver":0,"gold":0},
+       "firewater":{"current":5,"max":5},
+       "health":{"current":399,"max":399}
+    },
+    {
+        "_id":"garris_ashenus_8",
+        "origin":"Fyers",
+        "sex":"Man",
+        "mastery":"agility",
+        "level":8,
+        "experience":0,
+        "inventory":[],
+        "name":"Garris Ashenus",
+        "description":"Merchant-Knight of the Firelands",
+        "constitution":25,
+        "strength":12,
+        "agility":32,
+        "achre":18,
+        "caeren":11,
+        "kyosir":12,
+        "weaponOne":{
+            name: "Shotel",
+            rarity: 'Rare',
+        },"weaponTwo":{
+            name: "Shotel",
+            rarity: 'Rare',
+        },"weaponThree":{
+            name: "Moontear",
+            rarity: 'Rare',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Rare',
+        },"helmet":{
+            name: "Fireland Helm",
+            rarity: 'Rare',
+        },"chest":{
+            name: "Fireland Cuirass",
+            rarity: 'Rare',
+        },"legs":{
+            name: "Fireland Greaves",
+            rarity: 'Rare',
+        },"ringOne":{
+            name: "Fireland Ring",
+            rarity: 'Rare',
+        },"ringTwo":{
+            name: "Fireland Ring",
+            rarity: 'Rare',
+        },"amulet":{
+            name: "Occult Amulet",
+            rarity: 'Rare',
+        },"trinket":    {
+            name: "Occult Trinket",
+            rarity: 'Rare',
+        },
+        "faith":"devoted",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":497,"max":497}
+    },
+    {
+        "_id":"leaf_8",
+        "origin":"Quor'eite",
+        "sex":"Man",
+        "mastery":"agility",
+        "level":8,
+        "experience":0,
+        "inventory":[],
+        "name":"Kreceus",
+        "description":"Achreon Druid of the Eye",
+        "constitution":26,
+        "strength":14,
+        "agility":31,
+        "achre":22,
+        "caeren":12,
+        "kyosir":22,
+        "weaponOne":{
+            name: 'Longbow',
+            rarity: 'Rare',
+        },"weaponTwo":{
+            name: 'Spear',
+            rarity: 'Rare',
+        },"weaponThree":{
+            name: 'Wildstrike',
+            rarity: 'Rare',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Rare',
+        },"helmet":{
+            name: 'Achreon Helm',
+            rarity: 'Rare',
+        },"chest":{
+            name: 'Achreon Armor',
+            rarity: 'Rare',
+        },"legs":{
+            name: 'Achreon Greaves',
+            rarity: 'Rare',
+        },"ringOne":{
+            name: 'Achreon Ring',
+            rarity: 'Rare',
+        },"ringTwo":{
+            name: "Quor'eite Ring",
+            rarity: 'Rare',
+        },"amulet":{
+            name: 'Achreon Amulet',
+            rarity: 'Rare',
+        },"trinket":    {
+            name: 'Achreon Trinket',
+            rarity: 'Rare',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":279,"max":279}
+    },
+    {
+        "_id":"kreceus_8",
+        "origin":"Fyers",
+        "sex":"Man",
+        "mastery":"achre",
+        "level":8,
+        "experience":0,
+        "inventory":[],
+        "name":"Kreceus",
+        "description":"Apostle of Astra",
+        "constitution":24,
+        "strength":10,
+        "agility":22,
+        "achre":32,
+        "caeren":10,
+        "kyosir":23,
+        "weaponOne":{
+            name: 'Astral Spear',
+            rarity: 'Rare',
+        },"weaponTwo":{
+            name: 'Astral Spear',
+            rarity: 'Rare',
+        },"weaponThree":{
+            name: 'Achreon Recurve',
+            rarity: 'Rare',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Rare',
+        },"helmet":{
+            name: 'Astral Hood',
+            rarity: 'Rare',
+        },"chest":{
+            name: 'Astral Robes',
+            rarity: 'Rare',
+        },"legs":{
+            name: 'Astral Pants',
+            rarity: 'Rare',
+        },"ringOne":{
+            name: 'Astral Ring',
+            rarity: 'Rare',
+        },"ringTwo":{
+            name: 'Astral Ring',
+            rarity: 'Rare',
+        },"amulet":{
+            name: 'Astral Amulet',
+            rarity: 'Rare',
+        },"trinket":    {
+            name: 'Astral Trinket',
+            rarity: 'Rare',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":279,"max":279}
+    },
+    {
+            "_id":"kyngian_shaman_8",
+            "origin":"Quor'eite",
+            "sex":"Man",
+            "mastery":"agility",
+            "level":8,
+            "experience":0,
+            "inventory":[],
+            "name":"Kyn'gian Shaman",
+            "description":"Southron Shaman of Old Quor'eia",
+            "constitution":24,
+            "strength":14,
+            "agility":37,
+            "achre":22,
+            "caeren":18,
+            "kyosir":20,
+            "weaponOne":{
+                name: 'Longbow',
+                rarity: 'Rare',
+            },"weaponTwo":{
+                name: 'Spear',
+                rarity: 'Rare',
+            },"weaponThree":{
+                name: "Kynshear",
+                rarity: 'Rare',
+            },"shield":{
+                name: 'Parma',
+                rarity: 'Rare',
+            },"helmet":{
+                name: "Marauder's Helm",
+                rarity: 'Rare',
+            },"chest":{
+                name: "Marauder's Armor",
+                rarity: 'Rare',
+            },"legs":{
+                name: "Marauder's Greaves",
+                rarity: 'Rare',
+            },"ringOne":{
+                name: 'Achreon Ring',
+                rarity: 'Rare',
+            },"ringTwo":{
+                name: "Quor'eite Ring",
+                rarity: 'Rare',
+            },"amulet":{
+                name: "Marauder's Amulet",
+                rarity: 'Rare',
+            },"trinket":    {
+                name: "Marauder's Trinket",
+                rarity: 'Rare',
+            },
+            "faith":"adherent",
+            "currency":{"silver":0,"gold":0},
+            "firewater":{"current":5,"max":5},
+            "health":{"current":279,"max":279}
+    },
+    {
+            "_id":"mirio_8",
+            "origin":"Li'ivi",
+            "sex":"Man",
+            "mastery":"agility",
+            "level":8,
+            "experience":0,
+            "inventory":[],
+            "name":"Mirio Lorian Kyr'na",
+            "description":"Merchant Trader of Licivitas",
+            "constitution":22,
+            "strength":12,
+            "agility":29,
+            "achre":23,
+            "caeren":12,
+            "kyosir":24,
+            "weaponOne":{
+                name: "Hand of Se'dyro",
+                rarity: 'Rare',
+            },"weaponTwo":{
+                name: "Gladius",
+                rarity: 'Rare',
+            },"weaponThree":{
+                name: "Achreon Recurve",
+                rarity: 'Rare',
+            },"shield":{
+                name: 'Parma',
+                rarity: 'Rare',
+            },"helmet":{
+                name: "Licivitan Helm",
+                rarity: 'Rare',
+            },"chest":{
+                name: "Licivitan Cuirass",
+                rarity: 'Rare',
+            },"legs":{
+                name: "Licivitan Greaves",
+                rarity: 'Rare',
+            },"ringOne":{
+                name: "Sedyrus Ring",
+                rarity: 'Rare',
+            },"ringTwo":{
+                name: "Daethic Ring",
+                rarity: 'Rare',
+            },"amulet":{
+                name: "Daethic Amulet",
+                rarity: 'Rare',
+            },"trinket":    {
+                name: "Achreon Trinket",
+                rarity: 'Rare',
+            },
+            "faith":"devoted",
+            "currency":{"silver":0,"gold":0},
+            "firewater":{"current":5,"max":5},
+            "health":{"current":497,"max":497}
+    },
+    {
+            "_id":"sera_8",
+            "origin":"Notheo",
+            "sex":"Woman",
+            "mastery":"achre",
+            "level":8,
+            "experience":0,
+            "inventory":[],
+            "name":"Sera Lorian",
+            "description":"Daestra in the Outskirts of Lor",
+            "constitution":24,
+            "strength":10,
+            "agility":10,
+            "achre":30,
+            "caeren":27,
+            "kyosir":20,
+            "weaponOne":{
+                name: 'Tendril',
+                rarity: 'Rare',
+            },"weaponTwo":{
+                name: 'Hush',
+                rarity: 'Rare',
+            },"weaponThree":{
+                name: "Daethic Bow",
+                rarity: 'Rare',
+            },"shield":{
+                name: 'Heater',
+                rarity: 'Rare',
+            },"helmet":{
+                name: 'Dae Hood',
+                rarity: 'Rare',
+            },"chest":{
+                name: 'Dae Robes',
+                rarity: 'Rare',
+            },"legs":{
+                name: 'Dae Pants',
+                rarity: 'Rare',
+            },"ringOne":{
+                name: 'Dae Ring',
+                rarity: 'Rare',
+            },"ringTwo":{
+                name: 'Dae Ring',
+                rarity: 'Rare',
+            },"amulet":{
+                name: 'Dae Amulet',
+                rarity: 'Rare',
+            },"trinket":    {
+                name: 'Dae Trinket',
+                rarity: 'Rare',
+            },
+            "faith":"adherent",
+            "currency":{"silver":0,"gold":0},
+            "firewater":{"current":5,"max":5},
+            "health":{"current":399,"max":399}
+    },
+    {
+            "_id":"synaethi_8",
+            "origin":"Ashtre",
+            "sex":"Man",
+            "mastery":"achre",
+            "level":8,
+            "experience":0,
+            "inventory":[],
+            "name":"Synaethi Spiras",
+            "description":"Ghost-Child of Theogeni Spiras",
+            "constitution":23,
+            "strength":10,
+            "agility":17,
+            "achre":33,
+            "caeren":22,
+            "kyosir":16,
+            "weaponOne":{
+                name: "Windshear",
+                rarity: 'Rare',
+            },"weaponTwo":{
+                name: "Astral Spear",
+                rarity: 'Rare',
+            },"weaponThree":{
+                name: "Lava Spit",
+                rarity: 'Rare',
+            },"shield":{
+                name: 'Parma',
+                rarity: 'Rare',
+            },"helmet":{
+                name: "Fireland Helm",
+                rarity: 'Rare',
+            },"chest":{
+                name: "Fireland Cuirass",
+                rarity: 'Rare',
+            },"legs":{
+                name: "Fireland Greaves",
+                rarity: 'Rare',
+            },"ringOne":{
+                name: "Astral Ring",
+                rarity: 'Rare',
+            },"ringTwo":{
+                name: "Fireland Ring",
+                rarity: 'Rare',
+            },"amulet":{
+                name: "Occult Amulet",
+                rarity: 'Rare',
+            },"trinket":    {
+                name: "Occult Trinket",
+                rarity: 'Rare',
+            },
+            "faith":"devoted",
+            "currency":{"silver":0,"gold":0},
+            "firewater":{"current":5,"max":5},
+            "health":{"current":497,"max":497}
+    },
+    {
+            "_id":"torreous_8",
+            "origin":"Fyers",
+            "sex":"Man",
+            "mastery":"achre",
+            "level":8,
+            "experience":0,
+            "inventory":[],
+            "name":"Torreous Ashfyre",
+            "description":"Eldest Ashfyre Brother",
+            "constitution":22,
+            "strength":10,
+            "agility":11,
+            "achre":20,
+            "caeren":25,
+            "kyosir":24,
+            "weaponOne":{
+                name: 'Lava Spit',
+                rarity: 'Rare',
+            },"weaponTwo":{
+                name: 'Lava Spit',
+                rarity: 'Rare',
+            },"weaponThree":{
+                name: "Achreon Recurve",
+                rarity: 'Rare',
+            },"shield":{
+                name: 'Parma',
+                rarity: 'Rare',
+            },"helmet":{
+                name: 'Fyers Hood',
+                rarity: 'Rare',
+            },"chest":{
+                name: 'Fyers Robes',
+                rarity: 'Rare',
+            },"legs":{
+                name: 'Fyers Pants',
+                rarity: 'Rare',
+            },"ringOne":{
+                name: 'Fyers Ring',
+                rarity: 'Rare',
+            },"ringTwo":{
+                name: 'Fyers Ring',
+                rarity: 'Rare',
+            },"amulet":{
+                name: 'Fyers Amulet',
+                rarity: 'Rare',
+            },"trinket":    {
+                name: 'Fyers Trinket',
+                rarity: 'Rare',
+            },
+            "faith":"adherent",
+            "currency":{"silver":0,"gold":0},
+            "firewater":{"current":5,"max":5},
+            "health":{"current":399,"max":399}
+    },
+    {
+        "_id":"vincere_8",
+        "origin":"Quor'eite",
+        "sex":"Man",
+        "mastery":"achre",
+        "level":8,
+        "experience":0,
+        "inventory":[],
+        "name":"Vincere",
+        "description":"Arbiter of the Ley",
+        "constitution":24,
+        "strength":11,
+        "agility":24,
+        "achre":30,
+        "caeren":12,
+        "kyosir":12,
+        "weaponOne":{
+            name: "Quor'eite Crush",
+            rarity: 'Rare',
+        },"weaponTwo":{
+            name: "Quor'eite Crush",
+            rarity: 'Rare',
+        },"weaponThree":{
+            name: 'Achreon Recurve',
+            rarity: 'Rare',
+        },"shield":{
+            name: 'Parma',
+            rarity: 'Rare',
+        },"helmet":{
+            name: "Quor'eite Hood",
+            rarity: 'Rare',
+        },"chest":{
+            name: "Quor'eite Robes",
+            rarity: 'Rare',
+        },"legs":{
+            name: "Quor'eite Pants",
+            rarity: 'Rare',
+        },"ringOne":{
+            name: "Quor'eite Ring",
+            rarity: 'Rare',
+        },"ringTwo":{
+            name: "Quor'eite Ring",
+            rarity: 'Rare',
+        },"amulet":{
+            name: "Quor'eite Amulet",
+            rarity: 'Rare',
+        },"trinket":    {
+            name: "Quor'eite Trinket",
+            rarity: 'Rare',
+        },
+        "faith":"adherent",
+        "currency":{"silver":0,"gold":0},
+        "firewater":{"current":5,"max":5},
+        "health":{"current":423,"max":423}
+    },
 ];

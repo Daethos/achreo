@@ -66,8 +66,8 @@ export class Intro extends Scene {
         this.background.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height);
         this.background.setDepth(4);
         this.introText = this.add.text(
-            this.game.canvas.width * 0.15, 
-            this.game.canvas.height * 0.2, 
+            0, // this.game.canvas.width * 0.15 
+            0, // this.game.canvas.height * 0.2 
             this.node.text, {
                 color: '#fdf6d8',
                 fontFamily: 'Cinzel Regular',
@@ -76,16 +76,18 @@ export class Intro extends Scene {
                 strokeThickness: 2,
                 align: 'center',
             });
+        this.introText.setPosition(this.game.canvas.width * 0.15, this.game.canvas.height * 0.2);
         this.introText.setWordWrapWidth(this.game.canvas.width * 0.7);
-        
+        this.introText.setOrigin(0);
+
         this.introTextBorder = new Phaser.GameObjects.Rectangle(this,
-            this.introText.x - this.introText.width * this.introText.originX,
-            this.introText.y - this.introText.height * this.introText.originY,
+            0, // this.introText.x - this.introText.width * this.introText.originX
+            0, // this.introText.y - this.introText.height * this.introText.originY
             this.introText.width * 1.1,
             this.introText.height * 1.1,
         );
         this.introTextBorder.setStrokeStyle(2, 0xfdf6d8);
-        this.introTextBorder.setDepth(5);
+        this.introTextBorder.setDepth(8);
         this.introText.setDepth(6);
 
         this.node = INTRO_NODES[0];

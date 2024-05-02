@@ -274,13 +274,6 @@ const SpecialSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('BEAM')} Chiomism
-            </p>
-            Belittle and mock your opponent of their caer, damaging and slowing them. Channel. Short Cooldown. Moderate Stamina.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CAST')} Confuse
             </p>
             Inspire confusion in your opponent, causing them to contemplate reality for several seconds, though damage may break them from their fugue. Cast. Short Cooldown. Low Stamina
@@ -333,6 +326,13 @@ const SpecialSettings = () => {
             {svg('VOICE')} Howl
             </p>
             A hush that proliferates, stunning enemies caught in its piercing blast for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('BEAM')} Kyrnaicism
+            </p>
+            Belittle and mock your opponent of their caer, damaging and slowing them. Channel. Short Cooldown. Moderate Stamina.
             </div>
             <br />
             <div>

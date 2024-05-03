@@ -219,7 +219,7 @@ export default function App() {
     const setTips = (on: boolean): void => {
         console.log('Setting Tips:', on);
         if (on) {
-            const interval: number = 1000 * 6; // 1000 * 60 * 5
+            const interval: number = 1000 * 60 * 5; // 1000 * 60 * 5
             tips = setInterval(() => {
                 const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
                 setAlert({ header: 'Gameplay Tidbit', body: tip, delay: 3000, key: 'Close' }); // 10000

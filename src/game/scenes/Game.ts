@@ -123,23 +123,27 @@ export class Game extends Scene {
         const layerC = map.createLayer('Tile Layer - Construction', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
         const layer4 = map.createLayer('Tile Layer 4 - Primes', decorations as Phaser.Tilemaps.Tileset, 0, 0);
         const layer5 = map.createLayer('Tile Layer 5 - Snags', decorations as Phaser.Tilemaps.Tileset, 0, 0);
+        const layer6 = map.createLayer('Tile Layer 6 - Camps', camps as Phaser.Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer 2 - Flowers', decorations as Phaser.Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer 3 - Plants', decorations as Phaser.Tilemaps.Tileset, 0, 0);
         // map.createLayer('Tile Layer 4 - Primes', decorations as Phaser.Tilemaps.Tileset, 0, 0);
         // map.createLayer('Tile Layer 5 - Snags', decorations as Phaser.Tilemaps.Tileset, 0, 0);
-        map.createLayer('Tile Layer 6 - Camps', camps as Phaser.Tilemaps.Tileset, 0, 0);
+        // map.createLayer('Tile Layer 6 - Camps', camps as Phaser.Tilemaps.Tileset, 0, 0);
         layer0?.setCollisionByProperty({ collides: true });
         layer1?.setCollisionByProperty({ collides: true });
         layerC?.setCollisionByProperty({ collides: true });
         layer4?.setCollisionByProperty({ collides: true });
         layer5?.setCollisionByProperty({ collides: true });
+        layer6?.setCollisionByProperty({ collides: true });
         layer4?.setDepth(3);
         layer5?.setDepth(3);
+        // layer6?.setDepth(3);
         this.matter.world.convertTilemapLayer(layer0 as Phaser.Tilemaps.TilemapLayer);
         this.matter.world.convertTilemapLayer(layer1 as Phaser.Tilemaps.TilemapLayer);
         this.matter.world.convertTilemapLayer(layerC as Phaser.Tilemaps.TilemapLayer); 
         this.matter.world.convertTilemapLayer(layer4 as Phaser.Tilemaps.TilemapLayer);
         this.matter.world.convertTilemapLayer(layer5 as Phaser.Tilemaps.TilemapLayer);
+        this.matter.world.convertTilemapLayer(layer6 as Phaser.Tilemaps.TilemapLayer);
         // this.matter.world.createDebugGraphic(); 
 
         const objectLayer = map.getObjectLayer('navmesh');
@@ -347,6 +351,7 @@ export class Game extends Scene {
         EventBus.off('action-button-sound');
         EventBus.off('update-postfx');
         EventBus.off('music');
+        EventBus.off('switch-scene');
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].cleanUp();
         };
@@ -426,6 +431,27 @@ export class Game extends Scene {
             } else {
                 this.pauseMusic();
             };
+        });
+        EventBus.on('switch-scene', (data: { current: string, next: string }) => {
+            if (data.current !== 'Game') return;
+            this.scene.sleep(data.current);
+            if (this.combat) {
+                this.musicCombat.pause();
+                this.stopCombatTimer();    
+            } else {
+                this.musicBackground.pause();
+            };
+            this.scene.launch(data.next, { ascean: this.ascean, combat: this.state, game: this.gameState, settings: this.settings });
+        });
+        EventBus.on('wake-up', (scene: string) => {
+            this.scene.wake(scene);
+            if (this.combat) {
+                this.musicCombat.resume();
+                this.startCombatTimer();    
+            } else {
+                this.musicBackground.resume();
+            };
+            EventBus.emit('current-scene-ready', this);
         });
     };
 

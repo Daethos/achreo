@@ -54,8 +54,8 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
         };
     };
     const actions = {
-        blessPlayer,
-        rebukePlayer,
+        blessPlayer: () => blessPlayer(),
+        rebukePlayer: () => rebukePlayer(),
     };
 
     createEffect(() => {

@@ -93,7 +93,7 @@ export default function App() {
     });
     const [scene, setScene] = createSignal<string>('');
     const dimensions = useResizeListener();
-    const [alert, setAlert] = createSignal({ header: '', body: '', delay: 0 });
+    const [alert, setAlert] = createSignal({ header: '', body: '', delay: 0, key: '' });
     const [show, setShow] = createSignal<boolean>(false);
     let phaserRef: IRefPhaserGame;
     let tips: string | number | NodeJS.Timeout | undefined =  undefined;
@@ -191,7 +191,7 @@ export default function App() {
         try {
             EventBus.emit('preload-ascean', id);
             const asc: Ascean = menu()?.asceans?.find((asc: Ascean) => asc._id === id) as Ascean;
-            setAlert({ header: 'Loading Game', body: `Preparing ${asc.name}. Good luck.`, delay: 3000 });
+            setAlert({ header: 'Loading Game', body: `Preparing ${asc.name}. Good luck.`, delay: 3000, key: '' });
             setShow(true);
             const inv = await getInventory(asc?._id as string);
             const full = { ...asc, inventory: inv };
@@ -211,20 +211,20 @@ export default function App() {
         };
     };
 
-    const makeToast = (header: string, body: string, delay = 3000): void => {
-        setAlert({ header, body, delay });
+    const makeToast = (header: string, body: string, delay = 3000, key = ''): void => {
+        setAlert({ header, body, delay, key });
         setShow(true);    
     };
 
     const setTips = (on: boolean): void => {
         console.log('Setting Tips:', on);
         if (on) {
-            const interval: number = 1000 * 60 * 5;
+            const interval: number = 1000 * 6; // 1000 * 60 * 5
             tips = setInterval(() => {
                 const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
-                setAlert({ header: 'Gameplay Tidbit', body: tip, delay: 10000 }); // 10000
+                setAlert({ header: 'Gameplay Tidbit', body: tip, delay: 3000, key: 'Close' }); // 10000
                 setShow(true);    
-            }, interval); // 1000 * 60 * 5
+            }, interval); 
         } else {
             clearInterval(tips);
         };
@@ -297,8 +297,21 @@ export default function App() {
         };
     };
 
+    function switchScene(next: string): void {
+        setShow(false);
+        const scene = phaserRef.scene as Phaser.Scene;
+        console.log('Switching Scene from ', scene.scene.key, ' to: ', next);
+        EventBus.emit('switch-scene', { current: scene.scene.key, next });
+    };
+
+    const actions = {
+        'Enter Tent': () => switchScene('Tent'),
+        'Close': () => setShow(false),
+        'Exit World': () => switchScene('Game'),
+    };
+
     usePhaserEvent('destroy-game', destroyGame);
-    usePhaserEvent('alert', (payload: { header: string, body: string }) => makeToast(payload.header, payload.body));
+    usePhaserEvent('alert', (payload: { header: string, body: string, delay?: number, key?: string }) => makeToast(payload.header, payload.body, payload.delay, payload.key));
     usePhaserEvent('set-tips', setTips);
     usePhaserEvent('enter-menu', enterMenu);
     usePhaserEvent('fetch-ascean', fetchAscean);
@@ -326,7 +339,7 @@ export default function App() {
         const game = scene.scene.get('Game') as Game;
         game.musicBackground.pause();
         scene.scene.sleep(key);
-        scene.scene.setVisible(false, key);
+        // scene.scene.setVisible(false, key);
     })
     usePhaserEvent('fetch-button-reorder', () => {
         EventBus.emit('reorder-buttons', { list: settings().actions, type: 'action' });
@@ -446,7 +459,7 @@ export default function App() {
             </>)}
             <Show when={show()}>
                 <div class='cornerBL realize' style={{ width: '30%', 'z-index': 1 }}>
-                    <GameToast show={show} setShow={setShow} alert={alert} setAlert={setAlert as Setter<{ header: string; body: string; delay: number; }>} />
+                    <GameToast actions={actions} show={show} setShow={setShow} alert={alert} setAlert={setAlert as Setter<{ header: string; body: string; delay: number; key?: string; }>} />
                 </div>
             </Show>
         </div>

@@ -463,6 +463,13 @@ export const PhaserGame = (props: IProps) => {
         };
     };
 
+    function checkUi() {
+        if (props.scene() === 'Game' || props.scene() === 'Tent') {
+            return true;
+        };
+        return false;
+    };
+    
     async function createUi(id: string): Promise<void> {
         const fresh = await getAscean(id);
         const pop = await populate(fresh);
@@ -917,7 +924,7 @@ export const PhaserGame = (props: IProps) => {
     return (
         <>
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
-        <Show when={live() && props.scene() === 'Game'}>
+        <Show when={live() && checkUi()}>
             <BaseUI ascean={props.ascean} combat={combat} game={game} settings={props.settings} setSettings={props.setSettings} stamina={stamina} />
         </Show>
         </>

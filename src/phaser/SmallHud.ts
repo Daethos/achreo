@@ -7,7 +7,7 @@ function xModifier(x: number, index: number, offset = 43.75) {
 };
 
 export default class SmallHud extends Phaser.GameObjects.Container {
-    public scene: Game;
+    public scene: any;
     public bar: Phaser.GameObjects.Image[];
     public x: number;
     public y: number;
@@ -26,7 +26,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         open: boolean;
     };
 
-    constructor(scene: Game) {
+    constructor(scene: any) {
         const x = scene.cameras.main.width / 2;
         const y = scene.cameras.main.height / 2;
         super(scene, x, y);

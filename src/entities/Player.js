@@ -48,6 +48,7 @@ export default class Player extends Entity {
         this.targetIndex = 1;
         this.currentTarget = undefined;
         this.stamina = scene?.state?.playerAttributes?.stamina;
+        this.maxStamina = scene?.state?.playerAttributes?.stamina;
         this.isMoving = false;
         this.targetID = undefined;
         this.attackedTarget = undefined;
@@ -384,6 +385,7 @@ export default class Player extends Entity {
         this.playerStateListener();
         this.setFixedRotation();   
         this.checkEnemyCollision(playerSensor);
+        this.checkWorldCollision(playerSensor);
     };   
 
     getAscean = () => {
@@ -501,7 +503,7 @@ export default class Player extends Entity {
         EventBus.off('update-stalwart', this.stalwartUpdate);
         EventBus.off('remove-enemy', this.enemyUpdate);
         EventBus.off('tab-target', this.tabUpdate);
-        EventBus.off('updated-stamina');
+        EventBus.off('updated-stamina', this.updateStamina);
     };
 
     highlightTarget = (sprite) => {
@@ -530,10 +532,12 @@ export default class Player extends Entity {
         EventBus.on('update-stalwart', this.stalwartUpdate);
         EventBus.on('remove-enemy', this.enemyUpdate);
         EventBus.on('tab-target', this.tabUpdate);
-        EventBus.on('updated-stamina', (percentage) => {
-            this.stamina = Math.round(this.scene.state.playerAttributes.stamina * percentage / 100);
-        });
+        EventBus.on('updated-stamina', this.updateStamina);
     }; 
+
+    updateStamina = (percentage) => {
+        this.stamina = Math.round(this.maxStamina * percentage / 100);
+    };
 
     setPlayer = (stats) => {
         this.ascean = stats.ascean;
@@ -623,6 +627,7 @@ export default class Player extends Entity {
         this.health = e.newPlayerHealth;
         this.healthbar.setValue(this.health);
         if (this.healthbar.getTotal() < e.playerHealth) this.healthbar.setTotal(e.playerHealth);
+        if (e.playerAttributes.stamina > this.maxStamina) this.maxStamina = e.playerAttributes.stamina;
     };
 
     soundEffects(sfx) {
@@ -854,6 +859,36 @@ export default class Player extends Entity {
             },
             context: this.scene,
         });
+    };
+
+    checkWorldCollision(playerSensor) {
+
+        this.scene.matterCollision.addOnCollideStart({
+            objectA: [playerSensor],
+            callback: (other) => {
+                // console.log(other, 'World');
+                if (other.gameObjectB && other.gameObjectB?.properties?.name === 'tent') {
+                        EventBus.emit('alert', { 
+                            header: 'Tent', 
+                            body: `You have encountered a tent! \n Would you like to enter?`, 
+                            delay: 6000, 
+                            key: 'Enter Tent'
+                        });
+                };
+                if (other.gameObjectB && other.gameObjectB?.properties?.name === 'worldExit') {
+                    // if (other.gameObjectB.isTent) {
+                        EventBus.emit('alert', { 
+                            header: 'Exit', 
+                            body: `You are near the exit. \n Would you like to head back to the world?`, 
+                            delay: 6000, 
+                            key: 'Exit World'
+                        });
+                    // };
+                };
+            },
+            context: this.scene,
+        });
+
     };
 
     calculateCollisionPoint(other) {

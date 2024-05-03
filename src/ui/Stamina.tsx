@@ -9,6 +9,7 @@ function createStamina(stam: Accessor<number>) {
     const recover = () => {
         const newStamina = Math.min(100, staminaPercentage() + 1);
         setStaminaPercentage(newStamina);
+        // console.log('recovering', newStamina);
         EventBus.emit('updated-stamina', newStamina);
         if (newStamina >= 100) {
             clearInterval(interval);

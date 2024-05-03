@@ -12,6 +12,7 @@ import Phaser from 'phaser';
 import { Preloader } from './scenes/Preloader';
 import { useResizeListener } from '../utility/dimensions';
 import { Intro } from './scenes/Intro';
+import { Tent } from './scenes/Interior';
 
 const dimensions = useResizeListener();
 //  Find out more information about the Game Config at:
@@ -35,6 +36,7 @@ const config: Phaser.Types.Core.GameConfig = {
         MainMenu,
         MainGame,
         Intro,
+        Tent,
         GameOver
     ],
     physics: {

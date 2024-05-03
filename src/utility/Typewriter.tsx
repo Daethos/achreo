@@ -185,7 +185,7 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
         element.setAttribute('onclick', `handleButton('${functionName}')`);
     };
 
-    const styleHTML = ( html: string) => {
+    const styleHTML = (html: string) => {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, "text/html");
 

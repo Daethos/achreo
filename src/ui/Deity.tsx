@@ -73,7 +73,7 @@ export function Deity({ ascean, combat, game }: DeityProps) {
         });
         getDialogNodes();
         checkOptions(game()?.currentNode as DialogNode);
-    }); // , [ascean] 
+    }); 
 
     const actions = {
         giveExp: () => giveExp(),

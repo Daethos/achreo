@@ -1,0 +1,114 @@
+{ "compressionlevel":-1,
+ "height":5,
+ "infinite":false,
+ "layers":[
+        {
+         "data":[1094, 1097, 1098,
+            1132, 1135, 1136,
+            1170, 1173, 1174,
+            1208, 1211, 1212,
+            1246, 1248, 1250],
+         "height":5,
+         "id":1,
+         "name":"Ground",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":3,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "data":[0, 0, 0,
+            0, 400, 401,
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0],
+         "height":5,
+         "id":2,
+         "name":"Camps",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":3,
+         "x":0,
+         "y":0
+        }],
+ "nextlayerid":3,
+ "nextobjectid":1,
+ "orientation":"orthogonal",
+ "renderorder":"right-down",
+ "tiledversion":"1.9.2",
+ "tileheight":32,
+ "tilesets":[
+        {
+         "columns":32,
+         "firstgid":1,
+         "image":"Pictures\/Clean Extracted\/Ascea Maps Unzipped\/Camps and Graves\/Camp_Graves.png",
+         "imageheight":480,
+         "imagewidth":1024,
+         "margin":0,
+         "name":"Camp_Graves",
+         "spacing":0,
+         "tilecount":480,
+         "tileheight":32,
+         "tilewidth":32,
+         "transparentcolor":"#ffffff"
+        }, 
+        {
+         "columns":38,
+         "firstgid":481,
+         "image":"Pictures\/Clean Extracted\/Ascea Maps Unzipped\/Deep Cave\/_PNG\/MainLev.png",
+         "imageheight":1344,
+         "imagewidth":1216,
+         "margin":0,
+         "name":"DeepCaveMainLev",
+         "spacing":0,
+         "tilecount":1596,
+         "tileheight":32,
+         "tiles":[
+                {
+                 "id":767,
+                 "objectgroup":
+                    {
+                     "draworder":"index",
+                     "id":2,
+                     "name":"",
+                     "objects":[
+                            {
+                             "class":"",
+                             "height":16,
+                             "id":1,
+                             "name":"",
+                             "rotation":0,
+                             "visible":true,
+                             "width":32,
+                             "x":0,
+                             "y":16
+                            }],
+                     "opacity":1,
+                     "type":"objectgroup",
+                     "visible":true,
+                     "x":0,
+                     "y":0
+                    },
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"worldExit"
+                        }]
+                }],
+         "tilewidth":32,
+         "transparentcolor":"#ffffff"
+        }],
+ "tilewidth":32,
+ "type":"map",
+ "version":"1.9",
+ "width":3
+}

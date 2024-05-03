@@ -362,7 +362,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         });
         this.actionButtons = [];
         this.specialButtons = [];
-        EventBus.off('reorder-buttons', this.reorderButtons);
+        EventBus.off('reorder-buttons');
     };
 
     public reorder = () => {

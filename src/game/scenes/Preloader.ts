@@ -36,6 +36,7 @@ export class Preloader extends Scene {
         // Treasure.preload(this);
         
         this.load.tilemapTiledJSON('ascean_test', '../assets/gui/ascean_test.json');
+        this.load.tilemapTiledJSON('tent', '../assets/gui/tent.json');
         this.load.plugin('rexvirtualjoystickplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexvirtualjoystickplugin.min.js', true); 
         this.load.plugin('rexglowfilterpipelineplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexglowfilterpipelineplugin.min.js', true);
         this.load.plugin('rextexttypingplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rextexttypingplugin.min.js', true);
@@ -97,6 +98,7 @@ export class Preloader extends Scene {
         this.load.image('AncientForestMain', '../assets/gui/AncientForestMainLev.png');
         this.load.image('AncientForestDecorative', '../assets/gui/AncientForestDecorative.png');
         this.load.image('Camp_Graves', '../assets/gui/Camp_Graves.png');
+        this.load.image('DeepCaveMainLev', '../assets/gui/MainLev.png');
         this.load.image('closed', '../assets/images/closed.png');
         this.load.image('open', '../assets/images/open.png');
         this.load.image('caerenic', '../assets/images/caerenic.png');

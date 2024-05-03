@@ -36,8 +36,8 @@ function checkRootId(node: DialogNode, id: string) {
     return node.rootId === id;
 };
 
-function getNodesForDeity(enemy: string, deityInfo: any): DialogNode[] {
-    const nodeRange = `000${deityInfo.behaviors.length}`;
+function getNodesForDeity(enemy: string, interactions: any): DialogNode[] {
+    const nodeRange = `000${interactions}`; // interactions
     const matchingNodes: DialogNode[] = [];
     for (const node of EnemyDialogNodes.nodes) {
         if (node.options.length === 0 || !checkRootId(node, nodeRange)) {
@@ -96,7 +96,7 @@ export function Deity({ ascean, combat, game }: DeityProps) {
     };
 
     const getDialogNodes = async () => {
-        setDialogNodes(getNodesForDeity('Deity', ascean().statistics.relationships.deity));
+        setDialogNodes(getNodesForDeity('Deity', ascean().interactions.deity));
     };
 
     const giveExp = () => {

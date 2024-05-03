@@ -94,6 +94,10 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         });
     };
 
+    cleanUp = () => {
+        EventBus.off('toggle-bar');
+    };
+
     draw = () => {
         this.bar.forEach((item, index) => {
             item.x = xModifier(this.x, Math.min(index, 8));
@@ -117,18 +121,18 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         EventBus.on('toggle-bar', (e: boolean) => {
             if (e === true) {
                 this.setVisible(true);
-                this.bar.forEach((item) => {
-                    if (item.texture.key === 'closed') {
-                        item.setVisible(false);
-                    } else {
-                        item.setVisible(true);
-                    };
-                });
+                // this.bar.forEach((item) => {
+                //     if (item.texture.key === 'closed') {
+                //         item.setVisible(false);
+                //     } else {
+                //         item.setVisible(true);
+                //     };
+                // });
             } else {
                 this.setVisible(false);
-                this.bar.forEach((item) => {
-                    item.setVisible(false);
-                });
+                // this.bar.forEach((item) => {
+                //     item.setVisible(false);
+                // });
             };
         });
     };

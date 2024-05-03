@@ -491,6 +491,7 @@ export const PhaserGame = (props: IProps) => {
 
     function enterGame() {
         try  {
+            console.log(`Entering Game? ${!live()}`);
             setLive(!live());
         } catch (err: any) {
             console.warn(err, 'Error Entering Game');

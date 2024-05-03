@@ -18,6 +18,11 @@ export default class Settings {
     public control: string;
     public creationLeft: string;
     public creationRight: string;
+    public difficulty: { 
+        aggression: number; 
+        aim: boolean; 
+        tidbits: boolean; 
+    };
     public postFx: { 
         enable: boolean; 
         chromaticEnable: boolean; 
@@ -67,6 +72,7 @@ export default class Settings {
         this.difficulty = {
             aggression: 0.5,
             aim: false,
+            tidbits: false,
         };
         this.postFx = {
             enable: false, 

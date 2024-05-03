@@ -51,9 +51,6 @@ export class Game extends Scene {
     rexUI: any;
     navMesh: any;
     navMeshPlugin: any;
-    // joystick: any;
-    // baseSprite: Phaser.GameObjects.Sprite;
-    // thumbSprite: Phaser.GameObjects.Sprite;
     postFxPipeline: any;
 
     musicBackground: Phaser.Sound.BaseSound;
@@ -98,32 +95,22 @@ export class Game extends Scene {
         super('Game');
     };
 
-    preload() {
-    };
+    preload() {};
 
     create () {
-
         // ================== Camera ================== \\
-
         let camera = this.cameras.main;
         camera.zoom = 0.8;
 
-
-        this.asceanEvent();
-        this.getAscean();
-        this.combatEvent();
-        this.state = this.getCombat();
         this.gameEvent();
+        this.getAscean();
+        this.state = this.getCombat();
         this.getGame();
-        this.settingsEvent();
         this.settings = this.getSettings();
         this.rexUI = this.plugins.get('rexuiplugin');
 
-
         // ================== Add Multiple Inputs ================== \\
         // this.input.addPointer(3);
-        // this.input.addPointer(4);
-        // this.input.addPointer(5);
 
         // ================== Ascean Test Map ================== \\
         const map = this.make.tilemap({ key: 'ascean_test' });
@@ -173,9 +160,6 @@ export class Game extends Scene {
         camera.startFollow(this.player);
         camera.setLerp(0.1, 0.1);
         camera.setBounds(0, 0, 4096, 4096);
-        // const darkOverlay = this.add.graphics();
-        // darkOverlay.fillStyle(0x000000, 0.35); // Black with 50% opacity
-        // darkOverlay.fillRect(0, 0, 4096, 4096);
 
         var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
         this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
@@ -223,7 +207,9 @@ export class Game extends Scene {
         // =========================== Music =========================== \\
 
         this.musicBackground = this.sound.add('background', { volume: this?.settings?.volume ?? 0 / 2, loop: true });
-        this.musicBackground.play();
+        if (this.settings?.music === true) {
+            this.musicBackground.play();
+        };
         this.musicCombat = this.sound.add('combat', { volume: this?.settings?.volume, loop: true });
         // this.volumeEvent = () => EventBus.on('update-volume', (e) => this.musicBackground.setVolume(e));
         this.spooky = this.sound.add('spooky', { volume: this?.settings?.volume });
@@ -272,15 +258,7 @@ export class Game extends Scene {
         this.combatTimerText.setScrollFactor(0);
         this.combatTimerText.setVisible(false);
 
-        this.equipEvent();
-        this.unequipEvent();
-        this.purchaseEvent();
-        this.weaponEvent();
-        this.actionButtonEvent();
         this.postFxEvent();
-        this.lootDropEvent();
-        this.aggressiveEvent();
-        this.minimapEvent();
 
         // ================== Joystick ================== \\
 
@@ -354,39 +332,57 @@ export class Game extends Scene {
         EventBus.emit('current-scene-ready', this);
     };
 
-    asceanEvent = ():void => {
-        EventBus.on('ascean', (ascean: Ascean) => {
-            this.ascean = ascean;
-        });
-    };
-
-    combatEvent = ():void => {
-        EventBus.on('combat', (combat: any) => {
-            this.state = combat;
-        });
+    cleanUp = () => {
+        EventBus.off('ascean');
+        EventBus.off('combat');
+        EventBus.off('game');
+        EventBus.off('settings');
+        EventBus.off('enemyLootDrop');
+        EventBus.off('minimap');
+        EventBus.off('aggressive-enemy');
+        EventBus.off('equip-sound');
+        EventBus.off('unequip-sound');
+        EventBus.off('purchase-sound');
+        EventBus.off('weapon-order-sound');
+        EventBus.off('action-button-sound');
+        EventBus.off('update-postfx');
+        EventBus.off('music');
+        for (let i = 0; i < this.enemies.length; i++) {
+            this.enemies[i].cleanUp();
+        };
+        for (let i = 0; i < this.npcs.length; i++) {
+            this.npcs[i].cleanUp();
+        };
+        this.player.cleanUp();
+        this.actionBar.cleanUp();
+        this.actionBar.destroy();
+        this.combatMachine.cleanUp();
+        this.smallHud.cleanUp();
+        this.smallHud.destroy();
+        this.joystick.cleanUp();
+        this.rightJoystick.cleanUp();    
+        this.joystick.destroy();
+        this.rightJoystick.destroy();
     };
 
     gameEvent = ():void => {
+        EventBus.on('ascean', (ascean: Ascean) => {
+            this.ascean = ascean;
+        });
+        EventBus.on('combat', (combat: any) => {
+            this.state = combat;
+        });
         EventBus.on('game', (game: GameState) => {
             this.gameState = game;
         });
-    };
-
-    settingsEvent = ():void => {
         EventBus.on('settings', (settings: Settings) => {
             this.settings = settings;
-        });
-    };
-
-    lootDropEvent = (): void => {
+        });    
         EventBus.on('enemyLootDrop', (drops: any) => {
             drops.drops.forEach((drop: Equipment) => {
                 this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop }))
             });
-        });
-    };
-
-    minimapEvent = (): void => {
+        });    
         EventBus.on('minimap', () => {
             if (this.minimap.visible === true) {
                 this.minimap.setVisible(false);
@@ -398,9 +394,6 @@ export class Game extends Scene {
                 this.minimap.startFollow(this.player);
             };
         });
-    };
-
-    aggressiveEvent = (): void => {
         EventBus.on('aggressive-enemy', (e: {id: string, isAggressive: boolean}) => {
             let enemy = this.enemies.find((enemy: any) => enemy.enemyID === e.id);
             enemy.isAggressive = e.isAggressive;
@@ -411,7 +404,31 @@ export class Game extends Scene {
                 enemy.stateMachine.setState(States.CHASE);
             };
         });
+
+        EventBus.on('equip-sound', () => {
+            this.equip.play();
+        });
+        EventBus.on('unequip-sound', () => {
+            this.unequip.play();
+        });
+        EventBus.on('purchase-sound', () => {
+            this.purchase.play();
+        });
+        EventBus.on('weapon-order-sound', () => {
+            this.weaponOrder.play();
+        });
+        EventBus.on('action-button-sound', () => {
+            this.sound.play('TV_Button_Press', { volume: this?.settings?.volume * 2 });
+        });
+        EventBus.on('music', (on: boolean) => {
+            if (on === true && !this.scene.isPaused('Game')) {
+                this.resumeMusic();
+            } else {
+                this.pauseMusic();
+            };
+        });
     };
+
 
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
@@ -533,36 +550,6 @@ export class Game extends Scene {
 
     };
 
-    equipEvent():void {
-        EventBus.on('equip-sound', () => {
-            this.equip.play();
-        });
-    };
-
-    unequipEvent():void {
-        EventBus.on('unequip-sound', () => {
-            this.unequip.play();
-        });
-    };
-
-    purchaseEvent():void {
-        EventBus.on('purchase-sound', () => {
-            this.purchase.play();
-        });
-    };
-
-    weaponEvent():void {
-        EventBus.on('weapon-order-sound', () => {
-            this.weaponOrder.play();
-        });
-    };
-
-    actionButtonEvent():void {
-        EventBus.on('action-button-sound', () => {
-            this.sound.play('TV_Button_Press', { volume: this?.settings?.volume * 2 });
-        });
-    };
-
     changeScene(): void {
         this.scene.start('GameOver');
     };
@@ -587,7 +574,6 @@ export class Game extends Scene {
         EventBus.emit('request-settings');
         return this.settings;
     };
-
 
     // ================== Combat ================== \\
 
@@ -908,6 +894,7 @@ export class Game extends Scene {
 
     pause() {
         this.scene.pause();
+        // if (this.settings.music === false) return;
         if (!this.combat) {
             this.musicBackground.pause();
         } else {
@@ -916,8 +903,14 @@ export class Game extends Scene {
     };
     resume() {
         this.scene.resume();
+        console.log(this.settings?.music, 'Settings Music -- Would you **want** to resume?');
+        if (this.settings?.music === false) return;
         if (!this.combat) {
-            this.musicBackground.resume();
+            if (this.musicBackground.isPaused) {
+                this.musicBackground.resume();
+            } else {
+                this.musicBackground.play();
+            }
         } else {
             this.musicCombat.resume();
         };

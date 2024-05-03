@@ -62,6 +62,8 @@ export default class CombatMachine {
         Enemy: (data: any) => Dispatcher.enemy(data),
     };
 
+    public cleanUp = () => EventBus.off('combat', this.listener);
+
     private listener = () => EventBus.on('combat', (e: Combat): Combat => (this.context = e));
 
     private process = (): void => {

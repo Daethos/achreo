@@ -6,7 +6,7 @@ export const DEITIES = {
         name: "Daethos",
         description: "The One True God awaiting man in the Land of Hush and Tendril, the Arbiter of the Caer.",
         origin: "Thought to be Licivitas as the Good Lorian founded the Seyr in the city of his namesake. However, the origin of its prophet, Laetrois Ath'Shaorah, is unknown.",
-        favor: "Caeren",
+        favor: "None",
         worship: "Charity and Penance, for whether born bastard or regal, man or woman, gifted or afflicted, it is the duty in what one can bear and manifest greater, that will carry forward in his lineage and those around him. The Good may only be birthed through the individual, his ascertainment of the truth as evidenced through the perception of the world around him, and for that right may it converge and coalesce to his brothers on the whole.",
     },
     Achreo: {

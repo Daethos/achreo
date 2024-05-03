@@ -56,13 +56,13 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
         EventBus.emit('combat', combat());
     });  
 
-    createEffect(() => {
-        EventBus.emit('settings', settings());
-    });
-
     
     createEffect(() => {
-        console.log(ascean().statistics.relationships.deity, ascean().interactions.deity, ascean().journal, '--- The Ascean ---');
+        console.log(ascean(), 'Ascean')
+    });
+
+    createEffect(() => {
+        EventBus.emit('settings', settings());
     });
 
     onMount(() => {
@@ -328,11 +328,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     function balanceExperience(experience: number, level: number) {
         experience *= (110 - (level * 10)) / 100;
         experience = Math.round(experience);
-        // 3% drop off level 1 = * 1, 2 = * 0.97, 3 = * 0.94, 4 = * 0.91, 5 = * 0.88, 6 = * 0.85, 7 = * 0.82, 8 = * 0.79, 9 = * 0.76, 10 = * 0.73
-        // 4% drop off level 1 = * 1, 2 = * 0.96, 3 = * 0.92, 4 = * 0.88, 5 = * 0.84, 6 = * 0.80, 7 = * 0.76, 8 = * 0.72, 9 = * 0.68, 10 = * 0.64
-        // 5% drop off level 1 = * 1, 2 = * 0.95, 3 = * 0.90, 4 = * 0.85, 5 = * 0.80, 6 = * 0.75, 7 = * 0.70, 8 = * 0.65, 9 = * 0.60, 10 = * 0.55
-        // 6% drop off level 1 = * 1, 2 = * 0.94, 3 = * 0.88, 4 = * 0.82, 5 = * 0.76, 6 = * 0.70, 7 = * 0.64, 8 = * 0.58, 9 = * 0.52, 10 = * 0.46
-        // 7% drop off level 1 = * 1, 2 = * 0.93, 3 = * 0.86, 4 = * 0.79, 5 = * 0.72, 6 = * 0.65, 7 = * 0.58, 8 = * 0.51, 9 = * 0.44, 10 = * 0.37
         return experience;
     };
 

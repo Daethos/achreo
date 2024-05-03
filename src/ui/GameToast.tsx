@@ -4,16 +4,16 @@ import { Accessor, Setter } from 'solid-js'
 interface Props {
     show: Accessor<boolean>;
     setShow: Setter<boolean>;
-    alert: Accessor<{ header: string; body: string } | undefined>;
-    setAlert: Setter<{ header: string; body: string }>;
+    alert: Accessor<{ header: string; body: string, delay: number } | undefined>;
+    setAlert: Setter<{ header: string; body: string, delay: number }>;
 };
 
 export default function GameToast({ show, setShow, alert, setAlert }: Props) {
     function close(): void {
         setShow(!show());
-        setAlert(undefined as unknown as { header: string; body: string })
+        setAlert(undefined as unknown as { header: string; body: string, delay: number })
     };
-    const toast = {
+    const toast: any = {
         'background-color': '#000',
         padding: '0.5em',
         margin: '0.5em',
@@ -21,10 +21,11 @@ export default function GameToast({ show, setShow, alert, setAlert }: Props) {
         'border-radius': '0.5em',
         'box-shadow': '0 0 1em #ffc700',
         // transform: 'scale(0.65)',
-        bottom: '0',
+        position: alert()?.header === 'Gameplay Tidbit' ? 'absolute' : '', 
+        bottom: alert()?.header === 'Gameplay Tidbit' ? '45vh' : '0',
     };
     return (
-        <Toast onClose={() => close()} show={show()} delay={3000} autohide style={toast}>
+        <Toast onClose={() => close()} show={show()} delay={alert()?.delay} autohide style={toast}>
         <p style={{ 'font-size': '0.875em', margin: '0.25em', color: 'gold', 'font-weight': 600 }}>
             {alert()?.header}
         </p>

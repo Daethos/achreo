@@ -24,7 +24,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
     const [show, setShow] = createSignal<boolean>(true);
     const [alert, setAlert] = createSignal<{ header: string; body: string } | undefined>(undefined);
     const [toastShow, setToastShow] = createSignal<boolean>(false);
-    const [experience, setExperience] = createSignal<number>(ascean().experience as number); // ascean().experience as number
+    const [experience, setExperience] = createSignal<number>(ascean()?.experience as number); // ascean().experience as number
     const [clicked, setClicked] = createSignal<any>({
         open: false,
         closed: false,
@@ -42,13 +42,13 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
     const dimensions = useResizeListener(); 
 
     createMemo(() => {
-        if (ascean().experience as number > experience()) {
+        if (ascean()?.experience as number > experience()) {
             setToastShow(true);
             setAlert({
                 header: 'Experience Gain',
                 body: `You've Gained ${ascean().experience as number - experience()} Experience!`,
             });
-        } else if (ascean().experience !== 0 && ascean().experience as number < experience()) {
+        } else if (ascean()?.experience !== 0 && ascean()?.experience as number < experience()) {
             setAlert(undefined);    
             setToastShow(false);
         };     

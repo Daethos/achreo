@@ -116,6 +116,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
     const [showOrigin, setShowOrigin] = createSignal<boolean>(false);
     const [showFaith, setShowFaith] = createSignal<boolean>(false);
     const [deity, setDeity] = createSignal<any>(undefined);
+    const [showRestart, setShowRestart] = createSignal<boolean>(false);
 
     const dimensions = useResizeListener();
  
@@ -286,13 +287,13 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 <div class='creature-heading'>
                 <For each={deities}>
                     {(deity: any) => (
-                            <div>
-                            <h1 style={{ 'font-size': '1.2em' }}>{deity?.name}</h1>
-                            <h2>Favor: 
-                                {/* <span class='gold'></span> */}
-                                {deity?.favor}
-                            </h2> 
-                            </div>
+                        <div>
+                        <h1 style={{ 'font-size': '1.2em' }}>{deity?.name}</h1>
+                        <h2>Favor: 
+                            {/* <span class='gold'></span> */}
+                            {deity?.favor}
+                        </h2> 
+                        </div>
                     )}
                 </For>
                 </div>
@@ -387,6 +388,20 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, aggression: e.target.value } };
         setSettings(newSettings);
         await saveSettings(newSettings);
+    };
+
+    async function handleMusic() {
+        const newSettings = { ...settings(), music: !settings().music };
+        setSettings(newSettings);
+        await saveSettings(newSettings);
+        EventBus.emit('music', newSettings.music);
+    };
+
+    async function handleTidbits() {
+        const newSettings = { ...settings(), difficulty: { ...settings().difficulty, tidbits: !settings().difficulty.tidbits } };
+        setSettings(newSettings);
+        await saveSettings(newSettings);
+        EventBus.emit('set-tips', newSettings.difficulty.tidbits);
     };
 
     async function handleVolume(e: number) {
@@ -800,40 +815,39 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                                 </div>
                         </Match>
                         <Match when={settings().control === CONTROLS.DIFFICULTY}>
-                            <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
+                            <div class='center creature-heading' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
+                                <h1 style={font('1.25em')}>Aggression</h1>
                                 <div style={font('1em', '#fdf6d8')}>
-                                    Aim: <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'True' : 'False'}</button>
-                                </div>
-                                <div style={font('0.5em')}>[Toggle: True = Manual Aim, False = Auto Aim]</div>
-                                <br />
-                                <div style={font('1em', '#fdf6d8')}>
-                                    Aggression: <span class='gold'>{settings().difficulty.aggression}</span> <br />
+                                    <span class='gold'>{settings().difficulty.aggression}</span> <br />
                                     <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.aggression} onChange={(e) => handleAggression(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                                 </div>
                                 <div style={font('0.5em')}>[Aggressive AI Range: 0 - 100%]</div>
                                 <br />
-                                <div style={font('1em', '#fdf6d8')}>Sound</div>
-                                <div style={font('0.75em', '#fdf6d8')}>Volume ({settings().volume})</div>
+                                <h1 style={font('1.25em')}>Sound</h1>
+                                <div style={font('0.75em', '#fdf6d8')}>Enabled 
+                                    <button class='gold highlight' onClick={() => handleMusic()}>{settings().music ? 'True' : 'False'}</button>
+                                </div>
+
+                                <div style={{...font('0.75em', '#fdf6d8'), 'margin': '3%' }}>Volume ({settings().volume})</div>
                                 <Form.Range min={0} max={1} step={0.1} value={settings().volume} onChange={(e) => handleVolume(Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                                <br />
+                                <div style={font('1em', '#fdf6d8')}>
+                                    <h1 style={font('1.25em')}>Targeting</h1>
+                                    <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'Manual' : 'Auto'} Aim</button>
+                                </div>
+                                <div style={font('0.5em')}>[Whether you use the second joystick to aim ranged attacks]</div>
+                                <br />
+                                <h1 style={font('1.25em')}>Tidbits</h1>
+                                    <button class='gold highlight' onClick={() => handleTidbits()}>{settings().difficulty.tidbits ? 'On' : 'Off'}</button>
+                                <div style={font('0.5em')}>[On = Hints and Lore Popups, False = No Info Popups]</div>
+                                <br />
                             </div>
                         </Match>
                     </Switch>
-
-                    {/* <Pressable style={{ position: 'absolute', 'margin-left': '5%' }} onClick={() => setShow(true)}>
-                        <div>Reset Scene</div>
-                    </Pressable> */}
-                    {/* <Modal show={show} onHide={() => setShow(false)} style={{ top: '-25%', 'z-index': 9999 }} centered>
-                        <Modal.Header closeButton>
-                            <Modal.Title style={{ color: 'red' }}>Reset Scene</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <div>Are you sure you want to reset the scene?</div>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Pressable style={{ color: 'gold' }} onClick={() => setShow(false)}>No</Pressable>
-                            <Pressable style={{ color: 'red' }} onClick={() => restartGame()}>Yes</Pressable>
-                        </Modal.Footer>
-                    </Modal> */}
+                        <button class='highlight cornerTR' style={{ 'background-color': 'red', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} 
+                        onClick={() => setShowRestart(true)}>
+                            <p>Restart Game</p>
+                        </button>
                 </div>
             ) : ( 
                 <div class='center' style={{ display: 'flex', 'flex-direction': 'row' }}>
@@ -963,6 +977,22 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 </button>
             </div>
             </div>
+        </Show>
+        <Show when={showRestart()}>
+            <div class='modal'>
+
+            <div class='border superCenter creature-heading' style={{ width: '50%' }}>
+            <h1 class='center' style={{ color: 'red', margin: '5%' }}>
+                Restart Game
+            </h1>
+            <p class='center' style={{ 'margin-bottom': '15%' }}>
+            Do you with to go back to the Main Menu?
+            </p>
+            <button class='cornerBL highlight' style={{ color: 'gold' }} onClick={() => setShowRestart(false)}>No</button>
+            <button class='cornerBR highlight' style={{ color: 'red' }} onClick={() => document.location.reload()}>Yes</button>
+            {/* EventBus.emit('destroy-game') */}
+            </div>
+            </div> 
         </Show>
         <Show when={showTutorial()}>
             <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} /> 

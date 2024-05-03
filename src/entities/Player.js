@@ -1612,7 +1612,7 @@ export default class Player extends Entity {
             onComplete: () => {
                 this.isStorming = false; 
             },
-            loop: 2,
+            loop: 3,
         });  
     };
     onStormUpdate = (_dt) => {

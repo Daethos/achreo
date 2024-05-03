@@ -51,6 +51,7 @@ type ActionButton = {
 };
 
 export default class ActionButtons extends Phaser.GameObjects.Container {
+    public scene: Game;
     private actionButtons: ActionButton[];
     private specialButtons: ActionButton[];
     private buttonWidth: number;
@@ -60,6 +61,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     constructor(scene: Game) {
         super(scene);
+        this.scene = scene;
         this.actionButtons = [];
         this.specialButtons = [];
         this.buttonWidth = 24;
@@ -71,6 +73,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         this.setDepth(3);
         this.setScrollFactor(0);
         this.setVisible(true); // false
+        EventBus.on('reorder-buttons', this.reorderButtons);
         this.reorder();
     };
 
@@ -342,41 +345,75 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         this.draw();
     };
 
-    public reorder = () => {
-        EventBus.on('reorder-buttons', (order: { list: string[], type: string }) => {
-            const { list, type } = order;
-            switch (type) {
-                case 'action': {
-                    this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
-                        button.graphic.removeAllListeners();
-                        const newButton = { ...button, name: list[index].toUpperCase() as string };
-                        newButton.graphic.setInteractive(new Phaser.Geom.Circle(newButton.x, newButton.y, newButton.width), Phaser.Geom.Circle.Contains)
-                            .on('pointerup', (_pointer: any, _localX: any, _localY: any, _event: any) => {
-                                this.pressButton(newButton, this.scene);
-                            });
-                        return newButton;
-                    });
-                    break;
-                };
-                case 'special': {
-                    this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
-                        button.graphic.removeAllListeners();
-                        const newButton = { ...button, name: list[index].toUpperCase() as string };
-                        newButton.graphic.setInteractive(new Phaser.Geom.Circle(newButton.x, newButton.y, newButton.width), Phaser.Geom.Circle.Contains)
-                            .on('pointerup', (_pointer: any, _localX: any, _localY: any, _event: any) => {
-                                this.pressButton(newButton, this.scene);
-                            });
-                        return newButton;
-                    });
-                    break;
-                };
-                default:
-                    break;
-            };    
+    public cleanUp = () => {
+        this.actionButtons.forEach((button: ActionButton) => {
+            button.graphic.removeListener('pointerup');
+            button.graphic.removeAllListeners();
+            button.graphic.disableInteractive();
+            button.graphic.destroy();
+            button.border.destroy();
         });
+        this.specialButtons.forEach((button: ActionButton) => {
+            button.graphic.removeListener('pointerup');
+            button.graphic.removeAllListeners();
+            button.graphic.disableInteractive();
+            button.graphic.destroy();
+            button.border.destroy();    
+        });
+        this.actionButtons = [];
+        this.specialButtons = [];
+        EventBus.off('reorder-buttons', this.reorderButtons);
+    };
+
+    public reorder = () => {
         EventBus.emit('fetch-button-reorder');
     };
+
+    private reorderButtons = (order: { list: string[], type: string }) => {
+        const { list, type } = order;
+        switch (type) {
+            case 'action': {
+                this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
+                    button.graphic.removeAllListeners();
+                    button = { ...button, name: list[index].toUpperCase() as string };
+                    // const newButton = { ...button, name: list[index].toUpperCase() as string };
+                    this.setButtonInteractive(button);
+                    // button.graphic.setInteractive(new Phaser.Geom.Circle(button.x, button.y, button.width), Phaser.Geom.Circle.Contains)
+                    //     .on('pointerup', (_pointer: any, _localX: any, _localY: any, _event: any) => {
+                    //         this.pressButton(button, this.scene);
+                    //     });
+                    return button;
+                });
+                break;
+            };
+            case 'special': {
+                this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
+                    button.graphic.removeAllListeners();
+                    button = { ...button, name: list[index].toUpperCase() as string };
+                    // const newButton = { ...button, name: list[index].toUpperCase() as string };
+                    // newButton.graphic.setInteractive(new Phaser.Geom.Circle(newButton.x, newButton.y, newButton.width), Phaser.Geom.Circle.Contains)
+                    //     .on('pointerup', (_pointer: any, _localX: any, _localY: any, _event: any) => {
+                    //         this.pressButton(newButton, this.scene);
+                    //     });
+                    this.setButtonInteractive(button);
+                    return button;
+                });
+                break;
+            };
+            default:
+                break;
+        };    
+    };
+
+
+    private setButtonInteractive = (button: ActionButton) => {
+        button.graphic.setInteractive(new Phaser.Geom.Circle(button.x, button.y, button.width), Phaser.Geom.Circle.Contains)
+            .on('pointerup', (_pointer: any, _localX: any, _localY: any, _event: any) => {
+                this.pressButton(button, this.scene);
+            });
+    };
 };
+
 
 // const scaleStrafe = (button: ActionButton, scale: number): void => {
 //     button.graphic.clear();

@@ -14,7 +14,7 @@ const DISTANCE = {
     ATTACK: 25,
     MOMENTUM: 2,
     THRESHOLD: 75,
-    CHASE: 125,
+    CHASE: 75,
     RANGED_ALIGNMENT: 10,
     RANGED_MULTIPLIER: 3,
     DODGE: 1152, // 2304
@@ -711,7 +711,7 @@ export default class Enemy extends Entity {
             // this.clearCombatWin();
             return;
         };  
-        if (distance >= 100 * rangeMultiplier) { // was 75
+        if (distance >= 50 * rangeMultiplier) { // was 75 || 100
             if (this.path && this.path.length > 1) {
                 this.setVelocity(this.pathDirection.x * (this.speed + 0.25), this.pathDirection.y * (this.speed + 0.25)); // 2.5
             } else {
@@ -735,21 +735,26 @@ export default class Enemy extends Entity {
 
     onCombatEnter = () => {
         this.anims.play('player_running', true);
-        this.attackTimer = this.scene.time.addEvent({
-            delay: this.swingTimer,
-            callback: () => {
-                this.combat(this.attacking);
-            },
-            callbackScope: this,
-            loop: true,
+        // this.combat(this.attacking);
+        this.scene.time.delayedCall(this.swingTimer, () => {
+            this.combat(this.attacking);
         });
+        
+        // this.attackTimer = this.scene.time.addEvent({
+        //     delay: this.swingTimer,
+        //     callback: () => {
+        //         this.combat(this.attacking);
+        //     },
+        //     callbackScope: this,
+        //     loop: true,
+        // });
     };
     onCombatUpdate = (_dt) => {
         this.evaluateCombatDistance();
     };
     onCombatExit = () => { 
-        this.attackTimer.destroy();
-        this.attackTimer = undefined;
+        // this.attackTimer.destroy();
+        // this.attackTimer = undefined;
     };
 
     onEvasionEnter = () => { 

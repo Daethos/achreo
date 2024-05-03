@@ -6,7 +6,6 @@ export class MainMenu extends Scene {
     background: GameObjects.Image;
     logo: GameObjects.Image;
     title: NewText;
-    // title: GameObjects.Text;
     text: GameObjects.Text;
     logoTween: Phaser.Tweens.Tween | null;
     centerX: number;
@@ -21,11 +20,6 @@ export class MainMenu extends Scene {
     };
 
     create () {
-        // this.title = this.add.text(this.centerX, this.centerY / 1.5, 'The Ascean', {
-        //         fontFamily: 'Cinzel Regular', fontSize: 84, color: '#fdf6d8',
-        //         stroke: '#000000', strokeThickness: 8,
-        //         align: 'center'
-        // }).setOrigin(0.5).setDepth(100);
         this.title = new NewText(
             this,
             this.centerX,
@@ -34,9 +28,16 @@ export class MainMenu extends Scene {
             'title',
             0.5
         )
-        this.text = this.add.text(window.innerWidth / 2, window.innerHeight / 1.5, 'Enter Game', {
-            fontFamily: 'Cinzel Regular', fontSize: 24, color: '#fdf6d8',
-            stroke: '#000000', strokeThickness: 8,
+        this.text = this.add.text(
+            window.innerWidth / 2, 
+            window.innerHeight / 1.5, 
+            'Enter Game', 
+        {
+            fontFamily: 'Cinzel Regular', 
+            fontSize: 24, 
+            color: '#fdf6d8',
+            stroke: '#000000', 
+            strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5).setDepth(100);
         this.text.setInteractive();
@@ -76,32 +77,6 @@ export class MainMenu extends Scene {
         } else {
             this.scale.startFullscreen();
             this.fullscreen = true;
-        };
-    };
-
-    moveLogo (vueCallback: ({ x, y }: { x: number, y: number }) => void) {
-        if (this.logoTween) {
-            if (this.logoTween.isPlaying()) {
-                this.logoTween.pause();
-            } else {
-                this.logoTween.play();
-            };
-        } else {
-            this.logoTween = this.tweens.add({
-                targets: this.title,
-                x: { value: 750, duration: 3000, ease: 'Back.easeInOut' },
-                y: { value: 80, duration: 1500, ease: 'Sine.easeOut' },
-                yoyo: true,
-                repeat: -1,
-                onUpdate: () => {
-                    if (vueCallback) {
-                        vueCallback({
-                            x: Math.floor(this.logo.x),
-                            y: Math.floor(this.logo.y)
-                        });
-                    };
-                }
-            });
         };
     };
 };

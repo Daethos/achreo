@@ -151,13 +151,13 @@ export class Preloader extends Scene {
         this.txt_file = new NewText(
             this,
             this.centerX,
-            this.centerY / 0.6,
+            this.centerY / 0.55,
             '',
             'play',
             { x: 0.5, y: 1 }
         );
         let x = this.centerX - (this.width / 2);
-        let y = this.centerY / 0.8;
+        let y = this.centerY / 0.75;
         this.progress = this.add.graphics({ x: x, y: y });
         this.border = this.add.graphics({ x: x, y: y });
         this.borderBorder = this.add.graphics({ x: x, y: y });

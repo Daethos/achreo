@@ -156,8 +156,9 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
             console.warn(err.message);
         };
     };
+    // background: tutorial() === 'deity' ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.75)',
     return (
-        <div class='modal' style={{ background: 'rgba(0, 0, 0, 0.75)', 'z-index': 1000 }}>
+        <div class='modal' style={{ background: tutorial() === 'deity' ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.75)', 'z-index': 1000 }}>
             { tutorial() === 'boot' && <div>
                 <p class='cornerTL gold highlight' style={{ left: '0', top: '17.5%', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                    Game HUD {arrows.up} <br />
@@ -315,8 +316,14 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
             </div> }
             { tutorial() === 'deity' && <div 
                 style={{ 
-                    position: 'absolute', height: '50%', width: '60%', left: '20%', background: '#000', top: '40%', 
-                    border: '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', display: 'inline-flex', overflow: 'scroll' 
+                    position: 'absolute', 
+                    height: '100%', 
+                    width: '100%', 
+                    // left: '20%', 
+                    // top: '40%', 
+                    background: 'rgba(0, 0, 0, 1)', 
+                    // border: '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', 
+                    display: 'inline-flex', overflow: 'scroll' 
             }}>
                 <Typewriter stringText={deity} styling={{ 'overflow-y': 'auto' }} performAction={performAction} />
             </div> }

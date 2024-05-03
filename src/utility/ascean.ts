@@ -589,8 +589,8 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                 return {
                     name: "Cambiren",
                     traitOneName: "Caerenicism",
-                    traitOneDescription: "Your caer doubles up on attacks.",
-                    traitTwoName: "Mini-Game",
+                    traitOneDescription: "Your caer explodes and engulfs you.",
+                    traitTwoName: "Caerenisis",
                     traitTwoDescription: "You can disarm and evoke your enemy's caer into a battle of its own."
                 };
             case "Chiomic":
@@ -662,7 +662,7 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     name: "Se'van",
                     traitOneName: "Berserk",
                     traitOneDescription: "Your attacks grow stronger for each successive form of damage received.",
-                    traitTwoName: "Mini-Game",
+                    traitTwoName: "Grapple",
                     traitTwoDescription: "Grip your enemy in a vice of your own design."
                 };
             case "Shaorahi":
@@ -684,7 +684,7 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
             case "Tshaeral":
                 return {
                     name: "Tshaeral",
-                    traitOneName: "Mini-Game",
+                    traitOneName: "Tshaering",
                     traitOneDescription: "Your caer is imbued with tshaeral desire, a hunger to devour the world.",
                     traitTwoName: "Persuasion",
                     traitTwoDescription: "Your nature has a way of wilting the caer of your enemies."

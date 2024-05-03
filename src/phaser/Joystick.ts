@@ -29,6 +29,14 @@ export default class Joystick extends Phaser.GameObjects.Container {
         
     };
 
+    cleanUp() {
+        EventBus.off('update-cursor');
+        this.joystick.off('update', this.update, this);
+        this?.pointer?.destroy();
+        this.joystick.destroy();
+    };
+
+
     createCursorKeys() {
         return this.joystick.createCursorKeys();
     };

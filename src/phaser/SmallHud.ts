@@ -1,5 +1,4 @@
 import { EventBus } from "../game/EventBus";
-import { Game } from "../game/scenes/Game";
 
 function xModifier(x: number, index: number, offset = 43.75) {
     const mod = x * 1.35 + (index * offset);
@@ -27,8 +26,8 @@ export default class SmallHud extends Phaser.GameObjects.Container {
     };
 
     constructor(scene: any) {
-        const x = scene.cameras.main.width / 2;
-        const y = scene.cameras.main.height / 2;
+        const x = scene.cameras.main.width * scene.settings.positions.smallHud.x;
+        const y = scene.cameras.main.height * scene.settings.positions.smallHud.y;
         super(scene, x, y);
         this.scene = scene;
         this.x = x;
@@ -55,16 +54,16 @@ export default class SmallHud extends Phaser.GameObjects.Container {
 
     createBar = () => {
         
-        let open = this.scene.add.image(this.x, this.y * 2 + 10, 'open');
-        let closed = this.scene.add.image(this.x, this.y * 2 + 10, 'closed');
-        let pause = this.scene.add.image(this.x, this.y * 2 + 10, 'pause');
-        let minimap = this.scene.add.image(this.x, this.y * 2 + 10, 'minimap');
-        let cursor = this.scene.add.image(this.x, this.y * 2 + 10, 'cursor-reset');
-        let stealth = this.scene.add.image(this.x, this.y * 2 + 10, 'stealth');
-        let stalwart = this.scene.add.image(this.x, this.y * 2 + 10, 'stalwart');
-        let caerenic = this.scene.add.image(this.x, this.y * 2 + 10, 'caerenic');
-        let settings = this.scene.add.image(this.x, this.y * 2 + 10, 'settings');
-        let info = this.scene.add.image(this.x, this.y * 2 + 10, 'info');
+        let open = this.scene.add.image(this.x, this.y, 'open');
+        let closed = this.scene.add.image(this.x, this.y, 'closed');
+        let pause = this.scene.add.image(this.x, this.y, 'pause');
+        let minimap = this.scene.add.image(this.x, this.y, 'minimap');
+        let cursor = this.scene.add.image(this.x, this.y, 'cursor-reset');
+        let stealth = this.scene.add.image(this.x, this.y, 'stealth');
+        let stalwart = this.scene.add.image(this.x, this.y, 'stalwart');
+        let caerenic = this.scene.add.image(this.x, this.y, 'caerenic');
+        let settings = this.scene.add.image(this.x, this.y, 'settings');
+        let info = this.scene.add.image(this.x, this.y, 'info');
         this.bar.push(info);
         this.bar.push(settings);
         this.bar.push(caerenic);
@@ -101,6 +100,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
     draw = () => {
         this.bar.forEach((item, index) => {
             item.x = xModifier(this.x, Math.min(index, 8));
+            item.y = this.y;
             if (this.closed === true) {
                 if (item.texture.key === 'closed') {
                     item.setVisible(true); // false
@@ -121,19 +121,15 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         EventBus.on('toggle-bar', (e: boolean) => {
             if (e === true) {
                 this.setVisible(true);
-                // this.bar.forEach((item) => {
-                //     if (item.texture.key === 'closed') {
-                //         item.setVisible(false);
-                //     } else {
-                //         item.setVisible(true);
-                //     };
-                // });
             } else {
                 this.setVisible(false);
-                // this.bar.forEach((item) => {
-                //     item.setVisible(false);
-                // });
             };
+        });
+        EventBus.on('update-hud-position', (data: {x: number, y: number}) => {
+            const { x, y } = data;
+            this.x = this.scene.cameras.main.width * x;
+            this.y = this.scene.cameras.main.height * y;
+            this.draw();
         });
     };
 

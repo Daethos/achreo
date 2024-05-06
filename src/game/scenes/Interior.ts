@@ -29,8 +29,7 @@ export class Tent extends Scene {
         super('Tent');
     };
 
-    preload() {
-    };
+    preload() {};
 
     create(data: any) {
         this.ascean = data.ascean;
@@ -60,6 +59,14 @@ export class Tent extends Scene {
         const cameraY = (screenHeight - mapHeight) / 2;
         camera.setPosition(cameraX, cameraY);
         camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+        // Calculate the position of the top-left corner of the map on the screen
+        // const offsetX = (screenWidth - mapWidth) / 2;
+        // const offsetY = (screenHeight - mapHeight) / 2;
+
+        // Set the camera viewport to start at the top-left corner of the screen
+        // but center the map within the viewport
+        // camera.setViewport(offsetX - 100, offsetY - 100, mapWidth, mapHeight);
 
         // const centerX = this.cameras.main.worldView.centerX;
         // const topY = this.cameras.main.worldView.top;

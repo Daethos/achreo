@@ -17,6 +17,9 @@ import { States } from '../../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
 import Joystick from '../../phaser/Joystick';
 import SmallHud from '../../phaser/SmallHud';
+import { useResizeListener } from '../../utility/dimensions';
+
+const dimensions = useResizeListener();
 
 export class Game extends Scene {
     gameText: Phaser.GameObjects.Text;
@@ -245,7 +248,12 @@ export class Game extends Scene {
 
         // =========================== FPS =========================== \\
 
-        this.fpsText = this.add.text(window.innerWidth / 2 - 32, -40, 'FPS: ', { font: '16px Cinzel', color: '#fdf6d8' });
+        // window.innerWidth / 2 - 32, -40
+        this.fpsText = this.add.text(
+            dimensions()?.WIDTH * this.settings.positions.fpsText.x, 
+            dimensions()?.HEIGHT * this.settings.positions.fpsText.y, 
+            'FPS: ', { font: '16px Cinzel', color: '#fdf6d8' }
+        );
         this.fpsText.setScrollFactor(0);
         this.fpsText.setInteractive()
             .on('pointerup', () => {
@@ -261,13 +269,18 @@ export class Game extends Scene {
         this.combatTimerText = this.add.text(window.innerWidth / 2 - 40, window.innerHeight + 30, 'Combat Timer: ', { font: '16px Cinzel', color: '#fdf6d8' });
         this.combatTimerText.setScrollFactor(0);
         this.combatTimerText.setVisible(false);
-
         this.postFxEvent();
 
         // ================== Joystick ================== \\
-
-        this.joystick = new Joystick(this, window.innerWidth * 0.05, window.innerHeight * 0.8);
-        this.rightJoystick = new Joystick(this, window.innerWidth * 0.95, window.innerHeight * 0.8);
+        // window.innerWidth * 0.05, window.innerHeight * 0.8 || window.innerWidth * 0.95, window.innerHeight * 0.8
+        this.joystick = new Joystick(this, 
+            camera.width * this.settings.positions.leftJoystick.x, 
+            camera.height * this.settings.positions.leftJoystick.y
+        );
+        this.rightJoystick = new Joystick(this, 
+            camera.width * this.settings.positions.rightJoystick.x, 
+            camera.height * this.settings.positions.rightJoystick.y
+        );
         this.rightJoystick.createPointer(this); 
         this.joystickKeys = this.joystick.createCursorKeys();
 
@@ -411,16 +424,16 @@ export class Game extends Scene {
         });
 
         EventBus.on('equip-sound', () => {
-            this.equip.play();
+            this.sound.play('equip', { volume: this.settings.volume });
         });
         EventBus.on('unequip-sound', () => {
-            this.unequip.play();
+            this.sound.play('unequip', { volume: this.settings.volume });
         });
         EventBus.on('purchase-sound', () => {
-            this.purchase.play();
+            this.sound.play('purchase', { volume: this.settings.volume });
         });
         EventBus.on('weapon-order-sound', () => {
-            this.weaponOrder.play();
+            this.sound.play('weaponOrder', { volume: this.settings.volume });
         });
         EventBus.on('action-button-sound', () => {
             this.sound.play('TV_Button_Press', { volume: this?.settings?.volume * 2 });
@@ -434,17 +447,19 @@ export class Game extends Scene {
         });
         EventBus.on('switch-scene', (data: { current: string, next: string }) => {
             if (data.current !== 'Game') return;
-            this.scene.sleep(data.current);
+            // this.scene.sleep(data.current);
             if (this.combat) {
                 this.musicCombat.pause();
                 this.stopCombatTimer();    
             } else {
                 this.musicBackground.pause();
             };
+            this.scene.pause(data.current);
             this.scene.launch(data.next, { ascean: this.ascean, combat: this.state, game: this.gameState, settings: this.settings });
         });
         EventBus.on('wake-up', (scene: string) => {
-            this.scene.wake(scene);
+            // this.scene.wake(scene);
+            this.scene.resume(scene);
             if (this.combat) {
                 this.musicCombat.resume();
                 this.startCombatTimer();    
@@ -452,6 +467,26 @@ export class Game extends Scene {
                 this.musicBackground.resume();
             };
             EventBus.emit('current-scene-ready', this);
+        });
+        EventBus.on('update-fps', (data: {x: number, y: number}) => {
+            const { x, y } = data;
+            const newX = dimensions()?.WIDTH * x;
+            const newY = dimensions()?.HEIGHT * y;
+            console.log(newX, newY, 'New X and Y');
+            this.fpsText.setPosition(newX, newY);
+        });
+        EventBus.on('update-joystick-position', (data: {side : string, x: number, y: number}) => {
+            const { side, x, y } = data;
+            const newX = this.cameras.main.width * x;
+            const newY = this.cameras.main.height * y;
+            switch (side) {
+                case 'left':
+                    this.joystick.joystick.setPosition(newX, newY);
+                    break;
+                case 'right':
+                    this.rightJoystick.joystick.setPosition(newX, newY);
+                    break;
+            };
         });
     };
 

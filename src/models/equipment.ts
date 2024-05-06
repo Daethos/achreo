@@ -496,22 +496,22 @@ async function getArmorEquipment(level: number): Promise<Equipment[] | undefined
             let item;
             if (level < 4) {
                 if (eqpCheck > 90) {
-                    item = shuffleArray(Shields.filter((eq) => (eq.rarity === rarity)))[0];
+                    item = shuffleArray(Shields.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
                 } else if (eqpCheck > 60) {
-                    item = shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity)))[0];
+                    item = shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
                 } else if (eqpCheck > 30) {
-                    item = shuffleArray(Chests.filter((eq) => (eq.rarity === rarity)))[0];  
+                    item = shuffleArray(Chests.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];  
                 } else {
-                    item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity)))[0];
+                    item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
                 };
             } else if (type === 'Shield') {
-                item = shuffleArray(Shields.filter((eq) => (eq.rarity === rarity)))[0];
+                item = shuffleArray(Shields.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
             } else if (type === 'Helmet') {
-                item = shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity)))[0];
+                item = shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
             } else if (type === 'Chest') {
-                item = shuffleArray(Chests.filter((eq) => (eq.rarity === rarity)))[0];
+                item = shuffleArray(Chests.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
             } else if (type === 'Legs') {
-                item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity)))[0];
+                item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
             };
             let equipment = await mutate([item as Equipment], rarity) as Equipment[];
             equipment.forEach(item => new Equipment(item));

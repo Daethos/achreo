@@ -15,18 +15,18 @@ export default class Joystick extends Phaser.GameObjects.Container {
         this.scene = scene;
         this.scene.add.existing(this);
         this.pointer = null;
+        const height = window.innerHeight;
         this.joystick = scene.plugins.get('rexVirtualJoystick').add(scene, {
             x: x,
             y: y,
-            radius: window.innerHeight / 6,
-            base: scene.add.circle(0, 0, window.innerHeight / 6, 0x000000, 0.25),
-            thumb: scene.add.circle(0, 0, window.innerHeight / 12, 0xfdf6d8, 0.25),
+            radius: height / 6,
+            base: scene.add.circle(0, 0, height / 6, 0x000000, 0.25),
+            thumb: scene.add.circle(0, 0, height / 12, 0xfdf6d8, 0.25),
             dir: '8dir',
             // forceMin: 0,
             // enable: true
         });
         this.doubleTap();
-        
     };
 
     cleanUp() {

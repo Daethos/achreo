@@ -27,6 +27,7 @@ import { ACTIONS, SPECIALS } from '../utility/abilities';
 import { OriginModal } from '../components/Origin';
 import { FaithModal } from '../components/Faith';
 import { DEITIES } from '../utility/deities';
+import { PhaserShaper } from './PhaserShaper';
 
 export const viewCycleMap = {
     Character: 'Inventory',
@@ -56,6 +57,7 @@ const CONTROLS = {
     BUTTONS: 'Buttons',
     DIFFICULTY: 'Difficulty',
     POST_FX: 'Post FX',
+    PHASER_UI: 'Phaser UI',
 };
 const GET_FORGE_COST = {
     Common: 1,
@@ -549,19 +551,21 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
             <Firewater ascean={ascean} />
         </> ) : settings().asceanViews === VIEWS.SETTINGS ? ( <>
             <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Gameplay</div></button>
-            <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1 }}>
-                <button class='highlight p-3' onClick={() => currentView(SETTINGS.ACTIONS)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Actions</div></button>
-                <button class='highlight p-3' onClick={() => currentView(SETTINGS.SPECIALS)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Specials</div></button>
-                <button class='highlight p-3' onClick={() => currentView(SETTINGS.CONTROL)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Control</div></button>
-                <button class='highlight p-3' onClick={() => currentView(SETTINGS.GENERAL)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>General</div></button>
-                <button class='highlight p-3' onClick={() => currentView(SETTINGS.INVENTORY)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Inventory</div></button>
-                <button class='highlight p-3' onClick={() => currentView(SETTINGS.TACTICS)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Tactics</div></button>
-            </div>
+            {(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) && (
+                <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1 }}>
+                    <button class='highlight p-3' onClick={() => currentView(SETTINGS.ACTIONS)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Actions</div></button>
+                    <button class='highlight p-3' onClick={() => currentView(SETTINGS.SPECIALS)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Specials</div></button>
+                    <button class='highlight p-3' onClick={() => currentView(SETTINGS.CONTROL)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Control</div></button>
+                    <button class='highlight p-3' onClick={() => currentView(SETTINGS.GENERAL)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>General</div></button>
+                    <button class='highlight p-3' onClick={() => currentView(SETTINGS.INVENTORY)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Inventory</div></button>
+                    <button class='highlight p-3' onClick={() => currentView(SETTINGS.TACTICS)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Tactics</div></button>
+                </div>
+            )}
         </> ) : ( <>
             <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Faith</div></button>
         </> ) }
         {/* <<----- WINDOW ONE ----->> */}
-        <Show when={settings().control !== CONTROLS.POST_FX || settings().asceanViews !== VIEWS.SETTINGS}>
+        <Show when={(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) || settings().asceanViews !== VIEWS.SETTINGS}>
             <Switch>
                 <Match when={settings().asceanViews === VIEWS.SETTINGS}>
                 <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
@@ -723,9 +727,10 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
             ) : settings().asceanViews === VIEWS.SETTINGS ? (
                 <div class='center' style={{ display: 'flex', 'flex-direction': 'row' }}>
                     <div class='gold' style={{ position: 'absolute', top: '2%', 'font-size': '1.25em', display: 'inline' }}>Controls <br />
-                        <button class='highlight' style={{ 'font-size': '0.4em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.BUTTONS ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Actions</button>
-                        <button class='highlight' style={{ 'font-size': '0.4em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.POST_FX ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
-                        <button class='highlight' style={{ 'font-size': '0.4em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.DIFFICULTY ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
+                        <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.BUTTONS ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Actions</button>
+                        <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.POST_FX ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
+                        <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.DIFFICULTY ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
+                        <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.DIFFICULTY ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.PHASER_UI)}>UI</button>
                     </div>
                     <Switch>
                         <Match when={settings().control === CONTROLS.BUTTONS}>
@@ -843,10 +848,16 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                                 <br />
                             </div>
                         </Match>
+                        <Match when={settings().control === CONTROLS.PHASER_UI}>
+                            <div class='center creature-heading' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
+                                <PhaserShaper settings={settings} />
+                                <br />
+                            </div>
+                        </Match>
                     </Switch>
                         <button class='highlight cornerTR' style={{ 'background-color': 'red', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} 
                         onClick={() => setShowRestart(true)}>
-                            <p>Restart Game</p>
+                            <p>Restart</p>
                         </button>
                 </div>
             ) : ( 
@@ -858,7 +869,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
              ) }
         </div>
         {/* <<----- WINDOW THREE ----->> */}
-        <Show when={settings().control !== CONTROLS.POST_FX || settings().asceanViews !== VIEWS.SETTINGS}>
+        <Show when={(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) || settings().asceanViews !== VIEWS.SETTINGS}>
             <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? {
                 height: `${dimensions().HEIGHT * 0.8}px`, left: '66.5vw' 
             } : { 

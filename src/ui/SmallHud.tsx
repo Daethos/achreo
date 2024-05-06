@@ -152,7 +152,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
 
     const icon = (click: boolean) => {
         return {
-            width: '2em',
+            width: '1.75rem', // 2em
             'filter': click === true ? 'invert(100%)' : 'sepia(100%)',
             border: '1px solid #fdf6d8',
         };

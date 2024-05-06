@@ -75,15 +75,16 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         this.setVisible(true); // false
         EventBus.on('reorder-buttons', this.reorderButtons);
         this.reorder();
+        this.positionListen();
     };
 
     private addButtons = (scene: Game): void => {
         const { width, height } = scene.cameras.main;
-        const centerActionX = width * 0.825; // / 1.25
-        const centerActionY = height * 0.75; // / 1.35
+        const centerActionX = width * scene.settings.positions.actionButtons.x; // / 1.25
+        const centerActionY = height * scene.settings.positions.actionButtons.y; // / 1.35
          
-        const centerSpecialX = width * 0.7675; // width * 0.725 || / 1.375
-        const centerSpecialY = height * 0.6125; // height * 0.6 || / 1.675
+        const centerSpecialX = width * scene.settings.positions.specialButtons.x; // width * 0.725 || / 1.375
+        const centerSpecialY = height * scene.settings.positions.specialButtons.y; // height * 0.6 || / 1.675
         
         const radius = height / 2; // Radius of the circle || 1.75
         const startAngle = Math.PI; // Start angle (180 degrees) for the quarter circle
@@ -307,7 +308,60 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         });
     };    
 
+    private positionListen = (): void => {
+        EventBus.on('reposition-buttons', this.repositionButtons);
+    };
+
+    private repositionButtons = (data: {type: string, x: number, y: number}): void => {
+        const { type, x, y } = data;
+        const { width, height } = this.scene.cameras.main;
+        const radius = height / 2; // Radius of the circle || 1.75
+        const startAngle = Math.PI; // Start angle (180 degrees) for the quarter circle
+        const endAngle = Math.PI / 2; // End angle (90 degrees) for the quarter circle 
+        
+        switch (type) {
+            case 'action': {
+                const centerActionX = width * x; // / 1.25
+                const centerActionY = height * y; // / 1.35
+                this.actionButtons.forEach((button: ActionButton, index: number) => {
+                    const angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
+                    const buttonX = centerActionX + radius * Math.cos(angle);
+                    const buttonY = centerActionY - radius * Math.sin(angle); // Negative sign for Y to start from top
+                    button.graphic.clear();
+                    button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * SETTINGS.SCALE * button.current / button.total);
+                    button.border.clear();
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * SETTINGS.SCALE * button.current / button.total);
+                });
+                break;
+            };
+            case 'special': {
+                const centerSpecialX = width * x; // width * 0.725 || / 1.375
+                const centerSpecialY = height * y; // height * 0.6 || / 1.675
+                this.specialButtons.forEach((button: ActionButton, index: number) => {
+                    const angle = startAngle - (index * (startAngle - endAngle)) / (3.57);
+                    const buttonX = centerSpecialX + radius * Math.cos(angle);
+                    const buttonY = centerSpecialY - radius * Math.sin(angle); // Negative sign for Y to start from top
+                    button.graphic.clear();
+                    button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * SETTINGS.SCALE * 0.75 * button.current / button.total);
+                    button.border.clear();
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * SETTINGS.SCALE * 0.75 * button.current / button.total);
+                });
+                break;
+            };
+            default:
+                break;
+        };
+    };
+
     private pressButton = (button: ActionButton, scene: any): void => {
+        if (this.scene.scene.isActive('Game') === false) {
+            console.log('Game Scene is not active');
+            return;
+        };
         const input = button.name.toLowerCase();
         const check = staminaCheck(input, scene.player.stamina);
         if (check.success === true && scene.player.stateMachine.isState(input)) {
@@ -376,12 +430,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
                     button.graphic.removeAllListeners();
                     button = { ...button, name: list[index].toUpperCase() as string };
-                    // const newButton = { ...button, name: list[index].toUpperCase() as string };
                     this.setButtonInteractive(button);
-                    // button.graphic.setInteractive(new Phaser.Geom.Circle(button.x, button.y, button.width), Phaser.Geom.Circle.Contains)
-                    //     .on('pointerup', (_pointer: any, _localX: any, _localY: any, _event: any) => {
-                    //         this.pressButton(button, this.scene);
-                    //     });
                     return button;
                 });
                 break;
@@ -390,11 +439,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
                     button.graphic.removeAllListeners();
                     button = { ...button, name: list[index].toUpperCase() as string };
-                    // const newButton = { ...button, name: list[index].toUpperCase() as string };
-                    // newButton.graphic.setInteractive(new Phaser.Geom.Circle(newButton.x, newButton.y, newButton.width), Phaser.Geom.Circle.Contains)
-                    //     .on('pointerup', (_pointer: any, _localX: any, _localY: any, _event: any) => {
-                    //         this.pressButton(newButton, this.scene);
-                    //     });
                     this.setButtonInteractive(button);
                     return button;
                 });
@@ -404,7 +448,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 break;
         };    
     };
-
 
     private setButtonInteractive = (button: ActionButton) => {
         button.graphic.setInteractive(new Phaser.Geom.Circle(button.x, button.y, button.width), Phaser.Geom.Circle.Contains)

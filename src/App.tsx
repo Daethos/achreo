@@ -219,10 +219,10 @@ export default function App() {
     const setTips = (on: boolean): void => {
         console.log('Setting Tips:', on);
         if (on) {
-            const interval: number = 1000 * 60 * 5; // 1000 * 60 * 5
+            const interval: number = 1000 * 60 * 3; // 3 minutes
             tips = setInterval(() => {
                 const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
-                setAlert({ header: 'Gameplay Tidbit', body: tip, delay: 3000, key: 'Close' }); // 10000
+                setAlert({ header: 'Gameplay Tidbit', body: tip, delay: 10000, key: 'Close' }); // 10000
                 setShow(true);    
             }, interval); 
         } else {
@@ -321,6 +321,9 @@ export default function App() {
     usePhaserEvent('update-pause', togglePause);
     usePhaserEvent('request-settings', () => {
         EventBus.emit('settings', settings());
+    });
+    usePhaserEvent('update-settings', (set: any) => {
+        setSettings(set);
     });
     usePhaserEvent('player-ascean', () => EventBus.emit('player-ascean-ready', ascean()));
     usePhaserEvent('save-intro', async () => {

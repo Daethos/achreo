@@ -1,4 +1,7 @@
 import { startingSpecials } from "../utility/abilities";
+import { useResizeListener } from "../utility/dimensions";
+
+const dimensions = useResizeListener();
 
 export default class Settings {
     public _id: string;
@@ -40,6 +43,14 @@ export default class Settings {
         crtEnable: boolean; 
         crtHeight: number;
         crtWidth: number;
+    };
+    public positions: {
+        leftJoystick: { x: number; y: number; };
+        rightJoystick: { x: number; y: number; };
+        actionButtons: { x: number; y: number; };
+        specialButtons: { x: number; y: number; };
+        fpsText: { x: number; y: number; };
+        smallHud: { x: number; y: number; };
     };
 
     public constructor(id: string, mastery: string) {
@@ -91,6 +102,32 @@ export default class Settings {
             crtEnable: false, 
             crtHeight: 2,
             crtWidth: 2,
+        };
+        this.positions = {
+            leftJoystick: { 
+                x: 0.05, 
+                y: 0.8 
+            },
+            rightJoystick: { 
+                x: 0.95, 
+                y: 0.8 
+            },
+            actionButtons: {
+                x: 0.825,
+                y: 0.75,
+            },
+            specialButtons: {
+                x: 0.7675,
+                y: 0.6125,
+            },
+            fpsText: {
+                x: 0.5,
+                y: 0.05,
+            },
+            smallHud: { 
+                x: 0.5, 
+                y: 0.95 
+            },
         };
     };
     [key: string]: any;

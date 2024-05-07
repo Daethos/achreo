@@ -2267,10 +2267,11 @@ export default class Player extends Entity {
 
     swingReset = (type) => {
         this.canSwing = false;
-        this.scene.actionBar.setCurrent(0, this.swingTimer, type);
-        this.scene.time.delayedCall(this.swingTimer, () => {
+        const time = type === 'dodge' || type === 'roll' ? 500 : type === 'parry' ? 750 : this.swingTimer;
+        this.scene.actionBar.setCurrent(0, time, type);
+        this.scene.time.delayedCall(time, () => {
             this.canSwing = true;
-            this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, type);
+            this.scene.actionBar.setCurrent(time, time, type);
         }, undefined, this);
     };
 

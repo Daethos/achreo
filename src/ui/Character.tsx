@@ -59,6 +59,10 @@ const CONTROLS = {
     POST_FX: 'Post FX',
     PHASER_UI: 'Phaser UI',
 };
+const FAITH = {
+    DEITIES: 'Deities',
+    JOURNAL: 'Journal',
+};
 const GET_FORGE_COST = {
     Common: 1,
     Uncommon: 3,
@@ -119,6 +123,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
     const [showFaith, setShowFaith] = createSignal<boolean>(false);
     const [deity, setDeity] = createSignal<any>(undefined);
     const [showRestart, setShowRestart] = createSignal<boolean>(false);
+    const [entry, setEntry] = createSignal<any>(undefined);
 
     const dimensions = useResizeListener();
  
@@ -188,6 +193,12 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
 
     const currentCharacterView = async (e: string) => {
         const newSettings: Settings = { ...settings(), characterViews: e };
+        setSettings(newSettings);
+        await saveSettings(newSettings);
+    };
+
+    const currentFaithView = async (e: string) => {
+        const newSettings: Settings = { ...settings(), faithViews: e };
         setSettings(newSettings);
         await saveSettings(newSettings);
     };
@@ -276,7 +287,40 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 <h2>{info?.origin}</h2>
                 <p class='gold'>{info?.description}</p>
             </div>
-        )
+        );
+    };
+
+    const journalScroll = () => {
+        if (ascean().journal.entries.length === 0) {
+            setEntry(undefined);
+            return (
+                <div class='center creature-heading'>
+                    <h1>Journal</h1>
+                    <h2>There are no entries in your journal.</h2>
+                </div>
+            );
+        };
+
+        
+        const currentEntry = ascean().journal.entries[ascean().journal.currentEntry];
+        setEntry(currentEntry);
+        const next = ascean().journal.entries.length > ascean().journal.currentEntry + 1 ? ascean().journal.currentEntry + 1 : 0;
+        const prev = ascean().journal.currentEntry > 0 ? ascean().journal.entries[ascean().journal.currentEntry - 1] : ascean().journal.entries.length - 1;
+        console.log(ascean().journal, 'Ascean Journal', next, 'Next --- Prev', prev)
+
+        const formattedDate = new Date(entry().date).toISOString().split('T')[0].replace(/-/g, ' ');
+        return (
+            <div class='center creature-heading wrap' style={{ 'flex-wrap': 'wrap', 'margin-top': '12.5%' }}>
+                <button onClick={() => setCurrentEntry(prev as number)} class='highlight cornerTL'>Prev</button>
+                <button onClick={() => setCurrentEntry(next as number)} class='highlight cornerTR'>Next</button>
+                <h1>{entry().title}</h1>
+                <h4 style={{ margin: '4%' }}>{formattedDate}</h4>
+                <h2>{entry().body}</h2>
+
+                <h6 class='gold'>{entry().footnote}</h6>
+                <h6>[Location: {entry().location || '???'}]</h6>
+            </div>
+        );
     };
 
     const createDeityScroll = () => {
@@ -301,6 +345,14 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 </div>
             </div>
         );
+    };
+
+    function setCurrentEntry(e: number) {
+        const newEntry = ascean().journal.entries[e];
+        setEntry(newEntry);
+        const newJournal = { ...ascean().journal, currentEntry: e };
+        const update = { ...ascean(), journal: newJournal };
+        EventBus.emit('update-ascean', update);
     };
 
     async function currentControl(e: string) {
@@ -562,7 +614,18 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 </div>
             )}
         </> ) : ( <>
-            <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Faith</div></button>
+            <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Personal</div></button>
+            <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1 }}>
+            { settings().faithViews === FAITH.DEITIES ? (
+                <button class='highlight p-3' onClick={() => currentFaithView(FAITH.JOURNAL)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
+                    <div>Deities</div>
+                </button>
+            ) : (
+                <button class='highlight p-3' onClick={() => currentFaithView(FAITH.DEITIES)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
+                    <div>Journal</div>
+                </button>
+            ) }     
+            </div>
         </> ) }
         {/* <<----- WINDOW ONE ----->> */}
         <Show when={(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) || settings().asceanViews !== VIEWS.SETTINGS}>
@@ -674,7 +737,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                             </div>
                         </div>
                         <div class='wrap'>
-                        {createDeityInfo(deity())}
+                            {createDeityInfo(deity())}
                         </div>
                     </div>
                 </Match>    
@@ -730,7 +793,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                         <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.BUTTONS ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Actions</button>
                         <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.POST_FX ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
                         <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.DIFFICULTY ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
-                        <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.DIFFICULTY ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.PHASER_UI)}>UI</button>
+                        <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.PHASER_UI ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.PHASER_UI)}>UI</button>
                     </div>
                     <Switch>
                         <Match when={settings().control === CONTROLS.BUTTONS}>
@@ -894,7 +957,11 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 ) : ( 
                     <div style={{ 'scrollbar-width': 'none', overflow: 'scroll' }}>
                         <div class='center' style={{ padding: '2.5%' }}>
-                        {createDeityScroll()}
+                            { settings().faithViews === FAITH.DEITIES ? (
+                               createDeityScroll()
+                            ) : (
+                                journalScroll()
+                            ) }
                         </div>
                     </div>
                  ) }

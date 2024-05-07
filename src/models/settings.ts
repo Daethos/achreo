@@ -18,6 +18,7 @@ export default class Settings {
     public asceanViews: string;
     public settingViews: string;
     public characterViews: string;
+    public faithViews: string;
     public control: string;
     public creationLeft: string;
     public creationRight: string;
@@ -79,6 +80,7 @@ export default class Settings {
         this.asceanViews = 'Inventory';
         this.settingViews = 'Control';
         this.characterViews = 'Statistics';
+        this.faithViews = 'Deities';
         this.control = 'Buttons';
         this.difficulty = {
             aggression: 0.5,
@@ -121,12 +123,12 @@ export default class Settings {
                 y: 0.6125,
             },
             fpsText: {
-                x: 0.5,
+                x: 0.-0.1,
                 y: 0.05,
             },
             smallHud: { 
                 x: 0.5, 
-                y: 0.95 
+                y: 1.025 
             },
         };
     };

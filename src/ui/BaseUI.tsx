@@ -260,6 +260,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     break;
             };
             EventBus.emit('update-combat', res);
+            EventBus.emit('add-combat-logs', res);
             if (playerWin === true || computerWin === true) {
                 resolveCombat(res);
             };

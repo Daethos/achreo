@@ -4,7 +4,7 @@ import Equipment, { mutate } from "./equipment";
 import { Amulets, Rings, Trinkets } from "../assets/db/jewelry";
 import { Statistics, initStatistics } from "../utility/statistics";
 import { Tutorial, initTutorial } from "../utility/tutorial";
-import { initCharacter } from "../utility/ascean"; 
+import { Skills, initCharacter, initSkills } from "../utility/ascean"; 
 import { v4 as uuidv4 } from 'uuid';
 import { addAscean } from "../assets/db/db";
 
@@ -58,6 +58,7 @@ export default class Ascean {
         deity: number,
     };
     capable: number;
+    skills: Skills;
     // conversations: {
     //     [key: string]: {
     //         dialogue: string;
@@ -112,6 +113,7 @@ export default class Ascean {
             deity: 0,
         };
         this.capable = 0;
+        this.skills = initSkills;
     };
     [key: string]: any;
 };

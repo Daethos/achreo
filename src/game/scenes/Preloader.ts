@@ -108,6 +108,7 @@ export class Preloader extends Scene {
         this.load.image('stealth', '../assets/images/stealth.png');
         this.load.image('info', '../assets/images/info.png');
         this.load.image('settings', '../assets/images/settings.png');
+        this.load.image('logs', '../assets/images/logs.png');
         this.load.image('dialog', '../assets/images/dialog.png');
         this.load.image('loot', '../assets/images/loot.png');
         this.load.image('cursor-reset', '../assets/images/cursor-reset.png');

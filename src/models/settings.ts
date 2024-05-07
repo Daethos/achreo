@@ -123,11 +123,11 @@ export default class Settings {
                 y: 0.6125,
             },
             fpsText: {
-                x: 0.-0.1,
-                y: 0.05,
+                x: 0.45,
+                y: -0.1,
             },
             smallHud: { 
-                x: 0.5, 
+                x: 0.4625, 
                 y: 1.025 
             },
         };

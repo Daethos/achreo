@@ -1,6 +1,6 @@
 
 import { EventBus } from '../game/EventBus';
-import { Accessor, Show, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
+import { Accessor, Show, createEffect, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
 import { useResizeListener } from '../utility/dimensions';
 import { GameState } from '../stores/game';
 import { Combat } from '../stores/combat';
@@ -30,6 +30,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         closed: false,
         caerenic: false,
         combatSettings: false,
+        showCombat: false,
         dialog: false,
         loot: false,
         pause: false,
@@ -39,7 +40,47 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         stealth: false,
         phaser: false,
     });
+    const [combatHistory, setCombatHistory] = createSignal<any>(undefined);
+    let logs: HTMLElement | undefined = undefined;
     const dimensions = useResizeListener(); 
+    const text = (prev: string, data: Combat) => {
+        let result = prev !== undefined ? prev + "\n" : "";
+        if (data.playerStartDescription) result += data.playerStartDescription + "\n\n";
+        if (data.computerStartDescription) result += data.computerStartDescription + "\n\n";
+        if (data.playerSpecialDescription) result += data.playerSpecialDescription + "\n\n";
+        if (data.computerSpecialDescription) result += data.computerSpecialDescription + "\n\n";
+        if (data.playerActionDescription) result += data.playerActionDescription + "\n\n";
+        if (data.computerActionDescription) result += data.computerActionDescription + "\n\n";
+        if (data.playerInfluenceDescription) result += data.playerInfluenceDescription + "\n\n";
+        if (data.playerInfluenceDescriptionTwo) result += data.playerInfluenceDescriptionTwo + "\n\n";
+        if (data.computerInfluenceDescription) result += data.computerInfluenceDescription + "\n\n";
+        if (data.computerInfluenceDescriptionTwo) result += data.computerInfluenceDescriptionTwo + "\n\n";
+        if (data.playerDeathDescription) result += data.playerDeathDescription + "\n\n";
+        if (data.computerDeathDescription) result += data.computerDeathDescription + "\n\n";
+        // if (data.combatTimer) result += `Combat Timer: ${data.combatTimer} \n`;
+        return result;
+        // return (
+        //     <div class='center creature-heading'>
+        //         {data.playerStartDescription && <p>{data.playerStartDescription}</p>}
+        //         {data.computerStartDescription && <p>{data.computerStartDescription}</p>}
+        //         {data.playerSpecialDescription && <p>{data.playerSpecialDescription}</p>}
+        //         {data.computerSpecialDescription && <p>{data.computerSpecialDescription}</p>}
+        //         {data.playerActionDescription && <p>{data.playerActionDescription}</p>}
+        //         {data.computerActionDescription && <p>{data.computerActionDescription}</p>}
+        //         {data.playerInfluenceDescription && <p>{data.playerInfluenceDescription}</p>}
+        //         {data.playerInfluenceDescriptionTwo && <p>{data.playerInfluenceDescriptionTwo}</p>}
+        //         {data.computerInfluenceDescription && <p>{data.computerInfluenceDescription}</p>}
+        //         {data.computerInfluenceDescriptionTwo && <p>{data.computerInfluenceDescriptionTwo}</p>}
+        //         {data.playerDeathDescription && <p>{data.playerDeathDescription}</p>}
+        //         {data.computerDeathDescription && <p>{data.computerDeathDescription}</p>}
+        //         {/* {combat().combatTimer && <p>Combat Timer: {combat().combatTimer}</p>} */}
+        //     </div>
+        // );
+
+    };
+    createEffect(() => {
+        console.log(ascean().skills, 'Ascean');
+    });
 
     createMemo(() => {
         if (ascean()?.experience as number > experience()) {
@@ -67,6 +108,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
                 caerenic: combat().isCaerenic,
                 stalwart: combat().isStalwart,
                 stealth: combat().isStealth,
+                showCombat: game().showCombat,
                 showPlayer: game().showPlayer,
                 combatSettings: game().scrollEnabled,
                 pause: game().pauseState,
@@ -80,6 +122,10 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         });
         EventBus.on('closed', () => {
             setClicked({ ...clicked(), phaser: false });
+        });
+        EventBus.on('add-combat-logs', (data: Combat) => {
+            setCombatHistory(text(combatHistory(), data) as any);    
+            logs = text(combatHistory(), data) as HTMLElement;
         });
     });
 
@@ -143,6 +189,12 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         EventBus.emit('blend-game', { smallHud: false}); // !game().smallHud 
         EventBus.emit('action-button-sound');
     };
+    const showCombat = () => {
+        EventBus.emit('blend-game', { showCombat: !game().showCombat });
+        EventBus.emit('action-button-sound');
+        setClicked({ ...clicked(), showCombat: !clicked().showCombat });
+        EventBus.emit('toggle-bar', true);
+    };
     const showPlayer = () => {
         EventBus.emit('show-player');
         EventBus.emit('action-button-sound');
@@ -172,7 +224,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
             <LootDropUI ascean={ascean} game={game} />
         </Show>
        <Show when={game().showCombat}>
-            <CombatText combat={combat} />
+            <CombatText combat={combat} combatHistory={combatHistory} logs={logs as unknown as HTMLElement} />
         </Show>
         <Show when={game().showDialog}>
             <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} />
@@ -227,14 +279,19 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
                     </div>
                 </button>
 
-                
-                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '28.5%' } : { height: '3.5%', width: '7.5%', right: '60%' }} onClick={combatSettings}>
+                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '28.5%' } : { height: '3.5%', width: '7.5%', right: '60%' }} onClick={showCombat}>
+                    <div class='p-3' style={{ color: clicked().showCombat === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                        <img src={'../assets/images/logs.png'} style={icon(clicked().showCombat)} alt='Sh' />
+                    </div>
+                </button>
+
+                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '32.5%' } : { height: '3.5%', width: '7.5%', right: '60%' }} onClick={combatSettings}>
                     <div class='p-3' style={{ color: clicked().combatSettings === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
                         <img src={'../assets/images/settings.png'} style={icon(clicked().combatSettings)} alt='Sh' />
                     </div>
                 </button>
 
-                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '32.5%' } : { height: '3.5%', width: '7.5%', right: '68%' }} onClick={showPlayer}>
+                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '36.5%' } : { height: '3.5%', width: '7.5%', right: '68%' }} onClick={showPlayer}>
                     <div class='p-3' style={{ color: clicked().showPlayer === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
                         <img src={'../assets/images/info.png'} style={icon(clicked().showPlayer)} alt='Sh' />
                     </div>
@@ -244,7 +301,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         </Show>
         <Show when={game().dialogTag}>
         <button class='smallHudButtons flash' style={dimensions().ORIENTATION === 'landscape' ? 
-            { height: '7.5%', width: '3.75%', right: (game().smallHud !== true && !clicked().phaser) ? '4.5%' : '36.5%' } : // if game().smallHud === true ? right: '4.5%'
+            { height: '7.5%', width: '3.75%', right: (game().smallHud !== true && !clicked().phaser) ? '4.5%' : '40.5%' } : // if game().smallHud === true ? right: '4.5%'
             { height: '3.5%', width: '7.5%', right: '52%' }} 
             onClick={dialog}>
         <div class='p-3' style={{ color: clicked().dialog === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
@@ -254,7 +311,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         </Show>
         <Show when={game().lootTag}>
         <button class='smallHudButtons flash' style={dimensions().ORIENTATION === 'landscape' ? 
-            { height: '7.5%', width: '3.75%', right: (game().smallHud !== true && !clicked().phaser) ? '8.5%' : '40.5%' } : // right: game().smallHud === true ? '4.5' : '0.5%', top: '82.5%' SECOND ROW
+            { height: '7.5%', width: '3.75%', right: (game().smallHud !== true && !clicked().phaser) ? '8.5%' : '44.5%' } : // right: game().smallHud === true ? '4.5' : '0.5%', top: '82.5%' SECOND ROW
             { height: '3.5%', width: '7.5%', right: game().dialogTag ? '56%' : '52%' }} // right: game().dialogTag ? '8%' : '4%', bottom: '4.75%' SECOND ROW
             onClick={loot}>
         <div class='p-3' style={{ color: clicked().loot === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>

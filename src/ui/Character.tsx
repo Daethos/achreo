@@ -300,14 +300,10 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 </div>
             );
         };
-
-        
         const currentEntry = ascean().journal.entries[ascean().journal.currentEntry];
         setEntry(currentEntry);
         const next = ascean().journal.entries.length > ascean().journal.currentEntry + 1 ? ascean().journal.currentEntry + 1 : 0;
         const prev = ascean().journal.currentEntry > 0 ? ascean().journal.entries[ascean().journal.currentEntry - 1] : ascean().journal.entries.length - 1;
-        console.log(ascean().journal, 'Ascean Journal', next, 'Next --- Prev', prev)
-
         const formattedDate = new Date(entry().date).toISOString().split('T')[0].replace(/-/g, ' ');
         return (
             <div class='center creature-heading wrap' style={{ 'flex-wrap': 'wrap', 'margin-top': '12.5%' }}>

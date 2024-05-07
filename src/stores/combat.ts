@@ -109,6 +109,7 @@ export interface Combat {
     totalDamageData: number;
     prayerData: string[];
     deityData: string[];
+    skillData: string[];
 
     weather: string;
     isStalwart: boolean; // +15% Defense, Cannot Dodge, Roll
@@ -236,6 +237,7 @@ export const initCombat: Combat = {
     totalDamageData: 0,
     prayerData: [],
     deityData: [],
+    skillData: [],
 
     weather: '',
     isStalwart: false, // +15% Defense, Cannot Dodge, Roll

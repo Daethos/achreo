@@ -15,6 +15,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
     public switches: {
         info: boolean;
         settings: boolean;
+        logs: boolean;
         caerenic: boolean;
         stalwart: boolean;
         stealth: boolean;
@@ -38,6 +39,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.switches = {
             info: false,
             settings: false,
+            logs: false,
             caerenic: false,
             stalwart: false,
             stealth: false,
@@ -62,10 +64,12 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         let stealth = this.scene.add.image(this.x, this.y, 'stealth');
         let stalwart = this.scene.add.image(this.x, this.y, 'stalwart');
         let caerenic = this.scene.add.image(this.x, this.y, 'caerenic');
+        let logs = this.scene.add.image(this.x, this.y, 'logs');
         let settings = this.scene.add.image(this.x, this.y, 'settings');
         let info = this.scene.add.image(this.x, this.y, 'info');
         this.bar.push(info);
         this.bar.push(settings);
+        this.bar.push(logs);
         this.bar.push(caerenic);
         this.bar.push(stalwart);
         this.bar.push(stealth);
@@ -86,7 +90,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     item.setVisible(false);
                 };
             };
-            item.x = xModifier(this.x, Math.min(index, 8));
+            item.x = xModifier(this.x, Math.min(index, 9));
             item.on('pointerdown', () => {
                 this.pressButton(item);
             });
@@ -99,7 +103,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
 
     draw = () => {
         this.bar.forEach((item, index) => {
-            item.x = xModifier(this.x, Math.min(index, 8));
+            item.x = xModifier(this.x, Math.min(index, 9));
             item.y = this.y;
             if (this.closed === true) {
                 if (item.texture.key === 'closed') {
@@ -175,6 +179,11 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     case 'caerenic':
                         this.switches.caerenic = !this.switches.caerenic;
                         EventBus.emit('update-caerenic');                
+                        break;
+                    case 'logs':
+                        this.switches.logs = !this.switches.logs;
+                        EventBus.emit('action-button-sound');
+                        EventBus.emit('show-combat-logs', this.switches.logs); // variable
                         break;
                     case 'settings':
                         EventBus.emit('action-button-sound');

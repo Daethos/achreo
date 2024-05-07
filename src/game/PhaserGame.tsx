@@ -284,13 +284,22 @@ export const PhaserGame = (props: IProps) => {
         statistic.deities.Sevas += deityData.reduce((count: number, deity: string) => deity === "Se'vas" ? count + 1 : count, 0);
         statistic.deities.Shrygei += deityData.reduce((count: number, deity: string) => deity === "Shrygei" ? count + 1 : count, 0);
         statistic.deities.Tshaer += deityData.reduce((count: number, deity: string) => deity === 'Tshaer' ? count + 1 : count, 0);
-        
+
         let newStatistics: Statistics = { ...props.ascean().statistics, combat: statistic };
         if (wins > losses && props.ascean().statistics.relationships.deity.name !== '') {
             newStatistics = checkDeificConcerns(props.ascean().statistics, props.ascean().statistics.relationships.deity.name, 'combat', 'value') as Statistics;
         };
 
         return newStatistics;
+    };
+
+    function recordSkills(skills: string[]) {
+        let newSkills = { ...props.ascean().skills };
+        skills.forEach((skill: string) => {
+            newSkills[skill as keyof typeof newSkills] += 1;
+            newSkills[skill as keyof typeof newSkills] = Math.max(newSkills[skill as keyof typeof newSkills], props.ascean().level * 100);
+        });
+        return newSkills;
     };
 
     function saveChanges(state: any) {
@@ -362,10 +371,14 @@ export const PhaserGame = (props: IProps) => {
             totalDamageData: data.totalDamageData,
             prayerData: data.prayerData,
             deityData: data.deityData,
+            skillData: data.skillData,
         };
         const newStats = recordCombat(stat);
+        const newSkills = recordSkills(data.skillData);
+
         const update = { 
             ...props.ascean(), 
+            skills: newSkills,
             statistics: newStats, 
             health: { ...props.ascean().health, current: data.newPlayerHealth } 
         };

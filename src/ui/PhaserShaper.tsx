@@ -184,7 +184,7 @@ export function PhaserShaper({ settings }: IPhaserShape) {
             <h1 style={font('1.25em')}>Smal HUD</h1>
             <div style={font('1em')}>X: ({settings().positions.smallHud.x})</div>
             <Form.Range 
-                min={0} max={1} step={0.025} 
+                min={0} max={1} step={0.0125} 
                 onChange={(e) => handleHud(e, 'x')} 
                 value={settings().positions.smallHud.x} 
             />

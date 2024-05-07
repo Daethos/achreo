@@ -58,6 +58,13 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
         rebukePlayer: () => rebukePlayer(),
     };
 
+    // ${ ascean()?.faith === 'adherent' ? (
+    //     `<p class='adherentText'>You feel the presence of... ^750 ${highestFaith()}^1000?</p>`
+    // ) : ascean()?.faith === 'devoted' ? (
+    //     `<p class='devotedText'>You feel the presence of... ^750 ${highestFaith()}^1000?</p>`
+    // ) : (
+    //     '<p>You feel the presence of an overwhelming power...</p>'
+    // ) } <br />
     createEffect(() => {
         if (tutorial() === 'deity') {
             setDeity(`<div class='typewriterContainer' key='phenomena'>
@@ -65,19 +72,12 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 <img src=${ascean()?.faith === 'Adherent' ? '../assets/images/achreo-rising.jpg' : ascean()?.faith === 'Devoted' ? '../assets/images/daethos-forming.jpg' : '../assets/images/' + ascean().origin + '-' + ascean().sex + '.jpg'} alt=${ascean().faith}  class=${'godBorder'+ascean().mastery.charAt(0).toUpperCase()+ascean().mastery.slice(1)} />
                 </button>
                 <br />
-                ${ ascean()?.faith === 'adherent' ? (
-                    `<p class='adherentText'>You feel the presence of... ^750 ${highestFaith()}^1000?</p>`
-                ) : ascean()?.faith === 'devoted' ? (
-                    `<p class='devotedText'>You feel the presence of... ^750 ${highestFaith()}^1000?</p>`
-                ) : (
-                    '<p>You feel the presence of an overwhelming power...</p>'
-                ) } <br />
             
                 A tendril swirls soothing about your senses,<br /> its sweetness teasing as hush soon possesses. <br /><br />
                 Writhing, it warps to wrap round you, seething,<br /> forms of shade shimmer to dance upon your being. <br /><br />
                 Shape becoming silhouette of perish and delight,<br /> Gripping nerve seizes your caer to flourish in shrill light. <br /><br />
                 Harsh and willow, ceasing, follows twitching fascination,<br /> It shears and sutures you; a sheath of torrid satiation. <br /><br />
-                And yet perchance you seek to twist ${ascean()?.faith === 'Adherent' ? 'adherence' : 'devotion'} in its seams,<br /> To taste its ${ascean()?.mastery} burning the resin of your dreams. <br /><br />
+                And yet perchance you seek to twist ${ascean()?.faith === 'Adherent' ? 'adherence' : 'devotion'} in its seams,<br /> To taste its ${ascean()?.mastery} burning at the resin of your dreams. <br /><br />
             
                 <p class='${ascean()?.faith === 'Adherent' ? 'adherentText' : ascean()?.faith === 'Devoted' ? 'devotedText' : 'otherText'}'>You become attuned to a halt and paltry whisper,<br /> it rings and stretches your soft edges,<br /> serenity begging you hither.</p>
                 <p class='whisperText'>
@@ -115,8 +115,6 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 date: Date.now(),
                 location: 'Unknown',
             };
-            // console.log(entry, 'entry')
-            // await saveEntry(ascean()._id, entry);
             const res = await blessAscean(ascean()._id, entry);
             console.log(res, 'res')
             EventBus.emit('fetch-ascean', res.data._id);
@@ -136,7 +134,6 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 date: Date.now(),
                 location: 'Unknown',
             };
-            // await saveEntry(ascean()._id, entry);
             const res = await curseAscean(ascean()._id, entry);
             console.log(res, 'res');
             EventBus.emit('fetch-ascean', res.data._id);
@@ -319,10 +316,7 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                     position: 'absolute', 
                     height: '100%', 
                     width: '100%', 
-                    // left: '20%', 
-                    // top: '40%', 
                     background: 'rgba(0, 0, 0, 1)', 
-                    // border: '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', 
                     display: 'inline-flex', overflow: 'scroll' 
             }}>
                 <Typewriter stringText={deity} styling={{ 'overflow-y': 'auto' }} performAction={performAction} />

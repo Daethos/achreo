@@ -310,68 +310,152 @@ function damageTypeCompiler(damageType: string, enemy: Ascean, weapon: Equipment
     return { physicalDamage, magicalDamage };
 };
 
-function criticalCompiler(player: Ascean, critChance: number, critClearance: number, weapon: Equipment, physicalDamage: number, magicalDamage: number, weather: string, glancingBlow: boolean, criticalSuccess: boolean):{ criticalSuccess: boolean, glancingBlow: boolean, physicalDamage: number, magicalDamage: number } {
+function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, critClearance: number, weapon: Equipment, physicalDamage: number, magicalDamage: number, weather: string, glancingBlow: boolean, criticalSuccess: boolean):{ criticalSuccess: boolean, glancingBlow: boolean, physicalDamage: number, magicalDamage: number } {
     if (weather === 'Alluring Isles') critChance -= 10;
     if (weather === 'Astralands') critChance += 10;
     if (weather === 'Kingdom') critChance += 5;
-    if (critChance >= critClearance) {
-        physicalDamage *= weapon.criticalDamage;
-        magicalDamage *= weapon.criticalDamage;
-        criticalSuccess = true;
+
+    if (player === true) {
+        // if (critChance >= critClearance) {
+        //     physicalDamage *= weapon.criticalDamage;
+        //     magicalDamage *= weapon.criticalDamage;
+        //     criticalSuccess = true;
+        // } else {
+        //     const skills = ascean.skills;
+        //     let skill: number = 1;
+            
+        //     if (weapon.type === 'Spell') {
+        //         skill = skills[weapon.damageType?.[0] as keyof typeof skills];
+        //     } else {
+        //         skill = skills[weapon.type as keyof typeof skills];
+        //     };
+            
+        //     const modifier = skill / (ascean.level * 100);
+        //     const glancing = critClearance / 100;
+        //     if (glancing >= modifier) {
+        //         glancingBlow = true;
+        //         physicalDamage *= modifier;
+        //         magicalDamage *= modifier;
+        //     };
+        // };
+        if (critChance >= critClearance) {
+            physicalDamage *= weapon.criticalDamage;
+            magicalDamage *= weapon.criticalDamage;
+            criticalSuccess = true;
+        };
+        if (critClearance > critChance + ascean.level + 80) {
+            physicalDamage *= 0.1;
+            magicalDamage *= 0.1;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 75) {
+            physicalDamage *= 0.15;
+            magicalDamage *= 0.15;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 70) {
+            physicalDamage *= 0.2;
+            magicalDamage *= 0.2;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 65) {
+            physicalDamage *= 0.25;
+            magicalDamage *= 0.25;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 60) {
+            physicalDamage *= 0.3;
+            magicalDamage *= 0.3;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 55) {
+            physicalDamage *= 0.35;
+            magicalDamage *= 0.35;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 50) {
+            physicalDamage *= 0.4;
+            magicalDamage *= 0.4;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 45) {
+            physicalDamage *= 0.45;
+            magicalDamage *= 0.45;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 40) {
+            physicalDamage *= 0.5;
+            magicalDamage *= 0.5;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 35) {
+            physicalDamage *= 0.55;
+            magicalDamage *= 0.55;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 30) {
+            physicalDamage *= 0.6;
+            magicalDamage *= 0.6;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 25) {
+            physicalDamage *= 0.65;
+            magicalDamage *= 0.65;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 20) {
+            physicalDamage *= 0.7;
+            magicalDamage *= 0.7;
+            glancingBlow = true;
+        };
+    } else {
+        if (critChance >= critClearance) {
+            physicalDamage *= weapon.criticalDamage;
+            magicalDamage *= weapon.criticalDamage;
+            criticalSuccess = true;
+        };
+        if (critClearance > critChance + ascean.level + 80) {
+            physicalDamage *= 0.1;
+            magicalDamage *= 0.1;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 75) {
+            physicalDamage *= 0.15;
+            magicalDamage *= 0.15;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 70) {
+            physicalDamage *= 0.2;
+            magicalDamage *= 0.2;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 65) {
+            physicalDamage *= 0.25;
+            magicalDamage *= 0.25;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 60) {
+            physicalDamage *= 0.3;
+            magicalDamage *= 0.3;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 55) {
+            physicalDamage *= 0.35;
+            magicalDamage *= 0.35;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 50) {
+            physicalDamage *= 0.4;
+            magicalDamage *= 0.4;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 45) {
+            physicalDamage *= 0.45;
+            magicalDamage *= 0.45;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 40) {
+            physicalDamage *= 0.5;
+            magicalDamage *= 0.5;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 35) {
+            physicalDamage *= 0.55;
+            magicalDamage *= 0.55;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 30) {
+            physicalDamage *= 0.6;
+            magicalDamage *= 0.6;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 25) {
+            physicalDamage *= 0.65;
+            magicalDamage *= 0.65;
+            glancingBlow = true;
+        } else if (critClearance > critChance + ascean.level + 20) {
+            physicalDamage *= 0.7;
+            magicalDamage *= 0.7;
+            glancingBlow = true;
+        };
     };
-    if (critClearance > critChance + player.level + 80) {
-        physicalDamage *= 0.1;
-        magicalDamage *= 0.1;
-        glancingBlow = true;
-    } else if (critClearance > critChance + player.level + 75) {
-        physicalDamage *= 0.15;
-        magicalDamage *= 0.15;
-        glancingBlow = true;
-    } else if (critClearance > critChance + player.level + 70) {
-        physicalDamage *= 0.2;
-        magicalDamage *= 0.2;
-        glancingBlow = true;
-    } else if (critClearance > critChance + player.level + 65) {
-        physicalDamage *= 0.25;
-        magicalDamage *= 0.25;
-        glancingBlow = true;
-    } else if (critClearance > critChance + player.level + 60) {
-        physicalDamage *= 0.3;
-        magicalDamage *= 0.3;
-        glancingBlow = true;
-    } else if (critClearance > critChance + player.level + 55) {
-        physicalDamage *= 0.35;
-        magicalDamage *= 0.35;
-        glancingBlow = true;
-    } else if (critClearance > critChance + player.level + 50) {
-        physicalDamage *= 0.4;
-        magicalDamage *= 0.4;
-        glancingBlow = true;
-    } else if (critClearance > critChance + player.level + 45) {
-        physicalDamage *= 0.45;
-        magicalDamage *= 0.45;
-        glancingBlow = true;
-    } else if (critClearance > critChance + player.level + 40) {
-        physicalDamage *= 0.5;
-        magicalDamage *= 0.5;
-        glancingBlow = true;
-    } else if (critClearance > critChance + player.level + 35) {
-        physicalDamage *= 0.55;
-        magicalDamage *= 0.55;
-        glancingBlow = true;
-    } else if (critClearance > critChance + player.level + 30) {
-        physicalDamage *= 0.6;
-        magicalDamage *= 0.6;
-        glancingBlow = true;
-    } else if (critClearance > critChance + player.level + 25) {
-        physicalDamage *= 0.65;
-        magicalDamage *= 0.65;
-        glancingBlow = true;
-    } else if (critClearance > critChance + player.level + 20) {
-        physicalDamage *= 0.7;
-        magicalDamage *= 0.7;
-        glancingBlow = true;
-    }
     // else if (critClearance > critChance + 20) {
     //     physicalDamage *= 0.8;
     //     magicalDamage *= 0.8;
@@ -920,7 +1004,7 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
     let weapTwoCrit: number = combat.computerWeapons[1].criticalChance;
     weapOneCrit -= combat?.playerAttributes?.kyosirMod as number;
     weapTwoCrit -= combat?.playerAttributes?.kyosirMod as number;
-    const resultOne = criticalCompiler(combat.computer as Ascean, weapOneCrit, weapOneClearance, combat.computerWeapons[0], computerWeaponOnePhysicalDamage, computerWeaponOneMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
+    const resultOne = criticalCompiler(false, combat.computer as Ascean, weapOneCrit, weapOneClearance, combat.computerWeapons[0], computerWeaponOnePhysicalDamage, computerWeaponOneMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
     combat.computerGlancingBlow = resultOne.glancingBlow;
     combat.computerCriticalSuccess = resultOne.criticalSuccess;
     computerWeaponOnePhysicalDamage = resultOne.physicalDamage;
@@ -928,7 +1012,7 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
     if (weapOneCrit >= weapOneClearance) {
         firstWeaponCrit = true;
     };
-    const resultTwo = criticalCompiler(combat.computer as Ascean, weapTwoCrit, weapTwoClearance, combat.computerWeapons[1], computerWeaponTwoOhysicalDamage, computerWeaponTwoMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
+    const resultTwo = criticalCompiler(false, combat.computer as Ascean, weapTwoCrit, weapTwoClearance, combat.computerWeapons[1], computerWeaponTwoOhysicalDamage, computerWeaponTwoMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
     combat.computerGlancingBlow = resultTwo.glancingBlow;
     combat.computerCriticalSuccess = resultTwo.criticalSuccess;
     computerWeaponTwoOhysicalDamage = resultTwo.physicalDamage;
@@ -1160,7 +1244,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     criticalChance -= combat.playerAttributes?.kyosirMod as number;
     if (combat.weather === 'Astralands') criticalChance += 10;
 
-    const criticalResult = criticalCompiler(combat.computer as Ascean, criticalChance, criticalClearance, combat.computerWeapons[0], computerPhysicalDamage, computerMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
+    const criticalResult = criticalCompiler(false, combat.computer as Ascean, criticalChance, criticalClearance, combat.computerWeapons[0], computerPhysicalDamage, computerMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
     combat.computerGlancingBlow = criticalResult.glancingBlow;
     combat.computerCriticalSuccess = criticalResult.criticalSuccess;
     computerPhysicalDamage = criticalResult.physicalDamage;
@@ -1273,7 +1357,7 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     let weapTwoCrit = combat.weapons[1]?.criticalChance as number;
     weapOneCrit -= combat.computerAttributes?.kyosirMod as number;
     weapTwoCrit -= combat.computerAttributes?.kyosirMod as number;
-    const resultOne = criticalCompiler(combat.player as Ascean, weapOneCrit, weapOneClearance, combat.weapons[0] as Equipment, playerWeaponOnePhysicalDamage as number, playerWeaponOneMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess);
+    const resultOne = criticalCompiler(true, combat.player as Ascean, weapOneCrit, weapOneClearance, combat.weapons[0] as Equipment, playerWeaponOnePhysicalDamage as number, playerWeaponOneMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess);
     combat.criticalSuccess = resultOne.criticalSuccess;
     combat.glancingBlow = resultOne.glancingBlow;
     playerWeaponOnePhysicalDamage = resultOne.physicalDamage;
@@ -1281,7 +1365,7 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     if (weapOneCrit >= weapOneClearance) {
         firstWeaponCrit = true;
     };
-    const resultTwo = criticalCompiler(combat.player as Ascean, weapTwoCrit, weapTwoClearance, combat.weapons[1] as Equipment, playerWeaponTwoPhysicalDamage as number, playerWeaponTwoMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess);
+    const resultTwo = criticalCompiler(true, combat.player as Ascean, weapTwoCrit, weapTwoClearance, combat.weapons[1] as Equipment, playerWeaponTwoPhysicalDamage as number, playerWeaponTwoMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess);
     combat.criticalSuccess = resultTwo.criticalSuccess;
     combat.glancingBlow = resultTwo.glancingBlow;
     playerWeaponTwoPhysicalDamage = resultTwo.physicalDamage;
@@ -1361,6 +1445,10 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     // ==================== STATISTIC LOGIC ====================
     combat.typeAttackData.push(combat.weapons[0]?.attackType as string, combat.weapons[1]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
+    const skill = combat.weapons[0]?.type === 'Spell' ? combat.weapons[0]?.damageType?.[0].toUpperCase() as string + combat.weapons[0]?.damageType?.[0].slice(1) as string : combat.weapons[0]?.type;
+    combat.skillData.push(skill as string);
+    const skillTwo = combat.weapons[1]?.type === 'Spell' ? combat.weapons[1]?.damageType?.[0].toUpperCase() as string + combat.weapons[1]?.damageType?.[0].slice(1) as string : combat.weapons[1]?.type;
+    combat.skillData.push(skillTwo as string);
     combat.totalDamageData = combat.realizedPlayerDamage > combat.totalDamageData ? combat.realizedPlayerDamage : combat.totalDamageData;
     // ==================== STATISTIC LOGIC ====================
     
@@ -1515,7 +1603,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     criticalChance -= combat.computerAttributes?.kyosirMod as number;
     if (combat.weather === 'Astralands') criticalChance += 10;
     if (combat.weather === 'Astralands' && combat.weapons[0]?.influences?.[0] === 'Astra') criticalChance += 10;
-    const criticalResult = criticalCompiler(combat.player as Ascean, criticalChance, criticalClearance, combat.weapons[0] as Equipment, playerPhysicalDamage, playerMagicalDamage, combat.weather, combat.glancingBlow, combat.criticalSuccess);
+    const criticalResult = criticalCompiler(true, combat.player as Ascean, criticalChance, criticalClearance, combat.weapons[0] as Equipment, playerPhysicalDamage, playerMagicalDamage, combat.weather, combat.glancingBlow, combat.criticalSuccess);
     combat.criticalSuccess = criticalResult.criticalSuccess;
     combat.glancingBlow = criticalResult.glancingBlow;
     playerPhysicalDamage = criticalResult.physicalDamage;
@@ -1549,6 +1637,8 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     // ==================== STATISTIC LOGIC ====================
     combat.typeAttackData.push(combat.weapons[0]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
+    const skill = combat.weapons[0]?.type === 'Spell' ? combat.weapons[0]?.damageType?.[0].toUpperCase() as string + combat.weapons[0]?.damageType?.[0].slice(1) as string : combat.weapons[0]?.type;
+    combat.skillData.push(skill as string);
     combat.totalDamageData = combat.realizedPlayerDamage > combat.totalDamageData ? combat.realizedPlayerDamage : combat.totalDamageData;
     // ==================== STATISTIC LOGIC ====================
 
@@ -2197,6 +2287,7 @@ function weaponActionSplitter(combat: Combat): Combat {
         'typeDamageData': cleanData.typeDamageData,
         'deityData': cleanData.deityData,
         'prayerData': cleanData.prayerData,
+        'skillData': cleanData.skillData,
 
         'attackWeight': cleanData.attackWeight,
         'parryWeight': cleanData.parryWeight,
@@ -2312,6 +2403,7 @@ function newDataCompiler(combat: Combat): any {
         totalDamageData: combat.totalDamageData,
         prayerData: combat.prayerData,
         deityData: combat.deityData,
+        skillData: combat.skillData,
         weather: combat.weather,
         enemyID: combat.enemyID,
         combatTimer: combat.combatTimer,
@@ -2408,6 +2500,7 @@ function instantActionSplitter(combat: Combat): any {
         'actionData': combat.actionData,
         'deityData': combat.deityData,
         'prayerData': combat.prayerData,
+        'skillData': combat.skillData,
 
         'weapons': combat.weapons,
         'computerWeapons': combat.computerWeapons,

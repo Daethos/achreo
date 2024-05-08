@@ -10,7 +10,7 @@ import { GameState, initGame } from '../stores/game';
 import Equipment, { getOneRandom, upgradeEquipment } from '../models/equipment';
 import Settings from '../models/settings';
 import BaseUI from '../ui/BaseUI';
-import { Compiler, asceanCompiler } from '../utility/ascean';
+import { Compiler, LevelSheet, asceanCompiler } from '../utility/ascean';
 import { deleteEquipment, getAscean, getInventory, populate, updateSettings } from '../assets/db/db';
 import { getNpcDialog } from '../utility/dialog';
 import { getAsceanTraits } from '../utility/traits';
@@ -295,9 +295,16 @@ export const PhaserGame = (props: IProps) => {
 
     function recordSkills(skills: string[]) {
         let newSkills = { ...props.ascean().skills };
-        skills.forEach((skill: string) => {
+        console.log('Skills:', skills, 'Old Skills:', newSkills);
+        skills.forEach((skill: string, index: number) => {
+            if (index % 5 !== 0) {
+                // console.log('Skipping Skill:', skill);
+                return;
+            };
+            console.log(newSkills[skill as keyof typeof newSkills], 'Old Skill Value');
             newSkills[skill as keyof typeof newSkills] += 1;
-            newSkills[skill as keyof typeof newSkills] = Math.max(newSkills[skill as keyof typeof newSkills], props.ascean().level * 100);
+            newSkills[skill as keyof typeof newSkills] = Math.min(newSkills[skill as keyof typeof newSkills], props.ascean().level * 100);
+            console.log(newSkills[skill as keyof typeof newSkills], 'New Skill Value');
         });
         return newSkills;
     };
@@ -334,11 +341,6 @@ export const PhaserGame = (props: IProps) => {
 
             let currency = rebalanceCurrency({ silver, gold });
 
-            // if (silver > 99) {
-            //     gold += Math.floor(silver / 100);
-            //     silver = silver % 100;
-            // };
-
             if (props.ascean().firewater.current < 5 && props.ascean().level <= state.opponent) {
                 firewater = {
                     current: props.ascean().firewater.current + 1,
@@ -371,17 +373,104 @@ export const PhaserGame = (props: IProps) => {
             totalDamageData: data.totalDamageData,
             prayerData: data.prayerData,
             deityData: data.deityData,
-            skillData: data.skillData,
         };
         const newStats = recordCombat(stat);
         const newSkills = recordSkills(data.skillData);
-
+        setCombat({
+            ...combat(),
+            ...data,
+            actionData: [],
+            typeAttackData: [],
+            typeDamageData: [],
+            totalDamageData: 0,
+            prayerData: [],
+            deityData: [],
+            skillData: [],
+        });
         const update = { 
             ...props.ascean(), 
             skills: newSkills,
             statistics: newStats, 
             health: { ...props.ascean().health, current: data.newPlayerHealth } 
         };
+        EventBus.emit('update-ascean', update);
+    };
+
+    const recordWin = (record: Combat, experience: LevelSheet) => {
+        let stat = {
+            wins: record.playerWin ? 1 : 0,
+            losses: record.playerWin ? 0 : 1,
+            total: 1,
+            actionData: record.actionData,
+            typeAttackData: record.typeAttackData,
+            typeDamageData: record.typeDamageData,
+            totalDamageData: record.totalDamageData,
+            prayerData: record.prayerData,
+            deityData: record.deityData,
+        };
+        const newStats = recordCombat(stat);
+        const newSkills = recordSkills(record.skillData);
+        
+        let silver: number = experience.currency.silver, gold: number = experience.currency.gold, 
+            exp: number = experience.opponentExp, firewater = { ...props.ascean().firewater };
+
+        let computerLevel: number = experience.opponent;
+        if (experience.avarice) exp *= 1.2;
+        let health = experience.currentHealth > props.ascean().health.max ? props.ascean().health.max : experience.currentHealth;
+
+        if (computerLevel === 1) {
+            silver = Math.floor(Math.random() * 2) + 1;
+            gold = 0;
+        } else if (computerLevel >= 2 && computerLevel <= 10) {
+            silver = (Math.floor(Math.random() * 10) + 1) * computerLevel;
+            gold = 0;
+        } else if (computerLevel > 10 && computerLevel <= 20) {
+            if (computerLevel <= 15) {
+                if (Math.random() >= 0.5) {
+                    silver = Math.floor(Math.random() * 10) + 1;
+                    gold = 1;
+                } else {
+                    silver = Math.floor(Math.random() * 10) + 35;
+                    gold = 0;
+                };
+            };
+        };
+
+        silver += experience.currency.silver;
+        gold += experience.currency.gold;
+
+        let currency = rebalanceCurrency({ silver, gold });
+
+        if (props.ascean().firewater.current < 5 && props.ascean().level <= experience.opponent) {
+            firewater = {
+                current: props.ascean().firewater.current + 1,
+                max: props.ascean().firewater.max
+            };
+        };
+        
+        setCombat({
+            ...combat(),
+            ...record,
+            actionData: [],
+            typeAttackData: [],
+            typeDamageData: [],
+            totalDamageData: 0,
+            prayerData: [],
+            deityData: [],
+            skillData: [],
+        });
+
+        const update = { 
+            ...props.ascean(), 
+            skills: newSkills,
+            statistics: newStats, 
+            health: { ...props.ascean().health, current: health },
+            experience: exp,
+            currency: currency,
+            firewater: firewater,
+            inventory: game().inventory, 
+        };
+
         EventBus.emit('update-ascean', update);
     };
 
@@ -869,6 +958,9 @@ export const PhaserGame = (props: IProps) => {
         });
 
         EventBus.on('record-statistics', (e: Combat) => statFiler(e));
+        EventBus.on('record-win', (e: { record: Combat; experience: LevelSheet }) => {
+            recordWin(e.record, e.experience);
+        })
 
         onCleanup(() => {
             if (instance.game) {
@@ -930,7 +1022,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('luckout');
             EventBus.removeListener('persuasion');
             EventBus.removeListener('record-statistics');
-            
+            EventBus.removeListener('record-win');
         });
     });
 

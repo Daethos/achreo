@@ -137,7 +137,7 @@ export class Preloader extends Scene {
         this.title = new NewText(
             this,
             this.centerX,
-            this.centerY / 1.675,
+            this.centerY / 2,
             'Loading Game',
             'subtitle',
             0.5
@@ -146,7 +146,7 @@ export class Preloader extends Scene {
         this.txt_progress = new NewText(
             this,
             this.centerX,
-            this.centerY / 0.8,
+            this.centerY / 0.9,
             'Loading...',
             'preload',
             { x: 0.5, y: 1 }
@@ -154,13 +154,13 @@ export class Preloader extends Scene {
         this.txt_file = new NewText(
             this,
             this.centerX,
-            this.centerY / 0.55,
+            this.centerY / 0.6,
             '',
             'play',
             { x: 0.5, y: 1 }
         );
         let x = this.centerX - (this.width / 2);
-        let y = this.centerY / 0.75;
+        let y = this.centerY / 0.8;
         this.progress = this.add.graphics({ x: x, y: y });
         this.border = this.add.graphics({ x: x, y: y });
         this.borderBorder = this.add.graphics({ x: x, y: y });

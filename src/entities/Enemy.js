@@ -319,7 +319,8 @@ export default class Enemy extends Entity {
         // if (e.counterSuccess && !this.stateMachine.isCurrentState(States.STUNNED) && this.currentRound !== e.combatRound) this.setStun();
 
         if (this.health > e.newComputerHealth) { 
-            const damage = Math.round(this.health - e.newComputerHealth);
+            let damage = Math.round(this.health - e.newComputerHealth);
+            damage = e.glancingBlow === true ? `${damage} (Glancing)` : damage;
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.criticalSuccess);
             // console.log(`%c ${e.player.name} Dealt ${damage} Damage To ${this.ascean.name}`, 'color: #00ff00')
 

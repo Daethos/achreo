@@ -316,86 +316,90 @@ function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, c
     if (weather === 'Kingdom') critChance += 5;
 
     if (player === true) {
-        // if (critChance >= critClearance) {
-        //     physicalDamage *= weapon.criticalDamage;
-        //     magicalDamage *= weapon.criticalDamage;
-        //     criticalSuccess = true;
-        // } else {
-        //     const skills = ascean.skills;
-        //     let skill: number = 1;
-            
-        //     if (weapon.type === 'Spell') {
-        //         skill = skills[weapon.damageType?.[0] as keyof typeof skills];
-        //     } else {
-        //         skill = skills[weapon.type as keyof typeof skills];
-        //     };
-            
-        //     const modifier = skill / (ascean.level * 100);
-        //     const glancing = critClearance / 100;
-        //     if (glancing >= modifier) {
-        //         glancingBlow = true;
-        //         physicalDamage *= modifier;
-        //         magicalDamage *= modifier;
-        //     };
-        // };
         if (critChance >= critClearance) {
             physicalDamage *= weapon.criticalDamage;
             magicalDamage *= weapon.criticalDamage;
             criticalSuccess = true;
+        } else {
+            const skills = ascean.skills;
+            let skill: number = 1;
+            
+            if (weapon.type === 'Spell') {
+                skill = skills[weapon.damageType?.[0] as keyof typeof skills];
+            } else {
+                skill = skills[weapon.type as keyof typeof skills];
+            };
+            
+            const modifier = skill / (ascean.level * 100);
+            const glancing = critClearance / 100;
+            console.log(`Glancing: ${glancing} Modifier: ${modifier}`);
+            if (glancing >= modifier) {
+                glancingBlow = true;
+                // This is the random 1-100 roll that is higher than the MODIFIER (player skill in that weapon type) 
+                // GLANCING being the multiplier for the damage. If GLANCING is .85 GLANCING BLOW for 85% weapon damage.
+                // 1 - the difference. If GLANCING is .85, MODIFIER is .25. Difference is .60. 1 - .60 = .40. GLANCING BLOW for 40% weapon damage.
+                physicalDamage *= (1 - glancing); 
+                magicalDamage *= (1 - glancing); 
+            };
         };
-        if (critClearance > critChance + ascean.level + 80) {
-            physicalDamage *= 0.1;
-            magicalDamage *= 0.1;
-            glancingBlow = true;
-        } else if (critClearance > critChance + ascean.level + 75) {
-            physicalDamage *= 0.15;
-            magicalDamage *= 0.15;
-            glancingBlow = true;
-        } else if (critClearance > critChance + ascean.level + 70) {
-            physicalDamage *= 0.2;
-            magicalDamage *= 0.2;
-            glancingBlow = true;
-        } else if (critClearance > critChance + ascean.level + 65) {
-            physicalDamage *= 0.25;
-            magicalDamage *= 0.25;
-            glancingBlow = true;
-        } else if (critClearance > critChance + ascean.level + 60) {
-            physicalDamage *= 0.3;
-            magicalDamage *= 0.3;
-            glancingBlow = true;
-        } else if (critClearance > critChance + ascean.level + 55) {
-            physicalDamage *= 0.35;
-            magicalDamage *= 0.35;
-            glancingBlow = true;
-        } else if (critClearance > critChance + ascean.level + 50) {
-            physicalDamage *= 0.4;
-            magicalDamage *= 0.4;
-            glancingBlow = true;
-        } else if (critClearance > critChance + ascean.level + 45) {
-            physicalDamage *= 0.45;
-            magicalDamage *= 0.45;
-            glancingBlow = true;
-        } else if (critClearance > critChance + ascean.level + 40) {
-            physicalDamage *= 0.5;
-            magicalDamage *= 0.5;
-            glancingBlow = true;
-        } else if (critClearance > critChance + ascean.level + 35) {
-            physicalDamage *= 0.55;
-            magicalDamage *= 0.55;
-            glancingBlow = true;
-        } else if (critClearance > critChance + ascean.level + 30) {
-            physicalDamage *= 0.6;
-            magicalDamage *= 0.6;
-            glancingBlow = true;
-        } else if (critClearance > critChance + ascean.level + 25) {
-            physicalDamage *= 0.65;
-            magicalDamage *= 0.65;
-            glancingBlow = true;
-        } else if (critClearance > critChance + ascean.level + 20) {
-            physicalDamage *= 0.7;
-            magicalDamage *= 0.7;
-            glancingBlow = true;
-        };
+        // if (critChance >= critClearance) {
+        //     physicalDamage *= weapon.criticalDamage;
+        //     magicalDamage *= weapon.criticalDamage;
+        //     criticalSuccess = true;
+        // };
+        // if (critClearance > critChance + ascean.level + 80) {
+        //     physicalDamage *= 0.1;
+        //     magicalDamage *= 0.1;
+        //     glancingBlow = true;
+        // } else if (critClearance > critChance + ascean.level + 75) {
+        //     physicalDamage *= 0.15;
+        //     magicalDamage *= 0.15;
+        //     glancingBlow = true;
+        // } else if (critClearance > critChance + ascean.level + 70) {
+        //     physicalDamage *= 0.2;
+        //     magicalDamage *= 0.2;
+        //     glancingBlow = true;
+        // } else if (critClearance > critChance + ascean.level + 65) {
+        //     physicalDamage *= 0.25;
+        //     magicalDamage *= 0.25;
+        //     glancingBlow = true;
+        // } else if (critClearance > critChance + ascean.level + 60) {
+        //     physicalDamage *= 0.3;
+        //     magicalDamage *= 0.3;
+        //     glancingBlow = true;
+        // } else if (critClearance > critChance + ascean.level + 55) {
+        //     physicalDamage *= 0.35;
+        //     magicalDamage *= 0.35;
+        //     glancingBlow = true;
+        // } else if (critClearance > critChance + ascean.level + 50) {
+        //     physicalDamage *= 0.4;
+        //     magicalDamage *= 0.4;
+        //     glancingBlow = true;
+        // } else if (critClearance > critChance + ascean.level + 45) {
+        //     physicalDamage *= 0.45;
+        //     magicalDamage *= 0.45;
+        //     glancingBlow = true;
+        // } else if (critClearance > critChance + ascean.level + 40) {
+        //     physicalDamage *= 0.5;
+        //     magicalDamage *= 0.5;
+        //     glancingBlow = true;
+        // } else if (critClearance > critChance + ascean.level + 35) {
+        //     physicalDamage *= 0.55;
+        //     magicalDamage *= 0.55;
+        //     glancingBlow = true;
+        // } else if (critClearance > critChance + ascean.level + 30) {
+        //     physicalDamage *= 0.6;
+        //     magicalDamage *= 0.6;
+        //     glancingBlow = true;
+        // } else if (critClearance > critChance + ascean.level + 25) {
+        //     physicalDamage *= 0.65;
+        //     magicalDamage *= 0.65;
+        //     glancingBlow = true;
+        // } else if (critClearance > critChance + ascean.level + 20) {
+        //     physicalDamage *= 0.7;
+        //     magicalDamage *= 0.7;
+        //     glancingBlow = true;
+        // };
     } else {
         if (critChance >= critClearance) {
             physicalDamage *= weapon.criticalDamage;
@@ -1174,11 +1178,11 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                             combat.computerDualWielding = true;
                             computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
                             return combat;
-                        } else { // Less than 50 Srength 
+                        } else { // Less than 50 Strength 
                             computerPhysicalDamage *= 1.3;
                             computerMagicalDamage *= 1.15;
                         };
-                    } else { // Less than 50 Srength 
+                    } else { // Less than 50 Strength 
                         computerPhysicalDamage *= 1.3;
                         computerMagicalDamage *= 1.15;
                     };
@@ -1234,8 +1238,8 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
             computerPhysicalDamage *= 1.15;
             computerMagicalDamage *= 1.15;
         } else {
-            computerPhysicalDamage *= 0.95;
-            computerMagicalDamage *= 0.95;
+            computerPhysicalDamage *= 0.9;
+            computerMagicalDamage *= 0.9;
         };
     };
 
@@ -1445,9 +1449,9 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     // ==================== STATISTIC LOGIC ====================
     combat.typeAttackData.push(combat.weapons[0]?.attackType as string, combat.weapons[1]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
-    const skill = combat.weapons[0]?.type === 'Spell' ? combat.weapons[0]?.damageType?.[0].toUpperCase() as string + combat.weapons[0]?.damageType?.[0].slice(1) as string : combat.weapons[0]?.type;
+    const skill = combat.weapons[0]?.type === 'Spell' ? combat.weapons[0]?.damageType?.[0] : combat.weapons[0]?.type;
     combat.skillData.push(skill as string);
-    const skillTwo = combat.weapons[1]?.type === 'Spell' ? combat.weapons[1]?.damageType?.[0].toUpperCase() as string + combat.weapons[1]?.damageType?.[0].slice(1) as string : combat.weapons[1]?.type;
+    const skillTwo = combat.weapons[1]?.type === 'Spell' ? combat.weapons[1]?.damageType?.[0] : combat.weapons[1]?.type;
     combat.skillData.push(skillTwo as string);
     combat.totalDamageData = combat.realizedPlayerDamage > combat.totalDamageData ? combat.realizedPlayerDamage : combat.totalDamageData;
     // ==================== STATISTIC LOGIC ====================
@@ -1525,11 +1529,11 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                             combat.dualWielding = true;
                             dualWieldCompiler(combat);
                             return combat;
-                        } else { // Less than 40 Srength 
+                        } else { // Less than 40 Strength 
                             playerPhysicalDamage *= 1.3;
                             playerMagicalDamage *= 1.15;
                         };
-                    } else { // Less than 40 Srength 
+                    } else { // Less than 40 Strength 
                         playerPhysicalDamage *= 1.3;
                         playerMagicalDamage *= 1.15;
                     };
@@ -1594,8 +1598,8 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
             playerPhysicalDamage *= 1.15;
             playerMagicalDamage *= 1.15;
         } else {
-            playerPhysicalDamage *= 0.95;
-            playerMagicalDamage *= 0.95;
+            playerPhysicalDamage *= 0.9;
+            playerMagicalDamage *= 0.9;
         };
     };
     const criticalClearance = Math.floor(Math.random() * 10100) / 100;
@@ -1637,8 +1641,9 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     // ==================== STATISTIC LOGIC ====================
     combat.typeAttackData.push(combat.weapons[0]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
-    const skill = combat.weapons[0]?.type === 'Spell' ? combat.weapons[0]?.damageType?.[0].toUpperCase() as string + combat.weapons[0]?.damageType?.[0].slice(1) as string : combat.weapons[0]?.type;
+    const skill = combat.weapons[0]?.type === 'Spell' ? combat.weapons[0]?.damageType?.[0] : combat.weapons[0]?.type;
     combat.skillData.push(skill as string);
+    console.log('Skill Data:', combat.skillData);
     combat.totalDamageData = combat.realizedPlayerDamage > combat.totalDamageData ? combat.realizedPlayerDamage : combat.totalDamageData;
     // ==================== STATISTIC LOGIC ====================
 
@@ -1668,7 +1673,7 @@ function playerRollCompiler(combat: Combat, playerAction: string, computerAction
     if (playerRoll > rollCatch) {
         combat.rollSuccess = true;
         combat.playerSpecialDescription = 
-                `You successfully roll against ${combat.computer?.name}, avoiding their ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack.`;
+            `You successfully roll against ${combat.computer?.name}, avoiding their ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack.`;
         attackCompiler(combat, playerAction);
     } else {
         combat.playerSpecialDescription =

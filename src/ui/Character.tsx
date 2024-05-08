@@ -203,6 +203,41 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
         await saveSettings(newSettings);
     };
 
+    const createSkillBar = (skill: string) => {
+        const skillLevel = (ascean().skills as any)[skill];
+        const skillCap = ascean().level * 100;
+        const skillPercentage = Math.round((skillLevel / skillCap) * 100);
+        return (
+            <div class='skill-bar' style={{ 
+                'align-items': 'center',
+                'border': '0.1em solid gold', 
+                'border-radius': '0.25em', 
+                'justify-content': 'center',
+                'margin-bottom': '3%',
+                'text-align': 'center', 
+            }}>
+                <p class='skill-bar-text' style={{ 
+                    'color': '#fdf6d8', 
+                    'font-weight': 700, 
+                    'margin': '0 auto',
+                    // 'margin-left': '25%',
+                    'position': 'absolute', 
+                    // 'text-align': 'center',
+                    // 'transform': 'translateX(-50%)',
+                    'text-shadow': '#000 0.1em 0 0.5em', 
+                    'width': '90%', 
+                    'z-index': 1000, 
+                }}>{skill}: {skillLevel} / {skillCap}</p>
+                <div class='skill-bar-fill' style={{ 
+                    'background-color': 'blue', 
+                    'height': '4vh', 
+                    'overflow': 'hidden', 
+                    'width': `${skillPercentage}%`, 
+                }}></div>
+            </div>
+        );
+    };
+
     const createCharacterInfo = (character: string) => {
         switch (character) {
             case CHARACTERS.STATISTICS:
@@ -224,6 +259,29 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                             Highest Prayer: <span class='gold'>{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</span><br />
                             Favored Deity: <span class='gold'>{highestDeity[0]}</span><br />
                             Blessings: <span class='gold'>{highestDeity[1]}</span>
+                        <h1 style={{ 'margin-bottom': '3%' }}>Skills</h1>
+                            {createSkillBar('Axe')}
+                            {createSkillBar('Bow')}
+                            {createSkillBar('Curved Sword')}
+                            {createSkillBar('Dagger')}
+                            {createSkillBar('Earth')}
+                            {createSkillBar('Fire')}
+                            {createSkillBar('Frost')}
+                            {createSkillBar('Greataxe')}
+                            {createSkillBar('Greatbow')}
+                            {createSkillBar('Greatmace')}
+                            {createSkillBar('Greatsword')}
+                            {createSkillBar('Lightning')}
+                            {createSkillBar('Long Sword')}
+                            {createSkillBar('Mace')}
+                            {createSkillBar('Polearm')}
+                            {createSkillBar('Righteous')}
+                            {createSkillBar('Scythe')}
+                            {createSkillBar('Short Sword')}
+                            {createSkillBar('Spooky')}
+                            {createSkillBar('Sorcery')}
+                            {createSkillBar('Wild')}
+                            {createSkillBar('Wind')}
                     </div>
                 );
             case CHARACTERS.TRAITS:

@@ -12,12 +12,49 @@ import CombatText from './CombatText';
 import Dialog from './Dialog';
 import { LevelSheet } from '../utility/ascean';
 
+const damageTypes = [
+    'Blunt',
+    'Pierce', 
+    'Slash', 
+    
+    'Earth', 
+    'Fire', 
+    'Frost', 
+    'Lightning',
+    'Righteous',
+    'Sorcery',
+    'Spooky', 
+    'Wild',
+    'Wind', 
+];
 
 interface Props {
     ascean: Accessor<Ascean>;
     asceanState: Accessor<LevelSheet>;
     combat: Accessor<Combat>;
     game: Accessor<GameState>;
+};
+
+function StyleText(text: string) {
+    const style = (t: string) => {
+        const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        const numCheck = t.split('').find((c: string) => numbers.includes(parseInt(c)));
+        const attacks = ['Attack', 'Posutre', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'roll', 'postures', 'parries'];
+        const specials = ['Invocation', 'Tendrils', 'tendrils', 'Hush', 'Tendril', 'hush', 'tshaer', 'sacrifice', 'suture', 'heal'];
+        const isDamage = damageTypes.includes(t);
+        const isNumber = numCheck !== undefined;
+        const isAttack = attacks.includes(t);
+        const isSpecial = specials.includes(t);
+        return {
+            color: (isDamage === true || isNumber === true || isAttack === true) ? 'gold' : isSpecial === true ? 'purple' : t === '!' ? 'red' : '#fdf6d8',
+            'font-weight': (isDamage === true || isNumber === true || isAttack === true || isSpecial === true || t === '!') ? 'bold' : 'normal',                
+        };
+    };
+    return text.split(' ').map((t, i) => 
+        <span style={style(t)}>
+            {t}{' '}
+        </span>
+    );
 };
 
 export default function SmallHud({ ascean, asceanState, combat, game }: Props) { 
@@ -41,46 +78,45 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         phaser: false,
     });
     const [combatHistory, setCombatHistory] = createSignal<any>(undefined);
-    let logs: HTMLElement | undefined = undefined;
     const dimensions = useResizeListener(); 
     const text = (prev: string, data: Combat) => {
-        let result = prev !== undefined ? prev + "\n" : "";
-        if (data.playerStartDescription) result += data.playerStartDescription + "\n\n";
-        if (data.computerStartDescription) result += data.computerStartDescription + "\n\n";
-        if (data.playerSpecialDescription) result += data.playerSpecialDescription + "\n\n";
-        if (data.computerSpecialDescription) result += data.computerSpecialDescription + "\n\n";
-        if (data.playerActionDescription) result += data.playerActionDescription + "\n\n";
-        if (data.computerActionDescription) result += data.computerActionDescription + "\n\n";
-        if (data.playerInfluenceDescription) result += data.playerInfluenceDescription + "\n\n";
-        if (data.playerInfluenceDescriptionTwo) result += data.playerInfluenceDescriptionTwo + "\n\n";
-        if (data.computerInfluenceDescription) result += data.computerInfluenceDescription + "\n\n";
-        if (data.computerInfluenceDescriptionTwo) result += data.computerInfluenceDescriptionTwo + "\n\n";
-        if (data.playerDeathDescription) result += data.playerDeathDescription + "\n\n";
-        if (data.computerDeathDescription) result += data.computerDeathDescription + "\n\n";
-        // if (data.combatTimer) result += `Combat Timer: ${data.combatTimer} \n`;
+        let result: any = prev !== undefined ? prev + "\n" : "";
+        if (data.playerStartDescription !== '') result += data.playerStartDescription + "\n";
+        if (data.computerStartDescription !== '') result += data.computerStartDescription + "\n";
+        if (data.playerSpecialDescription !== '') result += data.playerSpecialDescription + "\n";
+        if (data.computerSpecialDescription !== '') result += data.computerSpecialDescription + "\n";
+        if (data.playerActionDescription !== '') result += data.playerActionDescription + "\n";
+        if (data.computerActionDescription !== '') result += data.computerActionDescription + "\n";
+        if (data.playerInfluenceDescription !== '') result += data.playerInfluenceDescription + "\n";
+        if (data.playerInfluenceDescriptionTwo !== '') result += data.playerInfluenceDescriptionTwo + "\n";
+        if (data.computerInfluenceDescription !== '') result += data.computerInfluenceDescription + "\n";
+        if (data.computerInfluenceDescriptionTwo !== '') result += data.computerInfluenceDescriptionTwo + "\n";
+        if (data.playerDeathDescription !== '') result += data.playerDeathDescription + "\n";
+        if (data.computerDeathDescription !== '') result += data.computerDeathDescription + "\n";
+        // result = styleText(result);
         return result;
-        // return (
-        //     <div class='center creature-heading'>
-        //         {data.playerStartDescription && <p>{data.playerStartDescription}</p>}
-        //         {data.computerStartDescription && <p>{data.computerStartDescription}</p>}
-        //         {data.playerSpecialDescription && <p>{data.playerSpecialDescription}</p>}
-        //         {data.computerSpecialDescription && <p>{data.computerSpecialDescription}</p>}
-        //         {data.playerActionDescription && <p>{data.playerActionDescription}</p>}
-        //         {data.computerActionDescription && <p>{data.computerActionDescription}</p>}
-        //         {data.playerInfluenceDescription && <p>{data.playerInfluenceDescription}</p>}
-        //         {data.playerInfluenceDescriptionTwo && <p>{data.playerInfluenceDescriptionTwo}</p>}
-        //         {data.computerInfluenceDescription && <p>{data.computerInfluenceDescription}</p>}
-        //         {data.computerInfluenceDescriptionTwo && <p>{data.computerInfluenceDescriptionTwo}</p>}
-        //         {data.playerDeathDescription && <p>{data.playerDeathDescription}</p>}
-        //         {data.computerDeathDescription && <p>{data.computerDeathDescription}</p>}
-        //         {/* {combat().combatTimer && <p>Combat Timer: {combat().combatTimer}</p>} */}
-        //     </div>
-        // );
-
     };
-    createEffect(() => {
-        console.log(ascean().skills, 'Ascean');
-    });
+    function styleText(text: string) {
+        const style = (t: string) => {
+            const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+            const numCheck = t.split('').find((c: string) => numbers.includes(parseInt(c)));
+            const attacks = ['Attack', 'Posutre', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'roll', 'postures', 'parries'];
+            const specials = ['Invocation', 'Tendrils', 'tendrils', 'Hush', 'Tendril', 'hush', 'tshaer', 'sacrifice', 'suture', 'heal'];
+            const isDamage = damageTypes.includes(t);
+            const isNumber = numCheck !== undefined;
+            const isAttack = attacks.includes(t);
+            const isSpecial = specials.includes(t);
+            const color = (isDamage === true || isNumber === true || isAttack === true) ? 'gold' : isSpecial === true ? 'purple' : t === '!' ? 'red' : '#fdf6d8';
+            const fontWeight = (isDamage === true || isNumber === true || isAttack === true || isSpecial === true || t === '!') ? 'bold' : 'normal';
+            return `<span style="color: ${color}; font-weight: ${fontWeight};">${t}</span>`;
+        };
+    
+        return text.split(' ').map((t, i) => style(t)).join(' ');
+    };
+    
+    // createEffect(() => {
+    //     console.log(ascean().skills, 'Ascean', combat(), 'Combat');
+    // });
 
     createMemo(() => {
         if (ascean()?.experience as number > experience()) {
@@ -125,7 +161,6 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         });
         EventBus.on('add-combat-logs', (data: Combat) => {
             setCombatHistory(text(combatHistory(), data) as any);    
-            logs = text(combatHistory(), data) as HTMLElement;
         });
     });
 
@@ -145,9 +180,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         EventBus.emit('useScroll');
         EventBus.emit('action-button-sound');
         setClicked({ ...clicked(), combatSettings: !clicked().combatSettings });
-        // if (!clicked().combatSettings === true) {
-            EventBus.emit('toggle-bar', true);
-        // };
+        EventBus.emit('toggle-bar', true);
     };
     const cursor = () => {
         EventBus.emit('action-button-sound');
@@ -224,7 +257,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
             <LootDropUI ascean={ascean} game={game} />
         </Show>
        <Show when={game().showCombat}>
-            <CombatText combat={combat} combatHistory={combatHistory} logs={logs as unknown as HTMLElement} />
+            <CombatText combat={combat} combatHistory={combatHistory} />
         </Show>
         <Show when={game().showDialog}>
             <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} />

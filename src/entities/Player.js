@@ -7,7 +7,6 @@ import HealthBar from "../phaser/HealthBar";
 import { EventBus } from "../game/EventBus";
 import CastingBar from "../phaser/CastingBar";
 import { PLAYER } from "../utility/player";
-import Joystick from "../phaser/Joystick";
 import AoE from "../phaser/AoE";
 import Bubble from "../phaser/Bubble";
 
@@ -569,6 +568,7 @@ export default class Player extends Entity {
     eventUpdate = (e) => {
         if (this.health > e.newPlayerHealth) {
             let damage = Math.round(this.health - e.newPlayerHealth);
+            damage = e.computerGlancingBlow ? `${damage} (Glancing)` : damage;
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.computerCriticalSuccess);
             // console.log(`%c ${damage} Damage Taken by ${e?.computer?.name}`, 'color: #ff0000')
         };
@@ -1073,6 +1073,9 @@ export default class Player extends Entity {
         this.castbar.setTime(PLAYER.DURATIONS.ARCING, 0xFF0000);
         this.setStatic(true);
         this.castbar.setVisible(true); 
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You begin arcing your ${this.scene.state.weapons[0].name}.`
+        });
     };
     onArcUpdate = (dt) => {
         this.combatChecker(this.isArcing);
@@ -1135,6 +1138,9 @@ export default class Player extends Entity {
                 this.checkCaerenic(false);
             });
         };
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You blink and flicker through this world.`
+        });
     };
     onBlinkUpdate = (_dt) => {
         this.combatChecker(this.isBlinking);
@@ -1177,6 +1183,9 @@ export default class Player extends Entity {
         });
         this.setStatic(true);
         this.castbar.setVisible(true); 
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You begin to channel your Kyrnaicism.`
+        });    
     };
     onKyrnaicismUpdate = (dt) => {
         this.combatChecker(this.isChiomic);
@@ -1205,6 +1214,9 @@ export default class Player extends Entity {
         this.isConfusing = true;
         if (!this.isGlowing) this.checkCaerenic(true); // !this.isCaerenic && 
         this.castbar.setVisible(true); 
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You attempt to confuse ${this.scene.state.computer?.name}.`
+        });
     };
     onConfuseUpdate = (dt) => {
         if (this.isMoving) this.isConfusing = false;
@@ -1252,6 +1264,9 @@ export default class Player extends Entity {
                 this.checkCaerenic(false);
             });
         };
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `Your caeren shrieks like a beacon, and a hush of ${this.scene.state.weapons[0].influences[0]} soothes your body.`
+        });
     };
     onDesperationUpdate = (_dt) => {
         this.combatChecker(this.isFreezing);
@@ -1270,6 +1285,9 @@ export default class Player extends Entity {
         this.isFearing = true;
         if (!this.isGlowing) this.checkCaerenic(true); // !this.isCaerenic &&
         this.castbar.setVisible(true); 
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You attempt to fear ${this.scene.state.computer?.name}.`
+        });
     };
     onFearingUpdate = (dt) => {
         if (this.isMoving) this.isFearing = false;
@@ -1298,7 +1316,10 @@ export default class Player extends Entity {
         this.castbar.setTotal(PLAYER.DURATIONS.FREEZE);
         this.isFreezing = true;
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
-        this.castbar.setVisible(true); 
+        this.castbar.setVisible(true);
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You attempt to freeze ${this.scene.state.computer?.name}.`
+        }); 
     };
     onFreezeCastUpdate = (dt) => {
         if (this.isMoving) this.isFreezing = false;
@@ -1327,6 +1348,9 @@ export default class Player extends Entity {
         this.isHealing = true;
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.castbar.setVisible(true); 
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You attempt to heal yourself.`
+        });
     };
     onHealingUpdate = (dt) => {
         if (this.isMoving) this.isHealing = false;
@@ -1401,6 +1425,9 @@ export default class Player extends Entity {
                 };
             },
         });       
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You launch yourself through the air!`
+        });
     };
     onLeapUpdate = (_dt) => {
         this.combatChecker(this.isLeaping);
@@ -1446,6 +1473,9 @@ export default class Player extends Entity {
                 this.isRushing = false;
             },
         });        
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `Your caeren bursts into a fervor, taking it with you.`
+        });
     };
     onRushUpdate = (_dt) => {
         this.combatChecker(this.isRushing);
@@ -1465,6 +1495,9 @@ export default class Player extends Entity {
         this.isPolymorphing = true;
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.castbar.setVisible(true); 
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You attempt to polymorph ${this.scene.state.computer?.name}.`
+        });
     };
     onPolymorphingUpdate = (dt) => {
         if (this.isMoving) this.isPolymorphing = false;
@@ -1506,6 +1539,9 @@ export default class Player extends Entity {
                 this.checkCaerenic(false);
             });
         };
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You shimmer in pursuit.`
+        });
     };
     onPursuitUpdate = (_dt) => {
         this.combatChecker(this.isPursuing);
@@ -1526,6 +1562,9 @@ export default class Player extends Entity {
         if (!this.inCombat) return;
         this.isHealing = true;
         this.setTimeEvent('rootCooldown', PLAYER.COOLDOWNS.SHORT);
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You attempt to root ${this.scene.state.computer?.name}.`
+        });
     };
     onRootingUpdate = (_dt) => {
         this.combatChecker(this.isHealing);
@@ -1549,6 +1588,9 @@ export default class Player extends Entity {
             if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
             this.isSlowing = false;
         });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, slowing them!`
+        });
     };
     onSlowUpdate = (_dt) => {
         this.combatChecker(this.isSlowing);
@@ -1570,7 +1612,6 @@ export default class Player extends Entity {
             if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
             this.isSacrificing = false;
         });
-        
     };
     onSacrificeUpdate = (_dt) => {
         this.combatChecker(this.isSacrificing);
@@ -1587,6 +1628,9 @@ export default class Player extends Entity {
         this.isSnaring = true;
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.castbar.setVisible(true); 
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You attempt to snare ${this.scene.state.computer?.name}.`
+        });
     };
     onSnaringUpdate = (dt) => {
         if (this.isMoving) this.isSnaring = false;
@@ -1649,6 +1693,9 @@ export default class Player extends Entity {
             },
             loop: 3,
         });  
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You begin storming with your ${this.scene.state.weapons[0].name}.`
+        });
     };
     onStormUpdate = (_dt) => {
         this.combatChecker(this.isStorming);
@@ -1750,6 +1797,9 @@ export default class Player extends Entity {
         this.scene.time.delayedCall(PLAYER.DURATIONS.CHIOMIC, () => {
             this.isChiomic = false;
         });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You mock and confuse your surrounding foes.`
+        });
     };
     onChiomicUpdate = (_dt) => {
         if (!this.isChiomic) {
@@ -1768,6 +1818,9 @@ export default class Player extends Entity {
         this.setTimeEvent('diseaseCooldown', PLAYER.COOLDOWNS.MODERATE);  
         this.scene.time.delayedCall(PLAYER.DURATIONS.DISEASE, () => {
             this.isDiseasing = false;
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You swirl such sweet tendrils which wrap round and reach to writhe.`
         });
     };
     onDiseaseUpdate = (_dt) => {
@@ -1789,6 +1842,9 @@ export default class Player extends Entity {
         this.scene.time.delayedCall(PLAYER.DURATIONS.HOWL, () => {
             this.isHowling = false;
         });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You howl, it's otherworldly nature stunning nearby foes.`
+        });
     };
     onHowlUpdate = (_dt) => {
         // this.combatChecker(this.isHowling);
@@ -1808,6 +1864,9 @@ export default class Player extends Entity {
         this.setTimeEvent('envelopCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.ENVELOP, () => {
             this.isEnveloping = false;    
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You envelop yourself, shirking oncoming attacks.`
         });
     };
     onEnvelopUpdate = (_dt) => {
@@ -1850,6 +1909,9 @@ export default class Player extends Entity {
         this.scene.time.delayedCall(PLAYER.DURATIONS.FREEZE, () => {
             this.isFreezing = false;
         });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You freeze nearby foes.`
+        });
     };
     onFreezeUpdate = (_dt) => {
         // this.combatChecker(this.isFreezing);
@@ -1872,6 +1934,9 @@ export default class Player extends Entity {
         this.setTimeEvent('maliceCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MALICE, () => {
             this.isMalicing = false;    
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You wrack malicious foes with the hush of their own attack.`
         });
     };
     onMaliceUpdate = (_dt) => {
@@ -1908,6 +1973,9 @@ export default class Player extends Entity {
         this.setTimeEvent('mendCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MEND, () => {
             this.isMending = false;    
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You seek to mend oncoming attacks.`
         });
     };
     onMendUpdate = (_dt) => {
@@ -1946,6 +2014,9 @@ export default class Player extends Entity {
         this.scene.time.delayedCall(PLAYER.DURATIONS.PROTECT, () => {
             this.isProtecting = false;    
         });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You protect yourself from oncoming attacks.`
+        });
     };
     onProtectUpdate = (_dt) => {
         // this.combatChecker(this.isProtecting);
@@ -1972,6 +2043,9 @@ export default class Player extends Entity {
         this.setTimeEvent('recoverCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.RECOVER, () => {
             this.isRecovering = false;    
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You warp oncoming damage into stamina.`
         });
     };
     onRecoverUpdate = (_dt) => {
@@ -2006,6 +2080,9 @@ export default class Player extends Entity {
         this.scene.time.delayedCall(PLAYER.DURATIONS.RENEWAL, () => {
             this.isRenewing = false;
         });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `Tears of a Hush proliferate and heal old wounds.`
+        });
     };
     onRenewalUpdate = (_dt) => {
         if (this.isRenewing) {
@@ -2023,6 +2100,9 @@ export default class Player extends Entity {
         this.isScreaming = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.SCREAM, () => {
             this.isScreaming = false;
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You scream, fearing nearby foes.`
         });
     };
     onScreamUpdate = (_dt) => {
@@ -2046,6 +2126,9 @@ export default class Player extends Entity {
         this.setTimeEvent('shieldCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIELD, () => {
             this.isShielding = false;    
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You shield yourself from oncoming attacks.`
         });
     };
     onShieldUpdate = (_dt) => {
@@ -2075,11 +2158,15 @@ export default class Player extends Entity {
 
     onShimmerEnter = () => {
         this.isShimmering = true; 
+        this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
         this.scene.useStamina(PLAYER.STAMINA.SHIMMER);
         this.setTimeEvent('shimmerCooldown', PLAYER.COOLDOWNS.MODERATE);
-        if (!this.isStealthing && !this.isShimmering) this.stealthEffect(true);    
+        if (!this.isStealthing) this.stealthEffect(true);    
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIMMER, () => {
             this.isShimmering = false;
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You shimmer, fading in and out of this world.`
         });
     };
     onShimmerUpdate = (_dt) => {
@@ -2105,8 +2192,9 @@ export default class Player extends Entity {
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT, () => {
             this.isSprinting = false;
-            if (this.isGlowing) this.checkCaerenic(false); // !this.isCaerenic && 
-            this.adjustSpeed(-PLAYER.SPEED.SPRINT);
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You tap into your caeren, bursting into an otherworldly sprint.`
         });
     };
     onSprintUpdate = (_dt) => {
@@ -2114,10 +2202,17 @@ export default class Player extends Entity {
             this.metaMachine.setState(States.CLEAN);
         };
     };
+    onSprintExit = () => {
+        if (this.isGlowing) this.checkCaerenic(false); // !this.isCaerenic && 
+        this.adjustSpeed(-PLAYER.SPEED.SPRINT);
+    };
 
     onStealthEnter = () => {
         if (!this.isShimmering) this.isStealthing = true; 
         this.stealthEffect(true);    
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You step halfway into the land of hush and tendril.`
+        });
     };
     onStealthUpdate = (_dt) => {
         if (!this.isStealthing || this.currentRound > 1 || this.scene.combat) {
@@ -2173,6 +2268,9 @@ export default class Player extends Entity {
         this.scene.time.delayedCall(PLAYER.DURATIONS.WARD, () => {
             this.isWarding = false;    
         });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You ward yourself from oncoming attacks.`
+        });
     };
     onWardUpdate = (_dt) => {
         // this.combatChecker(this.isWarding);
@@ -2209,6 +2307,9 @@ export default class Player extends Entity {
         this.scene.time.delayedCall(PLAYER.DURATIONS.WRITHE, () => {
             this.isWrithing = false;
         });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `Your caeren grips your body and contorts, writhing around you.`
+        });
     };
     onWritheUpdate = (_dt) => {
         this.combatChecker(this.isWrithing);
@@ -2228,6 +2329,9 @@ export default class Player extends Entity {
         this.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.setTint(0x888888);
         this.setStatic(true);
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You've been stunned.`
+        });
     };
     onStunUpdate = (dt) => {
         this.setVelocity(0);

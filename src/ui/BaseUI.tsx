@@ -177,15 +177,19 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     const newComputerHealth = combat().newComputerHealth - chiomic < 0 ? 0 : combat().newComputerHealth - chiomic;
                     playerWin = newComputerHealth === 0;
                     res = { ...combat(), newComputerHealth, playerWin };
-                    EventBus.emit('blend-combat', { newComputerHealth, playerWin });
+                    const chiomicDescription = 
+                        `Your hush flays ${chiomic} health from ${combat().computer?.name}.`
+                    EventBus.emit('blend-combat', { newComputerHealth, playerWin, playerActionDescription: chiomicDescription });
                     break;
                 case 'Tshaeral': // Lifedrain
                     const drained = Math.round(combat().playerHealth * (data / 100));
                     const newPlayerHealth = combat().newPlayerHealth + drained > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + drained;
                     const newHealth = combat().newComputerHealth - drained < 0 ? 0 : combat().newComputerHealth - drained;
                     playerWin = newHealth === 0;
+                    const tshaeralDescription =
+                        `You tshaer and devour ${drained} health from ${combat().computer?.name}.`
                     res = { ...combat(), newPlayerHealth, newComputerHealth: newHealth, playerWin };
-                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth: newHealth, playerWin });
+                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth: newHealth, playerWin, playerActionDescription: tshaeralDescription });
                     break;
                 case 'Health': // Either Enemy or Player gaining health
                     let { key, value } = data;
@@ -193,13 +197,17 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                         case 'player':
                             const healed = Math.floor(combat().playerHealth * (value / 100));
                             const newPlayerHealth = combat().newPlayerHealth + healed > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + healed;
-                            res = { ...combat(), newPlayerHealth };
+                            const healthDescription = 
+                                `You heal for ${healed}.`
+                            res = { ...combat(), newPlayerHealth, playerActionDescription: healthDescription };
                             EventBus.emit('blend-combat', { newPlayerHealth });
                             break;
                         case 'enemy':
                             const enemyHealth = value > 0 ? value : 0;
                             playerWin = enemyHealth === 0;
-                            res = { ...combat(), newComputerHealth: enemyHealth, playerWin };
+                            const enemyDescription =
+                                `${combat().computer?.name} heals for ${enemyHealth}.`
+                            res = { ...combat(), newComputerHealth: enemyHealth, playerWin, enemyActionDescription: enemyDescription};
                             EventBus.emit('update-combat-state', { key: 'newComputerHealth', value: enemyHealth });
                             break;
                         default:
@@ -235,10 +243,13 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     const sacrifice = Math.round(combat()?.player?.[combat().player?.mastery as string])
                     const playerSacrifice = combat().newPlayerHealth - (sacrifice / 2) < 0 ? 0 : combat().newPlayerHealth - (sacrifice / 2);
                     const enemySacrifice = combat().newComputerHealth - sacrifice < 0 ? 0 : combat().newComputerHealth - sacrifice;
+                    const sacrificeDescription =
+                        `You sacrifice ${sacrifice / 2} health to rip ${sacrifice} from ${combat().computer?.name}.`
                     res = { ...combat(),
                         newPlayerHealth: playerSacrifice,
                         newComputerHealth: enemySacrifice,
                         playerWin: enemySacrifice === 0,
+                        playerActionDescription: sacrificeDescription,
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerSacrifice, newComputerHealth: enemySacrifice, playerWin: enemySacrifice === 0 });
                     playerWin = res.playerWin;
@@ -247,17 +258,24 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     const suture = Math.round(combat()?.player?.[combat().player?.mastery as string]) / 2;
                     const playerSuture = combat().newPlayerHealth + suture > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + suture;
                     const enemySuture = combat().newComputerHealth - suture < 0 ? 0 : combat().newComputerHealth - suture;
+                    const sutureDescription = 
+                        `Your tendrils suture ${combat().computer?.name}'s caeren into yours, echoing ${suture} damage and healing.`    
+                    // combat.playerActionDescription
                     res = {
                         ...combat(),
                         newPlayerHealth: playerSuture,
                         newComputerHealth: enemySuture,
                         playerWin: enemySuture === 0,
+                        playerActionDescription: sutureDescription,
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerSuture, newComputerHealth: enemySuture, playerWin: enemySuture === 0 });
                     playerWin = res.playerWin;
                     break;
                 default:
                     break;
+            };
+            if ("vibrate" in navigator) {
+                navigator.vibrate([100, 100, 100]);
             };
             EventBus.emit('update-combat', res);
             EventBus.emit('add-combat-logs', res);
@@ -271,7 +289,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
 
     function resolveCombat(res: Combat) {
         try {
-            EventBus.emit('record-statistics', res);
+            // EventBus.emit('record-statistics', res);
             if (res.playerWin === true) {
                 let experience = 
                     Math.round((res.computer?.level as number) * 100 
@@ -289,7 +307,11 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     opponentExp: Math.min(experience, res?.player?.level! * 1000),
                 };
                 const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
-                EventBus.emit('gain-experience', newState);
+                EventBus.emit('record-win', {
+                    record: res,
+                    experience: newState
+                });
+                // EventBus.emit('gain-experience', newState);
                 EventBus.emit('enemy-loot', loot);
                 if (!ascean().tutorial.deity) {
                     if (newState.opponentExp >= 750 && ascean().level >= 1) { // 1000
@@ -311,6 +333,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     };
                 };
             } else {
+                EventBus.emit('record-statistics', res);
                 if (!ascean().tutorial.death) {
                     setTutorial('death');
                     setShowTutorial(true);
@@ -344,13 +367,19 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
     };
 
     usePhaserEvent('initiate-combat', (payload: { data: any, type: string }) => initiateCombat(payload.data, payload.type));
+    usePhaserEvent('remove-enemy', filterEnemies);
     usePhaserEvent('request-enemy', sendEnemyData);
     usePhaserEvent('request-settings', sendSettings);
-
-    usePhaserEvent('remove-enemy', filterEnemies);
+    usePhaserEvent('show-deity', (e: boolean) => setShowDeity(e));
+    usePhaserEvent('special-combat-text', (e: { playerSpecialDescription: string }) => {
+        const logs = {
+            ...combat(),
+            playerActionDescription: e.playerSpecialDescription,
+        };
+        EventBus.emit('add-combat-logs', logs);
+    });
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
-    usePhaserEvent('show-deity', (e: boolean) => setShowDeity(e));
 
     function fetchEnemy(enemy: any) {
         EventBus.emit('setup-enemy', enemy);

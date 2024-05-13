@@ -612,7 +612,7 @@ export default class Player extends Entity {
             };
             
             this.defeatedEnemyCheck(e.enemyID);
-            this.winningCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Victory', 3000, 'effect', true);    
+            // this.winningCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Victory', 3000, 'effect', true);    
         };
         if (e.computerWin === true) {
             this.anims.play('player_pray', true).on('animationcomplete', () => {
@@ -871,7 +871,7 @@ export default class Player extends Entity {
                         EventBus.emit('alert', { 
                             header: 'Tent', 
                             body: `You have encountered a tent! \n Would you like to enter?`, 
-                            delay: 6000, 
+                            delay: 4000, 
                             key: 'Enter Tent'
                         });
                 };
@@ -880,7 +880,7 @@ export default class Player extends Entity {
                         EventBus.emit('alert', { 
                             header: 'Exit', 
                             body: `You are near the exit. \n Would you like to head back to the world?`, 
-                            delay: 6000, 
+                            delay: 4000, 
                             key: 'Exit World'
                         });
                     // };
@@ -1074,7 +1074,7 @@ export default class Player extends Entity {
         this.setStatic(true);
         this.castbar.setVisible(true); 
         EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You begin arcing your ${this.scene.state.weapons[0].name}.`
+            playerSpecialDescription: `You begin arcing with your ${this.scene.state.weapons[0].name}.`
         });
     };
     onArcUpdate = (dt) => {
@@ -1090,7 +1090,7 @@ export default class Player extends Entity {
     };
     onArcExit = () => {
         if (this.arcSuccess) {
-            this.setTimeEvent('fearCooldown', PLAYER.COOLDOWNS.SHORT);  
+            this.setTimeEvent('arcCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.arcSuccess = false;
             this.scene.useStamina(PLAYER.STAMINA.ARC);
             if (this.currentTarget && this.inCombat) {
@@ -1138,9 +1138,6 @@ export default class Player extends Entity {
                 this.checkCaerenic(false);
             });
         };
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You blink and flicker through this world.`
-        });
     };
     onBlinkUpdate = (_dt) => {
         this.combatChecker(this.isBlinking);
@@ -1182,10 +1179,7 @@ export default class Player extends Entity {
             loop: false,
         });
         this.setStatic(true);
-        this.castbar.setVisible(true); 
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You begin to channel your Kyrnaicism.`
-        });    
+        this.castbar.setVisible(true);  
     };
     onKyrnaicismUpdate = (dt) => {
         this.combatChecker(this.isChiomic);
@@ -1213,10 +1207,7 @@ export default class Player extends Entity {
         this.castbar.setTotal(PLAYER.DURATIONS.CONFUSE);
         this.isConfusing = true;
         if (!this.isGlowing) this.checkCaerenic(true); // !this.isCaerenic && 
-        this.castbar.setVisible(true); 
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You attempt to confuse ${this.scene.state.computer?.name}.`
-        });
+        this.castbar.setVisible(true);  
     };
     onConfuseUpdate = (dt) => {
         if (this.isMoving) this.isConfusing = false;
@@ -1230,6 +1221,9 @@ export default class Player extends Entity {
     onConfuseExit = () => {
         if (this.confuseSuccess) {
             this.scene.confuse(this.attacking?.enemyID);
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You confuse ${this.scene.state.computer?.name}, and they stumble around in a daze.`
+            });
             this.setTimeEvent('confuseCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.confuseSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
@@ -1284,10 +1278,7 @@ export default class Player extends Entity {
         this.castbar.setTotal(PLAYER.DURATIONS.FEAR);
         this.isFearing = true;
         if (!this.isGlowing) this.checkCaerenic(true); // !this.isCaerenic &&
-        this.castbar.setVisible(true); 
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You attempt to fear ${this.scene.state.computer?.name}.`
-        });
+        this.castbar.setVisible(true);  
     };
     onFearingUpdate = (dt) => {
         if (this.isMoving) this.isFearing = false;
@@ -1301,6 +1292,9 @@ export default class Player extends Entity {
     onFearingExit = () => {
         if (this.fearSuccess) {
             this.scene.fear(this.attacking?.enemyID);
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You strike fear into ${this.scene.state.computer?.name}!`
+            });
             this.setTimeEvent('fearCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.fearSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
@@ -1316,10 +1310,7 @@ export default class Player extends Entity {
         this.castbar.setTotal(PLAYER.DURATIONS.FREEZE);
         this.isFreezing = true;
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
-        this.castbar.setVisible(true);
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You attempt to freeze ${this.scene.state.computer?.name}.`
-        }); 
+        this.castbar.setVisible(true); 
     };
     onFreezeCastUpdate = (dt) => {
         if (this.isMoving) this.isFreezing = false;
@@ -1347,10 +1338,7 @@ export default class Player extends Entity {
         this.castbar.setTotal(PLAYER.DURATIONS.HEALING);
         this.isHealing = true;
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
-        this.castbar.setVisible(true); 
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You attempt to heal yourself.`
-        });
+        this.castbar.setVisible(true);  
     };
     onHealingUpdate = (dt) => {
         if (this.isMoving) this.isHealing = false;
@@ -1472,10 +1460,7 @@ export default class Player extends Entity {
                 };
                 this.isRushing = false;
             },
-        });        
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `Your caeren bursts into a fervor, taking it with you.`
-        });
+        });         
     };
     onRushUpdate = (_dt) => {
         this.combatChecker(this.isRushing);
@@ -1494,10 +1479,7 @@ export default class Player extends Entity {
         this.castbar.setTotal(PLAYER.DURATIONS.POLYMORPH);
         this.isPolymorphing = true;
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
-        this.castbar.setVisible(true); 
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You attempt to polymorph ${this.scene.state.computer?.name}.`
-        });
+        this.castbar.setVisible(true);  
     };
     onPolymorphingUpdate = (dt) => {
         if (this.isMoving) this.isPolymorphing = false;
@@ -1511,6 +1493,9 @@ export default class Player extends Entity {
     onPolymorphingExit = () => {
         if (this.polymorphSuccess) {
             this.scene.polymorph(this.attacking?.enemyID);
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, polymorphing them!`
+            });
             this.setTimeEvent('polymorphCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.scene.useStamina(PLAYER.STAMINA.POLYMORPH);
             this.polymorphSuccess = false;
@@ -1538,10 +1523,7 @@ export default class Player extends Entity {
             this.scene.time.delayedCall(750, () => {
                 this.checkCaerenic(false);
             });
-        };
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You shimmer in pursuit.`
-        });
+        }; 
     };
     onPursuitUpdate = (_dt) => {
         this.combatChecker(this.isPursuing);
@@ -1561,10 +1543,7 @@ export default class Player extends Entity {
     onRootingEnter = () => {
         if (!this.inCombat) return;
         this.isHealing = true;
-        this.setTimeEvent('rootCooldown', PLAYER.COOLDOWNS.SHORT);
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You attempt to root ${this.scene.state.computer?.name}.`
-        });
+        this.setTimeEvent('rootCooldown', PLAYER.COOLDOWNS.SHORT); 
     };
     onRootingUpdate = (_dt) => {
         this.combatChecker(this.isHealing);
@@ -1572,6 +1551,9 @@ export default class Player extends Entity {
     onRootingExit = () => { 
         if (!this.inCombat) return;
         this.scene.root();
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, rooting them!`
+        });
         this.scene.useStamina(PLAYER.STAMINA.ROOT);
     };
 
@@ -1628,9 +1610,6 @@ export default class Player extends Entity {
         this.isSnaring = true;
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.castbar.setVisible(true); 
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You attempt to snare ${this.scene.state.computer?.name}.`
-        });
     };
     onSnaringUpdate = (dt) => {
         if (this.isMoving) this.isSnaring = false;
@@ -1645,6 +1624,9 @@ export default class Player extends Entity {
         // if (!this.inCombat) return;
         if (this.snaringSuccess) {
             this.setTimeEvent('snareCooldown', PLAYER.DURATIONS.SHORT);
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, snaring them!`
+            });
             this.scene.useStamina(PLAYER.STAMINA.SNARE);
             this.scene.snare(this.attacking.enemyID);
             this.snaringSuccess = false;

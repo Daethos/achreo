@@ -1975,7 +1975,7 @@ function actionSplitter(combat: Combat): Combat {
     newData.combatRound += 1;
     newData.sessionRound += 1;
 
-    console.log(newData, 'NEW DATA');
+    // console.log(newData, 'NEW DATA');
     return newData;
 };
 

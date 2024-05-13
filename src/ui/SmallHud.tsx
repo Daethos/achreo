@@ -80,44 +80,59 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
     const [combatHistory, setCombatHistory] = createSignal<any>(undefined);
     const dimensions = useResizeListener(); 
     const text = (prev: string, data: Combat) => {
-        let result: any = prev !== undefined ? prev + "\n" : "";
-        if (data.playerStartDescription !== '') result += data.playerStartDescription + "\n";
-        if (data.computerStartDescription !== '') result += data.computerStartDescription + "\n";
-        if (data.playerSpecialDescription !== '') result += data.playerSpecialDescription + "\n";
-        if (data.computerSpecialDescription !== '') result += data.computerSpecialDescription + "\n";
-        if (data.playerActionDescription !== '') result += data.playerActionDescription + "\n";
-        if (data.computerActionDescription !== '') result += data.computerActionDescription + "\n";
-        if (data.playerInfluenceDescription !== '') result += data.playerInfluenceDescription + "\n";
-        if (data.playerInfluenceDescriptionTwo !== '') result += data.playerInfluenceDescriptionTwo + "\n";
-        if (data.computerInfluenceDescription !== '') result += data.computerInfluenceDescription + "\n";
-        if (data.computerInfluenceDescriptionTwo !== '') result += data.computerInfluenceDescriptionTwo + "\n";
-        if (data.playerDeathDescription !== '') result += data.playerDeathDescription + "\n";
-        if (data.computerDeathDescription !== '') result += data.computerDeathDescription + "\n";
-        // result = styleText(result);
-        return result;
+        let oldText: any = prev !== undefined ? prev + "\n" : "";
+        let newText: any = '';
+        if (data.playerStartDescription !== '') newText += data.playerStartDescription + "\n";
+        if (data.computerStartDescription !== '') newText += data.computerStartDescription + "\n";
+        if (data.playerSpecialDescription !== '') newText += data.playerSpecialDescription + "\n";
+        if (data.computerSpecialDescription !== '') newText += data.computerSpecialDescription + "\n";
+        if (data.playerActionDescription !== '') newText += data.playerActionDescription + "\n";
+        if (data.computerActionDescription !== '') newText += data.computerActionDescription + "\n";
+        if (data.playerInfluenceDescription !== '') newText += data.playerInfluenceDescription + "\n";
+        if (data.playerInfluenceDescriptionTwo !== '') newText += data.playerInfluenceDescriptionTwo + "\n";
+        if (data.computerInfluenceDescription !== '') newText += data.computerInfluenceDescription + "\n";
+        if (data.computerInfluenceDescriptionTwo !== '') newText += data.computerInfluenceDescriptionTwo + "\n";
+        if (data.playerDeathDescription !== '') newText += data.playerDeathDescription + "\n";
+        if (data.computerDeathDescription !== '') newText += data.computerDeathDescription + "\n";
+        newText = styleText(newText);
+        oldText += newText;
+        return oldText;
     };
     function styleText(text: string) {
         const style = (t: string) => {
             const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
             const numCheck = t.split('').find((c: string) => numbers.includes(parseInt(c)));
-            const attacks = ['Attack', 'Posutre', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'roll', 'postures', 'parries'];
-            const specials = ['Invocation', 'Tendrils', 'tendrils', 'Hush', 'Tendril', 'hush', 'tshaer', 'sacrifice', 'suture', 'heal'];
+            const attacks = ['Attack', 'Posutre', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'roll', 'postures', 'parries', 'Critical'];
+            // const specials = ['Invocation', 'Tendrils', 'Hush', 'Tendril', 'hush', 'tshaer', 'sacrifice', 'suture'];
+            const hush = ['Invocation', 'Hush', 'hush', 'sacrifice'];
+            const tendril = ['Tendril', 'tendril', 'tshaer', 'suture'];
+            const isHush = hush.includes(t);
+            const isTendril = tendril.includes(t);
+            const isHeal = t.includes('heal');
             const isDamage = damageTypes.includes(t);
             const isNumber = numCheck !== undefined;
             const isAttack = attacks.includes(t);
-            const isSpecial = specials.includes(t);
-            const color = (isDamage === true || isNumber === true || isAttack === true) ? 'gold' : isSpecial === true ? 'purple' : t === '!' ? 'red' : '#fdf6d8';
-            const fontWeight = (isDamage === true || isNumber === true || isAttack === true || isSpecial === true || t === '!') ? 'bold' : 'normal';
+            // const isSpecial = specials.includes(t);
+            const isGlancing = t.includes('Glancing');
+            // Colors: Bone (#fdf6d8), Green, Gold, Purple, Teal, Red, Blue, Light Blue 
+            const color = 
+                isDamage === true ? 'blue' :
+                isNumber === true ? 'gold' : 
+                isHeal === true ? 'green' :
+                isGlancing ? 'lightblue' : 
+                isTendril === true ? 'purple' : 
+                isAttack === true ? 'red' : 
+                isHush === true ? 'teal' :
+                '#fdf6d8';
+            const fontWeight = (
+                isDamage === true || isNumber === true || isAttack === true || isHeal === true || isHush === true || isTendril === true
+            ) ? 'bold' : 'normal';
             return `<span style="color: ${color}; font-weight: ${fontWeight};">${t}</span>`;
         };
     
-        return text.split(' ').map((t, i) => style(t)).join(' ');
+        return text.split(' ').map((t, _i) => style(t)).join(' ');
     };
     
-    // createEffect(() => {
-    //     console.log(ascean().skills, 'Ascean', combat(), 'Combat');
-    // });
-
     createMemo(() => {
         if (ascean()?.experience as number > experience()) {
             setToastShow(true);
@@ -160,7 +175,22 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
             setClicked({ ...clicked(), phaser: false });
         });
         EventBus.on('add-combat-logs', (data: Combat) => {
-            setCombatHistory(text(combatHistory(), data) as any);    
+            const newText = text(combatHistory(), data);
+            setCombatHistory(newText);
+            EventBus.emit('blend-combat', {
+                playerStartDescription: '',
+                computerStartDescription: '',
+                playerSpecialDescription: '',
+                computerSpecialDescription: '',
+                playerActionDescription: '',
+                computerActionDescription: '',
+                playerInfluenceDescription: '',
+                computerInfluenceDescription: '',
+                playerInfluenceDescriptionTwo: '',
+                computerInfluenceDescriptionTwo: '',
+                playerDeathDescription: '',
+                computerDeathDescription: '',   
+            });
         });
     });
 
@@ -169,6 +199,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         EventBus.off('update-small-hud');
         EventBus.off('open');
         EventBus.off('closed');    
+        EventBus.off('add-combat-logs');
     });
 
     const map = () => {

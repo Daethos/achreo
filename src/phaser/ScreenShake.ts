@@ -4,8 +4,10 @@ let totalTrauma = 0;
 export function screenShake(scene: Phaser.Scene, duration = 96, intensity = 0.005) {
     totalTrauma += 1.05;
     intensity *= Math.pow(totalTrauma, 2);
-    
-    if ("vibrate" in navigator) navigator.vibrate(duration);
+    // console.log(scene, 'Scene')
+    if ("vibrate" in navigator) {
+        navigator.vibrate(duration);
+    };
     scene.cameras.main.shake(duration, intensity);
     
     const decayInterval = setInterval(() => {

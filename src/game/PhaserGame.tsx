@@ -386,6 +386,18 @@ export const PhaserGame = (props: IProps) => {
             prayerData: [],
             deityData: [],
             skillData: [],
+            playerStartDescription: '',
+            computerStartDescription: '',
+            playerSpecialDescription: '',
+            computerSpecialDescription: '',
+            playerActionDescription: '',
+            computerActionDescription: '',
+            playerInfluenceDescription: '',
+            computerInfluenceDescription: '',
+            playerInfluenceDescriptionTwo: '',
+            computerInfluenceDescriptionTwo: '',
+            playerDeathDescription: '',
+            computerDeathDescription: '',            
         });
         const update = { 
             ...props.ascean(), 
@@ -458,6 +470,18 @@ export const PhaserGame = (props: IProps) => {
             prayerData: [],
             deityData: [],
             skillData: [],
+            playerStartDescription: '',
+            computerStartDescription: '',
+            playerSpecialDescription: '',
+            computerSpecialDescription: '',
+            playerActionDescription: '',
+            computerActionDescription: '',
+            playerInfluenceDescription: '',
+            computerInfluenceDescription: '',
+            playerInfluenceDescriptionTwo: '',
+            computerInfluenceDescriptionTwo: '',
+            playerDeathDescription: '',
+            computerDeathDescription: '',            
         });
 
         const update = { 
@@ -1030,7 +1054,7 @@ export const PhaserGame = (props: IProps) => {
         <>
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
         <Show when={live() && checkUi()}>
-            <BaseUI ascean={props.ascean} combat={combat} game={game} settings={props.settings} setSettings={props.setSettings} stamina={stamina} />
+            <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} settings={props.settings} setSettings={props.setSettings} stamina={stamina} />
         </Show>
         </>
     );

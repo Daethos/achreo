@@ -16,8 +16,10 @@ import { LevelSheet } from '../utility/ascean';
 import { usePhaserEvent } from '../utility/hooks';
 import { consumePrayer, instantActionCompiler, weaponActionCompiler } from '../utility/combat';
 import { Deity } from './Deity';
+import { screenShake } from '../phaser/ScreenShake';
 
 interface Props {
+    instance: any;
     ascean: Accessor<Ascean>;
     combat: Accessor<Combat>;
     game: Accessor<GameState>;
@@ -26,7 +28,7 @@ interface Props {
     stamina: Accessor<number>;
 };
 
-export default function BaseUI({ ascean, combat, game, settings, setSettings, stamina }: Props) {
+export default function BaseUI({ instance, ascean, combat, game, settings, setSettings, stamina }: Props) {
     const { staminaPercentage } = createStamina(stamina);
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
@@ -176,7 +178,12 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     const chiomic = Math.round(combat().playerHealth * (data / 100));
                     const newComputerHealth = combat().newComputerHealth - chiomic < 0 ? 0 : combat().newComputerHealth - chiomic;
                     playerWin = newComputerHealth === 0;
-                    res = { ...combat(), newComputerHealth, playerWin };
+                    res = { 
+                        ...combat(), 
+                        newComputerHealth, 
+                        playerWin,
+                        computerDeathDescription: newComputerHealth === 0 ? `${combat().computer?.name} falls. Hail ${combat().player?.name}, you have won.` : '',
+                    };
                     const chiomicDescription = 
                         `Your hush flays ${chiomic} health from ${combat().computer?.name}.`
                     EventBus.emit('blend-combat', { newComputerHealth, playerWin, playerActionDescription: chiomicDescription });
@@ -188,7 +195,13 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     playerWin = newHealth === 0;
                     const tshaeralDescription =
                         `You tshaer and devour ${drained} health from ${combat().computer?.name}.`
-                    res = { ...combat(), newPlayerHealth, newComputerHealth: newHealth, playerWin };
+                    res = { 
+                        ...combat(), 
+                        newPlayerHealth, 
+                        newComputerHealth: newHealth, 
+                        playerWin,
+                        computerDeathDescription: newHealth === 0 ? `${combat().computer?.name} falls. Hail ${combat().player?.name}, you have won.` : '', 
+                    };
                     EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth: newHealth, playerWin, playerActionDescription: tshaeralDescription });
                     break;
                 case 'Health': // Either Enemy or Player gaining health
@@ -215,7 +228,6 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                     };
                     break;
                 case 'Enemy': // 'Enemy Blind Attack' i.e. an enemy not targeted hitting the player
-                    // console.log(data, 'Data')
                     let enemyData = {
                         computer: data.ascean,
                         computerAttributes: data.combatStats.attributes,
@@ -250,6 +262,7 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                         newComputerHealth: enemySacrifice,
                         playerWin: enemySacrifice === 0,
                         playerActionDescription: sacrificeDescription,
+                        computerDeathDescription: enemySacrifice === 0 ? `${combat().computer?.name} falls. Hail ${combat().player?.name}, you have won.` : '',
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerSacrifice, newComputerHealth: enemySacrifice, playerWin: enemySacrifice === 0 });
                     playerWin = res.playerWin;
@@ -267,16 +280,21 @@ export default function BaseUI({ ascean, combat, game, settings, setSettings, st
                         newComputerHealth: enemySuture,
                         playerWin: enemySuture === 0,
                         playerActionDescription: sutureDescription,
+                        computerDeathDescription: enemySuture === 0 ? `${combat().computer?.name} falls. Hail ${combat().player?.name}, you have won.` : '',    
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerSuture, newComputerHealth: enemySuture, playerWin: enemySuture === 0 });
                     playerWin = res.playerWin;
+                    if (playerWin === true) {
+
+                    }
                     break;
                 default:
                     break;
             };
-            if ("vibrate" in navigator) {
-                navigator.vibrate([100, 100, 100]);
-            };
+            screenShake(instance.game.scene.scenes[3], 250);
+            // if ("vibrate" in navigator) {
+            //     navigator.vibrate(250); // [250, 150, 250]
+            // };
             EventBus.emit('update-combat', res);
             EventBus.emit('add-combat-logs', res);
             if (playerWin === true || computerWin === true) {

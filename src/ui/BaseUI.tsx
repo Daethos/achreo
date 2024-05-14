@@ -305,7 +305,7 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
                 default:
                     break;
             };
-            screenShake(instance.game.scene.scenes[3], 200);
+            screenShake(instance.game.scene.scenes[3], 150);
             // if ("vibrate" in navigator) {
             //     navigator.vibrate(250); // [250, 150, 250]
             // };

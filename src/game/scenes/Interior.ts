@@ -8,6 +8,7 @@ import { GameState } from "../../stores/game";
 import Settings from "../../models/settings";
 import Ascean from "../../models/ascean";
 import { useResizeListener } from "../../utility/dimensions";
+import InputText from 'phaser3-rex-plugins/plugins/inputtext.js';
 
 const dimensions = useResizeListener();
 
@@ -24,6 +25,11 @@ export class Tent extends Scene {
     gameState: GameState;
     settings: Settings;
     coordinates: Phaser.GameObjects.Text;
+    guiPanel: Phaser.GameObjects.Container;
+    xCameraButton: Phaser.GameObjects.Rectangle;
+    yCameraButton: Phaser.GameObjects.Rectangle;
+    xCameraText: Phaser.GameObjects.Text;
+    yCameraText: Phaser.GameObjects.Text;
 
     constructor() {
         super('Tent');
@@ -60,25 +66,65 @@ export class Tent extends Scene {
         camera.setPosition(cameraX, cameraY);
         camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-        const rightGuiPanel = this.add.container(0, 0);
-        rightGuiPanel.setScrollFactor(0);
-        rightGuiPanel.setDepth(10);
-        const moveCamera = (x: number, y: number) => {
-            camera.pan(x, y, 500, 'Linear', true);
-        };
+        this.guiPanel = this.add.container(0, 0);
+        this.guiPanel.setScrollFactor(0);
+        this.guiPanel.setDepth(10);
+        // const moveCamera = (x: number, y: number) => {
+        //     console.log('Move Camera', x, y);
+        //     camera.pan(x, y, 500, 'Linear', true);
+        // };
 
-        EventBus.on('move-camera', moveCamera);
+        EventBus.on('move-camera', this.moveCamera);
 
-        const xCameraButton = this.add.rectangle(0, 0, 32, 32, 0x000000, 0.5);
-        xCameraButton.setInteractive();
-        xCameraButton.setScrollFactor(0);
-        xCameraButton.setDepth(10);
-        xCameraButton.on('pointerdown', () => {
-            camera.pan(0, camera.y, 500, 'Linear', true);
-        });
+        // this.xCameraButton = this.add.rectangle(100, 0, 32, 32, 0x000000, 0.5);
+        // this.xCameraButton.setInteractive();
+        // this.xCameraButton.setScrollFactor(0);
+        // this.xCameraButton.setDepth(10);
+        // this.xCameraButton.on('pointerdown', () => {
+        //     console.log('X Camera Button');
+        //     EventBus.emit('move-camera', Math.random() * mapWidth, camera.y);
+        // });
 
-        const xCameraText = this.add.text(0, 0, `'X'`, { font: '16px Cinzel', color: '#fdf6d8' });
+        this.xCameraText = this.add.text(100, 0, `X: ${camera.x}`, { font: '16px Cinzel', color: '#fdf6d8' });
+        this.xCameraText.setScrollFactor(0);
+        this.xCameraText.setOrigin(0.5);
+        this.xCameraText.setDepth(10);
 
+        var xInputText = new InputText(this, 100, 32, 100, 32, {
+            id: 'xInputText',
+            type: 'number',
+            text: `${camera.x}`,
+            fontSize: '16px',
+        })
+            .resize(100, 32)
+            // .setOrigin(0.5)
+            .on('textchange', (inputText: any) => {
+                console.log(inputText, 'Input Text');
+                this.xCameraText.setText(`X: ${inputText.text}`);
+                EventBus.emit('move-camera', Number(inputText.text), camera.y);
+        }, this);
+        this.add.existing(xInputText);
+
+        this.yCameraText = this.add.text(100, 100, `Y: ${camera.y}`, { font: '16px Cinzel', color: '#fdf6d8' });
+        this.yCameraText.setScrollFactor(0);
+        this.yCameraText.setOrigin(0.5);
+        this.yCameraText.setDepth(10);
+
+        var yInputText = new InputText(this, 100, 132, 100, 32, {
+            id: 'yInputText',
+            type: 'number',
+            text: `${camera.y}`,
+            fontSize: '16px',
+        })
+            .resize(100, 32)
+            // .setOrigin(0.5)
+            .on('textchange', (inputText: any) => {
+                console.log(inputText, 'Input Text');
+                this.yCameraText.setText(`Y: ${inputText.text}`);
+                EventBus.emit('move-camera', camera.x, Number(inputText.text));
+        }, this);
+        this.add.existing(yInputText);
+        
         // Calculate the position of the top-left corner of the map on the screen
         // const offsetX = (screenWidth - mapWidth) / 2;
         // const offsetY = (screenHeight - mapHeight) / 2;
@@ -100,6 +146,7 @@ export class Tent extends Scene {
         //             this.scale.startFullscreen();
         //         };
         //     });
+
         this.npc = new NPC({ scene: this, x: -32, y: 64, texture: 'player_actions', frame: 'player_idle_0' });
         this.player = new Player({ scene: this, x: 0, y: 128, texture: 'player_actions', frame: 'player_idle_0' });
         this.player.flipX = true;
@@ -140,6 +187,17 @@ export class Tent extends Scene {
         this.joystickKeys = this.joystick.createCursorKeys();
         this.sceneListener();
         EventBus.emit('current-scene-ready', this);
+    };
+
+    moveCamera = (x: number, y: number) => {
+        console.log('Move Camera', x, y);
+        // camera.pan(x, y, 500, 'Linear', true);
+        let camera = this.cameras.main;
+        // camera.pan(x, y, 500, 'Linear', true);
+        camera.setPosition(x, y);
+        // this.cameras.main.pan(x, y, 500, 'Linear', true);
+        this.xCameraText.setText(`X: ${x}`);
+        this.yCameraText.setText(`Y: ${y}`);
     };
 
     pause = () => {

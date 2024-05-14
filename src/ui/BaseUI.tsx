@@ -182,11 +182,18 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
                         ...combat(), 
                         newComputerHealth, 
                         playerWin,
-                        computerDeathDescription: newComputerHealth === 0 ? `${combat().computer?.name} falls. Hail ${combat().player?.name}, you have won.` : '',
                     };
                     const chiomicDescription = 
                         `Your hush flays ${chiomic} health from ${combat().computer?.name}.`
-                    EventBus.emit('blend-combat', { newComputerHealth, playerWin, playerActionDescription: chiomicDescription });
+                    EventBus.emit('blend-combat', { 
+                        newComputerHealth, 
+                        playerWin,
+                        playerActionDescription: chiomicDescription,
+                    });
+                    // EventBus.emit('special-combat-text', {
+                    //     playerSpecialDescription: chiomicDescription,
+                    //     // computerDeathDescription: newComputerHealth === 0 ? `${combat().computer?.name} falls. Hail ${combat().player?.name}, you have won.` : '',
+                    // });
                     break;
                 case 'Tshaeral': // Lifedrain
                     const drained = Math.round(combat().playerHealth * (data / 100));
@@ -200,9 +207,13 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
                         newPlayerHealth, 
                         newComputerHealth: newHealth, 
                         playerWin,
-                        computerDeathDescription: newHealth === 0 ? `${combat().computer?.name} falls. Hail ${combat().player?.name}, you have won.` : '', 
+                        playerActionDescription: tshaeralDescription,
                     };
-                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth: newHealth, playerWin, playerActionDescription: tshaeralDescription });
+                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth: newHealth, playerWin });
+                    // EventBus.emit('special-combat-text', {
+                    //     playerSpecialDescription: tshaeralDescription,
+                    //     // computerDeathDescription: newHealth === 0 ? `${combat().computer?.name} falls. Hail ${combat().player?.name}, you have won.` : '',
+                    // });
                     break;
                 case 'Health': // Either Enemy or Player gaining health
                     let { key, value } = data;
@@ -211,7 +222,7 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
                             const healed = Math.floor(combat().playerHealth * (value / 100));
                             const newPlayerHealth = combat().newPlayerHealth + healed > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + healed;
                             const healthDescription = 
-                                `You heal for ${healed}.`
+                                `You heal for ${healed}, back to ${Math.round(newPlayerHealth)}.`
                             res = { ...combat(), newPlayerHealth, playerActionDescription: healthDescription };
                             EventBus.emit('blend-combat', { newPlayerHealth });
                             break;
@@ -262,9 +273,12 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
                         newComputerHealth: enemySacrifice,
                         playerWin: enemySacrifice === 0,
                         playerActionDescription: sacrificeDescription,
-                        computerDeathDescription: enemySacrifice === 0 ? `${combat().computer?.name} falls. Hail ${combat().player?.name}, you have won.` : '',
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerSacrifice, newComputerHealth: enemySacrifice, playerWin: enemySacrifice === 0 });
+                    // EventBus.emit('special-combat-text', {
+                    //     playerSpecialDescription: sacrificeDescription,
+                    //     // computerDeathDescription: enemySacrifice === 0 ? `${combat().computer?.name} falls. Hail ${combat().player?.name}, you have won.` : '',
+                    // });
                     playerWin = res.playerWin;
                     break;
                 case 'Suture':
@@ -272,26 +286,26 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
                     const playerSuture = combat().newPlayerHealth + suture > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + suture;
                     const enemySuture = combat().newComputerHealth - suture < 0 ? 0 : combat().newComputerHealth - suture;
                     const sutureDescription = 
-                        `Your tendrils suture ${combat().computer?.name}'s caeren into yours, echoing ${suture} damage and healing.`    
+                        `Your tendrils suture ${combat().computer?.name}'s caeren into you, absorbing ${suture}.`    
                     // combat.playerActionDescription
                     res = {
                         ...combat(),
                         newPlayerHealth: playerSuture,
                         newComputerHealth: enemySuture,
                         playerWin: enemySuture === 0,
-                        playerActionDescription: sutureDescription,
-                        computerDeathDescription: enemySuture === 0 ? `${combat().computer?.name} falls. Hail ${combat().player?.name}, you have won.` : '',    
+                        playerActionDescription: sutureDescription,    
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerSuture, newComputerHealth: enemySuture, playerWin: enemySuture === 0 });
+                    // EventBus.emit('special-combat-text', {
+                    //     playerSpecialDescription: sutureDescription,
+                    //     // computerDeathDescription: enemySuture === 0 ? `${combat().computer?.name} falls. Hail ${combat().player?.name}, you have won.` : '',    
+                    // });
                     playerWin = res.playerWin;
-                    if (playerWin === true) {
-
-                    }
                     break;
                 default:
                     break;
             };
-            screenShake(instance.game.scene.scenes[3], 250);
+            screenShake(instance.game.scene.scenes[3], 200);
             // if ("vibrate" in navigator) {
             //     navigator.vibrate(250); // [250, 150, 250]
             // };

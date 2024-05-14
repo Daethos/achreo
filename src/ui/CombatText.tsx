@@ -17,8 +17,8 @@ export default function CombatText({ combat, combatHistory }: { combat: Accessor
             {/* <img src={'../assets/gui/message_window.png'} alt="message window" style={{ 
                 position: 'fixed', bottom: '10vh', left: '15vw', // 'z-index': 0
             }} /> */}
-            <div class='wrap' style={{ 'text-wrap': 'balance', margin: '3%' }}>
-                <p style={{ 'text-wrap': 'balance', 'z-index': 1, 'font-size': '0.65em' }} innerHTML={combatHistory()}></p>
+            <div style={{ 'text-wrap': 'balance', margin: '3%' }}>
+                <div style={{ 'text-wrap': 'balance', 'z-index': 1 }} innerHTML={combatHistory()} />
                 
                 <div class='center creature-heading'>
                 {combat().combatTimer && <p class='gold' style={{ 'text-wrap': 'balance', 'z-index': 1, 'font-size': '0.75em' }}>Combat Timer: {combat().combatTimer}</p>}

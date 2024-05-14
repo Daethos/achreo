@@ -1108,7 +1108,7 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
     };
     
     combat.computerActionDescription = 
-        `${computer?.name} dual-wield attacks you with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedComputerDamage)} ${combat.computerDamageType} and ${weapons[1].damageType?.[0] ? weapons[1].damageType[0] : ''}${weapons[1]?.damageType?.[1] ? ' / ' + weapons[1].damageType?.[1] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'Critical Strike Damage' : firstWeaponCrit === true || secondWeaponCrit === true ? 'Partial Crit Damage' : combat.computerGlancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `${computer?.name} dual-wield attacks you with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedComputerDamage)} ${combat.computerDamageType} and ${weapons[1].damageType?.[0] ? weapons[1].damageType[0] : ''}${weapons[1]?.damageType?.[1] ? ' / ' + weapons[1].damageType?.[1] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'Damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'Damage (Partial Crit)' : combat.computerGlancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
     
     return combat;
 };
@@ -1292,7 +1292,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
 
 
     combat.computerActionDescription = 
-        `${combat.computer?.name} attacks you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? 'Critical Strike Damage' : combat.computerGlancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `${combat.computer?.name} attacks you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? 'Damage (Critical)' : combat.computerGlancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
 
     if (combat.newPlayerHealth < 0) {
         if (combat.playerEffects.find(effect => effect.prayer === 'Denial')) {
@@ -1457,7 +1457,7 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     // ==================== STATISTIC LOGIC ====================
     
     combat.playerActionDescription = 
-        `You dual-wield attack ${computer?.name} with ${weapons[0]?.name} and ${weapons[1]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} and ${weapons[1]?.damageType?.[0] ? weapons[1]?.damageType?.[0] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'Critical Strike Damage' : firstWeaponCrit === true || secondWeaponCrit === true ? 'Partial Crit Damage' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `You dual-wield attack ${computer?.name} with ${weapons[0]?.name} and ${weapons[1]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} and ${weapons[1]?.damageType?.[0] ? weapons[1]?.damageType?.[0] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'Damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'Damage (Partial Crit)' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
         
     return combat;
 };
@@ -1648,7 +1648,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     // ==================== STATISTIC LOGIC ====================
 
     combat.playerActionDescription = 
-        `You attack ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(playerTotalDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'Critical Strike Damage' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `You attack ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(playerTotalDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'Damage (Critical)' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
 
     if (combat.newComputerHealth <= 0) {
         combat.newComputerHealth = 0;

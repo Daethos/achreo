@@ -82,18 +82,18 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
     const text = (prev: string, data: Combat) => {
         let oldText: any = prev !== undefined ? prev + "\n" : "";
         let newText: any = '';
-        if (data.playerStartDescription !== '') newText += data.playerStartDescription + "\n";
-        if (data.computerStartDescription !== '') newText += data.computerStartDescription + "\n";
-        if (data.playerSpecialDescription !== '') newText += data.playerSpecialDescription + "\n";
-        if (data.computerSpecialDescription !== '') newText += data.computerSpecialDescription + "\n";
-        if (data.playerActionDescription !== '') newText += data.playerActionDescription + "\n";
-        if (data.computerActionDescription !== '') newText += data.computerActionDescription + "\n";
-        if (data.playerInfluenceDescription !== '') newText += data.playerInfluenceDescription + "\n";
-        if (data.playerInfluenceDescriptionTwo !== '') newText += data.playerInfluenceDescriptionTwo + "\n";
-        if (data.computerInfluenceDescription !== '') newText += data.computerInfluenceDescription + "\n";
-        if (data.computerInfluenceDescriptionTwo !== '') newText += data.computerInfluenceDescriptionTwo + "\n";
-        if (data.playerDeathDescription !== '') newText += data.playerDeathDescription + "\n";
-        if (data.computerDeathDescription !== '') newText += data.computerDeathDescription + "\n";
+        if (data.playerStartDescription !== '') newText += data.playerStartDescription;
+        if (data.computerStartDescription !== '') newText += data.computerStartDescription;
+        if (data.playerSpecialDescription !== '') newText += data.playerSpecialDescription;
+        if (data.computerSpecialDescription !== '') newText += data.computerSpecialDescription;
+        if (data.playerActionDescription !== '') newText += data.playerActionDescription;
+        if (data.computerActionDescription !== '') newText += data.computerActionDescription;
+        if (data.playerInfluenceDescription !== '') newText += data.playerInfluenceDescription;
+        if (data.playerInfluenceDescriptionTwo !== '') newText += data.playerInfluenceDescriptionTwo;
+        if (data.computerInfluenceDescription !== '') newText += data.computerInfluenceDescription;
+        if (data.computerInfluenceDescriptionTwo !== '') newText += data.computerInfluenceDescriptionTwo;
+        // if (data.playerDeathDescription !== '') newText += data.playerDeathDescription;
+        // if (data.computerDeathDescription !== '') newText += data.computerDeathDescription;
         newText = styleText(newText);
         oldText += newText;
         return oldText;
@@ -102,7 +102,9 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         const style = (t: string) => {
             const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
             const numCheck = t.split('').find((c: string) => numbers.includes(parseInt(c)));
-            const attacks = ['Attack', 'Posutre', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'roll', 'postures', 'parries', 'Critical'];
+            const attacks = ['Attack', 'Posutre', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'roll', 'postures', 'parries'];
+            const cast = ['confuse', 'confusing', 'fear', 'fearing', 'polymorph', 'polymorphing', 'slow', 'slowing', 'snare', 'snaring'];
+            const isCast = cast.includes(t);
             // const specials = ['Invocation', 'Tendrils', 'Hush', 'Tendril', 'hush', 'tshaer', 'sacrifice', 'suture'];
             const hush = ['Invocation', 'Hush', 'hush', 'sacrifice'];
             const tendril = ['Tendril', 'tendril', 'tshaer', 'suture'];
@@ -113,21 +115,29 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
             const isNumber = numCheck !== undefined;
             const isAttack = attacks.includes(t);
             // const isSpecial = specials.includes(t);
+            const isCritical = t.includes('Critical');
             const isGlancing = t.includes('Glancing');
             // Colors: Bone (#fdf6d8), Green, Gold, Purple, Teal, Red, Blue, Light Blue 
             const color = 
-                isDamage === true ? 'blue' :
+                isCast === true ? 'blue' :
+                isDamage === true ? 'teal' :
                 isNumber === true ? 'gold' : 
-                isHeal === true ? 'green' :
+                isHeal === true ? '#0BDA51' :
                 isGlancing ? 'lightblue' : 
-                isTendril === true ? 'purple' : 
-                isAttack === true ? 'red' : 
-                isHush === true ? 'teal' :
+                isTendril === true ? 'fuchsia' : 
+                (isAttack === true || isCritical === true) ? 'red' : 
+                isHush === true ? 'fuchsia' :
                 '#fdf6d8';
             const fontWeight = (
-                isDamage === true || isNumber === true || isAttack === true || isHeal === true || isHush === true || isTendril === true
-            ) ? 'bold' : 'normal';
-            return `<span style="color: ${color}; font-weight: ${fontWeight};">${t}</span>`;
+                isCast === true || isNumber === true || isHeal === true || isHush === true || isTendril === true
+            ) ? 600 : 'normal';
+            const textShadow = (
+                isCast === true || isDamage === true || isNumber === true || isAttack === true || isHeal === true || isHush === true || isTendril === true
+            ) ? `gold 0 0 0` : 'none';
+            const fontSize = (
+                isCast === true || isDamage === true || isNumber === true || isAttack === true || isHeal === true || isHush === true || isTendril === true
+            ) ? '0.75em' : '0.65em';
+            return `<span style="color: ${color}; font-weight: ${fontWeight}; text-shadow: ${textShadow}; font-size: ${fontSize}; margin: 0;">${t}</span>`;
         };
     
         return text.split(' ').map((t, _i) => style(t)).join(' ');

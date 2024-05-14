@@ -146,7 +146,7 @@ export class Preloader extends Scene {
         this.txt_progress = new NewText(
             this,
             this.centerX,
-            this.centerY / 0.9,
+            this.centerY / 0.85,
             'Loading...',
             'preload',
             { x: 0.5, y: 1 }
@@ -154,7 +154,7 @@ export class Preloader extends Scene {
         this.txt_file = new NewText(
             this,
             this.centerX,
-            this.centerY / 0.6,
+            this.centerY / 0.55,
             '',
             'play',
             { x: 0.5, y: 1 }

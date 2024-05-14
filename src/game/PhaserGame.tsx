@@ -210,14 +210,6 @@ export const PhaserGame = (props: IProps) => {
     };
 
     function rebalanceCurrency(currency: { silver: number; gold: number; }): { silver: number; gold: number; } {
-        // while (currency.silver < 0) {
-        //     currency.gold -= 1;
-        //     currency.silver += 100;
-        // };
-        // while (currency.gold < 0) {
-        //     currency.gold += 1;
-        //     currency.silver -= 100;
-        // };
         let { silver, gold } = currency;
         if (silver > 99) {
             gold += Math.floor(silver / 100);
@@ -295,16 +287,16 @@ export const PhaserGame = (props: IProps) => {
 
     function recordSkills(skills: string[]) {
         let newSkills = { ...props.ascean().skills };
-        console.log('Skills:', skills, 'Old Skills:', newSkills);
+        // console.log('Skills:', skills, 'Old Skills:', newSkills);
         skills.forEach((skill: string, index: number) => {
-            if (index % 5 !== 0) {
+            if (index % 3 !== 0 && index !== 0) {
                 // console.log('Skipping Skill:', skill);
                 return;
             };
-            console.log(newSkills[skill as keyof typeof newSkills], 'Old Skill Value');
+            // console.log(newSkills[skill as keyof typeof newSkills], 'Old Skill Value');
             newSkills[skill as keyof typeof newSkills] += 1;
             newSkills[skill as keyof typeof newSkills] = Math.min(newSkills[skill as keyof typeof newSkills], props.ascean().level * 100);
-            console.log(newSkills[skill as keyof typeof newSkills], 'New Skill Value');
+            // console.log(newSkills[skill as keyof typeof newSkills], 'New Skill Value');
         });
         return newSkills;
     };

@@ -60,6 +60,25 @@ export class Tent extends Scene {
         camera.setPosition(cameraX, cameraY);
         camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
+        const rightGuiPanel = this.add.container(0, 0);
+        rightGuiPanel.setScrollFactor(0);
+        rightGuiPanel.setDepth(10);
+        const moveCamera = (x: number, y: number) => {
+            camera.pan(x, y, 500, 'Linear', true);
+        };
+
+        EventBus.on('move-camera', moveCamera);
+
+        const xCameraButton = this.add.rectangle(0, 0, 32, 32, 0x000000, 0.5);
+        xCameraButton.setInteractive();
+        xCameraButton.setScrollFactor(0);
+        xCameraButton.setDepth(10);
+        xCameraButton.on('pointerdown', () => {
+            camera.pan(0, camera.y, 500, 'Linear', true);
+        });
+
+        const xCameraText = this.add.text(0, 0, `'X'`, { font: '16px Cinzel', color: '#fdf6d8' });
+
         // Calculate the position of the top-left corner of the map on the screen
         // const offsetX = (screenWidth - mapWidth) / 2;
         // const offsetY = (screenHeight - mapHeight) / 2;

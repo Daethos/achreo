@@ -1,5 +1,5 @@
 export const SPECIAL = {
-    'constitution': [
+    'constitution': [ // 11
         'Consume', 
         'Desperation', 
         'Disease', 
@@ -13,7 +13,7 @@ export const SPECIAL = {
         'Ward'
     ], // 11
 
-    'strength': [
+    'strength': [ // 12
         'Arc', 
         'Consume', 
         'Howl', 
@@ -28,7 +28,7 @@ export const SPECIAL = {
         'Writhe'
     ], // 12
 
-    'agility': [
+    'agility': [ // 12
         'Consume', 
         'Desperation', 
         'Envelop', 
@@ -43,7 +43,7 @@ export const SPECIAL = {
         'Writhe'
     ], // 12
 
-    'achre': [
+    'achre': [ // 12
         'Blink', 
         'Confuse', 
         'Consume', 
@@ -58,7 +58,7 @@ export const SPECIAL = {
         'Slow'
     ], // 12
         
-    'caeren': [
+    'caeren': [ // 10
         'Consume', 
         'Desperation', 
         'Fear', 
@@ -71,7 +71,7 @@ export const SPECIAL = {
         'Suture'
     ], // 10
 
-    'kyosir': [
+    'kyosir': [ // 10
         'Chiomic', 
         'Confuse', 
         'Consume', 

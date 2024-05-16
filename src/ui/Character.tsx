@@ -498,6 +498,12 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
         await saveSettings(newSettings);
     };
 
+    async function handleSpecial(e: any) {
+        const newSettings = { ...settings(), difficulty: { ...settings().difficulty, special: e.target.value } };
+        setSettings(newSettings);
+        await saveSettings(newSettings);
+    };
+
     async function handleMusic() {
         const newSettings = { ...settings(), music: !settings().music };
         setSettings(newSettings);
@@ -943,7 +949,7 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                                     <span class='gold'>{settings().difficulty.aggression}</span> <br />
                                     <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.aggression} onChange={(e) => handleAggression(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                                 </div>
-                                <div style={font('0.5em')}>[Aggressive AI Range: 0 - 100%]</div>
+                                <div style={font('0.5em')}>[Aggressive Enemy Occurrence: 0 - 100%]</div>
                                 <br />
                                 <h1 style={font('1.25em')}>Sound</h1>
                                 <div style={font('0.75em', '#fdf6d8')}>Enabled 
@@ -958,6 +964,13 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                                     <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'Manual' : 'Auto'} Aim</button>
                                 </div>
                                 <div style={font('0.5em')}>[Whether you use the second joystick to aim ranged attacks]</div>
+                                <br />
+                                <h1 style={font('1.25em')}>Special (Elite)</h1>
+                                <div style={font('1em', '#fdf6d8')}>
+                                    <span class='gold'>{settings().difficulty.special}</span> <br />
+                                    <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.special} onChange={(e) => handleSpecial(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                                </div>
+                                <div style={font('0.5em')}>[Special (Elite) Enemy Occurrence: 0 - 100%]</div>
                                 <br />
                                 <h1 style={font('1.25em')}>Tidbits</h1>
                                     <button class='gold highlight' onClick={() => handleTidbits()}>{settings().difficulty.tidbits ? 'On' : 'Off'}</button>

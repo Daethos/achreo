@@ -400,6 +400,17 @@ export const PhaserGame = (props: IProps) => {
         EventBus.emit('update-ascean', update);
     };
 
+    function saveHealth(health: number): void {
+        const update = {
+            ...props.ascean(),
+            health: {
+                ...props.ascean().health,
+                current: health
+            },
+        };
+        EventBus.emit('update-ascean', update);
+    };
+
     const recordWin = (record: Combat, experience: LevelSheet) => {
         let stat = {
             wins: record.playerWin ? 1 : 0,
@@ -976,7 +987,8 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('record-statistics', (e: Combat) => statFiler(e));
         EventBus.on('record-win', (e: { record: Combat; experience: LevelSheet }) => {
             recordWin(e.record, e.experience);
-        })
+        });
+        EventBus.on('save-health', saveHealth);
 
         onCleanup(() => {
             if (instance.game) {
@@ -1039,6 +1051,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('persuasion');
             EventBus.removeListener('record-statistics');
             EventBus.removeListener('record-win');
+            EventBus.removeListener('save-health');
         });
     });
 

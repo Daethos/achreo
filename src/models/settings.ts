@@ -25,6 +25,7 @@ export default class Settings {
     public difficulty: { 
         aggression: number; 
         aim: boolean; 
+        special: number;
         tidbits: boolean; 
     };
     public postFx: { 
@@ -85,6 +86,7 @@ export default class Settings {
         this.difficulty = {
             aggression: 0.5,
             aim: false,
+            special: 0.5,
             tidbits: false,
         };
         this.postFx = {

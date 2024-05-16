@@ -37,7 +37,7 @@ const INTRO_NODES = {
         key: 5,
         prev: 4,
         next: undefined, // undefined
-        text: "The Ascea may grant land, prestige, titles--the inert and the material. To become the Ascean, the va'Esai, to be Worthy. That is the offer. Do not listen to whispers otherwise. Do not be led astray. Do not fear the bleating of the fallen and beaten. There is no such c̷u̴r̷s̴e̴.",
+        text: "The Ascea may grant forms of honor, swathes of land, increased prestige, and numerous titles--yet these are base, inert, and material. To become the Ascean, the va'Esai. To be Worthy. That is the offer. Do not listen to whispers otherwise. Do not be led astray. Do not fear the bleating of the fallen and beaten. There is nothing else.",
     },
 };
 

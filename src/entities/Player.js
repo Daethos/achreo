@@ -10,6 +10,20 @@ import { PLAYER } from "../utility/player";
 import AoE from "../phaser/AoE";
 import Bubble from "../phaser/Bubble";
 
+const DURATION = {
+    CONSUMED: 2000,
+    FEARED: 3000,
+    FROZEN: 3000,
+    SLOWED: 2500,
+    SNARED: 4000,
+    ROOTED: 3000,
+    STUNNED: 3000,
+    TEXT: 1500,
+    DODGE: 288, // 288
+    ROLL: 320, // 320
+    SPECIAL: 5000,
+};
+
 const ORIGIN = {
     WEAPON: { X: 0.25, Y: 1 },
     SHIELD: { X: -0.2, Y: 0.25 },
@@ -229,7 +243,23 @@ export default class Player extends Entity {
                 onEnter: this.onTshaeralEnter,
                 onUpdate: this.onTshaeralUpdate,
                 onExit: this.onTshaeralExit,
+            }) // ==================== NEGATIVE STATES ==================== //
+            .addState(States.CONFUSED, {
+                onEnter: this.onConfusedEnter,
+                onUpdate: this.onConfusedUpdate,
+                onExit: this.onConfusedExit,
             })
+            .addState(States.FEARED, {
+                onEnter: this.onFearedEnter,
+                onUpdate: this.onFearedUpdate,
+                onExit: this.onFearedExit,
+            })
+            .addState(States.POLYMORPHED, {
+                onEnter: this.onPolymorphedEnter,
+                onUpdate: this.onPolymorphedUpdate,
+                onExit: this.onPolymorphedExit,
+            })
+
         this.stateMachine.setState(States.NONCOMBAT);
 
         this.metaMachine = new StateMachine(this, 'player');
@@ -322,6 +352,16 @@ export default class Player extends Entity {
                 onEnter: this.onWritheEnter,
                 onUpdate: this.onWritheUpdate,
                 onExit: this.onWritheExit,
+            }) // ==================== NEGATIVE META STATES ==================== //
+            .addState(States.SLOWED, {
+                onEnter: this.onSlowedEnter,
+                // onUpdate: this.onSlowedUpdate,
+                onExit: this.onSlowedExit,
+            })
+            .addState(States.SNARED, {
+                onEnter: this.onSnaredEnter,
+                // onUpdate: this.onSnaredUpdate,
+                onExit: this.onSnaredExit,
             })
 
         this.metaMachine.setState(States.CLEAN);
@@ -368,6 +408,15 @@ export default class Player extends Entity {
         this.isTshaering = false;
         this.isWarding = false;
         this.isWrithing = false;
+        
+        this.isConfused = false;
+        this.isFeared = false;
+        this.isFrozen = false;
+        this.isRooted = false;
+        this.isSlowed = false;
+        this.isSnared = false;
+        this.isStunned = false;
+        
         this.tshaeringTimer = undefined; 
         this.highlight = this.scene.add.graphics()
             .lineStyle(4, 0xFF0000) // 3
@@ -571,6 +620,8 @@ export default class Player extends Entity {
             damage = e.computerGlancingBlow ? `${damage} (Glancing)` : damage;
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.computerCriticalSuccess);
             // console.log(`%c ${damage} Damage Taken by ${e?.computer?.name}`, 'color: #ff0000')
+            if (this.isConfused) this.isConfused = false;
+            if (this.isPolymorphed) this.isPolymorphed = false;
         };
         if (this.health < e.newPlayerHealth) {
             let heal = Math.round(e.newPlayerHealth - this.health);
@@ -2328,6 +2379,288 @@ export default class Player extends Entity {
         this.setStatic(false);
     };
 
+    // ================= NEGATIVE MACHINE STATES ================= \\
+    onConfusedEnter = () => { 
+        this.scene.joystick.joystick.setVisible(false);
+        this.scene.rightJoystick.joystick.setVisible(false);
+        this.scene.actionBar.setVisible(false);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '?c .on-f-u`SeD~', DURATION.TEXT, 'effect');
+        this.spriteWeapon.setVisible(false);
+        this.spriteShield.setVisible(false);
+        this.confuseDirection = 'down';
+        this.confuseMovement = 'idle';
+        this.confuseVelocity = { x: 0, y: 0 };
+        this.isAttacking = false;
+        this.isParrying = false;
+        this.isPosturing = false;
+        this.isRolling = false;
+        this.currentAction = ''; 
+        this.setGlow(this, true);
+        let iteration = 0;
+        const randomDirection = () => {  
+            const move = Phaser.Math.Between(1, 100);
+            const directions = ['up', 'down', 'left', 'right'];
+            const direction = directions[Phaser.Math.Between(0, 3)];
+            if (move > 50) {
+                if (direction === 'up') {
+                    this.confuseVelocity = { x: 0, y: -1.25 };
+                } else if (direction === 'down') {
+                    this.confuseVelocity = { x: 0, y: 1.25 };
+                } else if (direction === 'right') {
+                    this.confuseVelocity = { x: -1.25, y: 0 };
+                } else if (direction === 'left') {
+                    this.confuseVelocity = { x: 1.25, y: 0 };
+                };
+                this.confuseMovement = 'move';
+            } else {
+                this.confuseVelocity = { x: 0, y: 0 };
+                this.confuseMovement = 'idle';                
+            };
+            this.confuseDirection = direction;
+        };
+        const confusions = ['~?  ? ?!', 'Hhwat?', 'Wh-wor; -e ma i?', 'Woh `re ewe?', '...'];
+
+        this.confuseTimer = this.scene.time.addEvent({
+            delay: 1500,
+            callback: () => {
+                iteration++;
+                if (iteration === 5) {
+                    iteration = 0;
+                    this.isConfused = false;
+                } else {   
+                    this.specialCombatText.destroy();
+                    randomDirection();
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, confusions[Math.floor(Math.random() * 5)], 1000, 'effect');
+                };
+            },
+            callbackScope: this,
+            repeat: 4,
+        }); 
+
+    };
+    onConfusedUpdate = (_dt) => {
+        if (!this.isConfused) this.combatChecker(this.isConfused);
+        this.setVelocity(this.confuseVelocity.x, this.confuseVelocity.y);
+        if (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0) {
+            this.anims.play(`player_running`, true);
+        } else {
+            this.anims.play(`player_idle`, true);
+        };
+    };
+    onConfusedExit = () => { 
+        if (this.isConfused) this.isConfused = false;
+        this.scene.joystick.joystick.setVisible(true);
+        this.scene.rightJoystick.joystick.setVisible(true);
+        this.scene.actionBar.setVisible(true);
+        this.anims.play('player_running', true);
+        this.spriteWeapon.setVisible(true);
+        if (this.confuseTimer) {
+            this.confuseTimer.destroy();
+            this.confuseTimer = undefined;
+        };
+        this.setGlow(this, false);
+    };
+
+    onFearedEnter = () => { 
+        this.scene.joystick.joystick.setVisible(false);
+        this.scene.rightJoystick.joystick.setVisible(false);
+        this.scene.actionBar.setVisible(false);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'F̶e̷a̴r̷e̵d̴', DURATION.TEXT, 'damage');
+        this.spriteWeapon.setVisible(false);
+        this.spriteShield.setVisible(false);
+        this.fearDirection = 'down';
+        this.fearMovement = 'idle';
+        this.fearVelocity = { x: 0, y: 0 };
+        this.isAttacking = false;
+        this.isParrying = false;
+        this.isPosturing = false;
+        this.isRolling = false;
+        this.currentAction = ''; 
+        this.setGlow(this, true);
+        let iteration = 0;
+        const fears = ['...ahhh!', 'c̶o̷m̷e̷ ̴h̴e̵r̶e̶', 'Stay Away!', 'Somebody HELP ME', 'g̴̠̊ͅu̷͝ͅṱ̶͐ṯ̶̆u̸̼̚̚r̶̰̔ȃ̴̫l̴͈͝ ̶̹̎͛s̸͎͋ḥ̶̛̙́r̵̡̤̋͠ì̶͈̓e̸̬͕̅̈́k̵͔͌ī̸̮̹̎n̷̰̟̂͒g̷̦̓'];
+        const randomDirection = () => {  
+            const move = Phaser.Math.Between(1, 100);
+            const directions = ['up', 'down', 'left', 'right'];
+            const direction = directions[Phaser.Math.Between(0, 3)];
+            if (move > 50) {
+                if (direction === 'up') {
+                    this.fearVelocity = { x: 0, y: -1.25 };
+                } else if (direction === 'down') {
+                    this.fearVelocity = { x: 0, y: 1.25 };
+                } else if (direction === 'right') {
+                    this.fearVelocity = { x: -1.25, y: 0 };
+                } else if (direction === 'left') {
+                    this.fearVelocity = { x: 1.25, y: 0 };
+                };
+                this.fearMovement = 'move';
+            } else {
+                this.fearVelocity = { x: 0, y: 0 };
+                this.fearMovement = 'idle';                
+            };
+            this.fearDirection = direction;
+        };
+
+        this.fearTimer = this.scene.time.addEvent({
+            delay: 1500,
+            callback: () => {
+                iteration++;
+                if (iteration === 4) {
+                    iteration = 0;
+                    this.isFeared = false;
+                } else {   
+                    randomDirection();
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, fears[Math.floor(Math.random() * 5)], 1000, 'effect');
+                };
+            },
+            callbackScope: this,
+            repeat: 3,
+        }); 
+
+    };
+    onFearedUpdate = (_dt) => {
+        if (!this.isFeared) this.combatChecker(this.isFeared);
+        this.setVelocity(this.fearVelocity.x, this.fearVelocity.y);
+        if (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0) {
+            this.anims.play(`player_running`, true);
+        } else {
+            this.anims.play(`player_idle`, true);
+        };
+    };
+    onFearedExit = () => { 
+        this.scene.joystick.joystick.setVisible(true);
+        this.scene.rightJoystick.joystick.setVisible(true);
+        this.scene.actionBar.setVisible(true);
+        if (this.isFeared) this.isFeared = false;
+        this.anims.play('player_running', true);
+        this.spriteWeapon.setVisible(true);
+        if (this.fearTimer) {
+            this.fearTimer.destroy();
+            this.fearTimer = undefined;
+        };
+        this.setGlow(this, false);
+    };
+
+    onPolymorphedEnter = () => {
+        this.scene.joystick.joystick.setVisible(false);
+        this.scene.rightJoystick.joystick.setVisible(false);
+        this.scene.actionBar.setVisible(false);
+        this.isPolymorphed = true;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphed', DURATION.TEXT, 'effect');
+        this.clearAnimations();
+        this.clearTint();
+        this.anims.pause();
+        this.anims.play('rabbit_idle_down', true);
+        this.anims.resume();
+        this.spriteWeapon.setVisible(false);
+        this.spriteShield.setVisible(false);
+        this.polymorphDirection = 'down';
+        this.polymorphMovement = 'idle';
+        this.polymorphVelocity = { x: 0, y: 0 };
+
+        this.isAttacking = false;
+        this.isParrying = false;
+        this.isPosturing = false;
+        this.isRolling = false;
+        this.currentAction = ''; 
+
+        let iteration = 0;
+        const randomDirection = () => {  
+            const move = Phaser.Math.Between(1, 100);
+            const directions = ['up', 'down', 'left', 'right'];
+            const direction = directions[Phaser.Math.Between(0, 3)];
+            if (move > 50) {
+                if (direction === 'up') {
+                    this.polymorphVelocity = { x: 0, y: -1 };
+                } else if (direction === 'down') {
+                    this.polymorphVelocity = { x: 0, y: 1 };
+                } else if (direction === 'right') {
+                    this.polymorphVelocity = { x: -1, y: 0 };
+                } else if (direction === 'left') {
+                    this.polymorphVelocity = { x: 1, y: 0 };
+                };
+                this.polymorphMovement = 'move';
+            } else {
+                this.polymorphVelocity = { x: 0, y: 0 };
+                this.polymorphMovement = 'idle';                
+            };
+            this.polymorphDirection = direction;
+        };
+
+        this.polymorphTimer = this.scene.time.addEvent({
+            delay: 2000,
+            callback: () => {
+                iteration++;
+                if (iteration === 5) {
+                    iteration = 0;
+                    this.isPolymorphed = false;
+                } else {   
+                    randomDirection();
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '...thump', 1000, 'effect');
+                    this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: 15 } });
+                };
+            },
+            callbackScope: this,
+            repeat: 5,
+        }); 
+
+    };
+    onPolymorphedUpdate = (_dt) => {
+        if (!this.isPolymorphed) this.combatChecker(this.isPolymorphed);
+        this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
+        this.setVelocity(this.polymorphVelocity.x, this.polymorphVelocity.y);
+    };
+    onPolymorphedExit = () => { 
+        this.scene.joystick.joystick.setVisible(true);
+        this.scene.rightJoystick.joystick.setVisible(true);
+        this.scene.actionBar.setVisible(true);
+        if (this.isPolymorphed) this.isPolymorphed = false;
+        this.clearAnimations();
+        this.anims.play('player_running', true);
+        this.setTint(0x000000);
+        this.spriteWeapon.setVisible(true);
+        if (this.polymorphTimer) {
+            this.polymorphTimer.destroy();
+            this.polymorphTimer = undefined;
+        };
+    };
+
+    onSlowedEnter = () => {
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slowed', DURATION.TEXT, 'damage');
+        this.slowDuration = DURATION.SLOWED;
+        this.setTint(0xFFC700); // 0x888888
+        this.adjustSpeed(-PLAYER.SPEED.SLOW);
+        this.scene.time.delayedCall(this.slowDuration, () =>{
+            this.isSlowed = false;
+            this.metaMachine.setState(States.CLEAN);
+        });
+    };
+
+    onSlowedExit = () => {
+        this.clearTint();
+        this.setTint(0x000000);
+        this.adjustSpeed(PLAYER.SPEED.SLOW);
+    };
+
+    onSnaredEnter = () => {
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snared', DURATION.TEXT, 'damage');
+        this.snareDuration = 3000;
+        this.setTint(0x0000FF); // 0x888888
+        this.adjustSpeed(-PLAYER.SPEED.SNARE);
+        this.scene.time.delayedCall(this.snareDuration, () =>{
+            this.isSnared = false;
+            this.metaMachine.setState(States.CLEAN);
+        });
+    };
+    // onSnaredUpdate = (dt) => {};
+    onSnaredExit = () => { 
+        this.clearTint();
+        this.setTint(0x000000);
+        this.adjustSpeed(PLAYER.SPEED.SNARE);
+    };
+
+    // ================= SET TIME EVENT ================= \\
+
     setTimeEvent = (cooldown, limit = 30000) => {
         const evasion = cooldown === 'rollCooldown' || cooldown === 'dodgeCooldown' 
         if (!evasion) {
@@ -2810,26 +3143,50 @@ export default class Player extends Entity {
                 this.scene.particleManager.update(this, this.particleEffect);
             };
         };
-        if (this.inCombat && !this.healthbar.visible) this.healthbar.setVisible(true);
+
+        if (this.isConfused && !this.stateMachine.isCurrentState(States.CONFUSED)) {
+            this.stateMachine.setState(States.CONFUSED);
+            return;
+        };
+        if (this.isFeared && !this.stateMachine.isCurrentState(States.FEARED)) {
+            this.stateMachine.setState(States.FEARED);
+            return;
+        };
+        if (this.isPolymorphed && !this.stateMachine.isCurrentState(States.POLYMORPHED)) {
+            this.stateMachine.setState(States.POLYMORPHED);
+            return;
+        };
+        if (this.isStunned && !this.stateMachine.isCurrentState(States.STUNNED)) {
+            this.stateMachine.setState(States.STUNNED);
+            return;
+        };
+        if (this.isSlowed && !this.metaMachine.isCurrentState(States.SLOWED)) {
+            this.metaMachine.setState(States.SLOWED);
+            return;
+        };
+        if (this.isSnared && !this.metaMachine.isCurrentState(States.SNARED)) {
+            this.metaMachine.setState(States.SNARED); 
+            return;    
+        };
+
         // if (this.currentHelmSprite !== this.assetSprite(this.scene.state.player.helmet)) {
-        //     this.currentHelmSprite = this.assetSprite(this.scene.state.player.helmet);
-        //     this.spriteHelm.setTexture(this.currentHelmSprite);
+            //     this.currentHelmSprite = this.assetSprite(this.scene.state.player.helmet);
+            //     this.spriteHelm.setTexture(this.currentHelmSprite);
         // };
         // if (this.currentChestSprite !== this.assetSprite(this.scene.state.player.chest)) {
         //     this.currentChestSprite = this.assetSprite(this.scene.state.player.chest);
         //     this.spriteChest.setTexture(this.currentChestSprite);
         // };
         // if (this.currentLegsSprite !== this.assetSprite(this.scene.state.player.legs)) {
-        //     this.currentLegsSprite = this.assetSprite(this.scene.state.player.legs);
-        //     this.spriteLegs.setTexture(this.currentLegsSprite);
+            //     this.currentLegsSprite = this.assetSprite(this.scene.state.player.legs);
+            //     this.spriteLegs.setTexture(this.currentLegsSprite);
         // };
             
+        if (this.inCombat && !this.healthbar.visible) this.healthbar.setVisible(true);
         if (this.healthbar) this.healthbar.update(this);
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.winningCombatText) this.winningCombatText.update(this);
-        if (this.specialCombatText) this.specialCombatText.update(this);
-        // if (this.shieldBubble) this.shieldBubble.update(this.x, this.y);
-
+        if (this.specialCombatText) this.specialCombatText.update(this); 
         this.weaponRotation('player', this.currentTarget);
     };
 
@@ -2870,11 +3227,11 @@ export default class Player extends Entity {
 
         // ========================= Twisting ========================= \\
 
-        if (this.holdingBothMouseButtons) {
-            this.flipX = this.body.velocity.x < 0;
-            this.playerVelocity.x += Math.cos(this.angle) + this.acceleration;
-            this.playerVelocity.y += Math.sin(this.angle) + this.acceleration; 
-        };
+        // if (this.holdingBothMouseButtons) {
+        //     this.flipX = this.body.velocity.x < 0;
+        //     this.playerVelocity.x += Math.cos(this.angle) + this.acceleration;
+        //     this.playerVelocity.y += Math.sin(this.angle) + this.acceleration; 
+        // };
 
         // =================== DECELERATION ================== \\
 

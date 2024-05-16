@@ -647,27 +647,39 @@ export class Game extends Scene {
     chiomic = (id: string) => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (!enemy) return;
-        enemy.isConfused = true;
+        if (!enemy) {
+            this.player.isConfused = true;
+        } else {
+            enemy.isConfused = true;
+        };
     };
     confuse = (id: string) => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (!enemy) return;
-        enemy.isConfused = true;
+        if (!enemy) {
+            this.player.isConfused = true;
+        } else {
+            enemy.isConfused = true;
+        };
     };
 
     fear = (id: string) => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (!enemy) return;
-        enemy.isFeared = true;
+        if (!enemy) {
+            this.player.isFeared = true;
+        } else {
+            enemy.isFeared = true;
+        };
     };
     freeze = (id: string) => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (!enemy) return;
-        enemy.isFrozen = true;
+        if (!enemy) {
+            this.player.isFrozen = true;
+        } else {
+            enemy.isFrozen = true;
+        };
     };
     howl = (id: string) => {
         if (id === '') return;
@@ -676,8 +688,11 @@ export class Game extends Scene {
     polymorph = (id: string) => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (!enemy) return;
-        enemy.isPolymorphed = true;
+        if (!enemy) {
+            this.player.isPolymorphed = true;
+        } else {
+            enemy.isPolymorphed = true;
+        };
     };
     renewal = () => {
         EventBus.emit('initiate-combat', { data: { key: 'player', value: 7.5 }, type: 'Health' });
@@ -750,20 +765,29 @@ export class Game extends Scene {
     scream = (id: string) => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        if (!enemy) return;
-        enemy.isFeared = true;
+        if (!enemy) {
+            this.player.isFeared = true;
+        } else {
+            enemy.isFeared = true;
+        };
     };
     slow = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        if (!enemy) return;
-        enemy.isSlowed = true;
+        if (!enemy) {
+            this.player.isSlowed = true;
+        } else {
+            enemy.isSlowed = true;
+        };
     };
     snare = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        if (!enemy) return;
-        enemy.isSnared = true;
+        if (!enemy) {
+            this.player.isSnared = true;
+        } else {
+            enemy.isSnared = true;
+        };
     };
     storm = (id: string): void => {
         if (id === '') return;
@@ -790,14 +814,20 @@ export class Game extends Scene {
     stun = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        if (!enemy) return;
-        enemy.isBlindsided = true;
+        if (!enemy) {
+            this.player.isStunned = true;
+        } else {
+            enemy.isBlindsided = true;
+        };
     };
     stunned = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        if (!enemy) return;
-        enemy.isStunned = true;
+        if (!enemy) {
+            this.player.isStunned = true;
+        } else {
+            enemy.isStunned = true;
+        };
     };
     tendril = (id: string): void => {
         if (id === '') return;

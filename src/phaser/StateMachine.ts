@@ -46,6 +46,7 @@ export const States = {
     SACRIFICE: "sacrifice",
     SHROUD: "shroud",
     SLOW: "slow",
+    SLOWING: "slowing",
     SNARE: "snare",
     STORM: "storm",
     SUTURE: "suture",
@@ -103,7 +104,9 @@ export default class StateMachine {
     };
 
     isState(name: string) {
-        return this.states.has(name);
+        const state = this.states.has(name);
+        if (!state) console.warn(`State ${name} does not exist`);
+        return state;
     };
 
     isCurrentState(name: string) {
@@ -119,6 +122,10 @@ export default class StateMachine {
             onExit: config?.onExit?.bind(this.context)
         });
         return this;
+    };
+
+    public clearStates(): void {
+        this.changeStateQueue = [];
     };
 
     setState(name: string) {  

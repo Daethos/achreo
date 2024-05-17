@@ -27,6 +27,32 @@ class Particle {
             objectA: [sensor],
             callback: (other) => {
                 if (other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && !other.gameObjectB.isDefeated && player.name === 'player') {
+                    if (other.gameObjectB?.isShimmering) {
+                        const shimmer = Phaser.Math.Between(1, 100);
+                        if (shimmer > 50) {
+                            player.particleEffect.success = true;
+                            other.gameObjectB?.shimmerHit();
+                            return;
+                        };
+                    };
+                    if (other.gameObjectB?.isProtecting || other.gameObjectB?.isShielding || other.gameObjectB?.isWarding) {
+                        if (other.gameObjectB?.isShielding) {
+                            other.gameObjectB?.shieldHit();
+                        };
+                        if (other.gameObjectB?.isWarding) {
+                            other.gameObjectB?.wardHit();
+                        };
+                        player.particleEffect.success = true;
+                        return;
+                    };
+
+                    if (other.gameObjectB?.isMalicing) {
+                        other.gameObjectB?.maliceHit();
+                    };
+                    if (other.gameObjectB?.isMending) {
+                        other.gameObjectB?.mendHit();
+                    };
+
                     const match = this.scene.state?.enemyID === other.gameObjectB.enemyID;
                     player.attackedTarget = other.gameObjectB;
                     

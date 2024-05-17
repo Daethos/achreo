@@ -35,28 +35,6 @@ interface Props {
     game: Accessor<GameState>;
 };
 
-function StyleText(text: string) {
-    const style = (t: string) => {
-        const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-        const numCheck = t.split('').find((c: string) => numbers.includes(parseInt(c)));
-        const attacks = ['Attack', 'Posutre', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'roll', 'postures', 'parries'];
-        const specials = ['Invocation', 'Tendrils', 'tendrils', 'Hush', 'Tendril', 'hush', 'tshaer', 'sacrifice', 'suture', 'heal'];
-        const isDamage = damageTypes.includes(t);
-        const isNumber = numCheck !== undefined;
-        const isAttack = attacks.includes(t);
-        const isSpecial = specials.includes(t);
-        return {
-            color: (isDamage === true || isNumber === true || isAttack === true) ? 'gold' : isSpecial === true ? 'purple' : t === '!' ? 'red' : '#fdf6d8',
-            'font-weight': (isDamage === true || isNumber === true || isAttack === true || isSpecial === true || t === '!') ? 'bold' : 'normal',                
-        };
-    };
-    return text.split(' ').map((t, i) => 
-        <span style={style(t)}>
-            {t}{' '}
-        </span>
-    );
-};
-
 export default function SmallHud({ ascean, asceanState, combat, game }: Props) { 
     const [show, setShow] = createSignal<boolean>(true);
     const [alert, setAlert] = createSignal<{ header: string; body: string } | undefined>(undefined);
@@ -106,8 +84,8 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
             const cast = ['confuse', 'confusing', 'fear', 'fearing', 'polymorph', 'polymorphing', 'slow', 'slowing', 'snare', 'snaring'];
             const isCast = cast.includes(t);
             // const specials = ['Invocation', 'Tendrils', 'Hush', 'Tendril', 'hush', 'tshaer', 'sacrifice', 'suture'];
-            const hush = ['Invocation', 'Hush', 'hush', 'sacrifice'];
-            const tendril = ['Tendril', 'tendril', 'tshaer', 'suture'];
+            const hush = ['Invocation', 'Hush', 'hush', 'sacrifice', 'shimmer', 'shimmers'];
+            const tendril = ['Tendril', 'tendril', 'tshaer', 'suture', 'ensorcel', 'ensorcels'];
             const isHush = hush.includes(t);
             const isTendril = tendril.includes(t);
             const isHeal = t.includes('heal');

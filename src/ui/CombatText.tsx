@@ -1,4 +1,4 @@
-import { Accessor, createEffect, createMemo, createSignal } from 'solid-js';
+import { Accessor } from 'solid-js';
 import { Combat } from '../stores/combat';
 import { useResizeListener } from '../utility/dimensions';
 

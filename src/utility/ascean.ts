@@ -602,6 +602,9 @@ const asceanCompiler = (ascean: any): Compiler | undefined => {
         } else {
             ascean = setHealth(ascean, attributes.healthTotal, ascean.health.current);
         };
+        if (Number.isNaN(ascean.health.current)) {
+            ascean.health.current = ascean.health.max;
+        };
         if (Number.isNaN(ascean.experience)) {
             ascean.experience = ascean.level * 1000;
         };

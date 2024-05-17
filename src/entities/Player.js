@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import Entity, { FRAME_COUNT } from "./Entity";  
-import { screenShake, walk } from "../phaser/ScreenShake";
+import { walk } from "../phaser/ScreenShake";
 import StateMachine, { States } from "../phaser/StateMachine";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import HealthBar from "../phaser/HealthBar";
@@ -669,7 +669,7 @@ export default class Player extends Entity {
             this.anims.play('player_pray', true).on('animationcomplete', () => {
                 this.anims.play('player_idle', true);
             });
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Defeat', 3000, 'damage', true);
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Defeat', 3000, 'damage');
         };
         if (e.newPlayerHealth <= 0) {
             this.isDead = true;
@@ -2324,7 +2324,9 @@ export default class Player extends Entity {
         this.scene.sound.play('parry', { volume: this.scene.settings.volume });
         this.scene.stunned(this.attacking?.enemyID);
         this.wardBubble.setCharges(this.wardBubble.charges - 1);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Warded', 500, 'effect');
         if (this.wardBubble.charges <= 3) {
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Ward Broken', 500, 'damage');
             this.wardBubble.setCharges(0);
             this.isWarding = false;
         };
@@ -2357,7 +2359,7 @@ export default class Player extends Entity {
 
     onStunEnter = () => {
         this.isStunned = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', PLAYER.DURATIONS.STUNNED, 'effect', true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', PLAYER.DURATIONS.STUNNED, 'effect');
         this.scene.input.keyboard.enabled = false;
         this.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.setTint(0x888888);
@@ -2403,13 +2405,13 @@ export default class Player extends Entity {
             const direction = directions[Phaser.Math.Between(0, 3)];
             if (move > 50) {
                 if (direction === 'up') {
-                    this.confuseVelocity = { x: 0, y: -1.25 };
+                    this.confuseVelocity = { x: 0, y: -1.75 };
                 } else if (direction === 'down') {
-                    this.confuseVelocity = { x: 0, y: 1.25 };
+                    this.confuseVelocity = { x: 0, y: 1.75 };
                 } else if (direction === 'right') {
-                    this.confuseVelocity = { x: -1.25, y: 0 };
+                    this.confuseVelocity = { x: -1.75, y: 0 };
                 } else if (direction === 'left') {
-                    this.confuseVelocity = { x: 1.25, y: 0 };
+                    this.confuseVelocity = { x: 1.75, y: 0 };
                 };
                 this.confuseMovement = 'move';
             } else {
@@ -2485,13 +2487,13 @@ export default class Player extends Entity {
             const direction = directions[Phaser.Math.Between(0, 3)];
             if (move > 50) {
                 if (direction === 'up') {
-                    this.fearVelocity = { x: 0, y: -1.25 };
+                    this.fearVelocity = { x: 0, y: -2 };
                 } else if (direction === 'down') {
-                    this.fearVelocity = { x: 0, y: 1.25 };
+                    this.fearVelocity = { x: 0, y: 2 };
                 } else if (direction === 'right') {
-                    this.fearVelocity = { x: -1.25, y: 0 };
+                    this.fearVelocity = { x: -2, y: 0 };
                 } else if (direction === 'left') {
-                    this.fearVelocity = { x: 1.25, y: 0 };
+                    this.fearVelocity = { x: 2, y: 0 };
                 };
                 this.fearMovement = 'move';
             } else {
@@ -2571,13 +2573,13 @@ export default class Player extends Entity {
             const direction = directions[Phaser.Math.Between(0, 3)];
             if (move > 50) {
                 if (direction === 'up') {
-                    this.polymorphVelocity = { x: 0, y: -1 };
+                    this.polymorphVelocity = { x: 0, y: -1.25 };
                 } else if (direction === 'down') {
-                    this.polymorphVelocity = { x: 0, y: 1 };
+                    this.polymorphVelocity = { x: 0, y: 1.25 };
                 } else if (direction === 'right') {
-                    this.polymorphVelocity = { x: -1, y: 0 };
+                    this.polymorphVelocity = { x: -1.25, y: 0 };
                 } else if (direction === 'left') {
-                    this.polymorphVelocity = { x: 1, y: 0 };
+                    this.polymorphVelocity = { x: 1.25, y: 0 };
                 };
                 this.polymorphMovement = 'move';
             } else {
@@ -2859,7 +2861,7 @@ export default class Player extends Entity {
     };
 
     playerActionSuccess = () => {
-        // console.log('Player Action Success')
+        // console.log('Player Action Success');
         if (this.particleEffect) {
             this.scene.particleManager.removeEffect(this.particleEffect.id);
             this.particleEffect.effect.destroy();
@@ -2867,6 +2869,28 @@ export default class Player extends Entity {
         } else {
             const action = this.checkPlayerAction();
             if (!action) return;
+            if (this?.attackedTarget?.isShimmering) {
+                const shimmer = Phaser.Math.Between(1, 100);
+                if (shimmer > 50) {
+                    this?.attackedTarget?.shimmerHit();
+                    return;
+                };
+            };
+            if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
+                if (this.attackedTarget?.isShielding) {
+                    this.attackedTarget?.shieldHit();
+                };
+                if (this.attackedTarget?.isWarding) {
+                    this.attackedTarget?.wardHit();
+                };
+                return;    
+            };
+            if (this?.attackedTarget?.isMalicing) {
+                this?.attackedTarget?.maliceHit();
+            };
+            if (this?.attackedTarget?.isMending) {
+                this?.attackedTarget?.mendHit();
+            };
             const match = this.enemyIdMatch();
             if (match) { // Target Player Attack
                 this.scene.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: action } });
@@ -3083,6 +3107,8 @@ export default class Player extends Entity {
             this.setVelocity(0);
         } else if (this.isHurt) {
             this.anims.play('player_hurt', true).on('animationcomplete', () => this.isHurt = false);  
+        } else if (this.isPolymorphed) {
+            this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
         } else if (this.isParrying) {
             this.anims.play('player_attack_2', true).on('animationcomplete', () => this.isParrying = false);
         } else if (this.isDodging) { 
@@ -3156,10 +3182,6 @@ export default class Player extends Entity {
             this.stateMachine.setState(States.POLYMORPHED);
             return;
         };
-        if (this.isStunned && !this.stateMachine.isCurrentState(States.STUNNED)) {
-            this.stateMachine.setState(States.STUNNED);
-            return;
-        };
         if (this.isSlowed && !this.metaMachine.isCurrentState(States.SLOWED)) {
             this.metaMachine.setState(States.SLOWED);
             return;
@@ -3167,6 +3189,10 @@ export default class Player extends Entity {
         if (this.isSnared && !this.metaMachine.isCurrentState(States.SNARED)) {
             this.metaMachine.setState(States.SNARED); 
             return;    
+        };
+        if (this.isStunned && !this.stateMachine.isCurrentState(States.STUN)) {
+            this.stateMachine.setState(States.STUN);
+            return;
         };
 
         // if (this.currentHelmSprite !== this.assetSprite(this.scene.state.player.helmet)) {

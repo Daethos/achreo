@@ -14,6 +14,7 @@ const ActionTypes = {
     HEALTH: 'Health',
     SACRIFICE: 'Sacrifice',
     SUTURE: 'Suture',
+    ENEMY_CHIOMIC: 'Enemy Chiomic',
     ENEMY_SACRIFICE: 'Enemy Sacrifice',
     ENEMY_SUTURE: 'Enemy Suture',
 };
@@ -56,6 +57,10 @@ function suture(): void {
     EventBus.emit('initiate-combat', { type: ActionTypes.SUTURE });
 };
 
+function enemyChiomic(data: number): void {
+    EventBus.emit('initiate-combat', { data, type: ActionTypes.ENEMY_CHIOMIC });
+};
+
 function enemySacrifice(): void {
     EventBus.emit('initiate-combat', { type: ActionTypes.ENEMY_SACRIFICE });
 };
@@ -72,4 +77,4 @@ function health(data: KVI): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.HEALTH });
 };
 
-export { weapon, instant, prayer, player, enemy, actionInput, chiomic, tshaeral, health, sacrifice, suture, enemySacrifice, enemySuture };
+export { weapon, instant, prayer, player, enemy, actionInput, chiomic, tshaeral, health, sacrifice, suture, enemyChiomic, enemySacrifice, enemySuture };

@@ -123,17 +123,17 @@ export const DEITIES = {
     },
     "Se'vas": {
         name: "Se'vas, the Ancient of War",
-        description: "War appears to be a bit of an anomaly insofar as Ancients went. Like Kyn’gi (Hunt), he appeared to have a personal code of ethics he espoused and held not only his followers, but himself too. If there were ever a sense of justice thought to promulgate into the world, it is said to have derived from him.",
-        origin: "Believed to be worshiped by the Cragores to this day, and would reside where they are found as well, south of the Achreon Kingdom and Soverains, west of the Spine, among the great ranges. Also associated with the supernatural human hybrid Re’vas.",
+        description: "War appears to been a rogue Ancient like that of Kyn’gi (Hunt), a code of ethics carved for humanity and held by his followers. If there were ever a sense of justice thought to promulgate into the world, it is said to have derived from him.",
+        origin: "Believed to be worshiped by the Cragores to this day, Se'vas was said to reside where they are found, south of the Daethic Kingdom, and north of Licivitas, among the great ranges. Associated with the othernatural hybrid Re’vas.",
         favor: "Strength",
         worship: "Followers of Se'vas were famed to show the act of mercy to the sick, wounded, dying, and otherwise maimed individuals--even those who didn’t worship the Ancient. This involved the just cause to remove them of their suffering, for there would be no cruelty in allowing someone who could no longer lead a life worth living. These interpretations of this form of homage is one of the only surviving testaments found along the inner scribbles of writings devoted to the Ancient of War.",
     },
     Senari: {
         name: "Senari, the Ancient of Wisdom",
-        description: "It has been noted that Senari was one of the more thoughtful, contemplative, and engaging of the pantheon of Ancients. Her serene nature bore a form of peace with her followers, wanting what was best for them.",
+        description: "Noted that Senari was a thoughtful, contemplative, and engaging Ancient. Her serene nature bore a form of peace with her followers.",
         origin: "Said to have kept her seat of power harbored in the realm now known as Licivitas.",
         favor: "Agility",
-        worship: "Senari didn’t ask much for her followers, only their lives. This may seem strange, but this Ancient didn’t placate in the form of sacrifice or cruelty, but an appeasement toward self-determination. She asked them to afford within themselves the best person they could attempt to become, and nothing more. Quietly she would reflect on their agitation and frustrations; ever graceful, she’d help right their ways, gently fording their direction.",
+        worship: "Senari didn’t ask much from her followers, only their lives. This may seem strange, but this Ancient didn’t placate in the form of sacrifice or cruelty, but an appeasement toward self-determination. Quietly, she would reflect on their agitation and frustrations; ever graceful, gently fording their way.",
     },
     Shrygei: {
         name: "Shrygei, the Ancient of Song",

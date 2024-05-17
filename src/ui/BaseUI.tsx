@@ -191,6 +191,23 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
                         playerActionDescription: chiomicDescription,
                     });
                     break;
+                case 'Enemy Chiomic':
+                    const enemyChiomic = Math.round(combat().computerHealth * (data / 100));
+                    const newChiomicPlayerHealth = combat().newPlayerHealth - enemyChiomic < 0 ? 0 : combat().newPlayerHealth - enemyChiomic;
+                    computerWin = newChiomicPlayerHealth === 0;
+                    res = {
+                        ...combat(),
+                        newPlayerHealth: newChiomicPlayerHealth,
+                        computerWin,
+                    };
+                    const enemyChiomicDescription = 
+                        `${combat().computer?.name} flays ${enemyChiomic} health from you with their hush.`
+                    EventBus.emit('blend-combat', {
+                        newPlayerHealth: newChiomicPlayerHealth,
+                        computerWin,
+                        computerActionDescription: enemyChiomicDescription,
+                    });
+                    break;
                 case 'Tshaeral': // Lifedrain
                     const drained = Math.round(combat().playerHealth * (data / 100));
                     const newPlayerHealth = combat().newPlayerHealth + drained > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + drained;

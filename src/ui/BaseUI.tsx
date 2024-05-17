@@ -370,7 +370,6 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
 
     function resolveCombat(res: Combat) {
         try {
-            // EventBus.emit('record-statistics', res);
             if (res.playerWin === true) {
                 let experience = 
                     Math.round((res.computer?.level as number) * 100 
@@ -392,7 +391,6 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
                     record: res,
                     experience: newState
                 });
-                // EventBus.emit('gain-experience', newState);
                 EventBus.emit('enemy-loot', loot);
                 if (!ascean().tutorial.deity) {
                     if (newState.opponentExp >= 750 && ascean().level >= 1) { // 1000

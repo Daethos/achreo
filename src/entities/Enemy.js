@@ -802,7 +802,7 @@ export default class Enemy extends Entity {
             collision.gameObjectB.inCombat = true;
             collision.gameObjectB.highlightTarget(this);
             this.scene.combatEngaged(true);
-        }
+        };
     };
 
     setSpecialCombat = (bool) => {
@@ -811,23 +811,6 @@ export default class Enemy extends Entity {
             return;
         };
         const mastery = this.ascean.mastery;
-        
-        // const movements = ['Blink', 'Pursuit', 'Rush'];
-        // const channels = ['Kyrnaicism', 'Tshaeral'];
-        // const aoes = ['Chiomic', 'Disease', 'Freeze', 'Howl', 'Renewal', 'Scream', 'Writhe'];
-        // const bubbles = ['Malice', 'Mend', 'Protect', 'Shield', 'Ward'];
-        // const casts = ['Confuse', 'Fear', 'Healing', 'Polymorph', 'Snare'];
-        // const instants = ['Desperation', 'Sacrifice', 'Slowing', 'Suture'];
-        // const meta = ['Shimmer', 'Sprint'];
-
-        // const specials = [
-        //     'Blink', 'Chiomic', 'Confuse', 'Disease', 'Desperation', 
-        //     'Fear', 'Freeze', 'Healing', 'Howl', 'Kyrnaicism', 
-        //     'Leap', 'Malice', 'Mend', 'Polymorph', 'Protect', 
-        //     'Pursuit', 'Renewal', 'Rush', 'Sacrifice', 'Sacrifice', 
-        //     'Scream', 'Shield', 'Shimmer', 'Slowing', 'Snare', 
-        //     'Sprint', 'Suture', 'Tshaeral', 'Ward', 'Writhe'
-        // ];
         if (bool === true) {
             this.specialCombat = this.scene.time.delayedCall(DURATION.SPECIAL, () => {
                 if (this.inCombat === false) {
@@ -836,19 +819,15 @@ export default class Enemy extends Entity {
                     return;
                 };
                 const special = ENEMY_SPECIAL[mastery][Math.floor(Math.random() * ENEMY_SPECIAL[mastery].length)].toLowerCase();
-                // const special = movements[Math.floor(Math.random() * movements.length)].toLowerCase();
                 this.specialAction = special;
                 this.currentAction = 'special';
-                console.log(`%c ${this.ascean.name} is going to use ${special}`, 'color: #00ff00');
+                // console.log(`%c ${this.ascean.name} is going to use ${special}`, 'color: #00ff00');
                 if (this.stateMachine.isState(special)) {
-                    console.log(`Setting STATE to ${special}`);
                     this.stateMachine.setState(special);
                 } else if (this.metaMachine.isState(special)) {
-                    console.log(`Setting META STATE to ${special}`);
                     this.metaMachine.setState(special);
                 };
                 this.setSpecialCombat(true);
-                // this.stateMachine.setState(special);
             }, undefined, this);
         } else {
             this.specialCombat?.remove();
@@ -1264,9 +1243,9 @@ export default class Enemy extends Entity {
     onBlinkEnter = () => {
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         if (this.flipX === true) {
-            this.setVelocityX(25);
+            this.setVelocityX(35);
         } else {
-            this.setVelocityX(-25);
+            this.setVelocityX(-35);
         };
         if (!this.isCaerenic && !this.isGlowing) {
             this.checkCaerenic(true);
@@ -1303,7 +1282,6 @@ export default class Enemy extends Entity {
             computerSpecialDescription: `${this.ascean?.name} confuses you, causing you to stumble around in a daze.`
         });
         this.isPerformingSpecial = false;
-        // this.evaluateCombatDistance();
     };
 
     onDesperationEnter = () => {
@@ -1322,7 +1300,6 @@ export default class Enemy extends Entity {
     };
     onDesperationExit = () => {
         this.isPerformingSpecial = false;
-        // this.evaluateCombatDistance(); 
     };
 
     onFearingEnter = () => {
@@ -1360,7 +1337,11 @@ export default class Enemy extends Entity {
             EventBus.emit('initiate-combat', { data: { key: 'enemy', value: total }, type: 'Health' });
             this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
             this.checkCaerenic(false);
-            this.stateMachine.setState(States.CHASE);
+            if (this.inCombat) {
+                this.stateMachine.setState(States.CHASE);
+            } else {
+                this.stateMachine.setState(States.LEASH);
+            };
         });
     };
     onHealingUpdate = (_dt) => {
@@ -1424,10 +1405,6 @@ export default class Enemy extends Entity {
     onLeapEnter = () => {
         this.isPerformingSpecial = true;
         this.isLeaping = true;
-        // const worldX = this.scene.cameras.main.getWorldPoint(this.scene.player.x, this.scene.player.y).x;
-        // const worldY = this.scene.cameras.main.getWorldPoint(this.scene.player.x, this.scene.player.y).y;
-        // const target = new Phaser.Math.Vector2(worldX, worldY);
-        // const direction = target.subtract(this.position);
         const target = new Phaser.Math.Vector2(this.scene.player.x, this.scene.player.y);
         const direction = target.subtract(this.position);
         direction.normalize();
@@ -1484,7 +1461,6 @@ export default class Enemy extends Entity {
             computerSpecialDescription: `${this.ascean.name} polymorphs you into a rabbit!`
         });
         this.isPerformingSpecial = false;
-        // this.evaluateCombatDistance();
     };
 
     onPursuitEnter = () => {
@@ -1513,15 +1489,7 @@ export default class Enemy extends Entity {
     onRushEnter = () => {
         this.isPerformingSpecial = true;
         this.isRushing = true;
-        // this.originalRushPosition = new Phaser.Math.Vector2(this.x, this.y);
-        // this.leapPointer = this.scene.rightJoystick.pointer;
         this.scene.sound.play('stealth', { volume: this.scene.settings.volume });        
-        // const worldX = this.scene.cameras.main.getWorldPoint(this.scene.player.x, this.scene.player.y).x;
-        // const worldY = this.scene.cameras.main.getWorldPoint(this.scene.player.x, this.scene.player.y).y;
-        // const world = this.scene.cameras.main.getWorldPoint(this.scene.player.x, this.scene.player.y);
-        // const target = new Phaser.Math.Vector2(world.x, world.y);
-        // const direction = target.subtract(this.position);
-
         const target = new Phaser.Math.Vector2(this.scene.player.x, this.scene.player.y);
         const direction = target.subtract(this.position);
         direction.normalize();
@@ -1537,10 +1505,8 @@ export default class Enemy extends Entity {
             duration: 500,
             ease: 'Circ.easeOut',
             onComplete: () => {
-                // console.log(this.rushedEnemies, this.rushedEnemies.length, 'Rushed Enemies');
                 if (this.rushedEnemies.length > 0) {
                     this.rushedEnemies.forEach(enemy => {
-                        // console.log(`%c Rushed Enemy: ${enemy.enemyID}`, 'color: #ff0000');
                         this.scene.writhe(enemy.playerID);
                     });
                 };
@@ -1549,9 +1515,7 @@ export default class Enemy extends Entity {
             },
         });         
     };
-    onRushUpdate = (_dt) => {
-        // this.combatChecker(this.isRushing);
-    };
+    onRushUpdate = (_dt) => {};
     onRushExit = () => {
         this.rushedEnemies = [];
         this.checkCaerenic(false);

@@ -549,17 +549,13 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     };
 
     const clearDuel = () => {
-        // EventBus.emit('blend-game', { showDialog: false })
         EventBus.emit('show-dialogue');
         EventBus.emit('action-button-sound');
         EventBus.emit('update-pause', false);
     };
 
     const refillFlask = () => {
-        console.log('refilling flask!')
-        // restore firewater flask
-        // deduct currency
-        // save ascean
+        console.log('refilling flask!');
     };
 
     const getLoot = async (type: string): Promise<void> => {

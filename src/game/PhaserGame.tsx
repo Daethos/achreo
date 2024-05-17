@@ -390,6 +390,8 @@ export const PhaserGame = (props: IProps) => {
             computerInfluenceDescriptionTwo: '',
             playerDeathDescription: '',
             computerDeathDescription: '',            
+            playerWin: false,
+            computerWin: false,
         });
         const update = { 
             ...props.ascean(), 
@@ -485,6 +487,8 @@ export const PhaserGame = (props: IProps) => {
             computerInfluenceDescriptionTwo: '',
             playerDeathDescription: '',
             computerDeathDescription: '',            
+            playerWin: false,
+            computerWin: false,
         });
 
         const update = { 

@@ -222,7 +222,23 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
                         playerWin,
                         playerActionDescription: tshaeralDescription,
                     };
-                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth: newHealth, playerWin });
+                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth: newHealth, playerWin, playerActionDescription: tshaeralDescription });
+                    break;
+                case 'Enemy Tshaeral':
+                    const enemyDrain = Math.round(combat().computerHealth * (data / 100));
+                    const drainedPlayerHealth = combat().newPlayerHealth - enemyDrain < 0 ? 0 : combat().newPlayerHealth - enemyDrain;
+                    const drainedComputerHealth = combat().newComputerHealth + enemyDrain > combat().computerHealth ? combat().computerHealth : combat().newComputerHealth + enemyDrain;
+                    computerWin = drainedPlayerHealth === 0;
+                    const enemyTshaeralDescription =
+                        `${combat().computer?.name} tshaers and devours ${enemyDrain} health from you.`
+                    res = {
+                        ...combat(),
+                        newPlayerHealth: drainedPlayerHealth,
+                        newComputerHealth: drainedComputerHealth,
+                        computerWin,
+                        computerActionDescription: enemyTshaeralDescription,
+                    };
+                    EventBus.emit('blend-combat', { newPlayerHealth: drainedPlayerHealth, newComputerHealth: drainedComputerHealth, computerWin, computerActionDescription: enemyTshaeralDescription });
                     break;
                 case 'Health': // Either Enemy or Player gaining health
                     let { key, value } = data;
@@ -240,7 +256,7 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
                             playerWin = enemyHealth === 0;
                             const enemyDescription =
                                 `${combat().computer?.name} heals to ${enemyHealth}.`
-                            res = { ...combat(), newComputerHealth: enemyHealth, playerWin, enemyActionDescription: enemyDescription};
+                            res = { ...combat(), newComputerHealth: enemyHealth, playerWin, computerActionDescription: enemyDescription };
                             EventBus.emit('update-combat-state', { key: 'newComputerHealth', value: enemyHealth });
                             break;
                         default:
@@ -282,6 +298,7 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
                         newComputerHealth: enemySacrifice,
                         playerWin: enemySacrifice === 0,
                         playerActionDescription: sacrificeDescription,
+                        computerWin: playerSacrifice === 0,
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerSacrifice, newComputerHealth: enemySacrifice, playerWin: enemySacrifice === 0 });
                     playerWin = res.playerWin;
@@ -313,7 +330,8 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
                         newPlayerHealth: playerEnemySacrifice,
                         newComputerHealth: enemyEnemySacrifice,
                         computerWin: playerEnemySacrifice === 0,
-                        enemyActionDescription: enemySacrificeDescription,
+                        computerActionDescription: enemySacrificeDescription,
+                        playerWin: playerEnemySacrifice === 0,
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerEnemySacrifice, newComputerHealth: enemyEnemySacrifice, computerWin: playerEnemySacrifice === 0 });
                     computerWin = res.computerWin;
@@ -329,7 +347,7 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
                         newPlayerHealth: playerEnemySuture,
                         newComputerHealth: enemyEnemySuture,
                         computerWin: playerEnemySuture === 0,
-                        enemyActionDescription: enemySutureDescription,
+                        computerActionDescription: enemySutureDescription,
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerEnemySuture, newComputerHealth: enemyEnemySuture, computerWin: playerEnemySuture === 0 });
                     computerWin = res.computerWin;

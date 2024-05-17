@@ -17,6 +17,7 @@ const ActionTypes = {
     ENEMY_CHIOMIC: 'Enemy Chiomic',
     ENEMY_SACRIFICE: 'Enemy Sacrifice',
     ENEMY_SUTURE: 'Enemy Suture',
+    ENEMY_TSHAERAL: 'Enemy Tshaeral',
 };
 
 function weapon(data: KVI): void {
@@ -65,6 +66,7 @@ function enemySacrifice(): void {
     EventBus.emit('initiate-combat', { type: ActionTypes.ENEMY_SACRIFICE });
 };
 
+
 function enemySuture(): void {
     EventBus.emit('initiate-combat', { type: ActionTypes.ENEMY_SUTURE });
 };
@@ -73,8 +75,12 @@ function tshaeral(data: number): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.TSHAERAL });
 };
 
+function enemyTshaeral(data: number): void {
+    EventBus.emit('initiate-combat', { data, type: ActionTypes.ENEMY_TSHAERAL });
+};
+
 function health(data: KVI): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.HEALTH });
 };
 
-export { weapon, instant, prayer, player, enemy, actionInput, chiomic, tshaeral, health, sacrifice, suture, enemyChiomic, enemySacrifice, enemySuture };
+export { weapon, instant, prayer, player, enemy, actionInput, chiomic, tshaeral, health, sacrifice, suture, enemyChiomic, enemySacrifice, enemySuture, enemyTshaeral };

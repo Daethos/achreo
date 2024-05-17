@@ -60,6 +60,7 @@ export default class CombatMachine {
         'Enemy Chiomic': (data: number) => Dispatcher.enemyChiomic(data),
         'Enemy Sacrifice': (_data: undefined) => Dispatcher.enemySacrifice(),
         'Enemy Suture': (_data: undefined) => Dispatcher.enemySuture(),
+        'Enemy Tshaeral': (data: number) => Dispatcher.enemyTshaeral(data),
         Tshaeral: (data: number) => Dispatcher.tshaeral(data),
         Player: (data: any) => Dispatcher.player(data),
         Enemy: (data: any) => Dispatcher.enemy(data),

@@ -353,6 +353,11 @@ export default class Player extends Entity {
                 onUpdate: this.onWritheUpdate,
                 onExit: this.onWritheExit,
             }) // ==================== NEGATIVE META STATES ==================== //
+            .addState(States.FROZEN, {
+                onEnter: this.onFrozenEnter,
+                // onUpdate: this.onFrozenUpdate,
+                onExit: this.onFrozenExit,
+            })
             .addState(States.SLOWED, {
                 onEnter: this.onSlowedEnter,
                 // onUpdate: this.onSlowedUpdate,
@@ -1871,7 +1876,7 @@ export default class Player extends Entity {
         this.scene.sound.play('howl', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Howling', PLAYER.DURATIONS.HOWL, 'damage');
         this.isHowling = true;
-        this.setTimeEvent('chiomicCooldown', PLAYER.COOLDOWNS.SHORT);  
+        this.setTimeEvent('howlCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.time.delayedCall(PLAYER.DURATIONS.HOWL, () => {
             this.isHowling = false;
         });
@@ -2543,6 +2548,25 @@ export default class Player extends Entity {
         this.setGlow(this, false);
     };
 
+    onFrozenEnter = () => {
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Frozen', DURATION.TEXT, 'cast');
+        if (!this.isPolymorphed) this.clearAnimations();
+        this.anims.play('player_idle', true);
+        this.setStatic(true);
+        this.scene.time.addEvent({
+            delay: DURATION.FROZEN,
+            callback: () => {
+                this.isFrozen = false;
+                this.metaMachine.setState(States.CLEAN);
+            },
+            callbackScope: this,
+            loop: false,
+        });
+    };
+    onFrozenExit = () => {
+        this.setStatic(false);
+    };
+
     onPolymorphedEnter = () => {
         this.scene.joystick.joystick.setVisible(false);
         this.scene.rightJoystick.joystick.setVisible(false);
@@ -3176,6 +3200,10 @@ export default class Player extends Entity {
         };
         if (this.isFeared && !this.stateMachine.isCurrentState(States.FEARED)) {
             this.stateMachine.setState(States.FEARED);
+            return;
+        };
+        if (this.isFrozen && !this.metaMachine.isCurrentState(States.FROZEN)) {
+            this.metaMachine.setState(States.FROZEN);
             return;
         };
         if (this.isPolymorphed && !this.stateMachine.isCurrentState(States.POLYMORPHED)) {

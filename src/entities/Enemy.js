@@ -12,6 +12,78 @@ import CastingBar from "../phaser/CastingBar";
 import AoE from "../phaser/AoE";
 import Bubble from "../phaser/Bubble";
 
+export const ENEMY_SPECIAL = {
+    'constitution': [ // 9
+        'Desperation', 
+        'Disease', 
+        'Healing', 
+        'Kyrnaicism', 
+        'Mend', 
+        'Renewal', 
+        'Sacrifice', 
+        'Shield', 
+        'Ward'
+    ], // 9
+
+    'strength': [ // 9
+        'Desperation',
+        'Howl', 
+        'Rush',
+        'Scream', 
+        'Sprint', 
+        'Suture', 
+        'Tshaeral', 
+        'Ward', 
+        'Writhe'
+    ], // 9
+
+    'agility': [ // 8
+        'Desperation', 
+        'Pursuit', 
+        'Rush', 
+        'Shimmer', 
+        'Snare', 
+        'Slow',
+        'Sprint', 
+        'Writhe'
+    ], // 8
+
+    'achre': [ // 9
+        'Blink',
+        'Freeze', 
+        'Healing',
+        'Mend', 
+        'Polymorph', 
+        'Sacrifice', 
+        'Shimmer', 
+        'Slow',
+        'Snare',
+    ], // 9
+        
+    'caeren': [ // 8
+        'Desperation', 
+        'Fear', 
+        'Healing', 
+        'Mend', 
+        'Protect', 
+        'Sacrifice', 
+        'Shield', 
+        'Suture'
+    ], // 8
+
+    'kyosir': [ // 9
+        'Chiomic', 
+        'Confuse',
+        'Healing', 
+        'Kyrnaicism', 
+        'Malice', 
+        'Protect', 
+        'Scream', 
+        'Suture', 
+        'Tshaeral'
+    ], // 9
+};
+
 const DISTANCE = {
     MIN: 0,
     ATTACK: 25,
@@ -147,6 +219,11 @@ export default class Enemy extends Entity {
             .addState(States.DEFEATED, {
                 onEnter: this.onDefeatedEnter,
             }) // ====== Special States ======
+            .addState(States.BLINK, {
+                onEnter: this.onBlinkEnter,
+                onUpdate: this.onBlinkUpdate,
+                onExit: this.onBlinkExit,
+            })
             .addState(States.CONFUSE, {
                 onEnter: this.onConfuseEnter,
                 onUpdate: this.onConfuseUpdate,
@@ -167,15 +244,40 @@ export default class Enemy extends Entity {
                 onUpdate: this.onHealingUpdate,
                 onExit: this.onHealingExit,
             })
+            .addState(States.KYRNAICISM, {
+                onEnter: this.onKyrnaicismEnter,
+                onUpdate: this.onKyrnaicismUpdate,
+                onExit: this.onKyrnaicismExit,
+            })
+            .addState(States.LEAP, {
+                onEnter: this.onLeapEnter,
+                onUpdate: this.onLeapUpdate,
+                onExit: this.onLeapExit,
+            })
             .addState(States.POLYMORPH, {
                 onEnter: this.onPolymorphingEnter,
                 onUpdate: this.onPolymorphingUpdate,
                 onExit: this.onPolymorphingExit,
             })
+            .addState(States.PURSUIT, {
+                onEnter: this.onPursuitEnter,
+                onUpdate: this.onPursuitUpdate,
+                onExit: this.onPursuitExit,
+            })
+            .addState(States.RUSH, {
+                onEnter: this.onRushEnter,
+                onUpdate: this.onRushUpdate,
+                onExit: this.onRushExit,
+            })
             .addState(States.SACRIFICE, {
                 onEnter: this.onSacrificeEnter,
                 // onUpdate: this.onSacrificeUpdate,
                 onExit: this.onSacrificeExit,
+            })
+            .addState(States.SLOWING, {
+                onEnter: this.onSlowingEnter,
+                // onUpdate: this.onSlowingUpdate,
+                onExit: this.onSlowingExit,
             })
             .addState(States.SNARE, {
                 onEnter: this.onSnaringEnter,
@@ -187,10 +289,10 @@ export default class Enemy extends Entity {
                 // onUpdate: this.onSutureUpdate,
                 onExit: this.onSutureExit,
             })
-            .addState(States.SLOWING, {
-                onEnter: this.onSlowingEnter,
-                // onUpdate: this.onSlowingUpdate,
-                onExit: this.onSlowingExit,
+            .addState(States.TSHAERAL, {
+                onEnter: this.onTshaeralEnter,
+                onUpdate: this.onTshaeralUpdate,
+                onExit: this.onTshaeralExit,
             })
 
         this.stateMachine.setState(States.IDLE);
@@ -201,10 +303,30 @@ export default class Enemy extends Entity {
                 onEnter: this.onCleanEnter,
                 onExit: this.onCleanExit,
             })
+            .addState(States.CHIOMIC, {
+                onEnter: this.onChiomicEnter,
+                onUpdate: this.onChiomicUpdate,
+                onExit: this.onChiomicExit,
+            })
+            .addState(States.DISEASE, {
+                onEnter: this.onDiseaseEnter,
+                onUpdate: this.onDiseaseUpdate,
+                onExit: this.onDiseaseExit,
+            })
+            .addState(States.FREEZE, {
+                onEnter: this.onFreezeEnter,
+                onUpdate: this.onFreezeUpdate,
+                onExit: this.onFreezeExit,
+            })
             .addState(States.FROZEN, {
                 onEnter: this.onFrozenEnter,
                 onUpdate: this.onFrozenUpdate,
                 onExit: this.onFrozenExit,
+            })
+            .addState(States.HOWL, {
+                onEnter: this.onHowlEnter,
+                onUpdate: this.onHowlUpdate,
+                onExit: this.onHowlExit,
             })
             .addState(States.MALICE, {
                 onEnter: this.onMaliceEnter,
@@ -221,10 +343,20 @@ export default class Enemy extends Entity {
                 onUpdate: this.onProtectUpdate,
                 onExit: this.onProtectExit,
             })
+            .addState(States.RENEWAL, {
+                onEnter: this.onRenewalEnter,
+                onUpdate: this.onRenewalUpdate,
+                onExit: this.onRenewalExit,
+            })
             .addState(States.ROOTED, {
                 onEnter: this.onRootEnter,
                 onUpdate: this.onRootUpdate,
                 onExit: this.onRootExit,
+            })
+            .addState(States.SCREAM, {
+                onEnter: this.onScreamEnter,
+                onUpdate: this.onScreamUpdate,
+                onExit: this.onScreamExit,
             })
             .addState(States.SHIELD, {
                 onEnter: this.onShieldEnter,
@@ -256,6 +388,11 @@ export default class Enemy extends Entity {
                 onUpdate: this.onWardUpdate,
                 onExit: this.onWardExit,
             })
+            .addState(States.WRITHE, {
+                onEnter: this.onWritheEnter,
+                onUpdate: this.onWritheUpdate,
+                onExit: this.onWritheExit,
+            })
 
         this.metaMachine.setState(States.CLEAN);
         
@@ -273,6 +410,9 @@ export default class Enemy extends Entity {
         this.isHanging = false;
         this.isHealing = false;
         this.isPraying = false;
+        this.isRushing = false;
+        this.rushedEnemies = [];
+        this.touching = [];
         this.rollCooldown = 0;
         this.dodgeCooldown = 0;
         this.enemySensor = undefined;
@@ -476,12 +616,24 @@ export default class Enemy extends Entity {
         const percent = this.scene.settings.difficulty.special;
         return percent > Math.random() || false;
     };
+
+    isValidRushEnemy = (enemy) => {
+        if (this.isRushing) {
+            const newEnemy = this.rushedEnemies.every(obj => obj.playerID !== enemy.playerID);
+            if (newEnemy) {
+                console.log(`%c ${enemy.playerID} is a new enemy: ${newEnemy}`, 'color: #00ff00');
+                this.rushedEnemies.push(enemy);
+            };
+        };
+    };
     
     enemyCollision = (enemySensor) => {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [enemySensor],
             callback: other => {
                 if (!other.gameObjectB || other.gameObjectB.name !== 'player') return;
+                this.isValidRushEnemy(other.gameObjectB);
+                this.touching.push(other.gameObjectB);
                 if (this.ascean && !other.gameObjectB.isStealthing && this.enemyAggressionCheck()) {
                     this.createCombat(other, 'start');
                 } else if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
@@ -505,6 +657,7 @@ export default class Enemy extends Entity {
             objectA: [enemySensor],
             callback: other => {
                 if (!other.gameObjectB || other.gameObjectB.name !== 'player') return;
+                this.touching = this.touching.filter((target) => target === other.gameObjectB);
                 if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
                     if (this.healthbar) this.healthbar.setVisible(false);
                     if (this.isDefeated) {
@@ -657,37 +810,33 @@ export default class Enemy extends Entity {
             console.log(`%c ${this.ascean.name} is not a Special Enemy`, 'color: #f00');
             return;
         };
-        // const mastery = this.ascean.mastery;
-        // const SPECIALS = [
-        //     'Root', 
-        // ];
-        // const movements = ['Blink', 'Pursuit'];
-        // const attacks = ['Arc', 'Leap', 'Rush', 'Storm'];
+        const mastery = this.ascean.mastery;
+        
+        // const movements = ['Blink', 'Pursuit', 'Rush'];
         // const channels = ['Kyrnaicism', 'Tshaeral'];
         // const aoes = ['Chiomic', 'Disease', 'Freeze', 'Howl', 'Renewal', 'Scream', 'Writhe'];
-        const bubbles = ['Malice', 'Mend', 'Protect', 'Shield', 'Ward'];
-
+        // const bubbles = ['Malice', 'Mend', 'Protect', 'Shield', 'Ward'];
         // const casts = ['Confuse', 'Fear', 'Healing', 'Polymorph', 'Snare'];
         // const instants = ['Desperation', 'Sacrifice', 'Slowing', 'Suture'];
         // const meta = ['Shimmer', 'Sprint'];
 
         // const specials = [
-        //     'Confuse', 'Desperation', 'Fear', 'Healing', 
-        //     'Malice', 'Mend', 'Polymorph', 'Protect', 
-        //     'Sacrifice', 'Shield', 'Shimmer', 'Slowing', 
-        //     'Snare', 'Sprint', 'Suture', 'Ward'
+        //     'Blink', 'Chiomic', 'Confuse', 'Disease', 'Desperation', 
+        //     'Fear', 'Freeze', 'Healing', 'Howl', 'Kyrnaicism', 
+        //     'Leap', 'Malice', 'Mend', 'Polymorph', 'Protect', 
+        //     'Pursuit', 'Renewal', 'Rush', 'Sacrifice', 'Sacrifice', 
+        //     'Scream', 'Shield', 'Shimmer', 'Slowing', 'Snare', 
+        //     'Sprint', 'Suture', 'Tshaeral', 'Ward', 'Writhe'
         // ];
         if (bool === true) {
             this.specialCombat = this.scene.time.delayedCall(DURATION.SPECIAL, () => {
                 if (this.inCombat === false) {
-                    console.log(`%c ${this.ascean.name} is no longer in combat, removing Special`, 'color: #00ff00')
+                    console.log(`%c ${this.ascean.name} is no longer in combat, removing Special`, 'color: #00ff00');
                     this.specialCombat.remove();
                     return;
                 };
-                // this.isPerformingSpecial = true;
-                // this.stateMachine.clearStates();
-                // const special = SPECIAL[mastery][Math.floor(Math.random() * SPECIAL[mastery].length)];
-                const special = bubbles[Math.floor(Math.random() * bubbles.length)].toLowerCase();
+                const special = ENEMY_SPECIAL[mastery][Math.floor(Math.random() * ENEMY_SPECIAL[mastery].length)].toLowerCase();
+                // const special = movements[Math.floor(Math.random() * movements.length)].toLowerCase();
                 this.specialAction = special;
                 this.currentAction = 'special';
                 console.log(`%c ${this.ascean.name} is going to use ${special}`, 'color: #00ff00');
@@ -1111,6 +1260,28 @@ export default class Enemy extends Entity {
     };
 
     // ========================== SPECIAL ENEMY STATES ========================== \\
+
+    onBlinkEnter = () => {
+        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
+        if (this.flipX === true) {
+            this.setVelocityX(25);
+        } else {
+            this.setVelocityX(-25);
+        };
+        if (!this.isCaerenic && !this.isGlowing) {
+            this.checkCaerenic(true);
+            this.scene.time.delayedCall(500, () => {
+                this.checkCaerenic(false);
+                this.stateMachine.setState(States.HEALING);
+            });
+        };
+    };
+    onBlinkUpdate = (_dt) => {};
+    onBlinkExit = () => {
+        this.isPerformingSpecial = false;
+        this.evaluateCombatDistance();
+    };
+
     onConfuseEnter = () => {
         this.isPerformingSpecial = true;
         this.isConfusing = true;
@@ -1200,6 +1371,98 @@ export default class Enemy extends Entity {
         this.evaluateCombatDistance();
     };
     
+    onKyrnaicismEnter = () => {
+        this.isChiomic = true;
+        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Kyrnaicism', PLAYER.DURATIONS.KYRNAICISM / 2, 'damage');
+        this.castbar.setTotal(PLAYER.DURATIONS.KYRNAICISM);
+        this.castbar.setTime(PLAYER.DURATIONS.KYRNAICISM);
+        this.scene.slow(this.scene.state?.enemyID);
+        this.chiomicTimer = this.scene.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                if (!this.isChiomic || this.scene.state.playerWin || this.scene.state.newComputerHealth <= 0) {
+                    this.isChiomic = false;
+                    this.chiomicTimer.remove(false);
+                    this.chiomicTimer = undefined;
+                    return;
+                };
+                this.scene.combatMachine.action({ type: 'Enemy Chiomic', data: 10 });
+            },
+            callbackScope: this,
+            repeat: 3,
+        });
+        this.scene.time.addEvent({
+            delay: 3000,
+            callback: () => {
+                this.isChiomic = false;
+            },
+            callbackScope: this,
+            loop: false,
+        });
+        this.setStatic(true);
+        this.castbar.setVisible(true);  
+    };
+    onKyrnaicismUpdate = (dt) => {
+        if (this.isChiomic) {
+            this.castbar.update(dt, 'channel', 0xA700FF, this.x, this.y);
+        } else {
+            this.stateMachine.setState(States.CHASE);
+        };
+    };
+  onKyrnaicismExit = () => {
+        this.castbar.reset();
+        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
+        this.setStatic(false);
+        if (this.chiomicTimer) {
+            this.chiomicTimer.remove(false);
+            this.chiomicTimer = undefined;
+        };
+    };
+
+    onLeapEnter = () => {
+        this.isPerformingSpecial = true;
+        this.isLeaping = true;
+        // const worldX = this.scene.cameras.main.getWorldPoint(this.scene.player.x, this.scene.player.y).x;
+        // const worldY = this.scene.cameras.main.getWorldPoint(this.scene.player.x, this.scene.player.y).y;
+        // const target = new Phaser.Math.Vector2(worldX, worldY);
+        // const direction = target.subtract(this.position);
+        const target = new Phaser.Math.Vector2(this.scene.player.x, this.scene.player.y);
+        const direction = target.subtract(this.position);
+        direction.normalize();
+        this.flipX = direction.x < 0;
+        if (!this.isCaerenic && !this.isGlowing) {
+            this.checkCaerenic(true);
+        };
+        this.isAttacking = true;
+        this.scene.tweens.add({
+            targets: this,
+            x: this.x + (direction.x * 125),
+            y: this.y + (direction.y * 125),
+            duration: 750,
+            ease: 'Elastic',
+            onComplete: () => { 
+                this.isLeaping = false; 
+                if (this.touching.length > 0) {
+                    this.touching.forEach(enemy => {
+                        if (enemy.playerID !== this.scene.player.playerID) return;
+                        this.scene.writhe(enemy.playerID);
+                    });
+                };
+                this.stateMachine.setState(States.COMBAT);
+            },
+        });       
+        EventBus.emit('enemy-combat-text', {
+            computerSpecialDescription: `${this.ascean.name} launchs themself through the air!`
+        });
+    };
+    onLeapUpdate = (_dt) => {};
+    onLeapExit = () => {
+        this.isPerformingSpecial = false;
+        this.checkCaerenic(false);
+        this.evaluateCombatDistance();
+    };
     
     onPolymorphingEnter = () => {
         this.anims.play('player_health', true);
@@ -1222,6 +1485,78 @@ export default class Enemy extends Entity {
         });
         this.isPerformingSpecial = false;
         // this.evaluateCombatDistance();
+    };
+
+    onPursuitEnter = () => {
+        this.isPerformingSpecial = true;
+        this.scene.sound.play('wild', { volume: this.scene.settings.volume });
+        if (this.scene.player.flipX) {
+            this.setPosition(this.scene.player.x + 16, this.scene.player.y);
+        } else {
+            this.setPosition(this.scene.player.x - 16, this.scene.player.y);
+        };
+
+        if (!this.isCaerenic && !this.isGlowing) {
+            this.checkCaerenic(true);
+            this.scene.time.delayedCall(500, () => {
+                this.checkCaerenic(false);
+            });
+        }; 
+        this.stateMachine.setState(States.COMBAT);    
+    };
+    onPursuitUpdate = (_dt) => {};
+    onPursuitExit = () => {
+        this.isPerformingSpecial = false;
+        this.evaluateCombatDistance();
+    };
+
+    onRushEnter = () => {
+        this.isPerformingSpecial = true;
+        this.isRushing = true;
+        // this.originalRushPosition = new Phaser.Math.Vector2(this.x, this.y);
+        // this.leapPointer = this.scene.rightJoystick.pointer;
+        this.scene.sound.play('stealth', { volume: this.scene.settings.volume });        
+        // const worldX = this.scene.cameras.main.getWorldPoint(this.scene.player.x, this.scene.player.y).x;
+        // const worldY = this.scene.cameras.main.getWorldPoint(this.scene.player.x, this.scene.player.y).y;
+        // const world = this.scene.cameras.main.getWorldPoint(this.scene.player.x, this.scene.player.y);
+        // const target = new Phaser.Math.Vector2(world.x, world.y);
+        // const direction = target.subtract(this.position);
+
+        const target = new Phaser.Math.Vector2(this.scene.player.x, this.scene.player.y);
+        const direction = target.subtract(this.position);
+        direction.normalize();
+        this.flipX = direction.x < 0;
+        if (!this.isCaerenic && !this.isGlowing) {
+            this.checkCaerenic(true);
+        };
+        this.isParrying = true;
+        this.scene.tweens.add({
+            targets: this,
+            x: this.x + (direction.x * 250),
+            y: this.y + (direction.y * 250),
+            duration: 500,
+            ease: 'Circ.easeOut',
+            onComplete: () => {
+                // console.log(this.rushedEnemies, this.rushedEnemies.length, 'Rushed Enemies');
+                if (this.rushedEnemies.length > 0) {
+                    this.rushedEnemies.forEach(enemy => {
+                        // console.log(`%c Rushed Enemy: ${enemy.enemyID}`, 'color: #ff0000');
+                        this.scene.writhe(enemy.playerID);
+                    });
+                };
+                this.isRushing = false;
+                this.stateMachine.setState(States.CHASE);
+            },
+        });         
+    };
+    onRushUpdate = (_dt) => {
+        // this.combatChecker(this.isRushing);
+    };
+    onRushExit = () => {
+        this.rushedEnemies = [];
+        this.checkCaerenic(false);
+        this.isPerformingSpecial = false;
+        this.evaluateCombatDistance();
     };
 
     onSlowingEnter = () => {
@@ -1305,7 +1640,135 @@ export default class Enemy extends Entity {
         this.evaluateCombatDistance();
     };
 
+    onTshaeralEnter = () => {
+        this.isPerformingSpecial = true;
+        this.isTshaering = true;
+        this.attacking.isConsumed = true;
+        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAERAL / 2, 'damage');
+        this.castbar.setTotal(PLAYER.DURATIONS.TSHAERAL);
+        this.castbar.setTime(PLAYER.DURATIONS.TSHAERAL);
+        this.tshaeringTimer = this.scene.time.addEvent({
+            delay: 250,
+            callback: () => {
+                if (!this.isTshaering || this.scene.state.computerWin || this.scene.state.newPlayerHealth <= 0) {
+                    this.isTshaering = false;
+                    this.tshaeringTimer.remove(false);
+                    this.tshaeringTimer = undefined;
+                    return;
+                };
+                this.scene.combatMachine.action({ type: 'Enemy Tshaeral', data: 3 });
+            },
+            callbackScope: this,
+            repeat: 8,
+        });
+        this.scene.time.addEvent({
+            delay: 2000,
+            callback: () => {
+                this.isTshaering = false;
+            },
+            callbackScope: this,
+            loop: false,
+        });
+        this.setStatic(true);
+        this.castbar.setVisible(true); 
+    };
+    onTshaeralUpdate = (dt) => {
+        if (this.isTshaering) {
+            this.castbar.update(dt, 'channel', 0xA700FF, this.x, this.y);
+        } else {
+            this.stateMachine.setState(States.CHASE);
+        };
+
+    };
+    onTshaeralExit = () => {
+        this.isPerformingSpecial = false;
+        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
+        this.setStatic(false);
+        if (this.tshaeringTimer) {
+            this.tshaeringTimer.remove(false);
+            this.tshaeringTimer = undefined;
+        };
+    };
+
     // ========================== SPECIAL META STATES ========================== \\
+
+    onChiomicEnter = () => {
+        this.aoe = new AoE(this.scene, 'chiomic', 1, true, this);    
+        this.scene.sound.play('death', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Hah! Hah!', PLAYER.DURATIONS.CHIOMIC, 'effect');
+        this.isChiomic = true;
+        this.scene.time.delayedCall(PLAYER.DURATIONS.CHIOMIC, () => {
+            this.isChiomic = false;
+        });
+        EventBus.emit('enemy-combat-text', {
+            computerSpecialDescription: `${this.ascean.name} mocks and confuses their surrounding foes.`
+        });
+    };
+    onChiomicUpdate = (_dt) => {
+        if (!this.isChiomic) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onChioimicExit = () => {};
+
+    onDiseaseEnter = () => {
+        this.isDiseasing = true;
+        this.aoe = new AoE(this.scene, 'tendril', 6, true, this);    
+        this.scene.sound.play('dungeon', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tendrils Swirl', 750, 'tendril');
+        this.scene.time.delayedCall(PLAYER.DURATIONS.DISEASE, () => {
+            this.isDiseasing = false;
+        });
+        EventBus.emit('enemy-combat-text', {
+            computerSpecialDescription: `${this.ascean.name} swirls such sweet tendrils which wrap round and reach to writhe.`
+        });
+    };
+    onDiseaseUpdate = (_dt) => {
+        if (this.isDiseasing) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onDiseaseExit = () => {};
+
+    onFreezeEnter = () => {
+        this.aoe = new AoE(this.scene, 'freeze', 1, true, this);
+        this.scene.sound.play('freeze', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Freezing', PLAYER.DURATIONS.FREEZE, 'cast');
+        this.isFreezing = true;
+        this.scene.time.delayedCall(PLAYER.DURATIONS.FREEZE, () => {
+            this.isFreezing = false;
+        });
+        EventBus.emit('enemy-combat-text', {
+            computerSpecialDescription: `${this.ascean.name} freezes nearby foes.`
+        });
+    };
+    onFreezeUpdate = (_dt) => {
+        if (!this.isFreezing) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onFreezeExit = () => {};
+
+    onHowlEnter = () => {
+        this.aoe = new AoE(this.scene, 'howl', 1, true, this);    
+        this.scene.sound.play('howl', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Howling', PLAYER.DURATIONS.HOWL, 'damage');
+        this.isHowling = true;
+        this.scene.time.delayedCall(PLAYER.DURATIONS.HOWL, () => {
+            this.isHowling = false;
+        });
+        EventBus.emit('enemy-combat-text', {
+            computerSpecialDescription: `${this.ascean.name} howls, it's otherworldly nature stunning nearby foes.`
+        });
+    };
+    onHowlUpdate = (_dt) => {
+        if (!this.isHowling) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onHowlExit = () => {};
 
     onMaliceEnter = () => {
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
@@ -1406,6 +1869,45 @@ export default class Enemy extends Entity {
             this.protectBubble = undefined;
         };
     };
+
+    onRenewalEnter = () => {
+        this.isRenewing = true;
+        this.aoe = new AoE(this.scene, 'renewal', 6, false, this);    
+        this.scene.sound.play('shield', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Hush Tears', 750, 'bone');
+        this.scene.time.delayedCall(PLAYER.DURATIONS.RENEWAL, () => {
+            this.isRenewing = false;
+        });
+        EventBus.emit('enemy-combat-text', {
+            computerSpecialDescription: `Tears of a Hush proliferate and heal old wounds.`
+        });
+    };
+    onRenewalUpdate = (_dt) => {
+        if (this.isRenewing) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onRenewalExit = () => {};
+
+    onScreamEnter = () => {
+        if (!this.inCombat) return;
+        this.aoe = new AoE(this.scene, 'scream', 1, true, this);  
+        this.scene.sound.play('scream', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Screaming', 750, 'hush');
+        this.isScreaming = true;
+        this.scene.time.delayedCall(PLAYER.DURATIONS.SCREAM, () => {
+            this.isScreaming = false;
+        });
+        EventBus.emit('enemy-combat-text', {
+            computerSpecialDescription: `${this.ascean.name} screams, fearing nearby foes.`
+        });
+    };
+    onScreamUpdate = (_dt) => {
+        if (!this.isScreaming) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onScreamExit = () => {};
 
     onShieldEnter = () => {
         this.scene.sound.play('shield', { volume: this.scene.settings.volume });
@@ -1528,6 +2030,26 @@ export default class Enemy extends Entity {
             this.isWarding = false;
         };
     };
+
+    onWritheEnter = () => {
+        this.aoe = new AoE(this.scene, 'writhe', 1, true, this);    
+        this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Writhing', 750, 'tendril');
+        this.isWrithing = true;
+        this.scene.time.delayedCall(PLAYER.DURATIONS.WRITHE, () => {
+            this.isWrithing = false;
+        });
+        EventBus.emit('enemy-combat-text', {
+            computerSpecialDescription: `${this.ascean.name}'s caeren grips their body and contorts, writhing around them.`
+        });
+    };
+    onWritheUpdate = (_dt) => {
+        this.combatChecker(this.isWrithing);
+        if (!this.isWrithing) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onWritheExit = () => { };
 
     // ========================== STEALTH ========================== \\
 

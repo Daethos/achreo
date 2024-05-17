@@ -12,7 +12,7 @@ const COLORS = {
 };
 
 export default class AoE extends Phaser.Physics.Matter.Sprite {
-    constructor(scene, type, count = 1, positive = false) {
+    constructor(scene, type, count = 1, positive = false, enemy = undefined) {
         super(scene.matter.world, scene.player.x, scene.player.y + 6, 'target');
         this.setVisible(false);
         this.setScale(0.375); // 375
@@ -30,10 +30,17 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.hit = [];
         this.bless = [];
         this.timer = undefined;    
-        this.setupSensor(scene);
-        this.setupListener(scene);
-        this.setTimer(scene);
-        this.setCount(scene, type, positive);
+        if (enemy !== undefined) {
+            this.setupEnemySensor(enemy);
+            this.setupEnemyListener(scene);
+            this.setEnemyTimer(scene, enemy);
+            this.setupEnemyCount(scene, type, positive);
+        } else {
+            this.setupSensor(scene);
+            this.setupListener(scene);
+            this.setTimer(scene);
+            this.setCount(scene, type, positive);
+        };
     };
 
     setCount = (scene, type, positive) => {
@@ -73,6 +80,64 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             });
         };
     };
+
+    setupEnemyCount = (scene, type, positive) => {
+        if (positive === true) {
+            scene.time.delayedCall(1000, () => {
+                this.hit.forEach((target) => {
+                    scene[type](target.playerID);
+                });
+                this.count -= 1;
+                if (this.count === 0) {
+                    this.glowFilter.remove(this);
+                    this.hit = [];
+                    this.timer.destroy();
+                    this.timer.remove(false);
+                    this.timer = undefined;
+                    this.destroy();
+                } else {
+                    this.setupEnemyCount(scene, type, positive);
+                };
+            });
+        } else {
+            scene.time.delayedCall(1000, () => {
+                this.bless.forEach((target) => {
+                    scene[`enemy${type.charAt(0).toUpperCase() + type.slice(1)}`](target.enemyID);
+                });
+                this.count -= 1;
+                if (this.count === 0) {
+                    this.glowFilter.remove(this);
+                    this.bless = [];
+                    this.timer.destroy();
+                    this.timer.remove(false);
+                    this.timer = undefined;
+                    this.destroy();    
+                } else {
+                    this.setupEnemyCount(scene, type);
+                };
+            });
+        };
+    };
+
+    setEnemyTimer = (scene, enemy) => {
+        let scale = 0;
+        let count = 0;
+        this.timer = scene.time.addEvent({
+            delay: 50,
+            callback: () => {
+                if (count >= 20) return;
+                if (this && this.timer) {
+                    scale += 0.01875;
+                    this.setScale(scale);
+                    this.setVisible(true);
+                    this.setPosition(enemy.x, enemy.y + 6);
+                };
+                count++;
+            },
+            callbackScope: this,
+            loop: 20,
+        });
+    };
     
     setTimer = (scene) => {
         let scale = 0;
@@ -94,6 +159,15 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         });
     };
 
+    setupEnemySensor = (enemy) => {
+        const aoeSensor = Bodies.circle(enemy.x, enemy.y, 60, { 
+            isSensor: true, label: 'aoeSensor' 
+        });
+        this.setExistingBody(aoeSensor);
+        this.setStatic(true);
+        this.sensor = aoeSensor;
+    };
+
     setupSensor = (scene) => {
         const aoeSensor = Bodies.circle(scene.player.x, scene.player.y + 6, 60, { 
             isSensor: true, label: 'aoeSensor' 
@@ -101,6 +175,37 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setExistingBody(aoeSensor);
         this.setStatic(true);
         this.sensor = aoeSensor;
+    };
+
+    setupEnemyListener = (scene) => {
+        scene.matterCollision.addOnCollideStart({
+            objectA: [this.sensor],
+            callback: (collision) => {
+                const { gameObjectB, bodyB } = collision;
+                if (gameObjectB instanceof Phaser.Physics.Matter.Sprite) {
+                    if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
+                        this.hit.push(gameObjectB);
+                    } else if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
+                        this.bless.push(gameObjectB);
+                    };
+                };
+            },
+            context: scene
+        });
+        scene.matterCollision.addOnCollideEnd({
+            objectA: [this.sensor],
+            callback: (collision) => {
+                const { gameObjectB, bodyB } = collision;
+                if (gameObjectB instanceof Phaser.Physics.Matter.Sprite) {
+                    if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
+                        this.hit = this.hit.filter((target) => target === gameObjectB);
+                    } else if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
+                        this.bless = this.bless.filter((target) => target === gameObjectB);
+                    };
+                };
+            },
+            context: scene
+        });
     };
 
     setupListener = (scene) => {

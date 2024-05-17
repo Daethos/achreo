@@ -416,6 +416,7 @@ export class Game extends Scene {
             let enemy = this.enemies.find((enemy: any) => enemy.enemyID === e.id);
             enemy.isAggressive = e.isAggressive;
             if (e.isAggressive === true) {
+                enemy.setSpecialCombat(true);
                 enemy.attacking = this.player;
                 enemy.inCombat = true;
                 enemy.originPoint = new Phaser.Math.Vector2(enemy.x, enemy.y).clone();
@@ -697,6 +698,14 @@ export class Game extends Scene {
     renewal = () => {
         EventBus.emit('initiate-combat', { data: { key: 'player', value: 7.5 }, type: 'Health' });
     };
+    enemyRenewal = (id: string) => {
+        if (id === '') return;
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        if (!enemy) return;
+        const heal = enemy.ascean.health.max * 0.1;
+        const total = Math.min(enemy.health + heal, enemy.ascean.health.max);
+        EventBus.emit('initiate-combat', { data: { key: 'enemy', value: total }, type: 'Health', id });
+    };
     root = () => {
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === this.state.enemyID);
         if (!enemy) return;
@@ -836,29 +845,37 @@ export class Game extends Scene {
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.2);
             const health = enemy.health - damage;
             EventBus.emit('update-enemy-health', { id, health });
+        } else if (id === this.player.playerID) {
+            EventBus.emit('initiate-combat', { data: 10, type: 'Enemy Chiomic' });
         };
     };
-    writhe = (id: string): void => {
+    writhe = (id: string, enemyID?: string): void => {
         if (id === '') return;
         if (!this.player.inCombat) return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
 
-        const match = this.player.enemyIdMatch();
-        if (match) { // Target Player Attack
-            console.log('Matched Writhe')
-            this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: 'attack' } });
-        } else { // Blind Player Attack
-            console.log('Blind Writhe')
-            this.combatMachine.action({ type: 'Player', data: { 
-                playerAction: { action: 'attack', parry: this.state.parryGuess }, 
-                enemyID: enemy.enemyID, 
-                ascean: enemy.ascean, 
-                damageType: enemy.currentDamageType, 
-                combatStats: enemy.combatStats, 
-                weapons: enemy.weapons, 
-                health: enemy.health, 
-                actionData: { action: enemy.currentAction, parry: enemy.parryAction }
-            }});
+        if (!enemy) {
+            if (id === this.player.playerID) {
+                EventBus.emit('initiate-combat', { data: 25, type: 'Enemy Chiomic' })
+            };
+        } else {
+            const match = this.player.enemyIdMatch();
+            if (match) { // Target Player Attack
+                console.log('Matched Writhe');
+                this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: 'attack' } });
+            } else { // Blind Player Attack
+                console.log('Blind Writhe');
+                this.combatMachine.action({ type: 'Player', data: { 
+                    playerAction: { action: 'attack', parry: this.state.parryGuess }, 
+                    enemyID: enemy.enemyID, 
+                    ascean: enemy.ascean, 
+                    damageType: enemy.currentDamageType, 
+                    combatStats: enemy.combatStats, 
+                    weapons: enemy.weapons, 
+                    health: enemy.health, 
+                    actionData: { action: enemy.currentAction, parry: enemy.parryAction }
+                }});
+            };
         };
     };
 

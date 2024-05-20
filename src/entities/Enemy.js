@@ -829,8 +829,8 @@ export default class Enemy extends Entity {
                 this.specialAction = special;
                 this.currentAction = 'special';
                 // console.log(`%c ${this.ascean.name} is going to use ${special}`, 'color: #00ff00');
-                if (this.stateMachine.isState('kyrnaicism')) {
-                    this.stateMachine.setState('kyrnaicism');
+                if (this.stateMachine.isState(special)) {
+                    this.stateMachine.setState(special);
                 } else if (this.metaMachine.isState(special)) {
                     this.metaMachine.setState(special);
                 };

@@ -1643,7 +1643,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     combat.typeDamageData.push(combat.playerDamageType);
     const skill = combat.weapons[0]?.type === 'Spell' ? combat.weapons[0]?.damageType?.[0] : combat.weapons[0]?.type;
     combat.skillData.push(skill as string);
-    console.log('Skill Data:', combat.skillData);
+    // console.log('Skill Data:', combat.skillData);
     combat.totalDamageData = combat.realizedPlayerDamage > combat.totalDamageData ? combat.realizedPlayerDamage : combat.totalDamageData;
     // ==================== STATISTIC LOGIC ====================
 

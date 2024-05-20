@@ -153,7 +153,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         if (this.entity.name !== 'player') {
             if (x && y) {
                 const world = this.scene.cameras.main.getWorldPoint(x, y);
-                console.log(world, x, y, 'Enemy Castbar Updating Position');
+                // console.log(world, x, y, 'Enemy Castbar Updating Position');
                 this.setPosition(world.x, world.y + 35);
             };
         };

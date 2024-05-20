@@ -430,7 +430,7 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
     };
 
     function checkDeificInteractions(currentExperience: number) {
-        console.log(ascean().interactions.deity, ascean().level, currentExperience, 'Checking Deific Interactions');
+        // console.log(ascean().interactions.deity, ascean().level, currentExperience, 'Checking Deific Interactions');
         return ascean().interactions.deity <= ascean().level - 1 // <=
             && ascean().level === 2 
             && ascean().level * 750 <= currentExperience;
@@ -439,7 +439,7 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
     function filterEnemies(id: string) {
         let newEnemies = enemies();
         newEnemies = newEnemies.filter((enemy) => {
-            console.log(enemy.id === id, 'Filtering Enemies');
+            // console.log(enemy.id === id, 'Filtering Enemies');
             return enemy.id !== id ? true : false;
         });
         setEnemies(newEnemies);

@@ -43,7 +43,7 @@ export const ENEMY_SPECIAL = {
         'Rush', 
         'Shimmer', 
         'Snare', 
-        'Slow',
+        'Slowing',
         'Sprint', 
         'Writhe'
     ], // 8
@@ -56,7 +56,7 @@ export const ENEMY_SPECIAL = {
         'Polymorph', 
         'Sacrifice', 
         'Shimmer', 
-        'Slow',
+        'Slowing',
         'Snare',
     ], // 9
         
@@ -805,25 +805,32 @@ export default class Enemy extends Entity {
         };
     };
 
-    setSpecialCombat = (bool) => {
+    setSpecialCombat = (bool, mult = 1) => {
         if (this.isSpecial === false) {
             console.log(`%c ${this.ascean.name} is not a Special Enemy`, 'color: #f00');
             return;
         };
         const mastery = this.ascean.mastery;
         if (bool === true) {
-            this.specialCombat = this.scene.time.delayedCall(DURATION.SPECIAL, () => {
+            this.specialCombat = this.scene.time.delayedCall(DURATION.SPECIAL * mult, () => {
                 if (this.inCombat === false) {
                     console.log(`%c ${this.ascean.name} is no longer in combat, removing Special`, 'color: #00ff00');
                     this.specialCombat.remove();
                     return;
                 };
+                if (this.isConfused || this.isFeared || this.isPolymorphed || this.isStunned) {
+                    console.log(`%c ${this.ascean.name} is confused, feared, polymorphed, or stunned, removing Special`, 'color: #00ff00');
+                    // Delaying by 1 second to see if the enemy clears their negative status effects
+                    this.setSpecialCombat(true, 0.1);
+                    return;
+                };
+
                 const special = ENEMY_SPECIAL[mastery][Math.floor(Math.random() * ENEMY_SPECIAL[mastery].length)].toLowerCase();
                 this.specialAction = special;
                 this.currentAction = 'special';
                 // console.log(`%c ${this.ascean.name} is going to use ${special}`, 'color: #00ff00');
-                if (this.stateMachine.isState(special)) {
-                    this.stateMachine.setState(special);
+                if (this.stateMachine.isState('kyrnaicism')) {
+                    this.stateMachine.setState('kyrnaicism');
                 } else if (this.metaMachine.isState(special)) {
                     this.metaMachine.setState(special);
                 };

@@ -1011,7 +1011,7 @@ export class Game extends Scene {
     };
     resume() {
         this.scene.resume();
-        console.log(this.settings?.music, 'Settings Music -- Would you **want** to resume?');
+        // console.log(this.settings?.music, 'Settings Music -- Would you **want** to resume?');
         if (this.settings?.music === false) return;
         if (!this.combat) {
             if (this.musicBackground.isPaused) {

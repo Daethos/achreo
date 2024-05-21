@@ -131,7 +131,6 @@ export interface Combat {
 };
 
 export const initCombat: Combat = {
-
     player: undefined,
     action: '',
     playerAction: '',

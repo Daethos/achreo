@@ -2839,7 +2839,7 @@ function computerCombatCompiler(combat: { computerOne: Combat, computerTwo: Comb
     } catch (err) {
         console.log(err, 'Error in the Phaser Effect Tick of Game Services');
     };
-}
+};
 
 export {
     prayerSplitter,

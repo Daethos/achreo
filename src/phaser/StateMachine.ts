@@ -134,7 +134,7 @@ export default class StateMachine {
             return;
         }; 
         if (this.isCurrentState(name)) return;
-        if (this.isChangingState) {
+        if (this.isChangingState === true) {
             this.changeStateQueue.push(name); 
             return;
         }; 

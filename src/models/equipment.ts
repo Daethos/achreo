@@ -64,7 +64,7 @@ export default class Equipment {
 
 async function create(data: any): Promise<Equipment> {
     const equipment = new Equipment(data);
-    mutate([equipment], equipment?.rarity);
+    await mutate([equipment], equipment?.rarity);
     return equipment;
 };
 
@@ -96,11 +96,13 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
         const critDamage = ['criticalDamage'];
         
     
-        equipment.forEach(async (item: Equipment) => {
+        // equipment.forEach(async (item: Equipment) => {
+        for (const item of equipment) {
             item._id = uuidv4(); // uuidv4();
             const attributeCount = attributes.filter(attribute => item[attribute] > 0).length;
     
-            attributes.forEach(async attribute => {
+            // attributes.forEach(async attribute => {
+            for (const attribute of attributes) {   
                 if (item[attribute] > 0) {
                     if (attributeCount === 1) {
                         item[attribute] = randomIntFromInterval(range[4], range[5]);
@@ -116,9 +118,11 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
                         item[attribute] = randomIntFromInterval(range[0], range[0]);
                     };
                 };
-            });
+            };
+            // });
         
-            chance.forEach(async att => {
+            // chance.forEach(async att => {
+            for (const att of chance) {    
                 if (item[att] > 10) {
                     item[att] = randomIntFromInterval(item[att] -2, item[att] + 5);
                 } else if (item[att] > 5) { // 6-10
@@ -128,9 +132,11 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
                 } else if (item[att] > 0) { // 1-2
                     item[att] = randomIntFromInterval(item[att], item[att] + 1);
                 };
-            });
+            };
+            // });
         
-            damage.forEach(async dam => {
+            // damage.forEach(async dam => {
+            for (const dam of damage) {    
                 if (item[dam] > 20) { // 21 +/- 5/3
                     item[dam] = randomIntFromInterval(item[dam] - 1, item[dam] + 5);
                 } else if (item[dam] > 10) { // 11-20 +/- 3/2
@@ -140,9 +146,11 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
                 } else if (item[dam] > 1) { // 2-5 +/- 1/0
                     item[dam] = randomIntFromInterval(item[dam], item[dam] + 1);
                 };
-            });
+            };
+            // });
         
-            critDamage.forEach(async dam => {
+            // critDamage.forEach(async dam => {
+            for (const dam of critDamage) {    
                 if (item[dam] > 1.99) { // 2.0 +/- 0.3/0.25 (0.55 Range)
                     item[dam] = randomFloatFromInterval(item[dam] - 0.25, item[dam] + 0.3);
                 } else if (item[dam] > 1.74) { // 1.75 +/- 0.25/0.2 (0.45 Range)
@@ -162,12 +170,14 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
                 } else if (item[dam] === 1.01) { // 1.00 +/- 0.01/0 (0.01 Range)
                     item[dam] = randomFloatFromInterval(item[dam], item[dam] + 0.01);
                 };
-            });
+            };
+            // });
             await addEquipment(item);
-        });
+        };
+        // });
         return equipment;
     } catch (err) {
-        console.log(err, 'Error Mutating Equipment');
+        console.warn(err, 'Error Mutating Equipment');
     };
 };
 
@@ -584,14 +594,53 @@ async function getClothEquipment(level: number): Promise<Equipment[] | undefined
             } else if (type === 'Legs') {
                 item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type === 'Leather-Cloth' )))[0]; 
             };
-            let equipment = await mutate([item as Equipment], rarity) as Equipment[];
-            equipment.forEach(item => new Equipment(item));
-            merchantEquipment.push(equipment[0]);
+            if (item) {
+                let mutatedItems = await mutate([item], rarity) as Equipment[];
+                mutatedItems.forEach(item => new Equipment(item));
+                const clonedItem = advancedDeepClone(mutatedItems[0]);
+                console.log(clonedItem, 'Cloned, Mutated Item');
+                merchantEquipment.push(clonedItem);
+            };
+            // let equipment = await mutate([item as Equipment], rarity) as Equipment[];
+            // equipment.forEach(item => new Equipment(item));
+            // console.log(equipment[0], 'Equipment');
+            // merchantEquipment.push(equipment[0]);
         };
+        console.log(merchantEquipment, 'Merchant Equipment');
         return merchantEquipment;
     } catch (err) {
         console.warn(err, 'Error in Merchant Function');
     };
 };
+
+function deepClone<T>(obj: T): T {
+    return JSON.parse(JSON.stringify(obj));
+};
+
+function advancedDeepClone<T>(obj: T): T {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    };
+
+    if (obj instanceof Date) {
+        return new Date(obj.getTime()) as unknown as T;
+    };
+
+    if (obj instanceof Array) {
+        const arrCopy = [] as unknown as T;
+        (obj as unknown as Array<unknown>).forEach((item, index) => {
+            (arrCopy as any)[index] = advancedDeepClone(item);
+        });
+        return arrCopy;
+    };
+
+    const objCopy = {} as T;
+    Object.keys(obj).forEach((key) => {
+        (objCopy as unknown as Record<string, unknown>)[key] = advancedDeepClone((obj as unknown as Record<string, unknown>)[key]);
+    });
+
+    return objCopy;
+};
+
 
 export { create, defaultMutate, mutate, getOneRandom, getRandomNumStr, upgradeEquipment, getPhysicalWeaponEquipment, getMagicalWeaponEquipment, getArmorEquipment, getJewelryEquipment, getMerchantEquipment, getClothEquipment };

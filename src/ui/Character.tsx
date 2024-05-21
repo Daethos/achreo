@@ -28,6 +28,7 @@ import { OriginModal } from '../components/Origin';
 import { FaithModal } from '../components/Faith';
 import { DEITIES } from '../utility/deities';
 import { PhaserShaper } from './PhaserShaper';
+import { Reputation, faction } from '../utility/player';
 
 export const viewCycleMap = {
     Character: 'Inventory',
@@ -36,6 +37,8 @@ export const viewCycleMap = {
     Faith: 'Character',
 };
 const CHARACTERS = {
+    REPUTATION: 'Reputation',
+    SKILLS: 'Skills',
     STATISTICS: 'Statistics',
     TRAITS: 'Traits',
 };
@@ -77,6 +80,8 @@ const GET_NEXT_RARITY = {
     Epic: "Legendary",
 };
 interface Props {
+    reputation: Accessor<Reputation>;
+    setReputation: Setter<Reputation>;
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
     ascean: Accessor<Ascean>; 
@@ -85,7 +90,7 @@ interface Props {
     combatState: Accessor<Combat>;
 };
 
-const Character = ({ settings, setSettings, ascean, asceanState, game, combatState }: Props) => {
+const Character = ({ reputation, setReputation, settings, setSettings, ascean, asceanState, game, combatState }: Props) => {
     const [playerTraitWrapper, setPlayerTraitWrapper] = createSignal<any>({});
     const [dragAndDropInventory, setDragAndDropInventory] = createSignal(game()?.inventory);
     const [canUpgrade, setCanUpgrade] = createSignal<boolean>(false);
@@ -203,6 +208,38 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
         await saveSettings(newSettings);
     };
 
+    const createReputationBar = (faction: faction) => {
+        return (
+            <div class='skill-bar' style={{
+                'align-items': 'center',
+                'border': '0.1em solid gold', 
+                'border-radius': '0.25em', 
+                'justify-content': 'center',
+                'margin-bottom': '3%',
+                'text-align': 'center', 
+            }}>
+            <p class='skill-bar-text' style={{ 
+                    'color': '#fdf6d8', 
+                    'font-weight': 700, 
+                    'margin': '0 auto',
+                    // 'margin-left': '25%',
+                    'position': 'absolute', 
+                    // 'text-align': 'center',
+                    // 'transform': 'translateX(-50%)',
+                    'text-shadow': '#000 0.1em 0 0.5em', 
+                    'width': '90%', 
+                    'z-index': 1000, 
+                }}>{faction.name}: {faction.reputation} / 100</p>
+                <div class='skill-bar-fill' style={{ 
+                    'background-color': 'blue', 
+                    'height': '4vh', 
+                    'overflow': 'hidden', 
+                    'width': `${faction.reputation}%`, 
+                }}></div>
+            </div>
+        );    
+    };
+
     const createSkillBar = (skill: string) => {
         const skillLevel = (ascean().skills as any)[skill];
         const skillCap = ascean().level * 100;
@@ -240,26 +277,25 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
 
     const createCharacterInfo = (character: string) => {
         switch (character) {
-            case CHARACTERS.STATISTICS:
-                const highestDeity = Object.entries(ascean()?.statistics?.combat?.deities).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
-                const highestPrayer = Object.entries(ascean()?.statistics?.combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
-                let highestMastery = Object.entries(ascean()?.statistics?.mastery).reduce((a, b) => a[1] > b[1] ? a : b);
-                if (highestMastery?.[1] === 0) highestMastery = [ascean()?.mastery, 0];
+            case CHARACTERS.REPUTATION:
+                const unnamed = reputation().factions.filter((faction) => faction.named === false);
                 return (
                     <div class='creature-heading'>
-                        <h1 style={{ 'margin-bottom': '3%' }}>Attacks</h1>
-                            Magical: <span class='gold'>{ascean()?.statistics?.combat?.attacks?.magical}</span> <br />
-                            Physical: <span class='gold'>{ascean()?.statistics?.combat?.attacks?.physical}</span><br />
-                            Highest Damage: <span class='gold'>{Math.round(ascean()?.statistics?.combat?.attacks?.total)}</span>
-                        <h1 style={{ 'margin-bottom': '3%' }}>Combat</h1>
-                            Mastery: <span class='gold'>{highestMastery[0].charAt(0).toUpperCase() + highestMastery[0].slice(1)} - {highestMastery[1]}</span><br />
-                            Wins / Losses: <span class='gold'>{ascean()?.statistics?.combat?.wins} / {ascean()?.statistics?.combat?.losses}</span>
-                        <h1 style={{ 'margin-bottom': '3%' }}>Prayers</h1>
-                            Consumed / Invoked: <span class='gold'>{ascean()?.statistics?.combat?.actions?.consumes} / {ascean()?.statistics?.combat?.actions?.prayers} </span><br />
-                            Highest Prayer: <span class='gold'>{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</span><br />
-                            Favored Deity: <span class='gold'>{highestDeity[0]}</span><br />
-                            Blessings: <span class='gold'>{highestDeity[1]}</span>
+                        <h1 style={{ 'margin-bottom': '3%' }}>Reputation</h1>
+                        <div style={{ 'margin-bottom': '3%' }}>
+                            <For each={unnamed}>
+                                {(faction: faction) => (
+                                    createReputationBar(faction)
+                                )}
+                            </For>
+                        </div>
+                    </div>
+                );
+            case CHARACTERS.SKILLS:
+                return (
+                    <div class='creature-heading'>
                         <h1 style={{ 'margin-bottom': '3%' }}>Skills</h1>
+                        <div style={{ 'margin-bottom': '3%' }}>
                             {createSkillBar('Axe')}
                             {createSkillBar('Bow')}
                             {createSkillBar('Curved Sword')}
@@ -282,6 +318,51 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                             {createSkillBar('Sorcery')}
                             {createSkillBar('Wild')}
                             {createSkillBar('Wind')}
+                        </div>
+                    </div>
+                );
+            case CHARACTERS.STATISTICS:
+                const highestDeity = Object.entries(ascean()?.statistics?.combat?.deities).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
+                const highestPrayer = Object.entries(ascean()?.statistics?.combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
+                let highestMastery = Object.entries(ascean()?.statistics?.mastery).reduce((a, b) => a[1] > b[1] ? a : b);
+                if (highestMastery?.[1] === 0) highestMastery = [ascean()?.mastery, 0];
+                return (
+                    <div class='creature-heading'>
+                        <h1 style={{ 'margin-bottom': '3%' }}>Attacks</h1>
+                            Magical: <span class='gold'>{ascean()?.statistics?.combat?.attacks?.magical}</span> <br />
+                            Physical: <span class='gold'>{ascean()?.statistics?.combat?.attacks?.physical}</span><br />
+                            Highest Damage: <span class='gold'>{Math.round(ascean()?.statistics?.combat?.attacks?.total)}</span>
+                        <h1 style={{ 'margin-bottom': '3%' }}>Combat</h1>
+                            Mastery: <span class='gold'>{highestMastery[0].charAt(0).toUpperCase() + highestMastery[0].slice(1)} - {highestMastery[1]}</span><br />
+                            Wins / Losses: <span class='gold'>{ascean()?.statistics?.combat?.wins} / {ascean()?.statistics?.combat?.losses}</span>
+                        <h1 style={{ 'margin-bottom': '3%' }}>Prayers</h1>
+                            Consumed / Invoked: <span class='gold'>{ascean()?.statistics?.combat?.actions?.consumes} / {ascean()?.statistics?.combat?.actions?.prayers} </span><br />
+                            Highest Prayer: <span class='gold'>{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</span><br />
+                            Favored Deity: <span class='gold'>{highestDeity[0]}</span><br />
+                            Blessings: <span class='gold'>{highestDeity[1]}</span>
+                        {/* <h1 style={{ 'margin-bottom': '3%' }}>Skills</h1>
+                            {createSkillBar('Axe')}
+                            {createSkillBar('Bow')}
+                            {createSkillBar('Curved Sword')}
+                            {createSkillBar('Dagger')}
+                            {createSkillBar('Earth')}
+                            {createSkillBar('Fire')}
+                            {createSkillBar('Frost')}
+                            {createSkillBar('Greataxe')}
+                            {createSkillBar('Greatbow')}
+                            {createSkillBar('Greatmace')}
+                            {createSkillBar('Greatsword')}
+                            {createSkillBar('Lightning')}
+                            {createSkillBar('Long Sword')}
+                            {createSkillBar('Mace')}
+                            {createSkillBar('Polearm')}
+                            {createSkillBar('Righteous')}
+                            {createSkillBar('Scythe')}
+                            {createSkillBar('Short Sword')}
+                            {createSkillBar('Spooky')}
+                            {createSkillBar('Sorcery')}
+                            {createSkillBar('Wild')}
+                            {createSkillBar('Wind')} */}
                     </div>
                 );
             case CHARACTERS.TRAITS:
@@ -645,12 +726,20 @@ const Character = ({ settings, setSettings, ascean, asceanState, game, combatSta
                 <div class='playerMenuHeading'>Character</div>
             </button>
             <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1 }}>
-                { settings().characterViews === CHARACTERS.STATISTICS ? (
+                { settings().characterViews === CHARACTERS.REPUTATION ? (
+                    <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.SKILLS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
+                        <div>Reputation</div>
+                    </button>
+                ) : settings().characterViews === CHARACTERS.SKILLS ? (
+                    <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.STATISTICS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
+                        <div>Skills</div>
+                    </button>
+                ) : settings().characterViews === CHARACTERS.STATISTICS ? (
                     <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.TRAITS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
                         <div>Statistics</div>
                     </button>
                 ) : (
-                    <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.STATISTICS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
+                    <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.REPUTATION)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
                         <div>Traits</div>
                     </button>
                 ) }     

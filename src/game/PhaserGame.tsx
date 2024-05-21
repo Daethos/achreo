@@ -19,6 +19,7 @@ import { fetchNpc } from '../utility/npc';
 import { checkDeificConcerns } from '../utility/deities';
 import { Statistics } from '../utility/statistics';
 import { startingSpecials } from '../utility/abilities';
+import { Reputation, faction } from '../utility/player';
 
 export interface IRefPhaserGame {
     game: Phaser.Game | null;
@@ -31,6 +32,8 @@ interface IProps {
     menu: any;
     setMenu: (menu: Menu) => void;
     ascean: Accessor<Ascean>;
+    reputation: Accessor<Reputation>;
+    setReputation: Setter<Reputation>;
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
     scene: Accessor<any>;
@@ -285,6 +288,51 @@ export const PhaserGame = (props: IProps) => {
         return newStatistics;
     };
 
+    function recordCombatReputation(computer: Ascean) {
+        let newReputation = { ...props.reputation() };
+        newReputation.factions.forEach((faction: faction) => {
+            if (faction.name === computer.name) {
+                if (faction.reputation < 25) {
+                    faction.reputation += 1;
+                } else {
+                    faction.reputation -= 5;
+                };
+
+                if (faction.reputation >= 25 && faction.aggressive === true) {
+                    faction.aggressive = false;
+                };
+                if (faction.reputation < 25 && faction.aggressive === false && faction.named === false) {
+                    faction.aggressive = true;
+                };
+
+
+            };
+        });
+        return newReputation;
+    };
+
+    function recordNoncombatReputation(computer: Ascean) {
+        let newReputation = { ...props.reputation() };
+        newReputation.factions.forEach((faction: faction) => {
+            if (faction.name === computer.name) {
+                if (faction.reputation < 25) {
+                    faction.reputation += 3;
+                } else if (faction.reputation < 50) {
+                    faction.reputation += 2;
+                } else if (faction.reputation < 100) {
+                    faction.reputation += 1;
+                };
+
+                if (faction.reputation >= 25 && faction.aggressive === true) {
+                    faction.aggressive = false;
+                };
+
+
+            };
+        });
+        return newReputation;
+    };
+
     function recordSkills(skills: string[]) {
         let newSkills = { ...props.ascean().skills };
         // console.log('Skills:', skills, 'Old Skills:', newSkills);
@@ -426,6 +474,7 @@ export const PhaserGame = (props: IProps) => {
             deityData: record.deityData,
         };
         const newStats = recordCombat(stat);
+        const newReputation = recordCombatReputation(record.computer as Ascean);
         const newSkills = recordSkills(record.skillData);
         
         let silver: number = experience.currency.silver, gold: number = experience.currency.gold, 
@@ -503,6 +552,7 @@ export const PhaserGame = (props: IProps) => {
         };
 
         EventBus.emit('update-ascean', update);
+        EventBus.emit('update-reputation', newReputation);
     };
 
     async function swapEquipment(e: { type: string; item: Equipment }) {
@@ -1063,7 +1113,7 @@ export const PhaserGame = (props: IProps) => {
         <>
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
         <Show when={live() && checkUi()}>
-            <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} settings={props.settings} setSettings={props.setSettings} stamina={stamina} />
+            <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} setReputation={props.setReputation} settings={props.settings} setSettings={props.setSettings} stamina={stamina} />
         </Show>
         </>
     );

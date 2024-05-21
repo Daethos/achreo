@@ -6,11 +6,13 @@ import Ascean from '../../models/ascean';
 import { Asceans } from './ascean';
 import PseudoBase from './pseudo';
 import Equipment, { getOneRandom } from '../../models/equipment';
+import { Reputation } from '../../utility/player';
 let db = new PseudoBase('db');
 
 const EQUIPMENT = 'Equipment';
 const ASCEANS = 'Asceans';
 const SETTINGS = 'Settings';
+const REPUTATION = 'Reputation';
 
 export const getAsceans = async () => await db.collection(ASCEANS).get();
 export const getAscean = async (id: string) => await db.collection(ASCEANS).doc({ _id: id }).get();
@@ -213,6 +215,21 @@ export const updateInventory = async (id: string, inventory: string[]) => {
     let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
     ascean.inventory = inventory;
     await db.collection(ASCEANS).doc({ _id: id }).update(ascean);
+};
+
+export const getReputation = async (id: string) => {
+    const reputation = await db.collection(REPUTATION).doc({ _id: id }).get();
+    if (reputation) {
+        return reputation;
+    } else {
+        const newReputation = new Reputation(id);
+        await db.collection(REPUTATION).add(newReputation);
+        return newReputation;
+    };
+};
+
+export const updateReputation = async (reputation: Reputation) => {
+    await db.collection(REPUTATION).doc({ _id: reputation._id }).update(reputation);
 };
 
 export const getSettings = async (id: string) => {

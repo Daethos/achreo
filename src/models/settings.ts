@@ -1,7 +1,4 @@
 import { startingSpecials } from "../utility/abilities";
-import { useResizeListener } from "../utility/dimensions";
-
-const dimensions = useResizeListener();
 
 export default class Settings {
     public _id: string;

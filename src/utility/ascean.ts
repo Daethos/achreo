@@ -89,53 +89,53 @@ const WEIGHTS = {
 };
 
 export type Skills = {
-    Axe: number;
-    Bow: number;
+    'Axe': number;
+    'Bow': number;
     'Curved Sword': number;
-    Dagger: number;
-    Earth: number;
-    Fire: number;
-    Frost: number;
-    Greataxe: number;
-    Greatbow: number;
-    Greatmace: number;
-    Greatsword: number;
-    Lightning: number;
+    'Dagger': number;
+    'Earth': number;
+    'Fire': number;
+    'Frost': number;
+    'Greataxe': number;
+    'Greatbow': number;
+    'Greatmace': number;
+    'Greatsword': number;
+    'Lightning': number;
     'Long Sword': number;
-    Mace: number;
-    Polearm: number;
-    Righteous: number;
-    Scythe: number;
+    'Mace': number;
+    'Polearm': number;
+    'Righteous': number;
+    'Scythe': number;
     'Short Sword': number;
-    Spooky: number;
-    Sorcery: number;
-    Wild: number;
-    Wind: number;
+    'Spooky': number;
+    'Sorcery': number;
+    'Wild': number;
+    'Wind': number;
 };
 
 export const initSkills: Skills = {
-    Axe: 1,
-    Bow: 1,
+    'Axe': 1,
+    'Bow': 1,
     'Curved Sword': 1,
-    Dagger: 1,
-    Earth: 1,
-    Fire: 1,
-    Frost: 1,
-    Greataxe: 1,
-    Greatbow: 1,
-    Greatmace: 1,
-    Greatsword: 1,
-    Lightning: 1,
+    'Dagger': 1,
+    'Earth': 1,
+    'Fire': 1,
+    'Frost': 1,
+    'Greataxe': 1,
+    'Greatbow': 1,
+    'Greatmace': 1,
+    'Greatsword': 1,
+    'Lightning': 1,
     'Long Sword': 1,
-    Mace: 1,
-    Polearm: 1,
-    Righteous: 1,
-    Scythe: 1,
+    'Mace': 1,
+    'Polearm': 1,
+    'Righteous': 1,
+    'Scythe': 1,
     'Short Sword': 1,
-    Spooky: 1,
-    Sorcery: 1,
-    Wild: 1,
-    Wind: 1,
+    'Spooky': 1,
+    'Sorcery': 1,
+    'Wild': 1,
+    'Wind': 1,
 };
 
 // ================================== HELPER FUNCTIONS =================================== \\

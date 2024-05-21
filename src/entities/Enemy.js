@@ -608,6 +608,8 @@ export default class Enemy extends Entity {
     };
 
     setAggression = () => {
+        // This will become 
+        // return this.scene.reputation.find(obj => obj.name === this.ascean.name).aggressive;
         const percent = this.scene.settings.difficulty.aggression;
         return percent > Math.random() || false;
     };

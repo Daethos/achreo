@@ -14,56 +14,16 @@ import { CharacterSheet, Compiler, asceanCompiler } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
 import type { IRefPhaserGame } from './game/PhaserGame';
 import { EventBus } from './game/EventBus';
-import { allEquipment, deleteAscean, getAscean, getAsceans, getInventory, getSettings, populate, saveTutorial, scrub } from './assets/db/db'; 
+import { allEquipment, deleteAscean, getAscean, getAsceans, getInventory, getReputation, getSettings, populate, saveTutorial, scrub, updateReputation } from './assets/db/db'; 
 import GameToast from './ui/GameToast';
 import { Puff } from 'solid-spinner';
-
-const TIPS = [
-    "This game saves pertinent progress whenever you tamper with your inventory, change settings, or resolve combat.", 
-    "You may change your settings at any time; from difficulty, remapping buttons, and sound, to visual effects, this may aid in your success.", 
-    "You may pause the game at any time. The game itself pauses when various menus are brought up.",
-    "You may change around your armor and weapons at any time, even in the middle of combat.",
-    "There is a quick, combat menu that pauses the game and allows you to choose from available weapons, damage types, and prayers.",
-    "When leveling, you have the opportunity to redress certain behaviors. You may change your faith, mastery, and add 2 points to your attributes.",
-    "Not all enemies are aggressive, but even those passive may be provoked. Careful how you speak to strangers in this world.",
-    "Loot may be gained from defeating enemies--at least one is guaranteed. For safer methods, merchants can also be found peddling such wares.",
-    "Most inventory can be equipped, provided you are a high enough level relative to its rarity.",
-    "You may be able to forge a higher rarity item from three lower rarity items, if you have the gold.",
-    "Some special abilities are depending on your health, others mastery, and some weapon. Refer to the Gameplay character sheet to read the descriptions.",
-    "Parrying only functions if you are melee attacking, and you can parry projectiles if you are capable.",
-    "Dodge and Roll differ in application. Dodging is a defensive action, and does not trigger a weapon attack. Rolling is an offensive action, and may trigger a weapon attack.",
-    "You may have up to three weapons equipped at a time, and may switch between them at in the quick combat menu.",
-    "Try different special abilities to see which ones work best for your playstyle. Some may be more effective given how you've designed your character.",
-    "The game is not over when you 'die.' You simply must find a way to regain health, whether through a special ability, or a flask of firewater.",
-    "There are a variety of merchants, each with their own specialties. Some may be more to your liking, or willing to barter than others..",
-    "Enemies are all human, and play as such. They may adapt to your strategies, and find ways to counter your strengths.",
-    "It has been 7 years since the Great Northren War ended. King Mathyus Caderyn II worked with the Soverains in the Nothren'eas during the Ascea of 140 AE.",
-    "The Ghost Hawk of Greyrock, Theogeni Spiras, has recently extinguished an ancient house of the Firelands, the Ashfyres. Former Protectorates, this comes about from a longstanding feud and civil war post-Ascea 130 AE.",
-    "General Evrio Lorian Peroumes is campaigning in the Cragorean Mountains, north of Licivitas, to quell the warring humanoid tribes. Last seen in 140 AE, winning the Ascea, his immediate endeavor to secure an army for the upcoming campaign was secured as he kneeled to receive his crown as the va'Esai.",
-    "The daughter of Soverain Garrick Myelle, Jadei Myelle, was chosen in a council of the Soverains as the bride in the treaty between the Daethic Kingdom and the Soverains. To this this, no child has been bore to the union, with some in the Daethic Kingdom in a state of unrest, the only surviving son of the king, married to a foreign bride.",
-    "The Ascean, the va'Esai, are titles bestowed to the winner of the Ascea--a decennial tournament held in Licivitas, where the greatest of all provinces meet to compete, conduct diplomacy, and gamble. During the last Ascea of 140 AE, the Daethic Kingdom and Soverains secured a treaty during the armistice.",
-    "The va'Esai is a spiritual title ranking your accomplishments in these more docile times as parity with mythic heroes of old: Laetrois Ath'Shaorah, prophet of Daethos, holding the original title.",
-    "The Ascean va'Esai translates from ancient Shaorahi to `To be worthy of the preservation of being.` It is the highest honor recognized outside the political and religious realms, and former bearers are seen as modern day heroes.",
-    "The Arbiters, traveling judges of the ley, are well respected for their adherence to their duty. They are known to be impartial, and are often called upon to settle disputes between provinces, and gain perspective on matters domestic.",
-    "Sages come in various forms: the wandering observer who is voracious in their notation--endlessly sending feathers back to the Museum in Licivitas; the scholar hired as tutor for those who can afford, bespoke to their desire--at times mischievious; the engineer, putting a sage's thought to application and the reason for some bizarre machinations--at times useful, say, in war.",
-    "The Seyr of Daethos is located in the city of Lor, in the north east of Licivtas. It is the largest of the temples--near a city within. The Seyr is the center of the Daethic faith, its devoted often pilgramage to it at least once in their lifetime.",
-    "The Ancients are contentious in belief. Some argue they were as we were, others that they were more, if human in design at all. Interesting their existence is never in question, only their nature.",
-    "Worship of the Ancients is still praticed in most provinces, though strongest in the Soverains. The Daethic Kingdom is the only province to have a state religion; despite Licivitas being its center with the Seyr, they are officially declared.",
-    "The Soverains are a collection of rough borders, each with their own ruler, who come together to form a council to stave off King Mathyus II during the Great Nothren War. Some have since started working together more harmoniously, with others reverting back to isolation.",
-    "The West Fangs are the lands west of Licivitas, found after the Sundering in the War of the Ancients. Its inhabitants seem to be various exiles of the North, Licivitas, and the Firelands, who form a loose confederation of battle clans--though participation seems asymmetrical.",
-    "The Teeth are the craggly, jagged cliff faces of the West Fangs, settled by explorers of Licivitas--pushed there from warring battle clans. Being a savvier sort, the Li'ivi made due and built unthinkable ports and pulleys to traverse the cliffs, and were able to sustain themselves and eventually proliferate from being the only peoples around to access the water.",
-    "Independence was eventually sought by the settlers of the Teeth against Licivitas, who were a burden on the port cities resources and wealth, and whom rarely gave aid in times of distress and war with the hostile battle clans. Each city now is ruled by its own appointed leader, whom chooses council.",
-    "The Astralands; harsh, stormy, and with little arable land, it lies east of Licivitas, protected by the Spine, a high and jagged mountainous range. The people are known for their biting wit and savage practice of war, they are the `only ones not to have fallen` during the War of the Ancients, and are unique in their near monotheism of Astra, the Ancient of Lightning.",
-    "Ashtre are heralded for their practice of war, reactive to the enemy, terrain, and weather--having inculcated all scenarios of other provincial formations and styles. Known to have the most advanced navy, they are the only province to possess a standing army.",
-    "In the middle southron province of Sedyrus--as has recently been deigned to be called by its conquerors, the Sedyreal of the northern, inhospitable desert mountains, who have taken the land in totality from the Quor'eite in its southernmost jungles and beaches.",
-    "Sedyreal are esteemed for their horsemanship, coupled with their martial nature, were only stymied in the Sedyren War against Licivitas by the sheer logistical might of the Li'ivi. It is a testament to their endurance that, once the war against Licivitas ended, they initiated and won the southern Quor'eia against the Quor'eite.",
-    "The Quor'eite are a people of the southernmost jungles and beaches of Sedyrus, who have been assimilated and dispersed by the Sedyreal. A more charming and energetic people, and capable in their own right, their ability to survive in the jungle did not thwart the tenacity of the Sedyreal.",
-    "The Fyers are considered lucky, as evidenced by the land they inhabit. Rich in soil, minerals, and water, they are the most naturally wealthy of all provinces, even if not yet harvested. This boon has granted them leisurely pursuits, and a more relaxed demeanor as of late. Some have event welcomed Daethos to their homes.",
-];
+import { TIPS } from './utility/tips';
+import { Reputation, initReputation } from './utility/player';
 
 export default function App() {
     const [ascean, setAscean] = createSignal<Ascean>(undefined as unknown as Ascean);
     const [settings, setSettings] = createSignal(initSettings);
+    const [reputation, setReputation] = createSignal(initReputation);
     const [menu, setMenu] = createSignal<Menu>({
         asceans: [] as Ascean[] | [],  
         characterCreated: false, 
@@ -197,7 +157,9 @@ export default function App() {
             const full = { ...asc, inventory: inv };
             setAscean(full);
             setMenu({ ...menu(), choosingCharacter: false, gameRunning: true, playModal: false });
+            const rep = await getReputation(id);
             const set = await getSettings(id);
+            setReputation(rep);
             setSettings(set);
             setTimeout(() => {
                 EventBus.emit('enter-game');
@@ -280,12 +242,24 @@ export default function App() {
         };
     };
 
+    const updateRep = async (rep: Reputation): Promise<void> => {
+        try {
+            const success = await updateReputation(rep);
+            console.log('Reputation Updated:', success);
+            setReputation(rep);
+        } catch (err: any) {
+            console.warn('Error updating Reputation:', err);
+        };
+    };
+
     async function viewAscean(id: string): Promise<void> {
         EventBus.emit('preload-ascean', id);
         const asc = menu()?.asceans?.find((asc: Ascean) => asc._id === id);
         setAscean(asc as Ascean);
         setMenu({ ...menu(), choosingCharacter: false });
+        const rep = await getReputation(id);
         const set = await getSettings(id);
+        setReputation(rep);
         setSettings(set);
     };
 
@@ -319,12 +293,16 @@ export default function App() {
     usePhaserEvent('save-ascean', saveAscean);
     usePhaserEvent('update-ascean', updateAscean);
     usePhaserEvent('update-pause', togglePause);
+    usePhaserEvent('request-reputation', () => {
+        EventBus.emit('reputation', reputation());
+    });
+    usePhaserEvent('update-reputation', (rep: any) => {
+        setReputation(rep);
+    });
     usePhaserEvent('request-settings', () => {
         EventBus.emit('settings', settings());
     });
-    usePhaserEvent('update-settings', (set: any) => {
-        setSettings(set);
-    });
+    usePhaserEvent('update-settings', updateRep);
     usePhaserEvent('player-ascean', () => EventBus.emit('player-ascean-ready', ascean()));
     usePhaserEvent('save-intro', async () => {
         await saveTutorial(ascean()?._id as string, 'intro');
@@ -350,7 +328,7 @@ export default function App() {
     });
     return (
         <div id="app">
-            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} settings={settings} setSettings={setSettings} scene={scene} />
+            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} scene={scene} />
             {(scene() === 'MainMenu') && (<>
             { menu().creatingCharacter ? (
                 <div id='overlay' class='superCenter'>

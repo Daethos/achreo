@@ -17,18 +17,21 @@ import { usePhaserEvent } from '../utility/hooks';
 import { consumePrayer, instantActionCompiler, weaponActionCompiler } from '../utility/combat';
 import { Deity } from './Deity';
 import { screenShake } from '../phaser/ScreenShake';
+import { Reputation } from '../utility/player';
 
 interface Props {
     instance: any;
     ascean: Accessor<Ascean>;
     combat: Accessor<Combat>;
     game: Accessor<GameState>;
+    reputation: Accessor<Reputation>;
+    setReputation: Setter<Reputation>;
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
     stamina: Accessor<number>;
 };
 
-export default function BaseUI({ instance, ascean, combat, game, settings, setSettings, stamina }: Props) {
+export default function BaseUI({ instance, ascean, combat, game, reputation, setReputation, settings, setSettings, stamina }: Props) {
     const { staminaPercentage } = createStamina(stamina);
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
@@ -57,6 +60,10 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
     createEffect(() => {
         EventBus.emit('combat', combat());
     });  
+
+    createEffect(() => {
+        EventBus.emit('reputation', reputation());
+    });
 
     createEffect(() => {
         EventBus.emit('settings', settings());
@@ -484,7 +491,7 @@ export default function BaseUI({ instance, ascean, combat, game, settings, setSe
                 </Show> 
             </div>
         }>
-            <Character settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} game={game} combatState={combat} />
+            <Character reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} game={game} combatState={combat} />
         </Show>
         <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} /> 
         <Show when={showTutorial()}>

@@ -18,6 +18,7 @@ import { EnemySheet } from '../../utility/enemy';
 import Joystick from '../../phaser/Joystick';
 import SmallHud from '../../phaser/SmallHud';
 import { useResizeListener } from '../../utility/dimensions';
+import { Reputation, initReputation } from '../../utility/player';
 
 const dimensions = useResizeListener();
 
@@ -26,6 +27,7 @@ export class Game extends Scene {
     gameState: GameState | undefined;
     ascean: Ascean  | undefined;
     state: Combat = initCombat;
+    reputation: Reputation = initReputation;
     settings: Settings = initSettings;
     player: any;
     centerX: number = window.innerWidth / 2;
@@ -109,6 +111,7 @@ export class Game extends Scene {
         this.getAscean();
         this.state = this.getCombat();
         this.getGame();
+        this.reputation = this.getReputation();
         this.settings = this.getSettings();
         this.rexUI = this.plugins.get('rexuiplugin');
 
@@ -353,6 +356,7 @@ export class Game extends Scene {
         EventBus.off('ascean');
         EventBus.off('combat');
         EventBus.off('game');
+        EventBus.off('reputation');
         EventBus.off('settings');
         EventBus.off('enemyLootDrop');
         EventBus.off('minimap');
@@ -392,6 +396,9 @@ export class Game extends Scene {
         });
         EventBus.on('game', (game: GameState) => {
             this.gameState = game;
+        });
+        EventBus.on('reputation', (reputation: Reputation) => {
+            this.reputation = reputation;
         });
         EventBus.on('settings', (settings: Settings) => {
             this.settings = settings;
@@ -630,6 +637,11 @@ export class Game extends Scene {
 
     getGame(): void {
         EventBus.emit('request-game');
+    };
+
+    getReputation = (): Reputation => {
+        EventBus.emit('request-reputation');
+        return this.reputation;
     };
 
     getSettings = (): Settings => {

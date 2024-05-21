@@ -289,7 +289,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
             </button>
         }> 
             <Show when={game().smallHud}>
-                <button class='smallHudButtons' style={ dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '24.5%' } : { height: '3.5%', width: '7.5%', right: '44%' }}>
+                {/* <button class='smallHudButtons' style={ dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '24.5%' } : { height: '3.5%', width: '7.5%', right: '44%' }}>
                     <div class='p-3' style={{ color: clicked().caerenic === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center', height: 'auto', width: 'auto' }}>
                         <img src={'../assets/images/caerenic.png'} style={icon(clicked().caerenic)} alt='Ce' />
                     </div>
@@ -305,7 +305,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
                     <div class='p-3' style={{ color: clicked().stealth === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
                         <img src={'../assets/images/stealth.png'} style={icon(clicked().stealth)} alt='Sh' />
                     </div>
-                </button>
+                </button> */}
 
                 <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '12.5%' } : { height: '3.5%', width: '7.5%', right: '20%' }} onClick={cursor}>
                     <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
@@ -331,19 +331,19 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
                     </div>
                 </button>
 
-                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '28.5%' } : { height: '3.5%', width: '7.5%', right: '60%' }} onClick={showCombat}>
+                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '16.5%' } : { height: '3.5%', width: '7.5%', right: '60%' }} onClick={showCombat}>
                     <div class='p-3' style={{ color: clicked().showCombat === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
                         <img src={'../assets/images/logs.png'} style={icon(clicked().showCombat)} alt='Sh' />
                     </div>
                 </button>
 
-                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '32.5%' } : { height: '3.5%', width: '7.5%', right: '60%' }} onClick={combatSettings}>
+                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '20.5%' } : { height: '3.5%', width: '7.5%', right: '60%' }} onClick={combatSettings}>
                     <div class='p-3' style={{ color: clicked().combatSettings === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
                         <img src={'../assets/images/settings.png'} style={icon(clicked().combatSettings)} alt='Sh' />
                     </div>
                 </button>
 
-                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '36.5%' } : { height: '3.5%', width: '7.5%', right: '68%' }} onClick={showPlayer}>
+                <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { height: '7.5%', width: '3.75%', right: '24.5%' } : { height: '3.5%', width: '7.5%', right: '68%' }} onClick={showPlayer}>
                     <div class='p-3' style={{ color: clicked().showPlayer === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
                         <img src={'../assets/images/info.png'} style={icon(clicked().showPlayer)} alt='Sh' />
                     </div>
@@ -353,7 +353,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         </Show>
         <Show when={game().dialogTag}>
         <button class='smallHudButtons flash' style={dimensions().ORIENTATION === 'landscape' ? 
-            { height: '7.5%', width: '3.75%', right: (game().smallHud !== true && !clicked().phaser) ? '4.5%' : '40.5%' } : // if game().smallHud === true ? right: '4.5%'
+            { height: '7.5%', width: '3.75%', right: (game().smallHud !== true && !clicked().phaser) ? '4.5%' : '28.5%' } : // if game().smallHud === true ? right: '4.5%'
             { height: '3.5%', width: '7.5%', right: '52%' }} 
             onClick={dialog}>
         <div class='p-3' style={{ color: clicked().dialog === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
@@ -363,7 +363,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         </Show>
         <Show when={game().lootTag}>
         <button class='smallHudButtons flash' style={dimensions().ORIENTATION === 'landscape' ? 
-            { height: '7.5%', width: '3.75%', right: (game().smallHud !== true && !clicked().phaser) ? '8.5%' : '44.5%' } : // right: game().smallHud === true ? '4.5' : '0.5%', top: '82.5%' SECOND ROW
+            { height: '7.5%', width: '3.75%', right: (game().smallHud !== true && !clicked().phaser) ? '8.5%' : '32.5%' } : // right: game().smallHud === true ? '4.5' : '0.5%', top: '82.5%' SECOND ROW
             { height: '3.5%', width: '7.5%', right: game().dialogTag ? '56%' : '52%' }} // right: game().dialogTag ? '8%' : '4%', bottom: '4.75%' SECOND ROW
             onClick={loot}>
         <div class='p-3' style={{ color: clicked().loot === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>

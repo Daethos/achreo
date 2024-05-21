@@ -862,11 +862,11 @@ export class Game extends Scene {
             const match = this.player.enemyIdMatch();
             if (match) { // Target Player Attack
                 console.log('Matched Writhe');
-                this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: 'attack' } });
+                this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: 'writhe' } });
             } else { // Blind Player Attack
                 console.log('Blind Writhe');
                 this.combatMachine.action({ type: 'Player', data: { 
-                    playerAction: { action: 'attack', parry: this.state.parryGuess }, 
+                    playerAction: { action: 'writhe', parry: this.state.parryGuess }, 
                     enemyID: enemy.enemyID, 
                     ascean: enemy.ascean, 
                     damageType: enemy.currentDamageType, 

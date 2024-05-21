@@ -1123,12 +1123,18 @@ export default class Player extends Entity {
         // if (!this.inCombat) return;
         this.isArcing = true;
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
-        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Arcing', PLAYER.DURATIONS.ARCING / 2, 'damage');
         this.castbar.setTotal(PLAYER.DURATIONS.ARCING);
         this.castbar.setTime(PLAYER.DURATIONS.ARCING, 0xFF0000);
         this.setStatic(true);
         this.castbar.setVisible(true); 
+        if (!this.isCaerenic && !this.isGlowing) {
+            this.checkCaerenic(true);
+            this.scene.time.delayedCall(3000, () => {
+                // if (!this.isCaerenic && this.isGlowing) 
+                this.checkCaerenic(false);
+            });
+        };
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You begin arcing with your ${this.scene.state.weapons[0].name}.`
         });
@@ -1164,7 +1170,6 @@ export default class Player extends Entity {
                 };
             };
             this.castbar.reset();
-            if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
             this.setStatic(false);
         };
     };
@@ -1241,7 +1246,7 @@ export default class Player extends Entity {
         this.combatChecker(this.isChiomic);
         if (this.isChiomic) this.castbar.update(dt, 'channel', 0xA700FF);
     };
-  onKyrnaicismExit = () => {
+    onKyrnaicismExit = () => {
         this.castbar.reset();
         if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
         this.setStatic(false);
@@ -1449,9 +1454,6 @@ export default class Player extends Entity {
         const direction = target.subtract(this.position);
         direction.normalize();
         this.flipX = direction.x < 0;
-        if (!this.isCaerenic && !this.isGlowing) {
-            this.checkCaerenic(true);
-        };
         this.isAttacking = true;
         this.scene.tweens.add({
             targets: this,
@@ -1459,6 +1461,15 @@ export default class Player extends Entity {
             y: this.y + (direction.y * 125),
             duration: 750,
             ease: 'Elastic',
+            onStart: () => {
+                this.scene.sound.play('leap', { volume: this.scene.settings.volume });
+                if (!this.isCaerenic && !this.isGlowing) {
+                    this.checkCaerenic(true);
+                    this.scene.time.delayedCall(750, () => {
+                        this.checkCaerenic(false);
+                    });
+                };
+            },
             onComplete: () => { 
                 this.scene.useStamina(PLAYER.STAMINA.LEAP);
                 this.isLeaping = false; 
@@ -1481,7 +1492,6 @@ export default class Player extends Entity {
         // this.leapPointer = undefined;
         const leapCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
         this.setTimeEvent('leapCooldown', leapCooldown);
-        this.checkCaerenic(false);
     };
 
     onRushEnter = () => {
@@ -1496,9 +1506,6 @@ export default class Player extends Entity {
         const direction = target.subtract(this.position);
         direction.normalize();
         this.flipX = direction.x < 0;
-        if (!this.isCaerenic && !this.isGlowing) {
-            this.checkCaerenic(true);
-        };
         this.isParrying = true;
         this.scene.tweens.add({
             targets: this,
@@ -1506,6 +1513,14 @@ export default class Player extends Entity {
             y: this.y + (direction.y * 250),
             duration: 500,
             ease: 'Circ.easeOut',
+            onStart: () => {
+                if (!this.isCaerenic && !this.isGlowing) {
+                    this.checkCaerenic(true);
+                    this.scene.time.delayedCall(500, () => {
+                        this.checkCaerenic(false);
+                    });    
+                };
+            },
             onComplete: () => {
                 // console.log(this.rushedEnemies, this.rushedEnemies.length, 'Rushed Enemies');
                 if (this.rushedEnemies.length > 0) {
@@ -1525,7 +1540,6 @@ export default class Player extends Entity {
         this.rushedEnemies = [];
         const rushCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
         this.setTimeEvent('rushCooldown', rushCooldown);
-        this.checkCaerenic(false);
         this.scene.useStamina(PLAYER.STAMINA.RUSH);
     };
 
@@ -1586,8 +1600,8 @@ export default class Player extends Entity {
     };
     onPursuitExit = () => {
         if (!this.inCombat && !this.isStealthing && !this.isShimmering) {
-            const button = this.scene.smallHud.bar.find(b => b.texture.key === 'stealth');
-            this.scene.smallHud.pressButton(button);
+            const button = this.scene.smallHud.stances.find(b => b.texture.key === 'stealth');
+            this.scene.smallHud.pressStance(button);
         };
     };
 
@@ -1706,15 +1720,17 @@ export default class Player extends Entity {
         const length = direction.length();
         direction.normalize();
         this.flipX = direction.x < 0;
-        if (!this.isCaerenic && !this.isGlowing) {
-            this.checkCaerenic(true);
-        };
         this.isAttacking = true;
         this.scene.useStamina(PLAYER.STAMINA.STORM);
         this.scene.tweens.add({
             targets: this,
             angle: 360,
             duration: 850,
+            onStart: () => {
+                if (!this.isCaerenic && !this.isGlowing) {
+                    this.checkCaerenic(true);
+                };
+            },
             onLoop: () => {
                 console.log('Storming!')
                 this.isAttacking = true;
@@ -1743,7 +1759,7 @@ export default class Player extends Entity {
         this.stormPointer = undefined;
         const stormCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
         this.setTimeEvent('stormCooldown', stormCooldown);
-        this.checkCaerenic(false);
+        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
     };
 
     onSutureEnter = () => {

@@ -5,11 +5,18 @@ function xModifier(x: number, index: number, offset = 43.75) {
     return mod;
 };
 
+function leftXModifier(x: number, index: number, offset = 43.75) {
+    const mod = x * 0.35 - (index * offset);
+    return mod;
+};
+
 export default class SmallHud extends Phaser.GameObjects.Container {
     public scene: any;
     public bar: Phaser.GameObjects.Image[];
+    public stances: Phaser.GameObjects.Image[];
     public x: number;
     public y: number;
+    public leftX: number;
     public controls: Phaser.GameObjects.Container
     public closed: boolean;
     public switches: {
@@ -33,8 +40,10 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.scene = scene;
         this.x = x;
         this.y = y;
+        this.leftX = 10;
         this.scene.add.existing(this);
         this.bar = [];
+        this.stances = [];
         this.closed = true;
         this.switches = {
             info: false,
@@ -70,9 +79,9 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.bar.push(info);
         this.bar.push(settings);
         this.bar.push(logs);
-        this.bar.push(caerenic);
-        this.bar.push(stalwart);
-        this.bar.push(stealth);
+        // this.bar.push(caerenic);
+        // this.bar.push(stalwart);
+        // this.bar.push(stealth);
         this.bar.push(cursor);
         this.bar.push(minimap);
         this.bar.push(pause);
@@ -95,6 +104,23 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                 this.pressButton(item);
             });
         });
+
+        this.stances.push(caerenic);
+        this.stances.push(stalwart);
+        this.stances.push(stealth);
+
+        this.stances.forEach((item, index) => {
+            item.setScrollFactor(0);
+            item.setDepth(3);
+            item.setOrigin(0, 0);
+            item.setInteractive();
+            item.setScale(0.095);
+            item.setVisible(true);
+            item.x = leftXModifier(this.leftX, Math.min(index, 4));
+            item.on('pointerdown', () => {
+                this.pressStance(item);
+            });
+        });
     };
 
     cleanUp = () => {
@@ -103,7 +129,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
 
     draw = () => {
         this.bar.forEach((item, index) => {
-            item.x = xModifier(this.x, Math.min(index, 9));
+            item.x = xModifier(this.x, Math.min(index, 6));
             item.y = this.y;
             if (this.closed === true) {
                 if (item.texture.key === 'closed') {
@@ -119,6 +145,11 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                 };
             };
         });
+
+        this.stances.forEach((item, index) => {
+            item.x = leftXModifier(this.leftX, Math.min(index, 4));
+            item.y = this.y;
+        });
     };
 
     listener = () => {
@@ -132,6 +163,12 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         EventBus.on('update-hud-position', (data: {x: number, y: number}) => {
             const { x, y } = data;
             this.x = this.scene.cameras.main.width * x;
+            this.y = this.scene.cameras.main.height * y;
+            this.draw();
+        });
+        EventBus.on('update-left-hud-position', (data: {x: number, y: number}) => {
+            const { x, y } = data;
+            this.leftX = this.scene.cameras.main.width * x;
             this.y = this.scene.cameras.main.height * y;
             this.draw();
         });
@@ -166,20 +203,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     case 'cursor-reset':
                         EventBus.emit('action-button-sound');
                         EventBus.emit('update-cursor');
-                        break;
-                    case 'stealth':
-                        if (this.scene.combat === true) return;
-                        this.switches.stealth = !this.switches.stealth;
-                        EventBus.emit('update-stealth');
-                        break;
-                    case 'stalwart':
-                        this.switches.stalwart = !this.switches.stalwart;
-                        EventBus.emit('update-stalwart');                        
-                        break;
-                    case 'caerenic':
-                        this.switches.caerenic = !this.switches.caerenic;
-                        EventBus.emit('update-caerenic');                
-                        break;
+                        break; 
                     case 'logs':
                         this.switches.logs = !this.switches.logs;
                         EventBus.emit('action-button-sound');
@@ -199,19 +223,69 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                         break;
                         
                 };
-                if (this.switches[button.texture.key as keyof typeof this.switches] === true) {
-                    button.setBlendMode(Phaser.BlendModes.SCREEN);
-                } else {
-                    button.setBlendMode(Phaser.BlendModes.NORMAL);
-                };
+            };
+            if (this.switches[button.texture.key as keyof typeof this.switches] === true) {
+                button.setBlendMode(Phaser.BlendModes.SCREEN);
             } else {
-                if (this.switches[button.texture.key as keyof typeof this.switches] === true) {
-                    button.setBlendMode(Phaser.BlendModes.SCREEN);
-                } else {
-                    button.setBlendMode(Phaser.BlendModes.NORMAL);    
-                };
+                button.setBlendMode(Phaser.BlendModes.NORMAL);    
             };
         });
+        // this.stances.forEach((button) => {
+        //     if (button === item) {
+        //         switch (button.texture.key) {
+        //             case 'stealth':
+        //                 if (this.scene.combat === true) return;
+        //                 this.switches.stealth = !this.switches.stealth;
+        //                 EventBus.emit('update-stealth');
+        //                 break;
+        //             case 'stalwart':
+        //                 this.switches.stalwart = !this.switches.stalwart;
+        //                 EventBus.emit('update-stalwart');                        
+        //                 break;
+        //             case 'caerenic':
+        //                 this.switches.caerenic = !this.switches.caerenic;
+        //                 EventBus.emit('update-caerenic');                
+        //                 break;
+        //             default:
+        //                 break;
+        //         };
+        //     };
+        //     if (this.switches[button.texture.key as keyof typeof this.switches] === true) {
+        //         button.setBlendMode(Phaser.BlendModes.SCREEN);
+        //     } else {
+        //         button.setBlendMode(Phaser.BlendModes.NORMAL);    
+        //     };
+        // });
         EventBus.emit('update-small-hud');
+    };
+
+    pressStance = (stance: Phaser.GameObjects.Image) => {
+        this.stances.forEach((button) => {
+            if (button === stance) {
+                switch (button.texture.key) { 
+                    case 'stealth':
+                        if (this.scene.combat === true) return;
+                        this.switches.stealth = !this.switches.stealth;
+                        EventBus.emit('update-stealth');
+                        break;
+                    case 'stalwart':
+                        this.switches.stalwart = !this.switches.stalwart;
+                        EventBus.emit('update-stalwart');                        
+                        break;
+                    case 'caerenic':
+                        this.switches.caerenic = !this.switches.caerenic;
+                        EventBus.emit('update-caerenic');                
+                        break; 
+                    default:
+                        break;
+                        
+                };
+            };
+            if (this.switches[button.texture.key as keyof typeof this.switches] === true) {
+                button.setBlendMode(Phaser.BlendModes.SCREEN);
+            } else {
+                button.setBlendMode(Phaser.BlendModes.NORMAL);    
+            };
+        });
     };
 };

@@ -1457,7 +1457,7 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     // ==================== STATISTIC LOGIC ====================
     
     combat.playerActionDescription = 
-        `You dual-wield attack ${computer?.name} with ${weapons[0]?.name} and ${weapons[1]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} and ${weapons[1]?.damageType?.[0] ? weapons[1]?.damageType?.[0] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'Damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'Damage (Partial Crit)' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `You dual-wield ${combat.action} ${computer?.name} with ${weapons[0]?.name} and ${weapons[1]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} and ${weapons[1]?.damageType?.[0] ? weapons[1]?.damageType?.[0] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'Damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'Damage (Partial Crit)' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
         
     return combat;
 };
@@ -1478,7 +1478,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     };
 
     // This is for the Focused Attack Action i.e. you chose to Attack over adding a defensive component
-    if (combat.action === 'attack' || combat.action === 'arc' || combat.action === 'storm') {
+    if (combat.action === 'attack' || combat.action === 'arc' || combat.action === 'storm' || combat.action === 'writhe') {
         if (combat.weapons[0]?.grip === 'One Hand') {
             if (combat.weapons[0]?.attackType === 'Physical') {
                 if (combat.player?.mastery === 'agility' || combat.player?.mastery === 'constitution') {
@@ -1648,7 +1648,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     // ==================== STATISTIC LOGIC ====================
 
     combat.playerActionDescription = 
-        `You attack ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(playerTotalDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'Damage (Critical)' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `You ${combat.action} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(playerTotalDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'Damage (Critical)' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
 
     if (combat.newComputerHealth <= 0) {
         combat.newComputerHealth = 0;
@@ -2459,7 +2459,7 @@ function instantDamageSplitter(combat: Combat, mastery: string): Combat {
     combat.newComputerHealth -= combat.realizedPlayerDamage;
     combat.computerDamaged = true;
     combat.playerAction = 'invoke';
-    combat.playerActionDescription = `You attack ${combat.computer?.name}'s Caeren with your ${combat.player?.mastery}'s Invocation of ${combat.weapons[0]?.influences?.[0]} for ${Math.round(damage)} Pure Damage.`;    
+    combat.playerActionDescription = `You tshaer ${combat.computer?.name}'s Caeren with your ${combat.player?.mastery}'s Invocation of ${combat.weapons[0]?.influences?.[0]} for ${Math.round(damage)} Pure Damage.`;    
     return combat;
 };
 
@@ -2779,11 +2779,10 @@ function validate(combat: Combat): boolean {
 function instantActionCompiler(combat: Combat): Combat | undefined {
     try {
         if (validate(combat) === false) return combat;
-        console.log('Instant Action Compiler');
         const res = instantActionSplitter(combat);
         return res;
     } catch (err) {
-        console.log(err, 'Error in the Instant Action Compiler of Game Services');
+        console.warn(err, 'Error in the Instant Action Compiler of Game Services');
     };
 };
 
@@ -2793,7 +2792,7 @@ function consumePrayer(combat: Combat): Combat | undefined {
         const res = consumePrayerSplitter(combat);
         return res;
     } catch (err) {
-        console.log(err, 'Error in the Consume Prayer of Game Services');
+        console.warn(err, 'Error in the Consume Prayer of Game Services');
     };
 };
 
@@ -2803,7 +2802,7 @@ function weaponActionCompiler(combat: Combat): Combat | undefined {
         const res = weaponActionSplitter(combat);
         return res as Combat;
     } catch (err) {
-        console.log(err, 'Error in the Phaser Action Compiler of Game Services');
+        console.warn(err, 'Error in the Phaser Action Compiler of Game Services');
     };
 };
 
@@ -2817,7 +2816,7 @@ function prayerEffectTick(data: {
         const res = prayerEffectTickSplitter(data);
         return res;
     } catch (err) {
-        console.log(err, 'Error in the Phaser Effect Tick of Game Services');
+        console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
     };
 };
 
@@ -2827,7 +2826,7 @@ function prayerRemoveTick(combat: Combat, statusEffect: StatusEffect): Combat | 
         const res = prayerRemoveTickSplitter(combat, statusEffect);
         return res;
     } catch (err) {
-        console.log(err, 'Error in the Phaser Effect Tick of Game Services');
+        console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
     };
 };
 
@@ -2837,7 +2836,7 @@ function computerCombatCompiler(combat: { computerOne: Combat, computerTwo: Comb
         const res = computerCombatSplitter(combat);
         return res;
     } catch (err) {
-        console.log(err, 'Error in the Phaser Effect Tick of Game Services');
+        console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
     };
 };
 

@@ -469,7 +469,8 @@ async function getPhysicalWeaponEquipment(level: number): Promise<Equipment[] | 
             let item = shuffleArray(Weapons.filter((eq) => (eq.rarity === rarity && eq.attackType === 'Physical')))[0];
             let equipment = await mutate([item], rarity) as Equipment[];
             equipment.forEach(item => new Equipment(item));
-            merchantEquipment.push(equipment[0]);
+            const clone = deepClone(equipment[0]);
+            merchantEquipment.push(clone);
         };
         return merchantEquipment;
     } catch (err) {
@@ -485,7 +486,8 @@ async function getMagicalWeaponEquipment(level: number): Promise<Equipment[] | u
             let item = shuffleArray(Weapons.filter((eq) => (eq.rarity === rarity && eq.attackType === 'Magic')))[0];
             let equipment = await mutate([item], rarity) as Equipment[];
             equipment.forEach(item => new Equipment(item));
-            merchantEquipment.push(equipment[0]);
+            const clone = deepClone(equipment[0]);
+            merchantEquipment.push(clone);
         };
         return merchantEquipment;
     } catch (err) {
@@ -525,7 +527,8 @@ async function getArmorEquipment(level: number): Promise<Equipment[] | undefined
             };
             let equipment = await mutate([item as Equipment], rarity) as Equipment[];
             equipment.forEach(item => new Equipment(item));
-            merchantEquipment.push(equipment[0]);
+            const clone = deepClone(equipment[0]);
+            merchantEquipment.push(clone);
         };
         return merchantEquipment;
     } catch (err) {
@@ -555,7 +558,8 @@ async function getJewelryEquipment(level: number): Promise<Equipment[] | undefin
             };
             let equipment = await mutate([item as Equipment], rarity) as Equipment[];
             equipment.forEach(item => new Equipment(item));
-            merchantEquipment.push(equipment[0]);
+            const clone = deepClone(equipment[0]);
+            merchantEquipment.push(clone);
             // EventBus.emit('blend-game', { merchantEquipment });
         };
         return merchantEquipment;
@@ -569,9 +573,10 @@ async function getMerchantEquipment(level: number): Promise<Equipment[] | undefi
         let merchantEquipment = [];
         for (let i = 0; i < 9; i++) {
             const item = await getOneRandom(level);
-            merchantEquipment.push(item?.[0]);
+            const clone = deepClone(item)
+            merchantEquipment.push(clone);
         };
-        return merchantEquipment as Equipment[];
+        return merchantEquipment as unknown as Equipment[];
     } catch (err) {
         console.warn(err, 'Error in Merchant Function');
     };
@@ -597,8 +602,8 @@ async function getClothEquipment(level: number): Promise<Equipment[] | undefined
             if (item) {
                 let mutatedItems = await mutate([item], rarity) as Equipment[];
                 mutatedItems.forEach(item => new Equipment(item));
-                const clonedItem = advancedDeepClone(mutatedItems[0]);
-                console.log(clonedItem, 'Cloned, Mutated Item');
+                const clonedItem = deepClone(mutatedItems[0]);
+                // console.log(clonedItem, 'Cloned, Mutated Item');
                 merchantEquipment.push(clonedItem);
             };
             // let equipment = await mutate([item as Equipment], rarity) as Equipment[];
@@ -606,7 +611,7 @@ async function getClothEquipment(level: number): Promise<Equipment[] | undefined
             // console.log(equipment[0], 'Equipment');
             // merchantEquipment.push(equipment[0]);
         };
-        console.log(merchantEquipment, 'Merchant Equipment');
+        // console.log(merchantEquipment, 'Merchant Equipment');
         return merchantEquipment;
     } catch (err) {
         console.warn(err, 'Error in Merchant Function');
@@ -614,10 +619,6 @@ async function getClothEquipment(level: number): Promise<Equipment[] | undefined
 };
 
 function deepClone<T>(obj: T): T {
-    return JSON.parse(JSON.stringify(obj));
-};
-
-function advancedDeepClone<T>(obj: T): T {
     if (obj === null || typeof obj !== 'object') {
         return obj;
     };
@@ -629,14 +630,14 @@ function advancedDeepClone<T>(obj: T): T {
     if (obj instanceof Array) {
         const arrCopy = [] as unknown as T;
         (obj as unknown as Array<unknown>).forEach((item, index) => {
-            (arrCopy as any)[index] = advancedDeepClone(item);
+            (arrCopy as any)[index] = deepClone(item);
         });
         return arrCopy;
     };
 
     const objCopy = {} as T;
     Object.keys(obj).forEach((key) => {
-        (objCopy as unknown as Record<string, unknown>)[key] = advancedDeepClone((obj as unknown as Record<string, unknown>)[key]);
+        (objCopy as unknown as Record<string, unknown>)[key] = deepClone((obj as unknown as Record<string, unknown>)[key]);
     });
 
     return objCopy;

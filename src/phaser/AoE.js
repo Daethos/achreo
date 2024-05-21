@@ -45,7 +45,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
 
     setCount = (scene, type, positive) => {
         if (positive === true) {
-            scene.time.delayedCall(1000, () => {
+            scene.time.delayedCall(950, () => {
                 this.bless.forEach((_target) => {
                     scene[type]();
                 });
@@ -62,7 +62,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 };
             });
         } else {
-            scene.time.delayedCall(1000, () => {
+            scene.time.delayedCall(950, () => {
                 this.hit.forEach((target) => {
                     scene[type](target.enemyID);
                 });
@@ -83,7 +83,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
 
     setupEnemyCount = (scene, type, positive) => {
         if (positive === true) {
-            scene.time.delayedCall(1000, () => {
+            scene.time.delayedCall(950, () => {
                 this.hit.forEach((target) => {
                     scene[type](target.playerID);
                 });
@@ -100,7 +100,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 };
             });
         } else {
-            scene.time.delayedCall(1000, () => {
+            scene.time.delayedCall(950, () => {
                 this.bless.forEach((target) => {
                     scene[`enemy${type.charAt(0).toUpperCase() + type.slice(1)}`](target.enemyID);
                 });

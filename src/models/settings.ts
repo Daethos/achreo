@@ -52,6 +52,7 @@ export default class Settings {
         actionButtons: { x: number; y: number; };
         specialButtons: { x: number; y: number; };
         fpsText: { x: number; y: number; };
+        leftHud: { x: number; y: number; };
         smallHud: { x: number; y: number; };
     };
 
@@ -127,6 +128,10 @@ export default class Settings {
             fpsText: {
                 x: 0.45,
                 y: -0.1,
+            },
+            leftHud: {
+                x: 0.025,
+                y: 1.025,
             },
             smallHud: { 
                 x: 0.4625, 

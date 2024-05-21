@@ -108,6 +108,28 @@ export function PhaserShaper({ settings }: IPhaserShape) {
         EventBus.emit('update-settings', newSettings);
         EventBus.emit('update-hud-position', update);
     };
+
+    async function handleLeftHud(e: any, axis: string) {
+        const newSettings = { 
+            ...settings(), 
+            positions: { 
+                ...settings().positions, 
+                leftHud: {
+                    ...settings().positions.leftHud,
+                    [axis]: Number(e.target.value)
+                } 
+            }
+        };
+        console.log(newSettings, 'New Settings');
+        await updateSettings(newSettings);
+        const update = { 
+            x: axis === 'x' ? Number(e.target.value) : settings().positions.leftHud.x, 
+            y: axis === 'y' ? Number(e.target.value) : settings().positions.leftHud.y 
+        };
+        console.log(update, 'Update');
+        EventBus.emit('update-settings', newSettings);
+        EventBus.emit('update-left-hud-position', update);
+    };
     
     {/* <div style={font('0.5em')}>[Aggressive AI Range: 0 - 100%]</div> */}
     return (
@@ -179,6 +201,20 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 min={-0.15} max={1} step={0.05} 
                 onChange={(e) => handleFPS(e, 'y')} 
                 value={settings().positions.fpsText.y} 
+            />
+
+            <h1 style={font('1.25em')}>Left HUD</h1>
+            <div style={font('1em')}>X: ({settings().positions.leftHud.x})</div>
+            <Form.Range 
+                min={-0.125} max={1} step={0.0125} 
+                onChange={(e) => handleLeftHud(e, 'x')} 
+                value={settings().positions.leftHud.x} 
+            />
+            <div style={font('1em')}>Y: ({settings().positions.leftHud.y})</div>
+            <Form.Range 
+                min={0.1} max={1.1} step={0.025} 
+                onChange={(e) => handleLeftHud(e, 'y')} 
+                value={settings().positions.leftHud.y} 
             />
 
             <h1 style={font('1.25em')}>Smal HUD</h1>

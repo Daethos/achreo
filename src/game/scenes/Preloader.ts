@@ -86,6 +86,7 @@ export class Preloader extends Scene {
         this.load.audio('debuff', '../assets/sounds/21_Debuff_01.wav');
         this.load.audio('howl', '../assets/sounds/howl.wav');
         this.load.audio('scream', '../assets/sounds/scream.wav');
+        this.load.audio('leap', '../assets/sounds/leap.wav');
 
         this.assets = sanitize();
 

@@ -1,6 +1,7 @@
 import { Accessor, Setter, Show } from 'solid-js';
 import Ascean from '../models/ascean';
 import { GameState } from '../stores/game';
+import Quest from './quests';
 
 const ATTRIBUTE_TRAITS = {
     constitution: {
@@ -378,7 +379,7 @@ export const LuckoutModal = ({ traits, callback, name, influence, show, setShow 
                 <div style={{ 'font-size': "1em", margin: '5%' }}>
                 {traits().map((trait: any) => {
                     return (
-                        <div>
+                        <div style={{ margin: '3%' }}>
                             <button class='dialog-buttons inner' 
                                 style={{ color: traitStyle(trait.name), 'font-size': "1em", background: '#000' }} 
                                 onClick={() => callback(trait.name)}>
@@ -422,7 +423,7 @@ export const PersuasionModal = ({ traits, callback, name, influence, show, setSh
                 <div style={{ 'font-size': "1em", margin: "5%" }}>
                 {traits().map((trait: any) => {
                     return (
-                        <div>
+                        <div style={{ margin: '3%' }}>
                             <button class='dialog-buttons inner' style={{ color: traitStyle(trait.name), 'font-size': "1em", background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}]: {trait.persuasion.modal.replace('{enemy.name}', name).replace('{ascean.weapon_one.influences[0]}', influence())}</button>
                         </div>
                     )
@@ -441,6 +442,38 @@ export const PersuasionModal = ({ traits, callback, name, influence, show, setSh
                 </div>
             )
         })}
+        </>
+    );
+};
+
+export const QuestModal = ({ quests, show, setShow }: { quests: Accessor<Quest[]>, show: Accessor<boolean>, setShow: Setter<boolean> }) => {
+    return (
+        <>
+        <Show when={show()}>
+        <div class='modal' onClick={() => setShow(!show())}>
+            <div class='border superCenter' style={{ 'font-size': "1.25em" }}>
+            <div class='creature-heading wrap'>
+                <h1 style={{ margin: '3%' }}>Quests</h1>
+                <svg height="5" width="100%" class="tapered-rule mt-2">
+                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                </svg>
+                <h2>These are the quests you have available to you. Each quest has its own requirements and rewards. 
+                Quests may be shared between multiple enemies, but the player may only choose one quest giver.</h2>
+                <div style={{ 'font-size': "1em", margin: "5%" }}>
+                {quests().map((quest: Quest, index: number) => {
+                    return (
+                        <div style={{ margin: '3%' }}>
+                            <button class='dialog-buttons inner' style={{ color: index % 2 === 0 ? 'gold' : 'white', 'font-size': "1em", background: '#000' }}>[{quest.title}]: {quest.description}</button>
+                        </div>
+                    )
+                })}
+                </div>
+                [Note: Your decisions have granted this avenue of gameplay experience. There are more to discover.]<br /><br />
+            </div>
+            </div>
+        </div>
+        </Show>
+        <button class='dialog-buttons inner' style={{ color: "#fdf6d8", background: '#000', margin: '3%' }} onClick={() => setShow(!show())}>[ {'>>>'} Quests {'<<<'} ]</button>
         </>
     );
 };

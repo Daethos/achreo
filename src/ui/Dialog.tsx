@@ -4,7 +4,7 @@ import { Combat } from '../stores/combat';
 import Ascean from '../models/ascean';
 import { GameState } from '../stores/game';
 import { ProvincialWhispersButtons, Region, regionInformation } from '../utility/regions';
-import { LuckoutModal, PersuasionModal, checkTraits } from '../utility/traits';
+import { LuckoutModal, PersuasionModal, QuestModal, checkTraits } from '../utility/traits';
 import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds } from '../utility/DialogNode';
 import Typewriter from '../utility/Typewriter';
 import Currency from '../utility/Currency';
@@ -14,22 +14,8 @@ import { LevelSheet } from '../utility/ascean';
 import { useResizeListener } from '../utility/dimensions';
 import { getRarityColor, sellRarity } from '../utility/styling';
 import ItemModal from '../components/ItemModal';
-
-const named = [
-    "Achreus", "Ashreu'ul", "Caelan Greyne", "Chios Dachreon", "Cyrian Shyne", "Daetheus", 
-    "Dorien Caderyn", "Eugenes", "Evrio Lorian Peroumes", "Fierous Ashfyre", "Garris Ashenus", 
-    "King Mathyus Caderyn", "Kreceus", "Laetrois Ath'Shaorah", "Leaf", "Lorian", "Mavros Ilios", 
-    "Mirio", "Quor'estes", "Relien Myelle", "Sedeysus", "Sera Lorian", "Synaethi Spiras", "Torreous Ashfyre", 
-    "Tshios Ash'air", "Vincere"
-];
-
-const nameCheck = (name: string) => {
-    if (named.includes(name)) {
-        return true;
-    } else {
-        return false;
-    };
-};
+import { getQuests } from '../utility/quests';
+import { namedNameCheck } from '../utility/player';
 
 interface DialogOptionProps {
     option: DialogNodeOption;
@@ -236,6 +222,8 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [showSell, setShowSell] = createSignal<boolean>(false);
     const [sellItem, setSellItem] = createSignal<Equipment | undefined>(undefined);
     const [showItem, setShowItem] = createSignal<boolean>(false);
+    const [quests, setQuests] = createSignal<any[]>([]);
+    const [showQuests, setShowQuests] = createSignal<boolean>(false);
     const dimensions = useResizeListener();
     const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
@@ -284,7 +272,8 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
 
     const checkEnemy = (enemy: Ascean) => {
         if (enemy) {
-            setNamedEnemy(nameCheck(enemy.name));
+            checkQuests(enemy);
+            setNamedEnemy(namedNameCheck(enemy.name));
             setEnemyArticle(() => {
                 return ['a', 'e', 'i', 'o', 'u'].includes(enemy.name.charAt(0).toLowerCase()) ? 'an' : 'a';
             });
@@ -293,6 +282,36 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
 
     const checkInfluence = (a: Accessor<Ascean>) => {
         setInfluence(a()?.weaponOne?.influences?.[0]);
+    };
+
+    const checkQuests = (enemy: Ascean) => {
+        const enemyQuests = getQuests(enemy.name);
+        console.log(enemyQuests, 'Quests');
+        const prospectiveQuests = [];
+        if (enemyQuests.length === 0) return;        
+        if (ascean()?.quests?.length === 0) {
+            setQuests(enemyQuests);
+            return;
+        };
+        for (const playerQuest of ascean()?.quests) {
+            for (const quest of enemyQuests) {
+                if (quest.title === playerQuest.title) {
+                    if (playerQuest.completed) {
+                        // The player has already completed a prospective quest
+                        continue;
+                    };
+
+                } else {
+                    // The player has not yet accepted the quest
+                    prospectiveQuests.push(quest);
+                };
+            };
+        };
+        if (prospectiveQuests.length > 0) {
+            console.log(prospectiveQuests, 'Prospective Quests');
+            setQuests(prospectiveQuests);
+            // EventBus.emit('blend-game', { prospectiveQuests });
+        };    
     };
     
     const hollowClick = () => console.log('Hollow Click');
@@ -535,6 +554,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         // setCurrentIntent(clean);
         EventBus.emit('blend-game', { currentIntent: clean });
     };
+
     const handleRegion = (region: keyof Region) => {
         setRegion(regionInformation[region]);
     };
@@ -822,6 +842,8 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                                 ) : ( '' ) }
                             </div>
                         ) : ( '' ) }
+                        {/* TODO:FIXME: This is where the QUEST MODAL will go. FIXME:TODO: */}
+                        <QuestModal quests={quests} show={showQuests} setShow={setShowQuests} />
                     </>
                 ) : game().currentIntent === 'provincialWhispers' ? (
                     <>

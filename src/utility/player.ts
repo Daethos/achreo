@@ -379,6 +379,99 @@ export type faction = {
     dialog: number; // Reputation threshold to enable dialog option
 };
 
+export const ENEMY_ENEMIES = {
+    "Achreon Druid": ["Kyn'gian Shaman", "Tshaeral Shaman", "Kingsman", "Northren Wanderer"],
+    "Ahn'are Apostle": ["Astral Apostle", "Licivitan Soldier", "Daethic Inquisitor", "Daethic Knight"],
+    "Anashtre": ["Daethic Knight", "Soverain Blood Cloak", "Licivitan Soldier", "Daethic Inquisitor"],
+    "Astral Apostle": ["Ahn'are Apostle", "Licivitan Soldier", "Daethic Inquisitor", "Daethic Knight"],
+    "Cambiren Druid": ["Kyn'gian Shaman", "Tshaeral Shaman", "Kingsman", "Northren Wanderer"],
+    "Chiomic Jester": ["Fang Duelist", "Fang Mercenary", "Marauder", "Shrygeian Bard"],
+    "Daethic Inquisitor": ["Ilire Occultist", "Fyers Occultist", "Ma'ier Occultist", "Quor'eite Occultist", "Old Li'ivi Occultist"],
+    "Daethic Knight": ["Anashtre", "Soverain Blood Cloak", "Firesworn", "Se'va Shrieker", "Quor'eite Stalker"],
+    "Fang Duelist": ["Chiomic Jester", "Fang Mercenary", "Marauder", "Shrygeian Bard"],
+    "Fang Mercenary": ["Chiomic Jester", "Fang Duelist", "Marauder", "Shrygeian Bard"],
+    "Firesworn": ["Daethic Knight", "Fang Mercenary", "Se'va Shrieker", "Quor'eite Stalker", "Southron Wanderer"],
+    "Fyers Occultist": ["Daethic Inquisitor", "Ilire Occultist", "Ma'ier Occultist", "Quor'eite Occultist", "Old Li'ivi Occultist"],
+    "Ilire Occultist": ["Daethic Inquisitor", "Fyers Occultist", "Ma'ier Occultist", "Quor'eite Occultist", "Old Li'ivi Occultist"],
+    "Kingsman": ["Achreon Druid", "Cambiren Druid", "Northren Wanderer", "Soverain Blood Cloak"],
+    "Kyn'gian Shaman": ["Achreon Druid", "Cambiren Druid", "Southron Wanderer", "Sedyreal Guard", "Quor'eite Stalker"],
+    "Licivitan Soldier": ["Old Li'ivi Occultist", "Firesworn", "Soverain Blood Cloak", "Kingsman", "Se'va Shrieker"],
+    "Ma'ier Occultist": ["Daethic Inquisitor", "Fyers Occultist", "Ilire Occultist", "Quor'eite Occultist", "Old Li'ivi Occultist"],
+    "Marauder": ["Fang Duelist", "Fang Mercenary", "Chiomic Jester", "Shrygeian Bard"],
+    "Mavrosin Occultist": [],
+    "Northren Wanderer": ["Achreon Druid", "Cambiren Druid", "Kingsman", "Soverain Blood Cloak"],
+    "Nyren": ["Rahvrecur", "Se'va Shrieker", "Marauder", "Fang Mercenary"],
+    "Old Li'ivi Occultist": ["Daethic Inquisitor", "Fyers Occultist", "Ilire Occultist", "Ma'ier Occultist", "Quor'eite Occultist"],
+    "Quor'eite Occultist": ["Daethic Inquisitor", "Fyers Occultist", "Ilire Occultist", "Ma'ier Occultist", "Old Li'ivi Occultist"],
+    "Quor'eite Stalker": ["Daethic Knight", "Firesworn", "Se'va Shrieker", "Sedyreal Guard", "Southron Wanderer"],
+    "Rahvrecur": ["Nyren", "Se'va Shrieker", "Marauder", "Fang Mercenary"],
+    "Se'dyrist": ["Se'va Shrieker", "Fang Mercenary", "Sedyreal Guard", "Firesworn"],
+    "Sedyreal Guard": ["Se'dyrist", "Se'va Shrieker", "Firesworn", "Quor'eite Stalker", "Southron Wanderer"],
+    "Se'va Shrieker": ["Se'dyrist", "Sedyreal Guard", "Firesworn", "Quor'eite Stalker", "Southron Wanderer"],
+    "Shrygeian Bard": ["Chiomic Jester", "Fang Duelist", "Fang Mercenary", "Marauder"],
+    "Southron Wanderer": ["Firesworn", "Quor'eite Stalker", "Sedyreal Guard", "Se'va Shrieker"],
+    "Soverain Blood Cloak": ["Anashtre", "Licivitan Soldier", "Kingsman", "Northren Wanderer"],
+    "Tshaeral Shaman": ["Achreon Druid", "Cambiren Druid", "Daethic Knight", "Daethic Inquisitor"],
+
+    "Cyrian Shyne": ["King Mathyus Caderyn"],
+    "Dorien Caderyn": ["Garris Ashenus"],
+    "Eugenes": [""],
+    "Evrio Lorian Peroumes": ["Mirio"],
+    "Fierous Ashfyre": ["Synaethi Spiras"],
+    "Garris Ashenus": ["Dorien Caderyn"],
+    "King Mathyus Caderyn": ["Cyrian Shyne"],
+    "Kreceus": ["Ahn'are Apostle", "Licivitan Soldier", "Evrio Lorian Peroumes", "Mirio"],
+    "Laetrois Ath'Shaorah": ["Mavrios Ilios"],
+    "Leaf": ["Kingsman", "Northren Wanderer"],
+    "Lorian": ["Mavrios Ilios"],
+    "Mavrios Ilios": ["Laetrois Ath'Shaorah", "Lorian"],
+    "Mirio": ["Evrio Lorian Peroumes"],
+    "Sera Lorian": ["Evrio Lorian Peroumes", "Dorien Caderyn"],
+    "Synaethi Spiras": ["Fierous Ashfyre", "Torreous Ashfyre"],
+    "Torreous Ashfyre": ["Synaethi Spiras"],
+    "Tshios Ash'air": [],
+    "Vincere": ["King Mathyus Caderyn", "Dorien Caderyn", "Sera Lorian", "Evrio Lorian Peroumes"]
+};
+export const NAMED_ENEMY = [
+    "Achreus", 
+    "Ah'gani",
+    "Ashreu'ul", 
+    "Caelan Greyne", 
+    "Chios Dachreon", 
+    "Cyrian Shyne", 
+    "Daetheus", 
+    "Dorien Caderyn", 
+    "Eugenes", 
+    "Evrio Lorian Peroumes", 
+    "Fierous Ashfyre", 
+    "Garris Ashenus", 
+    "King Mathyus Caderyn", 
+    "Kreceus", 
+    "Laetrois Ath'Shaorah", 
+    "Leaf", 
+    "Lorian", 
+    "Mavros Ilios", 
+    "Mirio Lorian Kyr'na", 
+    "Quir'ilynis",
+    "Quor'estes", 
+    "Relien Myelle", 
+    "Sedeysus", 
+    "Sera Lorian", 
+    "Se'teyo Nati",
+    "Synaethi Spiras", 
+    "Torreous Ashfyre", 
+    "Tshios Ash'air", 
+    "Vincere"
+];
+
+export const namedNameCheck = (name: string) => {
+    if (NAMED_ENEMY.includes(name)) {
+        return true;
+    } else {
+        return false;
+    };
+};
+
 const initFactions: faction[] = [
     {
         name: "Achreon Druid",

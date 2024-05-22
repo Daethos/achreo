@@ -123,26 +123,12 @@ const DialogTree = ({ ascean, enemy, engageCombat, getLoot, dialogNodes, game, g
         getWeapon: () => getLoot('physical-weapon'),
         getFlask: () => refillFlask()
     };
-    const [currentNodeIndex, setCurrentNodeIndex] = createSignal(game()?.currentNodeIndex || 0);
+    // const [currentNodeIndex, setCurrentNodeIndex] = createSignal(game()?.currentNodeIndex || 0);
 
-    onMount(() => {
-        setCurrentNodeIndex(game()?.currentNodeIndex || 0);
-    });
-
-    onMount(() => {
-        console.log("We made it here!", dialogNodes[currentNodeIndex()]);
-        // gameDispatch({
-        //     type: GAME_ACTIONS.SET_CURRENT_DIALOG_NODE,
-        //     payload: dialogNodes[currentNodeIndex()]
-        // });
-        // gameDispatch({
-        //     type: GAME_ACTIONS.SET_RENDERING,
-        //     payload: {
-        //     options: dialogNodes[currentNodeIndex()]?.options,
-        //     text: dialogNodes[currentNodeIndex()]?.text
-        //     },
-        // });
-    });
+    // onMount(() => {
+    //     console.log("We made it here!", dialogNodes[currentNodeIndex()]);
+    //     setCurrentNodeIndex(game()?.currentNodeIndex || 0);
+    // });
 
     onMount(() => {
         if (game()?.currentNode) {

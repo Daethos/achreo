@@ -7,6 +7,7 @@ import { Tutorial, initTutorial } from "../utility/tutorial";
 import { Skills, initCharacter, initSkills } from "../utility/ascean"; 
 import { v4 as uuidv4 } from 'uuid';
 import { addAscean } from "../assets/db/db";
+import Quest from "../utility/quests";
 
 export default class Ascean {
     _id: string = uuidv4();
@@ -54,6 +55,7 @@ export default class Ascean {
         currentEntry: number,
         lastEntry: number,
     };
+    quests: Quest[];
     interactions: {
         deity: number,
     };
@@ -109,6 +111,7 @@ export default class Ascean {
             currentEntry: 0,
             lastEntry: 0,
         };    
+        this.quests = [];
         this.interactions = {
             deity: 0,
         };

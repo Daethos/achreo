@@ -22,6 +22,7 @@ export default class Settings {
     public difficulty: { 
         aggression: number; 
         aim: boolean; 
+        computer: boolean;
         special: number;
         tidbits: boolean; 
     };
@@ -84,6 +85,7 @@ export default class Settings {
         this.difficulty = {
             aggression: 0.5,
             aim: false,
+            computer: false,
             special: 0.5,
             tidbits: false,
         };

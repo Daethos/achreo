@@ -332,7 +332,7 @@ function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, c
             
             const modifier = skill / (ascean.level * 100);
             const glancing = critClearance / 100;
-            console.log(`Glancing: ${glancing} Modifier: ${modifier}`);
+            // console.log(`Glancing: ${glancing} Modifier: ${modifier}`);
             if (glancing >= modifier) {
                 glancingBlow = true;
                 // This is the random 1-100 roll that is higher than the MODIFIER (player skill in that weapon type) 
@@ -2743,21 +2743,14 @@ function computerCombatSplitter(data: { computerOne: Combat, computerTwo: Combat
             computerOne = dualActionSplitter(computerOne);
             computerTwo = dualActionSplitter(computerTwo);
         } else if (computerOneActionLive && !computerTwoActionLive) {
+            console.log("Actions");
             computerActionCompiler(computerTwo, computerOne.computerAction);
             computerAttackCompiler(computerTwo, computerOne.computerAction);
         } else if (!computerOneActionLive && computerTwoActionLive) {
+            console.log("Dual Actions");
             computerActionCompiler(computerOne, computerTwo.computerAction);
             computerAttackCompiler(computerOne, computerTwo.computerAction);
         };
-
-
-
-        // Discern the Computer's actions against each other as would be against the player
-        computerWeaponMaker(computerOne);
-        computerWeaponMaker(computerTwo);
-        computerActionCompiler(computerOne, computerTwo.computerAction);
-        computerActionCompiler(computerTwo, computerOne.computerAction);
-
 
         return { computerOne, computerTwo } as { computerOne: Combat, computerTwo: Combat };
     } catch (err) {

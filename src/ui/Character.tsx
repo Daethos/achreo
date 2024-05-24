@@ -579,6 +579,12 @@ const Character = ({ reputation, setReputation, settings, setSettings, ascean, a
         await saveSettings(newSettings);
     };
 
+    async function handleComputerCombat() {
+        const newSettings = { ...settings(), difficulty: { ...settings().difficulty, computer: !settings().difficulty.computer } };
+        setSettings(newSettings);
+        await saveSettings(newSettings);
+    };
+ 
     async function handleSpecial(e: any) {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, special: e.target.value } };
         setSettings(newSettings);
@@ -938,7 +944,7 @@ const Character = ({ reputation, setReputation, settings, setSettings, ascean, a
                 )
             ) : settings().asceanViews === VIEWS.SETTINGS ? (
                 <div class='center' style={{ display: 'flex', 'flex-direction': 'row' }}>
-                    <div class='gold' style={{ position: 'absolute', top: '2%', 'font-size': '1.25em', display: 'inline' }}>Controls <br />
+                    <div class='gold' style={{ position: 'absolute', top: '5%', 'font-size': '1.25em', display: 'inline' }}>Controls <br />
                         <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.BUTTONS ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Actions</button>
                         <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.POST_FX ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
                         <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.DIFFICULTY ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
@@ -1032,38 +1038,46 @@ const Character = ({ reputation, setReputation, settings, setSettings, ascean, a
                                 </div>
                         </Match>
                         <Match when={settings().control === CONTROLS.DIFFICULTY}>
-                            <div class='center creature-heading' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
-                                <h1 style={font('1.25em')}>Aggression</h1>
+                            <div class='center creature-heading wrap' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
                                 <div style={font('1em', '#fdf6d8')}>
-                                    <span class='gold'>{settings().difficulty.aggression}</span> <br />
+                                    <h1 style={font('1.25em')}>Computer Combat</h1>
+                                    <button class='gold highlight' onClick={() => handleComputerCombat()}>{settings().difficulty.computer ? 'Enabled' : 'Disabled'}</button>
+                                </div>
+                                <div style={font('0.5em')}>[Whether Computer Enemies Will Engage In Combat With Each Other (Not Yet Implemented)]</div>
+
+                                <div style={font('1em', '#fdf6d8')}>
+                                    <h1 style={font('1.25em')}>Computer Targeting</h1>
+                                    <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'Manual' : 'Auto'} Aim</button>
+                                </div>
+                                <div style={font('0.5em')}>[Whether You Use the Second Joystick to Aim Ranged Attacks in Combat]</div>
+
+                                <div style={font('1em', '#fdf6d8')}>
+                                    <h1 style={font('1.25em')}>Enemy Aggression</h1>
+                                    <span class='gold'>{settings().difficulty.aggression * 100}%</span> <br />
                                     <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.aggression} onChange={(e) => handleAggression(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                                 </div>
-                                <div style={font('0.5em')}>[Aggressive Enemy Occurrence: 0 - 100%]</div>
-                                <br />
-                                <h1 style={font('1.25em')}>Sound</h1>
-                                <div style={font('0.75em', '#fdf6d8')}>Enabled 
-                                    <button class='gold highlight' onClick={() => handleMusic()}>{settings().music ? 'True' : 'False'}</button>
+                                <div style={font('0.5em')}>[Aggressive Enemy Occurrence: 0 - 100% <br /> Restart Game For This Change To Take Effect.]</div>
+
+                                <h1 style={font('1.25em')}>Enemy Specials</h1>
+                                <div style={font('1em', '#fdf6d8')}>
+                                    <span class='gold'>{settings().difficulty.special * 100}%</span> <br />
+                                    <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.special} onChange={(e) => handleSpecial(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                                 </div>
+                                <div style={font('0.5em')}>[Special (Elite) Enemy Occurrence: 0 - 100% <br /> Restart Game For This Change To Take Effect.]</div>
+
+                                <h1 style={font('1.25em')}>Sound</h1>
+                                <div style={font('0.75em', '#fdf6d8')}> 
+                                    <button class='gold highlight' onClick={() => handleMusic()}>{settings().music ? 'Enabled' : 'Disabled'}</button>
+                                </div>
+                                <div style={font('0.5em')}>[Whether any music or sound effects are enabled. Restart Game For This Change To Take Effect.]</div>
 
                                 <div style={{...font('0.75em', '#fdf6d8'), 'margin': '3%' }}>Volume ({settings().volume})</div>
                                 <Form.Range min={0} max={1} step={0.1} value={settings().volume} onChange={(e) => handleVolume(Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                                 <br />
-                                <div style={font('1em', '#fdf6d8')}>
-                                    <h1 style={font('1.25em')}>Targeting</h1>
-                                    <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'Manual' : 'Auto'} Aim</button>
-                                </div>
-                                <div style={font('0.5em')}>[Whether you use the second joystick to aim ranged attacks]</div>
-                                <br />
-                                <h1 style={font('1.25em')}>Special (Elite)</h1>
-                                <div style={font('1em', '#fdf6d8')}>
-                                    <span class='gold'>{settings().difficulty.special}</span> <br />
-                                    <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.special} onChange={(e) => handleSpecial(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
-                                </div>
-                                <div style={font('0.5em')}>[Special (Elite) Enemy Occurrence: 0 - 100%]</div>
-                                <br />
-                                <h1 style={font('1.25em')}>Tidbits</h1>
+
+                                <h1 style={font('1.25em')}>Tidbit Popups</h1>
                                     <button class='gold highlight' onClick={() => handleTidbits()}>{settings().difficulty.tidbits ? 'On' : 'Off'}</button>
-                                <div style={font('0.5em')}>[On = Hints and Lore Popups, False = No Info Popups]</div>
+                                <div style={font('0.5em')}>[On = Helpful Hints and Lore Popups, False = No Info Popups]</div>
                                 <br />
                             </div>
                         </Match>

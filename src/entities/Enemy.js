@@ -428,12 +428,13 @@ export default class Enemy extends Entity {
         this.combatThreshold = 0;
         this.attackIsLive = false;
         this.isEnemy = true;
-        this.isAggressive = this.setAggression(); // Math.random() > 0.5 || false
+        this.isAggressive = this.setAggression(); 
         this.startedAggressive = this.isAggressive;
+        // New Concept for Computer Aggressive Enemies
+        this.computerAggressive = this.scene.settings.difficulty.computer;
         // New Concept for Elite / Special Enemies
         this.isElite = this.setSpecial();
         this.isSpecial = this.setSpecial();
-        // Math.random() > 0.9 || false
 
         this.isDefeated = false;
         this.isTriumphant = false;
@@ -474,7 +475,6 @@ export default class Enemy extends Entity {
         this.enemySensor = enemySensor;
         this.enemyCollision(enemySensor);
         
-        // console.log(this.width, this.height)
         this.setInteractive(new Phaser.Geom.Rectangle(
             48,
             0,
@@ -534,6 +534,9 @@ export default class Enemy extends Entity {
             this.health = e.health;
             this.healthbar.setValue(e.health);
             this.updateHealthBar(e.health);
+            if (e.health <= 0) {
+                this.stateMachine.setState(States.DEFEATED);
+            };
         };
     };
 
@@ -589,6 +592,24 @@ export default class Enemy extends Entity {
         this.currentRound = e.combatRound;
     };
 
+    computerCombatUpdate = (e) => {
+        if (this.enemyID !== e.enemyID) return;
+        console.log(`%c ${this.ascean.name} is in combat with ${e.player.name}`, 'color: #ff0000');
+        if (this.health > e.newComputerHealth) {
+            let damage = Math.round(this.health - e.newComputerHealth);
+            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.criticalSuccess);
+            // console.log(`%c ${e.player.name} Dealt ${damage} Damage To ${this.ascean.name}`, 'color: #00ff00')
+            if (!this.isConsumed && !this.isHurt && !this.isFeared && !this.isSlowed) this.stateMachine.setState(States.HURT);
+            if (this.currentRound !== e.combatRound) {
+                if (this.isPolymorphed) this.isPolymorphed = false;
+                if (!this.inCombat && !this.isDefeated) {
+                    // this.checkEnemyCombatEnter();
+                };
+            };
+            if (e.newComputerHealth <= 0) this.stateMachine.setState(States.DEFEATED);
+        };   
+    };
+
     persuasionUpdate = (e) => {
         if (this.enemyID !== e.enemy) return;
         if (e.persuaded) {
@@ -633,24 +654,32 @@ export default class Enemy extends Entity {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [enemySensor],
             callback: other => {
-                if (!other.gameObjectB || other.gameObjectB.name !== 'player') return;
-                this.isValidRushEnemy(other.gameObjectB);
-                this.touching.push(other.gameObjectB);
-                if (this.ascean && !other.gameObjectB.isStealthing && this.enemyAggressionCheck()) {
-                    this.createCombat(other, 'start');
-                } else if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
-                    const newEnemy = this.isNewEnemy(other.gameObjectB);
-                    if (newEnemy) {
-                        other.gameObjectB.targets.push(this);
-                        other.gameObjectB.checkTargets();
+                // if (!other.gameObjectB || other.gameObjectB.name !== 'player') return;
+                if (other.gameObjectB && other.gameObjectB.name === 'player') {
+                    this.isValidRushEnemy(other.gameObjectB);
+                    this.touching.push(other.gameObjectB);
+                    if (this.ascean && !other.gameObjectB.isStealthing && this.enemyAggressionCheck()) {
+                        this.createCombat(other, 'start');
+                    } else if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
+                        const newEnemy = this.isNewEnemy(other.gameObjectB);
+                        if (newEnemy) {
+                            other.gameObjectB.targets.push(this);
+                            other.gameObjectB.checkTargets();
+                        };
+                        if (this.scene.state.enemyID !== this.enemyID) this.scene.setupEnemy(this);
+                        this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
+                        if (this.stateMachine.isCurrentState(States.DEFEATED)) {
+                            this.scene.showDialog(true);
+                        } else {
+                            this.stateMachine.setState(States.AWARE);
+                        };
                     };
-                    if (this.scene.state.enemyID !== this.enemyID) this.scene.setupEnemy(this);
-                    this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
-                    if (this.stateMachine.isCurrentState(States.DEFEATED)) {
-                        this.scene.showDialog(true);
-                    } else {
-                        this.stateMachine.setState(States.AWARE);
-                    };
+                // } else if (other.gameObjectB && other.gameObjectB.name === 'enemy') {
+                //     console.log(`%c ${this.ascean.name} has come into contact with ${other.gameObjectB?.ascean?.name}. Are you aggressive against computers? ${this.computerAggressive}`, 'color: #ff0000');
+                //     this.touching.push(other.gameObjectB);
+                //     // if (this.isAggressive) {
+                //     //     this.createCombat(other, 'start');
+                //     // };
                 };
             },
             context: this.scene,
@@ -658,17 +687,21 @@ export default class Enemy extends Entity {
         this.scene.matterCollision.addOnCollideEnd({
             objectA: [enemySensor],
             callback: other => {
-                if (!other.gameObjectB || other.gameObjectB.name !== 'player') return;
-                this.touching = this.touching.filter((target) => target === other.gameObjectB);
-                if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
-                    if (this.healthbar) this.healthbar.setVisible(false);
-                    if (this.isDefeated) {
-                        this.scene.showDialog(false);
-                        this.stateMachine.setState(States.DEFEATED);
-                    } else {
-                        this.stateMachine.setState(States.IDLE);
+                // if (!other.gameObjectB || other.gameObjectB.name !== 'player') return;
+                if (other.gameObjectB && other.gameObjectB.name === 'player') {
+                    this.touching = this.touching.filter((target) => target === other.gameObjectB);
+                    if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
+                        if (this.healthbar) this.healthbar.setVisible(false);
+                        if (this.isDefeated) {
+                            this.scene.showDialog(false);
+                            this.stateMachine.setState(States.DEFEATED);
+                        } else {
+                            this.stateMachine.setState(States.IDLE);
+                        };
+                        this.scene.clearNAEnemy();
                     };
-                    this.scene.clearNAEnemy();
+                // } else if (other.gameObjectB && other.gameObjectB.name === 'enemy') {
+                //     this.touching = this.touching.filter((target) => target === other.gameObjectB);
                 };
             },
             context: this.scene,

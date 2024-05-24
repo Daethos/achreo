@@ -50,7 +50,7 @@ const DialogOption = ({ option, onClick, actions, setPlayerResponses, setKeyword
     return (
       <div>
         { showDialogOptions() && (
-            <button class='highlight dialog-buttons' onClick={handleClick} data-function-name='handleClick'>
+            <button class='highlight' style={{ 'font-size': '0.85em' }} onClick={handleClick} data-function-name='handleClick'>
                 <Typewriter stringText={option.text} styling={{ 'overflow-y': 'auto' }} performAction={hollowClick} />
             </button>
         ) }

@@ -733,7 +733,7 @@ export default class Player extends Entity {
             if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) {
                 this.scene.sound.play('parry', { volume: this.scene.settings.volume });
             };
-            EventBus.emit('blend-combat', { computerDamaged: false, playerDamaged: false });
+            EventBus.emit('blend-combat', { computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false });
         } catch (err) {
             console.warn(err.message, 'Error Setting Sound Effects');
         };

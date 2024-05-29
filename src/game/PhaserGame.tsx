@@ -335,16 +335,18 @@ export const PhaserGame = (props: IProps) => {
 
     function recordSkills(skills: string[]) {
         let newSkills = { ...props.ascean().skills };
-        // console.log('Skills:', skills, 'Old Skills:', newSkills);
         skills.forEach((skill: string, index: number) => {
-            if (index % 3 !== 0 && index !== 0) {
-                // console.log('Skipping Skill:', skill);
+            if (index === 0) {
+                const coinFlip = Math.random() >= 0.5;
+                if (coinFlip === false) {
+                    return;
+                };
+            };
+            if (index % 3 !== 0) {
                 return;
             };
-            // console.log(newSkills[skill as keyof typeof newSkills], 'Old Skill Value');
             newSkills[skill as keyof typeof newSkills] += 1;
             newSkills[skill as keyof typeof newSkills] = Math.min(newSkills[skill as keyof typeof newSkills], props.ascean().level * 100);
-            // console.log(newSkills[skill as keyof typeof newSkills], 'New Skill Value');
         });
         return newSkills;
     };

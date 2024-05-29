@@ -204,7 +204,7 @@ export default class Player extends Entity {
                 onUpdate: this.onRangedStunUpdate,
                 onExit: this.onRangedStunExit,
             })
-            .addState(States.ROOTING, {
+            .addState(States.ROOT, {
                 onEnter: this.onRootingEnter,
                 onUpdate: this.onRootingUpdate,
                 onExit: this.onRootingExit,
@@ -1213,6 +1213,11 @@ export default class Player extends Entity {
 
     onKyrnaicismEnter = () => {
         if (!this.inCombat) return;
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
+        if (distance > PLAYER.RANGE.MODERATE) {
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
+            return;    
+        };
         this.isChiomic = true;
         this.scene.useStamina(PLAYER.STAMINA.KYRNAICISM);
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
@@ -1270,6 +1275,11 @@ export default class Player extends Entity {
 
     onConfuseEnter = () => {
         if (!this.inCombat) return;
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
+        if (distance > PLAYER.RANGE.LONG) {
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
+            return;    
+        };
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Confusing', PLAYER.DURATIONS.CONFUSE / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.CONFUSE);
         this.isConfusing = true;
@@ -1341,6 +1351,11 @@ export default class Player extends Entity {
 
     onFearingEnter = () => {
         if (!this.inCombat) return;
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
+        if (distance > PLAYER.RANGE.LONG) {
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
+            return;    
+        };
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Fearing', PLAYER.DURATIONS.FEAR / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.FEAR);
         this.isFearing = true;
@@ -1373,6 +1388,11 @@ export default class Player extends Entity {
 
     onFreezeCastEnter = () => {
         if (!this.inCombat) return;
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
+        if (distance > PLAYER.RANGE.LONG) {
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
+            return;    
+        };
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Freezing', PLAYER.DURATIONS.FREEZE / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.FREEZE);
         this.isFreezing = true;
@@ -1551,6 +1571,11 @@ export default class Player extends Entity {
 
     onPolymorphingEnter = () => {
         if (!this.inCombat) return;
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
+        if (distance > PLAYER.RANGE.LONG) {
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
+            return;    
+        };
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphing', PLAYER.DURATIONS.POLYMORPH / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.POLYMORPH);
         this.isPolymorphing = true;
@@ -1582,6 +1607,11 @@ export default class Player extends Entity {
     };
 
     onPursuitEnter = () => {
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
+        if (distance > PLAYER.RANGE.LONG) {
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
+            return;    
+        };
         this.scene.sound.play('wild', { volume: this.scene.settings.volume });
         if (this.currentTarget) {
             if (this.currentTarget.flipX) {
@@ -1618,28 +1648,53 @@ export default class Player extends Entity {
 
     onRootingEnter = () => {
         if (!this.inCombat) return;
-        this.isHealing = true;
-        this.setTimeEvent('rootCooldown', PLAYER.COOLDOWNS.SHORT); 
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
+        if (distance > PLAYER.RANGE.LONG) {
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
+            return;    
+        };
+        this.isRooting = true;
+        this.castbar.setTotal(PLAYER.DURATIONS.ROOTING);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Rooting', PLAYER.DURATIONS.ROOTING / 2, 'cast');
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+        this.castbar.setVisible(true);
     };
-    onRootingUpdate = (_dt) => {
-        this.combatChecker(this.isHealing);
+    onRootingUpdate = (dt) => {
+        if (this.isMoving) this.isRooting = false;
+        this.combatChecker(this.isRooting);
+        if (this.castbar.time >= PLAYER.DURATIONS.ROOTING) {
+            this.rootingSuccess = true;
+            this.isRooting = false;
+        };
+        if (this.isRooting) this.castbar.update(dt, 'cast');
     };
     onRootingExit = () => { 
         if (!this.inCombat) return;
-        this.scene.root();
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, rooting them!`
-        });
-        this.scene.useStamina(PLAYER.STAMINA.ROOT);
+        if (this.rootingSuccess) {
+            this.scene.root();
+            this.setTimeEvent('rootCooldown', PLAYER.COOLDOWNS.SHORT); 
+            this.scene.useStamina(PLAYER.STAMINA.ROOT);
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, rooting them!`
+            });
+        };
+        this.castbar.reset();
+        if (this.isGlowing) this.checkCaerenic(false);
     };
 
     onSlowEnter = () => {
         if (!this.inCombat) return;
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
+        if (distance > PLAYER.RANGE.LONG) {
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
+            return;    
+        };
         this.isSlowing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slow', 750, 'cast');
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.scene.slow(this.attacking.enemyID);
         this.scene.useStamina(PLAYER.STAMINA.SLOW);
+        this.setTimeEvent('slowCooldown', PLAYER.COOLDOWNS.SHORT);
         
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.scene.time.delayedCall(500, () => {
@@ -1653,18 +1708,21 @@ export default class Player extends Entity {
     onSlowUpdate = (_dt) => {
         this.combatChecker(this.isSlowing);
     };
-    onSlowExit = () => {
-        if (!this.inCombat) return;
-        this.setTimeEvent('slowCooldown', PLAYER.COOLDOWNS.SHORT);
-    };
+    onSlowExit = () => {};
 
     onSacrificeEnter = () => {
         if (!this.inCombat) return;
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
+        if (distance > PLAYER.RANGE.MODERATE) {
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
+            return;    
+        };
         this.isSacrificing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Sacrifice', 750, 'effect');
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
         this.scene.useStamina(PLAYER.STAMINA.SACRIFICE);
         this.scene.combatMachine.action({ type: 'Sacrifice', data: undefined });
+        this.setTimeEvent('sacrificeCooldown', PLAYER.COOLDOWNS.MODERATE);
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.scene.time.delayedCall(500, () => {
             if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
@@ -1674,13 +1732,15 @@ export default class Player extends Entity {
     onSacrificeUpdate = (_dt) => {
         this.combatChecker(this.isSacrificing);
     };
-    onSacrificeExit = () => {
-        if (!this.inCombat) return;
-        this.setTimeEvent('sacrificeCooldown', PLAYER.COOLDOWNS.MODERATE);
-    };
+    onSacrificeExit = () => {};
 
     onSnaringEnter = () => {
         if (!this.inCombat) return;
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
+        if (distance > PLAYER.RANGE.LONG) {
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
+            return;    
+        };
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snaring', PLAYER.DURATIONS.SNARE, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.SNARE);
         this.isSnaring = true;
@@ -1770,11 +1830,17 @@ export default class Player extends Entity {
 
     onSutureEnter = () => {
         if (!this.inCombat) return;
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
+        if (distance > PLAYER.RANGE.MODERATE) {
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
+            return;    
+        };
         this.isSuturing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Suture', 750, 'effect');
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.scene.useStamina(PLAYER.STAMINA.SUTURE);
         this.scene.combatMachine.action({ type: 'Suture', data: undefined });
+        this.setTimeEvent('sutureCooldown', PLAYER.COOLDOWNS.MODERATE);
         
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.scene.time.delayedCall(500, () => {
@@ -1786,13 +1852,15 @@ export default class Player extends Entity {
     onSutureUpdate = (_dt) => {
         this.combatChecker(this.isSuturing);
     };
-    onSutureExit = () => {
-        if (!this.inCombat) return;
-        this.setTimeEvent('sutureCooldown', PLAYER.COOLDOWNS.MODERATE);
-    };
+    onSutureExit = () => {};
 
     onTshaeralEnter = () => {
         if (!this.inCombat) return;
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
+        if (distance > PLAYER.RANGE.MODERATE) {
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
+            return;    
+        };
         this.isTshaering = true;
         this.attacking.isConsumed = true;
         this.scene.useStamina(PLAYER.STAMINA.TSHAERAL);
@@ -1949,11 +2017,17 @@ export default class Player extends Entity {
     };
 
     envelopHit = () => {
+        if (this.envelopBubble === undefined || this.isEnveloping === false) {
+            if (this.envelopBubble) {
+                this.envelopBubble.destroy();
+                this.envelopBubble = undefined;
+            };
+            this.isEnveloping = false;
+            return;
+        };
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Enveloped', 500, 'effect');
-        console.log(this.stamina, 'Stamina before')
         this.scene.useStamina(40);
-        console.log(this.stamina, 'Stamina after')
         if (this.stamina - 40 <= 0) {
             this.isEnveloping = false;
         };
@@ -2014,6 +2088,14 @@ export default class Player extends Entity {
     };
 
     maliceHit = () => {
+        if (this.maliceBubble === undefined || this.isMalicing === false) {
+            if (this.maliceBubble) {
+                this.maliceBubble.destroy();
+                this.maliceBubble = undefined;
+            };
+            this.isMalicing = false;
+            return;
+        };
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush');
         EventBus.emit('initiate-combat', { data: 10, type: 'Chiomic' });
@@ -2054,6 +2136,14 @@ export default class Player extends Entity {
     };
 
     mendHit = () => {
+        if (this.mendBubble === undefined || this.isMending === false) {
+            if (this.mendBubble) {
+                this.mendBubble.destroy();
+                this.mendBubble = undefined;
+            };
+            this.isMending = false;
+            return;
+        };
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril');
         EventBus.emit('initiate-combat', { data: { key: 'player', value: 15 }, type: 'Health' });
@@ -2207,6 +2297,14 @@ export default class Player extends Entity {
     };
 
     shieldHit = () => {
+        if (this.shieldBubble === undefined || this.isShielding === false) {
+            if (this.shieldBubble) {
+                this.shieldBubble.destroy();
+                this.shieldBubble = undefined;
+            };
+            this.isShielding = false;
+            return;
+        };
         this.scene.sound.play('shield', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shield Hit', 500, 'effect');
         this.shieldBubble.setCharges(this.shieldBubble.charges - 1);
@@ -2348,6 +2446,14 @@ export default class Player extends Entity {
     };
 
     wardHit = () => {
+        if (this.wardBubble === undefined || this.isWarding === false) {
+            if (this.wardBubble) {
+                this.wardBubble.destroy();
+                this.wardBubble = undefined;
+            };
+            this.isWarding = false;
+            return;
+        };
         this.scene.sound.play('parry', { volume: this.scene.settings.volume });
         this.scene.stunned(this.attacking?.enemyID);
         this.wardBubble.setCharges(this.wardBubble.charges - 1);

@@ -727,10 +727,10 @@ export class Game extends Scene {
         // console.log(this.player.rightJoystick.pointer.x, this.player.rightJoystick.pointer.y, 'Right Joystick Pointer')
         
         // deriving the world x and y from the pointer
-        let x = this.player.rightJoystick.pointer.x;
+        let x = this.rightJoystick.pointer.x;
         let x2 = window.innerWidth / 2;
 
-        let y = this.player.rightJoystick.pointer.y;
+        let y = this.rightJoystick.pointer.y;
         let y2 = window.innerHeight / 2;
 
         const worldX = (x > x2 ? x : -x) + this.player.x;

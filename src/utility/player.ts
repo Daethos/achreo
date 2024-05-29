@@ -98,6 +98,7 @@ export const PLAYER = {
         PURSUIT: 750,
         RECOVER: 10000,
         RENEWAL: 6000,
+        ROOTING: 1000,
         RUSH: 750,
         SACRIFICE: 750,
         SCREAM: 1000,
@@ -110,6 +111,11 @@ export const PLAYER = {
         TSHAERAL: 2000,
         WARD: 10000,
         WRITHE: 1000,
+    },
+    RANGE: {
+        SHORT: 200,
+        MODERATE: 350,
+        LONG: 500,
     },
 };
 

@@ -184,7 +184,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     EventBus.emit('blend-combat', tick);
                     break;
                 case 'Remove Tick':
-                    console.log(data, 'Remove Tick');
                     const remove = prayerRemoveTick(combat(), data);
                     res = { ...combat(), ...remove };
                     EventBus.emit('blend-combat', remove);                    

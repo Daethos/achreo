@@ -1425,7 +1425,7 @@ export default class Enemy extends Entity {
             loop: false,
         });
         this.setStatic(true);
-        this.castbar.setVisible(true);  
+        // this.castbar.setVisible(true);  
     };
     onKyrnaicismUpdate = (dt) => {
         if (this.isChiomic) {
@@ -1676,7 +1676,7 @@ export default class Enemy extends Entity {
             loop: false,
         });
         this.setStatic(true);
-        this.castbar.setVisible(true); 
+        // this.castbar.setVisible(true); 
     };
     onTshaeralUpdate = (dt) => {
         if (this.isTshaering) {
@@ -1801,6 +1801,14 @@ export default class Enemy extends Entity {
     };
 
     maliceHit = () => {
+        if (this.maliceBubble === undefined || this.isMalicing === false) {
+            if (this.maliceBubble) {
+                this.maliceBubble.destroy();
+                this.maliceBubble = undefined;
+            };
+            this.isMalicing = false;
+            return;
+        };
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush');
         EventBus.emit('initiate-combat', { data: 10, type: 'Enemy Chiomic' });
@@ -1837,6 +1845,14 @@ export default class Enemy extends Entity {
     };
 
     mendHit = () => {
+        if (this.mendBubble === undefined || this.isMending === false) {
+            if (this.mendBubble) {
+                this.mendBubble.destroy();
+                this.mendBubble = undefined;
+            };
+            this.isMending = false;
+            return;
+        };
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril');
         const mend = Math.round(this.ascean.health.max * 0.15);
@@ -1940,6 +1956,14 @@ export default class Enemy extends Entity {
     };
 
     shieldHit = () => {
+        if (this.shieldBubble === undefined || this.isShielding === false) {
+            if (this.shieldBubble) {
+                this.shieldBubble.destroy();
+                this.shieldBubble = undefined;
+            };
+            this.isShielding = false;
+            return;
+        };
         this.scene.sound.play('shield', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shield Hit', 500, 'effect');
         this.shieldBubble.setCharges(this.shieldBubble.charges - 1);
@@ -2023,6 +2047,14 @@ export default class Enemy extends Entity {
     };
 
     wardHit = () => {
+        if (this.wardBubble === undefined || this.isWarding === false) {
+            if (this.wardBubble) {
+                this.wardBubble.destroy();
+                this.wardBubble = undefined;
+            };
+            this.isWarding = false;
+            return;
+        };
         this.scene.sound.play('parry', { volume: this.scene.settings.volume });
         this.scene.stunned(this.scene.player.ascean._id);
         this.wardBubble.setCharges(this.wardBubble.charges - 1);

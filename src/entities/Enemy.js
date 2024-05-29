@@ -276,7 +276,7 @@ export default class Enemy extends Entity {
             })
             .addState(States.SLOWING, {
                 onEnter: this.onSlowingEnter,
-                // onUpdate: this.onSlowingUpdate,
+                onUpdate: this.onSlowingUpdate,
                 onExit: this.onSlowingExit,
             })
             .addState(States.SNARE, {
@@ -853,7 +853,7 @@ export default class Enemy extends Entity {
                     this.specialCombat.remove();
                     return;
                 };
-                if (this.isConfused || this.isFeared || this.isPolymorphed || this.isStunned) {
+                if (this.isConfused || this.isFeared || this.isPolymorphed || this.isStunned || this.scene.state.playerEffects.find(effect => effect.prayer === 'Silence')) {
                     console.log(`%c ${this.ascean.name} is confused, feared, polymorphed, or stunned, removing Special`, 'color: #00ff00');
                     // Delaying by 1 second to see if the enemy clears their negative status effects
                     this.setSpecialCombat(true, 0.1);
@@ -1506,7 +1506,7 @@ export default class Enemy extends Entity {
     };
 
     onPursuitEnter = () => {
-        this.isPerformingSpecial = true;
+        // this.isPerformingSpecial = true;
         this.scene.sound.play('wild', { volume: this.scene.settings.volume });
         if (this.scene.player.flipX) {
             this.setPosition(this.scene.player.x + 16, this.scene.player.y);
@@ -1524,7 +1524,7 @@ export default class Enemy extends Entity {
     };
     onPursuitUpdate = (_dt) => {};
     onPursuitExit = () => {
-        this.isPerformingSpecial = false;
+        // this.isPerformingSpecial = false;
         this.evaluateCombatDistance();
     };
 
@@ -1566,24 +1566,22 @@ export default class Enemy extends Entity {
     };
 
     onSlowingEnter = () => {
-        this.isPerformingSpecial = true;
-        this.isSlowing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slow', 750, 'cast');
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.scene.slow(this.scene.state.player._id);
         
-        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
-        this.scene.time.delayedCall(500, () => {
-            this.checkCaerenic(false);
-            this.isSlowing = false;
-        });
+        if (!this.isCaerenic && !this.isGlowing) {
+            this.checkCaerenic(true);
+            this.scene.time.delayedCall(500, () => {
+                this.checkCaerenic(false);
+            });
+        };
     };
+    onSlowingUpdate = (_dt) => this.evaluateCombatDistance();
     onSlowingExit = () => {
         EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} ensorcels your caeren, slowing you!`
         });
-        this.isPerformingSpecial = false;
-        this.evaluateCombatDistance();
     };
 
     onSacrificeEnter = () => {
@@ -2011,7 +2009,6 @@ export default class Enemy extends Entity {
         });
     };
     onWardUpdate = (_dt) => {
-        // this.combatChecker(this.isWarding);
         if (this.isWarding) {
             this.wardBubble.update(this.x, this.y);
         } else {

@@ -14,7 +14,7 @@ import { EventBus } from "../game/EventBus";
 import { GameState } from '../stores/game';
 import { LevelSheet } from '../utility/ascean';
 import { usePhaserEvent } from '../utility/hooks';
-import { computerCombatCompiler, consumePrayer, instantActionCompiler, weaponActionCompiler } from '../utility/combat';
+import { computerCombatCompiler, consumePrayer, instantActionCompiler, prayerEffectTick, weaponActionCompiler } from '../utility/combat';
 import { Deity } from './Deity';
 import { screenShake } from '../phaser/ScreenShake';
 import { Reputation } from '../utility/player';
@@ -66,6 +66,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     });
 
     createEffect(() => {
+        console.log(settings(), 'Settings');
         EventBus.emit('settings', settings());
     });
 
@@ -174,6 +175,14 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     playerWin = insta.playerWin;
                     res = { ...combat(), ...insta };
                     EventBus.emit('blend-combat', insta);
+                    break;
+                case 'Tick':
+                    const { effect, effectTimer } = data;
+                    const tick = prayerEffectTick({ combat: combat(), effect, effectTimer });
+                    res = { ...combat(), ...tick };
+                    playerWin = res.playerWin;
+                    computerWin = res.computerWin;
+                    EventBus.emit('blend-combat', tick);
                     break;
                 case 'Player': // 'Player Blind Attack' i.e. hitting a non targeted enemy
                     const { playerAction, enemyID, ascean, damageType, combatStats, weapons, health, actionData } = data;

@@ -4,6 +4,7 @@ import { prayerEffectTick, prayerRemoveTick } from '../utility/combat';
 import StatusEffect from '../utility/prayer';
 import { Combat } from '../stores/combat';
 import { GameState } from '../stores/game';
+import { EventBus } from '../game/EventBus';
 
 
 export default function PrayerEffects({ combat, effect, enemy, game, setEffect, show, setShow }: { combat: Accessor<Combat>; effect: StatusEffect; enemy: boolean; game: Accessor<GameState>, setEffect: Setter<StatusEffect>; show: Accessor<boolean>; setShow: Setter<boolean>; }) {
@@ -14,7 +15,8 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
         if (!combat().combatEngaged || timer() <= 0) {
             if (canTick(effect, timer(), combat().combatTimer)) {
                 console.log('%c Prayer Tick Effect... !', 'color: gold');
-                prayerEffectTick({ combat: combat(), effect: effect, effectTimer: timer() });
+                // prayerEffectTick({ combat: combat(), effect: effect, effectTimer: timer() });
+                EventBus.emit('initiate-combat', { data: { effect, effectTimer: timer() }, type: 'Tick' });    
             };
             console.log(`%c Effect ${effect.prayer} has expired...`, 'color: red');
             prayerRemoveTick(combat(), effect);
@@ -28,7 +30,8 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
         
         if (canTick(effect, timer(), combat().combatTimer)) {
             console.log('%c Prayer Tick Effect... !', 'color: gold');
-            prayerEffectTick({ combat: combat(), effect: effect, effectTimer: timer() });
+            // prayerEffectTick({ combat: combat(), effect: effect, effectTimer: timer() });
+            EventBus.emit('initiate-combat', { data: { effect, effectTimer: timer() }, type: 'Tick' });    
         };
         if (effect.endTime - combat().combatTimer > timer()) {
             console.log(`%c Effect Refreshing from ${timer()}s remaining to ${effect.endTime - combat().combatTimer}s end time...`, 'color: green');

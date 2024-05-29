@@ -101,8 +101,8 @@ export default function LevelUp({ asceanState, show, setShow }: Props) {
     };
     
     return (
-        <div class='modal'>
-                <div class='stat-block superCenter' style={{ width: '100%', background: 'rgba(0, 0, 0, 0.9' }}>
+        <div class='modal' style={{ 'z-index': 5 }}>
+            <div class='stat-block superCenter' style={{ width: '100%', background: 'rgba(0, 0, 0, 0.9' }}>
                 <div class='left center' style={{ height: '80%', width: '48%',  top: '10%',display: 'inline-block', border: '0.15em solid #fdf6d8' }}>
                     <h3 class='gold wrap' style={{ 'margin': '5%' }}>Congratulations {asceanState().ascean.name}, You Can Now Level Up To {asceanState().ascean.level + 1}</h3>
                     <p class='gold wrap' style={{ 'margin-bottom': '3%' }}>
@@ -148,12 +148,11 @@ export default function LevelUp({ asceanState, show, setShow }: Props) {
                 </For>
                 </div>
                 </div>
-
                 <Show when={pool() === 2}>
                     <button class='highlight cornerTL' style={{ 'background-color': 'gold', color: '#000', 'font-weight': 700 }} onClick={() => levelUp(asceanState)}>Level Up</button>
                 </Show>
             </div>
                 <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setShow(!show())}>X</button>
         </div>
-    )
-}
+    );
+};

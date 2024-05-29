@@ -14,9 +14,6 @@ export default function CombatText({ combat, combatHistory }: { combat: Accessor
         } : { 
             position: 'absolute', top: '50vh', 'align-items': 'center', 'justify-content': 'center', overflow: 'scroll' 
         }}>
-            {/* <img src={'../assets/gui/message_window.png'} alt="message window" style={{ 
-                position: 'fixed', bottom: '10vh', left: '15vw', // 'z-index': 0
-            }} /> */}
             <div style={{ 'text-wrap': 'balance', margin: '3%' }}>
                 <div style={{ 'text-wrap': 'balance', 'z-index': 1 }} innerHTML={combatHistory()} />
                 

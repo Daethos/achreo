@@ -7,14 +7,14 @@ import { Preview } from './components/Preview';
 import { Game } from './game/scenes/Game';
 import { PhaserGame } from './game/PhaserGame';
 import { useResizeListener } from './utility/dimensions';
-import { initSettings } from './models/settings';
+import Settings, { initSettings } from './models/settings';
 import { LANDSCAPE_SCREENS, Menu, SCREENS } from './utility/screens';
 import Ascean, { createAscean } from './models/ascean';
 import { CharacterSheet, Compiler, asceanCompiler } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
 import type { IRefPhaserGame } from './game/PhaserGame';
 import { EventBus } from './game/EventBus';
-import { allEquipment, deleteAscean, getAscean, getAsceans, getInventory, getReputation, getSettings, populate, saveTutorial, scrub, updateReputation } from './assets/db/db'; 
+import { allEquipment, deleteAscean, getAscean, getAsceans, getInventory, getReputation, getSettings, populate, saveTutorial, scrub, updateReputation, updateSettings } from './assets/db/db'; 
 import GameToast from './ui/GameToast';
 import { Puff } from 'solid-spinner';
 import { TIPS } from './utility/tips';
@@ -227,6 +227,16 @@ export default function App() {
         };
     };
 
+    async function saveSettings(set: Settings): Promise<void> {
+        try {
+            await updateSettings(set);
+            // console.log('Settings Updated:', success);
+            setSettings(set);
+        } catch (err: any) {
+            console.warn('Error saving Settings:', err);
+        };
+    };
+
     const updateAscean = async (vaEsai: Ascean): Promise<void> => {
         try {
             const save = await scrub(vaEsai);
@@ -302,6 +312,7 @@ export default function App() {
     usePhaserEvent('request-settings', () => {
         EventBus.emit('settings', settings());
     });
+    usePhaserEvent('save-settings', saveSettings);
     usePhaserEvent('update-settings', updateRep);
     usePhaserEvent('player-ascean', () => EventBus.emit('player-ascean-ready', ascean()));
     usePhaserEvent('save-intro', async () => {

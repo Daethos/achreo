@@ -9,6 +9,7 @@ export default class Settings {
     public vibration: number;
     public actions: string[];
     public specials: string[];
+    public prayer: string;
     public shake: { duration: number; intensity: number; };
     public selected: { prayer: number; damageType: number; weapon: number; highlight: string; };
     public show: { combat: boolean; dialog: boolean; inventory: boolean; loot: boolean; player: boolean; };
@@ -63,6 +64,7 @@ export default class Settings {
         this.vibration = 100;
         this.actions = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
         this.specials = startingSpecials[mastery as keyof typeof startingSpecials];
+        this.prayer = 'Buff';
         this.shake = { duration: 100, intensity: 0.05 };
         this.selected = {
             prayer: 0,

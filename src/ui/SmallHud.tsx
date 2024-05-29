@@ -58,18 +58,18 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
     const [combatHistory, setCombatHistory] = createSignal<any>(undefined);
     const dimensions = useResizeListener(); 
     const text = (prev: string, data: Combat) => {
-        let oldText: any = prev !== undefined ? prev + "\n" : "";
+        let oldText: any = prev !== undefined ? prev  : "";
         let newText: any = '';
-        if (data.playerStartDescription !== '') newText += data.playerStartDescription;
-        if (data.computerStartDescription !== '') newText += data.computerStartDescription;
-        if (data.playerSpecialDescription !== '') newText += data.playerSpecialDescription;
-        if (data.computerSpecialDescription !== '') newText += data.computerSpecialDescription;
-        if (data.playerActionDescription !== '') newText += data.playerActionDescription;
-        if (data.computerActionDescription !== '') newText += data.computerActionDescription;
-        if (data.playerInfluenceDescription !== '') newText += data.playerInfluenceDescription;
-        if (data.playerInfluenceDescriptionTwo !== '') newText += data.playerInfluenceDescriptionTwo;
-        if (data.computerInfluenceDescription !== '') newText += data.computerInfluenceDescription;
-        if (data.computerInfluenceDescriptionTwo !== '') newText += data.computerInfluenceDescriptionTwo;
+        if (data.playerStartDescription !== '') newText += data.playerStartDescription + '\n';
+        if (data.computerStartDescription !== '') newText += data.computerStartDescription + '\n';
+        if (data.playerSpecialDescription !== '') newText += data.playerSpecialDescription + '\n';
+        if (data.computerSpecialDescription !== '') newText += data.computerSpecialDescription + '\n';
+        if (data.playerActionDescription !== '') newText += data.playerActionDescription + '\n';
+        if (data.computerActionDescription !== '') newText += data.computerActionDescription + '\n';
+        if (data.playerInfluenceDescription !== '') newText += data.playerInfluenceDescription + '\n';
+        if (data.playerInfluenceDescriptionTwo !== '') newText += data.playerInfluenceDescriptionTwo + '\n';
+        if (data.computerInfluenceDescription !== '') newText += data.computerInfluenceDescription + '\n';
+        if (data.computerInfluenceDescriptionTwo !== '') newText += data.computerInfluenceDescriptionTwo + '\n';
         // if (data.playerDeathDescription !== '') newText += data.playerDeathDescription;
         // if (data.computerDeathDescription !== '') newText += data.computerDeathDescription;
         newText = styleText(newText);
@@ -106,16 +106,12 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
                 (isAttack === true || isCritical === true) ? 'red' : 
                 isHush === true ? 'fuchsia' :
                 '#fdf6d8';
-            const fontWeight = (
-                isCast === true || isNumber === true || isHeal === true || isHush === true || isTendril === true
-            ) ? 600 : 'normal';
-            const textShadow = (
-                isCast === true || isDamage === true || isNumber === true || isAttack === true || isHeal === true || isHush === true || isTendril === true
-            ) ? `gold 0 0 0` : 'none';
-            const fontSize = (
-                isCast === true || isDamage === true || isNumber === true || isAttack === true || isHeal === true || isHush === true || isTendril === true
-            ) ? '0.75em' : '0.65em';
-            return `<span style="color: ${color}; font-weight: ${fontWeight}; text-shadow: ${textShadow}; font-size: ${fontSize}; margin: 0;">${t}</span>`;
+            const fontWeight = (isCast === true || isNumber === true || isHeal === true || isHush === true || isTendril === true) ? 600 : 'normal';
+            const textShadow = (isCast === true || isDamage === true || isNumber === true || isAttack === true || isHeal === true || isHush === true || isTendril === true) ? `gold 0 0 0` : 'none';
+            const fontSize = (isCast === true || isDamage === true || isNumber === true || isAttack === true || isHeal === true || isHush === true || isTendril === true) ? '0.75em' : '0.65em';
+            const newLine = t === '\n' ? '<br>' : t;
+
+            return `<span style="color: ${color}; font-weight: ${fontWeight}; text-shadow: ${textShadow}; font-size: ${fontSize}; margin: 0;">${newLine}</span>`;
         };
     
         return text.split(' ').map((t, _i) => style(t)).join(' ');

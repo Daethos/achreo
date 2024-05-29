@@ -577,6 +577,7 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
             combat.computerWin = false;
             combat.playerWin = true;
         };
+        combat.playerSpecialDescription = `The ${combat.player?.name} takes ${Math.round(effect.effect.damage as number * 0.33)} damage from your ${effect.name}.`;
     } else {
         combat.newPlayerHealth -= effect.effect.damage as number * 0.33;
         if (combat.newPlayerHealth < 0) {
@@ -589,6 +590,7 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
                 combat.playerWin = false;
             };
         };
+        combat.computerSpecialDescription = `${combat.computer?.name}'s ${effect.name} deals ${Math.round(effect.effect.damage as number * 0.33)} damage to you.`;
     };
     return combat;
 };
@@ -596,9 +598,11 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
 function healTick(combat: Combat, effect:StatusEffect, player: boolean): Combat {
     if (player) {
         combat.newPlayerHealth += effect.effect.healing as number * 0.33;
+        combat.playerSpecialDescription = `You heal for ${Math.round(effect.effect.healing as number * 0.33)} from your ${effect.name}.`;
         if (combat.newPlayerHealth > 0) combat.computerWin = false;
     } else {
         combat.newComputerHealth += effect.effect.healing as number * 0.33;
+        combat.computerSpecialDescription = `${combat.computer?.name} heals for ${Math.round(effect.effect.healing as number * 0.33)} from their ${effect.name}.`;
         if (combat.newComputerHealth > 0) combat.playerWin = false;
     };
     return combat;
@@ -2626,7 +2630,7 @@ function consumePrayerSplitter(combat: Combat): any {
 
 function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, effectTimer: number }): any { 
     let { combat, effect, effectTimer } = data;
-
+    console.log(combat, effect, effectTimer, 'Prayer Effect Tick Splitter');
     if (effect.playerName === combat.player?.name) { 
         if (effect.prayer === 'Damage') { 
             damageTick(combat, effect, true);

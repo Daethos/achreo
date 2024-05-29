@@ -733,7 +733,13 @@ export default class Player extends Entity {
             if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) {
                 this.scene.sound.play('parry', { volume: this.scene.settings.volume });
             };
-            EventBus.emit('blend-combat', { computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false });
+            EventBus.emit('blend-combat', { 
+                computerDamaged: false, playerDamaged: false, 
+                glancingBlow: false, computerGlancingBlow: false,
+                parrySuccess: false, computerParrySuccess: false, 
+                rollSuccess: false, computerRollSuccess: false,
+                religiousSuccess: false,
+            });
         } catch (err) {
             console.warn(err.message, 'Error Setting Sound Effects');
         };
@@ -2893,9 +2899,6 @@ export default class Player extends Entity {
             !this.stateMachine.isCurrentState(States.PARRY) &&
             !this.stateMachine.isCurrentState(States.ATTACK) &&
             !this.stateMachine.isCurrentState(States.POSTURE) &&
-            // !this.stateMachine.isCurrentState(States.INVOKE) &&
-            // !this.stateMachine.isCurrentState(States.TSHAERAL) &&
-            // !this.stateMachine.isCurrentState(States.HEALING) &&
             !this.isStalwart
         );
     };

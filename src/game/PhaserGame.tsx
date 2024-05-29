@@ -42,7 +42,7 @@ interface IProps {
 export const PhaserGame = (props: IProps) => {
     let gameContainer: HTMLDivElement | undefined;
     const [instance, setInstance] = createStore<IRefPhaserGame>({ game: null, scene: null });
-    const [combat, setCombat] = createSignal<Combat>(initCombat);
+    const [combat, setCombat] = createSignal<Combat>({ ...initCombat, playerBlessing: props.settings().prayer || 'Buff' });
     const [game, setGame] = createSignal<GameState>(initGame);
     const [stamina, setStamina] = createSignal(0);
     const [live, setLive] = createSignal(false);
@@ -589,6 +589,7 @@ export const PhaserGame = (props: IProps) => {
             playerDefense: stats.defense,
             playerDefenseDefault: stats.defense,
             playerDamageType: stats.combatWeaponOne.damageType?.[0] as string,
+            playerBlessing: props.settings().prayer,
         });
         setStamina(stats.attributes.stamina as number);
         setGame({ ...game(), inventory: stats.ascean.inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary });
@@ -670,6 +671,7 @@ export const PhaserGame = (props: IProps) => {
             newPlayerHealth: res?.ascean.health.current as number,
             playerHealth: res?.ascean.health.max as number,
             playerDamageType: res?.combatWeaponOne?.damageType?.[0] as string,
+            playerBlessing: props.settings().prayer,
         };
         setCombat(cleanCombat);
         setStamina(res?.attributes?.stamina as number);
@@ -847,7 +849,11 @@ export const PhaserGame = (props: IProps) => {
         });
 
         EventBus.on('changeDamageType', (e: string) => setCombat({ ...combat(), playerDamageType: e }));
-        EventBus.on('changePrayer', (e: string) => setCombat({ ...combat(), playerBlessing: e }));
+        EventBus.on('changePrayer', (e: string) => {
+            setCombat({ ...combat(), playerBlessing: e });
+            const settings = { ...props.settings(), prayer: e };
+            EventBus.emit('save-settings', settings);
+        });
         EventBus.on('changeWeapon', (e: [Equipment, Equipment, Equipment]) => {
             setCombat({ ...combat(), weapons: e, weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2], playerDamageType: e[0].damageType?.[0] as string});
             const update = { ...props.ascean(), weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2] };
@@ -945,7 +951,8 @@ export const PhaserGame = (props: IProps) => {
                 playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, 
                 playerAttributes: e.attributes, 
                 playerDefense: e.defense, 
-                playerDefenseDefault: e.defense })
+                playerDefenseDefault: e.defense 
+            });
         });
         EventBus.on('update-combat-state', (e: { key: string; value: string }) => setCombat({ ...combat(), [e.key]: e.value }));
         EventBus.on('update-combat-timer', (e: number) => setCombat({ ...combat(), combatTimer: e }));

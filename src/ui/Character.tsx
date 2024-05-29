@@ -228,7 +228,7 @@ const Character = ({ reputation, setReputation, settings, setSettings, ascean, a
                     // 'transform': 'translateX(-50%)',
                     'text-shadow': '#000 0.1em 0 0.5em', 
                     'width': '90%', 
-                    'z-index': 1000, 
+                    'z-index': 1, 
                 }}>{faction.name}: {faction.reputation} / 100</p>
                 <div class='skill-bar-fill' style={{ 
                     'background-color': 'blue', 
@@ -263,7 +263,7 @@ const Character = ({ reputation, setReputation, settings, setSettings, ascean, a
                     // 'transform': 'translateX(-50%)',
                     'text-shadow': '#000 0.1em 0 0.5em', 
                     'width': '90%', 
-                    'z-index': 1000, 
+                    'z-index': 1, 
                 }}>{skill}: {skillLevel} / {skillCap}</p>
                 <div class='skill-bar-fill' style={{ 
                     'background-color': 'blue', 

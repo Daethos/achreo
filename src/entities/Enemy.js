@@ -854,7 +854,7 @@ export default class Enemy extends Entity {
                     return;
                 };
                 if (this.isConfused || this.isFeared || this.isPolymorphed || this.isStunned || this.scene.state.playerEffects.find(effect => effect.prayer === 'Silence')) {
-                    console.log(`%c ${this.ascean.name} is confused, feared, polymorphed, or stunned, removing Special`, 'color: #00ff00');
+                    console.log(`%c ${this.ascean.name} is confused, feared, polymorphed, silenced, or stunned:; delaying Special Combat`, 'color: #00ff00');
                     // Delaying by 1 second to see if the enemy clears their negative status effects
                     this.setSpecialCombat(true, 0.1);
                     return;

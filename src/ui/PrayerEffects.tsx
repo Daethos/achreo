@@ -1,6 +1,6 @@
 import { Accessor, Setter, createEffect, createSignal } from 'solid-js'
 import { itemStyle } from '../utility/styling';
-import { prayerEffectTick, prayerRemoveTick } from '../utility/combat';
+// import { prayerEffectTick, prayerRemoveTick } from '../utility/combat';
 import StatusEffect from '../utility/prayer';
 import { Combat } from '../stores/combat';
 import { GameState } from '../stores/game';
@@ -12,14 +12,15 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
     var timeout: any = undefined;
     
     function tickEffect(timer: Accessor<number>) {
-        if (!combat().combatEngaged || timer() <= 0) {
+        if (combat().combatEngaged === false || timer() <= 0) {
             if (canTick(effect, timer(), combat().combatTimer)) {
-                console.log('%c Prayer Tick Effect... !', 'color: gold');
+                console.log('%c Prayer Effect Ticking...', 'color: gold');
                 // prayerEffectTick({ combat: combat(), effect: effect, effectTimer: timer() });
                 EventBus.emit('initiate-combat', { data: { effect, effectTimer: timer() }, type: 'Tick' });    
             };
-            console.log(`%c Effect ${effect.prayer} has expired...`, 'color: red');
-            prayerRemoveTick(combat(), effect);
+            // console.log(`%c Effect ${effect.prayer} has expired!`, 'color: red');
+            EventBus.emit('initiate-combat', { data: effect, type: 'Remove Tick' });
+            // prayerRemoveTick(combat(), effect);
             clearInterval(timeout);
             return;
         };
@@ -29,12 +30,12 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
         };
         
         if (canTick(effect, timer(), combat().combatTimer)) {
-            console.log('%c Prayer Tick Effect... !', 'color: gold');
+            // console.log('%c Prayer Effect Ticking...', 'color: gold');
             // prayerEffectTick({ combat: combat(), effect: effect, effectTimer: timer() });
             EventBus.emit('initiate-combat', { data: { effect, effectTimer: timer() }, type: 'Tick' });    
         };
         if (effect.endTime - combat().combatTimer > timer()) {
-            console.log(`%c Effect Refreshing from ${timer()}s remaining to ${effect.endTime - combat().combatTimer}s end time...`, 'color: green');
+            // console.log(`%c Effect Refreshing from ${timer()}s remaining to ${effect.endTime - combat().combatTimer}s end time...`, 'color: green');
             setEffectTimer(effect.endTime - combat().combatTimer);
         } else {
             // console.log(`%c Effect ${effect.prayer} ticking... ${timer()}s left. End Time: ${effect.endTime} / Combat Time: ${combat().combatTimer}`, `color: gold`)

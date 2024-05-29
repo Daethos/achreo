@@ -72,7 +72,6 @@ export default class StatusEffect {
     public endTime: number;
 
     constructor(combat: Combat, player: Ascean, enemy: Ascean, weapon: Equipment, attributes: CombatAttributes, prayer: string) {
-        console.log(prayer, 'prayer');
         this.name = this.setName(weapon?.influences?.[0] as string);
         this.playerName = player.name;
         this.enemyName = enemy.name;
@@ -444,49 +443,49 @@ export default class StatusEffect {
         let type = '';
         if (deity === 'Achreo' || deity === 'Astra' || deity === "Quor'ei" || deity === "Senari") {
             if (weapon.grip === 'One Hand' || weapon.type === 'Bow') {
-                type = 'Achre';
+                type = 'achre';
                 attribute = (attributes.totalAchre + weapon.achre) * (player.mastery === type ? 1.5 : 1.25);
             } else {
-                type = 'Caeren';
+                type = 'caeren';
                 attribute = attributes.totalCaeren + weapon.caeren * (player.mastery === type ? 1.25 : 1);
             };
         } else if (deity === "Ahn've" || deity === "Cambire" || deity === "Fyer" || deity === "Nyrolus") {
             if (weapon.grip === 'One Hand') {
-                type = 'Achre';
+                type = 'achre';
                 attribute = attributes.totalAchre + weapon.achre * (player.mastery === type ? 1.25 : 1);
             } else {
-                type = 'Caeren';
+                type = 'caeren';
                 attribute = (attributes.totalCaeren + weapon.caeren) * (player.mastery === type ? 1.5 : 1.25);
             };
         } else if (deity === "Kyn'gi" || deity === "Se'dyro" || deity === "Ma'anre") {
             if (weapon.grip === 'One Hand' || weapon.type === 'Bow') {
-                type = 'Agility';
+                type = 'agility';
                 attribute = (attributes.totalAgility + weapon.agility) * (player.mastery === type ? 1.5 : 1.25);
             } else {
-                type = 'Strength';
+                type = 'strength';
                 attribute = attributes.totalStrength + weapon.strength * (player.mastery === type ? 1.25 : 1);
             };
         } else if (deity === "Ilios" || deity === "Se'vas" || deity === "Tshaer") {
             if (weapon.grip === 'One Hand') {
-                type = 'Agility';
+                type = 'agility';
                 attribute = attributes.totalAgility + weapon.agility * (player.mastery === type ? 1.25 : 1);
             } else {
-                type = 'Strength';
+                type = 'strength';
                 attribute = (attributes.totalStrength + weapon.strength) * (player.mastery === type ? 1.5 : 1.25);
             };
         } else if (deity === "Chiomyr" || deity === "Kyrisos" || deity === "Shrygei") {
-            type = 'Kyosir';
+            type = 'kyosir';
             attribute = (attributes.totalKyosir + weapon.kyosir) * (player.mastery === type ? 1.5 : 1.25);
         } else if (deity === "Lilos" || deity === "Kyr'na" || deity === "Rahvre") {
-            type = 'Constitution';
+            type = 'constitution';
             attribute = (attributes.totalConstitution) * (player.mastery === type ? 2 : 1.5);
         } else if (deity === "Daethos") {
             if (weapon.grip === 'One Hand' || weapon.type === 'Bow') {
                 type = 'daethic';
-                attribute = (attributes.totalAchre + weapon.achre + attributes.totalAgility + weapon.agility) / (player.mastery === 'Achre' || player.mastery === 'Agility' ? 1 : 1.5);
+                attribute = (attributes.totalAchre + weapon.achre + attributes.totalAgility + weapon.agility) / (player.mastery === 'achre' || player.mastery === 'agility' ? 1 : 1.5);
             } else {
                 type = 'daethic';
-                attribute = (attributes.totalStrength + weapon.strength + attributes.totalCaeren + weapon.caeren) / (player.mastery === 'Caeren' || player.mastery === 'Strength' ? 1 : 1.5);
+                attribute = (attributes.totalStrength + weapon.strength + attributes.totalCaeren + weapon.caeren) / (player.mastery === 'caeren' || player.mastery === 'strength' ? 1 : 1.5);
             };
         };
         attribute = Math.round(attribute * 100) / 100;

@@ -13,13 +13,11 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
     
     function tick() {
         if (combat().combatEngaged === false) {
-            console.log('========== NO LONGER IN COMBAT ==========');
             EventBus.emit('initiate-combat', { data: effect, type: 'Remove Tick' });
             clearInterval(timeout);
             return;
         };
         if (game().pauseState === true) {
-            console.log('========== GAME IS PAUSED ==========');
             clearInterval(timeout);
             return;
         };
@@ -28,16 +26,13 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
             EventBus.emit('initiate-combat', { data: { effect, effectTimer: effectTimer() }, type: 'Tick' });    
         };
         if (effectTimer() <= 0) {
-            console.log('========== TIMER IS 0 TIMER IS 0 ==========');
             clearInterval(timeout);
             EventBus.emit('initiate-combat', { data: effect, type: 'Remove Tick' });
             return;
         };
         if (effect.endTime - combat().combatTimer > effectTimer()) {
-            // console.log(`%c Effect Refreshing from ${effectTimer()}s remaining to ${effect.endTime - combat().combatTimer}s end time...`, 'color: green');
             setEffectTimer(effect.endTime - combat().combatTimer);
         } else {
-            // console.log(`%c Effect ${effect.prayer} ticking... ${effectTimer()}s left. End Time: ${effect.endTime} / Combat Time: ${combat().combatTimer}`, `color: gold`)
             setEffectTimer((prev) => prev - 1);
         };
 
@@ -53,10 +48,9 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
 
     function canTick(prayer: StatusEffect, prayerTimer: number, combatTimer: number) {
         return prayerTimer % 3 === 0 && 
+               combat().combatEngaged === true &&
                prayer.startTime !== combatTimer && 
                (prayer.prayer === 'Heal' || prayer.prayer === 'Damage');
-        // console.log(`%c Can Tick? ${canTick}`, "color: '#fdf6d8");
-        // return canTick;    
     }; 
 
     function showEffect() {

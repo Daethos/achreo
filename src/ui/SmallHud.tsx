@@ -118,7 +118,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
                 isHush === true ? 'fuchsia' :
                 '#fdf6d8';
                 
-            const lush = (isCast === true || isNumber === true || isHeal === true || isHush === true || isTendril === true);
+            const lush = (isCast === true || isNumber === true || isHush === true || isTendril === true);
             const fontWeight = lush ? 600 : 'normal';
             const textShadow = lush ? `gold 0 0 0` : 'none';
             const fontSize = lush ? '0.75em' : '0.65em';

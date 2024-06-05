@@ -571,7 +571,8 @@ function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, 
 
 function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Combat {
     if (player) {
-        const playerDamage = effect.effect.damage as number * 0.33;
+
+        const playerDamage = effect.effect.damage as number * 0.33 * (combat.isCaerenic === true ? 1.15 : 1);
         combat.newComputerHealth -= playerDamage;
         if (combat.newComputerHealth < 0) {
             combat.newComputerHealth = 0;
@@ -580,7 +581,7 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
         };
         combat.playerSpecialDescription = `${combat.computer?.name} takes ${Math.round(playerDamage)} damage from your ${effect.name}.`;
     } else {
-        const computerDamage = effect.effect.damage as number * 0.33;
+        const computerDamage = effect.effect.damage as number * 0.33 * (combat.isCaerenic === true ? 1.25 : 1);
         combat.newPlayerHealth -= computerDamage;
         if (combat.newPlayerHealth < 0) {
             if (combat.playerEffects.find(effect => effect.prayer === 'Denial')) {
@@ -599,12 +600,12 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
 
 function healTick(combat: Combat, effect:StatusEffect, player: boolean): Combat {
     if (player) {
-        const playerHeal = effect.effect.healing as number * 0.33;
+        const playerHeal = effect.effect.healing as number * 0.33 * (combat.isCaerenic === true ? 1.15 : 1);
         combat.newPlayerHealth += playerHeal;
         combat.playerSpecialDescription = `You heal for ${Math.round(playerHeal)} from your ${effect.name}.`;
         if (combat.newPlayerHealth > 0) combat.computerWin = false;
     } else {
-        const computerHeal = effect.effect.healing as number * 0.33;
+        const computerHeal = effect.effect.healing as number * 0.33 * (combat.isCaerenic === true ? 1.15 : 1);
         combat.newComputerHealth += computerHeal;
         combat.computerSpecialDescription = `${combat.computer?.name} heals for ${Math.round(computerHeal)} from their ${effect.name}.`;
         if (combat.newComputerHealth > 0) combat.playerWin = false;
@@ -2460,14 +2461,13 @@ function prayerSplitter(combat: Combat, prayer: string): Combat {
     combat.playerBlessing = originalPrayer;
     return combat;
 };
-
 function instantDamageSplitter(combat: Combat, mastery: string): Combat {
-    let damage = combat.player?.[mastery] * 0.5 + (combat.player?.level as number);
+    let damage = combat.player?.[mastery] * (0.5 + (combat.player?.level as number / 10)) * (combat.isCaerenic === true ? 1.15 : 1);
     combat.realizedPlayerDamage = damage;
     combat.newComputerHealth -= combat.realizedPlayerDamage;
     combat.computerDamaged = true;
     combat.playerAction = 'invoke';
-    combat.playerActionDescription = `You tshaer ${combat.computer?.name}'s Caeren with your ${combat.player?.mastery}'s Invocation of ${combat.weapons[0]?.influences?.[0]} for ${Math.round(damage)} Pure Damage.`;    
+    combat.playerActionDescription = `You tshaer ${combat.computer?.name}'s caeren with your ${combat.player?.mastery}'s Invocation of ${combat.weapons[0]?.influences?.[0]} for ${Math.round(damage)} Pure Damage.`;    
     return combat;
 };
 
@@ -2507,7 +2507,7 @@ function instantActionSplitter(combat: Combat): any {
         combat.newComputerHealth = 0;
         combat.playerWin = true;
     };
-    if (combat.playerWin) statusEffectCheck(combat);
+    if (combat.playerWin === true) statusEffectCheck(combat);
 
     const changes = {
         'actionData': combat.actionData,
@@ -2600,6 +2600,7 @@ function consumePrayerSplitter(combat: Combat): any {
     combat.prayerSacrificeId = '';
     combat.prayerSacrificeName = '';
     combat.action = '';
+
     if (combat.prayerSacrifice !== 'Heal' && combat.realizedPlayerDamage > 0) combat.computerDamaged = true;
     if (combat.playerWin === true) statusEffectCheck(combat);
 
@@ -2638,7 +2639,6 @@ function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, 
     if (effect.playerName === combat.player?.name) { 
         if (effect.prayer === 'Damage') { 
             damageTick(combat, effect, true);
-            // if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.computerEffects = combat.computerEffects.filter(compEffect => compEffect.id !== effect.id);
         };
         if (effect.prayer === 'Heal') { 
             healTick(combat, effect, true);
@@ -2647,16 +2647,13 @@ function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, 
     } else if (effect.playerName === combat.computer?.name) {
         if (effect.prayer === 'Damage') {
             damageTick(combat, effect, false);
-            // if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.playerEffects = combat.playerEffects.filter(playEffect => playEffect.id !== effect.id);
         };
         if (effect.prayer === 'Heal') { 
             healTick(combat, effect, false);
-            // if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.computerEffects = combat.computerEffects.filter(computerEffect => computerEffect.id !== effect.id);
         };
     };
 
-    if (effectTimer <= 0) {
-        // console.log('This effect has expired and will be removed');
+    if (combat.combatTimer >= effect.endTime || effectTimer <= 0) {
         combat = prayerRemoveTickSplitter(combat, effect);
     };
 

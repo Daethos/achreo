@@ -133,7 +133,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
 
     function initiateCombat(data: any, type: string) {
         try {    
-            let playerWin: boolean = false, computerWin: boolean = false, res: any = undefined;
+            let playerWin: boolean = false, computerWin: boolean = false, res: any = undefined, caerenic: number = combat().isCaerenic ? 1.15 : 1, stalwart: number = combat().isStalwart ? 0.85 : 1;
             switch (type) {
                 case 'Weapon': // Targeted weapon action
                     const weapon = { ...combat(), [data.key]: data.value };
@@ -245,7 +245,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     playerWin = res.playerWin;
                     break;
                 case 'Chiomic': // Mindflay
-                    const chiomic = Math.round(combat().playerHealth * (data / 100));
+                    const chiomic = Math.round(combat().playerHealth * (data / 100)) * caerenic * ((combat().player?.level as number + 9) / 10);
                     const newComputerHealth = combat().newComputerHealth - chiomic < 0 ? 0 : combat().newComputerHealth - chiomic;
                     playerWin = newComputerHealth === 0;
                     res = { 
@@ -262,7 +262,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     });
                     break;
                 case 'Enemy Chiomic':
-                    const enemyChiomic = Math.round(combat().computerHealth * (data / 100));
+                    const enemyChiomic = Math.round(combat().computerHealth * (data / 100)) * (caerenic ? 1.25 : 1) * stalwart  * ((combat().computer?.level as number + 9) / 10);
                     const newChiomicPlayerHealth = combat().newPlayerHealth - enemyChiomic < 0 ? 0 : combat().newPlayerHealth - enemyChiomic;
                     computerWin = newChiomicPlayerHealth === 0;
                     res = {
@@ -279,7 +279,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     });
                     break;
                 case 'Tshaeral': // Lifedrain
-                    const drained = Math.round(combat().playerHealth * (data / 100));
+                    const drained = Math.round(combat().playerHealth * (data / 100)) * caerenic * ((combat().player?.level as number + 9) / 10);
                     const newPlayerHealth = combat().newPlayerHealth + drained > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + drained;
                     const newHealth = combat().newComputerHealth - drained < 0 ? 0 : combat().newComputerHealth - drained;
                     playerWin = newHealth === 0;
@@ -295,9 +295,10 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth: newHealth, playerWin, playerActionDescription: tshaeralDescription });
                     break;
                 case 'Enemy Tshaeral':
-                    const enemyDrain = Math.round(combat().computerHealth * (data / 100));
-                    const drainedPlayerHealth = combat().newPlayerHealth - enemyDrain < 0 ? 0 : combat().newPlayerHealth - enemyDrain;
-                    const drainedComputerHealth = combat().newComputerHealth + enemyDrain > combat().computerHealth ? combat().computerHealth : combat().newComputerHealth + enemyDrain;
+                    const enemyDrain = Math.round(combat().computerHealth * (data / 100)) * (caerenic ? 1.25 : 1) * stalwart * ((combat().computer?.level as number + 9) / 10);
+                    let drainedPlayerHealth = combat().newPlayerHealth - enemyDrain < 0 ? 0 : combat().newPlayerHealth - enemyDrain;
+                    let drainedComputerHealth = combat().newComputerHealth + enemyDrain > combat().computerHealth ? combat().computerHealth : combat().newComputerHealth + enemyDrain;
+                    
                     computerWin = drainedPlayerHealth === 0;
                     const enemyTshaeralDescription =
                         `${combat().computer?.name} tshaers and devours ${enemyDrain} health from you.`;
@@ -358,11 +359,12 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     EventBus.emit('blend-combat', res);
                     break;
                 case 'Sacrifice':
-                    const sacrifice = Math.round(combat()?.player?.[combat().player?.mastery as string])
-                    const playerSacrifice = combat().newPlayerHealth - (sacrifice / 2) < 0 ? 0 : combat().newPlayerHealth - (sacrifice / 2);
-                    const enemySacrifice = combat().newComputerHealth - sacrifice < 0 ? 0 : combat().newComputerHealth - sacrifice;
+                    const sacrifice = Math.round(combat()?.player?.[combat().player?.mastery as string]) * caerenic * ((combat().player?.level as number + 9) / 10);
+                    let playerSacrifice = combat().newPlayerHealth - (sacrifice / 2 * stalwart) < 0 ? 0 : combat().newPlayerHealth - (sacrifice / 2 * stalwart);
+                    let enemySacrifice = combat().newComputerHealth - sacrifice < 0 ? 0 : combat().newComputerHealth - sacrifice;
+
                     const sacrificeDescription =
-                        `You sacrifice ${sacrifice / 2} health to rip ${sacrifice} from ${combat().computer?.name}.`;
+                        `You sacrifice ${sacrifice / 2 * stalwart} health to rip ${sacrifice} from ${combat().computer?.name}.`;
                     res = { ...combat(),
                         newPlayerHealth: playerSacrifice,
                         newComputerHealth: enemySacrifice,
@@ -375,9 +377,10 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     playerWin = res.playerWin;
                     break;
                 case 'Suture':
-                    const suture = Math.round(combat()?.player?.[combat().player?.mastery as string]) / 2;
-                    const playerSuture = combat().newPlayerHealth + suture > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + suture;
-                    const enemySuture = combat().newComputerHealth - suture < 0 ? 0 : combat().newComputerHealth - suture;
+                    const suture = Math.round(combat()?.player?.[combat().player?.mastery as string]) / 2 * caerenic * ((combat().player?.level as number + 9) / 10);
+                    let playerSuture = combat().newPlayerHealth + suture > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + suture;
+                    let enemySuture = combat().newComputerHealth - suture < 0 ? 0 : combat().newComputerHealth - suture;
+                    
                     const sutureDescription = 
                         `Your tendrils suture ${combat().computer?.name}'s caeren into you, absorbing ${suture}.`;    
                     res = {
@@ -391,11 +394,12 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     playerWin = res.playerWin;
                     break;
                 case 'Enemy Sacrifice':
-                    const enemySac = Math.round(combat().computer?.[combat().computer?.mastery as string]);
-                    const playerEnemySacrifice = combat().newPlayerHealth - enemySac < 0 ? 0 : combat().newPlayerHealth - enemySac;
-                    const enemyEnemySacrifice = combat().newComputerHealth - (enemySac / 2) < 0 ? 0 : combat().newComputerHealth - (enemySac / 2);
+                    const enemySac = Math.round(combat().computer?.[combat().computer?.mastery as string]) * ((combat().computer?.level as number + 9) / 10) * stalwart;
+                    let playerEnemySacrifice = combat().newPlayerHealth - (enemySac * (caerenic ? 1.25 : 1)) < 0 ? 0 : combat().newPlayerHealth - (enemySac * (caerenic ? 1.25 : 1));
+                    let enemyEnemySacrifice = combat().newComputerHealth - (enemySac / 2) < 0 ? 0 : combat().newComputerHealth - (enemySac / 2);
+    
                     const enemySacrificeDescription = 
-                        `${combat().computer?.name} sacrifices ${enemySac} health to rip ${enemySac / 2} from you.`;
+                        `${combat().computer?.name} sacrifices ${enemySac / 2} health to rip ${enemySac * (caerenic ? 1.25 : 1)} from you.`;
                     res = {
                         ...combat(),
                         newPlayerHealth: playerEnemySacrifice,
@@ -409,9 +413,10 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     playerWin = res.playerWin;
                     break;
                 case 'Enemy Suture':
-                    const enemySut = Math.round(combat().computer?.[combat().computer?.mastery as string]) / 2;
-                    const playerEnemySuture = combat().newPlayerHealth - enemySut < 0 ? 0 : combat().newPlayerHealth - enemySut;
-                    const enemyEnemySuture = combat().newComputerHealth + enemySut > combat().computerHealth ? combat().computerHealth : combat().newComputerHealth + enemySut;
+                    const enemySut = Math.round(combat().computer?.[combat().computer?.mastery as string]) / 2 * (caerenic ? 1.25 : 1) * ((combat().computer?.level as number + 9) / 10) * stalwart;
+                    let playerEnemySuture = combat().newPlayerHealth - (enemySut * 1.25) < 0 ? 0 : combat().newPlayerHealth - (enemySut * 1.25);
+                    let enemyEnemySuture = combat().newComputerHealth + enemySut > combat().computerHealth ? combat().computerHealth : combat().newComputerHealth + enemySut;
+
                     const enemySutureDescription = 
                         `${combat().computer?.name} sutured ${enemySut} health from you, absorbing ${enemySut}.`;
                     res = {

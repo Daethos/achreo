@@ -899,20 +899,20 @@ export class Game extends Scene {
     clearNAEnemy = () => EventBus.emit('clear-enemy');
     clearNPC = () => EventBus.emit('clear-npc'); 
     combatEngaged = (bool: boolean) => {
-        this.combat = bool;
         // console.log(`Combat Engaged: ${bool}`);
         EventBus.emit('combat-engaged', bool);
-        if (bool) {
+        if (bool === true && this.combat !== bool) {
             // this.combatTimerText.setVisible(true);
             this.musicCombat.play();
             this.musicBackground.pause();
             this.startCombatTimer();
-        } else {
+        } else if (bool === false) {
             // this.combatTimerText.setVisible(false);
             this.musicCombat.pause();
             this.musicBackground.resume();
             this.stopCombatTimer();    
         };
+        this.combat = bool;
     };
     pauseMusic = () => {
         this.musicBackground.pause();
@@ -968,6 +968,42 @@ export class Game extends Scene {
         return border;
     };   
 
+    enemyUpdate = () => {
+        const enemies = this.sortEnemies(this.enemies);
+        for (let i = 0; i < enemies.length; i++) {
+            enemies[i].update();
+        };
+    };
+
+    npcUpdate = () => {
+        const npcs = this.sortNpcs(this.npcs);
+        for (let i = 0; i < npcs.length; i++) {
+            npcs[i].update();
+        };
+    };
+
+    playerUpdate = () => {
+        this.player.update(); 
+        this.combatMachine.processor();
+        this.playerLight.setPosition(this.player.x, this.player.y);
+    };
+
+    sortEnemies = (enemies: any[]) => {
+        let sorted = [];
+        for (let i = 0; i < enemies.length; i++) {
+            enemies[i].inCombat === true ? sorted.unshift(enemies[i]) : sorted.push(enemies[i]);
+        };
+        return sorted;
+    };
+
+    sortNpcs = (npcs: any[]) => {
+        let sorted = [];
+        for (let i = 0; i < npcs.length; i++) {
+            npcs[i].interacing === true ? sorted.unshift(npcs[i]) : sorted.push(npcs[i]);
+        };
+        return sorted;
+    };
+
     startCombatTimer = () => {
         if (this.combatTimer) {
             this.combatTimer.destroy();
@@ -997,18 +1033,15 @@ export class Game extends Scene {
     // ================== Update ================== \\
 
     update() {
-        this.player.update(); 
+        this.playerUpdate();
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update();
         };
         for (let i = 0; i < this.npcs.length; i++) {
             this.npcs[i].update();
-        }; 
-        this.combatMachine.processor();
-
-        this.playerLight.setPosition(this.player.x, this.player.y);
-        //  + '\n' + 'Height: ' + this.cameras.main.height + '\n' + 'Width: ' + this.cameras.main.width
+        };
         this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2)); 
+        //  + '\n' + 'Height: ' + this.cameras.main.height + '\n' + 'Width: ' + this.cameras.main.width
         // this.combatTimerText.setText('Combat Timer: ' + this.combatTime);
     };
 

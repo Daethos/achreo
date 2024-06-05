@@ -135,7 +135,7 @@ export default class Settings {
                 y: 1.025,
             },
             smallHud: { 
-                x: 0.4625, 
+                x: 0.575, 
                 y: 1.025 
             },
         };

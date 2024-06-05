@@ -428,6 +428,12 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     break;
             };
             screenShake(instance.game.scene.scenes[3], 150); // [250, 150, 250]
+            if (playerWin === true) {
+                res.computerDeathDescription = `${res.computer.name} has been defeated.`;
+            };
+            if (computerWin === true) {
+                res.playerDeathDescription = `You have been defeated.`;
+            };
             EventBus.emit('update-combat', res);
             EventBus.emit('add-combat-logs', res);
             if (playerWin === true || computerWin === true) {

@@ -2007,7 +2007,7 @@ export default class Enemy extends Entity {
             this.isSprinting = false;
         });
         EventBus.emit('enemy-combat-text', {
-            computerSpecialDescription: `${this.ascean.anem} taps into their caeren, bursting into an otherworldly sprint.`
+            computerSpecialDescription: `${this.ascean.name} taps into their caeren, bursting into an otherworldly sprint.`
         });
     };
     onSprintUpdate = (_dt) => {

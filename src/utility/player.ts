@@ -108,6 +108,7 @@ export const PLAYER = {
         SPRINT: 6000,
         STORM: 3000,
         STUNNED: 2500,
+        TEXT: 1500,
         TSHAERAL: 2000,
         WARD: 10000,
         WRITHE: 1000,

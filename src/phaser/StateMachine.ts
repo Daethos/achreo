@@ -150,6 +150,9 @@ export default class StateMachine {
             this.changeStateQueue.push(name); 
             return;
         }; 
+        if (this.id === 'enemy') {
+            
+        };
         this.isChangingState = true;
         if (this.currentState && this.currentState.onExit) this.currentState.onExit();
         this.currentState = this.states.get(name)!;

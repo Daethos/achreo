@@ -1970,11 +1970,11 @@ function actionSplitter(combat: Combat): Combat {
     
     if (newData.playerWin === true) {
         newData.computerDeathDescription = 
-        `${newData.computer.name} has been defeated. Hail ${newData.player.name}, you have won.`;
+        `${newData.computer.name} has been defeated.`;
     };
     if (newData.computerWin === true) {
         newData.playerDeathDescription = 
-        `You have been defeated. Hail ${newData.computer.name}, they have won.`;
+        `You have been defeated.`;
     };
     if (newData.playerWin === true || newData.computerWin === true) {
         statusEffectCheck(newData);
@@ -2265,8 +2265,8 @@ function weaponActionSplitter(combat: Combat): Combat {
     };
     faithCompiler(cleanData);
     
-    if (cleanData.playerWin === true) cleanData.computerDeathDescription = `${cleanData.computer.name} has been defeated. Hail ${cleanData.player.name}, you have won.`;
-    if (cleanData.computerWin === true) cleanData.playerDeathDescription = `You have been defeated. Hail ${cleanData.computer.name}, they have won.`;
+    if (cleanData.playerWin === true) cleanData.computerDeathDescription = `${cleanData.computer.name} has been defeated.`;
+    if (cleanData.computerWin === true) cleanData.playerDeathDescription = `You have been defeated.`;
     
     cleanData.action = '';
     cleanData.computerAction = '';
@@ -2638,24 +2638,31 @@ function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, 
     if (effect.playerName === combat.player?.name) { 
         if (effect.prayer === 'Damage') { 
             damageTick(combat, effect, true);
-            if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.computerEffects = combat.computerEffects.filter(compEffect => compEffect.id !== effect.id);
+            // if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.computerEffects = combat.computerEffects.filter(compEffect => compEffect.id !== effect.id);
         };
         if (effect.prayer === 'Heal') { 
             healTick(combat, effect, true);
-            if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.playerEffects = combat.playerEffects.filter(playerEffect => playerEffect.id !== effect.id);
+            // if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.playerEffects = combat.playerEffects.filter(playerEffect => playerEffect.id !== effect.id);
         };  
     } else if (effect.playerName === combat.computer?.name) {
         if (effect.prayer === 'Damage') {
             damageTick(combat, effect, false);
-            if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.playerEffects = combat.playerEffects.filter(playEffect => playEffect.id !== effect.id);
+            // if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.playerEffects = combat.playerEffects.filter(playEffect => playEffect.id !== effect.id);
         };
         if (effect.prayer === 'Heal') { 
             healTick(combat, effect, false);
-            if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.computerEffects = combat.computerEffects.filter(computerEffect => computerEffect.id !== effect.id);
+            // if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.computerEffects = combat.computerEffects.filter(computerEffect => computerEffect.id !== effect.id);
         };
     };
 
-    if (combat.playerWin === true || combat.computerWin === true) statusEffectCheck(combat);
+    if (effectTimer <= 0) {
+        // console.log('This effect has expired and will be removed');
+        combat = prayerRemoveTickSplitter(combat, effect);
+    };
+
+    if (combat.playerWin === true || combat.computerWin === true) {
+        combat = statusEffectCheck(combat);
+    };
 
     const changes = {
         'actionData': combat.actionData,
@@ -2674,6 +2681,7 @@ function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, 
         'playerWin': combat.playerWin,
         'computerWin': combat.computerWin,
     };
+
     return changes;
 };
 

@@ -14,8 +14,8 @@ export function PhaserShaper({ settings }: IPhaserShape) {
     const dimensions = useResizeListener();
 
     async function handleJoystick(e: any, side: string, axis: string) {
-        const newJoystick = { side, [axis]: Number(e.target.value) };
-        console.log(newJoystick, 'New Joystick');
+        // const newJoystick = { side, [axis]: Number(e.target.value) };
+        // console.log(newJoystick, 'New Joystick');
         const newSettings = { 
             ...settings(), 
             positions: { 
@@ -26,21 +26,18 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 } 
             } 
         };
-        console.log(newSettings, 'New Settings');
         await updateSettings(newSettings);
         const update = { 
             side, 
             x: axis === 'x' ? Number(e.target.value) : settings().positions[`${side}Joystick` as 'leftJoystick' | 'rightJoystick'].x, 
             y: axis === 'y' ? Number(e.target.value) : settings().positions[`${side}Joystick` as 'leftJoystick' | 'rightJoystick'].y 
         };
-        console.log(update, 'Update');
-        EventBus.emit('update-settings', newSettings);
+        EventBus.emit('save-settings', newSettings);
         EventBus.emit('update-joystick-position', update);
     };
 
     async function handleButtons(e: any, type: string, axis: string) {
-        const newButtons = { type, [axis]: Number(e.target.value) };
-        console.log(newButtons, 'New Buttons');
+        // const newButtons = { type, [axis]: Number(e.target.value) };
         const newSettings = { 
             ...settings(), 
             positions: { 
@@ -51,21 +48,19 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 } 
             } 
         };
-        console.log(newSettings, 'New Settings');
         await updateSettings(newSettings);
         const update = { 
             type, 
             x: axis === 'x' ? Number(e.target.value) : settings().positions[`${type}Buttons` as 'actionButtons' | 'specialButtons'].x, 
             y: axis === 'y' ? Number(e.target.value) : settings().positions[`${type}Buttons` as 'actionButtons' | 'specialButtons'].y 
         };
-        console.log(update, 'Update');
-        EventBus.emit('update-settings', newSettings);
+        EventBus.emit('save-settings', newSettings);
         EventBus.emit('reposition-buttons', update);
     };
 
     async function handleFPS(e: any, axis: string) {
-        const newFPS = { [axis]: Number(e.target.value) };
-        console.log(newFPS, 'New FPS');
+        // const newFPS = { [axis]: Number(e.target.value) };
+        // console.log(newFPS, 'New FPS');
         const newSettings = { 
             ...settings(), 
             positions: { 
@@ -76,14 +71,12 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 } 
             } 
         };
-        console.log(newSettings, 'New Settings');
         await updateSettings(newSettings);
         const update = { 
             x: axis === 'x' ? Number(e.target.value) : settings().positions.fpsText.x, 
             y: axis === 'y' ? Number(e.target.value) : settings().positions.fpsText.y 
         };
-        console.log(update, 'Update');
-        EventBus.emit('update-settings', newSettings);
+        EventBus.emit('save-settings', newSettings);
         EventBus.emit('update-fps', update);
     };
 
@@ -98,14 +91,12 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 } 
             } 
         };
-        console.log(newSettings, 'New Settings');
         await updateSettings(newSettings);
         const update = { 
             x: axis === 'x' ? Number(e.target.value) : settings().positions.smallHud.x, 
             y: axis === 'y' ? Number(e.target.value) : settings().positions.smallHud.y 
         };
-        console.log(update, 'Update');
-        EventBus.emit('update-settings', newSettings);
+        EventBus.emit('save-settings', newSettings);
         EventBus.emit('update-hud-position', update);
     };
 
@@ -120,14 +111,14 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 } 
             }
         };
-        console.log(newSettings, 'New Settings');
+        // console.log(newSettings, 'New Settings');
         await updateSettings(newSettings);
         const update = { 
             x: axis === 'x' ? Number(e.target.value) : settings().positions.leftHud.x, 
             y: axis === 'y' ? Number(e.target.value) : settings().positions.leftHud.y 
         };
-        console.log(update, 'Update');
-        EventBus.emit('update-settings', newSettings);
+        // console.log(update, 'Update');
+        EventBus.emit('save-settings', newSettings);
         EventBus.emit('update-left-hud-position', update);
     };
     
@@ -217,7 +208,7 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 value={settings().positions.leftHud.y} 
             />
 
-            <h1 style={font('1.25em')}>Smal HUD</h1>
+            <h1 style={font('1.25em')}>Small HUD</h1>
             <div style={font('1em')}>X: ({settings().positions.smallHud.x})</div>
             <Form.Range 
                 min={0} max={1} step={0.0125} 

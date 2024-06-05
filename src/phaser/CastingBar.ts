@@ -150,12 +150,13 @@ export default class CastingBar extends Phaser.GameObjects.Container {
 
     public update = (dt: number, type: string, color?: number, x?: number, y?: number): void => {
         this.setTime(type === 'cast' ? this.time + dt : this.time - dt, color || 0x0000FF);
-        if (this.entity.name !== 'player') {
-            if (x && y) {
-                // const world = this.scene.cameras.main.getWorldPoint(x, y);
-                // console.log(world, x, y, 'Enemy Castbar Updating Position');
-                this.setPosition(x, y + 35);
-            };
+        if (this.entity.name === 'enemy') {
+            this.setPosition(this.entity.x, this.entity.y + 35);
+            // if (x && y) {
+            //     // const world = this.scene.cameras.main.getWorldPoint(x, y);
+            //     // console.log(world, x, y, 'Enemy Castbar Updating Position');
+            //     this.setPosition(x, y + 35);
+            // };
         };
         // this position is right underneath the player at all times
         

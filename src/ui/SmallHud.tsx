@@ -1,6 +1,6 @@
 
 import { EventBus } from '../game/EventBus';
-import { Accessor, Show, createEffect, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
+import { Accessor, Show, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
 import { useResizeListener } from '../utility/dimensions';
 import { GameState } from '../stores/game';
 import { Combat } from '../stores/combat';
@@ -12,11 +12,12 @@ import CombatText from './CombatText';
 import Dialog from './Dialog';
 import { LevelSheet } from '../utility/ascean';
 
-const damageTypes = [
+// Colors: Bone (#fdf6d8), Green, Gold, Purple, Teal, Red, Blue, Light Blue 
+const MAX_ACTIONS = 30;
+const DAMAGE = [
     'Blunt',
     'Pierce', 
     'Slash', 
-    
     'Earth', 
     'Fire', 
     'Frost', 
@@ -27,7 +28,12 @@ const damageTypes = [
     'Wild',
     'Wind', 
 ];
-
+const NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const ATTACKS = ['Attack', 'Posture', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'rolls', 'postures', 'parries'];
+const CAST = ['confuse', 'confusing', 'fear', 'fearing', 'polymorph', 'polymorphing', 'slow', 'slowing', 'snare', 'snaring'];
+// const specials = ['Invocation', 'Tendrils', 'Hush', 'Tendril', 'hush', 'tshaer', 'sacrifice', 'suture'];
+const HUSH = ['Invocation', 'Hush', 'hush', 'sacrifice', 'shimmer', 'shimmers'];
+const TENDRIL = ['Tendril', 'tendril', 'tshaer', 'suture'];
 interface Props {
     ascean: Accessor<Ascean>;
     asceanState: Accessor<LevelSheet>;
@@ -57,6 +63,14 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
     });
     const [combatHistory, setCombatHistory] = createSignal<any>(undefined);
     const dimensions = useResizeListener(); 
+
+    // function addCombatAction(actions: string[], newAction: string): string[] {
+    //     const updatedActions = [...actions, newAction];
+    //     while (updatedActions.length > MAX_ACTIONS) {
+    //         updatedActions.shift();
+    //     };
+    //     return updatedActions;
+    // };
     const text = (prev: string, data: Combat) => {
         let oldText: any = prev !== undefined ? prev  : "";
         let newText: any = '';
@@ -70,32 +84,29 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         if (data.playerInfluenceDescriptionTwo !== '') newText += data.playerInfluenceDescriptionTwo + '\n';
         if (data.computerInfluenceDescription !== '') newText += data.computerInfluenceDescription + '\n';
         if (data.computerInfluenceDescriptionTwo !== '') newText += data.computerInfluenceDescriptionTwo + '\n';
-        // if (data.playerDeathDescription !== '') newText += data.playerDeathDescription;
-        // if (data.computerDeathDescription !== '') newText += data.computerDeathDescription;
+        if (data.playerDeathDescription !== '') newText += data.playerDeathDescription + '\n';
+        if (data.computerDeathDescription !== '') newText += data.computerDeathDescription + '\n';
         newText = styleText(newText);
+
+        // return addCombatAction(oldText, newText);
+
         oldText += newText;
         return oldText;
     };
     function styleText(text: string) {
-        const style = (t: string) => {
-            const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-            const numCheck = t.split('').find((c: string) => numbers.includes(parseInt(c)));
-            const attacks = ['Attack', 'Posutre', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'roll', 'postures', 'parries'];
-            const cast = ['confuse', 'confusing', 'fear', 'fearing', 'polymorph', 'polymorphing', 'slow', 'slowing', 'snare', 'snaring'];
-            const isCast = cast.includes(t);
-            // const specials = ['Invocation', 'Tendrils', 'Hush', 'Tendril', 'hush', 'tshaer', 'sacrifice', 'suture'];
-            const hush = ['Invocation', 'Hush', 'hush', 'sacrifice', 'shimmer', 'shimmers'];
-            const tendril = ['Tendril', 'tendril', 'tshaer', 'suture', 'ensorcel', 'ensorcels'];
-            const isHush = hush.includes(t);
-            const isTendril = tendril.includes(t);
-            const isHeal = t.includes('heal');
-            const isDamage = damageTypes.includes(t);
+        const style = (t: string) => { 
+            const numCheck = t.split('').find((c: string) => NUMBERS.includes(parseInt(c)));
             const isNumber = numCheck !== undefined;
-            const isAttack = attacks.includes(t);
+
+            const isAttack = ATTACKS.includes(t);
+            const isCast = CAST.includes(t);
+            const isDamage = DAMAGE.includes(t);
+            const isHeal = t.includes('heal');
+            const isHush = HUSH.includes(t);
+            const isTendril = TENDRIL.includes(t);
             // const isSpecial = specials.includes(t);
             const isCritical = t.includes('Critical');
             const isGlancing = t.includes('Glancing');
-            // Colors: Bone (#fdf6d8), Green, Gold, Purple, Teal, Red, Blue, Light Blue 
             const color = 
                 isCast === true ? 'blue' :
                 isDamage === true ? 'teal' :
@@ -106,12 +117,15 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
                 (isAttack === true || isCritical === true) ? 'red' : 
                 isHush === true ? 'fuchsia' :
                 '#fdf6d8';
-            const fontWeight = (isCast === true || isNumber === true || isHeal === true || isHush === true || isTendril === true) ? 600 : 'normal';
-            const textShadow = (isCast === true || isDamage === true || isNumber === true || isAttack === true || isHeal === true || isHush === true || isTendril === true) ? `gold 0 0 0` : 'none';
-            const fontSize = (isCast === true || isDamage === true || isNumber === true || isAttack === true || isHeal === true || isHush === true || isTendril === true) ? '0.75em' : '0.65em';
+                
+            const lush = (isCast === true || isNumber === true || isHeal === true || isHush === true || isTendril === true);
+            const fontWeight = lush ? 600 : 'normal';
+            const textShadow = lush ? `gold 0 0 0` : 'none';
+            const fontSize = lush ? '0.75em' : '0.65em';
             const newLine = t === '\n' ? '<br>' : t;
+            const style = (isDamage || isGlancing || isCritical) ? 'italic' : 'normal';
 
-            return `<span style="color: ${color}; font-weight: ${fontWeight}; text-shadow: ${textShadow}; font-size: ${fontSize}; margin: 0;">${newLine}</span>`;
+            return `<span style="color: ${color}; font-style: ${style}; font-weight: ${fontWeight}; text-shadow: ${textShadow}; font-size: ${fontSize}; margin: 0;">${newLine}</span>`;
         };
     
         return text.split(' ').map((t, _i) => style(t)).join(' ');

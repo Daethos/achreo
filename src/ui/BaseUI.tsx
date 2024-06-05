@@ -33,6 +33,7 @@ interface Props {
 
 export default function BaseUI({ instance, ascean, combat, game, reputation, setReputation, settings, setSettings, stamina }: Props) {
     const { staminaPercentage } = createStamina(stamina);
+    const [healthTimer, setHealthTimer] = createSignal<number>(0);
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [tutorial, setTutorial] = createSignal<string>('');
@@ -56,6 +57,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         caeren: 0,
         kyosir: 0,
     });
+    var remaining: number = 0, tick: number = 0, timer: any = undefined;
 
     createEffect(() => {
         EventBus.emit('combat', combat());
@@ -248,34 +250,34 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     const chiomic = Math.round(combat().playerHealth * (data / 100)) * caerenic * ((combat().player?.level as number + 9) / 10);
                     const newComputerHealth = combat().newComputerHealth - chiomic < 0 ? 0 : combat().newComputerHealth - chiomic;
                     playerWin = newComputerHealth === 0;
+                    const chiomicDescription = 
+                        `Your hush flays ${chiomic} health from ${combat().computer?.name}.`;
                     res = { 
                         ...combat(), 
                         newComputerHealth, 
                         playerWin,
+                        playerActionDescription: chiomicDescription,    
                     };
-                    const chiomicDescription = 
-                        `Your hush flays ${chiomic} health from ${combat().computer?.name}.`;
                     EventBus.emit('blend-combat', { 
                         newComputerHealth, 
                         playerWin,
-                        playerActionDescription: chiomicDescription,
                     });
                     break;
                 case 'Enemy Chiomic':
                     const enemyChiomic = Math.round(combat().computerHealth * (data / 100)) * (caerenic ? 1.25 : 1) * stalwart  * ((combat().computer?.level as number + 9) / 10);
                     const newChiomicPlayerHealth = combat().newPlayerHealth - enemyChiomic < 0 ? 0 : combat().newPlayerHealth - enemyChiomic;
                     computerWin = newChiomicPlayerHealth === 0;
+                    const enemyChiomicDescription = 
+                        `${combat().computer?.name} flays ${enemyChiomic} health from you with their hush.`;
                     res = {
                         ...combat(),
                         newPlayerHealth: newChiomicPlayerHealth,
                         computerWin,
+                        computerActionDescription: enemyChiomicDescription,
                     };
-                    const enemyChiomicDescription = 
-                        `${combat().computer?.name} flays ${enemyChiomic} health from you with their hush.`;
                     EventBus.emit('blend-combat', {
                         newPlayerHealth: newChiomicPlayerHealth,
                         computerWin,
-                        computerActionDescription: enemyChiomicDescription,
                     });
                     break;
                 case 'Tshaeral': // Lifedrain
@@ -292,7 +294,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                         playerWin,
                         playerActionDescription: tshaeralDescription,
                     };
-                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth: newHealth, playerWin, playerActionDescription: tshaeralDescription });
+                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth: newHealth, playerWin });
                     break;
                 case 'Enemy Tshaeral':
                     const enemyDrain = Math.round(combat().computerHealth * (data / 100)) * (caerenic ? 1.25 : 1) * stalwart * ((combat().computer?.level as number + 9) / 10);
@@ -309,7 +311,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                         computerWin,
                         computerActionDescription: enemyTshaeralDescription,
                     };
-                    EventBus.emit('blend-combat', { newPlayerHealth: drainedPlayerHealth, newComputerHealth: drainedComputerHealth, computerWin, computerActionDescription: enemyTshaeralDescription });
+                    EventBus.emit('blend-combat', { newPlayerHealth: drainedPlayerHealth, newComputerHealth: drainedComputerHealth, computerWin });
                     break;
                 case 'Health': // Either Enemy or Player gaining health
                     let { key, value } = data;
@@ -444,7 +446,9 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             if (playerWin === true || computerWin === true) {
                 resolveCombat(res);
             } else {
-                EventBus.emit('save-health', res.newPlayerHealth);
+                adjustTime(1000, res.newPlayerHealth);
+                // saveHealth(res.newPlayerHealth, 1000);
+                // EventBus.emit('save-health', res.newPlayerHealth);
             };
         } catch (err: any) {
             console.log(err, 'Error Initiating Combat');
@@ -505,6 +509,59 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             console.log(err, 'Error Resolving Combat');
         };
     };    
+
+    function startCountdown(health: number) {
+        if (!timer) {
+            timer = setInterval(() => {
+                remaining -= 1000;
+                console.log('Remaining Time:', remaining);
+                if (remaining <= 0) {
+                    console.log('Saving Health:', health);
+                    clearInterval(timer);
+                    timer = undefined;
+                    EventBus.emit('save-health', health);
+                }
+            }, 1000);
+        };
+    };
+    
+    function adjustTime(amount: number, health: number) {
+        remaining += amount;
+        // tick += amount;
+        console.log('Time and Remaining:', amount, remaining);
+    
+        if (remaining <= 0) {
+            remaining = 0;
+        };
+    
+        if (remaining === 0 && timer) {
+            clearInterval(timer);
+            timer = undefined;
+            EventBus.emit('save-health', health);
+        } else if (!timer) {
+            startCountdown(health);
+        };
+    };
+
+    function saveHealth(health: number, time: number) {
+        console.log(time, tick, 'Time and Tick');     
+        tick += time;
+        if (tick === 0) {
+            console.log('Saving Health:', health)
+            clearTimeout(timer);
+            EventBus.emit('save-health', health);
+            setHealthTimer(0);
+            return;
+        } else {
+            if (timer === undefined) {
+                timer = setTimeout(() => saveHealth(health, -1000), 1000);
+            } else {
+                clearTimeout(timer);
+                timer = setTimeout(() => saveHealth(health, -1000), 1000);
+            };
+        };
+        setHealthTimer((prev) => prev + 1);
+    };
 
     function balanceExperience(experience: number, level: number) {
         experience *= (110 - (level * 10)) / 100;

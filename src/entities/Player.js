@@ -780,7 +780,7 @@ export default class Player extends Entity {
     };
 
     defeatedEnemyCheck = (enemy) => {
-        this.targets = this.targets.filter(obj => obj.enemyID !== enemy);
+        this.targets = this.targets.filter(obj => (obj.enemyID !== enemy && obj.inCombat === false));
         this.sendEnemies(this.targets);
         this.scene.combatMachine.clear(enemy);
         if (this.targets.every(obj => !obj.inCombat)) {
@@ -1274,7 +1274,7 @@ export default class Player extends Entity {
     };
 
     onConfuseEnter = () => {
-        if (!this.inCombat) return;
+        if (this.inCombat === false) return;
         const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
         if (distance > PLAYER.RANGE.LONG) {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
@@ -1287,7 +1287,7 @@ export default class Player extends Entity {
         this.castbar.setVisible(true);  
     };
     onConfuseUpdate = (dt) => {
-        if (this.isMoving === false) this.isConfusing = false;
+        if (this.isMoving === true) this.isConfusing = false;
         this.combatChecker(this.isConfusing);
         if (this.castbar.time >= PLAYER.DURATIONS.CONFUSE) {
             this.confuseSuccess = true;

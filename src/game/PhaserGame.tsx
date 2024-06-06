@@ -49,24 +49,31 @@ export const PhaserGame = (props: IProps) => {
 
     async function lootDrop({ enemyID, level }: { enemyID: string; level: number }) {
         try {
+            // const roll = Math.floor(Math.random() * 101);
+            // if (roll < 51) {
+            //     console.log('No Loot Dropped');
+            //     return;
+            // };
             const res = await getOneRandom(level);
-            const roll = Math.floor(Math.random() * 101);
             if (!res) {
                 console.log('No Loot Dropped');
                 return;
             };
-            if (roll > 50) {
-                let sec = await getOneRandom(level);
-                if (!sec) {
-                    console.log('No Secondary Loot Dropped');
-                    return;
-                };
-                setGame({ ...game(), lootDrops: [ ...game().lootDrops, res[0], sec[0] ] });
-                EventBus.emit('enemyLootDrop',{ enemyID, drops: [res[0], sec[0]] });
-            } else {
-                setGame({ ...game(), lootDrops: [ ...game().lootDrops, res[0] ] });
-                EventBus.emit('enemyLootDrop',{ enemyID, drops: res });
-            };
+            setGame({ ...game(), lootDrops: [ ...game().lootDrops, res[0] ] });
+            EventBus.emit('enemyLootDrop',{ enemyID, drops: res });
+
+            // if (roll > 50) {
+            //     let sec = await getOneRandom(level);
+            //     if (!sec) {
+            //         console.log('No Secondary Loot Dropped');
+            //         return;
+            //     };
+            //     setGame({ ...game(), lootDrops: [ ...game().lootDrops, res[0], sec[0] ] });
+            //     EventBus.emit('enemyLootDrop',{ enemyID, drops: [res[0], sec[0]] });
+            // } else {
+            //     setGame({ ...game(), lootDrops: [ ...game().lootDrops, res[0] ] });
+            //     EventBus.emit('enemyLootDrop',{ enemyID, drops: res });
+            // };
         } catch (err: any) {
             console.warn(err, 'Error Dropping Loot');
         };

@@ -46,10 +46,10 @@ export default class Settings {
         crtWidth: number;
     };
     public positions: {
-        leftJoystick: { x: number; y: number; };
-        rightJoystick: { x: number; y: number; };
-        actionButtons: { x: number; y: number; };
-        specialButtons: { x: number; y: number; };
+        leftJoystick: { x: number; y: number; width: number; };
+        rightJoystick: { x: number; y: number; width: number; };
+        actionButtons: { x: number; y: number; width: number; };
+        specialButtons: { x: number; y: number; width: number; };
         fpsText: { x: number; y: number; };
         leftHud: { x: number; y: number; };
         smallHud: { x: number; y: number; };
@@ -112,26 +112,30 @@ export default class Settings {
         this.positions = {
             leftJoystick: { 
                 x: 0.05, 
-                y: 0.8 
+                y: 0.8,
+                width: 1, 
             },
             rightJoystick: { 
                 x: 0.95, 
-                y: 0.8 
+                y: 0.8,
+                width: 1, 
             },
             actionButtons: {
                 x: 0.825,
                 y: 0.75,
+                width: 1,
             },
             specialButtons: {
                 x: 0.7675,
                 y: 0.6125,
+                width: 1,
             },
             fpsText: {
                 x: 0.45,
                 y: -0.1,
             },
             leftHud: {
-                x: 0.025,
+                x: -0.0375,
                 y: 1.025,
             },
             smallHud: { 

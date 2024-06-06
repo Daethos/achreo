@@ -1979,10 +1979,6 @@ export default class Player extends Entity {
     };
     onEnvelopExit = () => {
         if (this.envelopBubble !== undefined) {
-            console.log('Envelop Bubble Destroyed', this.evelopBubble)
-            // this.envelopBubble.warp.remove(false);
-            // this.envelopBubble.warp.destroy();
-            // this.envelopBubble.warp = undefined;
             this.envelopBubble.destroy();
             this.envelopBubble = undefined;
         };
@@ -2141,7 +2137,6 @@ export default class Player extends Entity {
         });
     };
     onProtectUpdate = (_dt) => {
-        // this.combatChecker(this.isProtecting);
         if (this.isProtecting) {
             this.protectBubble.update(this.x, this.y);
         } else {

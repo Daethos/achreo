@@ -28,10 +28,15 @@ export const deleteAscean = async (id: string) => {
     inventory.forEach(async (item: string) => {
         await db.collection(EQUIPMENT).doc({ _id: item }).delete();
     });
-    await db.collection(ASCEANS).doc({ _id: id }).delete()
+    await db.collection(ASCEANS).doc({ _id: id }).delete();
+    const reputation = await db.collection(REPUTATION).doc({ _id: id }).get();
+    if (reputation) {
+        console.log('deleting reputation');
+        await db.collection(REPUTATION).doc({ _id: id }).delete();
+    };
     const settings = await db.collection(SETTINGS).doc({ _id: id }).get();
     if (settings) {
-        console.log('deleting settings')
+        console.log('deleting settings');
         await db.collection(SETTINGS).doc({ _id: id }).delete();
     };
 };

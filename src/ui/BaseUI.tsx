@@ -408,7 +408,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                         newComputerHealth: enemyEnemySacrifice,
                         computerWin: playerEnemySacrifice === 0,
                         computerActionDescription: enemySacrificeDescription,
-                        playerWin: playerEnemySacrifice === 0,
+                        playerWin: enemyEnemySacrifice === 0,
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerEnemySacrifice, newComputerHealth: enemyEnemySacrifice, computerWin: playerEnemySacrifice === 0 });
                     computerWin = res.computerWin;
@@ -512,7 +512,19 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
 
     function startCountdown(health: number) {
         if (!timer) {
+            if (combat().combatEngaged === false) {
+                console.log('Timer attempted to start outside combat, not necessary');
+                EventBus.emit('save-health', health);
+                return;
+            };
             timer = setInterval(() => {
+                if (combat().combatEngaged === false) {
+                    console.log('Combat Disengaged -- Either Leashed or Resolved -- Clearing Countdown');
+                    clearInterval(timer);
+                    timer = undefined;
+                    remaining = 0;
+                    return;
+                };
                 remaining -= 1000;
                 console.log('Remaining Time:', remaining);
                 if (remaining <= 0) {

@@ -58,6 +58,26 @@ export function PhaserShaper({ settings }: IPhaserShape) {
         EventBus.emit('reposition-buttons', update);
     };
 
+    async function handleButtonWidth(e: any, type: string) {
+        const newSettings = {
+            ...settings(),
+            positions: {
+                ...settings().positions,
+                [`${type}Buttons`]: {
+                    ...settings().positions[`${type}Buttons` as 'actionButtons' | 'specialButtons'],
+                    width: Number(e.target.value)
+                }
+            }
+        };
+        await updateSettings(newSettings);
+        const update = {
+            type,
+            rewidth: Number(e.target.value)
+        };
+        EventBus.emit('save-settings', newSettings);
+        EventBus.emit('re-width-buttons', update);
+    };
+
     async function handleFPS(e: any, axis: string) {
         // const newFPS = { [axis]: Number(e.target.value) };
         // console.log(newFPS, 'New FPS');
@@ -165,6 +185,12 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 onChange={(e) => handleButtons(e, 'action', 'y')} 
                 value={settings().positions.actionButtons.y} 
             />
+            <div style={font('1em')}>Width: ({settings().positions.actionButtons.width})</div>
+            <Form.Range 
+                min={0} max={2} step={0.1} 
+                onChange={(e) => handleButtonWidth(e, 'action')} 
+                value={settings().positions.actionButtons.width} 
+            />
 
             <h1 style={font('1.25em')}>Special Buttons</h1>
             <div style={font('1em')}>X: ({settings().positions.specialButtons.x})</div>
@@ -178,6 +204,12 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 min={0} max={1} step={0.0125} 
                 onChange={(e) => handleButtons(e, 'special', 'y')} 
                 value={settings().positions.specialButtons.y} 
+            />
+            <div style={font('1em')}>Width: ({settings().positions.specialButtons.width})</div>
+            <Form.Range 
+                min={0} max={2} step={0.1} 
+                onChange={(e) => handleButtonWidth(e, 'special')} 
+                value={settings().positions.specialButtons.width} 
             />
 
             <h1 style={font('1.25em')}>FPS Text</h1>
@@ -207,6 +239,7 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 onChange={(e) => handleLeftHud(e, 'y')} 
                 value={settings().positions.leftHud.y} 
             />
+            
 
             <h1 style={font('1.25em')}>Small HUD</h1>
             <div style={font('1em')}>X: ({settings().positions.smallHud.x})</div>

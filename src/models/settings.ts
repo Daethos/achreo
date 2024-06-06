@@ -48,8 +48,8 @@ export default class Settings {
     public positions: {
         leftJoystick: { x: number; y: number; width: number; };
         rightJoystick: { x: number; y: number; width: number; };
-        actionButtons: { x: number; y: number; width: number; };
-        specialButtons: { x: number; y: number; width: number; };
+        actionButtons: { display: string; x: number; y: number; width: number; };
+        specialButtons: { display: string; x: number; y: number; width: number; };
         fpsText: { x: number; y: number; };
         leftHud: { x: number; y: number; };
         smallHud: { x: number; y: number; };
@@ -121,11 +121,13 @@ export default class Settings {
                 width: 1, 
             },
             actionButtons: {
+                display: 'arc',
                 x: 0.825,
                 y: 0.75,
                 width: 1,
             },
             specialButtons: {
+                display: 'arc',
                 x: 0.7675,
                 y: 0.6125,
                 width: 1,

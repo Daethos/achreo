@@ -1310,8 +1310,10 @@ export default class Enemy extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Confusing', PLAYER.DURATIONS.CONFUSE / 2, 'cast');
         if (this.isGlowing === false) this.checkCaerenic(true);
         this.scene.time.delayedCall(PLAYER.DURATIONS.CONFUSE, () => {
-            this.scene.confuse(this.scene.state.player._id);
-            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+            if (this.checkPlayerResist() === true) {
+                this.scene.confuse(this.scene.state.player._id);
+                this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+            };    
             this.checkCaerenic(false);
             this.stateMachine.setState(States.HEALING);    
         });
@@ -1351,8 +1353,10 @@ export default class Enemy extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Fearing', PLAYER.DURATIONS.FEAR / 2, 'cast');
         if (this.isGlowing === false) this.checkCaerenic(true);
         this.scene.time.delayedCall(PLAYER.DURATIONS.FEAR, () => {
-            this.scene.fear(this.scene.state.player._id);
-            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+            if (this.checkPlayerResist() === true) {
+                this.scene.fear(this.scene.state.player._id);
+                this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+            };
             this.checkCaerenic(false);
             this.stateMachine.setState(States.CHASE);
         });
@@ -1395,10 +1399,13 @@ export default class Enemy extends Entity {
     };
     
     onKyrnaicismEnter = () => {
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Kyrnaicism', PLAYER.DURATIONS.KYRNAICISM / 2, 'damage');
+        if (this.checkPlayerResist() === false) {
+            return;
+        };
         this.isChiomic = true;
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         if (this.isGlowing === false) this.checkCaerenic(true);
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Kyrnaicism', PLAYER.DURATIONS.KYRNAICISM / 2, 'damage');
         this.castbar.setTotal(PLAYER.DURATIONS.KYRNAICISM);
         this.castbar.setTime(PLAYER.DURATIONS.KYRNAICISM);
         this.scene.slow(this.scene.state?.enemyID);
@@ -1434,7 +1441,7 @@ export default class Enemy extends Entity {
             this.stateMachine.setState(States.CHASE);
         };
     };
-  onKyrnaicismExit = () => {
+    onKyrnaicismExit = () => {
         this.castbar.reset();
         if (this.isGlowing === true) this.checkCaerenic(false);
         this.setStatic(false);
@@ -1489,8 +1496,10 @@ export default class Enemy extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphing', PLAYER.DURATIONS.POLYMORPH / 2, 'cast');
         if (this.isGlowing === false) this.checkCaerenic(true);
         this.scene.time.delayedCall(PLAYER.DURATIONS.POLYMORPH, () => {
-            this.scene.polymorph(this.attacking?.enemyID);
-            this.scene.mysterious.play();
+            if (this.checkPlayerResist() === true) {
+                this.scene.polymorph(this.attacking?.enemyID);
+                this.scene.mysterious.play();
+            };
             this.checkCaerenic(false);
             this.stateMachine.setState(States.HEALING);
         });
@@ -1567,6 +1576,9 @@ export default class Enemy extends Entity {
 
     onSlowingEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slow', 750, 'cast');
+        if (this.checkPlayerResist() === false) {
+            return;    
+        };
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.scene.slow(this.scene.state.player._id);
         
@@ -1585,9 +1597,12 @@ export default class Enemy extends Entity {
     };
 
     onSacrificeEnter = () => {
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Sacrifice', 750, 'effect');
+        if (this.checkPlayerResist() === false) {
+            return;    
+        };
         this.isPerformingSpecial = true;
         this.isSacrificing = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Sacrifice', 750, 'effect');
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume }); 
         this.scene.combatMachine.action({ type: 'Enemy Sacrifice', data: undefined });
         if (this.isGlowing === false) this.checkCaerenic(true);
@@ -1607,8 +1622,10 @@ export default class Enemy extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snaring', PLAYER.DURATIONS.SNARE, 'cast');
         if (this.isGlowing === false) this.checkCaerenic(true);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SNARE, () => {
-            this.scene.snare(this.scene.state.player._id);
-            this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
+            if (this.checkPlayerResist() === true) {
+                this.scene.snare(this.scene.state.player._id);
+                this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
+            };
             this.checkCaerenic(false);
             this.stateMachine.setState(States.CHASE);
         });    
@@ -1625,9 +1642,12 @@ export default class Enemy extends Entity {
     };
 
     onSutureEnter = () => {
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Suture', 750, 'effect');
+        if (this.checkPlayerResist() === false) {
+            return;    
+        };
         this.isPerformingSpecial = true;
         this.isSuturing = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Suture', 750, 'effect');
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume }); 
         this.scene.combatMachine.action({ type: 'Enemy Suture', data: undefined });
         
@@ -1645,12 +1665,15 @@ export default class Enemy extends Entity {
     };
 
     onTshaeralEnter = () => {
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAERAL / 2, 'damage');
+        if (this.checkPlayerResist() === false) {
+            return;    
+        };
         this.isPerformingSpecial = true;
         this.isTshaering = true;
         this.attacking.isConsumed = true;
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         if (this.isGlowing === false) this.checkCaerenic(true);
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAERAL / 2, 'damage');
         this.castbar.setTotal(PLAYER.DURATIONS.TSHAERAL);
         this.castbar.setTime(PLAYER.DURATIONS.TSHAERAL);
         this.tshaeringTimer = this.scene.time.addEvent({
@@ -1811,7 +1834,9 @@ export default class Enemy extends Entity {
         };
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush');
-        EventBus.emit('initiate-combat', { data: 10, type: 'Enemy Chiomic' });
+        if (this.checkPlayerResist() === true) {
+            EventBus.emit('initiate-combat', { data: 10, type: 'Enemy Chiomic' });
+        };
         this.maliceBubble.setCharges(this.maliceBubble.charges - 1);
         if (this.maliceBubble.charges <= 0) {
             this.isMalicing = false;
@@ -2056,7 +2081,9 @@ export default class Enemy extends Entity {
             return;
         };
         this.scene.sound.play('parry', { volume: this.scene.settings.volume });
-        this.scene.stunned(this.scene.player.ascean._id);
+        if (this.checkPlayerResist() === true) {
+            this.scene.stunned(this.scene.player.ascean._id);
+        };
         this.wardBubble.setCharges(this.wardBubble.charges - 1);
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Warded', 500, 'effect');
         if (this.wardBubble.charges <= 3) {

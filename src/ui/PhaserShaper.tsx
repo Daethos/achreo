@@ -16,21 +16,22 @@ export function PhaserShaper({ settings }: IPhaserShape) {
     async function handleJoystick(e: any, side: string, axis: string) {
         // const newJoystick = { side, [axis]: Number(e.target.value) };
         // console.log(newJoystick, 'New Joystick');
+        const change = Number(e.target.value);
         const newSettings = { 
             ...settings(), 
             positions: { 
                 ...settings().positions, 
                 [`${side}Joystick`]: {
                     ...settings().positions[`${side}Joystick` as 'leftJoystick' | 'rightJoystick'],
-                    [axis]: Number(e.target.value)
+                    [axis]: change
                 } 
             } 
         };
         await updateSettings(newSettings);
         const update = { 
             side, 
-            x: axis === 'x' ? Number(e.target.value) : settings().positions[`${side}Joystick` as 'leftJoystick' | 'rightJoystick'].x, 
-            y: axis === 'y' ? Number(e.target.value) : settings().positions[`${side}Joystick` as 'leftJoystick' | 'rightJoystick'].y 
+            x: axis === 'x' ? change : settings().positions[`${side}Joystick` as 'leftJoystick' | 'rightJoystick'].x, 
+            y: axis === 'y' ? change : settings().positions[`${side}Joystick` as 'leftJoystick' | 'rightJoystick'].y 
         };
         EventBus.emit('save-settings', newSettings);
         EventBus.emit('update-joystick-position', update);
@@ -38,47 +39,64 @@ export function PhaserShaper({ settings }: IPhaserShape) {
 
     async function handleButtons(e: any, type: string, axis: string) {
         // const newButtons = { type, [axis]: Number(e.target.value) };
+        const change = Number(e.target.value);
         const newSettings = { 
             ...settings(), 
             positions: { 
                 ...settings().positions, 
                 [`${type}Buttons`]: {
                     ...settings().positions[`${type}Buttons` as 'actionButtons' | 'specialButtons'],
-                    [axis]: Number(e.target.value)
+                    [axis]: change
                 } 
             } 
         };
         await updateSettings(newSettings);
         const update = { 
             type, 
-            x: axis === 'x' ? Number(e.target.value) : settings().positions[`${type}Buttons` as 'actionButtons' | 'specialButtons'].x, 
-            y: axis === 'y' ? Number(e.target.value) : settings().positions[`${type}Buttons` as 'actionButtons' | 'specialButtons'].y 
+            x: axis === 'x' ? change : settings().positions[`${type}Buttons` as 'actionButtons' | 'specialButtons'].x, 
+            y: axis === 'y' ? change : settings().positions[`${type}Buttons` as 'actionButtons' | 'specialButtons'].y 
         };
         EventBus.emit('save-settings', newSettings);
         EventBus.emit('reposition-buttons', update);
     };
 
     async function handleButtonWidth(e: any, type: string) {
+        const rewidth = Number(e.target.value); 
         const newSettings = {
             ...settings(),
             positions: {
                 ...settings().positions,
                 [`${type}Buttons`]: {
                     ...settings().positions[`${type}Buttons` as 'actionButtons' | 'specialButtons'],
-                    width: Number(e.target.value)
+                    width: rewidth
                 }
             }
         };
         await updateSettings(newSettings);
-        const update = {
-            type,
-            rewidth: Number(e.target.value)
-        };
+        const update = { type, rewidth };
         EventBus.emit('save-settings', newSettings);
         EventBus.emit('re-width-buttons', update);
     };
 
+    async function handleButtonDisplay(display: string, type: string) {
+        const newSettings = {
+            ...settings(),
+            positions: {
+                ...settings().positions,
+                [`${type}Buttons`]: {
+                    ...settings().positions[`${type}Buttons` as 'actionButtons' | 'specialButtons'],
+                    display
+                }
+            }
+        };
+        await updateSettings(newSettings);
+        const update = { type, display };
+        EventBus.emit('save-settings', newSettings);
+        EventBus.emit('redisplay-buttons', update);
+    };
+
     async function handleFPS(e: any, axis: string) {
+        const change = Number(e.target.value);
         // const newFPS = { [axis]: Number(e.target.value) };
         // console.log(newFPS, 'New FPS');
         const newSettings = { 
@@ -87,55 +105,57 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 ...settings().positions, 
                 fpsText: {
                     ...settings().positions.fpsText,
-                    [axis]: Number(e.target.value)
+                    [axis]: change
                 } 
             } 
         };
         await updateSettings(newSettings);
         const update = { 
-            x: axis === 'x' ? Number(e.target.value) : settings().positions.fpsText.x, 
-            y: axis === 'y' ? Number(e.target.value) : settings().positions.fpsText.y 
+            x: axis === 'x' ? change : settings().positions.fpsText.x, 
+            y: axis === 'y' ? change : settings().positions.fpsText.y 
         };
         EventBus.emit('save-settings', newSettings);
         EventBus.emit('update-fps', update);
     };
 
     async function handleHud(e: any, axis: string) {
+        const change = Number(e.target.value);
         const newSettings = { 
             ...settings(), 
             positions: { 
                 ...settings().positions, 
                 smallHud: {
                     ...settings().positions.smallHud,
-                    [axis]: Number(e.target.value)
+                    [axis]: change
                 } 
             } 
         };
         await updateSettings(newSettings);
         const update = { 
-            x: axis === 'x' ? Number(e.target.value) : settings().positions.smallHud.x, 
-            y: axis === 'y' ? Number(e.target.value) : settings().positions.smallHud.y 
+            x: axis === 'x' ? change : settings().positions.smallHud.x, 
+            y: axis === 'y' ? change : settings().positions.smallHud.y 
         };
         EventBus.emit('save-settings', newSettings);
         EventBus.emit('update-hud-position', update);
     };
 
     async function handleLeftHud(e: any, axis: string) {
+        const change = Number(e.target.value);
         const newSettings = { 
             ...settings(), 
             positions: { 
                 ...settings().positions, 
                 leftHud: {
                     ...settings().positions.leftHud,
-                    [axis]: Number(e.target.value)
+                    [axis]: change
                 } 
             }
         };
         // console.log(newSettings, 'New Settings');
         await updateSettings(newSettings);
         const update = { 
-            x: axis === 'x' ? Number(e.target.value) : settings().positions.leftHud.x, 
-            y: axis === 'y' ? Number(e.target.value) : settings().positions.leftHud.y 
+            x: axis === 'x' ? change : settings().positions.leftHud.x, 
+            y: axis === 'y' ? change : settings().positions.leftHud.y 
         };
         // console.log(update, 'Update');
         EventBus.emit('save-settings', newSettings);
@@ -173,6 +193,12 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 value={settings().positions.rightJoystick.y} 
             />
             <h1 style={font('1.25em')}>Action Buttons</h1>
+            <div style={font('1em')}>Display: ({settings().positions.actionButtons.display.charAt(0).toUpperCase() + settings().positions.actionButtons.display.slice(1)})</div>
+            {['Arc', 'Diagonal', 'Horizontal', 'Vertical'].map((display: string) => {
+                return (
+                    <button class='highlight p-3' onClick={() => handleButtonDisplay(display.toLowerCase(), 'action')}>{display}</button>
+                )
+            })}
             <div style={font('1em')}>X: ({settings().positions.actionButtons.x})</div>
             <Form.Range 
                 min={0} max={1} step={0.0125} 
@@ -193,15 +219,21 @@ export function PhaserShaper({ settings }: IPhaserShape) {
             />
 
             <h1 style={font('1.25em')}>Special Buttons</h1>
+            <div style={font('1em')}>Display: ({settings().positions.specialButtons.display.charAt(0).toUpperCase() + settings().positions.specialButtons.display.slice(1)})</div>
+            {['Arc', 'Diagonal', 'Horizontal', 'Vertical'].map((display: string) => {
+                return (
+                    <button class='highlight p-3' onClick={() => handleButtonDisplay(display.toLowerCase(), 'special')}>{display}</button>
+                )
+            })}
             <div style={font('1em')}>X: ({settings().positions.specialButtons.x})</div>
             <Form.Range 
-                min={0} max={1} step={0.0125} 
+                min={-0.25} max={1} step={0.0125} 
                 onChange={(e) => handleButtons(e, 'special', 'x')} 
                 value={settings().positions.specialButtons.x} 
             />
             <div style={font('1em')}>Y: ({settings().positions.specialButtons.y})</div>
             <Form.Range 
-                min={0} max={1} step={0.0125} 
+                min={-0.25} max={1} step={0.0125} 
                 onChange={(e) => handleButtons(e, 'special', 'y')} 
                 value={settings().positions.specialButtons.y} 
             />

@@ -85,7 +85,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         if (positive === true) {
             scene.time.delayedCall(950, () => {
                 this.hit.forEach((target) => {
-                    scene[type](target.playerID);
+                    if (this.scene.player.checkPlayerResist() === true) {
+                        scene[type](target.playerID);
+                    };
                 });
                 this.count -= 1;
                 if (this.count === 0) {

@@ -64,15 +64,20 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
     const [combatHistory, setCombatHistory] = createSignal<any>(undefined);
     const dimensions = useResizeListener(); 
 
-    // function addCombatAction(actions: string[], newAction: string): string[] {
-    //     const updatedActions = [...actions, newAction];
+    // function addCombatAction(actions: string[], newAction: string): string {
+    //     let updatedActions = [...actions, newAction];
     //     while (updatedActions.length > MAX_ACTIONS) {
     //         updatedActions.shift();
     //     };
-    //     return updatedActions;
+    //     const newActions = updatedActions.toString().split(',').join(' ');
+    //     console.log(newActions, 'New Actions ???');
+    //     return newActions;
     // };
     const text = (prev: string, data: Combat) => {
         let oldText: any = prev !== undefined ? prev  : "";
+        // const byteSize = (str: string) => new Blob([str]).size;
+        // const result = byteSize(oldText);
+        // console.log(result, 'Resulting Current Byte Size');
         let newText: any = '';
         if (data.playerStartDescription !== '') newText += data.playerStartDescription + '\n';
         if (data.computerStartDescription !== '') newText += data.computerStartDescription + '\n';
@@ -87,7 +92,6 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
         if (data.playerDeathDescription !== '') newText += data.playerDeathDescription + '\n';
         if (data.computerDeathDescription !== '') newText += data.computerDeathDescription + '\n';
         newText = styleText(newText);
-
         // return addCombatAction(oldText, newText);
 
         oldText += newText;
@@ -123,7 +127,7 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
             const textShadow = lush ? `gold 0 0 0` : 'none';
             const fontSize = lush ? '0.75em' : '0.65em';
             const newLine = t === '\n' ? '<br>' : t;
-            const style = (isDamage || isGlancing || isCritical || lush) ? 'italic' : 'normal';
+            const style = (isGlancing || isCritical || lush) ? 'italic' : 'normal';
 
             return `<span style="color: ${color}; font-style: ${style}; font-weight: ${fontWeight}; text-shadow: ${textShadow}; font-size: ${fontSize}; margin: 0;">${newLine}</span>`;
         };

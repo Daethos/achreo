@@ -263,7 +263,8 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         getMystic: async () => await getLoot('magical-weapon'),
         getTailor: async () => await getLoot('cloth'),
         getWeapon: async () => await getLoot('physical-weapon'),
-        getFlask: () => refillFlask()
+        getFlask: () => refillFlask(),
+        getSell: () => setShowSell(!showSell()),
     };
 
     const engageGrappling = (): void => {
@@ -286,7 +287,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
 
     const checkQuests = (enemy: Ascean) => {
         const enemyQuests = getQuests(enemy.name);
-        console.log(enemyQuests, 'Quests');
+        // console.log(enemyQuests, 'Quests');
         const prospectiveQuests = [];
         if (enemyQuests.length === 0) return;        
         if (ascean()?.quests?.length === 0) {
@@ -308,7 +309,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             };
         };
         if (prospectiveQuests.length > 0) {
-            console.log(prospectiveQuests, 'Prospective Quests');
+            // console.log(prospectiveQuests, 'Prospective Quests');
             setQuests(prospectiveQuests);
             // EventBus.emit('blend-game', { prospectiveQuests });
         };    

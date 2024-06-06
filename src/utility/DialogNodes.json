@@ -235,7 +235,7 @@
             "text": "What kind of weapon do you need?",
             "options": [
                 {
-                    "text": "Something of this world, martial and reliable.",
+                    "text": "Something of this world: martial; reliable.",
                     "next": "0007",
                     "npcIds": [
                         2
@@ -243,12 +243,21 @@
                     "action": "getWeapon"
                 },
                 {
-                    "text": "Perhance something a little bizarre.",
+                    "text": "Something a little bizarre perchance, of an othernature?",
                     "next": "0007",
                     "npcIds": [
                         7
                     ],
                     "action": "getMystic"
+                },
+                {
+                    "text": "Sell to the ${enemy.name}.",
+                    "next": "0007",
+                    "npcIds": [
+                        2,
+                        7
+                    ],
+                    "action": "getSell"
                 }
             ],
             "npcIds": [
@@ -261,7 +270,7 @@
             "text": "Of course, allow me to show you what I have on hand at the moment. I hope it's to your liking, ${ascean.name}.",
             "options": [
                 {
-                    "text": "See what the local blacksmith has been supplying for the city.",
+                    "text": "See what the local blacksmiths have been supplying for the ${enemy.name}.",
                     "next": "0008",
                     "npcIds": [
                         3
@@ -269,12 +278,21 @@
                     "action": "getArmor"
                 },
                 {
-                    "text": "See what softer garb may be proper for your travels.",
+                    "text": "See what softer garb may be more prim and proper for your leisured travels.",
                     "next": "0008",
                     "npcIds": [
                         8
                     ],
                     "action": "getTailor"
+                },
+                {
+                    "text": "Sell to the ${enemy.name}.",
+                    "next": "0008",
+                    "npcIds": [
+                        3,
+                        8
+                    ],
+                    "action": "getSell"
                 }
             ],
             "npcIds": [
@@ -287,7 +305,7 @@
             "text": "Here are my artifacts and oddities, do they amuse you?",
             "options": [
                 {
-                    "text": "See such bejeweled spectacles.",
+                    "text": "See such bejeweled spectacles on offer.",
                     "next": "0009",
                     "npcIds": [
                         4
@@ -325,14 +343,14 @@
             "text": "What kind of weapon are you looking to forge?",
             "options": [
                 {
-                    "text": "A weapon forged of wood and steel, nothing bizarre.",
+                    "text": "A weapon forged of wood and steel, nothing bizarre nor brazen.",
                     "next": "0018",
                     "npcIds": [
                         6
                     ]
                 },
                 {
-                    "text": "A weapon with some essence, some might call it magic.",
+                    "text": "A weapon with a curious essence, some might say not of this world.",
                     "next": "0019",
                     "npcIds": [
                         7
@@ -374,12 +392,20 @@
             "text": "Aye, I have the kind you're looking for, the finest armaments fresh off the forge from our talented smith.",
             "options": [
                 {
-                    "text": "See the martial weapons available.",
+                    "text": "See the martial weapons available for purchase.",
                     "next": "0014",
                     "npcIds": [
                         2
                     ],
                     "action": "getWeapon"
+                },
+                {
+                    "text": "Sell to the ${enemy.name}.",
+                    "next": "0014",
+                    "npcIds": [
+                        2
+                    ],
+                    "action": "getSell"
                 }
             ],
             "npcIds": [
@@ -391,12 +417,20 @@
             "text": "I imagine you knew why you've came, ${ascean.name}.",
             "options": [
                 {
-                    "text": "See the mystic weapons available.",
+                    "text": "See the mystic weapons available for purchase.",
                     "next": "0015",
                     "npcIds": [
                         7
                     ],
                     "action": "getMystic"
+                },
+                {
+                    "text": "Sell to the ${enemy.name}.",
+                    "next": "0015",
+                    "npcIds": [
+                        7
+                    ],
+                    "action": "getSell"
                 }
             ],
             "npcIds": [
@@ -416,12 +450,20 @@
             "text": "Good thing I carry a bit of every desire, have a chance look at my wares.",
             "options": [
                 {
-                    "text": "See the merchant's wares.",
+                    "text": "See the merchant's various wares on offer.",
                     "next": "0017",
                     "npcIds": [
                         1
                     ],
                     "action": "getGeneral"
+                },
+                {
+                    "text": "Sell to the ${enemy.name}.",
+                    "next": "0017",
+                    "npcIds": [
+                        1
+                    ],
+                    "action": "getSell"
                 }
             ],
             "npcIds": [
@@ -433,7 +475,7 @@
             "text": "Oh, yes, of course, a pleasure. Perchance coming round more often may aid my memory. Please, take a look at my wares.",
             "options": [
                 {
-                    "text": "See the merchant's wares.",
+                    "text": "See the merchant's various wares on offer.",
                     "next": "0017",
                     "npcIds": [
                         1
@@ -441,7 +483,7 @@
                     "action": "getGeneral"
                 },
                 {
-                    "text": "See the martial weapons available.",
+                    "text": "See the martial weapons available for purchase.",
                     "next": "0007",
                     "npcIds": [
                         2
@@ -449,7 +491,7 @@
                     "action": "getWeapon"
                 },
                 {
-                    "text": "See what the local blacksmith has been supplying for the city.",
+                    "text": "See what the local blacksmiths have been supplying for the ${enemy.name}.",
                     "next": "0008",
                     "npcIds": [
                         3
@@ -457,7 +499,7 @@
                     "action": "getArmor"
                 },
                 {
-                    "text": "See such bejeweled spectacles.",
+                    "text": "See such bejeweled spectacles on offer.",
                     "next": "0009",
                     "npcIds": [
                         4
@@ -486,7 +528,7 @@
                     ]
                 },
                 {
-                    "text": "ee the mystic weapons available.",
+                    "text": "See such othernatural weapons forged and found from afar.",
                     "next": "0007",
                     "npcIds": [
                         7
@@ -494,12 +536,25 @@
                     "action": "getMystic"
                 },
                 {
-                    "text": "See what softer garb may be proper for your travels.",
+                    "text": "See what softer garb may be more prim and proper for your leisured travels.",
                     "next": "0008",
                     "npcIds": [
                         8
                     ],
                     "action": "getTailor"
+                },
+                {
+                    "text": "Sell to the ${enemy.name}.",
+                    "next": "0018",
+                    "npcIds": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        7,
+                        8
+                    ],
+                    "action": "getSell"
                 }
             ],
             "npcIds": [

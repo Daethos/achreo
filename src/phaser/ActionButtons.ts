@@ -97,7 +97,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             
             let button: ActionButton = {
                 key: 'action',
-                name: Object.keys(element)[0],
+                name: scene.settings.actions[index],
                 border: new Phaser.GameObjects.Graphics(scene),
                 graphic: new Phaser.GameObjects.Graphics(scene),
                 color: Object.values(element)[0],
@@ -141,7 +141,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
             let button: ActionButton = {
                 key: 'special',
-                name: Object.keys(element)[0],
+                name: scene.settings.specials[index],
                 border: new Phaser.GameObjects.Graphics(scene),
                 graphic: new Phaser.GameObjects.Graphics(scene),
                 color: Object.values(element)[0],
@@ -343,7 +343,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
-                    // button.graphic.setPosition
                     // this.setButtonInteractive(button);
                     return button;
                 });
@@ -356,7 +355,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     const angle = startAngle - (index * (startAngle - endAngle)) / (3.57);
                     const buttonX = centerSpecialX + radius * Math.cos(angle);
                     const buttonY = centerSpecialY - radius * Math.sin(angle); // Negative sign for Y to start from top
-                    console.log(button.x, button.y, '<-- old x and y', buttonX, buttonY, '<-- new x and y');
                     button.graphic.clear();
                     // button.graphic.removeInteractive();
                     button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
@@ -446,15 +444,15 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     public cleanUp = () => {
         this.actionButtons.forEach((button: ActionButton) => {
             button.graphic.removeListener('pointerdown');
-            button.graphic.removeInteractive();
             button.graphic.disableInteractive();
+            button.graphic.removeInteractive();
             button.graphic.destroy();
             button.border.destroy();
         });
         this.specialButtons.forEach((button: ActionButton) => {
             button.graphic.removeListener('pointerdown');
-            button.graphic.removeInteractive();
             button.graphic.disableInteractive();
+            button.graphic.removeInteractive();
             button.graphic.destroy();
             button.border.destroy();    
         });
@@ -472,7 +470,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         switch (type) {
             case 'action': {
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
-                    button.graphic.removeInteractive();
+                    // button.graphic.removeInteractive();
+                    button.graphic.removeAllListeners();
                     button = { ...button, name: list[index].toUpperCase() as string };
                     this.setButtonInteractive(button);
                     return button;
@@ -481,7 +480,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             };
             case 'special': {
                 this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
-                    button.graphic.removeInteractive();
+                    // button.graphic.removeInteractive();
+                    button.graphic.removeAllListeners();
                     button = { ...button, name: list[index].toUpperCase() as string };
                     this.setButtonInteractive(button);
                     return button;
@@ -514,7 +514,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 
     private setButtonInteractive = (button: ActionButton): ActionButton => {
-        console.log(button.x, button.y, 'x and y in setButtonInteractive');
         button.graphic.setInteractive(new Phaser.Geom.Circle(button.x, button.y, button.width), Phaser.Geom.Circle.Contains)
             .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
                 this.pressButton(button, this.scene);

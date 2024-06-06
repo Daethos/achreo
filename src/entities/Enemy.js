@@ -898,7 +898,7 @@ export default class Enemy extends Entity {
         this.anims.play('player_pray', true).on('animationcomplete', () => {
             this.anims.play('player_idle', true);
         });
-        this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Defeated', 1500, 'damage', false);
+        // this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Defeated', 1500, 'damage', false);
         this.isDefeated = true;
         this.inCombat = false;
         this.setSpecialCombat(false);

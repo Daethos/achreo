@@ -513,22 +513,22 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     function startCountdown(health: number) {
         if (!timer) {
             if (combat().combatEngaged === false) {
-                console.log('Timer attempted to start outside combat, not necessary');
+                // console.log('Timer attempted to start outside combat, not necessary');
                 EventBus.emit('save-health', health);
                 return;
             };
             timer = setInterval(() => {
                 if (combat().combatEngaged === false) {
-                    console.log('Combat Disengaged -- Either Leashed or Resolved -- Clearing Countdown');
+                    // console.log('Combat Disengaged -- Either Leashed or Resolved -- Clearing Countdown');
                     clearInterval(timer);
                     timer = undefined;
                     remaining = 0;
                     return;
                 };
                 remaining -= 1000;
-                console.log('Remaining Time:', remaining);
+                // console.log('Remaining Time:', remaining);
                 if (remaining <= 0) {
-                    console.log('Saving Health:', health);
+                    // console.log('Saving Health:', health);
                     clearInterval(timer);
                     timer = undefined;
                     EventBus.emit('save-health', health);
@@ -540,7 +540,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     function adjustTime(amount: number, health: number) {
         remaining += amount;
         // tick += amount;
-        console.log('Time and Remaining:', amount, remaining);
+        // console.log('Time and Remaining:', amount, remaining);
     
         if (remaining <= 0) {
             remaining = 0;
@@ -555,25 +555,25 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         };
     };
 
-    function saveHealth(health: number, time: number) {
-        console.log(time, tick, 'Time and Tick');     
-        tick += time;
-        if (tick === 0) {
-            console.log('Saving Health:', health)
-            clearTimeout(timer);
-            EventBus.emit('save-health', health);
-            setHealthTimer(0);
-            return;
-        } else {
-            if (timer === undefined) {
-                timer = setTimeout(() => saveHealth(health, -1000), 1000);
-            } else {
-                clearTimeout(timer);
-                timer = setTimeout(() => saveHealth(health, -1000), 1000);
-            };
-        };
-        setHealthTimer((prev) => prev + 1);
-    };
+    // function saveHealth(health: number, time: number) {
+    //     console.log(time, tick, 'Time and Tick');     
+    //     tick += time;
+    //     if (tick === 0) {
+    //         console.log('Saving Health:', health)
+    //         clearTimeout(timer);
+    //         EventBus.emit('save-health', health);
+    //         setHealthTimer(0);
+    //         return;
+    //     } else {
+    //         if (timer === undefined) {
+    //             timer = setTimeout(() => saveHealth(health, -1000), 1000);
+    //         } else {
+    //             clearTimeout(timer);
+    //             timer = setTimeout(() => saveHealth(health, -1000), 1000);
+    //         };
+    //     };
+    //     setHealthTimer((prev) => prev + 1);
+    // };
 
     function balanceExperience(experience: number, level: number) {
         experience *= (110 - (level * 10)) / 100;

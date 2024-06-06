@@ -119,11 +119,11 @@ export default function SmallHud({ ascean, asceanState, combat, game }: Props) {
                 '#fdf6d8';
                 
             const lush = (isCast === true || isNumber === true || isHush === true || isTendril === true);
-            const fontWeight = lush ? 600 : 'normal';
+            const fontWeight = lush ? 550 : 'normal';
             const textShadow = lush ? `gold 0 0 0` : 'none';
             const fontSize = lush ? '0.75em' : '0.65em';
             const newLine = t === '\n' ? '<br>' : t;
-            const style = (isDamage || isGlancing || isCritical) ? 'italic' : 'normal';
+            const style = (isDamage || isGlancing || isCritical || lush) ? 'italic' : 'normal';
 
             return `<span style="color: ${color}; font-style: ${style}; font-weight: ${fontWeight}; text-shadow: ${textShadow}; font-size: ${fontSize}; margin: 0;">${newLine}</span>`;
         };

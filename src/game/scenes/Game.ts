@@ -493,28 +493,20 @@ export class Game extends Scene {
             switch (side) {
                 case 'left':
                     if (type === 'base') {
-                        // this.joystick.joystick.base.clear();
                         this.joystick.joystick.base.setFillStyle();
                         this.joystick.joystick.base.setFillStyle(color);
-                        // this.joystick.joystick.base.fillCircle(color);
                     } else {
-                        // this.joystick.joystick.thumb.clear();
                         this.joystick.joystick.thumb.setFillStyle();
                         this.joystick.joystick.thumb.setFillStyle(color);
-                        // this.joystick.joystick.thumb.fillCircle(color);
                     };
                     break;
                 case 'right':
                     if (type === 'base') {
-                        // this.rightJoystick.joystick.base.clear();
                         this.rightJoystick.joystick.base.setFillStyle();
                         this.rightJoystick.joystick.base.setFillStyle(color);
-                        // this.rightJoystick.joystick.base.fillCircle(color);
                     } else {
-                        // this.rightJoystick.joystick.thumb.clear();
                         this.rightJoystick.joystick.thumb.setFillStyle();
                         this.rightJoystick.joystick.thumb.setFillStyle(color);
-                        // this.rightJoystick.joystick.thumb.fillCircle(color);
                     };
                     break;
             };

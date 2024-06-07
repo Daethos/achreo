@@ -1,4 +1,4 @@
-import { Accessor, JSX } from 'solid-js';
+import { Accessor } from 'solid-js';
 import { Form } from 'solid-bootstrap';
 import { EventBus } from '../game/EventBus';
 import Settings from '../models/settings';
@@ -7,36 +7,68 @@ import { useResizeListener } from '../utility/dimensions';
 import { font } from '../utility/styling';
 
 const COLORS = {
+    'Aqua': 0x00FFFF,
     'Bone': 0xFDF6D8,
     'Black': 0x000000,
     'Blue': 0x0000FF,
+    'Brown': 0x8B4513,
     'Burned': 0xCC5500,
+    'Cerise': 0xDE3163,
+    'Charcoal': 0x36454F,
+    'Chartreuse': 0xDFFF00,
+    'Coral': 0xFF7F50,
+    'Dusty': 0xC9A9A6,
+    'Fuschia': 0xFF00FF,
     'Green': 0x00FF00,
-    'Gold': 0xFC7000,
+    'Gold': 0xFFD700,
+    'Icterine': 0xFCF55F,
+    'Lavender': 0xC3B1E1,
     'Malachite': 0x0BDA51,
+    'Pink': 0xFFC0CB,
     'Purple': 0x800080,
     'Red': 0xFF0000,
+    'Ruby': 0xE0115F,
+    'Sapphire': 0x0F52BA,
+    'Seafoam': 0x9FE2BF,
+    'Tangerine': 0xF08000,
     'Teal': 0x008080,
     'Violet': 0x7F00FF,
     'Ultramarine': 0x0437F2,
+    'Vanilla': 0xF3E5AB,
     'White': 0xFFFFFF,
+    'Wine': 0x722F37,
 };
 const NUMBERS = {
+    0x00FFFF: 'Aqua',
     0xFDF6D8: 'Bone',
     0x000000: 'Black',
     0x0000FF: 'Blue',
+    0x8B4513: 'Brown',
+    0xCC5500: 'Burned',
+    0xDE3163: 'Cerise',
+    0x36454F: 'Charcoal',
+    0xDFFF00: 'Chartreuse',
+    0xFF7F50: 'Coral',
+    0xC9A9A6: 'Dusty',
+    0xFF00FF: 'Fuschia',
     0x00FF00: 'Green',
-    0xFC7000: 'Gold',
+    0xFFD700: 'Gold',
+    0xFCF55F: 'Icterine',
+    0xC3B1E1: 'Lavender',
+    0x0BDA51: 'Malachite',
+    0xFFC0CB: 'Pink',
     0x800080: 'Purple',
     0xFF0000: 'Red',
-
-
-    0xCC5500: 'Burned',
-    0x0BDA51: 'Malachite',
+    0xE0115F: 'Ruby',
+    0x0F52BA: 'Sapphire',
+    0x9FE2BF: 'Seafoam',
+    0xF08000: 'Tangerine',
     0x008080: 'Teal',
     0x7F00FF: 'Violet',
     0x0437F2: 'Ultramarine',
+    0xF3E5AB: 'Vanilla',
     0xFFFFFF: 'White',
+    0x722F37: 'Wine',
 };
 
 interface IPhaserShape {
@@ -47,8 +79,6 @@ export function PhaserShaper({ settings }: IPhaserShape) {
     const dimensions = useResizeListener();
 
     async function handleJoystick(e: any, side: string, axis: string) {
-        // const newJoystick = { side, [axis]: Number(e.target.value) };
-        // console.log(newJoystick, 'New Joystick');
         const change = Number(e.target.value);
         const newSettings = { 
             ...settings(), 
@@ -225,7 +255,7 @@ export function PhaserShaper({ settings }: IPhaserShape) {
         EventBus.emit('reborder-buttons', update);
     };
 
-    async function handleButtonColor(color: number, type: string) {
+    async function handleButtonColor(color: string, type: string) {
         const newSettings = {
             ...settings(),
             positions: {
@@ -351,7 +381,7 @@ export function PhaserShaper({ settings }: IPhaserShape) {
             </Form.Select>
             <div style={font('1em')}>Opacity: ({settings().positions.leftJoystick.opacity})</div>
             <Form.Range 
-                min={0} max={1} step={0.1} 
+                min={0} max={1} step={0.05} 
                 onChange={(e) => handleJoystickOpacity(e, 'left')} 
                 value={settings().positions.leftJoystick.opacity} 
             />
@@ -395,7 +425,7 @@ export function PhaserShaper({ settings }: IPhaserShape) {
             </Form.Select>
             <div style={font('1em')}>Opacity: ({settings().positions.rightJoystick.opacity})</div>
             <Form.Range 
-                min={0} max={1} step={0.1} 
+                min={0} max={1} step={0.05} 
                 onChange={(e) => handleJoystickOpacity(e, 'right')} 
                 value={settings().positions.rightJoystick.opacity} 
             />
@@ -444,7 +474,7 @@ export function PhaserShaper({ settings }: IPhaserShape) {
             })}
             <div style={font('1em')}>Opacity: ({settings().positions.actionButtons.opacity})</div>
             <Form.Range 
-                min={0} max={1} step={0.1} 
+                min={0} max={1} step={0.05} 
                 onChange={(e) => handleButtonOpacity(e, 'action')} 
                 value={settings().positions.actionButtons.opacity} 
             />
@@ -501,7 +531,7 @@ export function PhaserShaper({ settings }: IPhaserShape) {
             })}
             <div style={font('1em')}>Opacity: ({settings().positions.specialButtons.opacity})</div>
             <Form.Range 
-                min={0} max={1} step={0.1} 
+                min={0} max={1} step={0.05} 
                 onChange={(e) => handleButtonOpacity(e, 'special')} 
                 value={settings().positions.specialButtons.opacity} 
             />

@@ -278,14 +278,18 @@ export class Game extends Scene {
         // window.innerWidth * 0.05, window.innerHeight * 0.8 || window.innerWidth * 0.95, window.innerHeight * 0.8
         this.joystick = new Joystick(this, 
             camera.width * this.settings.positions.leftJoystick.x, 
-            camera.height * this.settings.positions.leftJoystick.y
+            camera.height * this.settings.positions.leftJoystick.y,
+            this.settings.positions.leftJoystick.base,
+            this.settings.positions.leftJoystick.thumb
         );
         this.joystick.joystick.base.setAlpha(this.settings.positions.leftJoystick.opacity);
         this.joystick.joystick.thumb.setAlpha(this.settings.positions.leftJoystick.opacity);
         
         this.rightJoystick = new Joystick(this,
             camera.width * this.settings.positions.rightJoystick.x, 
-            camera.height * this.settings.positions.rightJoystick.y
+            camera.height * this.settings.positions.rightJoystick.y,
+            this.settings.positions.rightJoystick.base,
+            this.settings.positions.rightJoystick.thumb
         );
         this.rightJoystick.joystick.base.setAlpha(this.settings.positions.rightJoystick.opacity);
         this.rightJoystick.joystick.thumb.setAlpha(this.settings.positions.rightJoystick.opacity);

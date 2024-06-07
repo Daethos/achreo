@@ -229,7 +229,7 @@ export default class Player extends Entity {
                 onUpdate: this.onSutureUpdate,
                 onExit: this.onSutureExit,
             })
-            .addState(States.SLOWING, {
+            .addState(States.SLOW, {
                 onEnter: this.onSlowEnter,
                 onUpdate: this.onSlowUpdate,
                 onExit: this.onSlowExit,
@@ -1063,10 +1063,10 @@ export default class Player extends Entity {
     onDodgeEnter = () => {
         if (this.isStalwart || this.isStorming) return;
         this.isDodging = true;
-        this.scene.sound.play('dodge', { volume: this.scene.settings.volume });
-        this.scene.useStamina(PLAYER.STAMINA.DODGE);
         this.swingReset(States.DODGE);
         this.swingReset(States.ROLL);
+        this.scene.useStamina(PLAYER.STAMINA.DODGE);
+        this.scene.sound.play('dodge', { volume: this.scene.settings.volume });
         this.wasFlipped = this.flipX; 
         this.body.parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;
         this.body.parts[2].circleRadius = PLAYER.SENSOR.EVADE;
@@ -1081,7 +1081,7 @@ export default class Player extends Entity {
         this.combatChecker(this.isDodging);
     };
     onDodgeExit = () => {
-        if (this.isStorming) return;
+        if (this.isStalwart || this.isStorming) return;
         this.spriteWeapon.setVisible(true);
         this.dodgeCooldown = 0;
         this.isDodging = false;
@@ -1098,10 +1098,10 @@ export default class Player extends Entity {
     onRollEnter = () => {
         if (this.isStalwart || this.isStorming) return;
         this.isRolling = true;
-        this.scene.sound.play('roll', { volume: this.scene.settings.volume });
         this.swingReset(States.ROLL);
         this.swingReset(States.DODGE);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.ROLL);
+        this.scene.sound.play('roll', { volume: this.scene.settings.volume });
         this.body.parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;
         this.body.parts[2].circleRadius = PLAYER.SENSOR.EVADE;
         this.body.parts[1].vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
@@ -1114,7 +1114,7 @@ export default class Player extends Entity {
         this.combatChecker(this.isRolling);
     };
     onRollExit = () => {
-        if (this.isStorming) return;
+        if (this.isStalwart || this.isStorming) return;
         this.spriteWeapon.setVisible(true);
         this.rollCooldown = 0; 
         if (this.scene.state.action !== '') {
@@ -1671,7 +1671,7 @@ export default class Player extends Entity {
         this.isSlowing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slow', 750, 'cast');
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
-        this.scene.slow(this.attacking.enemyID);
+        this.scene.slow(this.attacking?.enemyID);
         this.scene.useStamina(PLAYER.STAMINA.SLOW);
         this.setTimeEvent('slowCooldown', PLAYER.COOLDOWNS.SHORT); 
         this.flickerCarenic(500); 
@@ -2812,7 +2812,11 @@ export default class Player extends Entity {
 
     swingReset = (type) => {
         this.canSwing = false;
-        const time = type === 'dodge' || type === 'roll' ? 500 : type === 'parry' ? 750 : this.swingTimer;
+        const time = 
+            (type === 'dodge' || type === 'parry' || type === 'roll') ? 750 : 
+            this.isAttacking === true ? this.swingTimer : 
+            this.isPosturing === true ? this.swingTimer - 250 :
+            this.swingTimer;
         this.scene.actionBar.setCurrent(0, time, type);
         this.scene.time.delayedCall(time, () => {
             this.canSwing = true;
@@ -2839,13 +2843,23 @@ export default class Player extends Entity {
 
     checkTargets = () => {
         const playerCombat = this.isPlayerInCombat();
+
         this.targets = this.targets.filter(gameObject => {
-            // if (gameObject.isDead) { // && playerCombat  || !gameObject.inCombat
-            //     return false;
-            // };
             if (gameObject.npcType && playerCombat) {
                 this.scene.combatEngaged(false);
                 this.inCombat = false;
+            };
+            
+            if (this.inCombat === true && (
+                (gameObject !== this.currentTarget && gameObject.inCombat !== true) ||
+                gameObject.inCombat === false || 
+                gameObject.isDefeated === true ||
+                gameObject.isTriumphant === true ||
+                gameObject.isLuckout === true ||
+                gameObject.isPersuaded === true
+            )) {
+                console.log('In Combat and this target should not be in the gallery of targets');    
+                return false;
             };
             return true;
         });
@@ -2854,6 +2868,7 @@ export default class Player extends Entity {
             if (this.triggeredActionAvailable) this.triggeredActionAvailable = undefined;
             if (this.actionAvailable) this.actionAvailable = false;
         };
+
         this.sendEnemies(this.targets);
         
         if (this.targets.length === 0) { // && this.scene.state.computer
@@ -2862,6 +2877,7 @@ export default class Player extends Entity {
         };
         
         const someInCombat = this.targets.some(gameObject => gameObject.inCombat);
+
         if (someInCombat && !playerCombat) {
             this.scene.combatEngaged(true);
             this.inCombat = true;

@@ -10,7 +10,7 @@ export default class Joystick extends Phaser.GameObjects.Container {
     public pointer: any;
     public joystick: any;
 
-    constructor(scene: any, x: number, y: number) {
+    constructor(scene: any, x: number, y: number, base: number, thumb: number) {
         super(scene, x, y);
         this.scene = scene;
         this.scene.add.existing(this);
@@ -20,8 +20,8 @@ export default class Joystick extends Phaser.GameObjects.Container {
             x: x,
             y: y,
             radius: height / 6,
-            base: scene.add.circle(0, 0, height / 6, 0x000000, 1),
-            thumb: scene.add.circle(0, 0, height / 12, 0xfdf6d8, 1),
+            base: scene.add.circle(0, 0, height / 6, base, 1),
+            thumb: scene.add.circle(0, 0, height / 12, thumb, 1),
             dir: '8dir',
             // forceMin: 0,
             // enable: true

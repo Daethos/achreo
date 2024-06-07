@@ -1136,7 +1136,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
         playerMagicalDefenseMultiplier = 1 - (combat.playerDefense?.magicalPosture as number / 100);
     };
 
-    if (combat.computerAction === 'attack') {
+    if (computerAction === 'attack') {
         if (combat.computerWeapons[0].grip === 'One Hand') {
             if (combat.computerWeapons[0].attackType === 'Physical') {
                 if (combat.computer?.mastery === 'agility' || combat.computer?.mastery === 'constitution') {
@@ -1303,7 +1303,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     combat.computerActionDescription = 
         `${combat.computer?.name} attacks you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? 'Damage (Critical)' : combat.computerGlancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
 
-    if (combat.newPlayerHealth < 0) {
+    if (combat.newPlayerHealth <= 0) {
         if (combat.playerEffects.find(effect => effect.prayer === 'Denial')) {
             combat.newPlayerHealth = 1;
             combat.playerEffects = combat.playerEffects.filter(effect => effect.prayer !== 'Denial');
@@ -1393,11 +1393,11 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     playerWeaponTwoPhysicalDamage *= 1 - ((1 - computerPhysicalDefenseMultiplier) * (1 - (weapons[1]?.physicalPenetration as number / 100)));
     playerWeaponTwoMagicalDamage *= 1 - ((1 - computerMagicalDefenseMultiplier) * (1 - (weapons[1]?.magicalPenetration as number / 100)));
 
-    const damageType = damageTypeCompiler(combat.playerDamageType, combat.computer as Ascean, weapons[0] as Equipment, playerWeaponOnePhysicalDamage, playerWeaponOneMagicalDamage);
+    const damageType = damageTypeCompiler(combat.playerDamageType, computer as Ascean, weapons[0] as Equipment, playerWeaponOnePhysicalDamage, playerWeaponOneMagicalDamage);
     playerWeaponOnePhysicalDamage = damageType.physicalDamage;
     playerWeaponOneMagicalDamage = damageType.magicalDamage;
 
-    const damageTypeTwo = damageTypeCompiler(combat.playerDamageType, combat.computer as Ascean, weapons[1] as Equipment, playerWeaponTwoPhysicalDamage, playerWeaponTwoMagicalDamage);
+    const damageTypeTwo = damageTypeCompiler(combat.playerDamageType, computer as Ascean, weapons[1] as Equipment, playerWeaponTwoPhysicalDamage, playerWeaponTwoMagicalDamage);
     playerWeaponTwoPhysicalDamage = damageTypeTwo.physicalDamage;
     playerWeaponTwoMagicalDamage = damageTypeTwo.magicalDamage;
 
@@ -1444,7 +1444,7 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     if (combat.computerAction === 'posture') {
         combat.realizedPlayerDamage *= 0.95;
     };
-    if (combat.isCaerenic) {
+    if (combat.isCaerenic === true) {
         combat.realizedPlayerDamage *= 1.15;
     };
 
@@ -1487,7 +1487,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     };
 
     // This is for the Focused Attack Action i.e. you chose to Attack over adding a defensive component
-    if (combat.action === 'attack' || combat.action === 'arc' || combat.action === 'storm' || combat.action === 'writhe') {
+    if (playerAction === 'attack' || playerAction === 'arc' || playerAction === 'storm' || playerAction === 'writhe') {
         if (combat.weapons[0]?.grip === 'One Hand') {
             if (combat.weapons[0]?.attackType === 'Physical') {
                 if (combat.player?.mastery === 'agility' || combat.player?.mastery === 'constitution') {
@@ -1657,7 +1657,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     // ==================== STATISTIC LOGIC ====================
 
     combat.playerActionDescription = 
-        `You ${combat.action} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(playerTotalDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'Damage (Critical)' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `You ${playerAction} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(playerTotalDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'Damage (Critical)' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
 
     if (combat.newComputerHealth <= 0) {
         combat.newComputerHealth = 0;
@@ -1793,7 +1793,7 @@ function actionSplitter(combat: Combat): Combat {
         `${newData.computer.name} sets to ${computerAction === '' ? 'defend' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1)}${computerParry ? '-' + computerParry.charAt(0).toUpperCase() + computerParry.slice(1) : ''} against you.`
 
     newData.playerStartDescription = 
-        `You attempt to ${playerAction === '' ? 'defend' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1)}${playerParry ? '-' + playerParry.charAt(0).toUpperCase() + playerParry.slice(1) : ''} against ${newData.computer.name}.`
+        `You attempt to ${playerAction === '' ? 'defend' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1)} against ${newData.computer.name}.`
     
     // If both Player and Computer Parry -> Parry [Fastest Resolution]
     if (playerAction === 'parry' && computerAction === 'parry') { // This is if PARRY: 'ACTION' Is the Same for Both
@@ -2075,7 +2075,7 @@ function dualActionSplitter(combat: Combat): Combat {
         `${newCombat.computer.name} sets to ${computerAction === '' ? 'defend' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1)}${computerParry ? '-' + computerParry.charAt(0).toUpperCase() + computerParry.slice(1) : ''} against you.`
 
     newCombat.playerStartDescription = 
-        `You attempt to ${playerAction === '' ? 'defend' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1)}${playerParry ? '-' + playerParry.charAt(0).toUpperCase() + playerParry.slice(1) : ''} against ${newCombat.computer.name}.`
+        `You attempt to ${playerAction === '' ? 'defend' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1)} against ${newCombat.computer.name}.`
     
     // ========================== PARRY LOGIC (PHASER) ========================== \\
 

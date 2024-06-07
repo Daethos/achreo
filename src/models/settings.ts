@@ -46,10 +46,42 @@ export default class Settings {
         crtWidth: number;
     };
     public positions: {
-        leftJoystick: { x: number; y: number; width: number; };
-        rightJoystick: { x: number; y: number; width: number; };
-        actionButtons: { display: string; spacing: number; x: number; y: number; width: number; };
-        specialButtons: { display: string; spacing: number; x: number; y: number; width: number; };
+        leftJoystick: { 
+            base: number;
+            thumb: number;
+            opacity: number; 
+            x: number; 
+            y: number; 
+            width: number; 
+        };
+        rightJoystick: { 
+            base: number;
+            thumb: number;
+            opacity: number; 
+            x: number; 
+            y: number; 
+            width: number; 
+        };
+        actionButtons: { 
+            border: number;
+            color: number;
+            display: string; 
+            opacity: number; 
+            spacing: number; 
+            x: number; 
+            y: number; 
+            width: number; 
+        };
+        specialButtons: { 
+            border: number;
+            color: number;
+            display: string; 
+            opacity: number; 
+            spacing: number; 
+            x: number; 
+            y: number; 
+            width: number; 
+        };
         fpsText: { x: number; y: number; };
         leftHud: { x: number; y: number; };
         smallHud: { x: number; y: number; };
@@ -111,24 +143,36 @@ export default class Settings {
         };
         this.positions = {
             leftJoystick: { 
+                base: 0x000000,
+                thumb: 0xfdf6d8,
+                opacity: 0.2,
                 x: 0.05, 
                 y: 0.8,
                 width: 1, 
             },
             rightJoystick: { 
+                base: 0x000000,
+                thumb: 0xfdf6d8,
+                opacity: 0.2,
                 x: 0.95, 
                 y: 0.8,
                 width: 1, 
             },
             actionButtons: {
+                border: 0xfdf6d8,
+                color: 0x800080,
                 display: 'arc',
+                opacity: 0.2,
                 spacing: 3.57,
                 x: 0.825,
                 y: 0.75,
                 width: 1,
             },
             specialButtons: {
+                border: 0xfdf6d8,
+                color: 0x000000,
                 display: 'arc',
+                opacity: 0.2,
                 spacing: 3.57,
                 x: 0.7675,
                 y: 0.6125,

@@ -6,6 +6,39 @@ import { updateSettings } from '../assets/db/db';
 import { useResizeListener } from '../utility/dimensions';
 import { font } from '../utility/styling';
 
+const COLORS = {
+    'Bone': 0xFDF6D8,
+    'Black': 0x000000,
+    'Blue': 0x0000FF,
+    'Burned': 0xCC5500,
+    'Green': 0x00FF00,
+    'Gold': 0xFC7000,
+    'Malachite': 0x0BDA51,
+    'Purple': 0x800080,
+    'Red': 0xFF0000,
+    'Teal': 0x008080,
+    'Violet': 0x7F00FF,
+    'Ultramarine': 0x0437F2,
+    'White': 0xFFFFFF,
+};
+const NUMBERS = {
+    0xFDF6D8: 'Bone',
+    0x000000: 'Black',
+    0x0000FF: 'Blue',
+    0x00FF00: 'Green',
+    0xFC7000: 'Gold',
+    0x800080: 'Purple',
+    0xFF0000: 'Red',
+
+
+    0xCC5500: 'Burned',
+    0x0BDA51: 'Malachite',
+    0x008080: 'Teal',
+    0x7F00FF: 'Violet',
+    0x0437F2: 'Ultramarine',
+    0xFFFFFF: 'White',
+};
+
 interface IPhaserShape {
     settings: Accessor<Settings>;
 };
@@ -37,6 +70,67 @@ export function PhaserShaper({ settings }: IPhaserShape) {
         EventBus.emit('update-joystick-position', update);
     };
 
+    async function handleJoystickColor(color: string, side: string, type: string) {
+        const newSettings = {
+            ...settings(), 
+            positions: {
+                ...settings().positions, 
+                [`${side}Joystick`]: {
+                    ...settings().positions[`${side}Joystick` as 'leftJoystick' | 'rightJoystick'],
+                    [type]: color
+                }
+            },
+        };
+        await updateSettings(newSettings);
+        const update = {
+            color, side, type
+        };
+        EventBus.emit('save-settings', newSettings);
+        EventBus.emit('update-joystick-color', update);
+    };
+
+    async function handleJoystickOpacity(e: any, side: string) {
+        const opacity = Number(e.target.value);
+        const newSettings = { 
+            ...settings(), 
+            positions: { 
+                ...settings().positions, 
+                [`${side}Joystick`]: {
+                    ...settings().positions[`${side}Joystick` as 'leftJoystick' | 'rightJoystick'],
+                    opacity
+                } 
+            } 
+        };
+        await updateSettings(newSettings);
+        const update = { 
+            side, 
+            opacity
+        };
+        EventBus.emit('save-settings', newSettings);
+        EventBus.emit('update-joystick-opacity', update);
+    };
+
+    async function handleJoystickWidth(e: any, side: string) {
+        const width = Number(e.target.value);
+        const newSettings = { 
+            ...settings(), 
+            positions: { 
+                ...settings().positions, 
+                [`${side}Joystick`]: {
+                    ...settings().positions[`${side}Joystick` as 'leftJoystick' | 'rightJoystick'],
+                    width
+                } 
+            } 
+        };
+        await updateSettings(newSettings);
+        const update = { 
+            side, 
+            width
+        };
+        EventBus.emit('save-settings', newSettings);
+        EventBus.emit('update-joystick-width', update);
+    };
+
     async function handleButtons(e: any, type: string, axis: string) {
         // const newButtons = { type, [axis]: Number(e.target.value) };
         const change = Number(e.target.value);
@@ -58,6 +152,24 @@ export function PhaserShaper({ settings }: IPhaserShape) {
         };
         EventBus.emit('save-settings', newSettings);
         EventBus.emit('reposition-buttons', update);
+    };
+
+    async function handleButtonOpacity(e: any, type: string) {
+        const opacity = Number(e.target.value); 
+        const newSettings = {
+            ...settings(),
+            positions: {
+                ...settings().positions,
+                [`${type}Buttons`]: {
+                    ...settings().positions[`${type}Buttons` as 'actionButtons' | 'specialButtons'],
+                    opacity
+                }
+            }
+        };
+        await updateSettings(newSettings);
+        const update = { type, opacity };
+        EventBus.emit('save-settings', newSettings);
+        EventBus.emit('opacity-buttons', update);
     };
 
     async function handleButtonSpacing(e: any, type: string) {
@@ -95,6 +207,41 @@ export function PhaserShaper({ settings }: IPhaserShape) {
         EventBus.emit('save-settings', newSettings);
         EventBus.emit('re-width-buttons', update);
     };
+
+    async function handleButtonBorder(border: string, type: string) {
+        const newSettings = {
+            ...settings(),
+            positions: {
+                ...settings().positions,
+                [`${type}Buttons`]: {
+                    ...settings().positions[`${type}Buttons` as 'actionButtons' | 'specialButtons'],
+                    border
+                }
+            }
+        };
+        await updateSettings(newSettings);
+        const update = { type, border };
+        EventBus.emit('save-settings', newSettings);
+        EventBus.emit('reborder-buttons', update);
+    };
+
+    async function handleButtonColor(color: number, type: string) {
+        const newSettings = {
+            ...settings(),
+            positions: {
+                ...settings().positions,
+                [`${type}Buttons`]: {
+                    ...settings().positions[`${type}Buttons` as 'actionButtons' | 'specialButtons'],
+                    color
+                }
+            }
+        };
+        await updateSettings(newSettings);
+        const update = { type, color };
+        EventBus.emit('save-settings', newSettings);
+        EventBus.emit('recolor-buttons', update);
+    };
+
 
     async function handleButtonDisplay(display: string, type: string) {
         const newSettings = {
@@ -184,6 +331,36 @@ export function PhaserShaper({ settings }: IPhaserShape) {
     return (
         <div class='center creature-heading' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '0' } : { 'margin-top': '50%' }}>
             <h1 style={font('1.25em')}>Left Joystick</h1>
+            <div style={font('1em')}>Base Color: ({NUMBERS[settings().positions.leftJoystick.base as keyof typeof NUMBERS]})</div>
+            <Form.Select onChange={(e) => handleJoystickColor(e.target.value, 'left', 'base')} style={{ margin: '3%' }} value={settings().positions.leftJoystick.base}>
+                <option>Base Menu</option>
+                {Object.keys(COLORS).map((color: string) => {
+                    return (
+                        <option value={COLORS[color as keyof typeof COLORS]}>{color}</option>
+                    )
+                })}
+            </Form.Select>
+            <div style={font('1em')}>Thumb Color: ({NUMBERS[settings().positions.leftJoystick.thumb as keyof typeof NUMBERS]})</div>
+            <Form.Select onChange={(e) => handleJoystickColor(e.target.value, 'left', 'thumb')} style={{ margin: '3%' }} value={settings().positions.leftJoystick.thumb}>
+                <option>Thumb Menu</option>
+                {Object.keys(COLORS).map((color: string) => {
+                    return (
+                        <option value={COLORS[color as keyof typeof COLORS]}>{color}</option>
+                    )
+                })}
+            </Form.Select>
+            <div style={font('1em')}>Opacity: ({settings().positions.leftJoystick.opacity})</div>
+            <Form.Range 
+                min={0} max={1} step={0.1} 
+                onChange={(e) => handleJoystickOpacity(e, 'left')} 
+                value={settings().positions.leftJoystick.opacity} 
+            />
+            <div style={font('1em')}>Width: ({settings().positions.leftJoystick.width})</div>
+            <Form.Range 
+                min={0.1} max={2} step={0.1} 
+                onChange={(e) => handleJoystickWidth(e, 'left')} 
+                value={settings().positions.leftJoystick.width} 
+            />
             <div style={font('1em')}>X: ({settings().positions.leftJoystick.x})</div>
             <Form.Range 
                 min={0} max={1} step={0.025} 
@@ -198,6 +375,36 @@ export function PhaserShaper({ settings }: IPhaserShape) {
             />
            
             <h1 style={font('1.25em')}>Right Joystick</h1>
+            <div style={font('1em')}>Base Color: ({NUMBERS[settings().positions.rightJoystick.base as keyof typeof NUMBERS]})</div>
+            <Form.Select onChange={(e) => handleJoystickColor(e.target.value, 'right', 'base')} style={{ margin: '3%' }} value={settings().positions.rightJoystick.base}>
+                <option>Base Menu</option>
+                {Object.keys(COLORS).map((color: string) => {
+                    return (
+                        <option value={COLORS[color as keyof typeof COLORS]}>{color}</option>
+                    )
+                })}
+            </Form.Select>
+            <div style={font('1em')}>Thumb Color: ({NUMBERS[settings().positions.rightJoystick.thumb as keyof typeof NUMBERS]})</div>
+            <Form.Select onChange={(e) => handleJoystickColor(e.target.value, 'right', 'thumb')} style={{ margin: '3%' }} value={settings().positions.rightJoystick.thumb}>
+                <option>Thumb Menu</option>
+                {Object.keys(COLORS).map((color: string) => {
+                    return (
+                        <option value={COLORS[color as keyof typeof COLORS]}>{color}</option>
+                    )
+                })}
+            </Form.Select>
+            <div style={font('1em')}>Opacity: ({settings().positions.rightJoystick.opacity})</div>
+            <Form.Range 
+                min={0} max={1} step={0.1} 
+                onChange={(e) => handleJoystickOpacity(e, 'right')} 
+                value={settings().positions.rightJoystick.opacity} 
+            />
+            <div style={font('1em')}>Width: ({settings().positions.rightJoystick.width})</div>
+            <Form.Range 
+                min={0.1} max={2} step={0.1} 
+                onChange={(e) => handleJoystickWidth(e, 'right')} 
+                value={settings().positions.rightJoystick.width} 
+            />
             <div style={font('1em')}> X: ({settings().positions.rightJoystick.x})</div>
             <Form.Range 
                 min={0} max={1} step={0.025} 
@@ -211,12 +418,36 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 value={settings().positions.rightJoystick.y} 
             />
             <h1 style={font('1.25em')}>Action Buttons</h1>
+            <div style={font('1em')}>Border: ({NUMBERS[settings().positions.actionButtons.border as keyof typeof NUMBERS]})</div>
+            <Form.Select onChange={(e) => handleButtonBorder(e.target.value, 'action')} style={{ margin: '3%' }} value={settings().positions.actionButtons.border}>
+                <option>Border Menu</option>
+                {Object.keys(COLORS).map((color: string) => {
+                    return (
+                        <option value={COLORS[color as keyof typeof COLORS]}>{color}</option>
+                    )
+                })}
+            </Form.Select>
+            <div style={font('1em')}>Color: ({NUMBERS[settings().positions.actionButtons.color as keyof typeof NUMBERS]})</div>
+            <Form.Select onChange={(e) => handleButtonColor(e.target.value, 'action')} style={{ margin: '3%' }} value={settings().positions.actionButtons.color}>
+                <option>Color Menu</option>
+                {Object.keys(COLORS).map((color: string) => {
+                    return (
+                        <option value={COLORS[color as keyof typeof COLORS]}>{color}</option>
+                    )
+                })}
+            </Form.Select>
             <div style={font('1em')}>Display: ({settings().positions.actionButtons.display.charAt(0).toUpperCase() + settings().positions.actionButtons.display.slice(1)})</div>
             {['Arc', 'Diagonal', 'Horizontal', 'Vertical'].map((display: string) => {
                 return (
                     <button class='highlight p-3' onClick={() => handleButtonDisplay(display.toLowerCase(), 'action')}>{display}</button>
                 )
             })}
+            <div style={font('1em')}>Opacity: ({settings().positions.actionButtons.opacity})</div>
+            <Form.Range 
+                min={0} max={1} step={0.1} 
+                onChange={(e) => handleButtonOpacity(e, 'action')} 
+                value={settings().positions.actionButtons.opacity} 
+            />
             <div style={font('1em')}>Spacing: ({settings().positions.actionButtons.spacing})</div>
             <Form.Range 
                 min={1} max={5} step={0.5} 
@@ -244,12 +475,36 @@ export function PhaserShaper({ settings }: IPhaserShape) {
             />
 
             <h1 style={font('1.25em')}>Special Buttons</h1>
+            <div style={font('1em')}>Border: ({NUMBERS[settings().positions.specialButtons.border as keyof typeof NUMBERS]})</div>
+            <Form.Select onChange={(e) => handleButtonBorder(e.target.value, 'special')} style={{ margin: '3%' }} value={settings().positions.specialButtons.border}>
+                <option>Border Menu</option>
+                {Object.keys(COLORS).map((color: string) => {
+                    return (
+                        <option value={COLORS[color as keyof typeof COLORS]}>{color}</option>
+                    )
+                })}
+            </Form.Select>
+            <div style={font('1em')}>Color: ({NUMBERS[settings().positions.specialButtons.color as keyof typeof NUMBERS]})</div>
+            <Form.Select onChange={(e) => handleButtonColor(e.target.value, 'special')} style={{ margin: '3%' }} value={settings().positions.specialButtons.color}>
+                <option>Color Menu</option>
+                {Object.keys(COLORS).map((color: string) => {
+                    return (
+                        <option value={COLORS[color as keyof typeof COLORS]}>{color}</option>
+                    )
+                })}
+            </Form.Select>
             <div style={font('1em')}>Display: ({settings().positions.specialButtons.display.charAt(0).toUpperCase() + settings().positions.specialButtons.display.slice(1)})</div>
             {['Arc', 'Diagonal', 'Horizontal', 'Vertical'].map((display: string) => {
                 return (
                     <button class='highlight p-3' onClick={() => handleButtonDisplay(display.toLowerCase(), 'special')}>{display}</button>
                 )
             })}
+            <div style={font('1em')}>Opacity: ({settings().positions.specialButtons.opacity})</div>
+            <Form.Range 
+                min={0} max={1} step={0.1} 
+                onChange={(e) => handleButtonOpacity(e, 'special')} 
+                value={settings().positions.specialButtons.opacity} 
+            />
             <div style={font('1em')}>Spacing: ({settings().positions.specialButtons.spacing})</div>
             <Form.Range 
                 min={1} max={5} step={0.5} 

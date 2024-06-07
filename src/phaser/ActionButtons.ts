@@ -30,6 +30,7 @@ const DISPLAY = {
 
 const SETTINGS = {
     SCALE: 1,
+    SCALE_SPECIAL: 0.75,
     BUTTON_WIDTH: 24,
     BUTTON_HEIGHT: 24,
     OPACITY: 0.2,
@@ -103,7 +104,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 name: scene.settings.actions[index],
                 border: new Phaser.GameObjects.Graphics(scene),
                 graphic: new Phaser.GameObjects.Graphics(scene),
-                color: Object.values(element)[0],
+                color: scene.settings.positions.actionButtons.color,
                 current: 100,
                 total: 100,
                 x: buttonX,
@@ -112,14 +113,14 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 width: this.buttonWidth,
             };
 
-            button.graphic.fillStyle(Object.values(element)[0], SETTINGS.OPACITY);
+            button.graphic.fillStyle(scene.settings.positions.actionButtons.color, scene.settings.positions.actionButtons.opacity);
             button.graphic.fillCircle(buttonX, buttonY, button.width as number);
             // button.graphic.setVisible(true);
             
-            button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
+            button.border.lineStyle(SETTINGS.BORDER_LINE, scene.settings.positions.actionButtons.border, scene.settings.positions.actionButtons.opacity);
             button.border.strokeCircle(buttonX, buttonY, button.width + 2 as number);
             // button.border.setVisible(true);
-            this.scaleButton(button, scene.settings.positions.actionButtons.width);
+            this.scaleButton(button, scene.settings.positions.actionButtons.width, scene.settings.positions.actionButtons.opacity, scene.settings.positions.actionButtons.border);
             button.graphic.setInteractive(new Phaser.Geom.Circle(
                 buttonX, buttonY, 
                 button.width), 
@@ -149,7 +150,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 name: scene.settings.specials[index],
                 border: new Phaser.GameObjects.Graphics(scene),
                 graphic: new Phaser.GameObjects.Graphics(scene),
-                color: Object.values(element)[0],
+                color: scene.settings.positions.specialButtons.color,
                 current: 100,
                 total: 100,
                 x: buttonX,
@@ -158,13 +159,13 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 width: this.buttonWidth,
             };
 
-            button.graphic.fillStyle(Object.values(element)[0], SETTINGS.OPACITY);
+            button.graphic.fillStyle(scene.settings.positions.specialButtons.color, scene.settings.positions.specialButtons.opacity);
             button.graphic.fillCircle(buttonX, buttonY, button.width as number);
             
-            button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
+            button.border.lineStyle(SETTINGS.BORDER_LINE, scene.settings.positions.specialButtons.border, scene.settings.positions.specialButtons.opacity);
             button.border.strokeCircle(buttonX, buttonY, button.width + 2 as number);
 
-            this.scaleButton(button, 0.75 * scene.settings.positions.specialButtons.width);
+            this.scaleButton(button, 0.75 * scene.settings.positions.specialButtons.width, scene.settings.positions.specialButtons.opacity, scene.settings.positions.specialButtons.border);
             button.graphic.setInteractive(new Phaser.Geom.Circle(
                 buttonX, buttonY, 
                 button.width), 
@@ -340,12 +341,12 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     private draw = (): void => {
         this.actionButtons = this.actionButtons.map((button: ActionButton) => {
-            this.scaleButton(button, this.scene.settings.positions.actionButtons.width); // * this.scene.settings.positions.specialButtons.width
+            this.scaleButton(button, this.scene.settings.positions.actionButtons.width, this.scene.settings.positions.actionButtons.opacity, this.scene.settings.positions.actionButtons.border); // * this.scene.settings.positions.specialButtons.width
             this.repositionButtons({ type: 'action', x: this.scene.settings.positions.actionButtons.x, y: this.scene.settings.positions.actionButtons.y });    
             return button;    
         });
         this.specialButtons = this.specialButtons.map((button: ActionButton) => { 
-            this.scaleButton(button, 0.75 * this.scene.settings.positions.specialButtons.width);
+            this.scaleButton(button, SETTINGS.SCALE_SPECIAL * this.scene.settings.positions.specialButtons.width, this.scene.settings.positions.specialButtons.opacity, this.scene.settings.positions.specialButtons.border);
             this.repositionButtons({ type: 'special', x: this.scene.settings.positions.specialButtons.x, y: this.scene.settings.positions.specialButtons.y });    
             return button;    
         });
@@ -356,6 +357,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         EventBus.on('re-width-buttons', this.rewidthButtons);
         EventBus.on('redisplay-buttons', this.redisplayButton);
         EventBus.on('respacing-buttons', this.respaceButton);
+        EventBus.on('opacity-buttons', this.opacityButton);
+        EventBus.on('reborder-buttons', this.reborderButton);
+        EventBus.on('recolor-buttons', this.recolorButton);
     };
 
     private redisplayButton = (data: { type: string, display: string }) => {
@@ -372,9 +376,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.graphic.clear();
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(display, this.scene.settings.positions.actionButtons.spacing, index, centerActionX, centerActionY, height);
-                    button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
+                    button.graphic.fillStyle(button.color, this.scene.settings.positions.actionButtons.opacity);
                     button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.actionButtons.width * button.current / button.total);
-                    button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, this.scene.settings.positions.actionButtons.border, this.scene.settings.positions.actionButtons.opacity);
                     button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.actionButtons.width * button.current / button.total);
                     button.x = buttonX;
                     button.y = buttonY;
@@ -387,10 +391,144 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.graphic.clear();
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(display, this.scene.settings.positions.specialButtons.spacing,index, centerSpecialX, centerSpecialY, height);
-                    button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.specialButtons.width * button.current / button.total);
-                    button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.specialButtons.width * button.current / button.total);
+                    button.graphic.fillStyle(button.color, this.scene.settings.positions.specialButtons.opacity);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.specialButtons.width * SETTINGS.SCALE_SPECIAL * button.current / button.total);
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, this.scene.settings.positions.specialButtons.border, this.scene.settings.positions.specialButtons.opacity);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.specialButtons.width * SETTINGS.SCALE_SPECIAL * button.current / button.total);
+                    button.x = buttonX;
+                    button.y = buttonY;
+                    button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
+                    return button;
+                });
+                break;
+            default:
+                break;
+        };
+    };
+
+    private opacityButton = (data: { type: string, opacity: number }) => {
+        const { type, opacity } = data;
+        const { width, height } = this.scene.cameras.main;
+        const centerActionX = width * this.scene.settings.positions.actionButtons.x; // / 1.25
+        const centerActionY = height * this.scene.settings.positions.actionButtons.y; // / 1.35
+        const centerSpecialX = width * this.scene.settings.positions.specialButtons.x; // width * 0.725 || / 1.375
+        const centerSpecialY = height * this.scene.settings.positions.specialButtons.y; // height * 0.6 || / 1.675
+
+        switch (type) {
+            case 'action':
+                this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
+                    button.graphic.clear();
+                    button.border.clear();
+                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.actionButtons.display, this.scene.settings.positions.actionButtons.spacing, index, centerActionX, centerActionY, height);
+                    button.graphic.fillStyle(button.color, opacity);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.actionButtons.width * button.current / button.total);
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, this.scene.settings.positions.actionButtons.border, opacity);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.actionButtons.width * button.current / button.total);
+                    button.x = buttonX;
+                    button.y = buttonY;
+                    button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
+                    return button;
+                });
+                break;
+            case 'special':
+                this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
+                    button.graphic.clear();
+                    button.border.clear();
+                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.specialButtons.display, this.scene.settings.positions.specialButtons.spacing, index, centerSpecialX, centerSpecialY, height);
+                    button.graphic.fillStyle(button.color, opacity);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.specialButtons.width * SETTINGS.SCALE_SPECIAL * button.current / button.total);
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, this.scene.settings.positions.specialButtons.border, opacity);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.specialButtons.width * SETTINGS.SCALE_SPECIAL * button.current / button.total);
+                    button.x = buttonX;
+                    button.y = buttonY;
+                    button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
+                    return button;
+                });
+                break;
+            default:
+                break;
+        };
+    };
+
+    private reborderButton = (data: { type: string, border: number }) => {
+        const { type, border } = data;
+        const { width, height } = this.scene.cameras.main;
+        const centerActionX = width * this.scene.settings.positions.actionButtons.x; // / 1.25
+        const centerActionY = height * this.scene.settings.positions.actionButtons.y; // / 1.35
+        const centerSpecialX = width * this.scene.settings.positions.specialButtons.x; // width * 0.725 || / 1.375
+        const centerSpecialY = height * this.scene.settings.positions.specialButtons.y; // height * 0.6 || / 1.675
+
+        switch (type) {
+            case 'action':
+                this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
+                    button.graphic.clear();
+                    button.border.clear();
+                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.actionButtons.display, this.scene.settings.positions.actionButtons.spacing, index, centerActionX, centerActionY, height);
+                    button.graphic.fillStyle(button.color, this.scene.settings.positions.actionButtons.opacity);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.actionButtons.width * button.current / button.total);
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, border, this.scene.settings.positions.actionButtons.opacity);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.actionButtons.width * button.current / button.total);
+                    button.x = buttonX;
+                    button.y = buttonY;
+                    button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
+                    return button;
+                });
+                break;
+            case 'special':
+                this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
+                    button.graphic.clear();
+                    button.border.clear();
+                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.specialButtons.display, this.scene.settings.positions.specialButtons.spacing, index, centerSpecialX, centerSpecialY, height);
+                    button.graphic.fillStyle(button.color, this.scene.settings.positions.specialButtons.opacity);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.specialButtons.width * SETTINGS.SCALE_SPECIAL * button.current / button.total);
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, border, this.scene.settings.positions.specialButtons.opacity);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.specialButtons.width * SETTINGS.SCALE_SPECIAL * button.current / button.total);
+                    button.x = buttonX;
+                    button.y = buttonY;
+                    button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
+                    return button;
+                });
+                break;
+            default:
+                break;
+        };
+    };
+
+    private recolorButton = (data: { type: string, color: number }) => {
+        const { type, color } = data;
+        const { width, height } = this.scene.cameras.main;
+        const centerActionX = width * this.scene.settings.positions.actionButtons.x; // / 1.25
+        const centerActionY = height * this.scene.settings.positions.actionButtons.y; // / 1.35
+        const centerSpecialX = width * this.scene.settings.positions.specialButtons.x; // width * 0.725 || / 1.375
+        const centerSpecialY = height * this.scene.settings.positions.specialButtons.y; // height * 0.6 || / 1.675
+
+        switch (type) {
+            case 'action':
+                this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
+                    button.graphic.clear();
+                    button.border.clear();
+                    button.color = color;
+                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.actionButtons.display, this.scene.settings.positions.actionButtons.spacing, index, centerActionX, centerActionY, height);
+                    button.graphic.fillStyle(button.color, this.scene.settings.positions.actionButtons.opacity);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.actionButtons.width * button.current / button.total);
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, this.scene.settings.positions.actionButtons.border, this.scene.settings.positions.actionButtons.opacity);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.actionButtons.width * button.current / button.total);
+                    button.x = buttonX;
+                    button.y = buttonY;
+                    button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
+                    return button;
+                });
+                break;
+            case 'special':
+                this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
+                    button.graphic.clear();
+                    button.border.clear();
+                    button.color = color;
+                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.specialButtons.display, this.scene.settings.positions.specialButtons.spacing, index, centerSpecialX, centerSpecialY, height);
+                    button.graphic.fillStyle(button.color, this.scene.settings.positions.specialButtons.opacity);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.specialButtons.width * SETTINGS.SCALE_SPECIAL * button.current / button.total);
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, this.scene.settings.positions.specialButtons.border, this.scene.settings.positions.specialButtons.opacity);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.specialButtons.width * SETTINGS.SCALE_SPECIAL * button.current / button.total);
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -416,9 +554,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.graphic.clear();
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.actionButtons.display, spacing, index, centerActionX, centerActionY, height);
-                    button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
+                    button.graphic.fillStyle(button.color, this.scene.settings.positions.actionButtons.opacity);
                     button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.actionButtons.width * button.current / button.total);
-                    button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, this.scene.settings.positions.actionButtons.border, this.scene.settings.positions.actionButtons.opacity);
                     button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.actionButtons.width * button.current / button.total);
                     button.x = buttonX;
                     button.y = buttonY;
@@ -431,10 +569,10 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.graphic.clear();
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.specialButtons.display, spacing,index, centerSpecialX, centerSpecialY, height);
-                    button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.specialButtons.width * button.current / button.total);
-                    button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.specialButtons.width * button.current / button.total);
+                    button.graphic.fillStyle(button.color, this.scene.settings.positions.specialButtons.opacity);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.specialButtons.width * SETTINGS.SCALE_SPECIAL * button.current / button.total);
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, this.scene.settings.positions.specialButtons.border, this.scene.settings.positions.specialButtons.opacity);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.specialButtons.width * SETTINGS.SCALE_SPECIAL * button.current / button.total);
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -468,9 +606,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                         this.scene.settings.positions.actionButtons.spacing,
                         index, centerActionX, centerActionY, height);
                     // button.graphic.removeInteractive();
-                    button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
+                    button.graphic.fillStyle(button.color, this.scene.settings.positions.actionButtons.opacity);
                     button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.actionButtons.width * button.current / button.total);
-                    button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, this.scene.settings.positions.actionButtons.border, this.scene.settings.positions.actionButtons.opacity);
                     button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.actionButtons.width * button.current / button.total);
                     button.x = buttonX;
                     button.y = buttonY;
@@ -495,10 +633,10 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     
                     
                     // button.graphic.removeInteractive();
-                    button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.specialButtons.width * 0.75 * button.current / button.total);
-                    button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.specialButtons.width * 0.75 * button.current / button.total);
+                    button.graphic.fillStyle(button.color, this.scene.settings.positions.specialButtons.opacity);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.specialButtons.width * SETTINGS.SCALE_SPECIAL * button.current / button.total);
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, this.scene.settings.positions.specialButtons.border, this.scene.settings.positions.specialButtons.opacity);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.specialButtons.width * SETTINGS.SCALE_SPECIAL * button.current / button.total);
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -517,14 +655,14 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         switch (type) {
             case 'action': {
                 this.actionButtons = this.actionButtons.map((button: ActionButton) => {
-                    this.scaleButton(button, rewidth);    
+                    this.scaleButton(button, rewidth, this.scene.settings.positions.actionButtons.opacity, this.scene.settings.positions.actionButtons.border);    
                     return button;
                 });
                 break;
             };
             case 'special': {
                 this.specialButtons = this.specialButtons.map((button: ActionButton) => {
-                    this.scaleButton(button, rewidth * 0.75);    
+                    this.scaleButton(button, rewidth * SETTINGS.SCALE_SPECIAL, this.scene.settings.positions.specialButtons.opacity, this.scene.settings.positions.specialButtons.border);    
                     return button;    
                 });
                 break;
@@ -630,22 +768,22 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         };    
     };
 
-    private scaleButton = (button: ActionButton, scale: number): ActionButton => {
+    private scaleButton = (button: ActionButton, scale: number, opacity: number, border: number): ActionButton => {
         if (button.current / button.total >= 1) {
             button.graphic.clear();
-            button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
+            button.graphic.fillStyle(button.color, opacity);
             button.graphic.fillCircle(button.x, button.y, SETTINGS.BUTTON_WIDTH * scale * button.current / button.total);
             // button.graphic.removeInteractive();
             button.border.clear();
-            button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
+            button.border.lineStyle(SETTINGS.BORDER_LINE, border, opacity);
             button.border.strokeCircle(button.x, button.y, (SETTINGS.BUTTON_WIDTH + 2) * scale * button.current / button.total);
             button.graphic.setInteractive();
             // this.setButtonInteractive(button);
         } else {
-            // button.graphic.fillStyle(0xFFC700, SETTINGS.OPACITY);
+            // button.graphic.fillStyle(0xFFC700, opacity);
             button.border.clear();
             button.graphic.clear();
-            button.graphic.disableInteractive();
+            // button.graphic.disableInteractive();
         };
         return button;
     };
@@ -660,16 +798,16 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 };
 
 
-// const scaleStrafe = (button: ActionButton, scale: number): void => {
+// const scaleStrafe = (button: ActionButton, scale: number, opacity: number): void => {
 //     button.graphic.clear();
-//     button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
+//     button.graphic.fillStyle(button.color, opacity);
 //     button.graphic.fillRoundedRect(
 //         button.x, 
 //         button.y, 
 //         button.width * scale as number, 
 //         button.height * scale as number);
 //     button.border.clear();
-//     button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
+//     button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, opacity);
 //     button.border.strokeRoundedRect(
 //         button.x, 
 //         button.y, 

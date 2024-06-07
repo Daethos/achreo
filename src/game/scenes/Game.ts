@@ -280,10 +280,15 @@ export class Game extends Scene {
             camera.width * this.settings.positions.leftJoystick.x, 
             camera.height * this.settings.positions.leftJoystick.y
         );
-        this.rightJoystick = new Joystick(this, 
+        this.joystick.joystick.base.setAlpha(this.settings.positions.leftJoystick.opacity);
+        this.joystick.joystick.thumb.setAlpha(this.settings.positions.leftJoystick.opacity);
+        
+        this.rightJoystick = new Joystick(this,
             camera.width * this.settings.positions.rightJoystick.x, 
             camera.height * this.settings.positions.rightJoystick.y
         );
+        this.rightJoystick.joystick.base.setAlpha(this.settings.positions.rightJoystick.opacity);
+        this.rightJoystick.joystick.thumb.setAlpha(this.settings.positions.rightJoystick.opacity);
         this.rightJoystick.createPointer(this); 
         this.joystickKeys = this.joystick.createCursorKeys();
 
@@ -483,6 +488,37 @@ export class Game extends Scene {
             console.log(newX, newY, 'New X and Y');
             this.fpsText.setPosition(newX, newY);
         });
+        EventBus.on('update-joystick-color', (data: { color: number, side: string, type: string }) => {
+            const { side, color, type } = data;
+            switch (side) {
+                case 'left':
+                    if (type === 'base') {
+                        // this.joystick.joystick.base.clear();
+                        this.joystick.joystick.base.setFillStyle();
+                        this.joystick.joystick.base.setFillStyle(color);
+                        // this.joystick.joystick.base.fillCircle(color);
+                    } else {
+                        // this.joystick.joystick.thumb.clear();
+                        this.joystick.joystick.thumb.setFillStyle();
+                        this.joystick.joystick.thumb.setFillStyle(color);
+                        // this.joystick.joystick.thumb.fillCircle(color);
+                    };
+                    break;
+                case 'right':
+                    if (type === 'base') {
+                        // this.rightJoystick.joystick.base.clear();
+                        this.rightJoystick.joystick.base.setFillStyle();
+                        this.rightJoystick.joystick.base.setFillStyle(color);
+                        // this.rightJoystick.joystick.base.fillCircle(color);
+                    } else {
+                        // this.rightJoystick.joystick.thumb.clear();
+                        this.rightJoystick.joystick.thumb.setFillStyle();
+                        this.rightJoystick.joystick.thumb.setFillStyle(color);
+                        // this.rightJoystick.joystick.thumb.fillCircle(color);
+                    };
+                    break;
+            };
+        });
         EventBus.on('update-joystick-position', (data: {side : string, x: number, y: number}) => {
             const { side, x, y } = data;
             const newX = this.cameras.main.width * x;
@@ -493,6 +529,33 @@ export class Game extends Scene {
                     break;
                 case 'right':
                     this.rightJoystick.joystick.setPosition(newX, newY);
+                    break;
+            };
+        });
+        EventBus.on('update-joystick-opacity', (data: { side: string, opacity: number }) => {
+            console.log(this.joystick.joystick.base, this.joystick.joystick.thumbj, '<<<--- BASE and THUMB')
+            const { side, opacity } = data;
+            switch (side) {
+                case 'left':
+                    this.joystick.joystick.base.setAlpha(opacity);
+                    this.joystick.joystick.thumb.setAlpha(opacity);
+                    break;
+                case 'right':
+                    this.rightJoystick.joystick.base.setAlpha(opacity);
+                    this.rightJoystick.joystick.thumb.setAlpha(opacity);
+                    break;
+            };
+        });
+        EventBus.on('update-joystick-width', (data: { side: string, width: number }) => {
+            const { side, width } = data;
+            switch (side) {
+                case 'left':
+                    this.joystick.joystick.base.setScale(width);
+                    this.joystick.joystick.thumb.setScale(width);
+                    break;
+                case 'right':
+                    this.rightJoystick.joystick.base.setScale(width);
+                    this.rightJoystick.joystick.thumb.setScale(width);
                     break;
             };
         });

@@ -1168,7 +1168,7 @@ export default class Player extends Entity {
             this.setTimeEvent('arcCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.arcSuccess = false;
             this.scene.useStamina(PLAYER.STAMINA.ARC);
-            if (this.currentTarget && this.inCombat) {
+            if (this.currentTarget && this.inCombat === true) {
                 if (this.flipX) {
                     this.weaponHitbox.setAngle(270);
                 } else {
@@ -1488,7 +1488,7 @@ export default class Player extends Entity {
             onComplete: () => { 
                 this.scene.useStamina(PLAYER.STAMINA.LEAP);
                 this.isLeaping = false; 
-                if (this.touching.length > 0) {
+                if (this.touching.length > 0 && this.inCombat === true) {
                     this.touching.forEach(enemy => {
                         this.scene.writhe(enemy.enemyID);
                     });
@@ -1533,7 +1533,7 @@ export default class Player extends Entity {
             },
             onComplete: () => {
                 // console.log(this.rushedEnemies, this.rushedEnemies.length, 'Rushed Enemies');
-                if (this.rushedEnemies.length > 0) {
+                if (this.rushedEnemies.length > 0 && this.inCombat === true) {
                     this.rushedEnemies.forEach(enemy => {
                         // console.log(`%c Rushed Enemy: ${enemy.enemyID}`, 'color: #ff0000');
                         this.scene.writhe(enemy.enemyID);
@@ -1772,7 +1772,8 @@ export default class Player extends Entity {
                 this.flickerCarenic(3000); 
             },
             onLoop: () => {
-                console.log('Storming!')
+                console.log('Storming!');
+                if (this.inCombat === false) return;
                 this.isAttacking = true;
                 this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 750, 'effect');
                 if (this.touching.length > 0) {

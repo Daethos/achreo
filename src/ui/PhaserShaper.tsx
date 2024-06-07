@@ -60,6 +60,24 @@ export function PhaserShaper({ settings }: IPhaserShape) {
         EventBus.emit('reposition-buttons', update);
     };
 
+    async function handleButtonSpacing(e: any, type: string) {
+        const spacing = Number(e.target.value); 
+        const newSettings = {
+            ...settings(),
+            positions: {
+                ...settings().positions,
+                [`${type}Buttons`]: {
+                    ...settings().positions[`${type}Buttons` as 'actionButtons' | 'specialButtons'],
+                    spacing
+                }
+            }
+        };
+        await updateSettings(newSettings);
+        const update = { type, spacing };
+        EventBus.emit('save-settings', newSettings);
+        EventBus.emit('respacing-buttons', update);
+    };
+
     async function handleButtonWidth(e: any, type: string) {
         const rewidth = Number(e.target.value); 
         const newSettings = {
@@ -199,6 +217,13 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                     <button class='highlight p-3' onClick={() => handleButtonDisplay(display.toLowerCase(), 'action')}>{display}</button>
                 )
             })}
+            <div style={font('1em')}>Spacing: ({settings().positions.actionButtons.spacing})</div>
+            <Form.Range 
+                min={1} max={5} step={0.5} 
+                onChange={(e) => handleButtonSpacing(e, 'action')} 
+                value={settings().positions.actionButtons.spacing} 
+            />
+            <div style={{...font('0.65em', 'gold'), 'margin-bottom': '3%' }}>[Spacing affects all non-Arc displays.]</div>
             <div style={font('1em')}>X: ({settings().positions.actionButtons.x})</div>
             <Form.Range 
                 min={0} max={1} step={0.0125} 
@@ -225,6 +250,13 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                     <button class='highlight p-3' onClick={() => handleButtonDisplay(display.toLowerCase(), 'special')}>{display}</button>
                 )
             })}
+            <div style={font('1em')}>Spacing: ({settings().positions.specialButtons.spacing})</div>
+            <Form.Range 
+                min={1} max={5} step={0.5} 
+                onChange={(e) => handleButtonSpacing(e, 'special')} 
+                value={settings().positions.specialButtons.spacing} 
+            />
+            <div style={{...font('0.65em', 'gold'), 'margin-bottom': '3%' }}>[Spacing affects all non-Arc displays.]</div>
             <div style={font('1em')}>X: ({settings().positions.specialButtons.x})</div>
             <Form.Range 
                 min={-0.25} max={1} step={0.0125} 

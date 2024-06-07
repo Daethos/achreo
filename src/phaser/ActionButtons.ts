@@ -92,46 +92,13 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const centerSpecialX = width * scene.settings.positions.specialButtons.x; // width * 0.725 || / 1.375
         const centerSpecialY = height * scene.settings.positions.specialButtons.y; // height * 0.6 || / 1.675
         
-        // const radius = height / 2; // Radius of the circle || 1.75
-        // const startAngle = Math.PI; // Start angle (180 degrees) for the quarter circle
-        // const endAngle = Math.PI / 2; // End angle (90 degrees) for the quarter circle 
         ACTIONS.forEach((element, index) => {
-            // let angle = 0, buttonX = 0, buttonY = 0;
-            const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.actionButtons.display, index, centerActionX, centerActionY, height);
-            // switch (this.scene.settings.positions.actionButtons.display) {
-            //     case DISPLAY.ARC: 
-            //         angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
-            //         buttonX = centerActionX + radius * Math.cos(angle);
-            //         buttonY = centerActionY - radius * Math.sin(angle); // Negative sign for Y to start from top
-            //         break;
-            //     case DISPLAY.DIAGONAL:
-            //         angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
-            //         buttonX = centerActionX + radius * Math.cos(angle);
-            //         buttonY = centerActionY - radius * Math.sin(angle); // Negative sign for Y to start from top
-                    
-            //         break;
-            //     case DISPLAY.HORIZONTAL:
-            //         angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
-            //         buttonX = centerActionX + radius * Math.cos(angle);
-            //         buttonY = centerActionY - radius * Math.sin(angle); // Negative sign for Y to start from top
-                    
-            //         break;
-            //     case DISPLAY.VERTICAL:
-            //         angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
-            //         buttonX = centerActionX + radius * Math.cos(angle);
-            //         buttonY = centerActionY - radius * Math.sin(angle); // Negative sign for Y to start from top
-                    
-            //         break;
-            //     default:
-            //         angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
-            //         buttonX = centerActionX + radius * Math.cos(angle);
-            //         buttonY = centerActionY - radius * Math.sin(angle); // Negative sign for Y to start from top
-            //         break;
-            // };
-            // const angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
-            // const buttonX = centerActionX + radius * Math.cos(angle);
-            // const buttonY = centerActionY - radius * Math.sin(angle); // Negative sign for Y to start from top
-            let button: ActionButton = {
+            const { buttonX, buttonY } = this.displayButton(
+                this.scene.settings.positions.actionButtons.display, 
+                this.scene.settings.positions.specialButtons.spacing,
+                index, centerActionX, centerActionY, height
+            );
+             let button: ActionButton = {
                 key: 'action',
                 name: scene.settings.actions[index],
                 border: new Phaser.GameObjects.Graphics(scene),
@@ -171,44 +138,11 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         });
 
         SPECIALS.forEach((element, index) => {
-            // const angle = startAngle - (index * (startAngle - endAngle)) / (3.57);
-            // const buttonX = centerSpecialX + radius * 1 * Math.cos(angle);
-            // const buttonY = centerSpecialY - radius * 1 * Math.sin(angle); // Negative sign for Y to start from top
-
-            // let angle = 0, buttonX = 0, buttonY = 0;
-
-            const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.specialButtons.display, index, centerSpecialX, centerSpecialY, height);
-
-            // switch (this.scene.settings.positions.specialButtons.display) {
-            //     case DISPLAY.ARC: 
-            //         angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
-            //         buttonX = centerSpecialX + radius * Math.cos(angle);
-            //         buttonY = centerSpecialY - radius * Math.sin(angle); // Negative sign for Y to start from top
-            //         break;
-            //     case DISPLAY.DIAGONAL:
-            //         angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
-            //         buttonX = centerSpecialX + radius * Math.cos(angle);
-            //         buttonY = centerSpecialY - radius * Math.sin(angle); // Negative sign for Y to start from top
-                    
-            //         break;
-            //     case DISPLAY.HORIZONTAL:
-            //         angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
-            //         buttonX = centerSpecialX + radius * Math.cos(angle);
-            //         buttonY = centerSpecialY - radius * Math.sin(angle); // Negative sign for Y to start from top
-                    
-            //         break;
-            //     case DISPLAY.VERTICAL:
-            //         angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
-            //         buttonX = centerSpecialX + radius * Math.cos(angle);
-            //         buttonY = centerSpecialY - radius * Math.sin(angle); // Negative sign for Y to start from top
-                    
-            //         break;
-            //     default:
-            //         angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
-            //         buttonX = centerSpecialX + radius * Math.cos(angle);
-            //         buttonY = centerSpecialY - radius * Math.sin(angle); // Negative sign for Y to start from top
-            //         break;
-            // };
+            const { buttonX, buttonY } = this.displayButton(
+                this.scene.settings.positions.specialButtons.display, 
+                this.scene.settings.positions.specialButtons.spacing,
+                index, centerSpecialX, centerSpecialY, height,
+            );
 
             let button: ActionButton = {
                 key: 'special',
@@ -370,12 +304,12 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         // this.strafeRight = strafeRight;
     };
 
-    private displayButton = (display: string, index: number, x: number, y: number, height: number) => {
+    private displayButton = (display: string, spacing: number, index: number, x: number, y: number, height: number) => {
         const radius = height / 2; // Radius of the circle || 1.75
         const startAngle = Math.PI; // Start angle (180 degrees) for the quarter circle
         const endAngle = Math.PI / 2; // End angle (90 degrees) for the quarter circle 
         let angle = 0, buttonX = 0, buttonY = 0; 
-        
+        // * Math.sqrt(2)
         switch (display) {
             case DISPLAY.ARC: 
                 angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
@@ -383,16 +317,16 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 buttonY = y - radius * Math.sin(angle); // Negative sign for Y to start from top
                 break;
             case DISPLAY.DIAGONAL:
-                buttonX = x + index * (radius * Math.sqrt(2) / 5); // Diagonal increment by sqrt(2)/2
-                buttonY = y - index * (radius * Math.sqrt(2) / 5); // Same increment for y to form a diagonal
+                buttonX = x + index * (radius / spacing); // Diagonal increment by sqrt(2)/2
+                buttonY = y - index * (radius / spacing); // Same increment for y to form a diagonal
                 break;
             case DISPLAY.HORIZONTAL:
-                buttonX = x + index * (radius / 3); // Horizontal increment by radius
+                buttonX = x + index * (radius / spacing); // Horizontal increment by radius
                 buttonY = y; // Y remains constant
                 break;
             case DISPLAY.VERTICAL:
                 buttonX = x; // X remains constant
-                buttonY = y + index * (radius / 2); // Vertical increment by radius
+                buttonY = y + index * (radius / spacing); // Vertical increment by radius
                 break;
             default:
                 angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
@@ -400,7 +334,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 buttonY = y - radius * Math.sin(angle); // Negative sign for Y to start from top
                 break;
         };
-        console.log('----- NEW BUTTON X / Y -----' ,buttonX, buttonY, '----- NEW BUTTON X /Y -----')
+        // console.log('----- NEW BUTTON X / Y -----' ,buttonX, buttonY, '----- NEW BUTTON X /Y -----')
         return { buttonX, buttonY };
     };
 
@@ -421,6 +355,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         EventBus.on('reposition-buttons', this.repositionButtons);
         EventBus.on('re-width-buttons', this.rewidthButtons);
         EventBus.on('redisplay-buttons', this.redisplayButton);
+        EventBus.on('respacing-buttons', this.respaceButton);
     };
 
     private redisplayButton = (data: { type: string, display: string }) => {
@@ -436,7 +371,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
                     button.graphic.clear();
                     button.border.clear();
-                    const { buttonX, buttonY } = this.displayButton(display, index, centerActionX, centerActionY, height);
+                    const { buttonX, buttonY } = this.displayButton(display, this.scene.settings.positions.actionButtons.spacing, index, centerActionX, centerActionY, height);
                     button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
                     button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.actionButtons.width * button.current / button.total);
                     button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
@@ -451,7 +386,51 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
                     button.graphic.clear();
                     button.border.clear();
-                    const { buttonX, buttonY } = this.displayButton(display, index, centerSpecialX, centerSpecialY, height);
+                    const { buttonX, buttonY } = this.displayButton(display, this.scene.settings.positions.specialButtons.spacing,index, centerSpecialX, centerSpecialY, height);
+                    button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.specialButtons.width * button.current / button.total);
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.specialButtons.width * button.current / button.total);
+                    button.x = buttonX;
+                    button.y = buttonY;
+                    button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
+                    return button;
+                });
+                break;
+            default:
+                break;
+        };
+    };
+
+    private respaceButton = (data: { type: string, spacing: number }) => {
+        const { type, spacing } = data;
+        const { width, height } = this.scene.cameras.main;
+        const centerActionX = width * this.scene.settings.positions.actionButtons.x; // / 1.25
+        const centerActionY = height * this.scene.settings.positions.actionButtons.y; // / 1.35
+        const centerSpecialX = width * this.scene.settings.positions.specialButtons.x; // width * 0.725 || / 1.375
+        const centerSpecialY = height * this.scene.settings.positions.specialButtons.y; // height * 0.6 || / 1.675
+
+        switch (type) {
+            case 'action':
+                this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
+                    button.graphic.clear();
+                    button.border.clear();
+                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.actionButtons.display, spacing, index, centerActionX, centerActionY, height);
+                    button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.actionButtons.width * button.current / button.total);
+                    button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + 2) * this.scene.settings.positions.actionButtons.width * button.current / button.total);
+                    button.x = buttonX;
+                    button.y = buttonY;
+                    button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
+                    return button;
+                });
+                break;
+            case 'special':
+                this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
+                    button.graphic.clear();
+                    button.border.clear();
+                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.specialButtons.display, spacing,index, centerSpecialX, centerSpecialY, height);
                     button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
                     button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.specialButtons.width * button.current / button.total);
                     button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
@@ -470,9 +449,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     private repositionButtons = (data: {type: string, x: number, y: number}): void => {
         const { type, x, y } = data;
         const { width, height } = this.scene.cameras.main;
-        const radius = height / 2; // Radius of the circle || 1.75
-        const startAngle = Math.PI; // Start angle (180 degrees) for the quarter circle
-        const endAngle = Math.PI / 2; // End angle (90 degrees) for the quarter circle 
+        // const radius = height / 2; // Radius of the circle || 1.75
+        // const startAngle = Math.PI; // Start angle (180 degrees) for the quarter circle
+        // const endAngle = Math.PI / 2; // End angle (90 degrees) for the quarter circle 
         
         switch (type) {
             case 'action': {
@@ -485,7 +464,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.graphic.clear();
                     button.border.clear();
                     
-                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.actionButtons.display, index, centerActionX, centerActionY, height);
+                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.actionButtons.display, 
+                        this.scene.settings.positions.actionButtons.spacing,
+                        index, centerActionX, centerActionY, height);
                     // button.graphic.removeInteractive();
                     button.graphic.fillStyle(button.color, SETTINGS.OPACITY);
                     button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.actionButtons.width * button.current / button.total);
@@ -508,7 +489,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     // const buttonY = centerSpecialY - radius * Math.sin(angle); // Negative sign for Y to start from top
                     button.graphic.clear();
                     button.border.clear();
-                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.specialButtons.display, index, centerSpecialX, centerSpecialY, height);
+                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.specialButtons.display, 
+                        this.scene.settings.positions.specialButtons.spacing,
+                        index, centerSpecialX, centerSpecialY, height);
                     
                     
                     // button.graphic.removeInteractive();

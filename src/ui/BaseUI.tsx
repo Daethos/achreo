@@ -619,7 +619,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         }>
             <Character reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} game={game} combatState={combat} />
         </Show>
-        <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} /> 
+        <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} settings={settings} /> 
         <Show when={showTutorial()}>
             <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
         </Show>

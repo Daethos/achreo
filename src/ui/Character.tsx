@@ -340,29 +340,6 @@ const Character = ({ reputation, setReputation, settings, setSettings, ascean, a
                             Highest Prayer: <span class='gold'>{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</span><br />
                             Favored Deity: <span class='gold'>{highestDeity[0]}</span><br />
                             Blessings: <span class='gold'>{highestDeity[1]}</span>
-                        {/* <h1 style={{ 'margin-bottom': '3%' }}>Skills</h1>
-                            {createSkillBar('Axe')}
-                            {createSkillBar('Bow')}
-                            {createSkillBar('Curved Sword')}
-                            {createSkillBar('Dagger')}
-                            {createSkillBar('Earth')}
-                            {createSkillBar('Fire')}
-                            {createSkillBar('Frost')}
-                            {createSkillBar('Greataxe')}
-                            {createSkillBar('Greatbow')}
-                            {createSkillBar('Greatmace')}
-                            {createSkillBar('Greatsword')}
-                            {createSkillBar('Lightning')}
-                            {createSkillBar('Long Sword')}
-                            {createSkillBar('Mace')}
-                            {createSkillBar('Polearm')}
-                            {createSkillBar('Righteous')}
-                            {createSkillBar('Scythe')}
-                            {createSkillBar('Short Sword')}
-                            {createSkillBar('Spooky')}
-                            {createSkillBar('Sorcery')}
-                            {createSkillBar('Wild')}
-                            {createSkillBar('Wind')} */}
                     </div>
                 );
             case CHARACTERS.TRAITS:

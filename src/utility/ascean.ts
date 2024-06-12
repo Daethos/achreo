@@ -237,7 +237,7 @@ const attributeCompiler = (ascean: Ascean, rarities: { helmet: number; chest: nu
 
     return newAttributes;
 };
-  
+
 function originCompiler(weapon: any, ascean: Ascean): Equipment {
     switch (ascean.origin) {
         case "Ashtre":

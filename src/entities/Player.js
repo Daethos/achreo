@@ -1009,7 +1009,7 @@ export default class Player extends Entity {
 
     onAttackEnter = () => {
         this.isAttacking = true;
-        this.swingReset(States.ATTACK);
+        this.swingReset(States.ATTACK, true);
         this.swingReset(States.POSTURE);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.ATTACK);
     }; 
@@ -1027,7 +1027,7 @@ export default class Player extends Entity {
 
     onParryEnter = () => {
         this.isParrying = true;    
-        this.swingReset(States.PARRY);
+        this.swingReset(States.PARRY, true);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.PARRY);
     };
     onParryUpdate = (_dt) => {
@@ -1044,7 +1044,7 @@ export default class Player extends Entity {
 
     onPostureEnter = () => {
         this.isPosturing = true;
-        this.swingReset(States.POSTURE);
+        this.swingReset(States.POSTURE, true);
         this.swingReset(States.ATTACK);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.POSTURE);
     };
@@ -1063,7 +1063,7 @@ export default class Player extends Entity {
     onDodgeEnter = () => {
         if (this.isStalwart || this.isStorming) return;
         this.isDodging = true;
-        this.swingReset(States.DODGE);
+        this.swingReset(States.DODGE, true);
         this.swingReset(States.ROLL);
         this.scene.useStamina(PLAYER.STAMINA.DODGE);
         this.scene.sound.play('dodge', { volume: this.scene.settings.volume });
@@ -1098,7 +1098,7 @@ export default class Player extends Entity {
     onRollEnter = () => {
         if (this.isStalwart || this.isStorming) return;
         this.isRolling = true;
-        this.swingReset(States.ROLL);
+        this.swingReset(States.ROLL, true);
         this.swingReset(States.DODGE);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.ROLL);
         this.scene.sound.play('roll', { volume: this.scene.settings.volume });
@@ -2794,14 +2794,32 @@ export default class Player extends Entity {
         };
         const type = cooldown.split('Cooldown')[0];
         this.scene.actionBar.setCurrent(0, limit, type);
-
+        const button = this.scene.actionBar.getButton(type);
+        // this.scene.actionBar.cooldownButton(button, limit / 1000);
+        // console.log('Button:', button);
         if (this.inCombat || type === 'blink' || type || 'desperation') {
             this.scene.time.delayedCall(limit, () => {
                 this.scene.actionBar.setCurrent(limit, limit, type);
+                this.scene.actionBar.animateButton(button);
                 if (!evasion) {
                     this[cooldown] = 0;
                 };
             }, undefined, this);
+            // let current = 0;
+            // const timer = this.scene.time.addEvent({
+            //     delay: 1000,
+            //     callback: () => {
+            //         current += 1000;
+            //         this.scene.actionBar.setCurrent(current, limit, type);
+            //         if (current >= limit) {
+            //             if (!evasion) {
+            //                 this[cooldown] = 0;
+            //             };
+            //             this.scene.actionBar.animateButton(button);
+            //             timer.destroy();
+            //         };
+            //     },
+            // });
         } else {
             this.scene.actionBar.setCurrent(limit, limit, type);
             if (!evasion) {
@@ -2810,17 +2828,21 @@ export default class Player extends Entity {
         };
     };
 
-    swingReset = (type) => {
+    swingReset = (type, primary = false) => {
         this.canSwing = false;
         const time = 
             (type === 'dodge' || type === 'parry' || type === 'roll') ? 750 : 
             this.isAttacking === true ? this.swingTimer : 
             this.isPosturing === true ? this.swingTimer - 250 :
             this.swingTimer;
+        const button = this.scene.actionBar.getButton(type);
         this.scene.actionBar.setCurrent(0, time, type);
+        // this.scene.actionBar.cooldownButton(button, time / 1000);
+        
         this.scene.time.delayedCall(time, () => {
             this.canSwing = true;
             this.scene.actionBar.setCurrent(time, time, type);
+            if (primary === true) this.scene.actionBar.animateButton(button);
         }, undefined, this);
     };
 

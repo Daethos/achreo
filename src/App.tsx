@@ -38,7 +38,7 @@ export default function App() {
     });
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>({
         name: 'Stranger', // Dorien Caderyn
-        description: 'Commoner from elsewhere', // Prince of the Daethic Kingdom
+        description: 'Commoner From Elsewhere Unknown', // Prince of the Daethic Kingdom
         sex: 'Man',
         origin: "Ashtre", // Notheo
         constitution: 16, // 12
@@ -179,12 +179,11 @@ export default function App() {
     };
 
     const setTips = (on: boolean): void => {
-        console.log('Setting Tips:', on);
         if (on) {
             const interval: number = 1000 * 60 * 3; // 3 minutes
             tips = setInterval(() => {
                 const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
-                setAlert({ header: 'Gameplay Tidbit', body: tip, delay: 10000, key: 'Close' }); // 10000
+                setAlert({ header: 'Gameplay Tidbit', body: tip, delay: 12000, key: 'Close' }); // 10000
                 setShow(true);    
             }, interval); 
         } else {
@@ -230,7 +229,6 @@ export default function App() {
     async function saveSettings(set: Settings): Promise<void> {
         try {
             await updateSettings(set);
-            // console.log('Settings Updated:', success);
             setSettings(set);
         } catch (err: any) {
             console.warn('Error saving Settings:', err);
@@ -292,6 +290,8 @@ export default function App() {
         'Enter Tent': () => switchScene('Tent'),
         'Close': () => setShow(false),
         'Exit World': () => switchScene('Game'),
+        'Pause': () => togglePause(true),
+        'Resume': () => togglePause(false),
     };
 
     usePhaserEvent('destroy-game', destroyGame);
@@ -303,15 +303,9 @@ export default function App() {
     usePhaserEvent('save-ascean', saveAscean);
     usePhaserEvent('update-ascean', updateAscean);
     usePhaserEvent('update-pause', togglePause);
-    usePhaserEvent('request-reputation', () => {
-        EventBus.emit('reputation', reputation());
-    });
-    usePhaserEvent('update-reputation', (rep: any) => {
-        setReputation(rep);
-    });
-    usePhaserEvent('request-settings', () => {
-        EventBus.emit('settings', settings());
-    });
+    usePhaserEvent('request-reputation', () => EventBus.emit('reputation', reputation()));
+    usePhaserEvent('update-reputation', updateRep);
+    usePhaserEvent('request-settings', () => EventBus.emit('settings', settings()));
     usePhaserEvent('save-settings', saveSettings);
     usePhaserEvent('update-settings', updateRep);
     usePhaserEvent('player-ascean', () => EventBus.emit('player-ascean-ready', ascean()));

@@ -296,7 +296,28 @@ export const PhaserGame = (props: IProps) => {
     };
 
     function recordCombatReputation(computer: Ascean) {
+        // let newReputation = { ...props.reputation() };
+        // const factions =  newReputation.factions.map((faction: faction) => {
+        //     if (faction.name === computer.name) {
+        //         if (faction.reputation < 25) {
+        //             faction.reputation += 1;
+        //         } else {
+        //             faction.reputation -= 5;
+        //         };
+
+        //         if (faction.reputation >= 25 && faction.aggressive === true) {
+        //             faction.aggressive = false;
+        //         };
+        //         if (faction.reputation < 25 && faction.aggressive === false && faction.named === false) {
+        //             faction.aggressive = true;
+        //         };
+        //         return faction;
+        //     };
+        // }) as faction[];
+        // newReputation = { ...newReputation, factions: factions };
+        // return newReputation;
         let newReputation = { ...props.reputation() };
+        console.log('newReputation', newReputation);
         newReputation.factions.forEach((faction: faction) => {
             if (faction.name === computer.name) {
                 if (faction.reputation < 25) {
@@ -307,9 +328,6 @@ export const PhaserGame = (props: IProps) => {
 
                 if (faction.reputation >= 25 && faction.aggressive === true) {
                     faction.aggressive = false;
-                };
-                if (faction.reputation < 25 && faction.aggressive === false && faction.named === false) {
-                    faction.aggressive = true;
                 };
 
 
@@ -924,25 +942,35 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('selectDamageType', (e: any) => setGame({ ...game(), selectedDamageTypeIndex: e.index, selectedHighlight: e.highlight }));
         EventBus.on('selectWeapon', (e: any) => setGame({ ...game(), selectedWeaponIndex: e.index, selectedHighlight: e.highlight }));
         EventBus.on('set-equipper', (e: any) => swapEquipment(e));
-        EventBus.on('show-combat-logs', (e: boolean) => setGame({ ...game(), showCombat: e }));
+        // EventBus.on('show-combat-logs', (e: boolean) => setGame({ ...game(), showCombat: e }));
+        EventBus.on('show-combat', () => {
+            if (game().scrollEnabled === false && game().showDialog === false && game().showPlayer === false) {
+                EventBus.emit('update-pause', !game().showCombat);
+            };
+            setGame({ 
+                ...game(), 
+                showCombat: !game().showCombat, 
+                smallHud: (!game().showCombat || game().scrollEnabled || game().showDialog || game().showPlayer) 
+            });
+        });
         EventBus.on('show-dialogue', () => {
-            if (game().scrollEnabled === false && game().showPlayer === false) {
+            if (game().scrollEnabled === false && game().showPlayer === false && game().showCombat === false) {
                 EventBus.emit('update-pause', !game().showDialog);
             };
             setGame({ 
                 ...game(), 
                 showDialog: !game().showDialog, 
-                smallHud: (!game().showDialog || game().scrollEnabled || game().showPlayer) 
+                smallHud: (!game().showDialog || game().scrollEnabled || game().showPlayer || game().showCombat) 
             });
         });
         EventBus.on('show-player', () => {
-            if (game().scrollEnabled === false && game().showDialog === false) {
+            if (game().scrollEnabled === false && game().showDialog === false && game().showCombat === false) {
                 EventBus.emit('update-pause', !game().showPlayer);
             };
             setGame({ 
                 ...game(), 
                 showPlayer: !game().showPlayer, 
-                smallHud: (!game().showPlayer || game().scrollEnabled || game().showDialog) 
+                smallHud: (!game().showPlayer || game().scrollEnabled || game().showDialog || game().showCombat) 
             });
         });
         EventBus.on('toggle-pause', (e: boolean) => setGame({ 
@@ -1096,7 +1124,8 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('selectDamageType');
             EventBus.removeListener('selectWeapon');
             EventBus.removeListener('set-equipper');
-            EventBus.removeListener('show-combat-logs');
+            // EventBus.removeListener('show-combat-logs');
+            EventBus.removeListener('show-combat');
             EventBus.removeListener('show-dialogue');
             EventBus.removeListener('show-player');
             EventBus.removeListener('toggle-pause');

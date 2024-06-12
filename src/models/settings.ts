@@ -46,6 +46,12 @@ export default class Settings {
         crtWidth: number;
     };
     public positions: {
+        camera: {
+            x: number;
+            y: number;
+            z: number;
+            zoom: number;
+        };
         leftJoystick: { 
             base: number;
             thumb: number;
@@ -82,9 +88,25 @@ export default class Settings {
             y: number; 
             width: number; 
         };
-        fpsText: { x: number; y: number; };
-        leftHud: { x: number; y: number; };
-        smallHud: { x: number; y: number; };
+        fpsText: { 
+            x: number; 
+            y: number; 
+        };
+        leftHud: { 
+            offset: number;
+            scale: number
+            x: number; 
+            y: number; 
+        };
+        smallHud: { 
+            offset: number;
+            scale: number
+            x: number; 
+            y: number; 
+        };
+        solidHud: {
+            right: number;
+        };
     };
 
     public constructor(id: string, mastery: string) {
@@ -142,6 +164,12 @@ export default class Settings {
             crtWidth: 2,
         };
         this.positions = {
+            camera: {
+                x: 0,
+                y: 0,
+                z: 0,
+                zoom: 0.8,
+            },
             leftJoystick: { 
                 base: 0x000000,
                 thumb: 0xfdf6d8,
@@ -183,12 +211,19 @@ export default class Settings {
                 y: -0.1,
             },
             leftHud: {
+                offset: 43.75,
+                scale: 0.095,
                 x: -0.0375,
                 y: 1.025,
             },
             smallHud: { 
+                offset: 43.75,
+                scale: 0.095,
                 x: 0.575, 
                 y: 1.025 
+            },
+            solidHud: {
+                right: 0.5,
             },
         };
     };

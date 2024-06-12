@@ -103,10 +103,7 @@ export class Game extends Scene {
     preload() {};
 
     create () {
-        // ================== Camera ================== \\
-        let camera = this.cameras.main;
-        camera.zoom = 0.8;
-
+        
         this.gameEvent();
         this.getAscean();
         this.state = this.getCombat();
@@ -114,6 +111,11 @@ export class Game extends Scene {
         this.reputation = this.getReputation();
         this.settings = this.getSettings();
         this.rexUI = this.plugins.get('rexuiplugin');
+        
+        // ================== Camera ================== \\
+        let camera = this.cameras.main;
+        console.log(this.settings.positions?.camera, 'Camera Position');
+        camera.zoom = this.settings.positions?.camera?.zoom || 0.8; // 0.8
 
         // ================== Add Multiple Inputs ================== \\
         // this.input.addPointer(3);
@@ -555,6 +557,10 @@ export class Game extends Scene {
                     break;
             };
         });
+        EventBus.on('update-camera-zoom', (zoom: number) => {
+            let camera = this.cameras.main;
+            camera.zoom = zoom;
+        });
     };
 
 
@@ -920,7 +926,7 @@ export class Game extends Scene {
             EventBus.emit('initiate-combat', { data: 10, type: 'Enemy Chiomic' });
         };
     };
-    writhe = (id: string, enemyID?: string): void => {
+    writhe = (id: string, _enemyID?: string): void => {
         if (id === '') return;
         if (!this.player.inCombat) return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);

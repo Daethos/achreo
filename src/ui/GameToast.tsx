@@ -1,7 +1,7 @@
 import { Toast } from 'solid-bootstrap';
-import { Accessor, JSX, Setter, Show, createEffect, createSignal } from 'solid-js';
+import { Accessor, Setter, Show } from 'solid-js';
 
-interface Props {
+interface Props { 
     actions: any;
     show: Accessor<boolean>;
     setShow: Setter<boolean>;

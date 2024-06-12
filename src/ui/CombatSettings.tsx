@@ -100,7 +100,7 @@ export default function CombatSettings({ combat, game }: Props) {
      // shadow('black', 1), styles.center,
     return (
         <div class='center combatSettings' style={dimensions().ORIENTATION === 'landscape' ? {
-                height: '40%', width: "50%", top: '50%', left: '25%', background: '#000', 'border': '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.1em 0.1em gold'
+                height: '40%', width: "50%", top: '50%', left: '25%', background: '#000', 'border': '0.1em solid #FFC700', 'border-radius': '0.25em', 'box-shadow': '0 0 0.1em 0.1em #FFC700'
             }: {
                 top: '70%', left: '10%'
         }}>

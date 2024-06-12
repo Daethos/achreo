@@ -673,7 +673,7 @@ const initFactions: faction[] = [
         faith: 'Adherent',
         dialog: 25,
     }, {
-        name: "Rahvrecur",
+        name: "Rahvrehcur",
         reputation: 0,
         named: false,
         aggressive: true,

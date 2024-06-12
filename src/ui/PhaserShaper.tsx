@@ -4,72 +4,7 @@ import { EventBus } from '../game/EventBus';
 import Settings from '../models/settings';
 import { updateSettings } from '../assets/db/db';
 import { useResizeListener } from '../utility/dimensions';
-import { font } from '../utility/styling';
-
-const COLORS = {
-    'Aqua': 0x00FFFF,
-    'Bone': 0xFDF6D8,
-    'Black': 0x000000,
-    'Blue': 0x0000FF,
-    'Brown': 0x8B4513,
-    'Burned': 0xCC5500,
-    'Cerise': 0xDE3163,
-    'Charcoal': 0x36454F,
-    'Chartreuse': 0xDFFF00,
-    'Coral': 0xFF7F50,
-    'Dusty': 0xC9A9A6,
-    'Fuschia': 0xFF00FF,
-    'Green': 0x00FF00,
-    'Gold': 0xFFD700,
-    'Icterine': 0xFCF55F,
-    'Lavender': 0xC3B1E1,
-    'Malachite': 0x0BDA51,
-    'Pink': 0xFFC0CB,
-    'Purple': 0x800080,
-    'Red': 0xFF0000,
-    'Ruby': 0xE0115F,
-    'Sapphire': 0x0F52BA,
-    'Seafoam': 0x9FE2BF,
-    'Tangerine': 0xF08000,
-    'Teal': 0x008080,
-    'Violet': 0x7F00FF,
-    'Ultramarine': 0x0437F2,
-    'Vanilla': 0xF3E5AB,
-    'White': 0xFFFFFF,
-    'Wine': 0x722F37,
-};
-const NUMBERS = {
-    0x00FFFF: 'Aqua',
-    0xFDF6D8: 'Bone',
-    0x000000: 'Black',
-    0x0000FF: 'Blue',
-    0x8B4513: 'Brown',
-    0xCC5500: 'Burned',
-    0xDE3163: 'Cerise',
-    0x36454F: 'Charcoal',
-    0xDFFF00: 'Chartreuse',
-    0xFF7F50: 'Coral',
-    0xC9A9A6: 'Dusty',
-    0xFF00FF: 'Fuschia',
-    0x00FF00: 'Green',
-    0xFFD700: 'Gold',
-    0xFCF55F: 'Icterine',
-    0xC3B1E1: 'Lavender',
-    0x0BDA51: 'Malachite',
-    0xFFC0CB: 'Pink',
-    0x800080: 'Purple',
-    0xFF0000: 'Red',
-    0xE0115F: 'Ruby',
-    0x0F52BA: 'Sapphire',
-    0x9FE2BF: 'Seafoam',
-    0xF08000: 'Tangerine',
-    0x008080: 'Teal',
-    0x7F00FF: 'Violet',
-    0x0437F2: 'Ultramarine',
-    0xF3E5AB: 'Vanilla',
-    0xFFFFFF: 'White',
-    0x722F37: 'Wine',
-};
+import { COLORS, NUMBERS, font } from '../utility/styling';
 
 interface IPhaserShape {
     settings: Accessor<Settings>;
@@ -290,6 +225,22 @@ export function PhaserShaper({ settings }: IPhaserShape) {
         EventBus.emit('redisplay-buttons', update);
     };
 
+    async function handleCamera(zoom: number) {
+        const newSettings = { 
+            ...settings(), 
+            positions: { 
+                ...settings().positions, 
+                camera: {
+                    ...settings().positions.camera,
+                    zoom
+                } 
+            } 
+        };
+        await updateSettings(newSettings);
+        EventBus.emit('save-settings', newSettings);
+        EventBus.emit('update-camera-zoom', zoom);
+    };
+
     async function handleFPS(e: any, axis: string) {
         const change = Number(e.target.value);
         // const newFPS = { [axis]: Number(e.target.value) };
@@ -313,7 +264,99 @@ export function PhaserShaper({ settings }: IPhaserShape) {
         EventBus.emit('update-fps', update);
     };
 
-    async function handleHud(e: any, axis: string) {
+    async function handleHudOffset(e: any, side: string) {
+        const offset = Number(e.target.value);
+        console.log(offset, 'Scale', side, 'Side');
+        switch (side) {
+            case 'left':
+                const newSettings = { 
+                    ...settings(), 
+                    positions: { 
+                        ...settings().positions, 
+                        leftHud: {
+                            ...settings().positions.leftHud,
+                            offset
+                        } 
+                    } 
+                };
+                await updateSettings(newSettings);
+                EventBus.emit('save-settings', newSettings);
+                EventBus.emit('update-left-hud-offset', offset);
+                break;
+            case 'right':
+                const newSettings2 = { 
+                    ...settings(), 
+                    positions: { 
+                        ...settings().positions, 
+                        smallHud: {
+                            ...settings().positions.smallHud,
+                            offset
+                        } 
+                    } 
+                };
+                await updateSettings(newSettings2);
+                EventBus.emit('save-settings', newSettings2);
+                EventBus.emit('update-small-hud-offset', offset);
+                break;
+            case 'solid':
+                const newSettings3 = { 
+                    ...settings(), 
+                    positions: { 
+                        ...settings().positions, 
+                        solidHud: {
+                            ...settings().positions.solidHud,
+                            right: offset
+                        } 
+                    } 
+                };
+                await updateSettings(newSettings3);
+                EventBus.emit('save-settings', newSettings3);
+                break;
+            default: 
+                break;
+        };
+    };
+
+    async function handleHudScale(e: any, side: string) {
+        const scale = Number(e.target.value);
+        console.log(scale, 'Scale', side, 'Side');
+        switch (side) {
+            case 'left':
+                const newSettings = { 
+                    ...settings(), 
+                    positions: { 
+                        ...settings().positions, 
+                        leftHud: {
+                            ...settings().positions.leftHud,
+                            scale
+                        } 
+                    } 
+                };
+                await updateSettings(newSettings);
+                EventBus.emit('save-settings', newSettings);
+                EventBus.emit('update-left-hud-scale', scale);
+                break;
+            case 'right':
+                const newSettings2 = { 
+                    ...settings(), 
+                    positions: { 
+                        ...settings().positions, 
+                        smallHud: {
+                            ...settings().positions.smallHud,
+                            scale
+                        } 
+                    } 
+                };
+                await updateSettings(newSettings2);
+                EventBus.emit('save-settings', newSettings2);
+                EventBus.emit('update-small-hud-scale', scale);
+                break;
+            default: 
+                break;
+        };
+    };
+
+    async function handleRightHud(e: any, axis: string) {
         const change = Number(e.target.value);
         const newSettings = { 
             ...settings(), 
@@ -360,6 +403,14 @@ export function PhaserShaper({ settings }: IPhaserShape) {
     {/* <div style={font('0.5em')}>[Aggressive AI Range: 0 - 100%]</div> */}
     return (
         <div class='center creature-heading' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '0' } : { 'margin-top': '50%' }}>
+            <h1 style={font('1.25em')}>Camera</h1>
+            <div style={font('1em')}>Zoom: ({settings().positions.camera?.zoom})</div>
+            <Form.Range 
+                min={0.1} max={1.5} step={0.05} 
+                onChange={(e) => handleCamera(Number(e.target.value))} 
+                value={settings().positions.camera?.zoom} 
+            />
+            
             <h1 style={font('1.25em')}>Left Joystick</h1>
             <div style={font('1em')}>Base Color: ({NUMBERS[settings().positions.leftJoystick.base as keyof typeof NUMBERS]})</div>
             <Form.Select onChange={(e) => handleJoystickColor(e.target.value, 'left', 'base')} style={{ margin: '3%' }} value={settings().positions.leftJoystick.base}>
@@ -385,9 +436,9 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 onChange={(e) => handleJoystickOpacity(e, 'left')} 
                 value={settings().positions.leftJoystick.opacity} 
             />
-            <div style={font('1em')}>Width: ({settings().positions.leftJoystick.width})</div>
+            <div style={font('1em')}>Scale: ({settings().positions.leftJoystick.width})</div>
             <Form.Range 
-                min={0.1} max={2} step={0.1} 
+                min={0.1} max={2} step={0.05} 
                 onChange={(e) => handleJoystickWidth(e, 'left')} 
                 value={settings().positions.leftJoystick.width} 
             />
@@ -429,9 +480,9 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 onChange={(e) => handleJoystickOpacity(e, 'right')} 
                 value={settings().positions.rightJoystick.opacity} 
             />
-            <div style={font('1em')}>Width: ({settings().positions.rightJoystick.width})</div>
+            <div style={font('1em')}>Scale: ({settings().positions.rightJoystick.width})</div>
             <Form.Range 
-                min={0.1} max={2} step={0.1} 
+                min={0.1} max={2} step={0.05} 
                 onChange={(e) => handleJoystickWidth(e, 'right')} 
                 value={settings().positions.rightJoystick.width} 
             />
@@ -478,6 +529,12 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 onChange={(e) => handleButtonOpacity(e, 'action')} 
                 value={settings().positions.actionButtons.opacity} 
             />
+            <div style={font('1em')}>Scale: ({settings().positions.actionButtons.width})</div>
+            <Form.Range 
+                min={0} max={2} step={0.1} 
+                onChange={(e) => handleButtonWidth(e, 'action')} 
+                value={settings().positions.actionButtons.width} 
+            />
             <div style={font('1em')}>Spacing: ({settings().positions.actionButtons.spacing})</div>
             <Form.Range 
                 min={1} max={5} step={0.5} 
@@ -497,12 +554,7 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 onChange={(e) => handleButtons(e, 'action', 'y')} 
                 value={settings().positions.actionButtons.y} 
             />
-            <div style={font('1em')}>Width: ({settings().positions.actionButtons.width})</div>
-            <Form.Range 
-                min={0} max={2} step={0.1} 
-                onChange={(e) => handleButtonWidth(e, 'action')} 
-                value={settings().positions.actionButtons.width} 
-            />
+
 
             <h1 style={font('1.25em')}>Special Buttons</h1>
             <div style={font('1em')}>Border: ({NUMBERS[settings().positions.specialButtons.border as keyof typeof NUMBERS]})</div>
@@ -535,6 +587,12 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 onChange={(e) => handleButtonOpacity(e, 'special')} 
                 value={settings().positions.specialButtons.opacity} 
             />
+            <div style={font('1em')}>Scale: ({settings().positions.specialButtons.width})</div>
+            <Form.Range 
+                min={0} max={2} step={0.1} 
+                onChange={(e) => handleButtonWidth(e, 'special')} 
+                value={settings().positions.specialButtons.width} 
+            />
             <div style={font('1em')}>Spacing: ({settings().positions.specialButtons.spacing})</div>
             <Form.Range 
                 min={1} max={5} step={0.5} 
@@ -554,12 +612,6 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 onChange={(e) => handleButtons(e, 'special', 'y')} 
                 value={settings().positions.specialButtons.y} 
             />
-            <div style={font('1em')}>Width: ({settings().positions.specialButtons.width})</div>
-            <Form.Range 
-                min={0} max={2} step={0.1} 
-                onChange={(e) => handleButtonWidth(e, 'special')} 
-                value={settings().positions.specialButtons.width} 
-            />
 
             <h1 style={font('1.25em')}>FPS Text</h1>
             <div style={font('1em')}>X: ({settings().positions.fpsText.x})</div>
@@ -575,7 +627,19 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 value={settings().positions.fpsText.y} 
             />
 
-            <h1 style={font('1.25em')}>Left HUD</h1>
+            <h1 style={font('1.25em')}>Left (Stance) HUD</h1>
+            <div style={font('1em')}>Offset ({settings().positions.leftHud.offset})</div>
+            <Form.Range 
+                min={30} max={50} step={1.25} 
+                onChange={(e) => handleHudOffset(e, 'left')} 
+                value={settings().positions.leftHud.offset} 
+            />
+            <div style={font('1em')}>Scale ({settings().positions.leftHud.scale})</div>
+            <Form.Range 
+                min={0.05} max={0.2} step={0.005} 
+                onChange={(e) => handleHudScale(e, 'left')} 
+                value={settings().positions.leftHud.scale} 
+            />
             <div style={font('1em')}>X: ({settings().positions.leftHud.x})</div>
             <Form.Range 
                 min={-0.125} max={1} step={0.0125} 
@@ -584,24 +648,45 @@ export function PhaserShaper({ settings }: IPhaserShape) {
             />
             <div style={font('1em')}>Y: ({settings().positions.leftHud.y})</div>
             <Form.Range 
-                min={0.1} max={1.1} step={0.025} 
+                min={0.1} max={1.1} step={0.0125} 
                 onChange={(e) => handleLeftHud(e, 'y')} 
                 value={settings().positions.leftHud.y} 
             />
             
 
-            <h1 style={font('1.25em')}>Small HUD</h1>
+            <h1 style={font('1.25em')}>Right (Settings) HUD</h1>
+            <div style={font('1em')}>Offset ({settings().positions.smallHud.offset})</div>
+            <Form.Range 
+                min={30} max={50} step={1.25} 
+                onChange={(e) => handleHudOffset(e, 'right')} 
+                value={settings().positions.smallHud.offset} 
+            />
+            <div style={font('1em')}>Scale ({settings().positions.smallHud.scale})</div>
+            <Form.Range 
+                min={0.05} max={0.2} step={0.005} 
+                onChange={(e) => handleHudScale(e, 'right')} 
+                value={settings().positions.smallHud.scale} 
+            />
             <div style={font('1em')}>X: ({settings().positions.smallHud.x})</div>
             <Form.Range 
                 min={0} max={1} step={0.0125} 
-                onChange={(e) => handleHud(e, 'x')} 
+                onChange={(e) => handleRightHud(e, 'x')} 
                 value={settings().positions.smallHud.x} 
             />
             <div style={font('1em')}>Y: ({settings().positions.smallHud.y})</div>
             <Form.Range 
-                min={0.1} max={1.1} step={0.025} 
-                onChange={(e) => handleHud(e, 'y')} 
+                min={0.1} max={1.1} step={0.0125} 
+                onChange={(e) => handleRightHud(e, 'y')} 
                 value={settings().positions.smallHud.y} 
+            />
+
+            
+            <h1 style={font('1.25em')}>Solid (Overview) HUD</h1>
+            <div style={font('1em')}>X: ({settings().positions.solidHud.right})</div>
+            <Form.Range 
+                min={0} max={20} step={0.5} 
+                onChange={(e) => handleHudOffset(e, 'solid')} 
+                value={settings().positions.solidHud.right} 
             />
         </div>
     );

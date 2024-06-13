@@ -946,7 +946,7 @@ export default class Player extends Entity {
                         EventBus.emit('alert', { 
                             header: 'Tent', 
                             body: `You have encountered a tent! \n Would you like to enter?`, 
-                            delay: 4000, 
+                            delay: 3000, 
                             key: 'Enter Tent'
                         });
                 };
@@ -955,7 +955,7 @@ export default class Player extends Entity {
                         EventBus.emit('alert', { 
                             header: 'Exit', 
                             body: `You are near the exit. \n Would you like to head back to the world?`, 
-                            delay: 4000, 
+                            delay: 3000, 
                             key: 'Exit World'
                         });
                     // };
@@ -1043,6 +1043,9 @@ export default class Player extends Entity {
     };
 
     onPostureEnter = () => {
+        if (this.isRanged === true && this.isMoving === true) {
+            return;
+        };
         this.isPosturing = true;
         this.swingReset(States.POSTURE, true);
         this.swingReset(States.ATTACK);
@@ -2508,7 +2511,7 @@ export default class Player extends Entity {
             const move = Phaser.Math.Between(1, 100);
             const directions = ['up', 'down', 'left', 'right'];
             const direction = directions[Phaser.Math.Between(0, 3)];
-            if (move > 50) {
+            if (move > 25) {
                 if (direction === 'up') {
                     this.confuseVelocity = { x: 0, y: -1.75 };
                 } else if (direction === 'down') {
@@ -2590,7 +2593,7 @@ export default class Player extends Entity {
             const move = Phaser.Math.Between(1, 100);
             const directions = ['up', 'down', 'left', 'right'];
             const direction = directions[Phaser.Math.Between(0, 3)];
-            if (move > 50) {
+            if (move > 25) {
                 if (direction === 'up') {
                     this.fearVelocity = { x: 0, y: -2 };
                 } else if (direction === 'down') {
@@ -2695,7 +2698,7 @@ export default class Player extends Entity {
             const move = Phaser.Math.Between(1, 100);
             const directions = ['up', 'down', 'left', 'right'];
             const direction = directions[Phaser.Math.Between(0, 3)];
-            if (move > 50) {
+            if (move > 25) {
                 if (direction === 'up') {
                     this.polymorphVelocity = { x: 0, y: -1.25 };
                 } else if (direction === 'down') {
@@ -3146,8 +3149,9 @@ export default class Player extends Entity {
     };
 
     handleActions = () => {
+
         // ========================= Tab Targeting ========================= \\
-        
+
         // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.target.TAB) && this.targets.length) { // was > 1 More than 1 i.e. worth tabbing
         //     // if (this.currentTarget) {
         //     //     this.currentTarget.clearTint();
@@ -3178,21 +3182,7 @@ export default class Player extends Entity {
         };
 
         // ========================= Player Combat Actions ========================= \\
-
         if (this.inCombat && this.attacking) {
-            // if (this.stamina >= PLAYER.STAMINA.PARRY && this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.attack.ONE)) {
-            //     this.scene.combatMachine.input('parryGuess', 'attack');
-            //     this.stateMachine.setState(States.PARRY);              
-            // };
-            // if (this.stamina >= PLAYER.STAMINA.PARRY && this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.posture.TWO)) {
-            //     this.scene.combatMachine.input('parryGuess', 'posture');
-            //     this.stateMachine.setState(States.PARRY);
-            // };
-            // if (this.stamina >= PLAYER.STAMINA.PARRY && this.movementClear() && this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.roll.THREE)) {
-            //     this.scene.combatMachine.input('parryGuess', 'roll');
-            //     this.stateMachine.setState(States.PARRY);
-            // };
-        
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.attack.ONE) && this.stamina >= PLAYER.STAMINA.ATTACK && this.canSwing) {
                 this.stateMachine.setState(States.ATTACK);
             };
@@ -3205,45 +3195,9 @@ export default class Player extends Entity {
                 this.scene.combatMachine.input('parryGuess', 'parry');
                 this.stateMachine.setState(States.PARRY);
             };
-            // if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.snare.V) && this.rootCooldown === 0) {
-            //     this.scene.root();
-            //     this.setTimeEvent('rootCooldown', 6000);
-            //     // screenShake(this.scene);
-            // };
-            // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.snare.V) && this.snareCooldown === 0) {
-            //     this.scene.snare(this.attacking.enemyID);
-            //     this.setTimeEvent('snareCooldown', 6000);
-            // };
-            // if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.pray.R) && !this.isMoving && this.polymorphCooldown === 0) { // && this.polymorphCooldown === 0
-            //     this.stateMachine.setState(States.POLYMORPH);
-            // };
-            // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.pray.R) && this.invokeCooldown === 0) {
-            //     if (this.scene.state.playerBlessing === '') return;
-            //     this.setTimeEvent('invokeCooldown');
-            //     this.stateMachine.setState(States.INVOKE);
-            // };
-            // if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.consume.F) && this.stamina >= PLAYER.STAMINA.TSHAERAL && this.tshaeralCooldown === 0) { // this.tshaeralCooldown === 0
-            //     this.stateMachine.setState(States.TSHAERAL);
-            //     this.setTimeEvent('tshaeralCooldown', 15000);
-            //     this.scene.time.addEvent({
-            //         delay: 2000,
-            //         callback: () => {
-            //             this.isTshaering = false;
-            //         },
-            //         callbackScope: this,
-            //         loop: false,
-            //     });
-            // };
-            // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.consume.F)) {
-            //     if (this.scene.state.playerEffects.length === 0) return;
-            //     this.isConsuming = true;
-            //     this.scene.combatMachine.action({ type: 'Consume', data: this.scene.state.playerEffects });
-            //     // screenShake(this.scene);
-            // };
         };
 
         // ========================= Player Movement Actions ========================= \\
-
         if (Phaser.Input.Keyboard.JustDown(this.inputKeys.roll.THREE) && this.stamina >= PLAYER.STAMINA.ROLL && this.movementClear()) {
             this.stateMachine.setState(States.ROLL);
         };
@@ -3253,22 +3207,6 @@ export default class Player extends Entity {
         };
 
         // ========================= Player Utility Actions ========================= \\
-
-        // if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.stalwart.G)) {
-        //     this.scene.caerenic();
-        // };
-
-        // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.stalwart.G)) {
-        //     this.scene.stalwart();
-        // }; 
-
-        // if (this.inputKeys.shift.SHIFT.isDown && Phaser.Input.Keyboard.JustDown(this.inputKeys.firewater.T)) {
-        //     EventBus.emit('update-stealth');
-        // };
-
-        // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.firewater.T)) {
-        //     this.stateMachine.setState(States.HEALING);
-        // };
     };
 
     handleAnimations = () => {
@@ -3315,7 +3253,6 @@ export default class Player extends Entity {
         };
         
         // ========================= Player Animation Positioning ========================= \\
-
         this.spriteWeapon.setPosition(this.x, this.y);
         this.spriteShield.setPosition(this.x, this.y);
 
@@ -3331,8 +3268,8 @@ export default class Player extends Entity {
         };
         if (this.particleEffect) { 
             if (this.particleEffect.success) {
-                this.particleEffect.triggered = true;
                 this.particleEffect.success = false;
+                this.particleEffect.triggered = true;
                 this.playerActionSuccess();
             } else {
                 this.scene.particleManager.update(this, this.particleEffect);
@@ -3415,12 +3352,16 @@ export default class Player extends Entity {
 
         // =================== STRAFING ================== \\
 
-        if (this.inputKeys.strafe.E.isDown || this.strafingRight === true) {
-            this.playerVelocity.x = speed; // 1.75
+        if (this.inputKeys.strafe.E.isDown || (this.isStrafing === true && this.playerVelocity.x > 0)) {
+            // this.playerVelocity.x = speed; 
+            // this.playerVelocity.x += 0.1; 
+            speed += 0.1;
             if (!this.flipX) this.flipX = true;
         };
-        if (this.inputKeys.strafe.Q.isDown || this.strafingLeft === true) {
-            this.playerVelocity.x = -speed; // 1.75
+        if (this.inputKeys.strafe.Q.isDown || (this.isStrafing === true && this.playerVelocity.x < 0)) {
+            // this.playerVelocity.x = -speed;
+            // this.playerVelocity.x -= 0.1;
+            speed -= 0.1;    
             if (this.flipX) this.flipX = false;
         };
 
@@ -3449,15 +3390,14 @@ export default class Player extends Entity {
 
         // =================== VARIABLES IN MOTION ================== \\
 
-        if (this.inputKeys.strafe.E.isDown || this.inputKeys.strafe.Q.isDown 
-            || this.strafingLeft === true || this.strafingRight === true) {
-            // if (!this.spriteShield.visible && !this.isDodging && !this.isRolling) this.spriteShield.setVisible(true);
-            this.isStrafing = true;
-        } else if (this.isStrafing) {
-            this.isStrafing = false;
-            this.strafingLeft = false;
-            this.strafingRight = false;
-        };
+        // if (this.inputKeys.strafe.E.isDown || this.inputKeys.strafe.Q.isDown) {
+        //     // if (!this.spriteShield.visible && !this.isDodging && !this.isRolling) this.spriteShield.setVisible(true);
+        //     this.isStrafing = true;
+        // } else if (this.isStrafing) {
+        //     this.isStrafing = false;
+        //     this.strafingLeft = false;
+        //     this.strafingRight = false;
+        // };
         
         if (this.isAttacking || this.isParrying || this.isPosturing) speed += 1;
         

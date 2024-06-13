@@ -30,7 +30,7 @@ const DAMAGE = [
     'Wind', 
 ];
 const NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-const ATTACKS = ['Attack', 'Posture', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'rolls', 'postures', 'parries'];
+const ATTACKS = ['Attack', 'Posture', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'rolls', 'postures', 'parries', 'parried', 'rolled', 'attacked', 'defend', 'postured'];
 const CAST = ['confuse', 'confusing', 'fear', 'fearing', 'polymorph', 'polymorphs', 'polymorphing', 'slow', 'slowing', 'snare', 'snaring'];
 // const specials = ['Invocation', 'Tendrils', 'Hush', 'Tendril', 'hush', 'tshaer', 'sacrifice', 'suture'];
 const HUSH = ['Invocation', 'Hush', 'hush', 'sacrifice', 'shimmer', 'shimmers'];

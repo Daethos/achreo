@@ -31,7 +31,7 @@ export const PLAYER = {
     },
     STAMINA: {
         // Physical
-        ATTACK: 25,
+        ATTACK: 30,
         DODGE: 15, // 25
         PARRY: 15,
         POSTURE: 20,

@@ -27,6 +27,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         caerenic: boolean;
         stalwart: boolean;
         stealth: boolean;
+        strafe: boolean;
         minimap: boolean;
         pause: boolean;
         cursor: boolean;
@@ -54,6 +55,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             caerenic: false,
             stalwart: false,
             stealth: false,
+            strafe: false,
             minimap: false,
             pause: false,
             cursor: false,
@@ -77,6 +79,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         let logs = this.scene.add.image(this.x, this.y, 'logs');
         let settings = this.scene.add.image(this.x, this.y, 'settings');
         let info = this.scene.add.image(this.x, this.y, 'info');
+        let strafe = this.scene.add.image(this.x, this.y, 'strafe');
         this.bar.push(info);
         this.bar.push(settings);
         this.bar.push(logs);
@@ -103,6 +106,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             });
         });
 
+        this.stances.push(strafe);
         this.stances.push(caerenic);
         this.stances.push(stalwart);
         this.stances.push(stealth);
@@ -294,9 +298,12 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                         this.switches.caerenic = !this.switches.caerenic;
                         EventBus.emit('update-caerenic');                
                         break; 
+                    case 'strafe':
+                        this.switches.strafe = !this.switches.strafe;
+                        this.scene.player.isStrafing = this.switches.strafe;
+                        break;
                     default:
                         break;
-                        
                 };
             };
             if (this.switches[button.texture.key as keyof typeof this.switches] === true) {

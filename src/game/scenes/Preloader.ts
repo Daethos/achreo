@@ -107,6 +107,7 @@ export class Preloader extends Scene {
         this.load.image('minimap', '../assets/images/minimap.png');
         this.load.image('pause', '../assets/images/pause.png');
         this.load.image('stealth', '../assets/images/stealth.png');
+        this.load.image('strafe', '../assets/images/strafe.png');
         this.load.image('info', '../assets/images/info.png');
         this.load.image('settings', '../assets/images/settings.png');
         this.load.image('logs', '../assets/images/logs.png');

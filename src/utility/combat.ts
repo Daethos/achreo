@@ -3,6 +3,21 @@ import Equipment from "../models/equipment";
 import { Combat } from "../stores/combat";
 import StatusEffect from "./prayer";
 
+const ATTACKS = {
+    attack: 'attack',
+    posture: 'posture against',
+    roll: 'roll into',
+    parry: 'parry',
+
+};
+
+const ENEMY_ATTACKS = {
+    attack: 'attacks',
+    posture: 'postures against',
+    roll: 'rolls into',
+    parry: 'parries',
+};
+
 export type CombatAttributes = {
     rawConstitution: number;
     rawStrength: number;
@@ -1117,7 +1132,7 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
     };
     
     combat.computerActionDescription = 
-        `${computer?.name} dual-wield attacks you with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedComputerDamage)} ${combat.computerDamageType} and ${weapons[1].damageType?.[0] ? weapons[1].damageType[0] : ''}${weapons[1]?.damageType?.[1] ? ' / ' + weapons[1].damageType?.[1] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'Damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'Damage (Partial Crit)' : combat.computerGlancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `${computer?.name} dual-wield ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedComputerDamage)} ${combat.computerDamageType} and ${weapons[1].damageType?.[0] ? weapons[1].damageType[0] : ''}${weapons[1]?.damageType?.[1] ? ' / ' + weapons[1].damageType?.[1] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'damage (Partial Crit)' : combat.computerGlancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
     
     return combat;
 };
@@ -1141,7 +1156,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
             if (combat.computerWeapons[0].attackType === 'Physical') {
                 if (combat.computer?.mastery === 'agility' || combat.computer?.mastery === 'constitution') {
                     if (combat.computerAttributes?.totalAgility as number + combat.computerWeapons[0].agility + combat.computerWeapons[1].agility >= 50) {
-                        if (combat.computerWeapons[1].grip === 'One Hand') { // If you're Focusing Attack + 1h + Agi Mastery + 1h in Second Slot
+                        if (combat.computerWeapons[1].grip === 'One Hand') { // If you're Focusing attack + 1h + Agi Mastery + 1h in Second Slot
                            combat.computerDualWielding = true;
                             computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
                             return combat;
@@ -1301,7 +1316,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
 
 
     combat.computerActionDescription = 
-        `${combat.computer?.name} attacks you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? 'Damage (Critical)' : combat.computerGlancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `${combat.computer?.name} ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? 'damage (Critical)' : combat.computerGlancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
 
     if (combat.newPlayerHealth <= 0) {
         if (combat.playerEffects.find(effect => effect.prayer === 'Denial')) {
@@ -1337,10 +1352,10 @@ function computerRollCompiler(combat: Combat, playerAction: string, computerActi
     };
     if (computerRoll > rollCatch) {
         combat.computerRollSuccess = true;
-        combat.computerSpecialDescription = `${combat.computer?.name} successfully rolls against you, avoiding your ${playerAction === 'attack' ? 'Focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } Attack.`
+        combat.computerSpecialDescription = `${combat.computer?.name} successfully rolls against you, avoiding your ${playerAction === 'attack' ? 'focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack.`
         computerAttackCompiler(combat, computerAction);
     } else {
-        combat.computerSpecialDescription = `${combat.computer?.name} fails to roll against your ${  playerAction === 'attack' ? 'Focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } Attack.`
+        combat.computerSpecialDescription = `${combat.computer?.name} fails to roll against your ${  playerAction === 'attack' ? 'focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack.`
         return combat;
     };
     return combat;
@@ -1466,7 +1481,7 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     // ==================== STATISTIC LOGIC ====================
     
     combat.playerActionDescription = 
-        `You dual-wield ${combat.action} ${computer?.name} with ${weapons[0]?.name} and ${weapons[1]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} and ${weapons[1]?.damageType?.[0] ? weapons[1]?.damageType?.[0] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'Damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'Damage (Partial Crit)' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `You dual-wield ${combat.action} ${computer?.name} with ${weapons[0]?.name} and ${weapons[1]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} and ${weapons[1]?.damageType?.[0] ? weapons[1]?.damageType?.[0] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'damage (Partial Crit)' : combat.glancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
         
     return combat;
 };
@@ -1486,13 +1501,13 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
         computerMagicalDefenseMultiplier = 1 - (combat.computerDefense?.magicalPosture as number / 100);
     };
 
-    // This is for the Focused Attack Action i.e. you chose to Attack over adding a defensive component
+    // This is for the focused attack Action i.e. you chose to attack over adding a defensive component
     if (playerAction === 'attack' || playerAction === 'arc' || playerAction === 'storm' || playerAction === 'writhe') {
         if (combat.weapons[0]?.grip === 'One Hand') {
             if (combat.weapons[0]?.attackType === 'Physical') {
                 if (combat.player?.mastery === 'agility' || combat.player?.mastery === 'constitution') {
                     if (combat.playerAttributes?.totalAgility as number + combat.weapons[0]?.agility + (combat.weapons[1]?.agility as number) >= 50) {
-                        if (combat.weapons[1]?.grip === 'One Hand') { // If you're Focusing Attack + 1h + Agi Mastery + 1h in Second Slot
+                        if (combat.weapons[1]?.grip === 'One Hand') { // If you're Focusing attack + 1h + Agi Mastery + 1h in Second Slot
                             combat.dualWielding = true;
                             dualWieldCompiler(combat);
                             return combat;
@@ -1597,11 +1612,6 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
         };
     };
 
-    if (playerAction === 'dodge') {
-        playerPhysicalDamage *= 0.9;
-        playerMagicalDamage *= 0.9;
-    };
-
     if (playerAction === 'roll' ) {
         if (combat.rollSuccess) {
             playerPhysicalDamage *= 1.15;
@@ -1657,7 +1667,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     // ==================== STATISTIC LOGIC ====================
 
     combat.playerActionDescription = 
-        `You ${playerAction} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(playerTotalDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'Damage (Critical)' : combat.glancingBlow === true ? 'Damage (Glancing)' : 'Damage'}.`    
+        `You ${playerAction} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(playerTotalDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'damage (Critical)' : combat.glancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
 
     if (combat.newComputerHealth <= 0) {
         combat.newComputerHealth = 0;
@@ -1682,11 +1692,11 @@ function playerRollCompiler(combat: Combat, playerAction: string, computerAction
     if (playerRoll > rollCatch) {
         combat.rollSuccess = true;
         combat.playerSpecialDescription = 
-            `You successfully roll against ${combat.computer?.name}, avoiding their ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack.`;
+            `You successfully roll against ${combat.computer?.name}, avoiding their ${ computerAction === 'attack' ? 'focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`;
         attackCompiler(combat, playerAction);
     } else {
         combat.playerSpecialDescription =
-        `You failed to roll against ${combat.computer?.name}'s ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack.`
+        `You failed to roll against ${combat.computer?.name}'s ${ computerAction === 'attack' ? 'focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`
          
     };
     return combat;
@@ -1713,38 +1723,38 @@ function doubleRollCompiler(combat: Combat, playerInitiative: number, computerIn
     if (playerInitiative > computerInitiative) { // You have Higher Initiative
         if (playerRoll > rollCatch) { // The Player Succeeds the Roll
             combat.playerSpecialDescription = 
-                `You successfully roll against ${combat.computer?.name}, avoiding their ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
+                `You successfully roll against ${combat.computer?.name}, avoiding their ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
             attackCompiler(combat, playerAction);
         } else if (computerRoll > rollCatch) { // The Player Fails the Roll and the Computer Succeeds
             combat.playerSpecialDescription = 
-                `You failed to roll against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
+                `You failed to roll against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
             combat.computerSpecialDescription = 
-                `${combat.computer?.name} successfully rolls against you, avoiding your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
+                `${combat.computer?.name} successfully rolls against you, avoiding your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} attack`;
             computerAttackCompiler(combat, computerAction);
         } else { // Neither Player nor Computer Succeed
             combat.playerSpecialDescription = 
-                `You failed to roll against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
+                `You failed to roll against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
             combat.computerSpecialDescription = 
-                `${combat.computer?.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
+                `${combat.computer?.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} attack`;
             attackCompiler(combat, playerAction);
             computerAttackCompiler(combat, computerAction);
         }
     } else { // The Computer has Higher Initiative
         if (computerRoll > rollCatch) { // The Computer Succeeds the Roll
             combat.computerSpecialDescription = 
-                `${combat.computer?.name} successfully rolls against you, avoiding your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
+                `${combat.computer?.name} successfully rolls against you, avoiding your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} attack`;
             computerAttackCompiler(combat, computerAction);
         } else if (playerRoll > rollCatch) { // The Computer Fails the Roll and the Player Succeeds
             combat.computerSpecialDescription = 
-                `${combat.computer?.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
+                `${combat.computer?.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} attack`;
             combat.playerSpecialDescription = 
-                `You successfully roll against ${combat.computer?.name}, avoiding their ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
+                `You successfully roll against ${combat.computer?.name}, avoiding their ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
             attackCompiler(combat, playerAction);
         } else { // Neither Computer nor Player Succeed
             combat.computerSpecialDescription = 
-                `${combat.computer?.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} Attack`;
+                `${combat.computer?.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} attack`;
             combat.playerSpecialDescription = 
-                `You failed to roll against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} Attack`;
+                `You failed to roll against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
             computerAttackCompiler(combat, computerAction);
             attackCompiler(combat, playerAction);
         };
@@ -1795,13 +1805,13 @@ function actionSplitter(combat: Combat): Combat {
     newData.playerStartDescription = 
         `You attempt to ${playerAction === '' ? 'defend' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1)} against ${newData.computer.name}.`
     
-    // If both Player and Computer Parry -> Parry [Fastest Resolution]
+    // If both Player and Computer parry -> parry [Fastest Resolution]
     if (playerAction === 'parry' && computerAction === 'parry') { // This is if PARRY: 'ACTION' Is the Same for Both
         if (playerParry === computerParry && playerParry === 'parry') {
             if (playerInitiative > computerInitiative) {
                 newData.parrySuccess = true;
                 newData.playerSpecialDescription = 
-                    `You successfully Parried ${newData.computer.name}'s Parry-Parry! Absolutely Brutal`;
+                    `You successfully parried ${newData.computer.name}'s parry-parry! Absolutely Brutal!`;
                 attackCompiler(newData, playerAction);
                 faithCompiler(newData); 
                 // statusEffectCheck(newData);
@@ -1811,7 +1821,7 @@ function actionSplitter(combat: Combat): Combat {
             } else {
                 newData.computerParrySuccess = true;
                 newData.computerSpecialDescription = 
-                    `${newData.computer.name} successfully Parried your Parry-Parry! Absolutely Brutal`
+                    `${newData.computer.name} successfully parried your parry-parry! Absolutely Brutal!`
                 computerAttackCompiler(newData, computerAction);
                 faithCompiler(newData);
 
@@ -1825,7 +1835,7 @@ function actionSplitter(combat: Combat): Combat {
         if (playerParry === computerAction && computerParry !== playerAction) {
             newData.parrySuccess = true;
             newData.playerSpecialDescription = 
-                `You successfully Parried ${newData.computer.name}'s Parry-${computerParry.charAt(0).toUpperCase() + computerParry.slice(1)}! Absolutely Brutal`
+                `You successfully parried ${newData.computer.name}'s parry-${computerParry.charAt(0).toUpperCase() + computerParry.slice(1)}! Absolutely Brutal!`
             attackCompiler(newData, playerAction)
             faithCompiler(newData);
             // statusEffectCheck(newData);
@@ -1838,7 +1848,7 @@ function actionSplitter(combat: Combat): Combat {
         if (computerParry === playerAction && playerParry !== computerAction) {
             newData.computerParrySuccess = true;
             newData.computerSpecialDescription = 
-                `${newData.computer.name} successfully Parried your Parry-${playerParry.charAt(0).toUpperCase() + playerParry.slice(1)}! Absolutely Brutal`
+                `${newData.computer.name} successfully parried your parry-${playerParry.charAt(0).toUpperCase() + playerParry.slice(1)}! Absolutely Brutal!`
             computerAttackCompiler(newData, computerAction);
             faithCompiler(newData);
             // statusEffectCheck(newData);
@@ -1849,9 +1859,9 @@ function actionSplitter(combat: Combat): Combat {
     
         if (playerParry !== computerAction && computerParry !== playerAction) {
             newData.playerSpecialDescription = 
-                `You failed to Parry ${newData.computer.name}'s Parry! Heartbreaking`
+                `You failed to parry ${newData.computer.name}'s parry! Heartbreaking!`
             newData.computerSpecialDescription = 
-                `${newData.computer.name} fails to Parry your Parry! Heartbreaking`
+                `${newData.computer.name} fails to parry your parry! Heartbreaking!`
                 if (playerInitiative > computerInitiative) {
                     attackCompiler(newData, playerAction);
                     computerAttackCompiler(newData, computerAction);
@@ -1866,7 +1876,7 @@ function actionSplitter(combat: Combat): Combat {
         if (playerParry === computerAction) {
             newData.parrySuccess = true;
             newData.playerSpecialDescription = 
-                `You successfully Parried ${newData.computer.name}'s ${ newData.computerAction === 'attack' ? 'Focused' : newData.computerAction.charAt(0).toUpperCase() + newData.computerAction.slice(1) } Attack.`
+                `You successfully parried ${newData.computer.name}'s ${ newData.computerAction === 'attack' ? 'focused' : newData.computerAction.charAt(0).toUpperCase() + newData.computerAction.slice(1) } attack.`
             attackCompiler(newData, playerAction);
             faithCompiler(newData);
             // statusEffectCheck(newData);
@@ -1875,7 +1885,7 @@ function actionSplitter(combat: Combat): Combat {
             return newData;
         } else {
             newData.playerSpecialDescription = 
-                `You failed to Parry ${newData.computer.name}'s ${ newData.computerAction === 'attack' ? 'Focused' : newData.computerAction.charAt(0).toUpperCase() + newData.computerAction.slice(1) } Attack. Heartbreaking!`
+                `You failed to parry ${newData.computer.name}'s ${ newData.computerAction === 'attack' ? 'focused' : newData.computerAction.charAt(0).toUpperCase() + newData.computerAction.slice(1) } attack. Heartbreaking!`
         };
     };
 
@@ -1883,7 +1893,7 @@ function actionSplitter(combat: Combat): Combat {
         if (computerParry === playerAction) {
             newData.computerParrySuccess = true;
             newData.computerSpecialDescription = 
-                `${newData.computer.name} successfully Parried your ${ newData.action === 'attack' ? 'Focused' : newData.action.charAt(0).toUpperCase() + newData.action.slice(1) } Attack.`
+                `${newData.computer.name} successfully parried your ${ newData.action === 'attack' ? 'focused' : newData.action.charAt(0).toUpperCase() + newData.action.slice(1) } attack.`
             computerAttackCompiler(newData, computerAction);
             faithCompiler(newData);
             // statusEffectCheck(newData);
@@ -1892,25 +1902,25 @@ function actionSplitter(combat: Combat): Combat {
             return newData;
         } else {
             newData.computerSpecialDescription = 
-                `${newData.computer.name} fails to Parry your ${ newData.action === 'attack' ? 'Focused' : newData.action.charAt(0).toUpperCase() + newData.action.slice(1) } Attack. Heartbreaking!`
+                `${newData.computer.name} fails to parry your ${ newData.action === 'attack' ? 'focused' : newData.action.charAt(0).toUpperCase() + newData.action.slice(1) } attack. Heartbreaking!`
         };
     };
     
     if (playerAction === 'dodge' && computerAction === 'dodge') { // If both choose Dodge
         if (playerInitiative > computerInitiative) {
             newData.playerSpecialDescription = 
-                `You successfully Dodge ${newData.computer.name}'s ${  newData.computerAction === 'attack' ? 'Focused' : newData.computerAction.charAt(0).toUpperCase() + newData.computerAction.slice(1) } Attack`
+                `You successfully Dodge ${newData.computer.name}'s ${  newData.computerAction === 'attack' ? 'focused' : newData.computerAction.charAt(0).toUpperCase() + newData.computerAction.slice(1) } attack`
             attackCompiler(newData, playerAction);
         } else {
-            `${newData.computer.name} successfully Dodges your ${  newData.action === 'attack' ? 'Focused' : newData.action.charAt(0).toUpperCase() + newData.action.slice(1) } Attack`
+            `${newData.computer.name} successfully Dodges your ${  newData.action === 'attack' ? 'focused' : newData.action.charAt(0).toUpperCase() + newData.action.slice(1) } attack`
             computerAttackCompiler(newData, computerAction);
         };
     };
 
-    // If the Player Dodges and the Computer does not *Parry or Dodge  *Checked for success
+    // If the Player Dodges and the Computer does not *parry or Dodge  *Checked for success
     if (playerAction === 'dodge' && computerAction !== 'dodge') {
         newData.playerSpecialDescription = 
-            `You successfully Dodge ${newData.computer.name}'s ${ newData.computerAction === 'attack' ? 'Focused' : newData.computerAction.charAt(0).toUpperCase() + newData.computerAction.slice(1) } Attack`
+            `You successfully Dodge ${newData.computer.name}'s ${ newData.computerAction === 'attack' ? 'focused' : newData.computerAction.charAt(0).toUpperCase() + newData.computerAction.slice(1) } attack`
         attackCompiler(newData, playerAction);
         faithCompiler(newData);
         // statusEffectCheck(newData);
@@ -1919,9 +1929,9 @@ function actionSplitter(combat: Combat): Combat {
         return newData;
     };
 
-    // If the Computer Dodges and the Player does not *Parry or Dodge *Checked for success
+    // If the Computer Dodges and the Player does not *parry or Dodge *Checked for success
     if (computerAction === 'dodge' && playerAction !== 'dodge') {
-        `${newData.computer.name} successfully Dodges your ${ newData.action === 'attack' ? 'Focused' : newData.action.charAt(0).toUpperCase() + newData.action.slice(1) } Attack`
+        `${newData.computer.name} successfully Dodges your ${ newData.action === 'attack' ? 'focused' : newData.action.charAt(0).toUpperCase() + newData.action.slice(1) } attack`
         computerAttackCompiler(newData, computerAction);
         faithCompiler(newData);
         // statusEffectCheck(newData);
@@ -1956,7 +1966,7 @@ function actionSplitter(combat: Combat): Combat {
         };
     };
 
-    if (playerAction === 'attack' || playerAction === 'posture' || computerAction === 'attack' || computerAction === 'posture') { // If both choose Attack
+    if (playerAction === 'attack' || playerAction === 'posture' || computerAction === 'attack' || computerAction === 'posture') { // If both choose attack
         if (playerInitiative > computerInitiative) {
             if (playerAction !== '') attackCompiler(newData, playerAction);
             if (computerAction !== '') computerAttackCompiler(newData, computerAction);
@@ -1992,6 +2002,14 @@ function computerWeaponMaker(combat: Combat): Combat {
     let prayers = ['Buff', 'Damage', 'Debuff', 'Heal'];
     let newPrayer = Math.floor(Math.random() * prayers.length);
     combat.computerBlessing = prayers[newPrayer];
+
+    const change = Math.floor(Math.random() * 101);
+    if (change < 50) {
+        combat.computerWeapons = [combat.computerWeapons[1], combat.computerWeapons[2], combat.computerWeapons[0]];
+        combat.computerDamageType = combat.computerWeapons[0]?.damageType?.[0] as string;
+        return combat;
+    };
+    
 
     let defenseTypes: any = {
         "Leather-Cloth": 0,
@@ -2083,10 +2101,10 @@ function dualActionSplitter(combat: Combat): Combat {
         if (playerParry === computerParry && playerParry === 'parry') {
             if (playerInitiative > computerInitiative) {
                 newCombat.parrySuccess = true;
-                newCombat.playerSpecialDescription = `You successfully Parried ${newCombat.computer.name}'s Parry-Parry! Absolutely Brutal`;
+                newCombat.playerSpecialDescription = `You successfully parried ${newCombat.computer.name}'s parry-parry! Absolutely Brutal`;
             } else {
                 newCombat.computerParrySuccess = true;
-                newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully Parried your Parry-Parry! Absolutely Brutal`; 
+                newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully parried your parry-parry! Absolutely Brutal`; 
             };
             return newCombat;
         };
@@ -2094,13 +2112,13 @@ function dualActionSplitter(combat: Combat): Combat {
 
     if (playerAction === 'parry' && computerAction !== 'parry') {
         newCombat.parrySuccess = true;
-        newCombat.playerSpecialDescription = `You successfully Parried ${newCombat.computer.name}'s ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack.`;
+        newCombat.playerSpecialDescription = `You successfully parried ${newCombat.computer.name}'s ${ computerAction === 'attack' ? 'focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`;
         return newCombat;
     };
 
     if (computerAction === 'parry' && playerAction !== 'parry') {
         newCombat.computerParrySuccess = true;
-        newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully Parried your ${ newCombat.action === 'attack' ? 'Focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } Attack.`;
+        newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully parried your ${ newCombat.action === 'attack' ? 'focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack.`;
         return newCombat;    
     };
 
@@ -2111,28 +2129,28 @@ function dualActionSplitter(combat: Combat): Combat {
     //     if (playerParry === computerParry && playerParry === 'parry') {
     //         if (playerInitiative > computerInitiative) {
     //             newCombat.parrySuccess = true;
-    //             newCombat.playerSpecialDescription = `You successfully Parried ${newCombat.computer.name}'s Parry-Parry! Absolutely Brutal`;
+    //             newCombat.playerSpecialDescription = `You successfully parried ${newCombat.computer.name}'s parry-parry! Absolutely Brutal`;
     //         } else {
     //             newCombat.computerParrySuccess = true;
-    //             newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully Parried your Parry-Parry! Absolutely Brutal`; 
+    //             newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully parried your parry-parry! Absolutely Brutal`; 
     //         };
     //         return newCombat;
     //     };
     //     if (playerParry === computerAction && computerParry !== playerAction) {
     //         newCombat.parrySuccess = true;
-    //         newCombat.playerSpecialDescription = `You successfully Parried ${newCombat.computer.name}'s Parry-${computerParry.charAt(0).toUpperCase() + computerParry.slice(1)}! Absolutely Brutal`;
+    //         newCombat.playerSpecialDescription = `You successfully parried ${newCombat.computer.name}'s parry-${computerParry.charAt(0).toUpperCase() + computerParry.slice(1)}! Absolutely Brutal`;
     //         return newCombat; 
     //     };
     
     //     if (computerParry === playerAction && playerParry !== computerAction) {
     //         newCombat.computerParrySuccess = true;
-    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully Parried your Parry-${playerParry.charAt(0).toUpperCase() + playerParry.slice(1)}! Absolutely Brutal`;
+    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully parried your parry-${playerParry.charAt(0).toUpperCase() + playerParry.slice(1)}! Absolutely Brutal`;
     //         return newCombat; 
     //     };
     
     //     if (playerParry !== computerAction && computerParry !== playerAction) {
-    //         newCombat.playerSpecialDescription = `You failed to Parry ${newCombat.computer.name}'s Parry! Heartbreaking`;
-    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} fails to Parry your Parry! Heartbreaking`;
+    //         newCombat.playerSpecialDescription = `You failed to parry ${newCombat.computer.name}'s parry! Heartbreaking`;
+    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} fails to parry your parry! Heartbreaking`;
     //         return newCombat;
     //     };
     // };
@@ -2140,21 +2158,21 @@ function dualActionSplitter(combat: Combat): Combat {
     // if (playerAction === 'parry' && computerAction !== 'parry') {
     //     if (playerParry === computerAction) {
     //         newCombat.parrySuccess = true;
-    //         newCombat.playerSpecialDescription = `You successfully Parried ${newCombat.computer.name}'s ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack.`;
+    //         newCombat.playerSpecialDescription = `You successfully parried ${newCombat.computer.name}'s ${ computerAction === 'attack' ? 'focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`;
     //         return newCombat;
     //     } else {
     //         newCombat.playerSpecialDescription = 
-    //             `You failed to Parry ${newCombat.computer.name}'s ${ computerAction === 'attack' ? 'Focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } Attack. Heartbreaking!`;
+    //             `You failed to parry ${newCombat.computer.name}'s ${ computerAction === 'attack' ? 'focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack. Heartbreaking!`;
     //     };
     // };
 
     // if (computerAction === 'parry' && playerAction !== 'parry') {
     //     if (computerParry === playerAction) {
     //         newCombat.computerParrySuccess = true;
-    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully Parried your ${ newCombat.action === 'attack' ? 'Focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } Attack.`;
+    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully parried your ${ newCombat.action === 'attack' ? 'focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack.`;
     //         return newCombat;    
     //     } else {
-    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} fails to Parry your ${ playerAction === 'attack' ? 'Focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } Attack. Heartbreaking!`;
+    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} fails to parry your ${ playerAction === 'attack' ? 'focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack. Heartbreaking!`;
     //     };
     // };
 
@@ -2171,7 +2189,7 @@ function dualActionSplitter(combat: Combat): Combat {
         computerRollCompiler(newCombat, playerAction, computerAction);
     };
 
-    if (phaserSuccessConcerns(newCombat.parrySuccess, newCombat.rollSuccess, newCombat.computerParrySuccess, newCombat.computerRollSuccess) === false) { // If both choose Attack
+    if (phaserSuccessConcerns(newCombat.parrySuccess, newCombat.rollSuccess, newCombat.computerParrySuccess, newCombat.computerRollSuccess) === false) { // If both choose attack
         if (playerInitiative > computerInitiative) {
             if (phaserActionConcerns(newCombat.action)) attackCompiler(newCombat, playerAction);
             if (phaserActionConcerns(newCombat.computerAction)) computerAttackCompiler(newCombat, computerAction);
@@ -2343,7 +2361,7 @@ function newDataCompiler(combat: Combat): any {
         computerDefense: combat.computerDefense, // Posseses Base + Postured Defenses
         computerDefenseDefault: combat.computerDefenseDefault, // Possesses Base Defenses
         computerAction: combat.computerAction, // Action Chosen By Computer
-        computerParryGuess: combat.computerParryGuess, // Comp's Parry Guess if Action === 'Parry'
+        computerParryGuess: combat.computerParryGuess, // Comp's parry Guess if Action === 'parry'
         computerWeapons: combat.computerWeapons,  // All 3 Weapons
         computerWeaponOne: combat.computerWeaponOne, // Clean Slate of Weapon One
         computerWeaponTwo: combat.computerWeaponTwo, // Clean Slate of Weapon Two

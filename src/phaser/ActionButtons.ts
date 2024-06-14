@@ -154,7 +154,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             innerStrength,
             glowColor,
             intensity,
-            knockout: true
+            knockout: false
         });
     }; 
 
@@ -301,8 +301,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     default:
                         break;
                 };
-                this.setGlow(button.graphic, false, 'graphic', button.key, this.scene.settings.positions.specialButtons.border);
-                this.setGlow(button.border, false, 'border', button.key, this.scene.settings.positions.specialButtons.color);
+                this.setGlow(button.graphic, false, 'graphic', button.key, this.scene.settings.positions.specialButtons.color);
+                this.setGlow(button.border, false, 'border', button.key, this.scene.settings.positions.specialButtons.border);
             }
         });
     };

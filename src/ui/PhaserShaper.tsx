@@ -501,7 +501,6 @@ export function PhaserShaper({ settings }: IPhaserShape) {
             <h1 style={font('1.25em')}>Action Buttons</h1>
             <div style={font('1em')}>Border: ({NUMBERS[settings().positions.actionButtons.border as keyof typeof NUMBERS]})</div>
             <Form.Select onChange={(e) => handleButtonBorder(e.target.value, 'action')} style={{ margin: '3%' }} value={settings().positions.actionButtons.border}>
-                <option>Border Menu</option>
                 {Object.keys(COLORS).map((color: string) => {
                     return (
                         <option value={COLORS[color as keyof typeof COLORS]}>{color}</option>
@@ -510,7 +509,6 @@ export function PhaserShaper({ settings }: IPhaserShape) {
             </Form.Select>
             <div style={font('1em')}>Color: ({NUMBERS[settings().positions.actionButtons.color as keyof typeof NUMBERS]})</div>
             <Form.Select onChange={(e) => handleButtonColor(e.target.value, 'action')} style={{ margin: '3%' }} value={settings().positions.actionButtons.color}>
-                <option>Color Menu</option>
                 {Object.keys(COLORS).map((color: string) => {
                     return (
                         <option value={COLORS[color as keyof typeof COLORS]}>{color}</option>
@@ -559,7 +557,6 @@ export function PhaserShaper({ settings }: IPhaserShape) {
             <h1 style={font('1.25em')}>Special Buttons</h1>
             <div style={font('1em')}>Border: ({NUMBERS[settings().positions.specialButtons.border as keyof typeof NUMBERS]})</div>
             <Form.Select onChange={(e) => handleButtonBorder(e.target.value, 'special')} style={{ margin: '3%' }} value={settings().positions.specialButtons.border}>
-                <option>Border Menu</option>
                 {Object.keys(COLORS).map((color: string) => {
                     return (
                         <option value={COLORS[color as keyof typeof COLORS]}>{color}</option>
@@ -568,7 +565,6 @@ export function PhaserShaper({ settings }: IPhaserShape) {
             </Form.Select>
             <div style={font('1em')}>Color: ({NUMBERS[settings().positions.specialButtons.color as keyof typeof NUMBERS]})</div>
             <Form.Select onChange={(e) => handleButtonColor(e.target.value, 'special')} style={{ margin: '3%' }} value={settings().positions.specialButtons.color}>
-                <option>Color Menu</option>
                 {Object.keys(COLORS).map((color: string) => {
                     return (
                         <option value={COLORS[color as keyof typeof COLORS]}>{color}</option>

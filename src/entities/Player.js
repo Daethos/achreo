@@ -711,6 +711,10 @@ export default class Player extends Entity {
         };
     };
 
+    resist = () => {
+        this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Resisted', PLAYER.DURATIONS.TEXT, 'effect');  
+    };
+
     soundEffects(sfx) {
         try {
             const soundEffectMap = (type, weapon) => {
@@ -3373,6 +3377,7 @@ export default class Player extends Entity {
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.winningCombatText) this.winningCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this); 
+        if (this.resistCombatText) this.resistCombatText.update(this);
         this.weaponRotation('player', this.currentTarget);
     };
 

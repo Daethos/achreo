@@ -113,6 +113,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.scrollingCombatText = undefined;
         this.winningCombatText = undefined;
         this.specialCombatText = undefined;
+        this.resistCombatText = undefined;
 
         this.path = [];
         this.nextPoint = {};
@@ -146,7 +147,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     startingSpeed = (entity) => {
-        let speed = (this.name === 'player' ? 1.5: 1.5); // PLAYER.SPEED.INITIAL
+        let speed = (this.name === 'player' ? 1.5: 1.65); // PLAYER.SPEED.INITIAL
         const helmet = entity.helmet.type;
         const chest = entity.chest.type;
         const legs = entity.legs.type;
@@ -463,11 +464,12 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     checkPlayerResist = () => {
         const chance = Math.random() * 101;
         const resist = this.scene.state.playerDefense.magicalDefenseModifier;
-        console.log(`%c Resist Chance: ${resist} --- Roll: ${chance}`, 'color: green');
+        // console.log(`%c Resist Chance: ${resist} --- Roll: ${chance}`, 'color: green');
+        
         if (chance > resist) {
             return true;
         } else {
-            this.scene.player.resistCombatText = new ScrollingCombatText(this.scene, this.scene.player.x, this.scene.player.y, 'Resisted', 1000, 'effect');
+            this.scene.player.resist();
             return false;
         };
     };

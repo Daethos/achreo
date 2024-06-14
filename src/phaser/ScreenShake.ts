@@ -17,7 +17,11 @@ export function screenShake(scene: Phaser.Scene, duration = 96, intensity = 0.00
         };
     }, 1);
 };
+
+export function sprint(scene: Phaser.Scene, duration = 64, intensity = 0.0005) { // 48 || 0.0004
+    scene.cameras.main.shake(duration, intensity);
+};
  
-export function walk(scene: Phaser.Scene, duration = 48, intensity = 0.0004) { // 32 || 0.0003
+export function walk(scene: Phaser.Scene, duration = 32, intensity = 0.0003) { // 32 || 0.0003
     scene.cameras.main.shake(duration, intensity);
 };

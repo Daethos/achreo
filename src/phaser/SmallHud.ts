@@ -227,7 +227,6 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                         EventBus.emit('update-cursor');
                         break; 
                     case 'logs':
-                        this.switches.logs = !this.switches.logs;
                         EventBus.emit('action-button-sound');
                         EventBus.emit('show-combat'); // variable
                         break;
@@ -307,7 +306,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                 };
             };
             if (this.switches[button.texture.key as keyof typeof this.switches] === true) {
-                button.setBlendMode(Phaser.BlendModes.SCREEN);
+                button.setBlendMode(Phaser.BlendModes.ADD);
             } else {
                 button.setBlendMode(Phaser.BlendModes.NORMAL);    
             };

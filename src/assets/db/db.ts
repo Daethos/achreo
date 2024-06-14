@@ -234,7 +234,8 @@ export const getReputation = async (id: string) => {
 };
 
 export const updateReputation = async (reputation: Reputation) => {
-    await db.collection(REPUTATION).doc({ _id: reputation._id }).update(reputation);
+    const update = await db.collection(REPUTATION).doc({ _id: reputation._id }).update(reputation);
+    return update;
 };
 
 export const getSettings = async (id: string) => {

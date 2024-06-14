@@ -102,6 +102,7 @@ export interface Combat {
 
     combatRound: number;
     sessionRound: number;
+    blindStrike: boolean;
 
     actionData: string[];
     typeAttackData: string[];
@@ -229,6 +230,7 @@ export const initCombat: Combat = {
 
     combatRound: 0,
     sessionRound: 0,
+    blindStrike: false,
 
     actionData: [],
     typeAttackData: [],

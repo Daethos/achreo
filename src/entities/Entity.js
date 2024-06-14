@@ -1,4 +1,5 @@
 import Phaser from "phaser"; 
+import ScrollingCombatText from "../phaser/ScrollingCombatText";
 // import { screenShake } from "../phaser/ScreenShake"; 
 
 export const FRAME_COUNT = {
@@ -474,6 +475,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     hitBoxCheck = (target) => {
+        if (target.isDefeated === true) return;
         const xOffset = this.flipX ? 16 : -16;
         // let pointer = this.scene.add.graphics()
         //     .lineStyle(1, 0xFF0000, 1)
@@ -483,16 +485,17 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             // pointer.clear();
             // pointer.strokeRect(target.x + xOffset, target.y + i, 1, 1);
             if (this.weaponHitbox.getBounds().contains(target.x + xOffset, target.y + i)) {
-                // console.log('Hitbox Hit!', i);
+                console.log('Hitbox Hit!', i, 'Target:', target.ascean?.name);
                 this.attackedTarget = target;
                 this.actionSuccess = true;
                 return;
             };
         };
+        console.log('Hitbox Missed!', 'Target:', target.ascean?.name);
     };
 
     checkActionSuccess = (entity, target) => {
-        if (this.inCombat === false && this.isStealthing === false) return;
+        // if (this.isStealthing === false) return; // this.inCombat === false && 
         if (entity === 'player' && !this.isStorming && !this.isArcing) {
             if (this.flipX) {
                 this.weaponHitbox.setAngle(270);
@@ -501,7 +504,17 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
             this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
             this.weaponHitbox.y = this.y - 8;
-            if (target === undefined) return;
+            if (target === undefined) {
+                console.log('SO you do not have a target. Mission, run through your targets array with this.hitBoxCheck.');
+                if (this.targets.length === 0) {
+                    console.log('You have no targets to run through, returning.');
+                    return;
+                };
+                for (let i = 0; i < this.targets.length; i++) {
+                    this.hitBoxCheck(this.targets[i]);
+                };
+                return;
+            };
             this.hitBoxCheck(target);
         };
 
@@ -585,7 +598,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.frameCount += 1;
         } else if (this.isAttacking) {
             if (this.frameCount === FRAME_COUNT.ATTACK_LIVE) {
-                if (entity === 'player' && this.inCombat && this.isRanged) {
+                if (entity === 'player' && this.isRanged) { // && this.inCombat
                     if (this.hasMagic) this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.currentDamageType);
                     if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('attack', this, 'arrow');
                 };
@@ -594,9 +607,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('attack', this, 'arrow');
                 };
             };
-
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
-
             if ((entity === 'player' && this.hasBow) || (entity === 'enemy' && this.hasBow)) {
                 this.spriteWeapon.setDepth(this.depth + 1);
                 if (this.flipX) {
@@ -866,7 +877,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.frameCount += 1;
         } else if (this.isPosturing) {
             if (this.frameCount === FRAME_COUNT.POSTURE_LIVE) {
-                if (entity === 'player' && this.inCombat && this.isRanged) {
+                if (entity === 'player' && this.isRanged) { // && this.inCombat
                     if (this.hasMagic) this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.currentDamageType);
                     if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('posture', this, 'arrow');
                 };

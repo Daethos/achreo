@@ -34,9 +34,10 @@ export default function CombatSettings({ combat, game }: Props) {
         let newTypes = []; 
         for (let i = 0; i < types.length; i++) {
             newTypes.push(
-                <p style={{ color: borderColor(types[i]), display: 'inline-block', margin: '2%', 'text-shadow': '0.05em 0.05em 0.05em #fdf6d8' }}>
+                <p style={{ color: borderColor(types[i]), display: 'inline-block', margin: '0%', 'text-shadow': '0.065em 0.065em 0.065em #fdf6d8', 'font-size': '1.25em' }}>
                     {/* {types[i]}{' <-> '}{types[i] === types[types.length - 1] ? types[0] : ''} */}
-                    {types[i] !== types[types.length - 1] ? `${types[i]} <-> ${(i + 1) % 4 === 0 ? '\n\n' : ''}` : types[i]}
+                    {/* {types[i] !== types[types.length - 1] ? `-> ${types[i]} <- ${(i + 1) % 4 === 0 ? '\n\n' : ''}` : types[i]} */}
+                    {`-> ${types[i]} <- ${(i + 1) % 4 === 0 ? '\n\n' : ''}`}    
                 </p>
             );
         };
@@ -67,7 +68,7 @@ export default function CombatSettings({ combat, game }: Props) {
                 EventBus.emit('changePrayer', prayers[newIndex]);
             } else if (game().selectedHighlight === 'Damage') {
                 const index = direction === 'up' ? -1 : 1;
-                const newIndex = (game().selectedDamageTypeIndex + index + (combat()?.weapons?.[0]?.damageType?.length ?? 0)) % (combat()?.weapons?.[0]?.damageType?.length ?? 0);
+                const newIndex = (game().selectedDamageTypeIndex + index + (combat()?.weapons?.[0]?.damageType?.length ?? 0)) % (combat()?.weapons?.[0]?.damageType?.length ?? 0) as number;
                 
                 EventBus.emit('selectDamageType', { index: newIndex, highlight: 'Damage' });
                 EventBus.emit('changeDamageType', combat()?.weapons?.[0]?.damageType?.[newIndex]);
@@ -90,9 +91,9 @@ export default function CombatSettings({ combat, game }: Props) {
         };
     };
 
-    function buttonText(direction: string) {
-        return direction === 'up' ? 'Up' 
-        : direction === 'down' ? 'Down' 
+    function buttonText(direction: string, highlight: string | undefined) {
+        return direction === 'up' && highlight !== 'Weapon' ? 'Left' : direction === 'up' ? 'Up' 
+        : direction === 'down' && highlight !== 'Weapon' ? 'Right' : direction === 'down' ? 'Down' 
         : direction === 'left' ? `${highlightCycle[game().selectedHighlight as keyof typeof highlightCycle].prev}` 
         : `${highlightCycle[game().selectedHighlight as keyof typeof highlightCycle].next}`;
     };
@@ -104,11 +105,11 @@ export default function CombatSettings({ combat, game }: Props) {
             }: {
                 top: '70%', left: '10%'
         }}>
-            <div class='center shadow mt-5' style={{ display: 'flex', 'flex-direction': 'row', width: '100%', 'z-index': 1 }}>
+            <div class='center shadow' style={{ display: 'flex', 'flex-direction': 'row', 'margin-top': '1%', width: '100%', 'z-index': 1 }}>
             <For each={Buttons}>{((button) => {
                 return (
                     <button class='highlight gold' style={{ 'z-index': 1 }} onClick={() => handleButton(button.direction)}>
-                        {buttonText(button.direction)}
+                        {buttonText(button.direction, game().selectedHighlight)}
                     </button>
                 )
             })}</For>
@@ -130,7 +131,11 @@ export default function CombatSettings({ combat, game }: Props) {
                 </Match>
                 <Match when={game().selectedHighlight === 'Prayer'}>
                     <div class='center'>
-                        <p class='shadow' style={highlightStyle}>Prayer: {prayers[game().selectedPrayerIndex]}</p>
+                        <p class='shadow' style={highlightStyle}>Current Prayer: {prayers[game().selectedPrayerIndex]} 
+                            {/* <span style={{ 'font-size': '0.75em' }}>
+                                [Up: {game().selectedPrayerIndex + 1 === prayers.length ? prayers[0] : prayers[game().selectedPrayerIndex + 1]}] [Down: {prayers[game().selectedPrayerIndex - 1 < 0 ? prayers.length - 1 : game().selectedPrayerIndex - 1]}] 
+                            </span> */}
+                        </p>
                         <div style={optionStyle}>{mapTypes(prayers)}</div>
                     </div>
                 </Match>

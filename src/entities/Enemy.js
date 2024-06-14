@@ -5,9 +5,7 @@ import HealthBar from "../phaser/HealthBar";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import { EventBus } from "../game/EventBus";
 import { v4 as uuidv4 } from 'uuid';
-import { getRandomNumStr } from "../models/equipment";
 import { PLAYER } from "../utility/player";
-import { SPECIAL } from "../utility/abilities";
 import CastingBar from "../phaser/CastingBar";
 import AoE from "../phaser/AoE";
 import Bubble from "../phaser/Bubble";
@@ -531,11 +529,24 @@ export default class Enemy extends Entity {
         if (e.id === this.scene.state?.enemyID) {
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: e.health } });
         } else {
+            if (this.health > e.health) {
+                let damage = Math.round(this.health - e.health);
+                damage = e?.glancing === true ? `${damage} (Glancing)` : damage;
+                this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e?.critical);
+            } else if (this.health < e.health) {
+                let heal = Math.round(e.health - this.health);
+                this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, 1500, 'heal');
+            };
             this.health = e.health;
             this.healthbar.setValue(e.health);
             this.updateHealthBar(e.health);
             if (e.health <= 0) {
                 this.stateMachine.setState(States.DEFEATED);
+            };
+            const isNewEnemy = this.isNewEnemy(this.scene.player);
+            if (isNewEnemy === true) {
+                this.scene.player.targetEngagement(this.enemyID);
+                this.jumpIntoCombat();
             };
         };
     };
@@ -562,7 +573,6 @@ export default class Enemy extends Entity {
             damage = e.glancingBlow === true ? `${damage} (Glancing)` : damage;
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.criticalSuccess);
             // console.log(`%c ${e.player.name} Dealt ${damage} Damage To ${this.ascean.name}`, 'color: #00ff00')
-
             if (this.isConsumed === false && this.isHurt === false && this.isFeared === false && this.isSlowed === false) this.stateMachine.setState(States.HURT);
             if (this.currentRound !== e.combatRound) {
                 if (this.isPolymorphed === true) this.isPolymorphed = false;
@@ -691,7 +701,7 @@ export default class Enemy extends Entity {
                     this.touching = this.touching.filter((target) => target === other.gameObjectB);
                     if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
                         if (this.healthbar) this.healthbar.setVisible(false);
-                        if (this.isDefeated) {
+                        if (this.isDefeated === true) {
                             this.scene.showDialog(false);
                             this.stateMachine.setState(States.DEFEATED);
                         } else {
@@ -732,6 +742,9 @@ export default class Enemy extends Entity {
         if (this.healthbar) this.healthbar.setVisible(true);
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
         this.stateMachine.setState(States.CHASE); 
+        if (this.scene.player.isCombat === false) {
+            this.scene.player.targetEngagement(this.enemyID);
+        };
     };
 
     playerStatusCheck = (player) => {
@@ -2975,7 +2988,7 @@ export default class Enemy extends Entity {
             parryPosture: 25 + this.scene.state.parryPostureWeight,
             parryRoll: 25 + this.scene.state.parryRollWeight,
             rollRating: this.currentWeapon ? this.currentWeapon.roll : this.ascean.weaponOne.roll,
-            armorRating: (this.scene.state.computerDefense.physicalPosture + this.scene.state.computerDefense.magicalPosture)  /  4,
+            armorRating: (this.combatStats.defense.physicalPosture + this.combatStats.defense.magicalPosture)  /  4,
         };
         if (actionNumber > (100 - computerActions.attack) || target.isStunned) {
             computerAction = 'attack';

@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { Game } from '../game/scenes/Game';
 import { EventBus } from '../game/EventBus';
-import { PLAYER, staminaCheck } from '../utility/player';
+import { staminaCheck } from '../utility/player';
 
 const ACTIONS = [
     { ATTACK: 0x800080 }, // 0xFA0000 
@@ -34,10 +34,6 @@ const SETTINGS = {
     OPACITY: 0.2,
     BORDER_COLOR: 0xFDF6D8,
     BORDER_LINE: 3,
-    STRAFE_X_OFFSET: 1.7,
-    STRAFE_Y_OFFSET: 3,
-    STRAFE_X_SCALE: 2.75,
-    STRAFE_Y_SCALE: 1.5,
 };
 
 export type ActionButton = {
@@ -62,8 +58,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     private specialButtons: ActionButton[];
     private buttonWidth: number;
     private buttonHeight: number;
-    // private strafeLeft: ActionButton;
-    // private strafeRight: ActionButton;
 
     constructor(scene: Game) {
         super(scene);
@@ -113,11 +107,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
             button.graphic.fillStyle(scene.settings.positions.actionButtons.color, scene.settings.positions.actionButtons.opacity);
             button.graphic.fillCircle(buttonX, buttonY, button.width as number);
-            // button.graphic.setVisible(true);
             
             button.border.lineStyle(SETTINGS.BORDER_LINE, scene.settings.positions.actionButtons.border, scene.settings.positions.actionButtons.opacity);
             button.border.strokeCircle(buttonX, buttonY, button.width + 2 as number);
-            // button.border.setVisible(true);
             this.scaleButton(button, scene.settings.positions.actionButtons.width, scene.settings.positions.actionButtons.opacity, scene.settings.positions.actionButtons.border);
             button.graphic.setInteractive(new Phaser.Geom.Circle(
                 buttonX, buttonY, 
@@ -179,139 +171,16 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             this.specialButtons.push(button);
             this.add(button.border);
             this.add(button.graphic);
-        });
-
-
-        // let strafeLeft: ActionButton = {
-        //     key: 'strafe',
-        //     name: 'STRAFELEFT',
-        //     border: new Phaser.GameObjects.Graphics(scene),
-        //     graphic: new Phaser.GameObjects.Graphics(scene),
-        //     color: 0xFFD700,
-        //     current: 100,
-        //     total: 100,
-        //     x: -(this.centerX / SETTINGS.STRAFE_X_OFFSET),
-        //     y: this.centerY - (this.buttonHeight * SETTINGS.STRAFE_Y_OFFSET),
-        //     width: this.buttonWidth * SETTINGS.STRAFE_X_SCALE,
-        //     height: this.buttonHeight * SETTINGS.STRAFE_Y_SCALE,
-        //     circle: this.buttonWidth,
-        // };
-
-        // strafeLeft.graphic.fillStyle(strafeLeft.color, SETTINGS.OPACITY);
-        // // strafeLeft.graphic.fillCircle(strafeLeft.x, strafeLeft.y, strafeLeft.circle);
-        // strafeLeft.graphic.fillRoundedRect(
-        //     strafeLeft.x, 
-        //     strafeLeft.y, 
-        //     strafeLeft.width, 
-        //     strafeLeft.height);
-        // // strafeLeft.graphic.setVisible(true);
-        
-        // strafeLeft.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
-        // // strafeLeft.border.strokeCircle(strafeLeft.x, strafeLeft.y, strafeLeft.circle + 2);
-        // strafeLeft.border.strokeRoundedRect(
-        //     strafeLeft.x, 
-        //     strafeLeft.y, 
-        //     strafeLeft.width, 
-        //     strafeLeft.height);
-        
-        // strafeLeft.graphic.setInteractive(new Phaser.Geom.Rectangle(
-        //     strafeLeft.x, 
-        //     strafeLeft.y, 
-        //     strafeLeft.width, 
-        //     strafeLeft.height), Phaser.Geom.Rectangle.Contains)
-        // // strafeLeft.graphic.setInteractive(new Phaser.Geom.Circle(strafeLeft.x, strafeLeft.y, strafeLeft.circle), Phaser.Geom.Circle.Contains)
-        //         .on('pointerdown', function(_pointer: any, _localX: any, _localY: any, _event: any) {
-        //             console.log('Strafing Left - Pointer Down');
-        //             scene.player.strafingLeft = true;
-        //             scaleStrafe(strafeLeft, 1.1);
-        //         })
-        //         // .on('pointerover', function(_pointer: any, _localX: any, _localY: any, _event: any) {
-        //         //     console.log('Strafing Left - Pointer Over');
-        //         //     scene.player.strafingLeft = true;
-        //         //     scaleStrafe(strafeLeft, 1.1);
-        //         // })
-        //         .on('pointerdown', function(_pointer: any, _localX: any, _localY: any, _event: any) {
-        //             console.log('Strafing Left - Pointer Up');
-        //             scene.player.strafingLeft = false;
-        //             scaleStrafe(strafeLeft, 1);
-        //         });
-
-        // strafeLeft.graphic.setScrollFactor(0);
-        // strafeLeft.border.setScrollFactor(0);
-        // this.add(strafeLeft.graphic);
-        // this.add(strafeLeft.border);
-        // this.strafeLeft = strafeLeft;
-
-        // let strafeRight: ActionButton = {
-        //     key: 'strafe',
-        //     name: 'STRAFERIGHT',
-        //     border: new Phaser.GameObjects.Graphics(scene),
-        //     graphic: new Phaser.GameObjects.Graphics(scene),
-        //     color: 0xFFD700,
-        //     current: 100,
-        //     total: 100,
-        //     x: (this.centerX * SETTINGS.STRAFE_X_OFFSET) - (this.buttonWidth),
-        //     y: this.centerY - (this.buttonHeight * SETTINGS.STRAFE_Y_OFFSET),
-        //     width: this.buttonWidth * SETTINGS.STRAFE_X_SCALE,
-        //     height: this.buttonHeight * SETTINGS.STRAFE_Y_SCALE,
-        //     circle: this.buttonWidth,
-        // };
-
-        // strafeRight.graphic.fillStyle(strafeRight.color, SETTINGS.OPACITY);
-        // // strafeRight.graphic.fillCircle(strafeRight.x, strafeRight.y, strafeRight.circle);
-        // strafeRight.graphic.fillRoundedRect(
-        //     strafeRight.x, 
-        //     strafeRight.y, 
-        //     strafeRight.width as number,
-        //     strafeRight.height as number);
-        // // strafeRight.graphic.setVisible(true);
-
-        // strafeRight.border.lineStyle(3, SETTINGS.BORDER_COLOR, SETTINGS.OPACITY);
-        // // strafeRight.border.strokeCircle(strafeRight.x, strafeRight.y, strafeRight.circle + 2);
-        // strafeRight.border.strokeRoundedRect(
-        //     strafeRight.x, 
-        //     strafeRight.y, 
-        //     strafeRight.width as number, 
-        //     strafeRight.height as number);
-
-        // strafeRight.graphic.setInteractive(new Phaser.Geom.Rectangle(
-        //     strafeRight.x, 
-        //     strafeRight.y, 
-        //     strafeRight.width, 
-        //     strafeRight.height), Phaser.Geom.Rectangle.Contains)
-        // // strafeRight.graphic.setInteractive(new Phaser.Geom.Circle(strafeRight.x, strafeRight.y, strafeRight.circle), Phaser.Geom.Circle.Contains)
-        //         .on('pointerdown', function(_pointer: any, _localX: any, _localY: any, _event: any) {
-        //             console.log('Strafing Right - Pointer Down');
-        //             scene.player.strafingRight = true;
-        //             scaleStrafe(strafeRight, 1.1);    
-        //         })
-        //         // .on('pointerover', function(_pointer: any, _localX: any, _localY: any, _event: any) {
-        //         //     console.log('Strafing Right - Pointer Over');
-        //         //     scene.player.strafingRight = true;
-        //         //     scaleStrafe(strafeRight, 1.1);    
-        //         // })
-        //         .on('pointerdown', function(_pointer: any, _localX: any, _localY: any, _event: any) {
-        //             console.log('Strafing Right - Pointer Up');
-        //             scene.player.strafingRight = false;
-        //             scaleStrafe(strafeRight, 1);    
-        //         });
-
-        // strafeRight.graphic.setScrollFactor(0);
-        // strafeRight.border.setScrollFactor(0);
-        // this.add(strafeRight.graphic);
-        // this.add(strafeRight.border);
-        // this.strafeRight = strafeRight;
+        }); 
     };
 
     animateButton(button: ActionButton) {
-        // Scale up the button
         this.scene.tweens.add({
             targets: [button],
             scale: 1.25,
             duration: 150,
             yoyo: true,
             onStart: () => {
-                // Invert colors && Scale Up 10%
                 button.graphic.clear();
                 button.border.clear();
                 switch (button.key) {
@@ -332,7 +201,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 };
             },
             onComplete: () => {
-                // Revert colors
                 button.graphic.clear();
                 button.border.clear();
                 switch (button.key) {
@@ -356,12 +224,10 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 
     cooldownButton(button: ActionButton, cooldown: number) {
-        console.log('----- COOLDOWN BUTTON -----', cooldown, '----- COOLDOWN BUTTON -----');
         const type = button.key;
         const display = type === 'action' ? this.scene.settings.positions.actionButtons.display : this.scene.settings.positions.specialButtons.display;
         const spacing = type === 'action' ? this.scene.settings.positions.actionButtons.spacing : this.scene.settings.positions.specialButtons.spacing;
         const index = type === 'action' ? this.actionButtons.indexOf(button) : this.specialButtons.indexOf(button);
-
         const { buttonX, buttonY } = this.displayButton(
             display,
             spacing,
@@ -451,7 +317,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 buttonY = y - radius * Math.sin(angle); // Negative sign for Y to start from top
                 break;
         };
-        // console.log('----- NEW BUTTON X / Y -----' ,buttonX, buttonY, '----- NEW BUTTON X /Y -----')
         return { buttonX, buttonY };
     };
 
@@ -861,7 +726,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         switch (type) {
             case 'action': {
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
-                    // button.graphic.removeInteractive();
                     button.graphic.removeAllListeners();
                     button = { ...button, name: list[index].toUpperCase() as string };
                     this.setButtonInteractive(button);
@@ -871,7 +735,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             };
             case 'special': {
                 this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
-                    // button.graphic.removeInteractive();
                     button.graphic.removeAllListeners();
                     button = { ...button, name: list[index].toUpperCase() as string };
                     this.setButtonInteractive(button);
@@ -889,12 +752,10 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             button.graphic.clear();
             button.graphic.fillStyle(button.color, opacity);
             button.graphic.fillCircle(button.x, button.y, SETTINGS.BUTTON_WIDTH * scale * button.current / button.total);
-            // button.graphic.removeInteractive();
             button.border.clear();
             button.border.lineStyle(SETTINGS.BORDER_LINE, border, opacity);
             button.border.strokeCircle(button.x, button.y, (SETTINGS.BUTTON_WIDTH + 2) * scale * button.current / button.total);
             button.graphic.setInteractive();
-            // this.setButtonInteractive(button);
         } else {
             // button.graphic.fillStyle(0xFFC700, opacity);
             // button.border.clear();
@@ -912,20 +773,3 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         return button;
     };
 };
-
-// const scaleStrafe = (button: ActionButton, scale: number, opacity: number): void => {
-//     button.graphic.clear();
-//     button.graphic.fillStyle(button.color, opacity);
-//     button.graphic.fillRoundedRect(
-//         button.x, 
-//         button.y, 
-//         button.width * scale as number, 
-//         button.height * scale as number);
-//     button.border.clear();
-//     button.border.lineStyle(SETTINGS.BORDER_LINE, SETTINGS.BORDER_COLOR, opacity);
-//     button.border.strokeRoundedRect(
-//         button.x, 
-//         button.y, 
-//         button?.width * scale as number, 
-//         button?.height * scale as number);
-// };

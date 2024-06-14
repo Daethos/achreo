@@ -210,6 +210,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                         computerDamageType: damageType,
                         computerEffects: [],
                         enemyID: enemyID, // Was ''
+                        // blindStrike: blindStrike,
                     };
                     res = { ...combat(), ...playerData };
                     res = weaponActionCompiler(res) as Combat;
@@ -242,7 +243,9 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                         dualWielding: res.dualWielding,
                         playerEffects: res.playerEffects,
                         // enemyID: res.enemyID,
+                        // blindStrike: res.blindStrike,
                     });
+                    EventBus.emit('update-enemy-health', { id: res.enemyID, health: res.newComputerHealth, glancing: res.glancingBlow, critical: res.criticalSuccess });
                     computerWin = res.computerWin;
                     playerWin = res.playerWin;
                     break;
@@ -330,7 +333,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                             const enemyDescription =
                                 `${combat().computer?.name} heals to ${Math.round(enemyHealth)}.`;
                             res = { ...combat(), newComputerHealth: enemyHealth, playerWin, computerActionDescription: enemyDescription };
-                            EventBus.emit('update-combat-state', { key: 'newComputerHealth', value: enemyHealth });
+                            EventBus.emit('update-enemy-health', { key: 'newComputerHealth', value: enemyHealth });
                             break;
                         default:
                             break;

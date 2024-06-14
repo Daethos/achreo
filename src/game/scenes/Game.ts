@@ -103,7 +103,6 @@ export class Game extends Scene {
     preload() {};
 
     create () {
-        
         this.gameEvent();
         this.getAscean();
         this.state = this.getCombat();
@@ -114,11 +113,7 @@ export class Game extends Scene {
         
         // ================== Camera ================== \\
         let camera = this.cameras.main;
-        console.log(this.settings.positions?.camera, 'Camera Position');
         camera.zoom = this.settings.positions?.camera?.zoom || 0.8; // 0.8
-
-        // ================== Add Multiple Inputs ================== \\
-        // this.input.addPointer(3);
 
         // ================== Ascean Test Map ================== \\
         const map = this.make.tilemap({ key: 'ascean_test' });

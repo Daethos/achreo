@@ -1,9 +1,9 @@
-import * as Phaser from 'phaser'; 
-import { getRandomNumStr } from '../models/equipment';
+import Phaser from 'phaser'; 
+import { v4 as uuidv4 } from 'uuid';
 
 class Particle {
     constructor(scene, action, key, player) {
-        const id = getRandomNumStr(16);
+        const id = uuidv4();
         this.scene = scene;
         this.id = id;
         this.action = action;
@@ -56,9 +56,15 @@ class Particle {
                     const match = this.scene.state?.enemyID === other.gameObjectB.enemyID;
                     player.attackedTarget = other.gameObjectB;
                     
-                    if (match) {
+                    if (match === true ) {
                         this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: this.action }});
                     } else {
+                        // let blindStrike = false;
+                        // if (player.inCombat === false || !player.attacking || !player.currentTarget || this.scene.combat === false) {
+                        //     player.targetEngagement(other.gameObjectB.enemyID);
+                        //     // Jump player into combat
+                        //     blindStrike = true;
+                        // };
                         this.scene.combatMachine.action({ type: 'Player', data: { 
                             playerAction: { 
                                 action: this.action, 
@@ -73,7 +79,8 @@ class Particle {
                             actionData: { 
                                 action: other.gameObjectB.currentAction, 
                                 parry: other.gameObjectB.parryAction 
-                            } 
+                            },
+                            // blindStrike: blindStrike,
                         }});
                     };
                     player.particleEffect.success = true;
@@ -94,7 +101,7 @@ class Particle {
             direction.normalize();
             return direction;
         } else {
-            if (scene.settings.difficulty.aim === true) {
+            if (scene.settings.difficulty.aim === true || !player.attacking) {
                 const pointer = scene.rightJoystick.pointer;
                 const worldX = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
                 const worldY = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;

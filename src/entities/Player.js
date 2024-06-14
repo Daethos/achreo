@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import Entity, { FRAME_COUNT } from "./Entity";  
-import { walk } from "../phaser/ScreenShake";
+import { sprint, walk } from "../phaser/ScreenShake";
 import StateMachine, { States } from "../phaser/StateMachine";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import HealthBar from "../phaser/HealthBar";
@@ -615,6 +615,19 @@ export default class Player extends Entity {
         };
     };
 
+    targetEngagement = (id) => {
+        const enemy = this.scene.enemies.find(obj => obj.enemyID === id);
+        if (!enemy) return;
+        console.log(`%c Engaging ${enemy.name}`, 'color: #ffc700')
+        this.inCombat = true;
+        this.scene.combatEngaged(true);
+        this.scene.setupEnemy(enemy);
+        this.targetID = id;
+        this.setAttacking(enemy);
+        this.setCurrentTarget(enemy);
+        this.highlightTarget(enemy);
+    };
+
     constantUpdate = (e) => {
         this.checkGear(e.player.shield, e.weapons[0], e.playerDamageType.toLowerCase());
     };
@@ -937,7 +950,6 @@ export default class Player extends Entity {
     };
 
     checkWorldCollision(playerSensor) {
-
         this.scene.matterCollision.addOnCollideStart({
             objectA: [playerSensor],
             callback: (other) => {
@@ -963,7 +975,6 @@ export default class Player extends Entity {
             },
             context: this.scene,
         });
-
     };
 
     calculateCollisionPoint(other) {
@@ -978,6 +989,25 @@ export default class Player extends Entity {
     getAttackDirection(collisionPoint) {
         const sensorPosition = this.sensor.position;
         return collisionPoint.x < sensorPosition.x;
+    };
+
+    getEnemyDirection = (target) => {
+        if (!target) return false;
+        const skills = this.scene.state.player.skills;
+        // console.log(`%c Skills: ${skills}`, 'color: #0f0');
+        const type = this.hasMagic ? this.scene.state.playerDamageType : this.scene.state.weapons[0].type;
+        // console.log(`%c Weapon Type: ${type}`, 'color: #0f0');
+        const skill = skills[type];
+        // console.log(`%c Skill: ${skill}`, 'color: #0f0');
+        const cap = this.scene.state.player.level * 100;
+        // console.log(`%c Cap: ${cap}`, 'color: #0f0');
+        const skilled = skill / cap >= 0.5;
+        // console.log(`%c Skilled: ${skilled}`, 'color: #0f0');
+        if (skilled) {
+            return true;
+        };
+        const direction = target.position.subtract(this.position);
+        return direction.x < 0 && this.flipX || direction.x > 0 && !this.flipX;
     };
 
     combatChecker = (state) => {
@@ -1008,6 +1038,13 @@ export default class Player extends Entity {
     }; 
 
     onAttackEnter = () => {
+        if (this.isRanged === true && this.inCombat === true) {
+            const correct = this.getEnemyDirection(this.currentTarget);
+            if (!correct) {
+                console.log(`%c Error (Attack): You are not looking at nor targeting an enemy.`, 'color: #ff0000');
+                return;
+            };
+        };
         this.isAttacking = true;
         this.swingReset(States.ATTACK, true);
         this.swingReset(States.POSTURE);
@@ -1043,8 +1080,16 @@ export default class Player extends Entity {
     };
 
     onPostureEnter = () => {
-        if (this.isRanged === true && this.isMoving === true) {
-            return;
+        if (this.isRanged === true) {
+            if (this.isMoving === true) { // The || needs to be a check that the player is 'looking at' the enemy
+                console.log(`%c Error (Posture): You are moving. Please Stand Still.`, 'color: #ff0');
+                return;
+            };
+            const correct = this.getEnemyDirection(this.currentTarget);
+            if (!correct && this.inCombat === true) {
+                console.log(`%c Error (Posture): You are not looking at nor targeting an enemy.`, 'color: #f00');
+                return;
+            };
         };
         this.isPosturing = true;
         this.swingReset(States.POSTURE, true);
@@ -2464,6 +2509,7 @@ export default class Player extends Entity {
     onStunEnter = () => {
         this.scene.joystick.joystick.setVisible(false);
         this.scene.rightJoystick.joystick.setVisible(false);
+        this.scene.actionBar.setVisible(false);
         this.isStunned = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', PLAYER.DURATIONS.STUNNED, 'effect');
         this.scene.input.keyboard.enabled = false;
@@ -2483,6 +2529,7 @@ export default class Player extends Entity {
     onStunExit = () => {
         this.scene.joystick.joystick.setVisible(true);
         this.scene.rightJoystick.joystick.setVisible(true);
+        this.scene.actionBar.setVisible(true);
         this.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.scene.input.keyboard.enabled = true;
         this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF)
@@ -3033,7 +3080,6 @@ export default class Player extends Entity {
     };
 
     playerActionSuccess = () => {
-        // console.log('Player Action Success');
         if (this.particleEffect) {
             this.scene.particleManager.removeEffect(this.particleEffect.id);
             this.particleEffect.effect.destroy();
@@ -3067,6 +3113,11 @@ export default class Player extends Entity {
             if (match) { // Target Player Attack
                 this.scene.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: action } });
             } else { // Blind Player Attack
+                let blindStrike = false;
+                if (this.inCombat === false || !this.attacking || !this.currentTarget || this.scene.combat === false) {
+                    // Jump player into combat
+                    blindStrike = true;
+                };
                 this.scene.combatMachine.action({ type: 'Player', data: { 
                     playerAction: { action: action, parry: this.scene.state.parryGuess }, 
                     enemyID: this.attackedTarget.enemyID, 
@@ -3075,12 +3126,12 @@ export default class Player extends Entity {
                     combatStats: this.attackedTarget.combatStats, 
                     weapons: this.attackedTarget.weapons, 
                     health: this.attackedTarget.health, 
-                    actionData: { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction }
+                    actionData: { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction },
+                    blindStrike: blindStrike
                 }});
             };
         };
         // if (this.actionTarget && !this.isRanged) this.knockback(this.actionTarget); // actionTarget
-        // screenShake(this.scene); 
         if (this.isStealthing) {
             this.scene.stun(this.attackedTarget.enemyID);
             this.isStealthing = false;
@@ -3148,28 +3199,25 @@ export default class Player extends Entity {
         requestAnimationFrame(rollLoop);
     };
 
+    // ========================= Tab Targeting ========================= \\
+    // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.target.TAB) && this.targets.length) { // was > 1 More than 1 i.e. worth tabbing
+    //     // if (this.currentTarget) {
+    //     //     this.currentTarget.clearTint();
+    //     // };
+    //     const newTarget = this.targets[this.targetIndex];
+    //     this.targetIndex = this.targetIndex + 1 >= this.targets.length ? 0 : this.targetIndex + 1;
+    //     if (!newTarget) return;
+    //     if (newTarget.npcType) { // NPC
+    //         this.scene.setupNPC(newTarget);
+    //     } else { // Enemy
+    //         this.scene.setupEnemy(newTarget);
+    //         this.attacking = newTarget;
+    //     };
+    //     this.currentTarget = newTarget;
+    //     this.targetID = newTarget.enemyID;
+    //     this.highlightTarget(newTarget);
+    // };
     handleActions = () => {
-
-        // ========================= Tab Targeting ========================= \\
-
-        // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.target.TAB) && this.targets.length) { // was > 1 More than 1 i.e. worth tabbing
-        //     // if (this.currentTarget) {
-        //     //     this.currentTarget.clearTint();
-        //     // };
-        //     const newTarget = this.targets[this.targetIndex];
-        //     this.targetIndex = this.targetIndex + 1 >= this.targets.length ? 0 : this.targetIndex + 1;
-        //     if (!newTarget) return;
-        //     if (newTarget.npcType) { // NPC
-        //         this.scene.setupNPC(newTarget);
-        //     } else { // Enemy
-        //         this.scene.setupEnemy(newTarget);
-        //         this.attacking = newTarget;
-        //     };
-        //     this.currentTarget = newTarget;
-        //     this.targetID = newTarget.enemyID;
-        //     this.highlightTarget(newTarget);
-        // };
-
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
             if (this.inCombat && !this.scene.state.computer) {
@@ -3206,7 +3254,6 @@ export default class Player extends Entity {
             this.stateMachine.setState(States.DODGE);
         };
 
-        // ========================= Player Utility Actions ========================= \\
     };
 
     handleAnimations = () => {
@@ -3224,17 +3271,23 @@ export default class Player extends Entity {
             if (this.dodgeCooldown === 0) this.playerDodge();
         } else if (this.isRolling) { 
             this.anims.play('player_roll', true);
-            walk(this.scene);
+            sprint(this.scene);
             this.spriteWeapon.setVisible(false);
             if (this.rollCooldown === 0) this.playerRoll();
         } else if (this.isPosturing) {
-            walk(this.scene);
+            sprint(this.scene);
             this.anims.play('player_attack_3', true).on('animationcomplete', () => this.isPosturing = false);
         } else if (this.isAttacking) {
-            walk(this.scene);
+            sprint(this.scene);
             this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isAttacking = false); 
         } else if ((Math.abs(this.body.velocity.x) > 0.1 || Math.abs(this.body.velocity.y) > 0.1)) {
             // walk(this.scene);
+            if (!this.isWalking) {
+                this.isWalking = this.scene.time.delayedCall(500, () => {
+                    walk(this.scene);
+                    this.isWalking = undefined;
+                }, undefined, this);
+            };
             if (!this.isMoving) this.isMoving = true;
             this.anims.play('player_running', true);
         } else if (this.isConsuming) { 
@@ -3262,7 +3315,7 @@ export default class Player extends Entity {
     };
 
     handleConcerns = () => {
-        if (this.actionSuccess) {
+        if (this.actionSuccess === true) {
             this.actionSuccess = false;
             this.playerActionSuccess();
         };
@@ -3352,13 +3405,13 @@ export default class Player extends Entity {
 
         // =================== STRAFING ================== \\
 
-        if (this.inputKeys.strafe.E.isDown || (this.isStrafing === true && this.playerVelocity.x > 0)) {
+        if (this.inputKeys.strafe.E.isDown || (this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0)) {
             // this.playerVelocity.x = speed; 
             // this.playerVelocity.x += 0.1; 
             speed += 0.1;
             if (!this.flipX) this.flipX = true;
         };
-        if (this.inputKeys.strafe.Q.isDown || (this.isStrafing === true && this.playerVelocity.x < 0)) {
+        if (this.inputKeys.strafe.Q.isDown || (this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x < 0)) {
             // this.playerVelocity.x = -speed;
             // this.playerVelocity.x -= 0.1;
             speed -= 0.1;    

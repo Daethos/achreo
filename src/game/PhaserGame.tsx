@@ -120,7 +120,6 @@ export const PhaserGame = (props: IProps) => {
             } as Ascean;
 
             if (props.ascean().mastery !== newMastery) {
-                console.log('resetting special abilities');
                 const settings = { ...props.settings(), specials: startingSpecials[newMastery as keyof typeof startingSpecials] };
                 props.setSettings(settings);
                 await updateSettings(settings);
@@ -296,28 +295,7 @@ export const PhaserGame = (props: IProps) => {
     };
 
     function recordCombatReputation(computer: Ascean) {
-        // let newReputation = { ...props.reputation() };
-        // const factions =  newReputation.factions.map((faction: faction) => {
-        //     if (faction.name === computer.name) {
-        //         if (faction.reputation < 25) {
-        //             faction.reputation += 1;
-        //         } else {
-        //             faction.reputation -= 5;
-        //         };
-
-        //         if (faction.reputation >= 25 && faction.aggressive === true) {
-        //             faction.aggressive = false;
-        //         };
-        //         if (faction.reputation < 25 && faction.aggressive === false && faction.named === false) {
-        //             faction.aggressive = true;
-        //         };
-        //         return faction;
-        //     };
-        // }) as faction[];
-        // newReputation = { ...newReputation, factions: factions };
-        // return newReputation;
         let newReputation = { ...props.reputation() };
-        console.log('newReputation', newReputation);
         newReputation.factions.forEach((faction: faction) => {
             if (faction.name === computer.name) {
                 if (faction.reputation < 25) {
@@ -361,12 +339,14 @@ export const PhaserGame = (props: IProps) => {
     function recordSkills(skills: string[]) {
         let newSkills = { ...props.ascean().skills };
         skills.forEach((skill: string, index: number) => {
-            if (index === 0) {
-                const coinFlip = Math.random() >= 0.5;
-                if (coinFlip === false) {
-                    return;
-                };
-            };
+            // Currently allowing for the first attack to grant a skill point.
+
+            // if (index === 0) {
+            //     const coinFlip = Math.random() >= 0.5;
+            //     if (coinFlip === false) {
+            //         return;
+            //     };
+            // };
             if (index % 3 !== 0) {
                 return;
             };
@@ -709,12 +689,7 @@ export const PhaserGame = (props: IProps) => {
     };
 
     function enterGame() {
-        try  {
-            console.log(`Entering Game? ${!live()}`);
-            setLive(!live());
-        } catch (err: any) {
-            console.warn(err, 'Error Entering Game');
-        };
+        setLive(!live());
     };
 
     onMount(() => {
@@ -1071,13 +1046,13 @@ export const PhaserGame = (props: IProps) => {
         EventBus.on('sell-item', sellItem);
         EventBus.on('luckout', (e: { luck: string, luckout: boolean }) => {
             const { luck, luckout } = e;
-            console.log(luck, luckout, 'Luckout');
+            // console.log(luck, luckout, 'Luckout');
             EventBus.emit('enemy-luckout', { enemy: combat().enemyID, luckout, luck });
             setCombat({ ...combat(), playerLuckout: luckout, playerTrait: luck, luckoutScenario: true });
         });
         EventBus.on('persuasion', (e: { persuasion: string, persuaded: boolean }) => {
             const { persuasion, persuaded } = e;
-            console.log(persuasion, persuaded, 'Persuasion');
+            // console.log(persuasion, persuaded, 'Persuasion');
             EventBus.emit('enemy-persuasion', { enemy: combat().enemyID, persuaded, persuasion });
             setCombat({ ...combat(), playerTrait: persuasion, enemyPersuaded: persuaded, persuasionScenario: true });   
         });
@@ -1097,42 +1072,58 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('current-scene-ready');
             EventBus.removeListener('main-menu');
             EventBus.removeListener('enter-game');
-            EventBus.removeListener('set-player');
+            
             EventBus.removeListener('add-item');
-            EventBus.removeListener('clear-enemy');
-            EventBus.removeListener('clear-npc');
-            EventBus.removeListener('fetch-enemy');
-            EventBus.removeListener('fetch-npc');
-            EventBus.removeListener('setup-enemy');  
-            EventBus.removeListener('setup-npc');
-            EventBus.removeListener('combat-engaged');  
-            EventBus.removeListener('delete-merchant-equipment');
-            EventBus.removeListener('drink-firewater'); 
-            EventBus.removeListener('gain-experience');
             EventBus.removeListener('add-lootdrop');
-            EventBus.removeListener('clear-loot');
-            EventBus.removeListener('enemy-loot');
-            EventBus.removeListener('interacting-loot');
-            EventBus.removeListener('initiate-input');
-            EventBus.removeListener('request-game');
-            EventBus.removeListener('request-ascean');    
-            EventBus.removeListener('request-combat');  
+            EventBus.removeListener('blend-combat');
+            EventBus.removeListener('blend-game');
+            
             EventBus.removeListener('changeDamageType');
             EventBus.removeListener('changePrayer');
             EventBus.removeListener('changeWeapon');
+            EventBus.removeListener('clear-enemy');
+            EventBus.removeListener('clear-loot');
+            EventBus.removeListener('clear-npc');
+            EventBus.removeListener('combat-engaged');  
+            EventBus.removeListener('create-prayer');
+            EventBus.removeListener('create-enemy-prayer');
+            
+            EventBus.removeListener('delete-merchant-equipment');
+            EventBus.removeListener('drink-firewater'); 
+            EventBus.removeListener('enemy-loot');
+            EventBus.removeListener('fetch-enemy');
+            EventBus.removeListener('fetch-npc');
+            EventBus.removeListener('gain-experience');
+            EventBus.removeListener('interacting-loot');
+            EventBus.removeListener('initiate-input');
+            EventBus.removeListener('luckout');
+            
+            EventBus.removeListener('purchase-item');
+            EventBus.removeListener('persuasion');
+            
+            EventBus.removeListener('record-statistics');
+            EventBus.removeListener('record-win');
+            EventBus.removeListener('request-game');
+            EventBus.removeListener('request-ascean');    
+            EventBus.removeListener('request-combat');  
+            
+            EventBus.removeListener('save-health');
+            EventBus.removeListener('sell-item');
             EventBus.removeListener('selectPrayer');
             EventBus.removeListener('selectDamageType');
             EventBus.removeListener('selectWeapon');
             EventBus.removeListener('set-equipper');
+            EventBus.removeListener('setup-enemy');  
+            EventBus.removeListener('setup-npc');
             // EventBus.removeListener('show-combat-logs');
             EventBus.removeListener('show-combat');
             EventBus.removeListener('show-dialogue');
             EventBus.removeListener('show-player');
+            EventBus.removeListener('set-player');
+            
             EventBus.removeListener('toggle-pause');
-            EventBus.removeListener('blend-combat');
             EventBus.removeListener('update-combat-state');
             EventBus.removeListener('update-combat-timer');
-            EventBus.removeListener('blend-game');
             // EventBus.removeListener('update-combat');
             EventBus.removeListener('update-health');
             EventBus.removeListener('update-lootdrops');
@@ -1141,16 +1132,7 @@ export const PhaserGame = (props: IProps) => {
             EventBus.removeListener('update-stealth');
             EventBus.removeListener('useHighlight');
             EventBus.removeListener('useScroll');
-            EventBus.removeListener('create-prayer');
-            EventBus.removeListener('create-enemy-prayer');
-            EventBus.removeListener('purchase-item');
-            EventBus.removeListener('sell-item');
             EventBus.removeListener('upgrade-item');
-            EventBus.removeListener('luckout');
-            EventBus.removeListener('persuasion');
-            EventBus.removeListener('record-statistics');
-            EventBus.removeListener('record-win');
-            EventBus.removeListener('save-health');
         });
     });
 

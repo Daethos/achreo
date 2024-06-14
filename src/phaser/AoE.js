@@ -34,7 +34,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             this.setupEnemySensor(enemy);
             this.setupEnemyListener(scene);
             this.setEnemyTimer(scene, enemy);
-            this.setupEnemyCount(scene, type, positive);
+            this.setupEnemyCount(scene, type, positive, enemy);
         } else {
             this.setupSensor(scene);
             this.setupListener(scene);
@@ -81,12 +81,12 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         };
     };
 
-    setupEnemyCount = (scene, type, positive) => {
+    setupEnemyCount = (scene, type, positive, enemy) => {
         if (positive === true) {
             scene.time.delayedCall(950, () => {
                 this.hit.forEach((target) => {
-                    if (this.scene.player.checkPlayerResist() === true) {
-                        scene[type](target.playerID);
+                    if (this.scene.player.checkPlayerResist() === true && target.playerID === this.scene.player.playerID) {
+                        scene[type](target.playerID, enemy.enemyID);
                     };
                 });
                 this.count -= 1;
@@ -186,7 +186,8 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 const { gameObjectB, bodyB } = collision;
                 if (gameObjectB instanceof Phaser.Physics.Matter.Sprite) {
                     if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
-                        this.hit.push(gameObjectB);
+                        const hit = this.hit.find((h) => h.playerID === gameObjectB.playerID);
+                        if (!hit) this.hit.push(gameObjectB);
                     } else if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
                         this.bless.push(gameObjectB);
                     };

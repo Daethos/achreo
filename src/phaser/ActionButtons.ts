@@ -58,6 +58,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     private specialButtons: ActionButton[];
     private buttonWidth: number;
     private buttonHeight: number;
+    private glowFilter: any;
+    private borderTimer: any;
+    private graphicTimer: any;
 
     constructor(scene: Game) {
         super(scene);
@@ -66,6 +69,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         this.specialButtons = [];
         this.buttonWidth = SETTINGS.BUTTON_HEIGHT;
         this.buttonHeight = SETTINGS.BUTTON_HEIGHT;
+        this.glowFilter = this.scene.plugins.get('rexGlowFilterPipeline');
+        this.borderTimer = {};
+        this.graphicTimer = {};
         this.addButtons(scene);
         scene.add.existing(this);
         const { width, height } = scene.cameras.main;
@@ -77,6 +83,80 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         this.reorder();
         this.positionListen();
     };
+
+    setGlow = (object: any, glow: boolean, type: string, key: string, color: number) => {
+        this.glowFilter.remove(object);
+        if (!glow) {
+            switch (type) {
+                case 'graphic':
+                    if (this.graphicTimer[key] !== undefined) {
+                        this.graphicTimer[key].remove(false);
+                        this.graphicTimer[key].destroy();
+                        this.graphicTimer[key] = undefined;
+                    };
+                    break;
+                case 'border':
+                    if (this.borderTimer[key] !== undefined) {
+                        this.borderTimer[key].remove(false);
+                        this.borderTimer[key].destroy();
+                        this.borderTimer[key] = undefined;
+                    };
+                    break;
+                default: break;
+            };
+            return; 
+        };
+            
+        this.updateGlow(object, color);
+
+        switch (type) {
+            case 'graphic':
+                this.graphicTimer[key] = this.scene.time.addEvent({
+                    delay: 30, // 125 Adjust the delay as needed
+                    callback: () => this.updateGlow(object, color),
+                    // loop: true,
+                    repeat: 5,
+                    callbackScope: this
+                });
+
+            // let count: number = 0;
+            // this.graphicTimer[key] = this.scene.time.delayedCall(30, () => {
+            //     count++
+            //     if (count >= 5) {
+                    
+            //     };
+            //     this.updateGlow(object, color);
+
+            //     // loop: true,
+            // }, undefined, this);
+                break;
+            case 'border':
+                this.borderTimer[key] = this.scene.time.addEvent({
+                    delay: 30, // 125 Adjust the delay as needed
+                    callback: () => this.updateGlow(object, color),
+                    // loop: true,
+                    repeat: 5,
+                    callbackScope: this
+                });
+                break;
+            default: break;
+        };
+    };
+
+    updateGlow = (object: any, glowColor: number) => {
+        this.glowFilter.remove(object);
+        const outerStrength = 2 + Math.sin(this.scene.time.now * 0.005) * 2; // Adjust the frequency and amplitude as needed
+        const innerStrength = 2 + Math.cos(this.scene.time.now * 0.005) * 2;
+        const intensity = 0.5;
+
+        this.glowFilter.add(object, {
+            outerStrength,
+            innerStrength,
+            glowColor,
+            intensity,
+            knockout: true
+        });
+    }; 
 
     private addButtons = (scene: Game): void => {
         const { width, height } = scene.cameras.main;
@@ -199,6 +279,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     default:
                         break;
                 };
+                this.setGlow(button.graphic, true, 'graphic', button.key, this.scene.settings.positions.specialButtons.border);
+                this.setGlow(button.border, true, 'border', button.key, this.scene.settings.positions.specialButtons.color);
             },
             onComplete: () => {
                 button.graphic.clear();
@@ -219,6 +301,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     default:
                         break;
                 };
+                this.setGlow(button.graphic, false, 'graphic', button.key, this.scene.settings.positions.specialButtons.border);
+                this.setGlow(button.border, false, 'border', button.key, this.scene.settings.positions.specialButtons.color);
             }
         });
     };
@@ -756,11 +840,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             button.border.lineStyle(SETTINGS.BORDER_LINE, border, opacity);
             button.border.strokeCircle(button.x, button.y, (SETTINGS.BUTTON_WIDTH + 2) * scale * button.current / button.total);
             button.graphic.setInteractive();
-        } else {
-            // button.graphic.fillStyle(0xFFC700, opacity);
-            // button.border.clear();
-            // button.graphic.clear();
-            // button.graphic.disableInteractive();
         };
         return button;
     };

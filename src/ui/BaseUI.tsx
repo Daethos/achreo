@@ -317,7 +317,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     EventBus.emit('blend-combat', { newPlayerHealth: drainedPlayerHealth, newComputerHealth: drainedComputerHealth, computerWin });
                     break;
                 case 'Health': // Either Enemy or Player gaining health
-                    let { key, value } = data;
+                    let { key, value, id } = data;
                     switch (key) {
                         case 'player':
                             const healed = Math.floor(combat().playerHealth * (value / 100));
@@ -333,7 +333,11 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                             const enemyDescription =
                                 `${combat().computer?.name} heals to ${Math.round(enemyHealth)}.`;
                             res = { ...combat(), newComputerHealth: enemyHealth, playerWin, computerActionDescription: enemyDescription };
-                            EventBus.emit('update-enemy-health', { key: 'newComputerHealth', value: enemyHealth });
+                            if (combat().enemyID === id) {
+                                EventBus.emit('blend-combat', { newComputerHealth: enemyHealth, playerWin });
+                            } else {
+                                EventBus.emit('update-enemy-health', { id, health: enemyHealth, glancing: false, critical: false });
+                            };
                             break;
                         default:
                             break;

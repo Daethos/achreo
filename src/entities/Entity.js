@@ -186,12 +186,14 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.glowShield.destroy();
                         this.glowShield = undefined;
                     };
+                    break;
                 case 'weapon':
                     if (this.glowWeapon !== undefined) {
                         this.glowWeapon.remove(false);
                         this.glowWeapon.destroy();
                         this.glowWeapon = undefined;
                     };
+                    break;
                 default:
                     if (this.glowTimer !== undefined) {
                         this.glowTimer.remove(false);

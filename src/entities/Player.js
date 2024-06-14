@@ -618,7 +618,7 @@ export default class Player extends Entity {
     targetEngagement = (id) => {
         const enemy = this.scene.enemies.find(obj => obj.enemyID === id);
         if (!enemy) return;
-        console.log(`%c Engaging ${enemy.name}`, 'color: #ffc700')
+        this.targets.push(enemy);
         this.inCombat = true;
         this.scene.combatEngaged(true);
         this.scene.setupEnemy(enemy);
@@ -687,7 +687,7 @@ export default class Player extends Entity {
             };
             
             this.defeatedEnemyCheck(e.enemyID);
-            // this.winningCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Victory', 3000, 'effect', true);    
+            // this.winningCombatText = new ScrollingCombatText(this.scene, this.x, this.y - 64, 'Victory', 1000, 'effect', true);    
         };
         if (e.computerWin === true) {
             this.anims.play('player_pray', true).on('animationcomplete', () => {
@@ -792,22 +792,26 @@ export default class Player extends Entity {
         };
     };
 
-    defeatedEnemyCheck = (enemy) => {
-        this.targets = this.targets.filter(obj => (obj.enemyID !== enemy && obj.inCombat === false));
+    defeatedEnemyCheck = (id) => {
+        this.targets = this.targets.filter(obj => (obj.enemyID !== id && obj.inCombat === false));
         this.sendEnemies(this.targets);
-        this.scene.combatMachine.clear(enemy);
+        this.currentTarget = undefined;
+        this.attacking = undefined;
+        this.removeHighlight();
+
+        this.scene.combatMachine.clear(id);
         if (this.targets.every(obj => !obj.inCombat)) {
             this.disengage();
         } else {
-            if (this.currentTarget.enemyID === enemy) { // Was targeting the enemy that was defeated
-                const newTarget = this.targets.find(obj => obj.enemyID !== enemy);
+            // if (this.currentTarget.enemyID === id) { // Was targeting the id that was defeated
+                const newTarget = this.targets.find(obj => obj.enemyID !== id);
                 if (!newTarget) return;
                 this.scene.setupEnemy(newTarget);
                 this.setAttacking(newTarget);
                 this.setCurrentTarget(newTarget);
                 this.targetID = newTarget.enemyID;
                 this.highlightTarget(newTarget);
-            }; 
+            // }; 
         };
     };
 
@@ -994,15 +998,10 @@ export default class Player extends Entity {
     getEnemyDirection = (target) => {
         if (!target) return false;
         const skills = this.scene.state.player.skills;
-        // console.log(`%c Skills: ${skills}`, 'color: #0f0');
         const type = this.hasMagic ? this.scene.state.playerDamageType : this.scene.state.weapons[0].type;
-        // console.log(`%c Weapon Type: ${type}`, 'color: #0f0');
         const skill = skills[type];
-        // console.log(`%c Skill: ${skill}`, 'color: #0f0');
         const cap = this.scene.state.player.level * 100;
-        // console.log(`%c Cap: ${cap}`, 'color: #0f0');
         const skilled = skill / cap >= 0.5;
-        // console.log(`%c Skilled: ${skilled}`, 'color: #0f0');
         if (skilled) {
             return true;
         };
@@ -1387,7 +1386,7 @@ export default class Player extends Entity {
     onDesperationExit = () => {
         const desperationCooldown = this.inCombat ? PLAYER.COOLDOWNS.LONG : PLAYER.COOLDOWNS.SHORT;
         this.setTimeEvent('desperationCooldown', desperationCooldown);  
-        EventBus.emit('initiate-combat', { data: { key: 'player', value: 50 }, type: 'Health' });
+        EventBus.emit('initiate-combat', { data: { key: 'player', value: 50, id: this.playerID }, type: 'Health' });
         this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
     };
 
@@ -1483,7 +1482,7 @@ export default class Player extends Entity {
             this.setTimeEvent('healingCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
             this.scene.useStamina(PLAYER.STAMINA.HEALING);
             this.healingSuccess = false;
-            EventBus.emit('initiate-combat', { data: { key: 'player', value: 25 }, type: 'Health' });
+            EventBus.emit('initiate-combat', { data: { key: 'player', value: 25, id: this.playerID }, type: 'Health' });
             this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
         };
         this.castbar.reset();
@@ -2163,7 +2162,7 @@ export default class Player extends Entity {
         };
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril');
-        EventBus.emit('initiate-combat', { data: { key: 'player', value: 15 }, type: 'Health' });
+        EventBus.emit('initiate-combat', { data: { key: 'player', value: 15, id: this.playerID }, type: 'Health' });
         this.mendBubble.setCharges(this.mendBubble.charges - 1);
         if (this.mendBubble.charges <= 0) {
             this.isMending = false;
@@ -2773,7 +2772,7 @@ export default class Player extends Entity {
                 } else {   
                     randomDirection();
                     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '...thump', 1000, 'effect');
-                    this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: 15 } });
+                    this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: 15, id: this.playerID } });
                 };
             },
             callbackScope: this,
@@ -2915,22 +2914,20 @@ export default class Player extends Entity {
 
     checkTargets = () => {
         const playerCombat = this.isPlayerInCombat();
-
         this.targets = this.targets.filter(gameObject => {
-            if (gameObject.npcType && playerCombat) {
+            if (gameObject.npcType && playerCombat === true) {
                 this.scene.combatEngaged(false);
                 this.inCombat = false;
             };
             
-            if (this.inCombat === true && (
-                (gameObject !== this.currentTarget && gameObject.inCombat !== true) ||
-                gameObject.inCombat === false || 
+            if (playerCombat === true && (
+                // (gameObject !== this.currentTarget && gameObject.inCombat !== true) ||
+                // gameObject.inCombat === false || 
                 gameObject.isDefeated === true ||
                 gameObject.isTriumphant === true ||
                 gameObject.isLuckout === true ||
                 gameObject.isPersuaded === true
             )) {
-                console.log('In Combat and this target should not be in the gallery of targets');    
                 return false;
             };
             return true;

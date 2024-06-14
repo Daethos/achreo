@@ -921,14 +921,23 @@ export class Game extends Scene {
             EventBus.emit('initiate-combat', { data: 10, type: 'Enemy Chiomic' });
         };
     };
-    writhe = (id: string, _enemyID?: string): void => {
+    writhe = (id: string, enemyID?: string): void => {
         if (id === '') return;
         if (!this.player.inCombat) return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
 
         if (!enemy) {
             if (id === this.player.playerID) {
-                EventBus.emit('initiate-combat', { data: 25, type: 'Enemy Chiomic' })
+                // console.log('writhe target is the player');
+                EventBus.emit('initiate-combat', { data: 25, type: 'Enemy Chiomic' });
+                // const enemyWrithe = this.enemies.find((e: any) => e.enemyID === enemyID);
+                // console.log(enemyWrithe, 'The enemy that is writhing, are they targeted?', enemyWrithe.isCurrentTarget);
+                // if (enemyWrithe.isCurrentTarget) {
+                //     if (this.state.computerAction === '') return;
+                //     this.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: 'attack', id: enemyID } });
+                // } else {
+                //     this.combatMachine.action({ type: 'Enemy', data: { enemyID, ascean: enemyWrithe.ascean, damageType: enemyWrithe.currentDamageType, combatStats: enemyWrithe.combatStats, weapons: enemyWrithe.weapons, health: enemyWrithe.health, actionData: { action: 'attack', parry: '', id: enemyID }}});
+                // };
             };
         } else {
             const match = this.player.enemyIdMatch();

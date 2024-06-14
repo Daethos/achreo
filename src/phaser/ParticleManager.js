@@ -65,6 +65,9 @@ class Particle {
                         //     // Jump player into combat
                         //     blindStrike = true;
                         // };
+                        // if (!player.isPlayerInCombat()) {
+                        //     player.targetEngagement(other.gameObjectB.enemyID);                            
+                        // };
                         this.scene.combatMachine.action({ type: 'Player', data: { 
                             playerAction: { 
                                 action: this.action, 

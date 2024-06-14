@@ -525,10 +525,12 @@ export default class Enemy extends Entity {
     };
 
     healthUpdate = (e) => {
-        if (this.enemyID !== e.id) return;
-        if (e.id === this.scene.state?.enemyID) {
-            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: e.health } });
-        } else {
+        if (this.enemyID !== e.id) return; // Is the enemy whose health is receiving an update
+        // if (e.id === this.scene.state?.enemyID) { // Is the target known via state
+        //     console.log('Known Target');
+        //     this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: e.health, id: this.enemyID } });
+        // } else { // Is not the target
+            // console.log('Unknown Target');
             if (this.health > e.health) {
                 let damage = Math.round(this.health - e.health);
                 damage = e?.glancing === true ? `${damage} (Glancing)` : damage;
@@ -541,6 +543,7 @@ export default class Enemy extends Entity {
             this.healthbar.setValue(e.health);
             this.updateHealthBar(e.health);
             if (e.health <= 0) {
+                this.isDefeated = true;
                 this.stateMachine.setState(States.DEFEATED);
             };
             const isNewEnemy = this.isNewEnemy(this.scene.player);
@@ -548,7 +551,7 @@ export default class Enemy extends Entity {
                 this.scene.player.targetEngagement(this.enemyID);
                 this.jumpIntoCombat();
             };
-        };
+        // };
     };
 
     checkCaerenic = (caerenic) => {
@@ -581,7 +584,10 @@ export default class Enemy extends Entity {
                     this.checkEnemyCombatEnter();
                 };
             };
-            if (e.newComputerHealth <= 0) this.stateMachine.setState(States.DEFEATED);
+            if (e.newComputerHealth <= 0) {
+                this.isDefeated = true;
+                this.stateMachine.setState(States.DEFEATED);
+            };
         } else if (this.health < e.newComputerHealth) { 
             let heal = Math.round(e.newComputerHealth - this.health);
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, 1500, 'heal');
@@ -615,7 +621,10 @@ export default class Enemy extends Entity {
                     // this.checkEnemyCombatEnter();
                 };
             };
-            if (e.newComputerHealth <= 0) this.stateMachine.setState(States.DEFEATED);
+            if (e.newComputerHealth <= 0) {
+                this.isDefeated = true;
+                this.stateMachine.setState(States.DEFEATED);
+            };
         };   
     };
 
@@ -1347,7 +1356,13 @@ export default class Enemy extends Entity {
         this.scene.time.delayedCall(PLAYER.DURATIONS.DESPERATION, () => {
             const heal = Math.round(this.ascean.health.max * 0.5);
             const total = Math.min(this.health + heal, this.ascean.health.max);
-            EventBus.emit('initiate-combat', { data: { key: 'enemy', value: total }, type: 'Health' });
+            EventBus.emit('initiate-combat', { data: { key: 'enemy', value: total, id: this.enemyID }, type: 'Health' });
+            // if (this.scene.state.enemyID === this.enemyID) {
+            // } else {
+            //     this.health = total;
+            //     this.healthbar.setValue(total);
+            //     this.updateHealthBar(total);
+            // };
             this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
             this.checkCaerenic(false);
             this.isStunned = true;
@@ -1392,7 +1407,13 @@ export default class Enemy extends Entity {
         this.scene.time.delayedCall(PLAYER.DURATIONS.HEALING, () => {
             const heal = Math.round(this.ascean.health.max * 0.25);
             const total = Math.min(this.health + heal, this.ascean.health.max);
-            EventBus.emit('initiate-combat', { data: { key: 'enemy', value: total }, type: 'Health' });
+            EventBus.emit('initiate-combat', { data: { key: 'enemy', value: total, id: this.enemyID }, type: 'Health' });
+            // if (this.scene.state.enemyID === this.enemyID) {
+            // } else {
+            //     this.health = total;
+            //     this.healthbar.setValue(total);
+            //     this.updateHealthBar(total);
+            // };
             this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
             this.checkCaerenic(false);
             if (this.inCombat) {
@@ -1910,7 +1931,13 @@ export default class Enemy extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril');
         const mend = Math.round(this.ascean.health.max * 0.15);
         const heal = Math.min(this.ascean.health.max, this.ascean.health.current + mend);
-        EventBus.emit('initiate-combat', { data: { key: 'enemy', value: heal }, type: 'Health' });
+        EventBus.emit('initiate-combat', { data: { key: 'enemy', value: heal, id: this.enemyID }, type: 'Health' });
+        // if (this.scene.state.enemyID === this.enemyID) {
+        // } else {
+        //     this.health = heal;
+        //     this.healthbar.setValue(health);
+        //     this.updateHealthBar(health);
+        // };
         this.mendBubble.setCharges(this.mendBubble.charges - 1);
         if (this.mendBubble.charges <= 0) {
             this.isMending = false;
@@ -2478,7 +2505,7 @@ export default class Enemy extends Entity {
                     if (this.isCurrentTarget && this.health < this.ascean.health.max) {
                         this.health = (this.health + (this.ascean.health.max * 0.3)) > this.ascean.health.max ? this.ascean.health.max : (this.health + (this.ascean.health.max * 0.3));
                         if (this.scene.state.enemyID === this.enemyID) {
-                            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: this.health } });
+                            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: this.health, id: this.enemyID } });
                         };
                         // EventBus.emit('update-combat-state', { newComputerHealth: this.health });
                     } else if (this.health < this.ascean.health.max) {

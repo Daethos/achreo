@@ -30,7 +30,7 @@ const DAMAGE = [
     'Wind', 
 ];
 const NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-const ATTACKS = ['Attack', 'Posture', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'rolls', 'postures', 'parries', 'parried', 'rolled', 'attacked', 'defend', 'postured'];
+const ATTACKS = ['Attack', 'Posture', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'rolls', 'postures', 'parries', 'parried', 'rolled', 'attacked', 'defend', 'postured', 'tshaer', 'tshaers', 'tshaering'];
 const CAST = ['confuse', 'confusing', 'fear', 'fearing', 'polymorph', 'polymorphs', 'polymorphing', 'slow', 'slowing', 'snare', 'snaring'];
 // const specials = ['Invocation', 'Tendrils', 'Hush', 'Tendril', 'hush', 'tshaer', 'sacrifice', 'suture'];
 const HUSH = ['Invocation', 'Hush', 'hush', 'sacrifice', 'shimmer', 'shimmers', 'protect', 'protects'];
@@ -125,11 +125,11 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
                 '#fdf6d8';
                 
             const lush = (isCast === true || isNumber === true || isHush === true || isTendril === true);
-            const fontWeight = lush ? 550 : 'normal';
-            const textShadow = lush ? `gold 0 0 0` : 'none';
+            const fontWeight = lush ? 500 : 'normal';
+            const textShadow = lush ? `#fdf6d8 0 0 0` : 'none';
             const fontSize = lush ? '0.75em' : '0.65em';
             const newLine = t === '\n' ? '<br>' : t;
-            const style = (isGlancing || isCritical || lush) ? 'italic' : 'normal';
+            const style = (isGlancing || isCritical || isAttack || isNumber) ? 'italic' : 'normal';
 
             return `<span style="color: ${color}; font-style: ${style}; font-weight: ${fontWeight}; text-shadow: ${textShadow}; font-size: ${fontSize}; margin: 0;">${newLine}</span>`;
         };

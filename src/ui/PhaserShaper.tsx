@@ -13,6 +13,35 @@ interface IPhaserShape {
 export function PhaserShaper({ settings }: IPhaserShape) {
     const dimensions = useResizeListener();
 
+    async function handleCastbar(type: string, value: number) {
+        console.log(type, value, 'Type and Value');
+        const newSettings = {
+            ...settings(),
+            positions: {
+                ...settings().positions,
+                castbar: {
+                    ...settings().positions.castbar,
+                    [`bar${type}`]: value
+                }
+            }
+        };
+        await updateSettings(newSettings);
+        EventBus.emit('save-settings', newSettings);
+        switch (type) {
+            case 'Height':
+                EventBus.emit('update-castbar', { height: value, width: settings().positions.castbar.barWidth });
+                break;
+            case 'Width':
+                EventBus.emit('update-castbar', { height: settings().positions.castbar.barHeight, width: value });
+                break;
+            case 'Y':
+                EventBus.emit('castbar-y', value);
+                break;
+            default:
+                break;
+        };
+    };
+
     async function handleJoystick(e: any, side: string, axis: string) {
         const change = Number(e.target.value);
         const newSettings = { 
@@ -239,6 +268,7 @@ export function PhaserShaper({ settings }: IPhaserShape) {
         await updateSettings(newSettings);
         EventBus.emit('save-settings', newSettings);
         EventBus.emit('update-camera-zoom', zoom);
+        // EventBus.emit('castbar-zoom-update', zoom);
     };
 
     async function handleFPS(e: any, axis: string) {
@@ -410,7 +440,30 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 onChange={(e) => handleCamera(Number(e.target.value))} 
                 value={settings().positions.camera?.zoom} 
             />
-            
+
+            <h1 style={font('1.25em')}>Castbar</h1>
+            <div style={font('1em')}>
+            <button class='highlight' onClick={() => handleCastbar('Height', settings().positions.castbar.barHeight - 2)}
+            >-</button>
+                Height: ({settings().positions.castbar.barHeight})
+                <button class='highlight' onClick={() => handleCastbar('Height', settings().positions.castbar.barHeight + 2)}
+            >+</button>
+            </div>
+            <div style={font('1em')}>
+            <button class='highlight' onClick={() => handleCastbar('Width', settings().positions.castbar.barWidth - 2)}
+            >-</button>
+                Width: ({settings().positions.castbar.barWidth})
+                <button class='highlight' onClick={() => handleCastbar('Width', settings().positions.castbar.barWidth + 2)}
+            >+</button>
+            </div>
+            <div style={font('1em')}>
+            <button class='highlight' onClick={() => handleCastbar('Y', settings().positions.castbar.barY - 2)}
+            >-</button>
+                Y: ({settings().positions.castbar.barY})
+                <button class='highlight' onClick={() => handleCastbar('Y', settings().positions.castbar.barY + 2)}
+            >+</button>
+            </div>
+
             <h1 style={font('1.25em')}>Left Joystick</h1>
             <div style={font('1em')}>Base Color: ({NUMBERS[settings().positions.leftJoystick.base as keyof typeof NUMBERS]})</div>
             <Form.Select onChange={(e) => handleJoystickColor(e.target.value, 'left', 'base')} style={{ margin: '3%' }} value={settings().positions.leftJoystick.base}>
@@ -442,18 +495,26 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 onChange={(e) => handleJoystickWidth(e, 'left')} 
                 value={settings().positions.leftJoystick.width} 
             />
-            <div style={font('1em')}>X: ({settings().positions.leftJoystick.x})</div>
-            <Form.Range 
+            <div style={font('1em')}>
+                <button class='highlight' onClick={() => handleJoystick(Math.max(0, settings().positions.leftJoystick.x - 0.025), 'left', 'x')}>-</button>
+                X: ({settings().positions.leftJoystick.x})
+                <button class='highlight' onClick={() => handleJoystick(Math.min(1, settings().positions.leftJoystick.x + 0.025), 'left', 'x')}>+</button>
+            </div>
+            {/* <Form.Range 
                 min={0} max={1} step={0.025} 
                 onChange={(e) => handleJoystick(e, 'left', 'x')} 
                 value={settings().positions.leftJoystick.x} 
-            />
-            <div style={font('1em')}>Y: ({settings().positions.leftJoystick.y})</div>
-            <Form.Range 
+            /> */}
+            <div style={font('1em')}>
+                <button class='highlight' onClick={() => handleJoystick(Math.max(0, settings().positions.leftJoystick.y - 0.025), 'left', 'y')}>-</button>            
+                Y: ({settings().positions.leftJoystick.y})
+                <button class='highlight' onClick={() => handleJoystick(Math.max(0, settings().positions.leftJoystick.y - 0.025), 'left', 'y')}>+</button>
+            </div>
+            {/* <Form.Range 
                 min={0} max={1} step={0.025} 
                 onChange={(e) => handleJoystick(e, 'left', 'y')} 
                 value={settings().positions.leftJoystick.y} 
-            />
+            /> */}
            
             <h1 style={font('1.25em')}>Right Joystick</h1>
             <div style={font('1em')}>Base Color: ({NUMBERS[settings().positions.rightJoystick.base as keyof typeof NUMBERS]})</div>
@@ -486,18 +547,26 @@ export function PhaserShaper({ settings }: IPhaserShape) {
                 onChange={(e) => handleJoystickWidth(e, 'right')} 
                 value={settings().positions.rightJoystick.width} 
             />
-            <div style={font('1em')}> X: ({settings().positions.rightJoystick.x})</div>
-            <Form.Range 
+            <div style={font('1em')}>
+                <button class='highlight' onClick={() => handleJoystick(Math.max(0, settings().positions.leftJoystick.x - 0.025), 'right', 'x')}>-</button>
+                X: ({settings().positions.rightJoystick.x})
+                <button class='highlight' onClick={() => handleJoystick(Math.min(1, settings().positions.leftJoystick.x - 0.025), 'right', 'x')}>+</button>
+            </div>
+            {/* <Form.Range 
                 min={0} max={1} step={0.025} 
                 onChange={(e) => handleJoystick(e, 'right', 'x')} 
                 value={settings().positions.rightJoystick.x} 
-            />
-            <div style={font('1em')}>Y: ({settings().positions.rightJoystick.y})</div>
-            <Form.Range 
+            /> */}
+            <div style={font('1em')}>
+                <button class='highlight' onClick={() => handleJoystick(Math.max(0, settings().positions.leftJoystick.y - 0.025), 'right', 'y')}>-</button>
+                Y: ({settings().positions.rightJoystick.y})
+                <button class='highlight' onClick={() => handleJoystick(Math.min(0, settings().positions.leftJoystick.y - 0.025), 'right', 'y')}>+</button>
+            </div>
+            {/* <Form.Range 
                 min={0} max={1} step={0.025} 
                 onChange={(e) => handleJoystick(e, 'right', 'y')} 
                 value={settings().positions.rightJoystick.y} 
-            />
+            /> */}
             <h1 style={font('1.25em')}>Action Buttons</h1>
             <div style={font('1em')}>Border: ({NUMBERS[settings().positions.actionButtons.border as keyof typeof NUMBERS]})</div>
             <Form.Select onChange={(e) => handleButtonBorder(e.target.value, 'action')} style={{ margin: '3%' }} value={settings().positions.actionButtons.border}>

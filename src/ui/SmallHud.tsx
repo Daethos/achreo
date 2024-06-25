@@ -12,29 +12,8 @@ import CombatText from './CombatText';
 import Dialog from './Dialog';
 import { LevelSheet } from '../utility/ascean';
 import Settings from '../models/settings';
+import { text } from '../utility/text';
 
-// Colors: Bone (#fdf6d8), Green, Gold, Purple, Teal, Red, Blue, Light Blue 
-// const MAX_ACTIONS = 30;
-const DAMAGE = [
-    'Blunt',
-    'Pierce', 
-    'Slash', 
-    'Earth', 
-    'Fire', 
-    'Frost', 
-    'Lightning',
-    'Righteous',
-    'Sorcery',
-    'Spooky', 
-    'Wild',
-    'Wind', 
-];
-const NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-const ATTACKS = ['Attack', 'Posture', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'rolls', 'postures', 'parries', 'parried', 'rolled', 'attacked', 'defend', 'postured', 'tshaer', 'tshaers', 'tshaering'];
-const CAST = ['confuse', 'confusing', 'fear', 'fearing', 'polymorph', 'polymorphs', 'polymorphing', 'slow', 'slowing', 'snare', 'snaring'];
-// const specials = ['Invocation', 'Tendrils', 'Hush', 'Tendril', 'hush', 'tshaer', 'sacrifice', 'suture'];
-const HUSH = ['Invocation', 'Hush', 'hush', 'sacrifice', 'shimmer', 'shimmers', 'protect', 'protects'];
-const TENDRIL = ['Tendril', 'tendril', 'tshaer', 'suture', 'shield', 'shields', 'mend'];
 interface Props {
     ascean: Accessor<Ascean>;
     asceanState: Accessor<LevelSheet>;
@@ -65,77 +44,6 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
     });
     const [combatHistory, setCombatHistory] = createSignal<any>(undefined);
     const dimensions = useResizeListener(); 
-
-    // function addCombatAction(actions: string[], newAction: string): string {
-    //     let updatedActions = [...actions, newAction];
-    //     while (updatedActions.length > MAX_ACTIONS) {
-    //         updatedActions.shift();
-    //     };
-    //     const newActions = updatedActions.toString().split(',').join(' ');
-    //     console.log(newActions, 'New Actions ???');
-    //     return newActions;
-    // };
-    const text = (prev: string, data: Combat) => {
-        let oldText: any = prev !== undefined ? prev  : "";
-        // const byteSize = (str: string) => new Blob([str]).size;
-        // const result = byteSize(oldText);
-        // console.log(result, 'Resulting Current Byte Size');
-        let newText: any = '';
-        if (data.playerStartDescription !== '') newText += data.playerStartDescription + '\n';
-        if (data.computerStartDescription !== '') newText += data.computerStartDescription + '\n';
-        if (data.playerSpecialDescription !== '') newText += data.playerSpecialDescription + '\n';
-        if (data.computerSpecialDescription !== '') newText += data.computerSpecialDescription + '\n';
-        if (data.playerActionDescription !== '') newText += data.playerActionDescription + '\n';
-        if (data.computerActionDescription !== '') newText += data.computerActionDescription + '\n';
-        if (data.playerInfluenceDescription !== '') newText += data.playerInfluenceDescription + '\n';
-        if (data.playerInfluenceDescriptionTwo !== '') newText += data.playerInfluenceDescriptionTwo + '\n';
-        if (data.computerInfluenceDescription !== '') newText += data.computerInfluenceDescription + '\n';
-        if (data.computerInfluenceDescriptionTwo !== '') newText += data.computerInfluenceDescriptionTwo + '\n';
-        if (data.playerDeathDescription !== '') newText += data.playerDeathDescription + '\n';
-        if (data.computerDeathDescription !== '') newText += data.computerDeathDescription + '\n';
-        newText = styleText(newText);
-        // return addCombatAction(oldText, newText);
-
-        oldText += newText;
-        return oldText;
-    };
-    function styleText(text: string) {
-        const style = (t: string) => { 
-            const numCheck = t.split('').find((c: string) => NUMBERS.includes(parseInt(c)));
-            const isNumber = numCheck !== undefined;
-
-            const isAttack = ATTACKS.includes(t);
-            const isCast = CAST.includes(t);
-            const isDamage = DAMAGE.includes(t);
-            const isHeal = t.includes('heal');
-            const isHush = HUSH.includes(t);
-            const isTendril = TENDRIL.includes(t);
-            // const isSpecial = specials.includes(t);
-            const isCritical = t.includes('Critical');
-            const isGlancing = t.includes('Glancing');
-            const color = 
-                isCast === true ? 'blue' :
-                isDamage === true ? 'teal' :
-                isNumber === true ? 'gold' : 
-                isHeal === true ? '#0BDA51' :
-                isGlancing ? 'lightblue' : 
-                isTendril === true ? 'fuchsia' : 
-                (isAttack === true || isCritical === true) ? 'red' : 
-                isHush === true ? 'fuchsia' :
-                '#fdf6d8';
-                
-            const lush = (isCast === true || isNumber === true || isHush === true || isTendril === true);
-            const fontWeight = lush ? 500 : 'normal';
-            const textShadow = lush ? `#fdf6d8 0 0 0` : 'none';
-            const fontSize = lush ? '0.75em' : '0.65em';
-            const newLine = t === '\n' ? '<br>' : t;
-            const style = (isGlancing || isCritical || isAttack || isNumber) ? 'italic' : 'normal';
-
-            return `<span style="color: ${color}; font-style: ${style}; font-weight: ${fontWeight}; text-shadow: ${textShadow}; font-size: ${fontSize}; margin: 0;">${newLine}</span>`;
-        };
-    
-        return text.split(' ').map((t, _i) => style(t)).join(' ');
-    };
     
     createMemo(() => {
         if (ascean()?.experience as number > experience()) {
@@ -254,6 +162,9 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
     const showPlayer = () => {
         EventBus.emit('show-player');
         EventBus.emit('action-button-sound');
+        if (!clicked().showPlayer === false) {
+            EventBus.emit('show-castbar', false);
+        };
         setClicked({ ...clicked(), showPlayer: !clicked().showPlayer });
         EventBus.emit('toggle-bar', true);
     };
@@ -344,7 +255,7 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
         </Show>
         <Show when={game().dialogTag}>
         <button class='smallHudButtons flash' style={dimensions().ORIENTATION === 'landscape' ? 
-            { ...overview((game().smallHud !== true && !clicked().phaser) ? 4.5 + settings().positions.solidHud.right : 28.5 + + settings().positions.solidHud.right ) } : // if game().smallHud === true ? right: '4.5%'
+            { ...overview((game().smallHud !== true && !clicked().phaser) ? 4.5 + settings().positions.solidHud.right : 28.5 + settings().positions.solidHud.right ) } : // if game().smallHud === true ? right: '4.5%'
             { height: '3.5%', width: '7.5%', right: '52%' }} 
             onClick={dialog}>
         <div class='p-3' style={{ color: clicked().dialog === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
@@ -354,7 +265,7 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
         </Show>
         <Show when={game().lootTag}>
         <button class='smallHudButtons flash' style={dimensions().ORIENTATION === 'landscape' ? 
-            { ...overview((game().smallHud !== true && !clicked().phaser) ? 8.5 : 32.5) } : // right: game().smallHud === true ? '4.5' : '0.5%', top: '82.5%' SECOND ROW
+            { ...overview((game().smallHud !== true && !clicked().phaser) ? 8.5 + settings().positions.solidHud.right : 32.5 + settings().positions.solidHud.right) } : // right: game().smallHud === true ? '4.5' : '0.5%', top: '82.5%' SECOND ROW
             { height: '3.5%', width: '7.5%', right: game().dialogTag ? '56%' : '52%' }} // right: game().dialogTag ? '8%' : '4%', bottom: '4.75%' SECOND ROW
             onClick={loot}>
         <div class='p-3' style={{ color: clicked().loot === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>

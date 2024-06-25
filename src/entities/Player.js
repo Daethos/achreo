@@ -1048,9 +1048,10 @@ export default class Player extends Entity {
                 return;
             };
         };
+        if (this.isPosturing || this.isParrying) return;
         this.isAttacking = true;
         this.swingReset(States.ATTACK, true);
-        this.swingReset(States.POSTURE);
+        // this.swingReset(States.POSTURE);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.ATTACK);
     }; 
     onAttackUpdate = (_dt) => {
@@ -1094,9 +1095,10 @@ export default class Player extends Entity {
                 return;
             };
         };
+        if (this.isAttacking || this.isParrying) return;
         this.isPosturing = true;
         this.swingReset(States.POSTURE, true);
-        this.swingReset(States.ATTACK);
+        // this.swingReset(States.ATTACK);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.POSTURE);
     };
     onPostureUpdate = (_dt) => {
@@ -1112,10 +1114,10 @@ export default class Player extends Entity {
     };
 
     onDodgeEnter = () => {
-        if (this.isStalwart || this.isStorming) return;
+        if (this.isStalwart || this.isStorming || this.isRolling) return;
         this.isDodging = true;
         this.swingReset(States.DODGE, true);
-        this.swingReset(States.ROLL);
+        // this.swingReset(States.ROLL);
         this.scene.useStamina(PLAYER.STAMINA.DODGE);
         this.scene.sound.play('dodge', { volume: this.scene.settings.volume });
         this.wasFlipped = this.flipX; 
@@ -1147,10 +1149,10 @@ export default class Player extends Entity {
     };
 
     onRollEnter = () => {
-        if (this.isStalwart || this.isStorming) return;
+        if (this.isStalwart || this.isStorming || this.isDodging) return;
         this.isRolling = true;
         this.swingReset(States.ROLL, true);
-        this.swingReset(States.DODGE);
+        // this.swingReset(States.DODGE);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.ROLL);
         this.scene.sound.play('roll', { volume: this.scene.settings.volume });
         this.body.parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;
@@ -3131,6 +3133,8 @@ export default class Player extends Entity {
                     blindStrike: blindStrike
                 }});
             };
+
+            this.knockback(this.attackedTarget.enemyID);
         };
         // if (this.actionTarget && !this.isRanged) this.knockback(this.actionTarget); // actionTarget
         if (this.isStealthing) {

@@ -471,6 +471,9 @@ const Character = ({ reputation, setReputation, settings, setSettings, ascean, a
         const newSettings: Settings = { ...settings(), control: e };
         setSettings(newSettings);
         await saveSettings(newSettings);
+        if (e === CONTROLS.PHASER_UI) {
+            EventBus.emit('show-castbar', true);
+        };
     };
 
     async function currentView(e: string) {

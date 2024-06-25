@@ -52,6 +52,11 @@ export default class Settings {
             z: number;
             zoom: number;
         };
+        castbar: {
+            barHeight: number;
+            barWidth: number;
+            barY: number;
+        };
         leftJoystick: { 
             base: number;
             thumb: number;
@@ -169,6 +174,11 @@ export default class Settings {
                 y: 0,
                 z: 0,
                 zoom: 0.8,
+            },
+            castbar: {
+                barHeight: 24,
+                barWidth: 200,
+                barY: 0,
             },
             leftJoystick: { 
                 base: 0x000000,

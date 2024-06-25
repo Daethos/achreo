@@ -147,7 +147,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     startingSpeed = (entity) => {
-        let speed = (this.name === 'player' ? 1.5: 1.65); // PLAYER.SPEED.INITIAL
+        let speed = (this.name === 'player' ? 1.25: 1.4); // PLAYER.SPEED.INITIAL
         const helmet = entity.helmet.type;
         const chest = entity.chest.type;
         const legs = entity.legs.type;
@@ -385,21 +385,30 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         });
     };
 
-    knockback(other) {
-        if (!other.pair.gameObjectB || !other.pair.gameObjectB.body) return;
-        let bodyPosition = other.pair.gameObjectB.body.position;
-        // let body = other.pair.gameObjectB.body; 
-        let offset = Phaser.Physics.Matter.Matter.Vector.mult(other.pair.collision.normal, other.pair.collision.depth); 
-        let collisionPoint = Phaser.Physics.Matter.Matter.Vector.add(offset, bodyPosition);
-        this.knockbackDirection = this.flipX 
-            ? Phaser.Physics.Matter.Matter.Vector.sub(collisionPoint, bodyPosition) 
-            : Phaser.Physics.Matter.Matter.Vector.sub(bodyPosition, collisionPoint);
-        this.knockbackDirection = Phaser.Physics.Matter.Matter.Vector.normalise(this.knockbackDirection); 
-        
-        console.log(this.knockbackDirection, 'Knockback Direction');
+    knockback(id) {
+        const enemy = this.scene.getEnemy(id);
+        if (enemy === undefined) {
+            console.log('No enemy found, no knockback!');
+            return;
+        };
 
-        const enemy = this.scene.getEnemy(other.pair.gameObjectB.enemyID);
-        console.log(enemy, 'Enemy Knockback');
+        const multiplier = (Math.abs(enemy.velocity.x) > 0.1) ? 0.0375 : 0.01;
+        let xAngle = (enemy.x - this.x) * multiplier;
+        let yAngle = (enemy.y - this.y) * multiplier;
+        this.knockbackDirection = { x: xAngle, y: yAngle };
+
+        // if (!other.pair.gameObjectB || !other.pair.gameObjectB.body) return;
+        // let bodyPosition = other.pair.gameObjectB.body.position;
+        // let offset = Phaser.Physics.Matter.Matter.Vector.mult(other.pair.collision.normal, other.pair.collision.depth); 
+        // let collisionPoint = Phaser.Physics.Matter.Matter.Vector.add(offset, bodyPosition);
+        // this.knockbackDirection = this.flipX 
+        //     ? Phaser.Physics.Matter.Matter.Vector.sub(collisionPoint, bodyPosition) 
+        //     : Phaser.Physics.Matter.Matter.Vector.sub(bodyPosition, collisionPoint);
+        // this.knockbackDirection = Phaser.Physics.Matter.Matter.Vector.normalise(this.knockbackDirection); 
+        
+        // console.log(this.knockbackDirection, 'Knockback Direction');
+        // const enemy = this.scene.getEnemy(other.pair.gameObjectB.enemyID);
+
         const accelerationFrames = 10; 
         const accelerationStep = this.knockbackForce / accelerationFrames; // this.knockbackForce / accelerationFrames
         const dampeningFactor = 0.9; 
@@ -416,9 +425,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
 
             if (currentForce < this.knockbackForce) currentForce += accelerationStep;
-            const forceX = (this.knockbackDirection.x * currentForce) * (this.flipX ? -5 : 5);
-            const forceY = (this.knockbackDirection.y * currentForce) * (this.flipX ? -5 : 5);
-            console.log(`Knockback forceX, forceY: ${forceX}, ${forceY}`);
+            const forceX = (this.knockbackDirection.x * currentForce); // * (this.flipX ? -5 : 5)
+            const forceY = (this.knockbackDirection.y * currentForce); // * (this.flipX ? -5 : 5)
+            // console.log(`Knockback forceX, forceY: ${forceX}, ${forceY}`);
             // enemy.setVelocityX(forceX);
             // enemy.setVelocityY(forceY);
             enemy.applyForce({ x: forceX, y: forceY });
@@ -478,24 +487,24 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         return item.imgUrl.split('/')[3].split('.')[0];
     };
 
-    hitBoxCheck = (target) => {
-        if (target.isDefeated === true) return;
+    hitBoxCheck = (enemy) => {
+        if (enemy.isDefeated === true) return;
         const xOffset = this.flipX ? 16 : -16;
         // let pointer = this.scene.add.graphics()
         //     .lineStyle(1, 0xFF0000, 1)
-        //     .strokeRect(target.x + xOffset, target.y, 1, 1);
+        //     .strokeRect(enemy.x + xOffset, enemy.y, 1, 1);
 
         for (let i = -32; i < 32; i++) {
             // pointer.clear();
-            // pointer.strokeRect(target.x + xOffset, target.y + i, 1, 1);
-            if (this.weaponHitbox.getBounds().contains(target.x + xOffset, target.y + i)) {
-                console.log('Hitbox Hit!', i, 'Target:', target.ascean?.name);
-                this.attackedTarget = target;
+            // pointer.strokeRect(enemy.x + xOffset, enemy.y + i, 1, 1);
+            if (this.weaponHitbox.getBounds().contains(enemy.x + xOffset, enemy.y + i)) {
+                // console.log('Hitbox Hit!', i, 'Target:', enemy.ascean?.name);
+                this.attackedTarget = enemy;
                 this.actionSuccess = true;
                 return;
             };
         };
-        console.log('Hitbox Missed!', 'Target:', target.ascean?.name);
+        // console.log('Hitbox Missed!', 'Target:', enemy.ascean?.name);
     };
 
     checkActionSuccess = (entity, target) => {
@@ -509,15 +518,23 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
             this.weaponHitbox.y = this.y - 8;
             if (target === undefined) {
-                console.log('SO you do not have a target. Mission, run through your targets array with this.hitBoxCheck.');
+                // console.log('SO you do not have a target. Mission, run through your targets array with this.hitBoxCheck.');
                 if (this.targets.length === 0) {
-                    console.log('You have no targets to run through, returning.');
-                    return;
-                };
-                for (let i = 0; i < this.targets.length; i++) {
-                    this.hitBoxCheck(this.targets[i]);
-                };
+                    console.log('You have no TARGETS to run through, checking TOUCHING.');
+                    if (this.touching.length === 0) {
+                        console.log('You have neither TARGETS nor TOUCHING, returning.');
+                        return;
+                    } else {
+                        for (let i = 0; i < this.touching.length; i++) {
+                            this.hitBoxCheck(this.touching[i]);
+                        };
+                    };
+                } else {
+                    for (let i = 0; i < this.targets.length; i++) {
+                        this.hitBoxCheck(this.targets[i]);
+                    };
                 return;
+                }
             };
             this.hitBoxCheck(target);
         };

@@ -18,6 +18,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     private total: number;
     private castbar: Phaser.GameObjects.Sprite;
     private timeText: Phaser.GameObjects.Text;
+    private barY: number;
 
     constructor(scene: Game, x: number, y: number, time: number, entity: any) {
         super(scene, x, y);
@@ -30,9 +31,10 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.setDepth(5);
         this.setScrollFactor(0);
         this.visible = false;
-        
+        this.barY = scene.settings.positions.castbar.barY;
+
         // this position is the bottom middle of the screen and more like 'ui' than 'world'
-        this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT);
+        this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - this.barY);
     };
 
     private create = (entity: any, scene: Game): void => {
@@ -122,6 +124,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
             this.zoom = e;
         });
         EventBus.on('castbar-y', (y: number) => {
+            this.barY = y;
             this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - y);
         });
         EventBus.on('update-castbar', (dims: { height: number, width: number }) => {

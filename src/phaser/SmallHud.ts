@@ -186,7 +186,9 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         });
         EventBus.on('update-small-hud-offset', (offset: number) => {
             this.bar.forEach((item, index) => {
-                item.x = xModifier(this.x, Math.min(index, 9), offset);
+                // item.x = xModifier(this.x, Math.min(index, 9), offset);
+                item.x = xModifier(this.x, Math.min(index, 6), offset || 43.75);
+
             });
         });
         EventBus.on('update-left-hud-offset', (offset: number) => {

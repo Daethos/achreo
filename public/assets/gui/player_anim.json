@@ -284,7 +284,7 @@
             "key": "player_running",
             "type": "frames",
             "repeat": -1,
-            "frameRate": 12,
+            "frameRate": 24,
             "frames": [
                 {
                     "key": "player",

@@ -89,6 +89,7 @@ export const States = {
     // Negative States
     CONFUSED: "confused",
     CONSUMED: "consumed",
+    COUNTERSPELLED: 'counterspelled',
     FEARED: "feared",
     FROZEN: "frozen",
     POLYMORPHED: "polymorphed",

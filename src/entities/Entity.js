@@ -392,7 +392,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             return;
         };
 
-        const multiplier = (Math.abs(enemy.velocity.x) > 0.1) ? 0.0375 : 0.01;
+        const multiplier = (Math.abs(enemy.velocity.x) > 0.1) ? 0.0075 : 0.00375;
         let xAngle = (enemy.x - this.x) * multiplier;
         let yAngle = (enemy.y - this.y) * multiplier;
         this.knockbackDirection = { x: xAngle, y: yAngle };
@@ -412,7 +412,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const accelerationFrames = 10; 
         const accelerationStep = this.knockbackForce / accelerationFrames; // this.knockbackForce / accelerationFrames
         const dampeningFactor = 0.9; 
-        const knockbackDuration = 500;
+        const knockbackDuration = 750;
         let currentForce = 0; 
 
         const knockbackLoop = (timestamp) => {
@@ -525,16 +525,18 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         console.log('You have neither TARGETS nor TOUCHING, returning.');
                         return;
                     } else {
+                        console.log('checking TOUCHING');
                         for (let i = 0; i < this.touching.length; i++) {
                             this.hitBoxCheck(this.touching[i]);
                         };
                     };
                 } else {
+                    console.log('checking TARGETS');
                     for (let i = 0; i < this.targets.length; i++) {
                         this.hitBoxCheck(this.targets[i]);
                     };
-                return;
-                }
+                    return;
+                };
             };
             this.hitBoxCheck(target);
         };

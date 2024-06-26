@@ -3,12 +3,12 @@ import Equipment from "../models/equipment";
 import { Combat } from "../stores/combat";
 import StatusEffect from "./prayer";
 
-// const ATTACKS = {
-//     attack: 'attack',
-//     posture: 'posture against',
-//     roll: 'roll into',
-//     parry: 'parry',
-// };
+const ATTACKS = {
+    attack: 'attack',
+    posture: 'posture against',
+    roll: 'roll into',
+    parry: 'parry',
+};
 
 const ENEMY_ATTACKS = {
     attack: 'attacks',
@@ -76,8 +76,8 @@ export type CombatStats =  {
 
 // ====================================== HELPERS ====================================== \\
 
-function roundToTwoDecimals(num: number): number {
-    const roundedNum = Number(num.toFixed(2));
+export function roundToTwoDecimals(num: number, dec: number = 2): number {
+    const roundedNum = Number(num.toFixed(dec));
     if (roundedNum.toString().match(/\.\d{3,}$/)) {
         return parseFloat(roundedNum.toString());
     };
@@ -1666,7 +1666,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     // ==================== STATISTIC LOGIC ====================
 
     combat.playerActionDescription = 
-        `You ${playerAction} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(playerTotalDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'damage (Critical)' : combat.glancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
+        `You ${ATTACKS[playerAction as keyof typeof ATTACKS]} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(playerTotalDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'damage (Critical)' : combat.glancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
 
     if (combat.newComputerHealth <= 0) {
         combat.newComputerHealth = 0;

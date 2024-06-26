@@ -48,7 +48,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
             case 'heal':
                 return 'green';
             case 'hush':
-                return 'fuschia';
+                return 'fuchsia';
             case 'tendril':
                 return 'purple';
             default:

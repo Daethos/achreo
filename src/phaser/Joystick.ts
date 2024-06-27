@@ -45,6 +45,7 @@ export default class Joystick extends Phaser.GameObjects.Container {
         this.pointer = scene.add.image(scene.cameras.main.width / 2, scene.cameras.main.height / 2, 'cursor');
         this.pointer.setScrollFactor(0);
         this.pointer.setDepth(3);
+        this.pointer.setOrigin(0.5);
     };
 
     controlPointer() {

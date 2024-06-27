@@ -716,10 +716,8 @@ export class Game extends Scene {
     };
 
     getWorldPointer = () => {
-        const pointer = this.rightJoystick.pointer;
-        const worldX = this.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
-        const worldY = this.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
-        const target = new Phaser.Math.Vector2(worldX, worldY);
+        const point = this.cameras.main.getWorldPoint(this.rightJoystick.pointer.x, this.rightJoystick.pointer.y);
+        const target = new Phaser.Math.Vector2(point.x, point.y);
         return target;
     };
 
@@ -729,7 +727,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.2);
+            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 1);
             const health = enemy.health - damage;
             EventBus.emit('update-enemy-health', { id, health });
             enemy.isStunned = true;

@@ -1640,37 +1640,37 @@ export default class Player extends Entity {
 
     onFyerusEnter = () => {
         // if (this.inCombat === false) return;
+        this.isFyerus = true;
+        if (this.isMoving === true) this.isFyerus = false;
+        if (this.isFyerus === false) return;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Fyerus', PLAYER.DURATIONS.FYERUS / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.FYERUS);
-        this.isAchire = true;
-        if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true); // !this.isCaerenic && 
+        this.castbar.setTime(PLAYER.DURATIONS.FYERUS);
         this.castbar.setVisible(true);  
-        this.isAstrave = true;
+        if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true); // !this.isCaerenic && 
+        // this.flickerCarenic(6000); 
+        this.isFyerus = true;
+        this.aoe = new AoE(this.scene, 'fyerus', 6, false, undefined, true);    
+        this.scene.useStamina(PLAYER.STAMINA.FYERUS);    
+        this.setTimeEvent('fyerusCooldown', 2000); // PLAYER.COOLDOWNS.SHORT
+        this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You unearth the fires and water from the land of hush and tendril.`
+        });
     };
     onFyerusUpdate = (dt) => {
-        if (this.isMoving === true) this.isAstrave = false;
-        this.combatChecker(this.isAstrave);
-        if (this.castbar.time >= PLAYER.DURATIONS.FYERUS) {
-            this.astraveSuccess = true;
-            this.isAstrave = false;
+        if (this.isMoving === true) this.isFyerus = false;
+        if (this.castbar.time <= 0) {
+            this.isFyerus = false;
         };
-        if (this.isAstrave === true) {
-            this.castbar.update(dt, 'cast');
+        this.combatChecker(this.isFyerus);
+        if (this.isFyerus === true) {
+            this.castbar.update(dt, 'channel', 0xE0115F);
         };
     };
     onFyerusExit = () => {
-        if (this.astraveSuccess === true) {
-            this.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, true);    
-            console.log('Achire Success!');
-            EventBus.emit('special-combat-text', {
-                playerSpecialDescription: `You unearth the winds and lightning from the land of hush and tendril.`
-            });
-            this.setTimeEvent('astraveCooldown', 2000); // PLAYER.COOLDOWNS.SHORT
-            this.astraveSuccess = false;
-            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
-            this.scene.useStamina(PLAYER.STAMINA.FYERUS);    
-        };
         this.castbar.reset();
+        this.isFyerus = false;
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); // !this.isCaerenic && 
     };
 
@@ -3515,7 +3515,7 @@ export default class Player extends Entity {
             this.anims.play('player_running', true);
         } else if (this.isConsuming) { 
             this.anims.play('player_health', true).on('animationcomplete', () => this.isConsuming = false);
-        } else if (this.isPolymorphing || this.isFearing || this.isFreezing || this.isHealing || this.isSlowing || this.isSnaring) { 
+        } else if (this.isAchire || this.isAstrave || this.isFyerus || this.isKynisos || this.isPolymorphing || this.isFearing || this.isFreezing || this.isHealing || this.isSlowing || this.isSnaring) { 
             walk(this.scene);
             this.anims.play('player_health', true);
         } else if (this.isChiomic || this.isTshaering) {

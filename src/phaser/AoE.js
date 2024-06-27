@@ -48,6 +48,17 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     };
 
     setCount = (scene, type, positive) => {
+        if (type === 'fyerus') {
+            if (scene.player.isMoving) {
+                this.glowFilter.remove(this);
+                this.bless = [];
+                this.timer.destroy();
+                this.timer.remove(false);
+                this.timer = undefined;
+                this.destroy();
+                return;
+            };
+        };
         if (positive === true) {
             scene.time.delayedCall(950, () => {
                 this.bless.forEach((_target) => {
@@ -150,7 +161,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         let count = 0;
         const target = manual === true ? scene.getWorldPointer() : scene.player;
         console.log(target, 'Target')
-        const y = manual === true ? target.y : target.y + 6
+        const y = manual === true ? target.y : target.y + 6;
         this.timer = scene.time.addEvent({
             delay: 50,
             callback: () => {
@@ -184,8 +195,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         } else {
             target = scene.player;
         };
+        const y = manual === true ? target.y : target.y + 6;
 
-        const aoeSensor = Bodies.circle(target.x, target.y + 6, 60, { 
+        const aoeSensor = Bodies.circle(target.x, y, 60, { 
             isSensor: true, label: 'aoeSensor' 
         });
         this.setExistingBody(aoeSensor);

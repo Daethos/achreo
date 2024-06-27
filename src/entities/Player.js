@@ -1725,22 +1725,43 @@ export default class Player extends Entity {
     };
 
     onKynisosEnter = () => {
-
+        // if (this.inCombat === false) return;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Kynisos', PLAYER.DURATIONS.KYNISOS / 2, 'cast');
+        this.castbar.setTotal(PLAYER.DURATIONS.KYNISOS);
+        this.isKynisos = true;
+        if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true); // !this.isCaerenic && 
+        this.castbar.setVisible(true);  
+        this.isKynisos = true;
     };
     onKynisosUpdate = (dt) => {
-
+        if (this.isMoving === true) this.isKynisos = false;
+        this.combatChecker(this.isKynisos);
+        if (this.castbar.time >= PLAYER.DURATIONS.KYNISOS) {
+            this.kynisosSuccess = true;
+            this.isKynisos = false;
+        };
+        if (this.isKynisos === true) {
+            this.castbar.update(dt, 'cast');
+        };
     };
     onKynisosExit = () => {
-
+        if (this.kynisosSuccess === true) {
+            this.aoe = new AoE(this.scene, 'kynisos', 3, false, undefined, true);    
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You unearth the netting of the golden hunt.`
+            });
+            this.setTimeEvent('kynisosCooldown', 2000); // PLAYER.COOLDOWNS.SHORT
+            this.kynisosSuccess = false;
+            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+            this.scene.useStamina(PLAYER.STAMINA.KYNISOS);    
+        };
+        this.castbar.reset();
+        if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); // !this.isCaerenic && 
     };
 
     onLeapEnter = () => {
         this.isLeaping = true;
         const target = this.scene.getWorldPointer();
-        // const pointer = this.scene.rightJoystick.pointer;
-        // const worldX = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
-        // const worldY = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
-        // const target = new Phaser.Math.Vector2(worldX, worldY);
         const direction = target.subtract(this.position);
         direction.normalize();
         this.flipX = direction.x < 0;
@@ -1781,10 +1802,6 @@ export default class Player extends Entity {
         this.isRushing = true;
         this.scene.sound.play('stealth', { volume: this.scene.settings.volume });        
         const target = this.scene.getWorldPointer();
-        // const pointer = this.scene.rightJoystick.pointer;
-        // const worldX = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
-        // const worldY = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
-        // const target = new Phaser.Math.Vector2(worldX, worldY);
         const direction = target.subtract(this.position);
         direction.normalize();
         this.flipX = direction.x < 0;

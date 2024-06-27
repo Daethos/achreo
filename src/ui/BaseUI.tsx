@@ -318,6 +318,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     break;
                 case 'Health': // Either Enemy or Player gaining health
                     let { key, value, id } = data;
+                    console.log(id, 'ID')
                     switch (key) {
                         case 'player':
                             const healed = Math.floor(combat().playerHealth * (value / 100));

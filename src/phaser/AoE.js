@@ -160,7 +160,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         let scale = 0;
         let count = 0;
         const target = manual === true ? scene.getWorldPointer() : scene.player;
-        console.log(target, 'Target')
         const y = manual === true ? target.y : target.y + 6;
         this.timer = scene.time.addEvent({
             delay: 50,

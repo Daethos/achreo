@@ -729,7 +729,7 @@ export class Game extends Scene {
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 1);
             const health = enemy.health - damage;
-            EventBus.emit('update-enemy-health', { id, health });
+            EventBus.emit('initiate-combat', { data: { id, key: 'enemy', value: health }, type: 'Health' });
             enemy.isStunned = true;
         };
     };
@@ -774,9 +774,9 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.2);
+            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.3);
             const health = enemy.health - damage;
-            EventBus.emit('update-enemy-health', { id, health });
+            EventBus.emit('initiate-combat', { data: { id, key: 'enemy', value: health }, type: 'Health', });
             enemy.isSlowed = true;
         };
     };
@@ -788,9 +788,12 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
-            this.player.isFrozen = true;
+            this.player.isRooted = true;
         } else {
-            enemy.isFrozen = true;
+            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.3);
+            const health = enemy.health - damage;
+            enemy.isRooted = true;
+            EventBus.emit('initiate-combat', { data: { id, key: 'enemy', value: health }, type: 'Health', });
         };
     };
     polymorph = (id: string) => {
@@ -811,7 +814,7 @@ export class Game extends Scene {
         if (!enemy) return;
         const heal = enemy.ascean.health.max * 0.1;
         const total = Math.min(enemy.health + heal, enemy.ascean.health.max);
-        EventBus.emit('initiate-combat', { data: { key: 'enemy', value: total }, type: 'Health', id });
+        EventBus.emit('initiate-combat', { data: { id, key: 'enemy', value: total }, type: 'Health' });
     };
     root = () => {
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === this.state.enemyID);
@@ -949,9 +952,9 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isAggressive === true) {
-            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.2);
+            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.3);
             const health = enemy.health - damage;
-            EventBus.emit('update-enemy-health', { id, health });
+            EventBus.emit('initiate-combat', { data: { id, key: 'enemy', value: health }, type: 'Health' });
         } else if (id === this.player.playerID) {
             EventBus.emit('initiate-combat', { data: 10, type: 'Enemy Chiomic' });
         };

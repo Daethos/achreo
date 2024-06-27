@@ -729,7 +729,7 @@ export class Game extends Scene {
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 1);
             const health = enemy.health - damage;
-            EventBus.emit('initiate-combat', { data: { id, key: 'enemy', value: health }, type: 'Health' });
+            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
             enemy.isStunned = true;
         };
     };
@@ -776,7 +776,7 @@ export class Game extends Scene {
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.3);
             const health = enemy.health - damage;
-            EventBus.emit('initiate-combat', { data: { id, key: 'enemy', value: health }, type: 'Health', });
+            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
             enemy.isSlowed = true;
         };
     };
@@ -793,7 +793,7 @@ export class Game extends Scene {
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.3);
             const health = enemy.health - damage;
             enemy.isRooted = true;
-            EventBus.emit('initiate-combat', { data: { id, key: 'enemy', value: health }, type: 'Health', });
+            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
         };
     };
     polymorph = (id: string) => {
@@ -806,15 +806,15 @@ export class Game extends Scene {
         };
     };
     renewal = () => {
-        EventBus.emit('initiate-combat', { data: { key: 'player', value: 7.5 }, type: 'Health' });
+        this.combatMachine.action({ data: { key: 'player', value: 7.5, id: this.player.playerID }, type: 'Health' });
     };
     enemyRenewal = (id: string) => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) return;
         const heal = enemy.ascean.health.max * 0.1;
-        const total = Math.min(enemy.health + heal, enemy.ascean.health.max);
-        EventBus.emit('initiate-combat', { data: { id, key: 'enemy', value: total }, type: 'Health' });
+        const health = Math.min(enemy.health + heal, enemy.ascean.health.max);
+            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
     };
     root = () => {
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === this.state.enemyID);
@@ -953,10 +953,10 @@ export class Game extends Scene {
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isAggressive === true) {
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.3);
-            const health = enemy.health - damage;
-            EventBus.emit('initiate-combat', { data: { id, key: 'enemy', value: health }, type: 'Health' });
+            const value = enemy.health - damage;
+            this.combatMachine.action({ data: { id, key: 'enemy', value }, type: 'Health' });
         } else if (id === this.player.playerID) {
-            EventBus.emit('initiate-combat', { data: 10, type: 'Enemy Chiomic' });
+            this.combatMachine.action({ data: 10, type: 'Enemy Chiomic' });
         };
     };
     writhe = (id: string, enemyID?: string): void => {
@@ -966,8 +966,7 @@ export class Game extends Scene {
 
         if (!enemy) {
             if (id === this.player.playerID) {
-                // console.log('writhe target is the player');
-                EventBus.emit('initiate-combat', { data: 25, type: 'Enemy Chiomic' });
+                this.combatMachine.action({ data: 20, type: 'Enemy Chiomic' });
                 // const enemyWrithe = this.enemies.find((e: any) => e.enemyID === enemyID);
                 // console.log(enemyWrithe, 'The enemy that is writhing, are they targeted?', enemyWrithe.isCurrentTarget);
                 // if (enemyWrithe.isCurrentTarget) {

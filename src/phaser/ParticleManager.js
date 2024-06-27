@@ -14,6 +14,25 @@ export const PARTICLES = [
     'wind', 
 ];
 
+function angleTarget(target) {
+    // const target = player.particleEffect.target;
+    let angle = 0;
+    if (target.x > 0) {
+        if (target.y > 0) { 
+            angle = 90;
+        } else { 
+            angle = 0;
+        };
+    } else {
+        if (target.y > 0) { 
+            angle = 180;
+        } else {
+            angle = 270
+        };
+    };
+    return angle;
+};
+
 class Particle {
     constructor(scene, action, key, player, special) {
         const particle = PARTICLES.includes(key);
@@ -21,19 +40,16 @@ class Particle {
         this.scene = scene;
         this.id = id;
         this.action = action;
-        this.effect = this.spriteMaker(this.scene, player, particle === true ? key + '_effect' : key, particle); 
+        this.effect = this.spriteMaker(this.scene, player, particle === true ? key + '_effect' : key, particle, special); 
         this.isParticle = particle === true;
         this.key = particle === true ? key + '_effect' : key;
-        this.sensorSize = particle === true ? 6 : 12;
+        this.sensorSize = special === false ? 6 : 12;
         this.special = special;
         this.success = false;
         this.target = this.setTarget(player, scene, special);
         this.timer = this.setTimer(action, id);
         this.triggered = false;
         this.velocity = this.setVelocity(action);
-        // if (special === true) Rotate the sprite pointing
-
-        console.log(this.isParticle, 'Is this a particle?', this.special, 'Is this special?');
 
         const { Bodies } = Phaser.Physics.Matter.Matter;
         const effectSensor = Bodies.circle(player.x, player.y, this.sensorSize, { isSensor: true, label: `effectSensor-${id}`}); 
@@ -145,7 +161,7 @@ class Particle {
     };
 
     setTimer(action, id) {
-        const time = { achire: 1250, attack: 1500, counter: 1000, posture: 1750, roll: 1250 };
+        const time = { achire: 1500, attack: 1500, counter: 1000, posture: 1750, roll: 1250 };
         this.scene.time.addEvent({
             delay: time[action],
             callback: () => {
@@ -161,8 +177,8 @@ class Particle {
         return velocity[action];
     };
 
-    spriteMaker(scene, player, key, particle) {
-        return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key).setScale(particle === true ? 0.3 : 0.6).setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
+    spriteMaker(scene, player, key, particle, special) {
+        return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key).setScale(particle === true && special === false ? 0.3 : 1).setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
     };
 };
 
@@ -233,25 +249,6 @@ export default class ParticleManager extends Phaser.Scene {
         };
     };
 
-    angleTarget = (player) => {
-        const tar = player.particleEffect.target;
-        let angle = 0;
-        if (tar.x > 0) {
-            if (tar.y > 0) { 
-                angle = 90;
-            } else { 
-                angle = 0;
-            };
-        } else {
-            if (tar.y > 0) { 
-                angle = 180;
-            } else {
-                angle = 270
-            };
-        };
-        return angle;
-    };
-
     update(player) { 
         if (!player.particleEffect) return;
         if (!player.particleEffect.effect.visible) player.particleEffect.effect.setVisible(true); 
@@ -261,7 +258,7 @@ export default class ParticleManager extends Phaser.Scene {
             if (player.particleEffect.isParticle === true) {
                 player.particleEffect.effect.play(player.particleEffect.key, true);
             } else {
-                player.particleEffect.effect.setAngle(this.angleTarget(player));
+                player.particleEffect.effect.setAngle(angleTarget(player.particleEffect.target));
             };
             
             const target = player.particleEffect.target;

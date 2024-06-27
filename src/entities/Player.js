@@ -1313,9 +1313,8 @@ export default class Player extends Entity {
             const anim = this.getWeaponAnim();
             this.particleEffect =  this.scene.particleManager.addEffect('achire', this, anim, true);
             // Create a projectile
-            console.log('Achire Success!');
             EventBus.emit('special-combat-text', {
-                playerSpecialDescription: `You entwine your achre and your caer and project it through your ${this.scene.state.weapons[0].name}.`
+                playerSpecialDescription: `Your Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0].name}.`
             });
             this.setTimeEvent('achireCooldown', 2000); // PLAYER.COOLDOWNS.SHORT
             this.achireSuccess = false;
@@ -1349,7 +1348,6 @@ export default class Player extends Entity {
     onAstraveExit = () => {
         if (this.astraveSuccess === true) {
             this.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, true);    
-            console.log('Achire Success!');
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You unearth the winds and lightning from the land of hush and tendril.`
             });
@@ -1563,7 +1561,7 @@ export default class Player extends Entity {
     onDesperationExit = () => {
         const desperationCooldown = this.inCombat ? PLAYER.COOLDOWNS.LONG : PLAYER.COOLDOWNS.SHORT;
         this.setTimeEvent('desperationCooldown', desperationCooldown);  
-        EventBus.emit('initiate-combat', { data: { key: 'player', value: 50, id: this.playerID }, type: 'Health' });
+        this.scene.combatMachine.action({ data: { key: 'player', value: 50, id: this.playerID }, type: 'Health' });
         this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
     };
 
@@ -1695,7 +1693,7 @@ export default class Player extends Entity {
             this.setTimeEvent('healingCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
             this.scene.useStamina(PLAYER.STAMINA.HEALING);
             this.healingSuccess = false;
-            EventBus.emit('initiate-combat', { data: { key: 'player', value: 25, id: this.playerID }, type: 'Health' });
+            this.scene.combatMachine.action({ data: { key: 'player', value: 25, id: this.playerID }, type: 'Health' });
             this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
         };
         this.castbar.reset();
@@ -2350,7 +2348,7 @@ export default class Player extends Entity {
         };
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush');
-        EventBus.emit('initiate-combat', { data: 10, type: 'Chiomic' });
+        this.scene.combatMachine.action({ data: 10, type: 'Chiomic' });
         this.maliceBubble.setCharges(this.maliceBubble.charges - 1);
         if (this.maliceBubble.charges <= 0) {
             this.isMalicing = false;
@@ -2398,7 +2396,9 @@ export default class Player extends Entity {
         };
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril');
-        EventBus.emit('initiate-combat', { data: { key: 'player', value: 15, id: this.playerID }, type: 'Health' });
+        
+        this.scene.combatMachine.action({ data: { key: 'player', value: 15, id: this.playerID }, type: 'Health' });
+        
         this.mendBubble.setCharges(this.mendBubble.charges - 1);
         if (this.mendBubble.charges <= 0) {
             this.isMending = false;
@@ -2471,7 +2471,7 @@ export default class Player extends Entity {
     };
 
     onRenewalEnter = () => {
-        if (this.inCombat === false) return;
+        // if (this.inCombat === false) return;
         this.isRenewing = true;
         this.scene.useStamina(PLAYER.STAMINA.RENEWAL);    
         this.aoe = new AoE(this.scene, 'renewal', 6, true);    

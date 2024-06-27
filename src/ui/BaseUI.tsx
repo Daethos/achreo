@@ -33,7 +33,6 @@ interface Props {
 
 export default function BaseUI({ instance, ascean, combat, game, reputation, setReputation, settings, setSettings, stamina }: Props) {
     const { staminaPercentage } = createStamina(stamina);
-    const [healthTimer, setHealthTimer] = createSignal<number>(0);
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [tutorial, setTutorial] = createSignal<string>('');
@@ -318,7 +317,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     break;
                 case 'Health': // Either Enemy or Player gaining health
                     let { key, value, id } = data;
-                    console.log(id, 'ID')
                     switch (key) {
                         case 'player':
                             const healed = Math.floor(combat().playerHealth * (value / 100));

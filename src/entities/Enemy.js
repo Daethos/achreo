@@ -1376,7 +1376,8 @@ export default class Enemy extends Entity {
         this.scene.time.delayedCall(PLAYER.DURATIONS.DESPERATION, () => {
             const heal = Math.round(this.ascean.health.max * 0.5);
             const total = Math.min(this.health + heal, this.ascean.health.max);
-            EventBus.emit('initiate-combat', { data: { key: 'enemy', value: total, id: this.enemyID }, type: 'Health' });
+            
+            this.scene.combatMachine.action({ data: { key: 'enemy', value: total, id: this.enemyID }, type: 'Health' });
             // if (this.scene.state.enemyID === this.enemyID) {
             // } else {
             //     this.health = total;
@@ -1444,13 +1445,7 @@ export default class Enemy extends Entity {
             } else {
                 const heal = Math.round(this.ascean.health.max * 0.25);
                 const total = Math.min(this.health + heal, this.ascean.health.max);
-                EventBus.emit('initiate-combat', { data: { key: 'enemy', value: total, id: this.enemyID }, type: 'Health' });
-                // if (this.scene.state.enemyID === this.enemyID) {
-                    // } else {
-                        //     this.health = total;
-                        //     this.healthbar.setValue(total);
-                        //     this.updateHealthBar(total);
-                        // };
+                this.scene.combatMachine.action({ data: { key: 'enemy', value: total, id: this.enemyID }, type: 'Health' });
                 this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
             };        
             this.checkCaerenic(false);
@@ -1479,6 +1474,7 @@ export default class Enemy extends Entity {
             return;
         };
         this.isChiomic = true;
+        this.isPerformingSpecial = true;
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         if (this.isGlowing === false) this.checkCaerenic(true);
         this.castbar.setTotal(PLAYER.DURATIONS.KYRNAICISM);
@@ -1511,7 +1507,6 @@ export default class Enemy extends Entity {
             loop: false,
         });
         this.setStatic(true);
-        // this.castbar.setVisible(true);  
     };
     onKyrnaicismUpdate = (dt) => {
         if (this.isChiomic) {
@@ -1526,6 +1521,7 @@ export default class Enemy extends Entity {
     };
     onKyrnaicismExit = () => {
         this.castbar.reset();
+        this.isPerformingSpecial = false;
         if (this.isGlowing === true) this.checkCaerenic(false);
         this.setStatic(false);
         if (this.chiomicTimer) {
@@ -1959,7 +1955,8 @@ export default class Enemy extends Entity {
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush');
         if (this.checkPlayerResist() === true) {
-            EventBus.emit('initiate-combat', { data: 10, type: 'Enemy Chiomic' });
+            this.scene.combatMachine.action({ data: 10, type: 'Enemy Chiomic' });
+            
         };
         this.maliceBubble.setCharges(this.maliceBubble.charges - 1);
         if (this.maliceBubble.charges <= 0) {
@@ -2006,13 +2003,7 @@ export default class Enemy extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril');
         const mend = Math.round(this.ascean.health.max * 0.15);
         const heal = Math.min(this.ascean.health.max, this.ascean.health.current + mend);
-        EventBus.emit('initiate-combat', { data: { key: 'enemy', value: heal, id: this.enemyID }, type: 'Health' });
-        // if (this.scene.state.enemyID === this.enemyID) {
-        // } else {
-        //     this.health = heal;
-        //     this.healthbar.setValue(health);
-        //     this.updateHealthBar(health);
-        // };
+        this.scene.combatMachine.action({ data: { key: 'enemy', value: heal, id: this.enemyID }, type: 'Health' });
         this.mendBubble.setCharges(this.mendBubble.charges - 1);
         if (this.mendBubble.charges <= 0) {
             this.isMending = false;

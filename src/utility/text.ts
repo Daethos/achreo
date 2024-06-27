@@ -34,8 +34,8 @@ const NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 const ATTACKS = ['Attack', 'Posture', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'rolls', 'postures', 'parries', 'parried', 'rolled', 'attacked', 'defend', 'postured', 'tshaer', 'tshaers', 'tshaering'];
 const CAST = ['confuse', 'confusing', 'fear', 'fearing', 'polymorph', 'polymorphs', 'polymorphing', 'slow', 'slowing', 'snare', 'snaring'];
 // const specials = ['Invocation', 'Tendrils', 'Hush', 'Tendril', 'hush', 'tshaer', 'sacrifice', 'suture'];
-const HUSH = ['Invocation', 'Hush', 'hush', 'sacrifice', 'shimmer', 'shimmers', 'protect', 'protects'];
-const TENDRIL = ['Tendril', 'tendril', 'tshaer', 'suture', 'shield', 'shields', 'mend'];
+const HUSH = ['Invocation', 'Hush', 'hush', 'sacrifice', 'shimmer', 'shimmers', 'protect', 'protects', 'astrave', 'fyerus'];
+const TENDRIL = ['Tendril', 'tendril', 'tshaer', 'suture', 'shield', 'shields', 'mend', 'achire', 'kynisos'];
 
 // function addCombatAction(actions: string[], newAction: string): string {
 //     let updatedActions = [...actions, newAction];

@@ -1,22 +1,42 @@
 import Phaser from 'phaser'; 
 import { v4 as uuidv4 } from 'uuid';
 
+export const PARTICLES = [
+    'arrow',
+    'earth', 
+    'fire', 
+    'frost', 
+    'lightning',
+    'righteous',
+    'sorcery',
+    'spooky', 
+    'wild',
+    'wind', 
+];
+
 class Particle {
-    constructor(scene, action, key, player) {
+    constructor(scene, action, key, player, special) {
+        const particle = PARTICLES.includes(key);
         const id = uuidv4();
         this.scene = scene;
         this.id = id;
         this.action = action;
-        this.effect = this.spriteMaker(this.scene, player, key + '_effect'); 
-        this.key = key + '_effect';
-        this.target = this.setTarget(player, scene);
+        this.effect = this.spriteMaker(this.scene, player, particle === true ? key + '_effect' : key, particle); 
+        this.isParticle = particle === true;
+        this.key = particle === true ? key + '_effect' : key;
+        this.sensorSize = particle === true ? 6 : 12;
+        this.special = special;
         this.success = false;
+        this.target = this.setTarget(player, scene, special);
         this.timer = this.setTimer(action, id);
         this.triggered = false;
         this.velocity = this.setVelocity(action);
+        // if (special === true) Rotate the sprite pointing
+
+        console.log(this.isParticle, 'Is this a particle?', this.special, 'Is this special?');
 
         const { Bodies } = Phaser.Physics.Matter.Matter;
-        const effectSensor = Bodies.circle(player.x, player.y, 6, { isSensor: true, label: `effectSensor-${id}`}); 
+        const effectSensor = Bodies.circle(player.x, player.y, this.sensorSize, { isSensor: true, label: `effectSensor-${id}`}); 
         this.effect.setExistingBody(effectSensor); 
         scene.add.existing(this.effect);
         this.sensorListener(player, effectSensor);
@@ -97,19 +117,20 @@ class Particle {
         });
     };
 
-    setTarget(player, scene) {
+    setTarget(player, scene, special = false) {
         if (player.name === 'enemy') {
             const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y);
             const direction = target.subtract(player.position);
             direction.normalize();
             return direction;
         } else {
-            if (scene.settings.difficulty.aim === true || !player.attacking) {
-                const pointer = scene.rightJoystick.pointer;
-                const worldX = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
-                const worldY = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
-                // console.log(worldX, worldY);
-                const target = new Phaser.Math.Vector2(worldX, worldY);
+            if (scene.settings.difficulty.aim === true || !player.attacking || special === true) {
+                const target = scene.getWorldPointer();
+                // const pointer = scene.rightJoystick.pointer;
+                // const worldX = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
+                // const worldY = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
+                // // console.log(worldX, worldY);
+                // const target = new Phaser.Math.Vector2(worldX, worldY);
                 // const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y) // player.rightJoystick.pointer.x, player.rightJoystick.pointer.y
                 const direction = target.subtract(player.position);
                 direction.normalize();
@@ -124,7 +145,7 @@ class Particle {
     };
 
     setTimer(action, id) {
-        const time = { attack: 1500, counter: 1000, posture: 1750, roll: 1250 };
+        const time = { achire: 1250, attack: 1500, counter: 1000, posture: 1750, roll: 1250 };
         this.scene.time.addEvent({
             delay: time[action],
             callback: () => {
@@ -136,12 +157,12 @@ class Particle {
     };
 
     setVelocity(action) {
-        const velocity = { attack: 4, counter: 6, posture: 3, roll: 3 }; // 7.5 || 9 || 6 || 6
+        const velocity = { achire: 5, attack: 4, counter: 6, posture: 3, roll: 3, special: 5 }; // 7.5 || 9 || 6 || 6
         return velocity[action];
     };
 
-    spriteMaker(scene, player, key) {
-        return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key).setScale(0.3).setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
+    spriteMaker(scene, player, key, particle) {
+        return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key).setScale(particle === true ? 0.3 : 0.6).setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
     };
 };
 
@@ -176,8 +197,8 @@ export default class ParticleManager extends Phaser.Scene {
         this.particles = []; 
     };  
 
-    addEffect(action, player, key) {
-        const newParticle = new Particle(this.scene, action, key, player); 
+    addEffect(action, player, key, special = false) {
+        const newParticle = new Particle(this.scene, action, key, player, special); 
         this.particles.push(newParticle);
         return newParticle;
     };
@@ -212,15 +233,38 @@ export default class ParticleManager extends Phaser.Scene {
         };
     };
 
+    angleTarget = (player) => {
+        const tar = player.particleEffect.target;
+        let angle = 0;
+        if (tar.x > 0) {
+            if (tar.y > 0) { 
+                angle = 90;
+            } else { 
+                angle = 0;
+            };
+        } else {
+            if (tar.y > 0) { 
+                angle = 180;
+            } else {
+                angle = 270
+            };
+        };
+        return angle;
+    };
+
     update(player) { 
         if (!player.particleEffect) return;
         if (!player.particleEffect.effect.visible) player.particleEffect.effect.setVisible(true); 
-        if (!player.flipX && !player.particleEffect.effect.flipX) player.particleEffect.effect.flipX = true;
+        if (!player.flipX && !player.particleEffect.effect.flipX && player.particleEffect.isParticle === true) player.particleEffect.effect.flipX = true;
         if (player.particleEffect && player.particleEffect.effect && this.particles.find((particle) => particle.id === player.particleEffect.id)) {
-            if (player.name === 'player' && player.particleEffect.action === 'roll') return;
-            player.particleEffect.effect.play(player.particleEffect.key, true);
+
+            if (player.particleEffect.isParticle === true) {
+                player.particleEffect.effect.play(player.particleEffect.key, true);
+            } else {
+                player.particleEffect.effect.setAngle(this.angleTarget(player));
+            };
+            
             const target = player.particleEffect.target;
-            // target.normalize();
             player.particleEffect.effect.setVelocity(player.particleEffect.velocity * target.x, target.y * player.particleEffect.velocity);
         };
     };

@@ -1,9 +1,13 @@
 const { Bodies } = Phaser.Physics.Matter.Matter;
 
 const COLORS = {
+    'achire': 0x00FFFF,
+    'astrave': 0xFFFF00,
     'chiomic': 0xFFC700,
     'freeze': 0x0000FF,
+    'fyerus': 0xE0115F,
     'howl': 0xFF0000,
+    'kynisos': 0xFFD700,
     'renewal': 0xFDF6D8,
     'scream': 0xFF00FF,
     'shock': 0x00FFFF,
@@ -12,7 +16,7 @@ const COLORS = {
 };
 
 export default class AoE extends Phaser.Physics.Matter.Sprite {
-    constructor(scene, type, count = 1, positive = false, enemy = undefined) {
+    constructor(scene, type, count = 1, positive = false, enemy = undefined, manual = false) {
         super(scene.matter.world, scene.player.x, scene.player.y + 6, 'target');
         this.setVisible(false);
         this.setScale(0.375); // 375
@@ -36,9 +40,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             this.setEnemyTimer(scene, enemy);
             this.setupEnemyCount(scene, type, positive, enemy);
         } else {
-            this.setupSensor(scene);
+            this.setupSensor(scene, manual);
             this.setupListener(scene);
-            this.setTimer(scene);
+            this.setTimer(scene, manual);
             this.setCount(scene, type, positive);
         };
     };
@@ -141,9 +145,12 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         });
     };
     
-    setTimer = (scene) => {
+    setTimer = (scene, manual) => {
         let scale = 0;
         let count = 0;
+        const target = manual === true ? scene.getWorldPointer() : scene.player;
+        console.log(target, 'Target')
+        const y = manual === true ? target.y : target.y + 6
         this.timer = scene.time.addEvent({
             delay: 50,
             callback: () => {
@@ -152,7 +159,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                     scale += 0.01875;
                     this.setScale(scale);
                     this.setVisible(true);
-                    this.setPosition(scene.player.x, scene.player.y + 6);
+                    this.setPosition(target.x, y);
                 };
                 count++;
             },
@@ -170,8 +177,15 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.sensor = aoeSensor;
     };
 
-    setupSensor = (scene) => {
-        const aoeSensor = Bodies.circle(scene.player.x, scene.player.y + 6, 60, { 
+    setupSensor = (scene, manual) => {
+        let target;
+        if (manual) {
+            target = scene.getWorldPointer();
+        } else {
+            target = scene.player;
+        };
+
+        const aoeSensor = Bodies.circle(target.x, target.y + 6, 60, { 
             isSensor: true, label: 'aoeSensor' 
         });
         this.setExistingBody(aoeSensor);

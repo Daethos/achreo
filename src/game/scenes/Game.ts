@@ -715,8 +715,26 @@ export class Game extends Scene {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };
 
+    getWorldPointer = () => {
+        const pointer = this.rightJoystick.pointer;
+        const worldX = this.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
+        const worldY = this.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
+        const target = new Phaser.Math.Vector2(worldX, worldY);
+        return target;
+    };
+
     // ============================ Combat Specials ============================ \\ 
     
+    astrave = (id: string) => {
+        if (id === '') return;
+        let enemy = this.enemies.find((e: any) => e.enemyID === id);
+        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
+            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.2);
+            const health = enemy.health - damage;
+            EventBus.emit('update-enemy-health', { id, health });
+            enemy.isStunned = true;
+        };
+    };
     chiomic = (id: string) => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
@@ -754,9 +772,28 @@ export class Game extends Scene {
             enemy.isFrozen = true;
         };
     };
+    fyerus = (id: string) => {
+        if (id === '') return;
+        let enemy = this.enemies.find((e: any) => e.enemyID === id);
+        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
+            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.2);
+            const health = enemy.health - damage;
+            EventBus.emit('update-enemy-health', { id, health });
+            enemy.isSlowed = true;
+        };
+    };
     howl = (id: string) => {
         if (id === '') return;
         this.stunned(id);
+    };
+    kynisos = (id: string) => {
+        if (id === '') return;
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        if (!enemy) {
+            this.player.isFrozen = true;
+        } else {
+            enemy.isFrozen = true;
+        };
     };
     polymorph = (id: string) => {
         if (id === '') return;

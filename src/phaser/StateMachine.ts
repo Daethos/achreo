@@ -56,6 +56,12 @@ export const States = {
     ROOT: "root",
     RUSH: "rush",
     SACRIFICE: "sacrifice",
+
+    ACHIRE: 'achire', // Casted, Damage Projectile, Manual Aim || Fuchsia & Teal
+    ASTRAVE: 'astrave', // Casted, AoE, Damage, Manual Aim || Yelllow & Bone
+    FYERUS: 'fyerus', // Channeled, AoE, Damage w/ Snare?, Manual Aim || Aqua & Ruby
+    KYNISOS: 'kynisos', // Casted, AoE, Root, Manual Aim || Gold & Green
+    
     SHROUD: "shroud",
     SLOW: "slow",
     SLOWING: "slowing",

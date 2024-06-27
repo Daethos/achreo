@@ -203,9 +203,11 @@ const CombatSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('PARRY')} Parry
+            {svg('PARRY')} Parry / Counter Spell
             </p>
             Your opponent, whether man or machine, will change its preference of attacks based on their own abilitiy and yours, in addition to your preference of actions. Successfully parrying the specific action of the enemy stuns them for several seconds.
+            <br />
+            [Counterspell interrupts any casted or channeled effect the enemy is performing. Available instead of parrying when you are using magical weapons.]
             </div>
             <br />
             <div>
@@ -251,6 +253,19 @@ const SpecialSettings = () => {
             </div>
             <br />
 
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('CAST')} Achire
+            </p>
+            Entwine your achre and caer through your weapon to release a powerful projectile. Cast. Short Cooldown. Moderate Stamina.
+            </div>
+            <br /><div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('AOE')} Astrave
+            </p>
+            Uproot tendrils, damaging all caught in its grasp. AoE. Short Cooldown. Moderate Stamina. Manual Aim.
+            </div>
+            <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('WEAPONS')} Arc
@@ -311,7 +326,14 @@ const SpecialSettings = () => {
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('AOE')} Freeze
             </p>
-            A hush that proliferates, freezing enemies caught in its chilling blast for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, freezing enemies caught in its grasp for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('BEAM')} Fyerus
+            </p>
+            Uprooted tendrils, damaging enemies and snaring enemies caught in their grasp. Channeled. Moderate Cooldown. Moderate Stamina. Manual Aim.
             </div>
             <br />
             <div>
@@ -326,6 +348,13 @@ const SpecialSettings = () => {
             {svg('VOICE')} Howl
             </p>
             A hush that proliferates, stunning enemies caught in its piercing blast for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('AOE')} Kynisos
+            </p>
+            Uprooted tendrils, rooting enemies caught in their grasp for several seconds. Cast. Moderate Cooldown. Moderate Stamina. Manual Aim
             </div>
             <br />
             <div>

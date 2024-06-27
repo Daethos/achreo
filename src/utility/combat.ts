@@ -4,6 +4,7 @@ import { Combat } from "../stores/combat";
 import StatusEffect from "./prayer";
 
 const ATTACKS = {
+    achire: 'achire',
     attack: 'attack',
     posture: 'posture against',
     roll: 'roll into',
@@ -1501,7 +1502,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     };
 
     // This is for the focused attack Action i.e. you chose to attack over adding a defensive component
-    if (playerAction === 'attack' || playerAction === 'arc' || playerAction === 'storm' || playerAction === 'writhe') {
+    if (playerAction === 'achire' || playerAction === 'attack' || playerAction === 'arc' || playerAction === 'special' || playerAction === 'storm' || playerAction === 'writhe') {
         if (combat.weapons[0]?.grip === 'One Hand') {
             if (combat.weapons[0]?.attackType === 'Physical') {
                 if (combat.player?.mastery === 'agility' || combat.player?.mastery === 'constitution') {
@@ -1593,6 +1594,10 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     };
 
     // Checking For Player Actions
+    if (playerAction === 'achire') {
+        playerPhysicalDamage *= 1.5;
+        playerMagicalDamage *= 1.5;
+    };
     if (playerAction === 'arc') {
         playerPhysicalDamage *= 4;
         playerMagicalDamage *= 4;

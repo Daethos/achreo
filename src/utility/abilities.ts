@@ -1,5 +1,6 @@
 export const SPECIAL = {
-    'constitution': [ // 11
+    'constitution': [ // 12
+        'Astrave',
         'Consume', 
         'Desperation', 
         'Disease', 
@@ -11,9 +12,10 @@ export const SPECIAL = {
         'Sacrifice', 
         'Shield', 
         'Ward'
-    ], // 11
+    ], // 12
 
-    'strength': [ // 12
+    'strength': [ // 13
+        'Achire',
         'Arc', 
         'Consume', 
         'Howl', 
@@ -26,13 +28,14 @@ export const SPECIAL = {
         'Tshaeral', 
         'Ward', 
         'Writhe'
-    ], // 12
+    ], // 13
 
-    'agility': [ // 12
+    'agility': [ // 13
         'Consume', 
         'Desperation', 
         'Envelop', 
         'Invoke', 
+        'Kynisos',
         'Pursuit', 
         'Recover', 
         'Rush', 
@@ -41,9 +44,11 @@ export const SPECIAL = {
         'Sprint', 
         'Storm', 
         'Writhe'
-    ], // 12
+    ], // 13
 
-    'achre': [ // 12
+    'achre': [ // 14
+        'Achire',
+        'Astrave',
         'Blink', 
         'Confuse', 
         'Consume', 
@@ -56,12 +61,14 @@ export const SPECIAL = {
         'Sacrifice', 
         'Shimmer', 
         'Slow'
-    ], // 12
+    ], // 14
         
-    'caeren': [ // 10
+    'caeren': [ // 12
+        'Astrave',
         'Consume', 
         'Desperation', 
         'Fear', 
+        'Fyerus',
         'Healing', 
         'Invoke', 
         'Mend', 
@@ -69,24 +76,29 @@ export const SPECIAL = {
         'Sacrifice', 
         'Shield', 
         'Suture'
-    ], // 10
+    ], // 12
 
-    'kyosir': [ // 10
-        'Chiomic', 
+    'kyosir': [ // 12
+        'Astrave',
+        'Chiomic',
         'Confuse', 
         'Consume', 
         'Invoke', 
+        'Kynisos',
         'Kyrnaicism', 
         'Malice', 
         'Protect', 
         'Scream', 
         'Suture', 
         'Tshaeral'
-    ], // 10
+    ], // 12
 };
+
 export const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
 
 export const SPECIALS = [
+    'Achire',
+    'Astrave',
     'Arc',
     'Blink', 
     'Chiomic', 
@@ -97,9 +109,11 @@ export const SPECIALS = [
     'Envelop',
     'Fear', 
     'Freeze',
+    'Fyerus',
     'Healing', 
     'Howl', 
-    'Invoke', 
+    'Invoke',
+    'Kynisos', 
     'Kyrnaicism',
     'Leap', 
     'Malice',

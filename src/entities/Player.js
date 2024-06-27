@@ -139,6 +139,16 @@ export default class Player extends Entity {
                 onUpdate: this.onArcUpdate,
                 onExit: this.onArcExit,
             })
+            .addState(States.ACHIRE, {
+                onEnter: this.onAchireEnter,
+                onUpdate: this.onAchireUpdate,
+                onExit: this.onAchireExit,
+            })
+            .addState(States.ASTRAVE, {
+                onEnter: this.onAstraveEnter,
+                onUpdate: this.onAstraveUpdate,
+                onExit: this.onAstraveExit,
+            })
             .addState(States.BLINK, {
                 onEnter: this.onBlinkEnter,
                 onUpdate: this.onBlinkUpdate,
@@ -169,6 +179,11 @@ export default class Player extends Entity {
                 onUpdate: this.onFreezeCastUpdate,
                 onExit: this.onFreezeCastExit,
             })
+            .addState(States.FYERUS, {
+                onEnter: this.onFyerusEnter,
+                onUpdate: this.onFyerusUpdate,
+                onExit: this.onFyerusExit,
+            })
             .addState(States.HEALING, {
                 onEnter: this.onHealingEnter,
                 onUpdate: this.onHealingUpdate,
@@ -178,6 +193,11 @@ export default class Player extends Entity {
                 onEnter: this.onInvokeEnter,
                 onUpdate: this.onInvokeUpdate,
                 onExit: this.onInvokeExit,
+            })
+            .addState(States.KYNISOS, {
+                onEnter: this.onKynisosEnter,
+                onUpdate: this.onKynisosUpdate,
+                onExit: this.onKynisosExit,
             })
             .addState(States.KYRNAICISM, {
                 onEnter: this.onKyrnaicismEnter,
@@ -396,10 +416,14 @@ export default class Player extends Entity {
         this.isCaerenic = false;
         this.isStalwart = false;
         this.isStealthing = false;
+        this.isAchire = false;
+        this.isAstrave = false;
         this.isArcing = false;
         this.isChioimic = false;
         this.isEnveloping = false;
+        this.isFyerus = false;
         this.isHealing = false;
+        this.isKynisos = false;
         this.isLeaping = false;
         this.isMalicing = false;
         this.isMending = false;
@@ -859,20 +883,17 @@ export default class Player extends Entity {
         this.currentTarget = undefined;
         this.attacking = undefined;
         this.removeHighlight();
-
         this.scene.combatMachine.clear(id);
         if (this.targets.every(obj => !obj.inCombat)) {
             this.disengage();
         } else {
-            // if (this.currentTarget.enemyID === id) { // Was targeting the id that was defeated
-                const newTarget = this.targets.find(obj => obj.enemyID !== id);
-                if (!newTarget) return;
-                this.scene.setupEnemy(newTarget);
-                this.setAttacking(newTarget);
-                this.setCurrentTarget(newTarget);
-                this.targetID = newTarget.enemyID;
-                this.highlightTarget(newTarget);
-            // }; 
+            const newTarget = this.targets.find(obj => obj.enemyID !== id);
+            if (!newTarget) return;
+            this.scene.setupEnemy(newTarget);
+            this.setAttacking(newTarget);
+            this.setCurrentTarget(newTarget);
+            this.targetID = newTarget.enemyID;
+            this.highlightTarget(newTarget);
         };
     };
 
@@ -1070,6 +1091,18 @@ export default class Player extends Entity {
         return direction.x < 0 && this.flipX || direction.x > 0 && !this.flipX;
     };
 
+    getWeaponAnim = () => {
+        let anim = '';
+        if (this.hasMagic === true) {
+            anim = this.currentDamageType;
+        } else if (this.hasBow === true) {
+            anim = 'arrow';
+        } else {
+            anim = this.assetSprite(this.scene.state.weapons[0]);
+        };
+        return anim;
+    };
+
     combatChecker = (state) => {
         if (state) return;
         if (this.inCombat) {
@@ -1256,6 +1289,79 @@ export default class Player extends Entity {
         this.setStatic(false);
     };
 
+    onAchireEnter = () => {
+        // if (this.inCombat === false) return;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Achire', PLAYER.DURATIONS.ACHIRE / 2, 'cast');
+        this.castbar.setTotal(PLAYER.DURATIONS.ACHIRE);
+        this.isAchire = true;
+        if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true); // !this.isCaerenic && 
+        this.castbar.setVisible(true);  
+    };
+    onAchireUpdate = (dt) => {
+        if (this.isMoving === true) this.isAchire = false;
+        this.combatChecker(this.isAchire);
+        if (this.castbar.time >= PLAYER.DURATIONS.ACHIRE) {
+            this.achireSuccess = true;
+            this.isAchire = false;
+        };
+        if (this.isAchire === true) {
+            this.castbar.update(dt, 'cast');
+        };
+    };
+    onAchireExit = () => {
+        if (this.achireSuccess === true) {
+            const anim = this.getWeaponAnim();
+            this.particleEffect =  this.scene.particleManager.addEffect('achire', this, anim, true);
+            // Create a projectile
+            console.log('Achire Success!');
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You entwine your achre and your caer and project it through your ${this.scene.state.weapons[0].name}.`
+            });
+            this.setTimeEvent('achireCooldown', 2000); // PLAYER.COOLDOWNS.SHORT
+            this.achireSuccess = false;
+            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+            this.scene.useStamina(PLAYER.STAMINA.ACHIRE);    
+        };
+        this.castbar.reset();
+        if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); // !this.isCaerenic && 
+    };
+
+    onAstraveEnter = () => {
+        // if (this.inCombat === false) return;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Astrave', PLAYER.DURATIONS.ASTRAVE / 2, 'cast');
+        this.castbar.setTotal(PLAYER.DURATIONS.ASTRAVE);
+        this.isAstrave = true;
+        if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true); // !this.isCaerenic && 
+        this.castbar.setVisible(true);  
+        this.isAstrave = true;
+    };
+    onAstraveUpdate = (dt) => {
+        if (this.isMoving === true) this.isAstrave = false;
+        this.combatChecker(this.isAstrave);
+        if (this.castbar.time >= PLAYER.DURATIONS.ASTRAVE) {
+            this.astraveSuccess = true;
+            this.isAstrave = false;
+        };
+        if (this.isAstrave === true) {
+            this.castbar.update(dt, 'cast');
+        };
+    };
+    onAstraveExit = () => {
+        if (this.astraveSuccess === true) {
+            this.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, true);    
+            console.log('Achire Success!');
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You unearth the winds and lightning from the land of hush and tendril.`
+            });
+            this.setTimeEvent('astraveCooldown', 2000); // PLAYER.COOLDOWNS.SHORT
+            this.astraveSuccess = false;
+            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+            this.scene.useStamina(PLAYER.STAMINA.ASTRAVE);    
+        };
+        this.castbar.reset();
+        if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); // !this.isCaerenic && 
+    };
+
     onArcEnter = () => {
         // if (!this.inCombat) return;
         this.isArcing = true;
@@ -1328,7 +1434,7 @@ export default class Player extends Entity {
         this.combatChecker(this.isBlinking);
     };
     onBlinkExit = () => {};
-
+    
     onKyrnaicismEnter = () => {
         if (!this.inCombat) return;
         const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
@@ -1532,6 +1638,42 @@ export default class Player extends Entity {
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); // !this.isCaerenic && 
     };
 
+    onFyerusEnter = () => {
+        // if (this.inCombat === false) return;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Fyerus', PLAYER.DURATIONS.FYERUS / 2, 'cast');
+        this.castbar.setTotal(PLAYER.DURATIONS.FYERUS);
+        this.isAchire = true;
+        if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true); // !this.isCaerenic && 
+        this.castbar.setVisible(true);  
+        this.isAstrave = true;
+    };
+    onFyerusUpdate = (dt) => {
+        if (this.isMoving === true) this.isAstrave = false;
+        this.combatChecker(this.isAstrave);
+        if (this.castbar.time >= PLAYER.DURATIONS.FYERUS) {
+            this.astraveSuccess = true;
+            this.isAstrave = false;
+        };
+        if (this.isAstrave === true) {
+            this.castbar.update(dt, 'cast');
+        };
+    };
+    onFyerusExit = () => {
+        if (this.astraveSuccess === true) {
+            this.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, true);    
+            console.log('Achire Success!');
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You unearth the winds and lightning from the land of hush and tendril.`
+            });
+            this.setTimeEvent('astraveCooldown', 2000); // PLAYER.COOLDOWNS.SHORT
+            this.astraveSuccess = false;
+            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+            this.scene.useStamina(PLAYER.STAMINA.FYERUS);    
+        };
+        this.castbar.reset();
+        if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); // !this.isCaerenic && 
+    };
+
     onHealingEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Healing', PLAYER.DURATIONS.HEALING / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.HEALING);
@@ -1582,12 +1724,23 @@ export default class Player extends Entity {
         this.scene.useStamina(PLAYER.STAMINA.INVOKE);
     };
 
+    onKynisosEnter = () => {
+
+    };
+    onKynisosUpdate = (dt) => {
+
+    };
+    onKynisosExit = () => {
+
+    };
+
     onLeapEnter = () => {
         this.isLeaping = true;
-        const pointer = this.scene.rightJoystick.pointer;
-        const worldX = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
-        const worldY = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
-        const target = new Phaser.Math.Vector2(worldX, worldY);
+        const target = this.scene.getWorldPointer();
+        // const pointer = this.scene.rightJoystick.pointer;
+        // const worldX = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
+        // const worldY = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
+        // const target = new Phaser.Math.Vector2(worldX, worldY);
         const direction = target.subtract(this.position);
         direction.normalize();
         this.flipX = direction.x < 0;
@@ -1627,10 +1780,11 @@ export default class Player extends Entity {
     onRushEnter = () => {
         this.isRushing = true;
         this.scene.sound.play('stealth', { volume: this.scene.settings.volume });        
-        const pointer = this.scene.rightJoystick.pointer;
-        const worldX = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
-        const worldY = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
-        const target = new Phaser.Math.Vector2(worldX, worldY);
+        const target = this.scene.getWorldPointer();
+        // const pointer = this.scene.rightJoystick.pointer;
+        // const worldX = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
+        // const worldY = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
+        // const target = new Phaser.Math.Vector2(worldX, worldY);
         const direction = target.subtract(this.position);
         direction.normalize();
         this.flipX = direction.x < 0;

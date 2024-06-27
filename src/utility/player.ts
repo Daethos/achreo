@@ -37,6 +37,8 @@ export const PLAYER = {
         POSTURE: 20,
         ROLL: 15, // 25
         // Magical
+        ACHIRE: 25,
+        ASTRAVE: 25,
         ARC: 25,
         BLINK: 10,
         CHIOMIC: 25,  
@@ -44,8 +46,10 @@ export const PLAYER = {
         CONSUME: 10,
         DESPERATION: 40,
         FEAR: 10,
+        FYERUS: 25,
         HEALING: 25,
         INVOKE: -25,
+        KYNISOS: 25,
         KYRNAICISM: 25,
         LEAP: 25,
         POLYMORPH: 10,
@@ -81,14 +85,18 @@ export const PLAYER = {
         LONG: 15000,
     },
     DURATIONS: {
+        ACHIRE: 1000,
+        ASTRAVE: 1500,
         ARCING: 3000,
         CHIOMIC: 1000,
         CONFUSE: 1000,
         DISEASE: 6000,
         ENVELOP: 10000,
         FEAR: 1500,
+        FYERUS: 8000,
         FREEZE: 750,
         HEALING: 1500,
+        KYNISOS: 1500,
         KYRNAICISM: 3000,
         LEAP: 750,
         MALICE: 10000,
@@ -122,6 +130,18 @@ export const PLAYER = {
 
 export const staminaCheck = (input: string, stamina: number): { success: boolean; cost: number } => {
     switch (input) {
+        case 'achire':
+            const achireSuccess = stamina >= PLAYER.STAMINA.ACHIRE;
+            return {
+                success: achireSuccess,
+                cost: PLAYER.STAMINA.ACHIRE,
+            };
+        case 'astrave':
+            const astraveSucess = stamina >= PLAYER.STAMINA.ASTRAVE;
+            return {
+                success: astraveSucess,
+                cost: PLAYER.STAMINA.ASTRAVE,
+            };
         case 'attack':
             const attackSucess = stamina >= PLAYER.STAMINA.ATTACK;
             return {
@@ -212,6 +232,12 @@ export const staminaCheck = (input: string, stamina: number): { success: boolean
                 success: freezingSuccess,
                 cost: PLAYER.STAMINA.FREEZE,
             };
+        case 'fyerus':
+            const fyerusSuccess = stamina >= PLAYER.STAMINA.FYERUS;
+            return {
+                success: fyerusSuccess,
+                cost: PLAYER.STAMINA.FYERUS,
+            };
         case 'healing':
             const healingSuccess = stamina >= PLAYER.STAMINA.HEALING;
             return {
@@ -229,6 +255,12 @@ export const staminaCheck = (input: string, stamina: number): { success: boolean
             return { 
                 success: invokeSuccess,
                 cost: PLAYER.STAMINA.INVOKE,
+            };
+        case 'kynisos':
+            const kynisosSuccess = stamina >= PLAYER.STAMINA.KYNISOS;
+            return {
+                success: kynisosSuccess,
+                cost: PLAYER.STAMINA.KYNISOS,
             };
         case 'kyrnaicism':
             const kyrnaicismSuccess = stamina >= PLAYER.STAMINA.KYRNAICISM;

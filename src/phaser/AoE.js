@@ -189,7 +189,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
 
     setupSensor = (scene, manual) => {
         let target;
-        if (manual) {
+        if (manual === true) {
             target = scene.getWorldPointer();
         } else {
             target = scene.player;
@@ -251,6 +251,21 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             },
             context: scene
         });
+        
+        // scene.matterCollision.addOnCollideActive({
+        //     objectA: [this.sensor],
+        //     callback: (collision) => {
+        //         const { gameObjectB, bodyB } = collision;
+        //         if (gameObjectB instanceof Phaser.Physics.Matter.Sprite) {
+        //             if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
+        //                 this.hit.push(gameObjectB);    
+        //             } else if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
+        //                 this.bless.push(gameObjectB);
+        //             };
+        //         };
+        //     },
+        //     context: scene
+        // });
         scene.matterCollision.addOnCollideEnd({
             objectA: [this.sensor],
             callback: (collision) => {

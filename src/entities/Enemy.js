@@ -98,9 +98,10 @@ const DURATION = {
     CONSUMED: 2000,
     FEARED: 3000,
     FROZEN: 3000,
+    PARALYZED: 5000,
+    ROOTED: 3000,
     SLOWED: 2500,
     SNARED: 4000,
-    ROOTED: 3000,
     STUNNED: 3000,
     TEXT: 1500,
     DODGE: 288, // 288
@@ -195,6 +196,11 @@ export default class Enemy extends Entity {
                 onEnter: this.onFearEnter,
                 onUpdate: this.onFearUpdate,
                 onExit: this.onFearExit,
+            })
+            .addState(States.PARALYZED, {
+                onEnter: this.onParalyzedEnter,
+                onUpdate: this.onParalyzedUpdate,
+                onExit: this.onParalyzedExit,
             })
             .addState(States.POLYMORPHED, {
                 onEnter: this.onPolymorphEnter,
@@ -449,9 +455,7 @@ export default class Enemy extends Entity {
         this.parryAction = '';
         this.originalPosition = new Phaser.Math.Vector2(this.x, this.y);
         this.originPoint = {}; // For Leashing
-        this.isConfused = false;
-        this.isConsumed = false;
-        this.isFeared = false;
+
         this.sensorDisp = 12;
         this.colliderDisp = 16; 
 
@@ -479,10 +483,8 @@ export default class Enemy extends Entity {
         this.enemyCollision(enemySensor);
         
         this.setInteractive(new Phaser.Geom.Rectangle(
-            48,
-            0,
-            32,
-            this.height
+            48, 0,
+            32, this.height
         ), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
                 this.scene.setupEnemy(this);
@@ -531,6 +533,7 @@ export default class Enemy extends Entity {
 
     healthUpdate = (e) => {
         if (this.enemyID !== e.id) return; // Is the enemy whose health is receiving an update
+        console.log('Is this updating too much?')
         // if (e.id === this.scene.state?.enemyID) { // Is the target known via state
         //     console.log('Known Target');
         //     this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: e.health, id: this.enemyID } });
@@ -574,15 +577,17 @@ export default class Enemy extends Entity {
             };
             return;
         };
-        // if (e.counterSuccess && !this.stateMachine.isCurrentState(States.STUNNED) && this.currentRound !== e.combatRound) this.setStun();
+        if (this.isDefeated === true && this.inCombat === true) {
+            this.stateMachine.setState(States.DEFEATED);
+            return;
+        };
 
         if (this.health > e.newComputerHealth) { 
             let damage = Math.round(this.health - e.newComputerHealth);
-            damage = e.glancingBlow === true ? `${damage} (Glancing)` : damage;
+            damage = e.criticalSuccess === true ? `${damage} (Critical)` : e.glancingBlow === true ? `${damage} (Glancing)` : damage;
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.criticalSuccess);
-            // console.log(`%c ${e.player.name} Dealt ${damage} Damage To ${this.ascean.name}`, 'color: #00ff00')
             if (this.isConsumed === false && this.isHurt === false && this.isFeared === false && this.isSlowed === false) this.stateMachine.setState(States.HURT);
-            if (this.currentRound !== e.combatRound) {
+            if (this.currentRound !== e.combatRound || this.inCombat === false) {
                 if (this.isPolymorphed === true) this.isPolymorphed = false;
                 if (this.isConfused === true) this.isConfused = false;
                 if (this.inCombat === false && this.isDefeated === false) {
@@ -614,16 +619,14 @@ export default class Enemy extends Entity {
 
     computerCombatUpdate = (e) => {
         if (this.enemyID !== e.enemyID) return;
-        // console.log(`%c ${this.ascean.name} is in combat with ${e.player.name}`, 'color: #ff0000');
         if (this.health > e.newComputerHealth) {
             let damage = Math.round(this.health - e.newComputerHealth);
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.criticalSuccess);
-            // console.log(`%c ${e.player.name} Dealt ${damage} Damage To ${this.ascean.name}`, 'color: #00ff00')
             if (!this.isConsumed && !this.isHurt && !this.isFeared && !this.isSlowed) this.stateMachine.setState(States.HURT);
-            if (this.currentRound !== e.combatRound) {
+            if (this.currentRound !== e.combatRound || this.inCombat === false) {
                 if (this.isPolymorphed) this.isPolymorphed = false;
-                if (!this.inCombat && !this.isDefeated) {
-                    // this.checkEnemyCombatEnter();
+                if (this.inCombat === false && this.isDefeated === false) {
+                    this.checkEnemyCombatEnter();
                 };
             };
             if (e.newComputerHealth <= 0) {
@@ -652,8 +655,7 @@ export default class Enemy extends Entity {
     };
 
     setAggression = () => {
-        // This will become 
-        // return this.scene.reputation.find(obj => obj.name === this.ascean.name).aggressive;
+        // This will become // return this.scene.reputation.find(obj => obj.name === this.ascean.name).aggressive;
         const percent = this.scene.settings.difficulty.aggression;
         return percent > Math.random() || false;
     };
@@ -866,30 +868,24 @@ export default class Enemy extends Entity {
         };
     };
 
+    // console.log(`%c ${this.ascean.name} is not a Special Enemy`, 'color: #f00');
+    // console.log(`%c ${this.ascean.name} is confused, feared, polymorphed, silenced, or stunned:; delaying Special Combat`, 'color: #00ff00');
     setSpecialCombat = (bool, mult = 1) => {
-        if (this.isSpecial === false) {
-            // console.log(`%c ${this.ascean.name} is not a Special Enemy`, 'color: #f00');
-            return;
-        };
+        if (this.isSpecial === false) return;
         const mastery = this.ascean.mastery;
         if (bool === true) {
             this.specialCombat = this.scene.time.delayedCall(DURATION.SPECIAL * mult, () => {
                 if (this.inCombat === false) {
-                    // console.log(`%c ${this.ascean.name} is no longer in combat, removing Special`, 'color: #00ff00');
                     this.specialCombat.remove();
                     return;
                 };
-                if (this.isConfused || this.isFeared || this.isPolymorphed || this.isStunned || this.scene.state.playerEffects.find(effect => effect.prayer === 'Silence')) {
-                    // console.log(`%c ${this.ascean.name} is confused, feared, polymorphed, silenced, or stunned:; delaying Special Combat`, 'color: #00ff00');
-                    // Delaying by 1 second to see if the enemy clears their negative status effects
+                if (this.isSuffering() || this.isStunned || this.scene.state.playerEffects.find(effect => effect.prayer === 'Silence')) {
                     this.setSpecialCombat(true, 0.3);
                     return;
                 };
-
                 const special = ENEMY_SPECIAL[mastery][Math.floor(Math.random() * ENEMY_SPECIAL[mastery].length)].toLowerCase();
                 this.specialAction = special;
                 this.currentAction = 'special';
-                // console.log(`%c ${this.ascean.name} is going to use ${special}`, 'color: #00ff00');
                 if (this.stateMachine.isState(special)) {
                     this.stateMachine.setState(special);
                 } else if (this.metaMachine.isState(special)) {
@@ -908,7 +904,7 @@ export default class Enemy extends Entity {
     };
 
     isSuffering = () => {
-        const suffering = this.isConfused || this.isFeared || this.isPolymorphed;
+        const suffering = this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed;
         // console.log(`%c Is ${this.ascean.name} suffering? ${suffering}`, 'color: red');
         return suffering;
     };
@@ -1552,7 +1548,7 @@ export default class Enemy extends Entity {
                 if (this.touching.length > 0) {
                     this.touching.forEach(enemy => {
                         if (enemy.playerID !== this.scene.player.playerID) return;
-                        this.scene.writhe(enemy.playerID);
+                        this.scene.writhe(enemy.playerID, 'leap');
                     });
                 };
                 this.stateMachine.setState(States.COMBAT);
@@ -1646,7 +1642,7 @@ export default class Enemy extends Entity {
             onComplete: () => {
                 if (this.rushedEnemies.length > 0) {
                     this.rushedEnemies.forEach(enemy => {
-                        this.scene.writhe(enemy.playerID);
+                        this.scene.writhe(enemy.playerID, 'rush');
                     });
                 };
                 this.isRushing = false;
@@ -2538,6 +2534,48 @@ export default class Enemy extends Entity {
         this.setTint(0x000000);
     };
 
+    onParalyzedEnter = () => {
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Paralyzed', 2500, 'effect');
+        this.paralyzeDuration = DURATION.PARALYZED;
+        this.isAttacking = false;
+        this.isParrying = false;
+        this.isPosturing = false;
+        this.isRolling = false;
+        this.isDodging = false;
+        this.currentAction = ''; 
+        this.anims.pause();
+        
+        this.setTint(0x888888); // 0x888888
+        this.setStatic(true);
+
+        this.scene.time.delayedCall(this.paralyzeDuration, () => {
+            this.isParalyzed = false;
+        });
+
+        // this.paralyzeTimer = this.scene.time.addEvent({
+        //     delay: this.paralyzeDuration,
+        //     callback: () => {
+        //         this.isBlindsided = false;
+        //         this.isParalyzed = false;
+        //         if (this.paralyzeTimer) {
+        //             this.paralyzeTimer.destroy();
+        //             this.paralyzeTimer = undefined;
+        //         };
+        //     },
+        //     callbackScope: this,
+        //     loop: false,
+        // });
+    };
+    onParalyzedUpdate = (dt) => {
+        this.setVelocity(0);
+        if (this.isParalyzed === false) this.evaluateCombatDistance(); // Wasn't if (!this.isStunned)
+    };
+    onParalyzedExit = () => {
+        this.setTint(0x000000)
+        this.setStatic(false);
+        this.anims.resume();
+    };
+
     onPolymorphEnter = () => {
         this.isPolymorphed = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphed', DURATION.TEXT, 'effect');
@@ -2992,12 +3030,21 @@ export default class Enemy extends Entity {
             this.stateMachine.setState(States.CONFUSED);
             return;
         };
+        if (this.isConsumed && !this.stateMachine.isCurrentState(States.CONSUMED)) {
+            this.stateMachine.setState(States.CONSUMED);
+            return;
+        };
         if (this.isCounterSpelled && !this.stateMachine.isCurrentState(States.COUNTERSPELLED)) {
             this.stateMachine.setState(States.COUNTERSPELLED);
             return;
         };
         if (this.isFeared && !this.stateMachine.isCurrentState(States.FEARED)) {
             this.stateMachine.setState(States.FEARED);
+            return;
+        };
+        if (this.isParalyzed && !this.stateMachine.isCurrentState(States.PARALYZED)) {
+            console.log('Turning to State Paralyzed');
+            this.stateMachine.setState(States.PARALYZED);
             return;
         };
         if (this.isPolymorphed && !this.stateMachine.isCurrentState(States.POLYMORPHED)) {
@@ -3008,16 +3055,13 @@ export default class Enemy extends Entity {
             this.stateMachine.setState(States.STUNNED);
             return;
         };
-        if (this.isConsumed && !this.stateMachine.isCurrentState(States.CONSUMED)) {
-            this.stateMachine.setState(States.CONSUMED);
+        
+        if (this.isFrozen && !this.metaMachine.isCurrentState(States.FROZEN)) {
+            this.metaMachine.setState(States.FROZEN);
             return;
         };
         if (this.isRooted && !this.metaMachine.isCurrentState(States.ROOTED)) {
             this.metaMachine.setState(States.ROOTED);
-            return;
-        };
-        if (this.isFrozen && !this.metaMachine.isCurrentState(States.FROZEN)) {
-            this.metaMachine.setState(States.FROZEN);
             return;
         };
         if (this.isSlowed && !this.metaMachine.isCurrentState(States.SLOWED)) {

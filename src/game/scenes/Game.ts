@@ -358,7 +358,7 @@ export class Game extends Scene {
         EventBus.emit('current-scene-ready', this);
     };
 
-    cleanUp = () => {
+    cleanUp = (): void => {
         EventBus.off('ascean');
         EventBus.off('combat');
         EventBus.off('game');
@@ -393,7 +393,7 @@ export class Game extends Scene {
         this.rightJoystick.destroy();
     };
 
-    gameEvent = ():void => {
+    gameEvent = (): void => {
         EventBus.on('ascean', (ascean: Ascean) => {
             this.ascean = ascean;
         });
@@ -559,7 +559,7 @@ export class Game extends Scene {
     };
 
 
-    postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
+    postFxEvent = (): Phaser.Events.EventEmitter => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
         // console.log(type, val, 'Type and Value') 
         if (type === 'bloom') {
@@ -652,7 +652,7 @@ export class Game extends Scene {
         };
     });
 
-    setPostFx = (settings: any, enable: boolean) => { 
+    setPostFx = (settings: any, enable: boolean): void => { 
         if (enable === true) {
             this.postFxPipeline.setEnable();
         } else {
@@ -711,11 +711,11 @@ export class Game extends Scene {
 
     // ================== Combat ================== \\
 
-    getEnemy(id: string) {
+    getEnemy = (id: string): Enemy => {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };
 
-    getWorldPointer = () => {
+    getWorldPointer = (): Phaser.Math.Vector2 => {
         const point = this.cameras.main.getWorldPoint(this.rightJoystick.pointer.x, this.rightJoystick.pointer.y);
         const target = new Phaser.Math.Vector2(point.x, point.y);
         return target;
@@ -723,7 +723,7 @@ export class Game extends Scene {
 
     // ============================ Combat Specials ============================ \\ 
     
-    astrave = (id: string) => {
+    astrave = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
@@ -733,7 +733,7 @@ export class Game extends Scene {
             enemy.isStunned = true;
         };
     };
-    chiomic = (id: string) => {
+    chiomic = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
@@ -742,7 +742,7 @@ export class Game extends Scene {
             enemy.isConfused = true;
         };
     };
-    confuse = (id: string) => {
+    confuse = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
@@ -752,7 +752,7 @@ export class Game extends Scene {
         };
     };
 
-    fear = (id: string) => {
+    fear = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
@@ -761,7 +761,7 @@ export class Game extends Scene {
             enemy.isFeared = true;
         };
     };
-    freeze = (id: string) => {
+    freeze = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
@@ -770,7 +770,7 @@ export class Game extends Scene {
             enemy.isFrozen = true;
         };
     };
-    fyerus = (id: string) => {
+    fyerus = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
@@ -780,11 +780,11 @@ export class Game extends Scene {
             enemy.isSlowed = true;
         };
     };
-    howl = (id: string) => {
+    howl = (id: string): void => {
         if (id === '') return;
         this.stunned(id);
     };
-    kynisos = (id: string) => {
+    kynisos = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
@@ -796,7 +796,17 @@ export class Game extends Scene {
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
         };
     };
-    polymorph = (id: string) => {
+    paralyze = (id: string): void => {
+        if (id === '') return;
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        if (!enemy) {
+            this.player.isParalyzed = true;
+        } else {
+        console.log('Paralyzing Enemy');
+            enemy.isParalyzed = true;
+        };
+    };
+    polymorph = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
@@ -808,7 +818,7 @@ export class Game extends Scene {
     renewal = () => {
         this.combatMachine.action({ data: { key: 'player', value: 7.5, id: this.player.playerID }, type: 'Health' });
     };
-    enemyRenewal = (id: string) => {
+    enemyRenewal = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) return;
@@ -816,7 +826,7 @@ export class Game extends Scene {
         const health = Math.min(enemy.health + heal, enemy.ascean.health.max);
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
     };
-    root = () => {
+    root = (): void => {
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === this.state.enemyID);
         if (!enemy) return;
         enemy.isRooted = true;
@@ -881,7 +891,7 @@ export class Game extends Scene {
             },
         });
     };
-    scream = (id: string) => {
+    scream = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) {
@@ -951,15 +961,15 @@ export class Game extends Scene {
     tendril = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0 && enemy.isAggressive === true) {
+        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.3);
-            const value = enemy.health - damage;
-            this.combatMachine.action({ data: { id, key: 'enemy', value }, type: 'Health' });
+            const total = Math.max(0, enemy.health - damage);
+            this.combatMachine.action({ data: { key: 'enemy', value: total, id }, type: 'Health' });
         } else if (id === this.player.playerID) {
             this.combatMachine.action({ data: 10, type: 'Enemy Chiomic' });
         };
     };
-    writhe = (id: string, enemyID?: string): void => {
+    writhe = (id: string, special?: string): void => {
         if (id === '') return;
         if (!this.player.inCombat) return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
@@ -967,20 +977,12 @@ export class Game extends Scene {
         if (!enemy) {
             if (id === this.player.playerID) {
                 this.combatMachine.action({ data: 20, type: 'Enemy Chiomic' });
-                // const enemyWrithe = this.enemies.find((e: any) => e.enemyID === enemyID);
-                // console.log(enemyWrithe, 'The enemy that is writhing, are they targeted?', enemyWrithe.isCurrentTarget);
-                // if (enemyWrithe.isCurrentTarget) {
-                //     if (this.state.computerAction === '') return;
-                //     this.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: 'attack', id: enemyID } });
-                // } else {
-                //     this.combatMachine.action({ type: 'Enemy', data: { enemyID, ascean: enemyWrithe.ascean, damageType: enemyWrithe.currentDamageType, combatStats: enemyWrithe.combatStats, weapons: enemyWrithe.weapons, health: enemyWrithe.health, actionData: { action: 'attack', parry: '', id: enemyID }}});
-                // };
             };
         } else {
             const match = this.player.enemyIdMatch();
             if (match) { // Target Player Attack
                 console.log('Matched Writhe');
-                this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: 'writhe' } });
+                this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: special ? special : 'writhe' } });
             } else { // Blind Player Attack
                 console.log('Blind Writhe');
                 this.combatMachine.action({ type: 'Player', data: { 
@@ -999,40 +1001,37 @@ export class Game extends Scene {
 
     // ============================ Game ============================ \\
 
-    checkPlayerSuccess = () => {
+    checkPlayerSuccess = (): void => {
         if (!this.player.actionSuccess && (this.state.action !== 'parry' && this.state.action !== 'roll' && this.state.action !== '')) this.combatMachine.input('action', '');
     };
-    clearNAEnemy = () => EventBus.emit('clear-enemy');
-    clearNPC = () => EventBus.emit('clear-npc'); 
+    clearNAEnemy = (): boolean => EventBus.emit('clear-enemy');
+    clearNPC = (): boolean => EventBus.emit('clear-npc'); 
     combatEngaged = (bool: boolean) => {
-        // console.log(`Combat Engaged: ${bool}`);
         EventBus.emit('combat-engaged', bool);
         if (bool === true && this.combat !== bool) {
-            // this.combatTimerText.setVisible(true);
             this.musicCombat.play();
             this.musicBackground.pause();
             this.startCombatTimer();
         } else if (bool === false) {
-            // this.combatTimerText.setVisible(false);
             this.musicCombat.pause();
             this.musicBackground.resume();
             this.stopCombatTimer();    
         };
         this.combat = bool;
     };
-    pauseMusic = () => {
+    pauseMusic = (): void => {
         this.musicBackground.pause();
         this.musicCombat.pause();
     };
-    resumeMusic = () => {
+    resumeMusic = (): void => {
         if (!this.combat) {
             this.musicBackground.resume();
         } else {
             this.musicCombat.resume();
         };
     };
-    drinkFlask = () => EventBus.emit('drink-firewater');
-    setupEnemy = (enemy: any) => {
+    drinkFlask = (): boolean => EventBus.emit('drink-firewater');
+    setupEnemy = (enemy: any): void => {
         const data: EnemySheet = { 
             id: enemy.enemyID, 
             game: enemy.ascean, 
@@ -1048,19 +1047,19 @@ export class Game extends Scene {
         };
         EventBus.emit('setup-enemy', data);
     };
-    setupNPC = (npc: any) => {
+    setupNPC = (npc: any): void => {
         const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType };
         EventBus.emit('setup-npc', data);    
     };
-    showDialog = (dialog: boolean) => EventBus.emit('blend-game', { dialogTag: dialog }); // smallHud: dialog
+    showDialog = (dialog: boolean): boolean => EventBus.emit('blend-game', { dialogTag: dialog }); // smallHud: dialog
 
     // ============================ Player ============================ \\
 
-    caerenic = () => EventBus.emit('update-caerenic');
-    stalwart = () => EventBus.emit('update-stalwart');
-    useStamina = (value: number) => EventBus.emit('update-stamina', value);
+    caerenic = (): boolean => EventBus.emit('update-caerenic');
+    stalwart = (): boolean => EventBus.emit('update-stalwart');
+    useStamina = (value: number): boolean => EventBus.emit('update-stamina', value);
 
-    createTextBorder(text: NewText) {
+    createTextBorder(text: NewText): Phaser.GameObjects.Graphics {
         const border = this.add.graphics();
         border.lineStyle(4, 0x2A0134, 1);
         border.strokeRect(
@@ -1074,27 +1073,27 @@ export class Game extends Scene {
         return border;
     };   
 
-    enemyUpdate = () => {
+    enemyUpdate = (): void => {
         const enemies = this.sortEnemies(this.enemies);
         for (let i = 0; i < enemies.length; i++) {
             enemies[i].update();
         };
     };
 
-    npcUpdate = () => {
+    npcUpdate = (): void => {
         const npcs = this.sortNpcs(this.npcs);
         for (let i = 0; i < npcs.length; i++) {
             npcs[i].update();
         };
     };
 
-    playerUpdate = () => {
+    playerUpdate = (): void => {
         this.player.update(); 
         this.combatMachine.processor();
         this.playerLight.setPosition(this.player.x, this.player.y);
     };
 
-    sortEnemies = (enemies: any[]) => {
+    sortEnemies = (enemies: Enemy[]): Enemy[] => {
         let sorted = [];
         for (let i = 0; i < enemies.length; i++) {
             enemies[i].inCombat === true ? sorted.unshift(enemies[i]) : sorted.push(enemies[i]);
@@ -1102,7 +1101,7 @@ export class Game extends Scene {
         return sorted;
     };
 
-    sortNpcs = (npcs: any[]) => {
+    sortNpcs = (npcs: NPC[]): NPC[] => {
         let sorted = [];
         for (let i = 0; i < npcs.length; i++) {
             npcs[i].interacing === true ? sorted.unshift(npcs[i]) : sorted.push(npcs[i]);
@@ -1110,7 +1109,7 @@ export class Game extends Scene {
         return sorted;
     };
 
-    startCombatTimer = () => {
+    startCombatTimer = (): void => {
         if (this.combatTimer) {
             this.combatTimer.destroy();
             // this.combatTimer = undefined;
@@ -1127,7 +1126,7 @@ export class Game extends Scene {
         });
     };
 
-    stopCombatTimer = () => {
+    stopCombatTimer = (): void => {
         if (this.combatTimer) {
             this.combatTimer.destroy();
             // this.combatTimer = undefined;
@@ -1138,8 +1137,9 @@ export class Game extends Scene {
 
     // ================== Update ================== \\
 
-    update() {
+    update(): void {
         this.playerUpdate();
+        this.rightJoystick.update();
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update();
         };
@@ -1151,7 +1151,7 @@ export class Game extends Scene {
         // this.combatTimerText.setText('Combat Timer: ' + this.combatTime);
     };
 
-    pause() {
+    pause(): void {
         this.scene.pause();
         // if (this.settings.music === false) return;
         if (!this.combat) {
@@ -1160,7 +1160,7 @@ export class Game extends Scene {
             this.musicCombat.pause();
         };
     };
-    resume() {
+    resume(): void {
         this.scene.resume();
         // console.log(this.settings?.music, 'Settings Music -- Would you **want** to resume?');
         if (this.settings?.music === false) return;

@@ -223,7 +223,7 @@ export default class Settings {
             leftHud: {
                 offset: 43.75,
                 scale: 0.095,
-                x: -0.0375,
+                x: 0.1,
                 y: 1.025,
             },
             smallHud: { 

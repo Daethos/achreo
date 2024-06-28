@@ -1,5 +1,5 @@
 export const SPECIAL = {
-    'constitution': [ // 12
+    'constitution': [ // 13
         'Astrave',
         'Consume', 
         'Desperation', 
@@ -8,11 +8,12 @@ export const SPECIAL = {
         'Invoke', 
         'Kyrnaicism', 
         'Mend', 
+        'Paralyze',
         'Renewal', 
         'Sacrifice', 
         'Shield', 
         'Ward'
-    ], // 12
+    ], // 13
 
     'strength': [ // 13
         'Achire',
@@ -78,7 +79,7 @@ export const SPECIAL = {
         'Suture'
     ], // 12
 
-    'kyosir': [ // 12
+    'kyosir': [ // 13
         'Astrave',
         'Chiomic',
         'Confuse', 
@@ -87,11 +88,12 @@ export const SPECIAL = {
         'Kynisos',
         'Kyrnaicism', 
         'Malice', 
+        'Paralyze',
         'Protect', 
         'Scream', 
         'Suture', 
         'Tshaeral'
-    ], // 12
+    ], // 13
 };
 
 export const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
@@ -118,6 +120,7 @@ export const SPECIALS = [
     'Leap', 
     'Malice',
     'Mend', 
+    'Paralyze',
     'Polymorph',
     'Protect', 
     'Pursuit', 

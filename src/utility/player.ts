@@ -52,6 +52,7 @@ export const PLAYER = {
         KYNISOS: 25,
         KYRNAICISM: 25,
         LEAP: 25,
+        PARALYZE: 10,
         POLYMORPH: 10,
         PURSUIT: 25,
         ROOT: 10,
@@ -103,6 +104,7 @@ export const PLAYER = {
         MEND: 10000,
         PROTECT: 6000,
         POLYMORPH: 1500,
+        PARALYZE: 1500,
         PURSUIT: 750,
         RECOVER: 10000,
         RENEWAL: 6000,
@@ -285,6 +287,12 @@ export const staminaCheck = (input: string, stamina: number): { success: boolean
             return {
                 success: mendSuccess,
                 cost: PLAYER.STAMINA.MEND,
+            };
+        case 'paralyze':
+            const paralyzeSuccess = stamina >= PLAYER.STAMINA.PARALYZE;
+            return {
+                success: paralyzeSuccess,
+                cost: PLAYER.STAMINA.PARALYZE
             };
         case 'polymorph':
             const polymorphSuccess = stamina >= PLAYER.STAMINA.POLYMORPH;

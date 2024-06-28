@@ -58,6 +58,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.isPosturing = false;
         this.isRolling = false;
 
+        this.isStalwart = false;
+        this.isStealthing = false;
+        this.isCasting = false;
+        
         this.isAtEdge = false;
         this.isBlindsided = false;
         this.inCombat = false;
@@ -66,15 +70,43 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.isDead = false;
         this.isJumping = false;
         this.isHanging = false;
-        this.isHealing = false;
         this.isHurt = false;
         this.isPraying = false;
         this.isStrafing = false;
         this.isStalwart = false;
         this.isRanged = false;
-        this.isStunned = false;
         this.hasMagic = false;
         this.hasBow = false;
+
+        this.isArcing = false;
+        this.isChiomic = false;
+        this.isEnveloping = false;
+        this.isFreezing = false;
+        this.isHealing = false;
+        this.isLeaping = false;
+        this.isMalicing = false;
+        this.isMending = false;
+        this.isProtecting = false;
+        this.isPursuing = false;
+        this.isRushing = false;
+        this.isShielding = false;
+        this.isShimmering = false;
+        this.isSprinting = false;
+        this.isSuturing = false;
+        this.isTshaering = false;
+        this.isWarding = false;
+        this.isWrithing = false;
+
+        this.isConfused = false;
+        this.isConsumed = false;
+        this.isFeared = false;
+        this.isFrozen = false;
+        this.isPolymorphed = false;
+        this.isRooted = false;
+        this.isSlowed = false;
+        this.isSnared = false;
+        this.isStunned = false;
+
 
         this.actionAvailable = false;
         this.actionSuccess = false;
@@ -131,10 +163,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.glowLegs = undefined;
         this.glowTimer = undefined;
         this.speed = 0;
-        this.isFeared = false;
-        this.isPolymorphed = false;
-        this.isRooted = false;
-        this.isSnared = false;
     };
 
     get position() {

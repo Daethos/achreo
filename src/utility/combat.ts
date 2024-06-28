@@ -9,6 +9,9 @@ const ATTACKS = {
     posture: 'posture against',
     roll: 'roll into',
     parry: 'parry',
+    leap: 'leap onto',
+    rush: 'rush through',
+    writhe: 'writhe into',
 };
 
 const ENEMY_ATTACKS = {
@@ -16,6 +19,9 @@ const ENEMY_ATTACKS = {
     posture: 'postures against',
     roll: 'rolls into',
     parry: 'parries',
+    leap: 'leaps onto',
+    rush: 'rushes through',
+    writhe: 'writhes into',
 };
 
 export type CombatAttributes = {
@@ -1151,7 +1157,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
         playerMagicalDefenseMultiplier = 1 - (combat.playerDefense?.magicalPosture as number / 100);
     };
 
-    if (computerAction === 'attack') {
+    if (computerAction === ('attack' || 'leap' || 'rush' || 'writhe')) {
         if (combat.computerWeapons[0].grip === 'One Hand') {
             if (combat.computerWeapons[0].attackType === 'Physical') {
                 if (combat.computer?.mastery === 'agility' || combat.computer?.mastery === 'constitution') {
@@ -1502,7 +1508,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     };
 
     // This is for the focused attack Action i.e. you chose to attack over adding a defensive component
-    if (playerAction === 'achire' || playerAction === 'attack' || playerAction === 'arc' || playerAction === 'special' || playerAction === 'storm' || playerAction === 'writhe') {
+    if (playerAction === 'achire' || playerAction === 'attack' || playerAction === 'arc' || 'leap' || 'rush' || playerAction === 'special' || playerAction === 'storm' || playerAction === 'writhe') {
         if (combat.weapons[0]?.grip === 'One Hand') {
             if (combat.weapons[0]?.attackType === 'Physical') {
                 if (combat.player?.mastery === 'agility' || combat.player?.mastery === 'constitution') {

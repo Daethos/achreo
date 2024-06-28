@@ -134,7 +134,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
 
     function initiateCombat(data: any, type: string) {
         try {    
-            let playerWin: boolean = false, computerWin: boolean = false, res: any = undefined, caerenic: number = combat().isCaerenic ? 1.15 : 1, stalwart: number = combat().isStalwart ? 0.85 : 1;
+            let playerWin: boolean = false, computerWin: boolean = false, res: any = undefined, affectsHealth: boolean = true, caerenic: number = combat().isCaerenic ? 1.15 : 1, stalwart: number = combat().isStalwart ? 0.85 : 1;
             switch (type) {
                 case 'Weapon': // Targeted weapon action
                     const weapon = { ...combat(), [data.key]: data.value };
@@ -209,7 +209,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                         computerDamageType: damageType,
                         computerEffects: [],
                         enemyID: enemyID, // Was ''
-                        // blindStrike: blindStrike,
                     };
                     res = { ...combat(), ...playerData };
                     res = weaponActionCompiler(res) as Combat;
@@ -242,7 +241,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                         dualWielding: res.dualWielding,
                         playerEffects: res.playerEffects,
                         // enemyID: res.enemyID,
-                        // blindStrike: res.blindStrike,
                     });
                     EventBus.emit('update-enemy-health', { id: res.enemyID, health: res.newComputerHealth, glancing: res.glancingBlow, critical: res.criticalSuccess });
                     computerWin = res.computerWin;
@@ -264,6 +262,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                         newComputerHealth, 
                         playerWin,
                     });
+                    affectsHealth = false;
                     break;
                 case 'Enemy Chiomic':
                     const enemyChiomic = Math.round(combat().computerHealth * (data / 100)) * (caerenic ? 1.25 : 1) * stalwart  * ((combat().computer?.level as number + 9) / 10);
@@ -330,13 +329,14 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                             const enemyHealth = value > 0 ? value : 0;
                             playerWin = enemyHealth === 0;
                             const enemyDescription =
-                                `${combat().computer?.name} heals to ${Math.round(enemyHealth)}.`;
+                                `${combat().computer?.name} health shifts to ${Math.round(enemyHealth)}.`;
                             res = { ...combat(), newComputerHealth: enemyHealth, playerWin, computerActionDescription: enemyDescription };
                             if (combat().enemyID === id) {
                                 EventBus.emit('blend-combat', { newComputerHealth: enemyHealth, playerWin });
                             } else {
                                 EventBus.emit('update-enemy-health', { id, health: enemyHealth, glancing: false, critical: false });
                             };
+                            affectsHealth = false;
                             break;
                         default:
                             break;
@@ -451,7 +451,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             EventBus.emit('add-combat-logs', res);
             if (playerWin === true || computerWin === true) {
                 resolveCombat(res);
-            } else {
+            } else if (affectsHealth === true) {
                 adjustTime(1000, res.newPlayerHealth);
                 // saveHealth(res.newPlayerHealth, 1000);
                 // EventBus.emit('save-health', res.newPlayerHealth);
@@ -463,6 +463,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
 
     function resolveCombat(res: Combat) {
         try {
+            adjustTime(0, 0, true);
             if (res.playerWin === true) {
                 let experience = 
                     Math.round((res.computer?.level as number) * 100 
@@ -519,44 +520,40 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     function startCountdown(health: number) {
         if (!timer) {
             if (combat().combatEngaged === false) {
-                // console.log('Timer attempted to start outside combat, not necessary');
                 EventBus.emit('save-health', health);
                 return;
             };
             timer = setInterval(() => {
-                if (combat().combatEngaged === false) {
-                    // console.log('Combat Disengaged -- Either Leashed or Resolved -- Clearing Countdown');
-                    clearInterval(timer);
-                    timer = undefined;
-                    remaining = 0;
-                    return;
-                };
+                // if (combat().combatEngaged === false) {
+                //     clearInterval(timer);
+                //     timer = undefined;
+                //     remaining = 0;
+                //     return;
+                // };
                 remaining -= 1000;
-                // console.log('Remaining Time:', remaining);
                 if (remaining <= 0) {
-                    // console.log('Saving Health:', health);
                     clearInterval(timer);
+                    remaining = 0;
                     timer = undefined;
                     EventBus.emit('save-health', health);
-                }
+                };
             }, 1000);
         };
     };
     
-    function adjustTime(amount: number, health: number) {
-        remaining += amount;
-        // tick += amount;
-        // console.log('Time and Remaining:', amount, remaining);
-    
-        if (remaining <= 0) {
-            remaining = 0;
-        };
-    
-        if (remaining === 0 && timer) {
+    function adjustTime(amount: number, health: number, cancel?: boolean) {
+        if (cancel === true) {
             clearInterval(timer);
             timer = undefined;
-            EventBus.emit('save-health', health);
-        } else if (!timer) {
+            return;
+        };
+        remaining += amount;
+        // if (remaining <= 0 && timer) {
+        //     clearInterval(timer);
+        //     timer = undefined;
+        //     EventBus.emit('save-health', health);
+        // } else 
+        if (!timer) {
             startCountdown(health);
         };
     };
@@ -568,7 +565,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     };
 
     function checkDeificInteractions(currentExperience: number) {
-        // console.log(ascean().interactions.deity, ascean().level, currentExperience, 'Checking Deific Interactions');
         return ascean().interactions.deity <= ascean().level - 1 // <=
             && ascean().level === 2 
             && ascean().level * 750 <= currentExperience;
@@ -577,7 +573,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     function filterEnemies(id: string) {
         let newEnemies = enemies();
         newEnemies = newEnemies.filter((enemy) => {
-            // console.log(enemy.id === id, 'Filtering Enemies');
             return enemy.id !== id ? true : false;
         });
         setEnemies(newEnemies);

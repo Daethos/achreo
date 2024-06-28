@@ -11,8 +11,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     constructor(scene: Phaser.Scene, x: number, y: number, text: string, duration: number, context: string, critical?: boolean) {
         super(scene, x, y);
         this.color = this.setColor(context);
-        const clarifiedText = critical ? `${text} (Critical)` : text;
-        this.text = new Phaser.GameObjects.Text(scene, 0, 0, clarifiedText, { 
+        this.text = new Phaser.GameObjects.Text(scene, 0, 0, text, { 
             color: this.color, 
             fontFamily: 'Cinzel', 
             fontSize: critical ? '36px' : '24px',

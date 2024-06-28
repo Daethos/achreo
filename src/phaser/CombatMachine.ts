@@ -9,7 +9,7 @@ interface Action {
     data: any;
     id?: string;
 };
-export interface KVI {
+export type KVI = {
     key: string;
     value: string | number | boolean;
     id?: string; 

@@ -2693,6 +2693,7 @@ export default class Player extends Entity {
         this.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.setTint(0x888888);
         this.setStatic(true);
+        this.anims.pause();
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You've been stunned.`
         });
@@ -2711,6 +2712,7 @@ export default class Player extends Entity {
         this.scene.input.keyboard.enabled = true;
         this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF)
         this.setStatic(false);
+        this.anims.resume();
     };
 
     // ================= NEGATIVE MACHINE STATES ================= \\

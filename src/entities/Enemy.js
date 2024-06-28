@@ -240,7 +240,6 @@ export default class Enemy extends Entity {
             })
             .addState(States.DESPERATION, {
                 onEnter: this.onDesperationEnter,
-                // onUpdate: this.onDesperationUpdate,
                 onExit: this.onDesperationExit,
             })
             .addState(States.FEAR, {
@@ -280,7 +279,6 @@ export default class Enemy extends Entity {
             })
             .addState(States.SACRIFICE, {
                 onEnter: this.onSacrificeEnter,
-                // onUpdate: this.onSacrificeUpdate,
                 onExit: this.onSacrificeExit,
             })
             .addState(States.SLOWING, {
@@ -295,7 +293,6 @@ export default class Enemy extends Entity {
             })
             .addState(States.SUTURE, {
                 onEnter: this.onSutureEnter,
-                // onUpdate: this.onSutureUpdate,
                 onExit: this.onSutureExit,
             })
             .addState(States.TSHAERAL, {
@@ -379,12 +376,10 @@ export default class Enemy extends Entity {
             })
             .addState(States.SLOWED, {
                 onEnter: this.onSlowEnter,
-                // onUpdate: this.onSlowUpdate,
                 onExit: this.onSlowExit,
             })
             .addState(States.SNARED, {
                 onEnter: this.onSnareEnter,
-                // onUpdate: this.onSnareUpdate,
                 onExit: this.onSnareExit,
             })
             .addState(States.SPRINTING, {
@@ -439,9 +434,7 @@ export default class Enemy extends Entity {
         this.isEnemy = true;
         this.isAggressive = this.setAggression(); 
         this.startedAggressive = this.isAggressive;
-        // New Concept for Computer Aggressive Enemies
         this.computerAggressive = this.scene.settings.difficulty.computer;
-        // New Concept for Elite / Special Enemies
         this.isElite = this.setSpecial();
         this.isSpecial = this.setSpecial();
 
@@ -533,12 +526,6 @@ export default class Enemy extends Entity {
 
     healthUpdate = (e) => {
         if (this.enemyID !== e.id) return; // Is the enemy whose health is receiving an update
-        console.log('Is this updating too much?')
-        // if (e.id === this.scene.state?.enemyID) { // Is the target known via state
-        //     console.log('Known Target');
-        //     this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: e.health, id: this.enemyID } });
-        // } else { // Is not the target
-            // console.log('Unknown Target');
         if (this.health > e.health) {
             let damage = Math.round(this.health - e.health);
             damage = e?.glancing === true ? `${damage} (Glancing)` : damage;
@@ -559,7 +546,6 @@ export default class Enemy extends Entity {
             this.scene.player.targetEngagement(this.enemyID);
             this.jumpIntoCombat();
         };
-        // };
     };
 
     checkCaerenic = (caerenic) => {
@@ -679,7 +665,6 @@ export default class Enemy extends Entity {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [enemySensor],
             callback: other => {
-                // if (!other.gameObjectB || other.gameObjectB.name !== 'player') return;
                 if (other.gameObjectB && other.gameObjectB.name === 'player') {
                     this.isValidRushEnemy(other.gameObjectB);
                     this.touching.push(other.gameObjectB);
@@ -2544,27 +2529,11 @@ export default class Enemy extends Entity {
         this.isDodging = false;
         this.currentAction = ''; 
         this.anims.pause();
-        
         this.setTint(0x888888); // 0x888888
         this.setStatic(true);
-
         this.scene.time.delayedCall(this.paralyzeDuration, () => {
             this.isParalyzed = false;
         });
-
-        // this.paralyzeTimer = this.scene.time.addEvent({
-        //     delay: this.paralyzeDuration,
-        //     callback: () => {
-        //         this.isBlindsided = false;
-        //         this.isParalyzed = false;
-        //         if (this.paralyzeTimer) {
-        //             this.paralyzeTimer.destroy();
-        //             this.paralyzeTimer = undefined;
-        //         };
-        //     },
-        //     callbackScope: this,
-        //     loop: false,
-        // });
     };
     onParalyzedUpdate = (dt) => {
         this.setVelocity(0);
@@ -2895,7 +2864,6 @@ export default class Enemy extends Entity {
             return;
         };  
         if (this.isPerformingSpecial) {
-            // console.log(`${this.ascean.name} is performing a special action and cannot evaluate combat distance.`);
             return;
         };
         
@@ -3025,7 +2993,6 @@ export default class Enemy extends Entity {
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this);
         if (this.inCombat === false) return;
-        // console.log('===================== Evaluating Enemy State =====================') 
         if (this.isConfused && !this.stateMachine.isCurrentState(States.CONFUSED)) {
             this.stateMachine.setState(States.CONFUSED);
             return;
@@ -3141,7 +3108,6 @@ export default class Enemy extends Entity {
 
     evaluateCombat = (target) => {  
         let computerAction;
-        // let computerCounter;
         let actionNumber = Math.floor(Math.random() * 101);
         const computerActions = {
             attack: 40 + this.scene.state.attackWeight,

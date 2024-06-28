@@ -226,6 +226,14 @@ export default function App() {
         };
     };
 
+    async function silentSave(vaEsai: Ascean): Promise<void> {
+        try {
+            await scrub(vaEsai);
+        } catch (err: any) {
+            console.warn('Error saving Ascean:', err);
+        };
+    };
+
     async function saveSettings(set: Settings): Promise<void> {
         try {
             await updateSettings(set);
@@ -301,6 +309,7 @@ export default function App() {
     usePhaserEvent('fetch-ascean', fetchAscean);
     usePhaserEvent('quick-ascean', quickAscean);
     usePhaserEvent('save-ascean', saveAscean);
+    usePhaserEvent('silent-save', silentSave);
     usePhaserEvent('update-ascean', updateAscean);
     usePhaserEvent('update-pause', togglePause);
     usePhaserEvent('request-reputation', () => EventBus.emit('reputation', reputation()));

@@ -26,10 +26,10 @@ const deityBorder = (mastery: string) => {
         'margin-bottom': '5%',
         'margin-top': '2.5%',
         'width': '40%',
-        position: 'fixed',
-        left: '50%',
-        transform: 'translateX(-50%)',
-    };
+        'position': 'fixed',
+        'left': '50%',
+        'transform': 'translateX(-50%)',
+    } as any;
 };
 
 function checkRootId(node: DialogNode, id: string) {
@@ -63,11 +63,9 @@ export function Deity({ ascean, combat, game }: DeityProps) {
     const [keywordResponses, setKeywordResponses] = createSignal<string[]>([]);
     const [dialogNodes, setDialogNodes] = createSignal<DialogNode[]>([]);
     const [showDeity, setShowDeity] = createSignal<boolean>(true);
-    const [deity, setDeity] = createSignal({
-        name: '',
-    });
+    const [deity, setDeity] = createSignal({ name: '' });
     createEffect(() => {
-        console.log(ascean()?.statistics.relationships.deity, 'Deity Name', highestFaith(), 'Highest Faith')
+        // console.log(ascean()?.statistics.relationships.deity, 'Deity Name', highestFaith(), 'Highest Faith');
         setDeity({
             name: ascean()?.statistics.relationships.deity.name === '' ? highestFaith() : ascean()?.statistics.relationships.deity.name,
         });
@@ -120,9 +118,9 @@ export function Deity({ ascean, combat, game }: DeityProps) {
                     keywords: keywordResponses(),
                 },
             };
-            console.log(data, "Data for Deity Encounter");
+            // console.log(data, "Data for Deity Encounter");
             const res = await evaluateDeity(data);
-            console.log(res, "Response from Deity Encounter");
+            // console.log(res, "Response from Deity Encounter");
             EventBus.emit('fetch-ascean', res.data._id);
             EventBus.emit('show-deity', false);
             if (game().pauseState) {

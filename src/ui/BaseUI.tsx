@@ -524,12 +524,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 return;
             };
             timer = setInterval(() => {
-                // if (combat().combatEngaged === false) {
-                //     clearInterval(timer);
-                //     timer = undefined;
-                //     remaining = 0;
-                //     return;
-                // };
                 remaining -= 1000;
                 if (remaining <= 0) {
                     clearInterval(timer);
@@ -548,11 +542,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             return;
         };
         remaining += amount;
-        // if (remaining <= 0 && timer) {
-        //     clearInterval(timer);
-        //     timer = undefined;
-        //     EventBus.emit('save-health', health);
-        // } else 
         if (!timer) {
             startCountdown(health);
         };

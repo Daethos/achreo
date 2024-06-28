@@ -200,7 +200,7 @@
       },
       {
         "id": "0007",
-        "text": "I simply require your touch, if it pleases you.",
+        "text": "I simply require your touch.",
         "options": [
           {
             "text": "[Reach out and touch ${enemy.name}]",
@@ -224,7 +224,7 @@
       },
       {
         "id": "0008",
-        "text": "[ You felt a surge of your caer blend into ${enemy.name}. This violent, violet burst interrupts your communion, leaving you breathless. ]",
+        "text": "[ You felt a surge of your caer blend into ${enemy.name}. This violent burst interrupts your communion, leaving you breathless. ]",
         "options": [
           {
             "text": "Serenity pervades the area, glittering from the point of your connection to ${enemy.name}, yourself unsure of what's to come.",

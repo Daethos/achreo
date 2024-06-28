@@ -464,8 +464,9 @@ export const PhaserGame = (props: IProps) => {
                 ...props.ascean().health,
                 current: health
             },
+            inventory: game().inventory
         };
-        EventBus.emit('update-ascean', update);
+        EventBus.emit('silent-save', update);
     };
 
     const recordWin = (record: Combat, experience: LevelSheet) => {

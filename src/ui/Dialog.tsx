@@ -878,9 +878,9 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             ) : ( '' ) }
             { merchantTable()?.length > 0 ? (
                 <>
-                <button class='highlight' onClick={() => setShowSell(!showSell())}>
+                {/* <button class='highlight' onClick={() => setShowSell(!showSell())}>
                     Sell to {combat().computer?.name}?
-                </button>
+                </button> */}
                 <MerchantTable table={merchantTable} game={game} ascean={ascean}  />
                 </>
             ) : ( '' ) }

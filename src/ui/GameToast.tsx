@@ -27,7 +27,6 @@ export default function GameToast({ actions, show, setShow, alert, setAlert }: P
         border: '0.1em solid #ffc700',
         'border-radius': '0.5em',
         'box-shadow': '0 0 1em #ffc700',
-        // transform: 'scale(0.65)',
         position: alert()?.key !== '' ? 'absolute' : '', 
         bottom: alert()?.key !== '' ? '45vh' : '0',
     };

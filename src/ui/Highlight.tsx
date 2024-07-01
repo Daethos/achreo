@@ -3,7 +3,7 @@ import Equipment from "../models/equipment";
 import Ascean from "../models/ascean";
 import { useResizeListener } from "../utility/dimensions";
 import { EventBus } from "../game/EventBus";
-import { font, getRarityColor } from "../utility/styling";
+import { getRarityColor } from "../utility/styling";
 
 interface Props {
     ascean: Accessor<Ascean>;
@@ -28,13 +28,10 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
 
     createEffect(() => {
         if (inventoryType() === 'weaponOne') {
-            // console.log('Weapon', weaponCompared());
             setTrueType(weaponCompared());
         } else if (inventoryType() === 'ringOne') {
-            // console.log('Ring', ringCompared());
             setTrueType(ringCompared());
         } else {
-            // console.log('Else', inventoryType());
             setTrueType(inventoryType());
         };
         canUpgrade(pouch, highlighted()?.item?.name, highlighted()?.item?.rarity as string);
@@ -80,20 +77,14 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
 
     function setEquipper() {
         let type;
-        // console.log(inventoryType(), 'Inventory Type', weaponCompared(), 'Weapon Compared', ringCompared(), 'Ring Compared');
         if (inventoryType() === 'weaponOne') {
-            // console.log('Weapon', weaponCompared());
             type = weaponCompared();
         } else if (inventoryType() === 'ringOne') {
             type = ringCompared();
-            // console.log('Ring', ringCompared());
         } else {
-            // console.log('Else', inventoryType());
             type = inventoryType();
         };
-        // console.log(type, highlighted()?.item, '------- Type -------');
         EventBus.emit('set-equipper', { type, item: highlighted()?.item });
-        // setEquipModalShow(true);
     };
 
     function setInspector() {
@@ -109,9 +100,7 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
 
     function canUpgrade(inventory: Accessor<Equipment[]>, name: string, rarity: string): void {
         const matches = inventory().filter(item => item?.name === name && item?.rarity === rarity);
-        // console.log(matches.length, "Matches Length");
         const canUpgrade = matches.length >= 3;
-        // console.log(canUpgrade, "canUpgrade");
         setUpgrade(canUpgrade);
     };
 
@@ -140,7 +129,6 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
     };
 
     const createTable = (inventoryType: Accessor<string>) => { 
-        // console.log(inventoryType(), 'Inventory Type');
         const asceanName = ascean()[inventoryType()]?.name.includes('Starter') ? ascean()[inventoryType()]?.name.split(' ')[0] + ' ' + ascean()[inventoryType()]?.name.split(' ')[1] : ascean()[inventoryType()]?.name;
         const inventoryName = highlighted()?.item?.name.includes('Starter') ? highlighted()?.item?.name.split(' ')[0] + ' ' + highlighted()?.item?.name.split(' ')[1] : highlighted()?.item?.name;
         const asceanTypeGrip = ascean()[inventoryType()]?.grip && ascean()[inventoryType()]?.type ? <>

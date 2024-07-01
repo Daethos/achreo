@@ -65,7 +65,6 @@ export function Deity({ ascean, combat, game }: DeityProps) {
     const [showDeity, setShowDeity] = createSignal<boolean>(true);
     const [deity, setDeity] = createSignal({ name: '' });
     createEffect(() => {
-        // console.log(ascean()?.statistics.relationships.deity, 'Deity Name', highestFaith(), 'Highest Faith');
         setDeity({
             name: ascean()?.statistics.relationships.deity.name === '' ? highestFaith() : ascean()?.statistics.relationships.deity.name,
         });
@@ -118,9 +117,7 @@ export function Deity({ ascean, combat, game }: DeityProps) {
                     keywords: keywordResponses(),
                 },
             };
-            // console.log(data, "Data for Deity Encounter");
             const res = await evaluateDeity(data);
-            // console.log(res, "Response from Deity Encounter");
             EventBus.emit('fetch-ascean', res.data._id);
             EventBus.emit('show-deity', false);
             if (game().pauseState) {

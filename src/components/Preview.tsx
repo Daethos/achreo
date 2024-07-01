@@ -32,10 +32,9 @@ export function Preview({ newAscean }: { newAscean: Accessor<CharacterSheet> }) 
         'width': dimensions().ORIENTATION === 'landscape' ? '7.5vw' : '15vw',
         'top': dimensions().ORIENTATION === 'landscape' ? '3vh' : '0',
         'left': dimensions().ORIENTATION === 'landscape' ? '20vw' : '3vw',
-        // 'margin': dimensions().ORIENTATION === 'landscape' ? '-35vh 0 0 25%' : '',
         'border': '0.15em solid gold',
         'border-radius': '0.5em',  
-    }
+    };
 
     function qualifiers(char: string, idx: number, count: number, splitter: number): boolean {
         if ((char === ' ' || char === '.') && idx !== 0 && idx !== splitter - 1 && ((idx <= 49 && idx >= 25 && count === 0) || (idx <= 74 && idx >= 50 && count === 1))) {

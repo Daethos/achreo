@@ -5,33 +5,25 @@ import PrayerEffects from './PrayerEffects';
 import { EventBus } from '../game/EventBus';
 import { For, Show } from 'solid-js';
 import { Combat } from '../stores/combat';
-// import { populateEnemy, randomEnemy } from '../assets/db/db';
-// import { asceanCompiler } from '../utility/ascean';
 import StatusEffect from '../utility/prayer';
-// import Ascean from '../models/ascean';
-// import Equipment from '../models/equipment';
-// import { CombatAttributes } from '../utility/combat';
 import { PrayerModal } from '../utility/buttons';
 import { GameState } from '../stores/game';
+import StaminaBubble from './StaminaBubble';
 
 interface Props {
     state: Accessor<Combat>;
-    staminaPercentage: Accessor<number>;
     game: Accessor<GameState>;
     stamina: Accessor<number>;
 };
 
-export default function CombatUI({ state, staminaPercentage, game, stamina }: Props) {
+export default function CombatUI({ state, game, stamina }: Props) {
     const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal(false);
     const [shieldShow, setShieldShow] = createSignal(false);
     const [prayerShow, setPrayerShow] = createSignal(false);
     const [playerHealthPercentage, setPlayerHealthPercentage] = createSignal(0); 
 
-    createEffect(() => {
-        const newHealthPercentage = Math.round((state().newPlayerHealth/state().playerHealth) * 100);
-        setPlayerHealthPercentage(newHealthPercentage);
-    });  
+    createEffect(() => setPlayerHealthPercentage(Math.round((state().newPlayerHealth/state().playerHealth) * 100)));  
 
     const disengage = () => EventBus.emit('disengage');
     const showPlayer = () => {
@@ -47,34 +39,16 @@ export default function CombatUI({ state, staminaPercentage, game, stamina }: Pr
         };
     };
 
-    // function createPrayer() {
-    //     console.log('Creating prayer...');
-    //     let enemy = randomEnemy(1, 2);
-    //     enemy = populateEnemy(enemy);
-    //     const res = asceanCompiler(enemy);
-    //     const exists = new StatusEffect(state(), res?.ascean as Ascean, state().player as Ascean, state().weapons?.[0] as Equipment, res?.attributes as CombatAttributes, state().playerBlessing);
-    //     console.log(exists, 'exists');
-    //     EventBus.emit('create-prayer', exists);
-    // };
-    // 5a0043
     return (
         <div class='playerCombatUi'> 
             <p class='playerName' style={{ 'z-index': 2 }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
             <div class='center playerHealthBar' style={{ 'z-index': 0 }}>
-                <div class='playerPortrait' style={{ 'font-size': '1em', color: state().isStealth ? '#fdf6d8' : '#000', 'z-index': 1 }}>{`${Math.round(state().newPlayerHealth)} / ${state().playerHealth} [${playerHealthPercentage()}%]`}</div>
+                <div class='playerPortrait' style={{ 'font-size': '1.05em', color: state().isStealth ? '#fdf6d8' : '#000', 'z-index': 1 }}>{`${Math.round(state().newPlayerHealth)} / ${state().playerHealth} [${playerHealthPercentage()}%]`}</div>
                 <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, 'z-index': -1, width: `100%`, 'background-color': 'red' }}></div>
                 <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, 'z-index': -1, width: `${playerHealthPercentage()}%`, background: 'red',  'background-color': state()?.isStealth ? '#444' : '#FFC700' }}></div>
             </div>
             <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar"/>
-            {/* <button class='highlight superCenter' onClick={() => createPrayer()} style={{ top: '92.5vh', left: '50vw' }}>
-                <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>
-                    Create Prayer
-                </div>
-            </button> */}
-            <div class='staminaBubble'>
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, 'z-index': -1, 'background-color': '#008000', height: `${staminaPercentage()}%` }}></div>
-                <p class='stamina' style={{ 'margin-top': '25%' }}>{Math.round((staminaPercentage() * stamina() / 100))}</p>
-            </div>
+            <StaminaBubble stamina={stamina} />
             <div class='combatUiWeapon' onClick={() => setShow(show => !show)} style={caerenic(state().isCaerenic) as any}>
                 <img src={state()?.weapons?.[0]?.imgUrl} alt={state()?.weapons?.[0]?.name} />
             </div>

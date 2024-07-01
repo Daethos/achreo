@@ -1,9 +1,10 @@
-import { font, getRarityColor } from "../utility/styling"
+import { getRarityColor } from "../utility/styling"
 import { Show } from "solid-js";
 import { useResizeListener } from "../utility/dimensions";
 import Equipment from "../models/equipment";
 
 function attrSplitter(string: string, value: number) {
+    if (value <= 0) return '';
     return <span>{string}: <span class='gold'>+{value} </span></span>
 };
 
@@ -47,12 +48,12 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                     <Show when={item?.type && !item?.grip}>
                         <div style={{ 'font-size': '1.25em', 'margin': '3%' }}>{item.type}</div>
                     </Show>
-                    { item?.constitution > 0 ? attrSplitter('CON', item?.constitution) : '' }
-                    { item?.strength > 0 ? attrSplitter('STR', item?.strength) : '' }
-                    { item?.agility > 0 ? attrSplitter('AGI', item?.agility) : '' }
-                    { item?.achre > 0 ? attrSplitter('ACH', item?.achre) : '' }
-                    { item?.caeren > 0 ? attrSplitter('CAER', item?.caeren) : '' }
-                    { item?.kyosir > 0 ? attrSplitter('KYO', item?.kyosir) : '' }
+                    {attrSplitter('CON', item?.constitution)}
+                    {attrSplitter('STR', item?.strength)}
+                    {attrSplitter('AGI', item?.agility)}
+                    {attrSplitter('ACH', item?.achre)}
+                    {attrSplitter('CAER', item?.caeren)}
+                    {attrSplitter('KYO', item?.kyosir)}
                     { attribute ? <br /> : '' }
                     Damage: <span class='gold'>{item?.physicalDamage}</span> Phys | <span class='gold'>{item?.magicalDamage}</span> Magi <br />
                     <Show when={item?.physicalResistance || item?.magicalResistance}>

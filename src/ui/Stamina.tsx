@@ -2,14 +2,21 @@ import { Accessor, createSignal, onCleanup, onMount } from "solid-js";
 import { EventBus } from "../game/EventBus";
 
 function createStamina(stam: Accessor<number>) {
-    const [staminaPercentage, setStaminaPercentage] = createSignal(0);
     const [stamina, setStamina] = createSignal(stam());
+    const [staminaPercentage, setStaminaPercentage] = createSignal(100);
+    const [usedStamina, setUsedStamina] = createSignal(0);
     let interval: any | undefined = undefined;
+    let remaining = 0;
 
     const recover = () => {
+        if (remaining > 0) {
+            remaining -= 200 - stamina();
+            return;    
+        };
+        if (remaining < 0) remaining = 0;
+        setUsedStamina(0);
         const newStamina = Math.min(100, staminaPercentage() + 1);
         setStaminaPercentage(newStamina);
-        // console.log('recovering', newStamina);
         EventBus.emit('updated-stamina', newStamina);
         if (newStamina >= 100) {
             clearInterval(interval);
@@ -17,19 +24,27 @@ function createStamina(stam: Accessor<number>) {
         };
     };
 
+    const startRecovery = () => {
+        setUsedStamina(0);
+        interval = setInterval(recover, 200 - stamina());
+    };
+
     const updateStamina = (e: number) => {
+        remaining += 1000;
         if (interval === undefined) {
-            interval = setInterval(recover, 200 - stam());
+            startRecovery();
         };
-        const newStamina = Math.max(0, (stamina() * staminaPercentage() / 100) - e);
+
+        const oldStamina = stamina() * staminaPercentage() / 100;
+        const newStamina = Math.max(0, oldStamina - e);
         const newStaminaPercentage = Math.max(0, Math.min(100, Math.round(newStamina / stamina() * 100)));
         setStaminaPercentage(newStaminaPercentage);
+        setUsedStamina((prev) => prev + e);
     };
 
     onMount(() => {
         EventBus.on('update-stamina', updateStamina);
         EventBus.on('update-total-stamina', (e: number) => setStamina(e));
-        interval = setInterval(recover, 200 - stamina());
     });    
 
     onCleanup(() => {
@@ -39,7 +54,7 @@ function createStamina(stam: Accessor<number>) {
         interval = undefined;
     });
 
-    return {staminaPercentage, setStaminaPercentage};
+    return {staminaPercentage, usedStamina};
 };
 
 export default createStamina;

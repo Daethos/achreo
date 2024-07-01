@@ -82,11 +82,7 @@ const MerchantLoot = ({ item, ascean, setShow, setHighlight }: Props) => {
             };
             cost.silver = Math.floor(cost.silver);
             cost.gold = Math.floor(cost.gold);
-            // console.log(cost, 'How Much Does This Cost?');
-            setPurchaseSetting({
-                item: item,
-                cost: cost
-            });
+            setPurchaseSetting({item, cost});
         } catch (err: any) {
             console.log(err.message, 'Error Determining Cost!');
         };
@@ -116,7 +112,7 @@ const MerchantLoot = ({ item, ascean, setShow, setHighlight }: Props) => {
 
     const getItemStyle = {
         background: 'black',
-        border: '0.15em solid ' + getRarityColor(item?.rarity as string)
+        border: `0.15em solid ${getRarityColor(item?.rarity as string)}`
     };
     
     return (

@@ -2,7 +2,6 @@ import { Accessor, Setter, Show, createEffect, createSignal, onMount } from 'sol
 import Ascean from '../models/ascean';
 import Character from './Character';
 import CombatUI from './CombatUI';
-import createStamina from './Stamina';
 import EnemyPreview from './EnemyPreview';
 import EnemyUI from './EnemyUI';
 import Settings from '../models/settings';
@@ -31,8 +30,7 @@ interface Props {
     stamina: Accessor<number>;
 };
 
-export default function BaseUI({ instance, ascean, combat, game, reputation, setReputation, settings, setSettings, stamina }: Props) {
-    const { staminaPercentage } = createStamina(stamina);
+export default function BaseUI({ instance, ascean, combat, game, reputation, settings, setSettings, stamina }: Props) {
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [tutorial, setTutorial] = createSignal<string>('');
@@ -56,19 +54,13 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         caeren: 0,
         kyosir: 0,
     });
-    var remaining: number = 0, tick: number = 0, timer: any = undefined;
+    var remaining: number = 0, timer: any = undefined;
 
-    createEffect(() => {
-        EventBus.emit('combat', combat());
-    });  
+    createEffect(() => EventBus.emit('combat', combat()));  
 
-    createEffect(() => {
-        EventBus.emit('reputation', reputation());
-    });
+    createEffect(() => EventBus.emit('reputation', reputation()));
 
-    createEffect(() => {
-        EventBus.emit('settings', settings());
-    });
+    createEffect(() => EventBus.emit('settings', settings()));
 
     onMount(() => {
         if (!ascean().tutorial.intro) {
@@ -453,8 +445,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 resolveCombat(res);
             } else if (affectsHealth === true) {
                 adjustTime(1000, res.newPlayerHealth);
-                // saveHealth(res.newPlayerHealth, 1000);
-                // EventBus.emit('save-health', res.newPlayerHealth);
             };
         } catch (err: any) {
             console.log(err, 'Error Initiating Combat');
@@ -599,7 +589,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         <div id='base-ui'>
         <Show when={game().showPlayer} fallback={
             <div style={{ position: "absolute", 'z-index': 1 }}>
-                <CombatUI state={combat} staminaPercentage={staminaPercentage} game={game} stamina={stamina} />
+                <CombatUI state={combat} game={game} stamina={stamina} />
                 <Show when={combat().computer} fallback={
                     <EnemyPreview enemies={enemies} fetchEnemy={fetchEnemy} />
                 }>
@@ -607,7 +597,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 </Show> 
             </div>
         }>
-            <Character reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} game={game} combatState={combat} />
+            <Character reputation={reputation} settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} game={game} combatState={combat} />
         </Show>
         <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} settings={settings} /> 
         <Show when={showTutorial()}>

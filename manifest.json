@@ -1,0 +1,17 @@
+{
+    "name": "The Ascean",
+    "short_name": "Ascean",
+    "start_url": "https://achreo.vercel.app",
+    "display": "fullscreen",
+    "background_color": "#000",
+    "description": "An Action Roleplaying Game for Mobile.",
+    "icons": [
+        {
+            "src": "logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable any"
+        }
+    ],
+    "orientation": "landscape"
+}

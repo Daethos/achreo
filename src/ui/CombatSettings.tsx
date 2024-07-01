@@ -26,7 +26,6 @@ interface Props {
 };
 
 export default function CombatSettings({ combat, game }: Props) {
-    // const [prayers, setPrayers] = createSignal([ 'Buff', 'Heal', 'Debuff', 'Damage', 'Avarice', 'Denial', 'Dispel', 'Silence']);
     const prayers = ['Buff', 'Heal', 'Debuff', 'Damage', 'Avarice', 'Denial', 'Dispel', 'Silence'];
     const dimensions = useResizeListener();
     
@@ -57,7 +56,7 @@ export default function CombatSettings({ combat, game }: Props) {
         {direction:'down', symbol:'v'},
         {direction:'right', symbol:'->'}, 
     ];
-// 1px 1px 2px red, 0 0 1em blue, 0 0 0.2em blue
+
     function handleButton(direction: string) {
         console.log('direction', direction);
         if (direction === 'up' || direction === 'down') {
@@ -77,7 +76,6 @@ export default function CombatSettings({ combat, game }: Props) {
                 if (!combat()?.weapons[newIndex]) return;
                 let one: any[] = [];
                 if (combat()?.weapons.length === 3) one = [combat()?.weapons?.[newIndex], combat()?.weapons?.[0], combat()?.weapons?.[2]?._id === combat()?.weapons?.[newIndex]?._id ? combat()?.weapons?.[1] : combat()?.weapons?.[2]];
-                // if (combat()?.weapons.length === 2) one = [combat()?.weapons?.[newIndex], combat()?.weapons?.[0]];
                 EventBus.emit('selectWeapon', { index: newIndex, highlight: 'Weapon' });
                 EventBus.emit('changeWeapon', one);
             };
@@ -97,8 +95,7 @@ export default function CombatSettings({ combat, game }: Props) {
         : direction === 'left' ? `${highlightCycle[game().selectedHighlight as keyof typeof highlightCycle].prev}` 
         : `${highlightCycle[game().selectedHighlight as keyof typeof highlightCycle].next}`;
     };
-    // combatSettings { position: "absolute", 'border': '0.15em solid gold', 'background-color': 'transparent', 'z-index': 1 }
-     // shadow('black', 1), styles.center,
+
     return (
         <div class='center combatSettings' style={dimensions().ORIENTATION === 'landscape' ? {
                 height: '40%', width: "50%", top: '50%', left: '25%', background: '#000', 'border': '0.1em solid #FFC700', 'border-radius': '0.25em', 'box-shadow': '0 0 0.1em 0.1em #FFC700'
@@ -131,11 +128,7 @@ export default function CombatSettings({ combat, game }: Props) {
                 </Match>
                 <Match when={game().selectedHighlight === 'Prayer'}>
                     <div class='center'>
-                        <p class='shadow' style={highlightStyle}>Current Prayer: {prayers[game().selectedPrayerIndex]} 
-                            {/* <span style={{ 'font-size': '0.75em' }}>
-                                [Up: {game().selectedPrayerIndex + 1 === prayers.length ? prayers[0] : prayers[game().selectedPrayerIndex + 1]}] [Down: {prayers[game().selectedPrayerIndex - 1 < 0 ? prayers.length - 1 : game().selectedPrayerIndex - 1]}] 
-                            </span> */}
-                        </p>
+                        <p class='shadow' style={highlightStyle}>Current Prayer: {prayers[game().selectedPrayerIndex]}</p>
                         <div style={optionStyle}>{mapTypes(prayers)}</div>
                     </div>
                 </Match>

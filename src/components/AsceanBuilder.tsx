@@ -21,9 +21,6 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
         <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION !== 'landscape'}>
             <Preview newAscean={newAscean} />
         </Show>
-            {/* <p class='border'>
-                The Ascean is a game of skill and strategy, with a focus on real-time combat. You will be able to choose from a variety of weapons, armor, and skills to create a character that suits your playstyle.
-            </p> */}
             {/* <<---------- PORTRAIT ---------->> */}
             <Show when={dimensions()?.ORIENTATION === 'landscape'} fallback={ 
                 <Switch>

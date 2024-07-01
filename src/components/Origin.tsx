@@ -104,7 +104,7 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
         setShow(!show());
     }; 
     const dimensions = useResizeListener();
-// position: 'absolute', maxHeight: '80%', width: '80%', left: '10%', top: '10%', oveflow: 'scroll'
+
     return (
         <Show when={show()} fallback={<button onClick={handleOrigin} class="highlight" style={{ color: origin.name === newAscean()?.origin ? 'gold' : '#fdf6d8' }}>{origin.name}</button>}>
             <div class='modal' onClick={handleShow} style={{ 'text-wrap': 'balance' }}>
@@ -113,7 +113,6 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
                 left: dimensions().ORIENTATION === 'landscape' ? '7.5%' : '', 
             }}>
                 <div class="border creature-heading" style={{ height: '100%', 'text-wrap': 'balance' }}><br />
-                    {/* <img src={origin.imgUrl} alt={origin.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === 'landscape' ? '15%' : '' }} /> */}
                     <p class='super wrap'>
                         {origin.bio}<br /><br />{origin.bioTwo}
                     </p>

@@ -12,12 +12,10 @@ export default function HealthBar({ combat, enemy }: Props) {
 
     createEffect(() => {
         if (enemy) {
-            const healthPercentage = Math.round((combat().newComputerHealth/combat().computerHealth) * 100);
-            setComputerHealthPercentage(healthPercentage);
-            return;
+            setComputerHealthPercentage(Math.round((combat().newComputerHealth/combat().computerHealth) * 100));
+        } else {
+            setPlayerHealthPercentage(Math.round((combat().newPlayerHealth/combat().playerHealth) * 100));
         };
-        const healthPercentage = Math.round((combat().newPlayerHealth/combat().playerHealth) * 100);
-        setPlayerHealthPercentage(healthPercentage);
     });
 
     return ( 

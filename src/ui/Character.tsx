@@ -10,7 +10,7 @@ import Firewater from './Firewater';
 import { ActionButtonModal, Modal } from '../utility/buttons';
 import { font, getRarityColor } from '../utility/styling';
 import ItemModal from '../components/ItemModal';
-import Equipment, { getOneRandom } from '../models/equipment';
+import Equipment from '../models/equipment';
 import { useResizeListener } from '../utility/dimensions';
 import { Attributes } from '../utility/attributes';
 import Settings from '../models/settings';
@@ -81,7 +81,6 @@ const GET_NEXT_RARITY = {
 };
 interface Props {
     reputation: Accessor<Reputation>;
-    setReputation: Setter<Reputation>;
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
     ascean: Accessor<Ascean>; 
@@ -90,7 +89,7 @@ interface Props {
     combatState: Accessor<Combat>;
 };
 
-const Character = ({ reputation, setReputation, settings, setSettings, ascean, asceanState, game, combatState }: Props) => {
+const Character = ({ reputation, settings, setSettings, ascean, asceanState, game, combatState }: Props) => {
     const [playerTraitWrapper, setPlayerTraitWrapper] = createSignal<any>({});
     const [dragAndDropInventory, setDragAndDropInventory] = createSignal(game()?.inventory);
     const [canUpgrade, setCanUpgrade] = createSignal<boolean>(false);
@@ -656,39 +655,7 @@ const Character = ({ reputation, setReputation, settings, setSettings, ascean, a
         const newInventory = game().inventory.filter((item) => item._id !== id);
         EventBus.emit('refresh-inventory', newInventory);
         setRemoveModalShow(false);
-    };
-
-    // async function getExperience() {
-    //     let experience: number = ascean().experience + 1000;
-    //     let ceiling: number = ascean().level * 1000;
-    //     const newState = { 
-    //         ...asceanState(), 
-    //         avarice: false, 
-    //         opponent: 4,
-    //         opponentExp: Math.min(experience, ceiling),
-    //     };
-    //     EventBus.emit('gain-experience', newState);
-    // };
-
-    // async function getInventory() {
-    //     try {
-    //         const item = await getOneRandom(ascean().level);
-    //         EventBus.emit('add-item', item);
-    //     } catch (err: any) {
-    //         console.warn(err, 'Error in Free Inventory');
-    //     };
-    // };
-
-    // async function getMoney() {
-    //     const newAscean = { 
-    //         ...ascean(), 
-    //         currency: { 
-    //             ...ascean().currency, 
-    //             gold: ascean().currency.gold + 1000 
-    //         } 
-    //     };
-    //     EventBus.emit('update-ascean', newAscean);
-    // };
+    }; 
 
     function item(rarity: string) {
         return {

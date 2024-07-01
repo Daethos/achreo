@@ -32,9 +32,6 @@ export class Preloader extends Scene {
     preload() {
         ParticleManager.preload(this);
         Entity.preload(this);
-        // this.load.setPath('assets/images');
-        // Treasure.preload(this);
-        
         this.load.tilemapTiledJSON('ascean_test', '../assets/gui/ascean_test.json');
         this.load.tilemapTiledJSON('tent', '../assets/gui/tent.json');
         this.load.plugin('rexvirtualjoystickplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexvirtualjoystickplugin.min.js', true); 

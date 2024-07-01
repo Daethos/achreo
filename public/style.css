@@ -4,7 +4,7 @@ body {
     width: 100%;
     height: 100vh;
     color: rgba(253, 246, 216, 0.87);
-    background-color: #000000; 
+    background-color: #000; 
     font-family: "Cinzel Regular", 'Cinzel', 'Cinzel Bold', Arial, Helvetica, sans-serif;
     font-optical-sizing: auto;
 }
@@ -29,13 +29,10 @@ body {
     align-items: center;
     width: 100%;
     height: 100vh;
-    /* border: 0.15em solid #fdf6d8; */
     z-index: 1;
 }
 
 #deity-pic {
-    /* width: 25%;
-    height: 25%; */
     max-height: 37.5%;
     max-width: 37.5%;
     border-radius: 50%;
@@ -46,8 +43,6 @@ body {
 
 #origin-pic {
     display: block;
-    /* width: 25%;
-    height: 25%; */
     max-height: 25%;
     max-width: 25%;
     border-radius: 50%;
@@ -73,8 +68,6 @@ body {
     width: 100%;
 }
 
-/* <------------- GAME UI -------------> */
-
 .playerCombatUi {
     position: fixed;
     top: 0;
@@ -97,7 +90,6 @@ body {
     position: absolute;
     top: 2.5vh;
     left: 31.5vw;
-    /* border: 0.15em solid purple; */
     align-items: center;
     justify-content: center;
     border-radius: 50%;
@@ -171,9 +163,7 @@ body {
 
 .combatSettings {
     position: fixed;
-    /* border: 0.15em solid gold; */
     background-color: transparent;
-    /* z-index: 2; */
 }
 
 .disengage {
@@ -200,16 +190,12 @@ body {
 }
 
 .playerMenuHeading {
-    /* position: absolute;
-    top: 10;
-    */
     font-family: 'Cinzel-Regular';
     font-size: 1em; 
     text-align: center;
     color: #fdf6d8;
     background-color: black;
     padding: 0;
-    /* border: 0.1em solid ; */
 } 
 
 .playerWindow {
@@ -275,7 +261,6 @@ body {
     position: absolute;
     top: 2.5vh;
     right: 25vw;
-    /* border: 0.15em solid purple; */
     align-items: center;
     justify-content: center;
     border-radius: 50%;
@@ -335,7 +320,6 @@ body {
     right: 5vw;
 }
 
-
 .smallHudButtons {
     position: fixed;
     bottom: 1%;
@@ -366,8 +350,6 @@ body {
 .table {
     display: flex;
 }
-
-/* <------------- GAME UI -------------> */
 
 .ascean-builder {
     border: 0.25em solid #fdf6d8;
@@ -416,7 +398,7 @@ body {
     width: 10em;
     margin: 0.5em;
     padding: 0.5em;
-    background-color: #000000;
+    background-color: #000;
     border-radius: 5;
     color: rgba(253, 246, 216, 0.87);
     border: 0.15em solid rgba(253, 246, 216, 0.87);
@@ -429,12 +411,10 @@ body {
     }
 
     &:active {
-        /* background-color: #fdf6d8; */
         border: 0.15em solid gold;
         color: gold;
     }
 
-    /* Disabled styles */
     &:disabled {
         cursor: not-allowed;
         border: 0.15em solid rgba(253, 246, 216, 0.3);
@@ -444,9 +424,8 @@ body {
 
 .buttonBorderless {
     font-family: "Cinzel Regular";
-    /* margin: 0.5em; */
     padding: 0.5em;
-    background-color: #000000;
+    background-color: #000;
     color: rgba(253, 246, 216, 0.87);
     border: none;
     cursor: pointer;
@@ -458,12 +437,10 @@ body {
     }
 
     &:active {
-        /* background-color: #fdf6d8; */
         border: 0.15em solid gold;
         color: gold;
     }
 
-    /* Disabled styles */
     &:disabled {
         cursor: not-allowed;
         border: 0.15em solid rgba(253, 246, 216, 0.3);
@@ -527,7 +504,6 @@ body {
 .left {
     position: absolute;
     left: 1%;
-    /* border: 0.15em solid #fdf6d8; */
 }
 
 .superCenter {
@@ -571,7 +547,6 @@ body {
 .right {
     position: absolute;
     left: 51%;
-    /* border: 0.15em solid #fdf6d8; */
 }
 
 .fade-in {
@@ -610,8 +585,7 @@ body {
     flex-direction: column;
     border-left: 0.2em solid #fdf6d8;
     border-right: 0.2em solid #fdf6d8;
-    /* border: 0.2em solid #fdf6d8; */
-    background-color: #000000;
+    background-color: #000;
 }
 
 .imageCardMiddle {
@@ -621,8 +595,7 @@ body {
     flex-direction: column;
     border-left: 0.2em solid #fdf6d8;
     border-right: 0.2em solid #fdf6d8;
-    /* border: 0.2em solid #fdf6d8; */
-    background-color: #000000;
+    background-color: #000;
 }
 
 .imageCardRight {
@@ -632,8 +605,7 @@ body {
     flex-direction: column;
     border-left: 0.2em solid #fdf6d8;
     border-right: 0.2em solid #fdf6d8;
-    /* border: 0.2em solid #fdf6d8; */
-    background-color: #000000;
+    background-color: #000;
 }
 
 .modal {
@@ -645,7 +617,6 @@ body {
     height: 100%;
     max-height: 100%;
     overflow: auto;
-    /* overflow: auto; */
     background-color: rgba(0, 0, 0, 0.75);
 }
 
@@ -677,9 +648,7 @@ body {
     }
 }
 
-
 .shadow {
-    /* box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5); */
     text-shadow: 0 0 0.5em rgba(0, 0, 0, 1);
 }
 
@@ -712,7 +681,7 @@ body {
 
 .highlight {
     color: #fdf6d8;
-    background: #000000;
+    background: #000;
     border-radius: 0.25rem;
     padding: 0.25rem 1rem;
     margin: 0.5rem;
@@ -727,7 +696,7 @@ body {
 }
 
 .highlight-deity {
-    background: #000000;
+    background: #000;
     border: none;
     height: 100%;
     width: 50%;
@@ -805,7 +774,6 @@ body {
     font-family: 'Cinzel Regular', 'Libre Baskerville', 'Lora', 'Calisto MT', 'Bookman Old Style', Bookman, 'Goudy Old Style', Garamond, 'Hoefler Text', 'Bitstream Charter', Georgia, serif;
     font-size: 1.5em;
     color: gold;
-    /* line-height: 1.2em; */
     margin: 10px 0 0;
     letter-spacing: 1px;
     font-variant: small-caps;
@@ -818,8 +786,6 @@ body {
     color: #fdf6d8;
     font-style: oblique;
     font-size: 1em;
-    /* line-height: 1.2em; */
-    /* margin: 0 0 10px; */
 }
 .creature-heading p{
     font-family: "Cinzel Regular";
@@ -831,7 +797,6 @@ body {
     margin: 0;
     color: #fdf6d8;
     font-size: 1em;
-    /* line-height: 1.2em; */
 }
 .property-line h4 {
     color: #5a0043;
@@ -840,7 +805,6 @@ body {
 .property-line {
     text-indent: -1em;
     padding-left: 1.1em;
-    /* line-height: 1.4em; */
 }
 .property-line.first {
     margin: 8px 0 0
@@ -857,24 +821,19 @@ body {
     vertical-align: middle;
     width: 15.5%;
     font-size: 0.9em;
-    /* line-height: 1em; */
 }
 .abilities h4 {
     margin: 10px 0 2px;
     font-size: 1em;
-    /* line-height: 1.2em; */
     text-transform: uppercase;
-    /* color: #7A200D; */
     color: #fdf6d8;
 }
 .abilities p{
     margin: 0 0 10px;
-    /* line-height: 1.2em; */
 }
 .property-block h4,
 .property-block p {
     font-size: 1em;
-    /* line-height: 1.2em; */
     display: inline;
     margin: 0;
 }

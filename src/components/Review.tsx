@@ -16,6 +16,12 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
         setCharacter(deity?.character as string);
     });
 
+    const mastery = (attr: string) => {
+        return {
+            color: newAscean()?.mastery === attr ? 'gold' : '#fdf6d8' 
+        };
+    };
+
     return (
         <div class='center wrap'>
             <div class='creature-heading'>
@@ -36,12 +42,12 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
                 </div>
                 <br />
                 <div class='creature-heading'>
-                    <h2 style={{color: newAscean()?.mastery === 'constitution' ? 'gold' : '#fdf6d8'}}>Constitution: {newAscean()?.constitution}</h2>
-                    <h2 style={{color: newAscean()?.mastery === 'strength' ? 'gold' : '#fdf6d8'}}>Strength: {newAscean()?.strength}</h2>
-                    <h2 style={{color: newAscean()?.mastery === 'agility' ? 'gold' : '#fdf6d8'}}>Agility: {newAscean()?.agility}</h2>
-                    <h2 style={{color: newAscean()?.mastery === 'achre' ? 'gold' : '#fdf6d8'}}>Achre: {newAscean()?.achre}</h2>
-                    <h2 style={{color: newAscean()?.mastery === 'caeren' ? 'gold' : '#fdf6d8'}}>Caeren: {newAscean()?.caeren}</h2>
-                    <h2 style={{color: newAscean()?.mastery === 'kyosir' ? 'gold' : '#fdf6d8'}}>Kyosir: {newAscean()?.kyosir}</h2>
+                    <h2 style={mastery('constitution')}>Constitution: {newAscean()?.constitution}</h2>
+                    <h2 style={mastery('strength')}>Strength: {newAscean()?.strength}</h2>
+                    <h2 style={mastery('agility')}>Agility: {newAscean()?.agility}</h2>
+                    <h2 style={mastery('achre')}>Achre: {newAscean()?.achre}</h2>
+                    <h2 style={mastery('caeren')}>Caeren: {newAscean()?.caeren}</h2>
+                    <h2 style={mastery('kyosir')}>Kyosir: {newAscean()?.kyosir}</h2>
                 </div>
                 </>
             }>
@@ -53,12 +59,12 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
                 </div>
                 <div class='right' style={{ width: '48%' }}>
                 <div class='creature-heading center'>
-                    <h2 style={{color: newAscean()?.mastery === 'constitution' ? 'gold' : '#fdf6d8'}}>Constitution: {newAscean()?.constitution}</h2>
-                    <h2 style={{color: newAscean()?.mastery === 'strength' ? 'gold' : '#fdf6d8'}}>Strength: {newAscean()?.strength}</h2>
-                    <h2 style={{color: newAscean()?.mastery === 'agility' ? 'gold' : '#fdf6d8'}}>Agility: {newAscean()?.agility}</h2>
-                    <h2 style={{color: newAscean()?.mastery === 'achre' ? 'gold' : '#fdf6d8'}}>Achre: {newAscean()?.achre}</h2>
-                    <h2 style={{color: newAscean()?.mastery === 'caeren' ? 'gold' : '#fdf6d8'}}>Caeren: {newAscean()?.caeren}</h2>
-                    <h2 style={{color: newAscean()?.mastery === 'kyosir' ? 'gold' : '#fdf6d8'}}>Kyosir: {newAscean()?.kyosir}</h2>
+                    <h2 style={mastery('constitution')}>Constitution: {newAscean()?.constitution}</h2>
+                    <h2 style={mastery('strength')}>Strength: {newAscean()?.strength}</h2>
+                    <h2 style={mastery('agility')}>Agility: {newAscean()?.agility}</h2>
+                    <h2 style={mastery('achre')}>Achre: {newAscean()?.achre}</h2>
+                    <h2 style={mastery('caeren')}>Caeren: {newAscean()?.caeren}</h2>
+                    <h2 style={mastery('kyosir')}>Kyosir: {newAscean()?.kyosir}</h2>
                 </div>
                 </div>
                 </div>

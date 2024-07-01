@@ -2,11 +2,7 @@ import { Accessor, For, Setter } from "solid-js";
 import { CharacterSheet } from "../utility/ascean";
 
 export default function Sex({ newAscean, setNewAscean }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet> }) {
-    const sexes = [{
-        name: 'Man', description: 'Men' 
-    }, { 
-        name: 'Woman', description: 'Women'
-    }];
+    const sexes = [{name: 'Man', description: 'Men'}, {name: 'Woman', description: 'Women'}];
 
     return (
         <div class='center creature-heading' style={{ 'margin-bottom': '3%' }}>

@@ -312,41 +312,11 @@ export const PhaserGame = (props: IProps) => {
             };
         });
         return newReputation;
-    };
-
-    function recordNoncombatReputation(computer: Ascean) {
-        let newReputation = { ...props.reputation() };
-        newReputation.factions.forEach((faction: faction) => {
-            if (faction.name === computer.name) {
-                if (faction.reputation < 25) {
-                    faction.reputation += 3;
-                } else if (faction.reputation < 50) {
-                    faction.reputation += 2;
-                } else if (faction.reputation < 100) {
-                    faction.reputation += 1;
-                };
-
-                if (faction.reputation >= 25 && faction.aggressive === true) {
-                    faction.aggressive = false;
-                };
-
-
-            };
-        });
-        return newReputation;
-    };
+    }; 
 
     function recordSkills(skills: string[]) {
         let newSkills = { ...props.ascean().skills };
         skills.forEach((skill: string, index: number) => {
-            // Currently allowing for the first attack to grant a skill point.
-
-            // if (index === 0) {
-            //     const coinFlip = Math.random() >= 0.5;
-            //     if (coinFlip === false) {
-            //         return;
-            //     };
-            // };
             if (index % 3 !== 0) {
                 return;
             };
@@ -663,6 +633,7 @@ export const PhaserGame = (props: IProps) => {
     };
     
     async function createUi(id: string): Promise<void> {
+        console.log('Creating UI');
         const fresh = await getAscean(id);
         const pop = await populate(fresh);
         const res = asceanCompiler(pop);
@@ -682,6 +653,8 @@ export const PhaserGame = (props: IProps) => {
             playerBlessing: props.settings().prayer,
         };
         setCombat(cleanCombat);
+        console.log('Creating Combat: ', cleanCombat);
+        EventBus.emit('combat', cleanCombat);
         setStamina(res?.attributes?.stamina as number);
         const inventory = await getInventory(id);
         const traits = getAsceanTraits(props.ascean());
@@ -818,7 +791,7 @@ export const PhaserGame = (props: IProps) => {
                 computerWin: e.isTriumphant,
                 enemyID: e.id,
             });
-            const dialog = getNpcDialog(e.enemy.name);
+            const dialog = getNpcDialog();
             setGame({ ...game(), dialog: dialog });
         });
         EventBus.on('setup-npc', (e: any) => {
@@ -1140,8 +1113,8 @@ export const PhaserGame = (props: IProps) => {
     return (
         <>
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
-        <Show when={live() && checkUi()}>
-            <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} setReputation={props.setReputation} settings={props.settings} setSettings={props.setSettings} stamina={stamina} />
+        <Show when={live() && checkUi() && props.scene() === 'Game'}>
+            <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} stamina={stamina} />
         </Show>
         </>
     );

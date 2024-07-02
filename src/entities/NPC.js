@@ -7,7 +7,6 @@ import { EventBus } from "../game/EventBus";
 let idCount = 0;
 
 export default class NPC extends Entity { 
-
     constructor(data) {
         let { scene } = data;
         super({ ...data, name: "npc", ascean: undefined, health: 0 }); 

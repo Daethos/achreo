@@ -78,9 +78,6 @@ export type CombatStats =  {
     [key: string]: any;
 };
 
-
-//return { ascean, attributes, combatWeaponOne, combatWeaponTwo, combatWeaponThree, defense };
-
 // ====================================== HELPERS ====================================== \\
 
 export function roundToTwoDecimals(num: number, dec: number = 2): number {
@@ -353,7 +350,6 @@ function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, c
             
             const modifier = skill / (ascean.level * 100);
             const glancing = critClearance / 100;
-            // console.log(`Glancing: ${glancing} Modifier: ${modifier}`);
             if (glancing >= modifier) {
                 glancingBlow = true;
                 // This is the random 1-100 roll that is higher than the MODIFIER (player skill in that weapon type) 
@@ -363,64 +359,6 @@ function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, c
                 magicalDamage *= (1 - glancing); 
             };
         };
-        // if (critChance >= critClearance) {
-        //     physicalDamage *= weapon.criticalDamage;
-        //     magicalDamage *= weapon.criticalDamage;
-        //     criticalSuccess = true;
-        // };
-        // if (critClearance > critChance + ascean.level + 80) {
-        //     physicalDamage *= 0.1;
-        //     magicalDamage *= 0.1;
-        //     glancingBlow = true;
-        // } else if (critClearance > critChance + ascean.level + 75) {
-        //     physicalDamage *= 0.15;
-        //     magicalDamage *= 0.15;
-        //     glancingBlow = true;
-        // } else if (critClearance > critChance + ascean.level + 70) {
-        //     physicalDamage *= 0.2;
-        //     magicalDamage *= 0.2;
-        //     glancingBlow = true;
-        // } else if (critClearance > critChance + ascean.level + 65) {
-        //     physicalDamage *= 0.25;
-        //     magicalDamage *= 0.25;
-        //     glancingBlow = true;
-        // } else if (critClearance > critChance + ascean.level + 60) {
-        //     physicalDamage *= 0.3;
-        //     magicalDamage *= 0.3;
-        //     glancingBlow = true;
-        // } else if (critClearance > critChance + ascean.level + 55) {
-        //     physicalDamage *= 0.35;
-        //     magicalDamage *= 0.35;
-        //     glancingBlow = true;
-        // } else if (critClearance > critChance + ascean.level + 50) {
-        //     physicalDamage *= 0.4;
-        //     magicalDamage *= 0.4;
-        //     glancingBlow = true;
-        // } else if (critClearance > critChance + ascean.level + 45) {
-        //     physicalDamage *= 0.45;
-        //     magicalDamage *= 0.45;
-        //     glancingBlow = true;
-        // } else if (critClearance > critChance + ascean.level + 40) {
-        //     physicalDamage *= 0.5;
-        //     magicalDamage *= 0.5;
-        //     glancingBlow = true;
-        // } else if (critClearance > critChance + ascean.level + 35) {
-        //     physicalDamage *= 0.55;
-        //     magicalDamage *= 0.55;
-        //     glancingBlow = true;
-        // } else if (critClearance > critChance + ascean.level + 30) {
-        //     physicalDamage *= 0.6;
-        //     magicalDamage *= 0.6;
-        //     glancingBlow = true;
-        // } else if (critClearance > critChance + ascean.level + 25) {
-        //     physicalDamage *= 0.65;
-        //     magicalDamage *= 0.65;
-        //     glancingBlow = true;
-        // } else if (critClearance > critChance + ascean.level + 20) {
-        //     physicalDamage *= 0.7;
-        //     magicalDamage *= 0.7;
-        //     glancingBlow = true;
-        // };
     } else {
         if (critChance >= critClearance) {
             physicalDamage *= weapon.criticalDamage;
@@ -481,29 +419,16 @@ function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, c
             glancingBlow = true;
         };
     };
-    // else if (critClearance > critChance + 20) {
-    //     physicalDamage *= 0.8;
-    //     magicalDamage *= 0.8;
-    //     glancingBlow = true;
-    // } else if (critClearance > critChance + 10) {
-    //     physicalDamage *= 0.9;
-    //     magicalDamage *= 0.9;
-    //     glancingBlow = true;
-    // }
     return { criticalSuccess, glancingBlow, physicalDamage, magicalDamage };
 }; 
 
 function phaserActionConcerns(action: string): boolean {
-    if (action === 'attack' || action === 'posture' || action === 'roll') {
-        return true;
-    };
+    if (action === 'attack' || action === 'posture' || action === 'roll') return true;
     return false;
 };
 
 function phaserSuccessConcerns(parrySuccess: boolean, rollSuccess: boolean, computerParrySuccess: boolean, computerRollSuccess: boolean): boolean {
-    if (parrySuccess || rollSuccess || computerParrySuccess || computerRollSuccess) {
-        return true;
-    };
+    if (parrySuccess || rollSuccess || computerParrySuccess || computerRollSuccess) return true;
     return false;
 };
 
@@ -592,7 +517,6 @@ function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, 
 
 function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Combat {
     if (player) {
-
         const playerDamage = effect.effect.damage as number * 0.33 * (combat.isCaerenic === true ? 1.15 : 1);
         combat.newComputerHealth -= playerDamage;
         if (combat.newComputerHealth < 0) {
@@ -706,7 +630,6 @@ function applyEffect(prayer: StatusEffect, defense: Defense, weapon: Equipment, 
 
 function stripEffect(prayer: StatusEffect, defense: Defense, weapon: Equipment, isDebuff: boolean): { defense: Defense, weapon: Equipment } {
     const modifier = isDebuff ? 1 : -1;
-    // console.log(`Stripping ${prayer.prayer} from ${prayer.weapon.name} of ${isDebuff ? prayer.enemyName : prayer.playerName}`);
     for (let key in weapon) {
         if (prayer.effect[key]) {
             let modifiedValue = weapon[key] + prayer.effect[key] * modifier * prayer.activeStacks;
@@ -728,7 +651,6 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
     const desc = index === 0 ? '' : 'Two'
     if (name === 'player') {
         const blessing = combat.playerBlessing;
-        // console.log(`${combat.player?.name} ${blessing} Success`);
         combat.prayerData.push(blessing);
         combat.deityData.push(weapon.influences?.[0] as string);
         combat.religiousSuccess = true;
@@ -768,7 +690,6 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
             combat[`playerInfluenceDescription${desc}`] = exists.description;
         } else {
             if (exists.stacks) {
-                // console.log(`${name} stacked ${exists.prayer}`);
                 exists = StatusEffect.updateEffectStack(exists, combat, combat.player as Ascean, weapon);
                 combat[`playerInfluenceDescription${desc}`] = `${exists.description} Stacked ${exists.activeStacks} times.`; 
                 if (exists.prayer === 'Buff') {
@@ -780,7 +701,6 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
                 if (exists.prayer === 'Damage') damageTick(combat, exists, true);
             }; 
             if (exists.refreshes) {
-                // console.log(`${name} refreshed ${exists.prayer}`);
                 exists.duration = Math.floor(combat?.player?.level as number / 3 + 1) > 6 ? 6 : Math.floor(combat?.player?.level as number / 3 + 1);
                 exists.tick.end += exists.duration;
                 exists.endTime += 6;
@@ -793,7 +713,6 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
         };
     } else { // Computer Effect
         const blessing = combat.computerBlessing;
-        // console.log(`${combat.computer.name} ${blessing} Success`);
         combat.computerReligiousSuccess = true;
         const negativeEffect = blessing === 'Damage' || blessing === 'Debuff';
         let exists: StatusEffect | undefined;
@@ -1667,14 +1586,11 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
 
     combat.newComputerHealth -= combat.realizedPlayerDamage;
 
-    // ==================== STATISTIC LOGIC ====================
     combat.typeAttackData.push(combat.weapons[0]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
     const skill = combat.weapons[0]?.type === 'Spell' ? combat.weapons[0]?.damageType?.[0] : combat.weapons[0]?.type;
     combat.skillData.push(skill as string);
-    // console.log('Skill Data:', combat.skillData);
     combat.totalDamageData = combat.realizedPlayerDamage > combat.totalDamageData ? combat.realizedPlayerDamage : combat.totalDamageData;
-    // ==================== STATISTIC LOGIC ====================
 
     combat.playerActionDescription = 
         `You ${ATTACKS[playerAction as keyof typeof ATTACKS]} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(playerTotalDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'damage (Critical)' : combat.glancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
@@ -1772,242 +1688,6 @@ function doubleRollCompiler(combat: Combat, playerInitiative: number, computerIn
     return combat;
 };
 
-// function actionSplitter(combat: Combat): Combat {
-//     let newData = newDataCompiler(combat);
-//     newData.actionData.push(newData.action);
-//     const playerInitiative = newData.playerAttributes.initiative;
-//     const computerInitiative = newData.computerAttributes.initiative;
-//     let playerAction = newData.action;
-//     const playerParry = newData.parryGuess;
-//     let computerParry = newData.computerParryGuess;
-//     let computerAction = newData.computerAction;
-
-//     if (playerAction === '' && !newData.phaser) {
-//         let possibleChoices = ['attack', 'posture', 'roll'];
-//         let postureRating = ((combat.playerDefense?.physicalPosture as number + (combat.playerDefense?.magicalPosture as number)) / 4) + 5;
-//         let rollRating: number = combat.weapons[0]?.roll as number;
-//         let posture = 'posture';
-//         let roll = 'roll';
-
-//         if (rollRating >= 100) {
-//             possibleChoices.push(roll);
-//         } else  if (postureRating >= 100) {
-//             possibleChoices.push(posture);
-//         } else if (postureRating >= rollRating) { 
-//             possibleChoices.push(posture);
-//         } else { 
-//             possibleChoices.push(roll);
-//         };
-//         let newChoice = Math.floor(Math.random() * possibleChoices.length);
-//         newData.action = possibleChoices[newChoice];
-//         newData.playerAction = possibleChoices[newChoice];
-//         playerAction = possibleChoices[newChoice];
-//     };
-//     computerWeaponMaker(newData);
-
-//     computerActionCompiler(newData, playerAction);
-//     computerParry = newData.computerParryGuess;
-//     computerAction = newData.computerAction;
-
-//     newData.computerStartDescription = 
-//         `${newData.computer.name} sets to ${computerAction === '' ? 'defend' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1)}${computerParry ? '-' + computerParry.charAt(0).toUpperCase() + computerParry.slice(1) : ''} against you.`
-
-//     newData.playerStartDescription = 
-//         `You attempt to ${playerAction === '' ? 'defend' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1)} against ${newData.computer.name}.`
-    
-//     // If both Player and Computer parry -> parry [Fastest Resolution]
-//     if (playerAction === 'parry' && computerAction === 'parry') { // This is if PARRY: 'ACTION' Is the Same for Both
-//         if (playerParry === computerParry && playerParry === 'parry') {
-//             if (playerInitiative > computerInitiative) {
-//                 newData.parrySuccess = true;
-//                 newData.playerSpecialDescription = 
-//                     `You successfully parried ${newData.computer.name}'s parry-parry! Absolutely Brutal!`;
-//                 attackCompiler(newData, playerAction);
-//                 faithCompiler(newData); 
-//                 // statusEffectCheck(newData);
-//                 newData.combatRound += 1;
-//                 newData.sessionRound += 1;
-//                 return newData;
-//             } else {
-//                 newData.computerParrySuccess = true;
-//                 newData.computerSpecialDescription = 
-//                     `${newData.computer.name} successfully parried your parry-parry! Absolutely Brutal!`
-//                 computerAttackCompiler(newData, computerAction);
-//                 faithCompiler(newData);
-
-//                 // statusEffectCheck(newData);
-//                 newData.combatRound += 1;
-//                 newData.sessionRound += 1;
-//                 return newData;
-//             };
-//         };
-//         // If the Player Guesses Right and the Computer Guesses Wrong
-//         if (playerParry === computerAction && computerParry !== playerAction) {
-//             newData.parrySuccess = true;
-//             newData.playerSpecialDescription = 
-//                 `You successfully parried ${newData.computer.name}'s parry-${computerParry.charAt(0).toUpperCase() + computerParry.slice(1)}! Absolutely Brutal!`
-//             attackCompiler(newData, playerAction)
-//             faithCompiler(newData);
-//             // statusEffectCheck(newData);
-//             newData.combatRound += 1;
-//             newData.sessionRound += 1;
-//             return newData;
-//         };
-    
-//         // If the Computer Guesses Right and the Player Guesses Wrong
-//         if (computerParry === playerAction && playerParry !== computerAction) {
-//             newData.computerParrySuccess = true;
-//             newData.computerSpecialDescription = 
-//                 `${newData.computer.name} successfully parried your parry-${playerParry.charAt(0).toUpperCase() + playerParry.slice(1)}! Absolutely Brutal!`
-//             computerAttackCompiler(newData, computerAction);
-//             faithCompiler(newData);
-//             // statusEffectCheck(newData);
-//             newData.combatRound += 1;
-//             newData.sessionRound += 1;
-//             return newData;
-//         } ;
-    
-//         if (playerParry !== computerAction && computerParry !== playerAction) {
-//             newData.playerSpecialDescription = 
-//                 `You failed to parry ${newData.computer.name}'s parry! Heartbreaking!`
-//             newData.computerSpecialDescription = 
-//                 `${newData.computer.name} fails to parry your parry! Heartbreaking!`
-//                 if (playerInitiative > computerInitiative) {
-//                     attackCompiler(newData, playerAction);
-//                     computerAttackCompiler(newData, computerAction);
-//                 } else {
-//                     computerAttackCompiler(newData, computerAction);
-//                     attackCompiler(newData, playerAction);
-//                 };
-//         };
-//     };
-
-//     if (playerAction === 'parry' && computerAction !== 'parry') {
-//         if (playerParry === computerAction) {
-//             newData.parrySuccess = true;
-//             newData.playerSpecialDescription = 
-//                 `You successfully parried ${newData.computer.name}'s ${ newData.computerAction === 'attack' ? 'focused' : newData.computerAction.charAt(0).toUpperCase() + newData.computerAction.slice(1) } attack.`
-//             attackCompiler(newData, playerAction);
-//             faithCompiler(newData);
-//             // statusEffectCheck(newData);
-//             newData.combatRound += 1;
-//             newData.sessionRound += 1;
-//             return newData;
-//         } else {
-//             newData.playerSpecialDescription = 
-//                 `You failed to parry ${newData.computer.name}'s ${ newData.computerAction === 'attack' ? 'focused' : newData.computerAction.charAt(0).toUpperCase() + newData.computerAction.slice(1) } attack. Heartbreaking!`
-//         };
-//     };
-
-//     if (computerAction === 'parry' && playerAction !== 'parry') {
-//         if (computerParry === playerAction) {
-//             newData.computerParrySuccess = true;
-//             newData.computerSpecialDescription = 
-//                 `${newData.computer.name} successfully parried your ${ newData.action === 'attack' ? 'focused' : newData.action.charAt(0).toUpperCase() + newData.action.slice(1) } attack.`
-//             computerAttackCompiler(newData, computerAction);
-//             faithCompiler(newData);
-//             // statusEffectCheck(newData);
-//             newData.combatRound += 1;
-//             newData.sessionRound += 1;
-//             return newData;
-//         } else {
-//             newData.computerSpecialDescription = 
-//                 `${newData.computer.name} fails to parry your ${ newData.action === 'attack' ? 'focused' : newData.action.charAt(0).toUpperCase() + newData.action.slice(1) } attack. Heartbreaking!`
-//         };
-//     };
-    
-//     if (playerAction === 'dodge' && computerAction === 'dodge') { // If both choose Dodge
-//         if (playerInitiative > computerInitiative) {
-//             newData.playerSpecialDescription = 
-//                 `You successfully Dodge ${newData.computer.name}'s ${  newData.computerAction === 'attack' ? 'focused' : newData.computerAction.charAt(0).toUpperCase() + newData.computerAction.slice(1) } attack`
-//             attackCompiler(newData, playerAction);
-//         } else {
-//             `${newData.computer.name} successfully Dodges your ${  newData.action === 'attack' ? 'focused' : newData.action.charAt(0).toUpperCase() + newData.action.slice(1) } attack`
-//             computerAttackCompiler(newData, computerAction);
-//         };
-//     };
-
-//     // If the Player Dodges and the Computer does not *parry or Dodge  *Checked for success
-//     if (playerAction === 'dodge' && computerAction !== 'dodge') {
-//         newData.playerSpecialDescription = 
-//             `You successfully Dodge ${newData.computer.name}'s ${ newData.computerAction === 'attack' ? 'focused' : newData.computerAction.charAt(0).toUpperCase() + newData.computerAction.slice(1) } attack`
-//         attackCompiler(newData, playerAction);
-//         faithCompiler(newData);
-//         // statusEffectCheck(newData);
-//         newData.combatRound += 1;
-//         newData.sessionRound += 1;
-//         return newData;
-//     };
-
-//     // If the Computer Dodges and the Player does not *parry or Dodge *Checked for success
-//     if (computerAction === 'dodge' && playerAction !== 'dodge') {
-//         `${newData.computer.name} successfully Dodges your ${ newData.action === 'attack' ? 'focused' : newData.action.charAt(0).toUpperCase() + newData.action.slice(1) } attack`
-//         computerAttackCompiler(newData, computerAction);
-//         faithCompiler(newData);
-//         // statusEffectCheck(newData);
-//         newData.combatRound += 1;
-//         newData.sessionRound += 1;
-//         return newData;
-//     };
-
-//     if (playerAction === 'roll' && computerAction === 'roll') { // If both choose Roll
-//         doubleRollCompiler(newData, playerInitiative, computerInitiative, playerAction, computerAction);
-//     };
-
-//     if (playerAction === 'roll' && computerAction !== 'roll') {
-//         playerRollCompiler(newData, playerAction, computerAction);
-//         if (newData.rollSuccess === true) {
-//             faithCompiler(newData);
-//             // statusEffectCheck(newData);
-//             newData.combatRound += 1;
-//             newData.sessionRound += 1;
-//             return newData;
-//         };
-//     };
-
-//     if (computerAction === 'roll' && playerAction !== 'roll') {
-//         computerRollCompiler(newData, playerAction, computerAction);
-//         if (newData.computerRollSuccess === true) {
-//             faithCompiler(newData);
-//             // statusEffectCheck(newData);
-//             newData.combatRound += 1;
-//             newData.sessionRound += 1;
-//             return newData;
-//         };
-//     };
-
-//     if (playerAction === 'attack' || playerAction === 'posture' || computerAction === 'attack' || computerAction === 'posture') { // If both choose attack
-//         if (playerInitiative > computerInitiative) {
-//             if (playerAction !== '') attackCompiler(newData, playerAction);
-//             if (computerAction !== '') computerAttackCompiler(newData, computerAction);
-//         } else {
-//             if (computerAction !== '') computerAttackCompiler(newData, computerAction);
-//             if (playerAction !== '') attackCompiler(newData, playerAction);
-//         };
-//     };
-
-//     faithCompiler(newData);
-//     // statusEffectCheck(newData);
-    
-//     if (newData.playerWin === true) {
-//         newData.computerDeathDescription = 
-//         `${newData.computer.name} has been defeated.`;
-//     };
-//     if (newData.computerWin === true) {
-//         newData.playerDeathDescription = 
-//         `You have been defeated.`;
-//     };
-//     if (newData.playerWin === true || newData.computerWin === true) {
-//         statusEffectCheck(newData);
-//     };
-
-//     newData.combatRound += 1;
-//     newData.sessionRound += 1;
-
-//     // console.log(newData, 'NEW DATA');
-//     return newData;
-// };
-
 function computerWeaponMaker(combat: Combat): Combat {
     let prayers = ['Buff', 'Damage', 'Debuff', 'Heal'];
     let newPrayer = Math.floor(Math.random() * prayers.length);
@@ -2019,7 +1699,6 @@ function computerWeaponMaker(combat: Combat): Combat {
         combat.computerDamageType = combat.computerWeapons[0]?.damageType?.[0] as string;
         return combat;
     };
-    
 
     let defenseTypes: any = {
         "Leather-Cloth": 0,
@@ -2133,59 +1812,6 @@ function dualActionSplitter(combat: Combat): Combat {
     };
 
 
-    // ========================== PARRY LOGIC (TURN BASED) ========================== \\
-
-    // if (playerAction === 'parry' && computerAction === 'parry') { 
-    //     if (playerParry === computerParry && playerParry === 'parry') {
-    //         if (playerInitiative > computerInitiative) {
-    //             newCombat.parrySuccess = true;
-    //             newCombat.playerSpecialDescription = `You successfully parried ${newCombat.computer.name}'s parry-parry! Absolutely Brutal`;
-    //         } else {
-    //             newCombat.computerParrySuccess = true;
-    //             newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully parried your parry-parry! Absolutely Brutal`; 
-    //         };
-    //         return newCombat;
-    //     };
-    //     if (playerParry === computerAction && computerParry !== playerAction) {
-    //         newCombat.parrySuccess = true;
-    //         newCombat.playerSpecialDescription = `You successfully parried ${newCombat.computer.name}'s parry-${computerParry.charAt(0).toUpperCase() + computerParry.slice(1)}! Absolutely Brutal`;
-    //         return newCombat; 
-    //     };
-    
-    //     if (computerParry === playerAction && playerParry !== computerAction) {
-    //         newCombat.computerParrySuccess = true;
-    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully parried your parry-${playerParry.charAt(0).toUpperCase() + playerParry.slice(1)}! Absolutely Brutal`;
-    //         return newCombat; 
-    //     };
-    
-    //     if (playerParry !== computerAction && computerParry !== playerAction) {
-    //         newCombat.playerSpecialDescription = `You failed to parry ${newCombat.computer.name}'s parry! Heartbreaking`;
-    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} fails to parry your parry! Heartbreaking`;
-    //         return newCombat;
-    //     };
-    // };
-
-    // if (playerAction === 'parry' && computerAction !== 'parry') {
-    //     if (playerParry === computerAction) {
-    //         newCombat.parrySuccess = true;
-    //         newCombat.playerSpecialDescription = `You successfully parried ${newCombat.computer.name}'s ${ computerAction === 'attack' ? 'focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`;
-    //         return newCombat;
-    //     } else {
-    //         newCombat.playerSpecialDescription = 
-    //             `You failed to parry ${newCombat.computer.name}'s ${ computerAction === 'attack' ? 'focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack. Heartbreaking!`;
-    //     };
-    // };
-
-    // if (computerAction === 'parry' && playerAction !== 'parry') {
-    //     if (computerParry === playerAction) {
-    //         newCombat.computerParrySuccess = true;
-    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully parried your ${ newCombat.action === 'attack' ? 'focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack.`;
-    //         return newCombat;    
-    //     } else {
-    //         newCombat.computerSpecialDescription = `${newCombat.computer.name} fails to parry your ${ playerAction === 'attack' ? 'focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack. Heartbreaking!`;
-    //     };
-    // };
-
     if (playerAction === 'roll' && computerAction === 'roll') { // If both choose Roll
         doubleRollCompiler(newCombat, playerInitiative, computerInitiative, playerAction, computerAction);
         return newCombat;
@@ -2218,7 +1844,6 @@ function weaponActionSplitter(combat: Combat): Combat {
     const playerActionLive = cleanData.action !== '' ? true : false;
     const computerActionLive = cleanData.computerAction !== '' ? true : false;
     if (playerActionLive && computerActionLive) {
-        // console.log("Dual Actions");
         cleanData = dualActionSplitter(cleanData);
         changes = {
             ...changes,
@@ -2270,7 +1895,6 @@ function weaponActionSplitter(combat: Combat): Combat {
             'dualWielding': cleanData.dualWielding,
         };
     } else if (!playerActionLive && computerActionLive) {
-        // console.log(cleanData.computer.name, "Computer Attacking");
         if (cleanData.computerAction === 'parry') return cleanData;
         computerWeaponMaker(cleanData);
         computerAttackCompiler(cleanData, cleanData.computerAction);
@@ -2452,8 +2076,6 @@ function newDataCompiler(combat: Combat): any {
         isCaerenic: combat.isCaerenic,
         isStalwart: combat.isStalwart,
         npcType: combat.npcType,
-        // persuasionScenario: combat.persuasionScenario,
-        // luckoutScenario: combat.luckoutScenario,
         isEnemy: combat.isEnemy,
         isAggressive: combat.isAggressive,
         startedAggressive: combat.startedAggressive,
@@ -2483,7 +2105,6 @@ function computerDispel(combat: Combat): Combat {
 // ================================== ACTION - SPLITTERS ===================================== \\
 
 function prayerSplitter(combat: Combat, prayer: string): Combat {
-    // console.log(`Prayer: ${prayer}`);
     let originalPrayer = combat.playerBlessing;
     combat.playerBlessing = prayer; 
     faithSuccess(combat, 'player', combat.weapons[0] as Equipment, 0);
@@ -2569,20 +2190,15 @@ function consumePrayerSplitter(combat: Combat): any {
         combat.prayerSacrificeId = combat.playerEffects[0].id;
         combat.prayerSacrificeName = combat.playerEffects[0].name;
     };
-    // if (combat.prayerSacrifice === '') combat.prayerSacrifice = combat.playerEffects[0].prayer;
-    // if (combat.prayerSacrificeName === '') combat.prayerSacrificeName = combat.playerEffects[0].name;
     combat.actionData.push('consume');
     combat.prayerData.push(combat.prayerSacrifice);
-    // console.log(`Sacrificing: ${combat.prayerSacrifice} - ${combat.prayerSacrificeName}?`);
     combat.playerEffects = combat.playerEffects.filter(effect => {
         if (effect.id !== combat.prayerSacrificeId) return true; // || effect.enemyName !== combat.computer.name
-        // console.log(`Sacrificing: ${combat.prayerSacrifice} - ${combat.prayerSacrificeName}!`);
         const matchingWeapon = combat.weapons.find(weapon => weapon?._id === effect.weapon.id);
         const matchingWeaponIndex = combat.weapons.indexOf(matchingWeapon);
         const matchingDebuffTarget = combat.weapons.find(weapon => weapon?.name === effect.debuffTarget);
         const matchingDebuffTargetIndex = combat.weapons.indexOf(matchingDebuffTarget);
 
-        // console.log(`Sacrificing: ${combat.prayerSacrifice}`);
         switch (combat.prayerSacrifice) {
             case 'Heal':
                 combat.newPlayerHealth += effect.effect?.healing as number * 0.165;
@@ -2620,7 +2236,6 @@ function consumePrayerSplitter(combat: Combat): any {
                 break;
             default: break;
         };
-        // console.log('Effect Sacrificed');
         return false;
     });
 
@@ -2664,14 +2279,12 @@ function consumePrayerSplitter(combat: Combat): any {
 
 function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, effectTimer: number }): any { 
     let { combat, effect, effectTimer } = data;
-    // console.log(combat, effect, effectTimer, 'Prayer Effect Tick Splitter');
     if (effect.playerName === combat.player?.name) { 
         if (effect.prayer === 'Damage') { 
             damageTick(combat, effect, true);
         };
         if (effect.prayer === 'Heal') { 
             healTick(combat, effect, true);
-            // if (combat.combatTimer >= effect.endTime || effectTimer === 0) combat.playerEffects = combat.playerEffects.filter(playerEffect => playerEffect.id !== effect.id);
         };  
     } else if (effect.playerName === combat.computer?.name) {
         if (effect.prayer === 'Damage') {
@@ -2712,26 +2325,22 @@ function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, 
 };
 
 function prayerRemoveTickSplitter(combat: Combat, statusEffect: StatusEffect): Combat {
-    // console.log(`%c Removing ${statusEffect.prayer} from ${statusEffect.playerName}`, 'color: #ff0000');
     const target = (statusEffect.prayer === 'Damage' || statusEffect.prayer === 'Debuff') ? statusEffect.enemyName : statusEffect.playerName;
     if (target === combat.player?.name) { 
         combat.playerEffects = combat.playerEffects.filter(effect => {
             if (effect.id !== statusEffect.id) return true; 
-
             const matchingWeapon: Equipment = combat.weapons.find(weapon => weapon?._id === effect.weapon.id) as Equipment;
             const matchingWeaponIndex: number = combat.weapons.indexOf(matchingWeapon);
             const matchingDebuffTarget: Equipment = combat.weapons.find(weapon => weapon?.name === effect.debuffTarget) as Equipment;
             const matchingDebuffTargetIndex: number = combat.weapons.indexOf(matchingDebuffTarget);
 
             if (effect.prayer === 'Buff') { 
-                // console.log(`Removing Buff Effect from ${effect.playerName}`);
                 const deBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingWeaponIndex] as Equipment, false);
                 combat.playerDefense = deBuff.defense;
                 combat.weapons[matchingWeaponIndex] = deBuff.weapon;
             };
 
             if (effect.prayer === 'Debuff') { 
-                // console.log(`Removing Debuff Effect from ${effect.playerName} against ${effect.debuffTarget}`);
                 const reBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingDebuffTargetIndex] as Equipment, true);
                 combat.playerDefense = reBuff.defense;
                 combat.weapons[matchingDebuffTargetIndex] = reBuff.weapon;
@@ -2742,21 +2351,18 @@ function prayerRemoveTickSplitter(combat: Combat, statusEffect: StatusEffect): C
     } else if (target === combat.computer?.name) {
         combat.computerEffects = combat.computerEffects.filter(effect => {
             if (effect.id !== statusEffect.id) return true;
-
             const matchingWeapon: Equipment = combat.computerWeapons.find(weapon => weapon._id === effect.weapon.id) as Equipment;
             const matchingWeaponIndex: number = combat.computerWeapons.indexOf(matchingWeapon);
             const matchingDebuffTarget: Equipment = combat.computerWeapons.find(weapon => weapon.name === effect.debuffTarget) as Equipment;
             const matchingDebuffTargetIndex: number = combat.computerWeapons.indexOf(matchingDebuffTarget);
 
             if (effect.prayer === 'Buff') { 
-                // console.log(`Removing Buff Effect from ${effect.playerName}`);
                 const deBuff = stripEffect(effect, combat.computerDefense as Defense, combat.computerWeapons[matchingWeaponIndex], false);
                 combat.computerDefense = deBuff.defense;
                 combat.computerWeapons[matchingWeaponIndex] = deBuff.weapon;
             };
 
             if (effect.prayer === 'Debuff') { 
-                // console.log(`Removing Debuff Effect from ${effect.playerName} against ${effect.debuffTarget}`);
                 const reBuff = stripEffect(effect, combat.computerDefense as Defense, combat.computerWeapons[matchingDebuffTargetIndex], true);
                 combat.computerDefense = reBuff.defense;
                 combat.computerWeapons[matchingDebuffTargetIndex] = reBuff.weapon;

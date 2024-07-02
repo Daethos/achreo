@@ -387,6 +387,13 @@ const SpecialSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('CAST')} Paralyze
+            </p>
+            Paralyze your opponent for several seconds, causing them to be disabled for the duration. Cast. Moderate Cooldown. Low Stamina.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CAST')} Polymorph
             </p>
             Turn your opponent into a fluffy bunny for several seconds, causing them to be disabled for the duration. Cast. Short Cooldown. Low Stamina.

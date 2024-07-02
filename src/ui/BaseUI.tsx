@@ -24,7 +24,6 @@ interface Props {
     combat: Accessor<Combat>;
     game: Accessor<GameState>;
     reputation: Accessor<Reputation>;
-    setReputation: Setter<Reputation>;
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
     stamina: Accessor<number>;

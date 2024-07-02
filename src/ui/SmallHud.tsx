@@ -153,7 +153,6 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
         EventBus.emit('action-button-sound');
     };
     const showCombat = () => {
-        // EventBus.emit('blend-game', { showCombat: !game().showCombat });
         EventBus.emit('show-combat');
         EventBus.emit('action-button-sound');
         setClicked({ ...clicked(), showCombat: !clicked().showCombat });

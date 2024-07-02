@@ -1,6 +1,4 @@
 import Phaser from "phaser"; 
-import ScrollingCombatText from "../phaser/ScrollingCombatText";
-// import { screenShake } from "../phaser/ScreenShake"; 
 
 export const FRAME_COUNT = {
     ATTACK_LIVE: 16,
@@ -22,7 +20,6 @@ export const SWING_TIME = { 'One Hand': 1250, 'Two Hand': 1650 }; // 750, 1250 [
 export const ENEMY_SWING_TIME = { 'One Hand': 950, 'Two Hand': 1250 }; // 750, 1250 [old]
 
 export default class Entity extends Phaser.Physics.Matter.Sprite {
-
     static preload(scene) { 
         scene.load.atlas(`player_actions`, '../assets/gui/player_actions.png', '../assets/gui/player_actions_atlas.json');
         scene.load.animation(`player_actions_anim`, '../assets/gui/player_actions_anim.json');
@@ -338,85 +335,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.isHurt = false;
             this.setTint(0x000000);    
         }); 
-    }; 
-    
-    checkHanging() {
-        this.scene.matterCollision.addOnCollideStart({
-            objectA: this.sensor,
-            callback: (event) => {
-                const { bodyB, pair } = event;
-                if (!bodyB.gameObject || !bodyB.gameObject.tile) return;
-                const isGround = bodyB.gameObject.tile.properties.isGround;
-                if (isGround) {
-                    const playerPositionY = this.y; // Get the Y-coordinate of the player's sprite
-                    const penetration = pair.collision.penetration;
-                    const normal = pair.collision.normal;
-            
-                    const collisionPoint = {
-                        x: bodyB.position.x + penetration.y * normal.x,
-                        y: bodyB.position.y + penetration.y * normal.y
-                    };
-                    if (collisionPoint.y > playerPositionY) {
-                        this.scene.setOnGround(event.bodyA.gameObject.name, true);
-                        if (event.bodyA.gameObject.name === 'player') {
-                            if (this.scene.isPlayerHanging) this.scene.setHanging(event.bodyA.gameObject.name, false);
-                        } else {
-                            if (this.scene.isEnemyHanging) this.scene.setHanging(event.bodyA.gameObject.name, false);
-                        }
-                        if (this.isHanging) this.isHanging = false;
-                        this.setStatic(false);
-                    } else {
-                        this.scene.setHanging(event.bodyA.gameObject.name, true);
-                        this.isHanging = true; 
-                        this.setStatic(true);
-                        this.setVelocityY(0); 
-                    };
-                };
-            },
-            context: this.scene
-        });
-
-        this.scene.matterCollision.addOnCollideActive({
-            objectA: this.sensor,
-            callback: (event) => {
-                const { bodyB, pair } = event;
-                if (!bodyB.gameObject || !bodyB.gameObject.tile) return;
-                const isGround = bodyB.gameObject.tile.properties.isGround;
-                if (isGround) {
-                    const playerPositionY = this.y; // Get the Y-coordinate of the player's sprite
-                    const penetration = pair.collision.penetration;
-                    const normal = pair.collision.normal;
-            
-                    const collisionPoint = {
-                        x: bodyB.position.x + penetration.y * normal.x,
-                        y: bodyB.position.y + penetration.y * normal.y
-                    }; 
-
-                    if (collisionPoint.y > playerPositionY) {
-                        this.scene.setOnGround(event.bodyA.gameObject.name, true); 
-                        if (event.bodyA.gameObject.name === 'player') {
-                            if (this.scene.isPlayerHanging) this.scene.setHanging(event.bodyA.gameObject.name, false);
-                        } else {
-                            if (this.scene.isEnemyHanging) this.scene.setHanging(event.bodyA.gameObject.name, false);
-                        }
-                        if (this.isHanging) this.isHanging = false;
-                        this.setStatic(false);
-                    } else {
-                        this.scene.setHanging(event.bodyA.gameObject.name, true);
-                        this.isHanging = true; 
-                        this.setStatic(true);
-                        this.setVelocityY(0); 
-                    };
-                };
-            },
-            context: this.scene
-        });
     };
 
     knockback(id) {
         const enemy = this.scene.getEnemy(id);
         if (enemy === undefined) {
-            console.log('No enemy found, no knockback!');
             return;
         };
 
@@ -424,18 +347,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         let xAngle = (enemy.x - this.x) * multiplier;
         let yAngle = (enemy.y - this.y) * multiplier;
         this.knockbackDirection = { x: xAngle, y: yAngle };
-
-        // if (!other.pair.gameObjectB || !other.pair.gameObjectB.body) return;
-        // let bodyPosition = other.pair.gameObjectB.body.position;
-        // let offset = Phaser.Physics.Matter.Matter.Vector.mult(other.pair.collision.normal, other.pair.collision.depth); 
-        // let collisionPoint = Phaser.Physics.Matter.Matter.Vector.add(offset, bodyPosition);
-        // this.knockbackDirection = this.flipX 
-        //     ? Phaser.Physics.Matter.Matter.Vector.sub(collisionPoint, bodyPosition) 
-        //     : Phaser.Physics.Matter.Matter.Vector.sub(bodyPosition, collisionPoint);
-        // this.knockbackDirection = Phaser.Physics.Matter.Matter.Vector.normalise(this.knockbackDirection); 
-        
-        // console.log(this.knockbackDirection, 'Knockback Direction');
-        // const enemy = this.scene.getEnemy(other.pair.gameObjectB.enemyID);
 
         const accelerationFrames = 10; 
         const accelerationStep = this.knockbackForce / accelerationFrames; // this.knockbackForce / accelerationFrames
@@ -446,7 +357,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const knockbackLoop = (timestamp) => {
             if (!startTime) startTime = timestamp;
             const elapsed = timestamp - startTime;
-            // console.log(`Knockback elapsed / knockbackDuration: ${elapsed} / ${knockbackDuration}`);
 
             if (elapsed >= knockbackDuration) {
                 return;
@@ -455,11 +365,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             if (currentForce < this.knockbackForce) currentForce += accelerationStep;
             const forceX = (this.knockbackDirection.x * currentForce); // * (this.flipX ? -5 : 5)
             const forceY = (this.knockbackDirection.y * currentForce); // * (this.flipX ? -5 : 5)
-            // console.log(`Knockback forceX, forceY: ${forceX}, ${forceY}`);
-            // enemy.setVelocityX(forceX);
-            // enemy.setVelocityY(forceY);
             enemy.applyForce({ x: forceX, y: forceY });
-            // console.log(`Knockback currentForce: ${currentForce}`);
             currentForce *= dampeningFactor;
             requestAnimationFrame(knockbackLoop);
         };
@@ -470,7 +376,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if ("vibrate" in navigator) {
             navigator.vibrate(100);
         };
-        // screenShake(this.scene);
     };
 
     checkDamageType = (type, concern) => {
@@ -501,8 +406,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     checkPlayerResist = () => {
         const chance = Math.random() * 101;
         const resist = this.scene.state.playerDefense.magicalDefenseModifier;
-        // console.log(`%c Resist Chance: ${resist} --- Roll: ${chance}`, 'color: green');
-        
         if (chance > resist) {
             return true;
         } else {
@@ -526,17 +429,14 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             // pointer.clear();
             // pointer.strokeRect(enemy.x + xOffset, enemy.y + i, 1, 1);
             if (this.weaponHitbox.getBounds().contains(enemy.x + xOffset, enemy.y + i)) {
-                // console.log('Hitbox Hit!', i, 'Target:', enemy.ascean?.name);
                 this.attackedTarget = enemy;
                 this.actionSuccess = true;
                 return;
             };
         };
-        // console.log('Hitbox Missed!', 'Target:', enemy.ascean?.name);
     };
 
     checkActionSuccess = (entity, target) => {
-        // if (this.isStealthing === false) return; // this.inCombat === false && 
         if (entity === 'player' && !this.isStorming && !this.isArcing) {
             if (this.flipX) {
                 this.weaponHitbox.setAngle(270);
@@ -546,11 +446,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
             this.weaponHitbox.y = this.y - 8;
             if (target === undefined) {
-                // console.log('SO you do not have a target. Mission, run through your targets array with this.hitBoxCheck.');
                 if (this.targets.length === 0) {
-                    console.log('You have no TARGETS to run through, checking TOUCHING.');
                     if (this.touching.length === 0) {
-                        console.log('You have neither TARGETS nor TOUCHING, returning.');
                         return;
                     } else {
                         console.log('checking TOUCHING');
@@ -559,7 +456,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         };
                     };
                 } else {
-                    console.log('checking TARGETS');
                     for (let i = 0; i < this.targets.length; i++) {
                         this.hitBoxCheck(this.targets[i]);
                     };

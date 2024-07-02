@@ -1,21 +1,9 @@
 import Phaser from 'phaser'; 
 import { v4 as uuidv4 } from 'uuid';
 
-export const PARTICLES = [
-    'arrow',
-    'earth', 
-    'fire', 
-    'frost', 
-    'lightning',
-    'righteous',
-    'sorcery',
-    'spooky', 
-    'wild',
-    'wind', 
-];
+export const PARTICLES = ['arrow', 'earth',  'fire',  'frost',  'lightning', 'righteous', 'sorcery', 'spooky', 'wild', 'wind'];
 
 function angleTarget(target) {
-    // const target = player.particleEffect.target;
     let angle = 0;
     if (target.x > 0) {
         if (target.y > 0) { 
@@ -95,15 +83,6 @@ class Particle {
                     if (match === true ) {
                         this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: this.action }});
                     } else {
-                        // let blindStrike = false;
-                        // if (player.inCombat === false || !player.attacking || !player.currentTarget || this.scene.combat === false) {
-                        //     player.targetEngagement(other.gameObjectB.enemyID);
-                        //     // Jump player into combat
-                        //     blindStrike = true;
-                        // };
-                        // if (!player.isPlayerInCombat()) {
-                        //     player.targetEngagement(other.gameObjectB.enemyID);                            
-                        // };
                         this.scene.combatMachine.action({ type: 'Player', data: { 
                             playerAction: { 
                                 action: this.action, 
@@ -119,13 +98,11 @@ class Particle {
                                 action: other.gameObjectB.currentAction, 
                                 parry: other.gameObjectB.parryAction 
                             },
-                            // blindStrike: blindStrike,
                         }});
                     };
                     player.particleEffect.success = true;
                 };
                 if (other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy' && !other.gameObjectB.isProtecting) {
-                    // console.log('--- PARTICLE EFFECT TRIGGERED FOR ENEMY ---');
                     player.particleEffect.success = true;
                 };
             },
@@ -142,12 +119,6 @@ class Particle {
         } else {
             if (scene.settings.difficulty.aim === true || !player.attacking || special === true) {
                 const target = scene.getWorldPointer();
-                // const pointer = scene.rightJoystick.pointer;
-                // const worldX = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
-                // const worldY = scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
-                // // console.log(worldX, worldY);
-                // const target = new Phaser.Math.Vector2(worldX, worldY);
-                // const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y) // player.rightJoystick.pointer.x, player.rightJoystick.pointer.y
                 const direction = target.subtract(player.position);
                 direction.normalize();
                 return direction;
@@ -184,7 +155,6 @@ class Particle {
 
 export default class ParticleManager extends Phaser.Scene { 
     static preload(scene) {
-        // scene.load.image('arrow_effect', process.env.PUBLIC_URL + '/images/arrow_effect.png');
         scene.load.atlas('arrow_effect', '../assets/gui/arrow_effect.png', '../assets/gui/arrow_effect_atlas.json');
         scene.load.animation('arrow_anim', '../assets/gui/arrow_anim.json');    
         scene.load.atlas('earth_effect', '../assets/gui/earth_effect.png', '../assets/gui/earth_json.json');
@@ -254,13 +224,11 @@ export default class ParticleManager extends Phaser.Scene {
         if (!player.particleEffect.effect.visible) player.particleEffect.effect.setVisible(true); 
         if (!player.flipX && !player.particleEffect.effect.flipX && player.particleEffect.isParticle === true) player.particleEffect.effect.flipX = true;
         if (player.particleEffect && player.particleEffect.effect && this.particles.find((particle) => particle.id === player.particleEffect.id)) {
-
             if (player.particleEffect.isParticle === true) {
                 player.particleEffect.effect.play(player.particleEffect.key, true);
             } else {
                 player.particleEffect.effect.setAngle(angleTarget(player.particleEffect.target));
             };
-            
             const target = player.particleEffect.target;
             player.particleEffect.effect.setVelocity(player.particleEffect.velocity * target.x, target.y * player.particleEffect.velocity);
         };

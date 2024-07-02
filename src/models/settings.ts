@@ -93,10 +93,7 @@ export default class Settings {
             y: number; 
             width: number; 
         };
-        fpsText: { 
-            x: number; 
-            y: number; 
-        };
+        fpsText: { x: number; y: number; };
         leftHud: { 
             offset: number;
             scale: number
@@ -109,9 +106,7 @@ export default class Settings {
             x: number; 
             y: number; 
         };
-        solidHud: {
-            right: number;
-        };
+        solidHud: { right: number; };
     };
 
     public constructor(id: string, mastery: string) {

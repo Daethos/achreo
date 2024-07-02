@@ -17,20 +17,16 @@ import { Tent } from './scenes/Interior';
 const dimensions = useResizeListener();
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
-    width: dimensions()?.ORIENTATION === 'landscape' ? dimensions().WIDTH : dimensions().HEIGHT,
     height: dimensions()?.ORIENTATION === 'landscape' ? dimensions().HEIGHT : dimensions().WIDTH,
+    width: dimensions()?.ORIENTATION === 'landscape' ? dimensions().WIDTH : dimensions().HEIGHT,
     scale: {
-        mode: Phaser.Scale.RESIZE, // FIT
+        mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     parent: 'game-container',
     backgroundColor: '#000',
-    dom: {
-        createContainer: true
-    },
-    input: {
-        activePointers: 10,
-    },
+    dom: { createContainer: true },
+    input: { activePointers: 3 },
     scene: [
         Boot,
         Preloader,
@@ -42,10 +38,7 @@ const config: Phaser.Types.Core.GameConfig = {
     ],
     physics: {
         default: 'matter',
-        matter: {
-            // debug: true,
-            gravity: { x: 0, y: 0 },
-        }
+        matter: { gravity: { x: 0, y: 0 } } // debug: true,
     },
     fps: { limit: 90, target: 60 },
     fullscreenTarget: 'base-ui',
@@ -73,7 +66,7 @@ const config: Phaser.Types.Core.GameConfig = {
             mapping: "navMeshPlugin",
             start: true
         }],
-    },
+    }
 };
 
 const StartGame = (parent: string) => {

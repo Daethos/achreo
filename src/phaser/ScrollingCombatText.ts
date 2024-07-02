@@ -6,7 +6,6 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     private duration: number;
     private timer: Phaser.Time.TimerEvent;
     private timerTime: number;
-    private context: string;
 
     constructor(scene: Phaser.Scene, x: number, y: number, text: string, duration: number, context: string, critical?: boolean) {
         super(scene, x, y);
@@ -24,7 +23,6 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         scene.add.existing(this);
         this.duration = duration;
         this.timerTime = 0;
-        this.context = context;
         this.timer = scene.time.addEvent({
             delay: this.duration,
             callback: () => {

@@ -186,7 +186,6 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         });
         EventBus.on('update-small-hud-offset', (offset: number) => {
             this.bar.forEach((item, index) => {
-                // item.x = xModifier(this.x, Math.min(index, 9), offset);
                 item.x = xModifier(this.x, Math.min(index, 6), offset || 43.75);
 
             });
@@ -253,32 +252,6 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                 button.setBlendMode(Phaser.BlendModes.NORMAL);    
             };
         });
-        // this.stances.forEach((button) => {
-        //     if (button === item) {
-        //         switch (button.texture.key) {
-        //             case 'stealth':
-        //                 if (this.scene.combat === true) return;
-        //                 this.switches.stealth = !this.switches.stealth;
-        //                 EventBus.emit('update-stealth');
-        //                 break;
-        //             case 'stalwart':
-        //                 this.switches.stalwart = !this.switches.stalwart;
-        //                 EventBus.emit('update-stalwart');                        
-        //                 break;
-        //             case 'caerenic':
-        //                 this.switches.caerenic = !this.switches.caerenic;
-        //                 EventBus.emit('update-caerenic');                
-        //                 break;
-        //             default:
-        //                 break;
-        //         };
-        //     };
-        //     if (this.switches[button.texture.key as keyof typeof this.switches] === true) {
-        //         button.setBlendMode(Phaser.BlendModes.SCREEN);
-        //     } else {
-        //         button.setBlendMode(Phaser.BlendModes.NORMAL);    
-        //     };
-        // });
         EventBus.emit('update-small-hud');
     };
 

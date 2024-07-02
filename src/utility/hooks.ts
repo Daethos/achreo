@@ -9,4 +9,4 @@ export function usePhaserEvent(event: string, callback: (payload: any) => void) 
     onCleanup(() => {
         EventBus.off(event, callback);
     });
-}
+};

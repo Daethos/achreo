@@ -13,6 +13,7 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
     const [attribute, setAttribute] = createSignal(Attributes[0]);
     const [attrShow, setAttrShow] = createSignal(false);
     const dimensions = useResizeListener();
+    const viewMargin = { margin: '4%' };
 
     return (
         <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
@@ -20,10 +21,10 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
             <div class='creature-heading' style={{ width: '100%', height: '100%' }}>
                 <h1>{ascean().name}</h1>
                 <h2 class='mb-3'>{ascean().description}</h2>
-                <img src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} id='origin-pic' />
-                <p style={{ margin: '4%' }}>Level: <span class='gold'>{ascean().level}</span> | Experience: <span class='gold'>{ascean().experience}</span></p>
-                <p style={{ margin: '4%' }}>Health: <span class='gold'>{Math.round(ascean().health.current)}</span> / <span class='gold'>{ascean().health.max}</span> | Wealth: <span class='gold'>{ascean().currency.gold}g {ascean().currency.silver}s</span></p>
-                <p style={{ margin: '4%' }}>Faith: <span class='gold'>{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> | Mastery: <span class='gold'>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span></p>
+                <img src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} alt={`${ascean().origin} ${ascean().sex}`} id='origin-pic' />
+                <p style={viewMargin}>Level: <span class='gold'>{ascean().level}</span> | Experience: <span class='gold'>{ascean().experience}</span></p>
+                <p style={viewMargin}>Health: <span class='gold'>{Math.round(ascean().health.current)}</span> / <span class='gold'>{ascean().health.max}</span> | Wealth: <span class='gold'>{ascean().currency.gold}g {ascean().currency.silver}s</span></p>
+                <p style={viewMargin}>Faith: <span class='gold'>{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> | Mastery: <span class='gold'>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span></p>
                 <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
                 <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
                 <br />
@@ -47,9 +48,9 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                         <h1>{ascean().name}</h1>
                         <h2>{ascean().description}</h2>
                         <img src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} id='origin-pic' />
-                        <p style={{ margin: '4%' }}>Level: <span class='gold'>{ascean().level}</span> | Experience: <span class='gold'>{ascean().experience}</span></p>
-                        <p style={{ margin: '4%' }}>Health: <span class='gold'>{Math.round(ascean().health.current)}</span> / <span class='gold'>{ascean().health.max}</span> | Wealth: <span class='gold'>{ascean().currency.gold}g {ascean().currency.silver}s</span></p>
-                        <p style={{ margin: '4%' }}>Faith: <span class='gold'>{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> | Mastery: <span class='gold'>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span></p>
+                        <p style={viewMargin}>Level: <span class='gold'>{ascean().level}</span> | Experience: <span class='gold'>{ascean().experience}</span></p>
+                        <p style={viewMargin}>Health: <span class='gold'>{Math.round(ascean().health.current)}</span> / <span class='gold'>{ascean().health.max}</span> | Wealth: <span class='gold'>{ascean().currency.gold}g {ascean().currency.silver}s</span></p>
+                        <p style={viewMargin}>Faith: <span class='gold'>{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> | Mastery: <span class='gold'>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span></p>
                     </div>
                 </div>
 
@@ -76,4 +77,4 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
             </div>
         </Show>
     );
-}
+};

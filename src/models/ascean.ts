@@ -61,14 +61,6 @@ export default class Ascean {
     };
     capable: number;
     skills: Skills;
-    // conversations: {
-    //     [key: string]: {
-    //         dialogue: string;
-    //         responses: {
-    //             [key: string]: string;
-    //         };
-    //     };
-    // };
 
     constructor(ascean: Ascean) {
         this._id = ascean._id;
@@ -224,7 +216,7 @@ async function createAscean(data: any, template?: boolean): Promise<Ascean> {
     const trinket = Trinkets.find(trinket => trinket.rarity === 'Default');
 
     if (!template) {
-        await mutate([weaponOne, weaponTwo, shield, weaponThree, helmet, chest, legs, ringOne, ringTwo, amulet, trinket] as any[], 'Common')
+        await mutate([weaponOne, weaponTwo, shield, weaponThree, helmet, chest, legs, ringOne, ringTwo, amulet, trinket] as any[], 'Common');
     };
     
     if (template) {
@@ -407,6 +399,5 @@ function createTemplate(data: any): Ascean {
 };
 
 const initAscean = createTemplate(initCharacter);
-
 
 export { createAscean, initAscean };

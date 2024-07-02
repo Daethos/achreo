@@ -21,7 +21,6 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow }:
             'padding-bottom': '-0.25em'
         };
     };
-
     const div = (eqp: Equipment) => {
         return (
             <div onClick={() => info(eqp)} style={item(eqp.rarity as string)}>
@@ -29,12 +28,7 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow }:
             </div>
         );
     };
-
-    const image = {
-        width: '100%',
-        height: '100%',
-    };
-
+    const image = { width: '100%', height: '100%' };
     function info(item: Equipment) {
         setEquipment(item);
         setShow(!show());

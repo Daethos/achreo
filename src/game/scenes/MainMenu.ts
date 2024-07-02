@@ -7,7 +7,6 @@ export class MainMenu extends Scene {
     logo: GameObjects.Image;
     title: NewText;
     text: GameObjects.Text;
-    logoTween: Phaser.Tweens.Tween | null;
     centerX: number;
     centerY: number;
     fullscreen: boolean;
@@ -27,7 +26,7 @@ export class MainMenu extends Scene {
             'The Ascean',
             'title',
             0.5
-        )
+        );
         this.text = this.add.text(
             window.innerWidth / 2, 
             window.innerHeight / 1.5, 
@@ -44,7 +43,7 @@ export class MainMenu extends Scene {
         this.text.on('pointerup', this.mainMenu, this);
 
         EventBus.emit('current-scene-ready', this);
-        EventBus.on('enter-game', this.changeScene, this);
+        EventBus.on('enter-menu', this.changeScene, this);
         EventBus.on('full-screen', () => {
             if (this.scale.isFullscreen) {
                 this.scale.stopFullscreen();
@@ -57,20 +56,19 @@ export class MainMenu extends Scene {
     };
     
     changeScene () {
-        if (this.logoTween) {
-            this.logoTween.stop();
-            this.logoTween = null;
-        };
         this.sound.play('TV_Button_Press', { loop: false });
         this.scene.start('Game');
-        EventBus.emit('start-game');
+        EventBus.emit('loading-ascean');
     };
 
     mainMenu() {
         this.sound.play('TV_Button_Press', { loop: false });
         this.title.obj.destroy();
+        this.title.destroy();
         this.text.destroy();
+        // EventBus.emit('enter-menu');
         EventBus.emit('enter-menu');
+
         if (this.scale.isFullscreen) {
             this.scale.stopFullscreen();
             this.fullscreen = false;

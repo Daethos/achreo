@@ -24,7 +24,6 @@ export default class Joystick extends Phaser.GameObjects.Container {
             thumb: scene.add.circle(0, 0, height / 12, thumb, 1),
             dir: '8dir',
             // forceMin: 0,
-            // enable: true
         });
         this.doubleTap();
     };

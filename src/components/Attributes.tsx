@@ -5,10 +5,7 @@ import { Attributes } from '../utility/attributes';
 import { CombatAttributes } from '../utility/combat';
 import Ascean from '../models/ascean';
 
-const font = {
-    'font-size': '1em',
-    margin: '0'
-};
+const font = { 'font-size': '1em', margin: '0' };
 
 export default function AttributeModal({ attribute }: { attribute: any }) {
     const dimensions = useResizeListener();
@@ -44,7 +41,7 @@ export function AttributeCompiler({ ascean, setAttribute, show, setShow }: { asc
             const res = asceanCompiler(ascean());
             setAbilities(res?.attributes);
         } catch (err) {
-            console.error(err);
+            console.warn(err);
         };
     };
     createEffect(() => {
@@ -59,38 +56,32 @@ export function AttributeCompiler({ ascean, setAttribute, show, setShow }: { asc
             <div style={inline}>
                 <button class='buttonBorderless' onClick={() => toggle('constitution')} style={font}>Con</button>
                 <p class='gold' style={font}>{abilities()?.totalConstitution}</p>
-                {/* <div style={styles.abilitiesP]}>({abilities()?.rawConstitution} + {abilities()?.equipConstitution})</div> */}
             </div>
             <div>{'\n'}</div>
             <div style={inline}>
                 <button class='buttonBorderless' onClick={() => toggle('strength')} style={font}>Str</button>
                 <p class='gold' style={font}>{abilities()?.totalStrength}</p>
-                {/* <div style={styles.abilitiesP]}>({abilities()?.rawStrength} + {abilities()?.equipStrength})</div> */}
             </div>
             <div>{'\n'}</div>
 
             <div style={inline}>
                 <button class='buttonBorderless' onClick={() => toggle('agility')} style={font}>Agi</button>
                 <p class='gold' style={font}> {abilities()?.totalAgility}</p>
-                {/* <div style={styles.abilitiesP]}>({abilities()?.rawAgility} + {abilities()?.equipAgility})</div> */}
             </div>
             <div>{'\n'}</div>
             <div style={inline}>
                 <button class='buttonBorderless' onClick={() => toggle('achre')} style={font}>Ach</button>
                 <p class='gold' style={font}>{abilities()?.totalAchre}</p>
-                {/* <div style={styles.abilitiesP]}>({abilities()?.rawAchre} + {abilities()?.equipAchre})</div> */}
             </div>
             <div>{'\n'}</div>
             <div style={inline}>
                 <button class='buttonBorderless' onClick={() => toggle('caeren')} style={font}>Caer</button>
                 <p class='gold' style={font}>{abilities()?.totalCaeren}</p>
-                {/* <div style={styles.abilitiesP]}>({abilities()?.rawCaeren} + {abilities()?.equipCaeren})</div> */}
             </div>
             <div>{'\n'}</div>
             <div style={inline}>
                 <button class='buttonBorderless' onClick={() => toggle('kyosir')} style={font}>Kyo</button>
                 <p class='gold' style={font}>{abilities()?.totalKyosir}</p>
-                {/* <div style={styles.abilitiesP]}>({abilities()?.rawKyosir} + {abilities()?.equipKyosir})</div> */}
             </div>
         </div>
     );

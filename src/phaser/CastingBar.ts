@@ -33,17 +33,11 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.visible = false;
         this.barY = scene.settings.positions.castbar.barY;
 
-        // this position is the bottom middle of the screen and more like 'ui' than 'world'
         this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - this.barY);
     };
 
     private create = (entity: any, scene: Game): void => {
         if (entity.name === 'player') {
-            // 50 = 'world', 200 = 'ui'
-            // this.barWidth = 160 / (this.zoom + (this.zoom * MODIFIER)); // (0.8 default)
-            // // 6 = 'world', 24 = 'ui'
-            // this.barHeight = 19.2 / (this.zoom + (this.zoom * MODIFIER)); // (0.8 default)
-
             this.barHeight = scene.settings.positions.castbar.barHeight;
             this.barWidth = scene.settings.positions.castbar.barWidth;
 
@@ -144,19 +138,5 @@ export default class CastingBar extends Phaser.GameObjects.Container {
 
     public update = (dt: number, type: string, color?: number, x?: number, y?: number): void => {
         this.setTime(type === 'cast' ? this.time + dt : this.time - dt, color || 0x0000FF);
-        // if (this.entity.name === 'enemy') {
-        //     this.setPosition(this.entity.x, this.entity.y + 35);
-        //     // if (x && y) {
-        //     //     // const world = this.scene.cameras.main.getWorldPoint(x, y);
-        //     //     // console.log(world, x, y, 'Enemy Castbar Updating Position');
-        //     //     this.setPosition(x, y + 35);
-        //     // };
-        // };
-        // this position is right underneath the player at all times
-        
-
-        // console.log(`time: ${this.time}, total: ${this.total}`);
-        // this.timeText.setText(`${Math.round(this.time)} / ${this.total}`);
-        // this.timeText.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - 50);
     };
 };

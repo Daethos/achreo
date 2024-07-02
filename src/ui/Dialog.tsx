@@ -214,8 +214,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [luckoutTraits, setLuckoutTraits] = createSignal<any>([]);
     const [persuasion, setPersuasion] = createSignal<boolean>(false);
     const [persuasionTraits, setPersuasionTraits] = createSignal<any>([]);
-    const [miniGame, setMiniGame] = createSignal<boolean>(false);
-    const [miniGameTraits, setMiniGameTraits] = createSignal<any>([]);
     const [enemyArticle, setEnemyArticle] = createSignal<any>('');
     const [merchantTable, setMerchantTable] = createSignal<any>({});
     const [region, setRegion] = createSignal<any>(regionInformation['Astralands']);
@@ -265,10 +263,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         getWeapon: async () => await getLoot('physical-weapon'),
         getFlask: () => refillFlask(),
         getSell: () => setShowSell(!showSell()),
-    };
-
-    const engageGrappling = (): void => {
-        checkingLoot();
     }; 
 
     const checkEnemy = (enemy: Ascean) => {
@@ -287,7 +281,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
 
     const checkQuests = (enemy: Ascean) => {
         const enemyQuests = getQuests(enemy.name);
-        // console.log(enemyQuests, 'Quests');
         const prospectiveQuests = [];
         if (enemyQuests.length === 0) return;        
         if (ascean()?.quests?.length === 0) {
@@ -298,20 +291,15 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             for (const quest of enemyQuests) {
                 if (quest.title === playerQuest.title) {
                     if (playerQuest.completed) {
-                        // The player has already completed a prospective quest
                         continue;
                     };
-
                 } else {
-                    // The player has not yet accepted the quest
                     prospectiveQuests.push(quest);
                 };
             };
         };
         if (prospectiveQuests.length > 0) {
-            // console.log(prospectiveQuests, 'Prospective Quests');
             setQuests(prospectiveQuests);
-            // EventBus.emit('blend-game', { prospectiveQuests });
         };    
     };
     
@@ -410,8 +398,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             enemyLuck *= 1.25; 
         };
         if (playerLuck >= enemyLuck) {
-            // playReligion();
-            // dispatch(getLuckoutFetch({ luck, id: combat().player._id, luckedOut: true }));
             let experience = 
                 ascean().experience +
                 Math.round((combat().computer?.level as number) * 
@@ -433,10 +419,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             EventBus.emit('luckout', { luck, luckout: true });
             const num = Math.floor(Math.random() * 2);
             setLuckoutString(`${luckoutTrait?.luckout?.success[num].replace('{enemy.name}', enemy.name).replace('{ascean.weaponOne.influences[0]}', influence()).replace('{ascean.name}', ascean().name).replace('{enemy.weaponOne.influences[0]}', enemy.weaponOne.influences?.[0]).replace('{enemy.faith}', enemy.faith).replace('{article}', enemyArticle)}`);
-            // shakeScreen({ duration: 1000, intensity: 1.5 });
-            // if ('vibrate' in navigator) navigator.vibrate(1000);
         } else {
-            // getLuckoutFetch({ luck, id: combat().player._id, luckout: false });
             EventBus.emit('luckout', { luck, luckout: false });
             checkingLoot();
             setLuckoutString(`${luckoutTrait?.luckout?.failure.replace('{enemy.name}', enemy.name).replace('{ascean.weaponOne.influences[0]}', influence()).replace('{ascean.name}', ascean().name).replace('{enemy.weaponOne.influences[0]}', enemy.weaponOne.influences?.[0]).replace('{enemy.faith}', enemy.faith).replace('{article}', enemyArticle)} \n\n Prepare for combat, ${ascean().name}, and may your weapon strike surer than your words.`);
@@ -487,23 +470,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             const persuasionTrait = persuasionTraits().find((trait: { name: string; }) => trait.name === combat()?.playerTrait);
             setPersuasionString(`${persuasionTrait?.persuasion.success[num].replace('{enemy.name}', combat()?.computer?.name).replace('{ascean.weaponOne.influences[0]}', influence()).replace('{ascean.name}', combat()?.player?.name).replace('{enemy.weaponOne.influences[0]}', combat()?.computer?.weaponOne?.influences?.[0]).replace('{enemy.faith}', combat()?.computer?.faith)}`);
         };
-    };
-
-    const checkMiniGame = () => {
-        const traits = {
-            primary: game()?.primary,
-            secondary: game()?.secondary,
-            tertiary: game()?.tertiary,
-        };
-        const miniGameTraits = ['Cambiren', "Se'van", 'Shrygeian', 'Tashaeral'];
-        const matchingTraits = Object.values(traits).filter(trait => miniGameTraits.includes(trait?.name));
-        if (matchingTraits.length === 0) {
-            setMiniGame(false);
-            return;
-        };
-        setMiniGame(true);
-        setMiniGameTraits(matchingTraits);
-    };
+    }; 
 
     const canUpgrade = (inventory: any[]): any[] | null => {
         const groups: Record<string, any[]> = {};
@@ -526,9 +493,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
 
     const checkingLoot = (): void => {
         if (game().merchantEquipment.length > 0) {
-            // await deleteEquipment(game().merchantEquipment);
             EventBus.emit('delete-equipment', { equipment: game().merchantEquipment });
-            // setMerchantEquipment([]);
             EventBus.emit('blend-game', { merchantEquipment: [] });
         };
     };
@@ -552,7 +517,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 clean = intent;
                 break;
         };
-        // setCurrentIntent(clean);
         EventBus.emit('blend-game', { currentIntent: clean });
     };
 
@@ -584,7 +548,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             EventBus.emit('delete-merchant-equipment', { equipment: game()?.merchantEquipment });
         };
         try {
-            // console.log(type, 'Type!');
             let merchantEquipment: any;
             if (type === 'physical-weapon') {
                 merchantEquipment = await getPhysicalWeaponEquipment(combat()?.player?.level as number);
@@ -616,7 +579,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         EventBus.emit('sell-item', sellItem());    
     };
 
-    // {combat()?.computer?.alive ? '' : '[Deceased]'}
     return (
         <Show when={combat().computer}>
         <div style={{ 
@@ -735,24 +697,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                             ) }
                             { luckout() ? ( 
                                 <LuckoutModal traits={luckoutTraits} callback={attemptLuckout} name={combat()?.computer?.name as string} influence={influence as Accessor<string>} show={luckoutModalShow} setShow={setLuckoutModalShow} /> 
-                            ) : ('') }
-                            { miniGame() ? (
-                                miniGameTraits().map((trait: any) => {
-                                    return (
-                                        <div>
-                                            {trait.name === "Se'van" ? (
-                                                <button class='highlight dialog-buttons' onClick={() => engageGrappling()}>[Testing] Surprise {combat()?.computer?.name} and initiate Se'van Grappling</button>
-                                            ) : trait.name === "Cambiren" ? (
-                                                <button class='highlight dialog-buttons' >[WIP] Cambiren Combat</button>
-                                            ) : trait.name === "Tshaeral" ? (
-                                                <button class='highlight dialog-buttons' >[WIP] Tshaeral Combat</button>
-                                            ) : trait.name === "Shrygeian" ? (
-                                                <button class='highlight dialog-buttons' >[WIP] Shrygeian Combat</button>
-                                            ) : ('')}
-                                        </div>
-                                    )
-                                })
-                            ) : ('') }
+                            ) : ('') } 
                         </div>
                     ) } 
                     </>

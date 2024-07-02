@@ -27,18 +27,6 @@ export const States = {
     HEAL: "heal",
     HURT: "hurt",
 
-    // Chiomic -- Offensive Caerenic Abilities
-    // [Chiomic, Confuse, Consume, Malice, Polymorph, Slow, Snare]
-
-    // Kyrisian -- Defensive Caerenic Abilities
-    // [Desperation, Healing, Renewal, Mend, Protect, Shield, Ward]
-    
-    // Se'vanic -- Kinetic Caerenic Abilities
-    // [Arc, Leap, Rush, Shimmer, Sprinting, Storm, Writhe]
-
-    // Tshaeric -- Guttural Caerenic Abilities
-    // [Sacrifice, Howl, Kyrnaicism, Scream, Suture, Tshaeral]
-    
     ARC: 'arc',
     BLINK: "blink",
     CONFUSE: "confuse",

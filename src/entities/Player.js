@@ -35,8 +35,8 @@ const ORIGIN = {
 export default class Player extends Entity {
     constructor(data) {
         const { scene } = data;
+        console.log(scene.state, 'State');
         super({ ...data, name: 'player', ascean: scene.state.player, health: scene.state.player.health.current }); 
-
         this.ascean = this.getAscean();
         this.health = this.ascean.health.current;
         this.playerID = this.ascean._id;
@@ -55,7 +55,6 @@ export default class Player extends Entity {
 
         this.scene.add.existing(this);
         this.scene.add.existing(this.spriteWeapon);
-        // this.spriteWeapon.setDepth(this + 1);
         this.spriteWeapon.setAngle(-195);
         this.currentDamageType = weapon?.damageType[0].toLowerCase();
         this.targetIndex = 1;
@@ -78,15 +77,6 @@ export default class Player extends Entity {
 
         this.currentShieldSprite = this.assetSprite(this.ascean?.shield);
         this.spriteShield = this.createSprite(this.currentShieldSprite, 0, 0, PLAYER.SCALE.SHIELD, ORIGIN.SHIELD.X, ORIGIN.SHIELD.Y);
-
-        // this.currentHelmSprite = this.assetSprite(scene?.state?.player?.helmet);
-        // this.currentChestSprite = this.assetSprite(scene?.state?.player?.chest);
-        // this.currentLegsSprite = this.assetSprite(scene?.state?.player?.legs);
-        // this.spriteHelm = this.createSprite(this.currentHelmSprite, 0, 0, 0.35, ORIGIN.HELMET.X, ORIGIN.HELMET.Y);
-        // this.spriteChest = this.createSprite(this.currentChestSprite, 0, 0, 0.55, ORIGIN.CHEST.X, ORIGIN.CHEST.Y);
-        // this.spriteLegs = this.createSprite(this.currentLegsSprite, 0, 0, 0.55, ORIGIN.LEGS.X, ORIGIN.LEGS.Y);
-
-        // this.spriteHelmt.setName
 
         this.playerVelocity = new Phaser.Math.Vector2();
         this.speed = this.startingSpeed(scene?.ascean);
@@ -3383,24 +3373,6 @@ export default class Player extends Entity {
         requestAnimationFrame(rollLoop);
     };
 
-    // ========================= Tab Targeting ========================= \\
-    // if (Phaser.Input.Keyboard.JustDown(this.inputKeys.target.TAB) && this.targets.length) { // was > 1 More than 1 i.e. worth tabbing
-    //     // if (this.currentTarget) {
-    //     //     this.currentTarget.clearTint();
-    //     // };
-    //     const newTarget = this.targets[this.targetIndex];
-    //     this.targetIndex = this.targetIndex + 1 >= this.targets.length ? 0 : this.targetIndex + 1;
-    //     if (!newTarget) return;
-    //     if (newTarget.npcType) { // NPC
-    //         this.scene.setupNPC(newTarget);
-    //     } else { // Enemy
-    //         this.scene.setupEnemy(newTarget);
-    //         this.attacking = newTarget;
-    //     };
-    //     this.currentTarget = newTarget;
-    //     this.targetID = newTarget.enemyID;
-    //     this.highlightTarget(newTarget);
-    // };
     handleActions = () => {
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
@@ -3491,13 +3463,8 @@ export default class Player extends Entity {
             this.anims.play('player_idle', true);
         };
         
-        // ========================= Player Animation Positioning ========================= \\
         this.spriteWeapon.setPosition(this.x, this.y);
         this.spriteShield.setPosition(this.x, this.y);
-
-        // this.spriteHelm.setPosition(this.x, this.y);
-        // this.spriteChest.setPosition(this.x, this.y);
-        // this.spriteLegs.setPosition(this.x, this.y);
     };
 
     handleConcerns = () => {
@@ -3544,25 +3511,10 @@ export default class Player extends Entity {
             return;
         };
 
-        // if (this.currentHelmSprite !== this.assetSprite(this.scene.state.player.helmet)) {
-            //     this.currentHelmSprite = this.assetSprite(this.scene.state.player.helmet);
-            //     this.spriteHelm.setTexture(this.currentHelmSprite);
-        // };
-        // if (this.currentChestSprite !== this.assetSprite(this.scene.state.player.chest)) {
-        //     this.currentChestSprite = this.assetSprite(this.scene.state.player.chest);
-        //     this.spriteChest.setTexture(this.currentChestSprite);
-        // };
-        // if (this.currentLegsSprite !== this.assetSprite(this.scene.state.player.legs)) {
-            //     this.currentLegsSprite = this.assetSprite(this.scene.state.player.legs);
-            //     this.spriteLegs.setTexture(this.currentLegsSprite);
-        // };
-
         if (this.inCombat === true && this.currentTarget === undefined) this.findEnemy();
-        
         if (this.inCombat && !this.healthbar.visible) this.healthbar.setVisible(true);
         if (this.healthbar) this.healthbar.update(this);
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
-        // if (this.winningCombatText) this.winningCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this); 
         if (this.resistCombatText) this.resistCombatText.update(this);
         this.weaponRotation('player', this.currentTarget);
@@ -3570,10 +3522,7 @@ export default class Player extends Entity {
 
     handleMovement = () => {
         let speed = this.speed;
-        // this.scene.rightJoystick.update();
-
         // =================== MOVEMENT ================== \\
-
         if (this.inputKeys.right.D.isDown || this.inputKeys.right.RIGHT.isDown || this.scene.joystickKeys.right.isDown) {
             this.playerVelocity.x += this.acceleration;
             if (this.flipX) this.flipX = false;
@@ -3593,30 +3542,16 @@ export default class Player extends Entity {
         };
 
         // =================== STRAFING ================== \\
-
-        if (this.inputKeys.strafe.E.isDown || (this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0)) {
-            // this.playerVelocity.x = speed; 
-            // this.playerVelocity.x += 0.1; 
+        if (this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0) {
             speed += 0.1;
             if (!this.flipX) this.flipX = true;
         };
-        if (this.inputKeys.strafe.Q.isDown || (this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x < 0)) {
-            // this.playerVelocity.x = -speed;
-            // this.playerVelocity.x -= 0.1;
+        if (this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x < 0) {
             speed -= 0.1;    
             if (this.flipX) this.flipX = false;
         };
 
-        // ========================= Twisting ========================= \\
-
-        // if (this.holdingBothMouseButtons) {
-        //     this.flipX = this.body.velocity.x < 0;
-        //     this.playerVelocity.x += Math.cos(this.angle) + this.acceleration;
-        //     this.playerVelocity.y += Math.sin(this.angle) + this.acceleration; 
-        // };
-
         // =================== DECELERATION ================== \\
-
         if (!this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.strafe.E.isDown && !this.inputKeys.strafe.Q.isDown && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && !this.scene.joystickKeys.left.isDown && !this.scene.joystickKeys.right.isDown) {
             this.playerVelocity.x = this.zeroOutVelocity(this.playerVelocity.x, this.deceleration);
         };
@@ -3631,24 +3566,11 @@ export default class Player extends Entity {
         };
 
         // =================== VARIABLES IN MOTION ================== \\
-
-        // if (this.inputKeys.strafe.E.isDown || this.inputKeys.strafe.Q.isDown) {
-        //     // if (!this.spriteShield.visible && !this.isDodging && !this.isRolling) this.spriteShield.setVisible(true);
-        //     this.isStrafing = true;
-        // } else if (this.isStrafing) {
-        //     this.isStrafing = false;
-        //     this.strafingLeft = false;
-        //     this.strafingRight = false;
-        // };
-        
         if (this.isAttacking || this.isParrying || this.isPosturing) speed += 1;
         
         // ==================== SETTING VELOCITY ==================== \\
-        
         this.playerVelocity.limit(speed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
-        // console.log(this.scene.multiplayer)
-        // this.multiplayerMovement(); 
     }; 
 
     update() {
@@ -3658,24 +3580,5 @@ export default class Player extends Entity {
         this.handleActions();
         this.handleAnimations();
         this.handleMovement(); 
-    };
-
-    isAtEdgeOfLedge(scene) {
-        const playerSensor = this.body.parts[2]; // Assuming playerSensor is the second part of the compound body
-        const rayStart = { x: playerSensor.position.x - playerSensor.circleRadius, y: playerSensor.position.y }; // Starting point of the ray
-        const rayEnd = { x: playerSensor.position.x + playerSensor.circleRadius, y: playerSensor.position.y - playerSensor.circleRadius }; // Ending point of the ray
-        const bodies = scene.matter.world.getAllBodies().filter(body => body.gameObject && body.gameObject?.tile?.properties?.isGround);
-        let isAtEdge = false;
-        const intersections = scene.matter.intersectRay(rayStart.x, rayStart.y, rayEnd.x, rayEnd.y, 36, bodies).filter(intersection => intersection.id !== playerSensor.id);
-        if (intersections.length === 1) {
-            isAtEdge = true;
-        }; 
-        return isAtEdge;
-    }; 
-
-    isCollidingWithPlayer() {
-        const bodies = this.scene.matter.world.getAllBodies().filter(body => body.gameObject && body.gameObject?.tile?.properties?.isGround);
-        const playerSensor = this.body.parts[2];
-        return this.scene.matter.overlap(playerSensor, bodies);
-    };   
+    };  
 };

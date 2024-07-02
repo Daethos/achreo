@@ -29,7 +29,6 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
             // knockout: true,
         });
         this.drawBubble(scene, time);
-        // this.setDelay(scene, time);    
         scene.add.existing(this);
     };
 
@@ -74,15 +73,12 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
 
     updateGlow = (time: number) => {
         if (!this || this.calling === true || !this.glowFilter || !this.warp || !time) return;
-        // console.log(this, this.glowFilter, this.warp, time, 'updateGlow');
-        // if (this.glowFilter.isActive) {
-            // };
-            this.glowFilter.remove(this);
-            
-            const outerStrength = (this.charges) + Math.sin(time * 0.005) * (this.charges); // Adjust the frequency and amplitude as needed
-            const innerStrength = (this.charges) + Math.cos(time * 0.005) * (this.charges);
-            const intensity = 0.25;
-            const glowColor = this.color;
+        this.glowFilter.remove(this);
+        
+        const outerStrength = (this.charges) + Math.sin(time * 0.005) * (this.charges); // Adjust the frequency and amplitude as needed
+        const innerStrength = (this.charges) + Math.cos(time * 0.005) * (this.charges);
+        const intensity = 0.25;
+        const glowColor = this.color;
             
         this.glowFilter.add?.(this, {
             outerStrength,

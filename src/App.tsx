@@ -21,6 +21,7 @@ import { TIPS } from './utility/tips';
 import { Reputation, initReputation } from './utility/player';
 
 export default function App() {
+    const [startGame, setStartGame] = createSignal(false);
     const [ascean, setAscean] = createSignal<Ascean>(undefined as unknown as Ascean);
     const [settings, setSettings] = createSignal(initSettings);
     const [reputation, setReputation] = createSignal(initReputation);
@@ -58,9 +59,7 @@ export default function App() {
     let phaserRef: IRefPhaserGame;
     let tips: string | number | NodeJS.Timeout | undefined =  undefined;
 
-    createEffect(() => {
-        fetchAsceans();
-    });
+    createEffect(() => fetchAsceans());
 
     function destroyGame(): void {
         try {
@@ -71,7 +70,6 @@ export default function App() {
             scene.scene.stop('Intro');
             scene.scene.start('MainMenu');
             setAscean(undefined as unknown as Ascean);
-            EventBus.emit('enter-game');
         } catch (err: any) {
             console.warn('Error destroying Game:', err);
         };
@@ -83,13 +81,15 @@ export default function App() {
                 const res = await getAsceans();
                 await allEquipment();
                 if (!res.length) {
-                    console.log('No Asceans Found');
-                    setMenu({ ...menu(), loading: false });
+                    setMenu({ ...menu(), loading: false, loaded: true, creatingCharacter: false });
                     return;
                 };
                 const pop = await Promise.all(res.map(async (asc: Ascean) => await populate(asc)));
                 const hyd = pop.map((asc: Ascean) => asceanCompiler(asc)).map((asc: Compiler) => { return { ...asc.ascean, weaponOne: asc.combatWeaponOne, weaponTwo: asc.combatWeaponTwo, weaponThree: asc.combatWeaponThree }});
-                setMenu({ ...menu(), asceans: hyd, loading: false, }); // choosingCharacter: true
+                setMenu({ ...menu(), asceans: hyd, loading: false, loaded: true, choosingCharacter: true }); // choosingCharacter: true
+                if (hyd.length === 1) {
+                    viewAscean(hyd[0]._id);
+                };
             } catch (err: any) {
                 console.warn('Error fetching Asceans:', err);
             };
@@ -97,9 +97,7 @@ export default function App() {
         fetch();
     };
  
-    const currentScene = (scene: Phaser.Scene) => {
-        setScene(scene.scene.key);
-    };
+    const currentScene = (scene: Phaser.Scene) => setScene(scene.scene.key);
 
     function menuOption(option: string): void {
         switch (option) {
@@ -149,7 +147,7 @@ export default function App() {
 
     async function loadAscean(id: string): Promise<void> {
         try {
-            EventBus.emit('preload-ascean', id);
+            setStartGame(true);
             const asc: Ascean = menu()?.asceans?.find((asc: Ascean) => asc._id === id) as Ascean;
             setAlert({ header: 'Loading Game', body: `Preparing ${asc.name}. Good luck.`, delay: 3000, key: '' });
             setShow(true);
@@ -161,17 +159,16 @@ export default function App() {
             const set = await getSettings(id);
             setReputation(rep);
             setSettings(set);
-            setTimeout(() => {
-                EventBus.emit('enter-game');
-                // === Tips === \\
-            }, 2500);
             if (set.difficulty.tidbits === true) {
                 setTips(true);
             };
+            EventBus.emit('preload-ascean', id);
         } catch (err: any) {
             console.warn('Error loading Ascean:', err);
         };
     };
+
+    const loadingAscean = () => EventBus.emit('enter-game');
 
     const makeToast = (header: string, body: string, delay = 3000, key = ''): void => {
         setAlert({ header, body, delay, key });
@@ -269,6 +266,11 @@ export default function App() {
     };
 
     async function viewAscean(id: string): Promise<void> {
+        if (ascean()?._id === id) {
+            setMenu({ ...menu(), choosingCharacter: false });
+            return;
+        };
+        console.log('VIEW ASCEAN')
         EventBus.emit('preload-ascean', id);
         const asc = menu()?.asceans?.find((asc: Ascean) => asc._id === id);
         setAscean(asc as Ascean);
@@ -307,6 +309,7 @@ export default function App() {
     usePhaserEvent('set-tips', setTips);
     usePhaserEvent('enter-menu', enterMenu);
     usePhaserEvent('fetch-ascean', fetchAscean);
+    usePhaserEvent('loading-ascean', loadingAscean);
     usePhaserEvent('quick-ascean', quickAscean);
     usePhaserEvent('save-ascean', saveAscean);
     usePhaserEvent('silent-save', silentSave);
@@ -334,7 +337,6 @@ export default function App() {
         const game = scene.scene.get('Game') as Game;
         game.musicBackground.pause();
         scene.scene.sleep(key);
-        // scene.scene.setVisible(false, key);
     })
     usePhaserEvent('fetch-button-reorder', () => {
         EventBus.emit('reorder-buttons', { list: settings().actions, type: 'action' });
@@ -342,116 +344,107 @@ export default function App() {
     });
     return (
         <div id="app">
-            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} scene={scene} />
-            {(scene() === 'MainMenu') && (<>
-            { menu().creatingCharacter ? (
-                <div id='overlay' class='superCenter'>
-                <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION === 'landscape'}>
-                    <Preview newAscean={newAscean} />
-                </Show>
-                <AsceanBuilder newAscean={newAscean} setNewAscean={setNewAscean} menu={menu} />
-                <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
-                    <>
-                    { (SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV !== SCREENS.COMPLETE.KEY) && 
-                        <button class='highlight cornerBL' onClick={() => setMenu({ ...menu(), screen: SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV})}>
-                            <div>Back ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV as keyof typeof SCREENS]?.TEXT})</div>
-                        </button>
-                    }
-                    { (SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT !== SCREENS.CHARACTER.KEY) && 
-                        <button class='highlight cornerBR' onClick={() => setMenu({ ...menu(), screen: SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT})}>
-                            <div>Next ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT as keyof typeof SCREENS]?.TEXT})</div>
-                        </button>
-                    }
-                    { SCREENS[menu()?.screen as keyof typeof SCREENS]?.KEY === SCREENS.COMPLETE.KEY && 
-                        <button class='highlight cornerBR' onClick={() => createCharacter(newAscean())}>
-                            <div>Create {newAscean()?.name?.split(' ')[0]}</div>
-                        </button>
-                    }
-                    <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
-                        <div>Back</div>
-                    </button>
-                    </>
-                }>
-                    <>
-                    { (LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV !== LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                        <button class='highlight cornerBL' onClick={() => setMenu({ ...menu(), screen: LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV})}>
-                            <div>Back ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
-                        </button>
-                    }
-                    { (LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT !== LANDSCAPE_SCREENS.CHARACTER.KEY) && 
-                        <button class='highlight cornerBR' onClick={() => setMenu({ ...menu(), screen: LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT})}>
-                            <div>Next ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
-                        </button>
-                    }
-                    { (LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                        <button class='highlight cornerBR' onClick={() => createCharacter(newAscean())}>
-                            <div>Create {newAscean()?.name?.split(' ')[0]}</div>
-                        </button>
-                    }
-                    <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
-                        <div>Back</div>
-                    </button>
-                    </>
-                </Show>
-                </div>
-            ) : menu()?.choosingCharacter ? ( // menu().asceans.length > 0
-                <div id="overlay" class='superCenter'>
-                    <MenuAscean menu={menu} viewAscean={viewAscean} loadAscean={loadAscean} />
-                    <Show when={menu()?.asceans?.length < 3}>
-                        <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'black' }}>Create Character</button>
+            <Show when={startGame()} fallback={<>
+                {menu().creatingCharacter ? (
+                    <div id='overlay' class='superCenter'>
+                    <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION === 'landscape'}>
+                        <Preview newAscean={newAscean} />
                     </Show>
-                </div>
-            ) : ascean() ? (
-                <>
-                    <AsceanView ascean={ascean} />
-                    <Show when={menu()?.asceans?.length > 0}>
-                        <button class='highlight cornerTL' onClick={() => setMenu({ ...menu(), choosingCharacter: true })} style={{ 'background-color': 'black' }}>Main Menu</button> 
-                    </Show>
-                    <Show when={menu()?.asceans?.length < 3}>
-                        <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'black' }}>Create Character</button>
-                    </Show>
-                    <Show when={menu().deleteModal}>
-                        <div class='modal' onClick={() => setMenu({ ...menu(), deleteModal: false })} style={{ background: 'rgba(0, 0, 0, 1)' }}>
-                            <button class='highlight superCenter' onClick={() => deleteCharacter(ascean()?._id)} style={{ color: 'red', margin: 0, padding: '1em', width: 'auto', 'font-size': '1.5em', 'font-weight': 700, 'border-radius': '0' }}>Permanently Delete {ascean()?.name}?</button>
-                            <div class='gold verticalBottom super' style={{ 'margin-bottom': '10%' }}>
-                                [This action is irreversible. You may click anywhere to cancel.]
-                            </div>
-                        </div>
-                    </Show>
-                    <Show when={show()}>
-                        <div class='modal' style={{ background: 'rgba(0, 0, 0, 1)' }}>
-                            <div class='superCenter center' style={{ "z-index": 1 }}>
-                                <Puff color="gold" />
-                            </div>
-                        </div>
-                    </Show>
-                    <button class="highlight cornerBL" style={{ 'background-color': 'black' }} onClick={() => setMenu({ ...menu(), deleteModal: true })}>Delete {ascean()?.name.split(' ')[0]}</button>
-                    <button class='highlight cornerBR' style={{ 'background-color': 'black' }} onClick={() => loadAscean(ascean()?._id)}>Enter Game</button>
-                </>
-            ) : ( 
-                <div>
-                <div class="cornerTL super">
-                    The Ascean v0.0.1
-                </div>
-                <Show when={menu().loaded}>
-                <div class='superCenter' style={{ 'font-family': 'Cinzel Regular', 'font-size': '1.25em' }}>
-                    <div class='center' style={{ 'font-size': '3.875em' }}>
-                        The Ascean <br /> 
-                        { menu()?.asceans?.length > 0 ? (
-                            <button class='center highlight' style={{ 'border-radius': '0.5em' }} onClick={() => menuOption('chooseCharacter')}>
-                            Main Menu
+                    <AsceanBuilder newAscean={newAscean} setNewAscean={setNewAscean} menu={menu} />
+                    <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
+                        <>
+                        { (SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV !== SCREENS.COMPLETE.KEY) && 
+                            <button class='highlight cornerBL' onClick={() => setMenu({ ...menu(), screen: SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV})}>
+                                <div>Back ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV as keyof typeof SCREENS]?.TEXT})</div>
                             </button>
-                        ) : (
-                            <button class='center highlight' style={{ 'border-radius': '0.5em' }} onClick={() => menuOption('createCharacter')}>
-                            Create Character
+                        }
+                        { (SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT !== SCREENS.CHARACTER.KEY) && 
+                            <button class='highlight cornerBR' onClick={() => setMenu({ ...menu(), screen: SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT})}>
+                                <div>Next ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT as keyof typeof SCREENS]?.TEXT})</div>
                             </button>
-                        ) }
+                        }
+                        { SCREENS[menu()?.screen as keyof typeof SCREENS]?.KEY === SCREENS.COMPLETE.KEY && 
+                            <button class='highlight cornerBR' onClick={() => createCharacter(newAscean())}>
+                                <div>Create {newAscean()?.name?.split(' ')[0]}</div>
+                            </button>
+                        }
+                        <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
+                            <div>Back</div>
+                        </button>
+                        </>
+                    }>
+                        <>
+                        { (LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV !== LANDSCAPE_SCREENS.COMPLETE.KEY) && 
+                            <button class='highlight cornerBL' onClick={() => setMenu({ ...menu(), screen: LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV})}>
+                                <div>Back ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
+                            </button>
+                        }
+                        { (LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT !== LANDSCAPE_SCREENS.CHARACTER.KEY) && 
+                            <button class='highlight cornerBR' onClick={() => setMenu({ ...menu(), screen: LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT})}>
+                                <div>Next ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
+                            </button>
+                        }
+                        { (LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.COMPLETE.KEY) && 
+                            <button class='highlight cornerBR' onClick={() => createCharacter(newAscean())}>
+                                <div>Create {newAscean()?.name?.split(' ')[0]}</div>
+                            </button>
+                        }
+                        <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
+                            <div>Back</div>
+                        </button>
+                        </>
+                    </Show>
                     </div>
-                </div>
-                </Show>
-                </div>
-            ) }
-            </>)}
+                ) : menu()?.choosingCharacter ? ( // menu().asceans.length > 0
+                    <div id="overlay" class='superCenter'>
+                        <MenuAscean menu={menu} viewAscean={viewAscean} loadAscean={loadAscean} />
+                        <Show when={menu()?.asceans?.length < 3}>
+                            <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'black' }}>Create Character</button>
+                        </Show>
+                    </div>
+                ) : ascean() ? (
+                    <>
+                        <AsceanView ascean={ascean} />
+                        <Show when={menu()?.asceans?.length > 0}>
+                            <button class='highlight cornerTL' onClick={() => setMenu({ ...menu(), choosingCharacter: true })} style={{ 'background-color': 'black' }}>Main Menu</button> 
+                        </Show>
+                        <Show when={menu()?.asceans?.length < 3}>
+                            <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'black' }}>Create Character</button>
+                        </Show>
+                        <Show when={menu().deleteModal}>
+                            <div class='modal' onClick={() => setMenu({ ...menu(), deleteModal: false })} style={{ background: 'rgba(0, 0, 0, 1)' }}>
+                                <button class='highlight superCenter' onClick={() => deleteCharacter(ascean()?._id)} style={{ color: 'red', margin: 0, padding: '1em', width: 'auto', 'font-size': '1.5em', 'font-weight': 700, 'border-radius': '0' }}>Permanently Delete {ascean()?.name}?</button>
+                                <div class='gold verticalBottom super' style={{ 'margin-bottom': '10%' }}>[This action is irreversible. You may click anywhere to cancel.]</div>
+                            </div>
+                        </Show>
+                        <Show when={show()}>
+                            <div class='modal' style={{ background: 'rgba(0, 0, 0, 1)' }}>
+                                <div class='superCenter center' style={{ "z-index": 1 }}><Puff color="gold" /></div>
+                            </div>
+                        </Show>
+                        <button class="highlight cornerBL" style={{ 'background-color': 'black' }} onClick={() => setMenu({ ...menu(), deleteModal: true })}>Delete {ascean()?.name.split(' ')[0]}</button>
+                        <button class='highlight cornerBR' style={{ 'background-color': 'black' }} onClick={() => loadAscean(ascean()?._id)}>Enter Game</button>
+                    </>
+                ) : ( 
+                    <div>
+                    <div class="cornerTL super">The Ascean v0.0.1</div>
+                    <Show when={menu().loaded}>
+                    <div class='superCenter' style={{ 'font-family': 'Cinzel Regular' }}>
+                        <div class='center' style={{ 'font-size': '2.5em' }}>
+                            The Ascean<br /> 
+                            { menu()?.asceans?.length > 0 ? (
+                                <button class='center highlight' style={{ 'border-radius': '0.5em' }} onClick={() => menuOption('chooseCharacter')}>Main Menu</button>
+                            ) : (
+                                <button class='center highlight' style={{ 'border-radius': '0.5em' }} onClick={() => menuOption('createCharacter')}>Create Character</button>
+                            ) }
+                        </div>
+                    </div>
+                    </Show>
+                    </div>
+                )}
+            </>}>
+                <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} scene={scene} />
+            </Show>
             <Show when={show()}>
                 <div class='cornerBL realize' style={{ width: '30%', 'z-index': 1 }}>
                     <GameToast actions={actions} show={show} setShow={setShow} alert={alert} setAlert={setAlert as Setter<{ header: string; body: string; delay: number; key?: string; }>} />

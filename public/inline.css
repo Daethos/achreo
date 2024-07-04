@@ -91,7 +91,7 @@
 .healthbar {display: flex;position: absolute;margin-left: 15%;width: 70%;overflow: hidden;border: 0.1em solid #fdf6d8;border-radius: 0.5em;}
 .playerInventoryBag {height: 100%;width: 100%;z-index: 1;background-color: #000;display: grid;grid-template-columns: repeat(5, 1fr);}
 .playerName {position: absolute;left: 5vw;top: -1.5vh;font-family: 'Cinzel Regular';font-size: 1em;color: gold;font-weight: 600;text-shadow: 0 0 0.5em rgba(0, 0, 0, 1);}
-.playerPortrait {font-family: 'Cinzel Regular';font-weight: 700;text-align: center;z-index: 1;}
+.playerPortrait {font-family: 'Cinzel Regular';font-weight: 700;text-align: center;z-index: 1;justify-content: center;align-items: center;}
 .playerHealthBar {position: fixed;top: 7.5vh;left: 2.5vw;width: 20vw;height: 5vh;overflow: hidden;border: 0.1em solid purple;}
 #playerHealthbarBorder {position: fixed;top: 4vh;left: 0;height: 12.5vh;width: 25vw;z-index: 1;}
 .combatEffects {display: grid;position: fixed;grid-template-columns: repeat(5, 1fr);width: 100%;transform: scale(1);z-index: 1;}

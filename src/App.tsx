@@ -39,7 +39,7 @@ export default function App() {
     });
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>({
         name: 'Stranger', // Dorien Caderyn
-        description: 'Commoner From Elsewhere Unknown', // Prince of the Daethic Kingdom
+        description: 'Commoner From Elsewhere And Otherlands Unknown', // Prince of the Daethic Kingdom
         sex: 'Man',
         origin: "Ashtre", // Notheo
         constitution: 16, // 12
@@ -270,7 +270,6 @@ export default function App() {
             setMenu({ ...menu(), choosingCharacter: false });
             return;
         };
-        console.log('VIEW ASCEAN')
         EventBus.emit('preload-ascean', id);
         const asc = menu()?.asceans?.find((asc: Ascean) => asc._id === id);
         setAscean(asc as Ascean);

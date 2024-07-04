@@ -77,7 +77,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const { width, height } = scene.cameras.main;
         this.setPosition(width / 5, height / 5); // 2.75, 1.5
         this.setDepth(3);
-        this.setScrollFactor(0);
+        this.setScrollFactor(0, 0);
         this.setVisible(true); // false
         EventBus.on('reorder-buttons', this.reorderButtons);
         this.reorder();
@@ -199,8 +199,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                         this.pressButton(button, scene);
                     }); 
 
-            button.graphic.setScrollFactor(0);
-            button.border.setScrollFactor(0);
+            button.graphic.setScrollFactor(0, 0);
+            button.border.setScrollFactor(0, 0);
             button.graphic.setDepth(3);
 
             this.actionButtons.push(button);
@@ -244,8 +244,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                         this.pressButton(button, scene);
                     }); 
             
-            button.graphic.setScrollFactor(0);
-            button.border.setScrollFactor(0);
+            button.graphic.setScrollFactor(0, 0);
+            button.border.setScrollFactor(0, 0);
             button.graphic.setDepth(3);
 
             this.specialButtons.push(button);
@@ -264,7 +264,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     animateButton(button: ActionButton) {
         this.scene.tweens.add({
             targets: [button],
-            scale: 1.375,
+            scale: 1.5,
             duration: 150,
             yoyo: true,
             onStart: () => {
@@ -272,7 +272,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 button.border.clear();
                 switch (button.key) {
                     case 'action':
-                        this.animate(button, this.scene.settings.positions.actionButtons.color, this.scene.settings.positions.actionButtons.border, this.scene.settings.positions.actionButtons.opacity, this.scene.settings.positions.actionButtons.width, 0.15, false);
+                        this.animate(button, this.scene.settings.positions.actionButtons.color, this.scene.settings.positions.actionButtons.border, this.scene.settings.positions.actionButtons.opacity, this.scene.settings.positions.actionButtons.width, 0.4, false);
                         break;
                     case 'special':
                         this.animate(button, this.scene.settings.positions.specialButtons.color, this.scene.settings.positions.specialButtons.border, this.scene.settings.positions.specialButtons.opacity, this.scene.settings.positions.specialButtons.width, 0.15, false);
@@ -336,7 +336,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const startAngle = Math.PI; // Start angle (180 degrees) for the quarter circle
         const endAngle = Math.PI / 2; // End angle (90 degrees) for the quarter circle 
         let angle = 0, buttonX = 0, buttonY = 0; 
-        // * Math.sqrt(2)
         switch (display) {
             case DISPLAY.ARC: 
                 angle = startAngle - (index * (startAngle - endAngle)) / (spacing); // spacing 3.57
@@ -612,25 +611,15 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     private repositionButtons = (data: {type: string, x: number, y: number}): void => {
         const { type, x, y } = data;
         const { width, height } = this.scene.cameras.main;
-        // const radius = height / 2; // Radius of the circle || 1.75
-        // const startAngle = Math.PI; // Start angle (180 degrees) for the quarter circle
-        // const endAngle = Math.PI / 2; // End angle (90 degrees) for the quarter circle 
         
         switch (type) {
             case 'action': {
                 const centerActionX = width * x; // / 1.25
                 const centerActionY = height * y; // / 1.35
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
-                    // const angle = startAngle - (index * (startAngle - endAngle)) / (3.57); // 3.57
-                    // const buttonX = centerActionX + radius * Math.cos(angle);
-                    // const buttonY = centerActionY - radius * Math.sin(angle); // Negative sign for Y to start from top
                     button.graphic.clear();
                     button.border.clear();
-                    
-                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.actionButtons.display, 
-                        this.scene.settings.positions.actionButtons.spacing,
-                        index, centerActionX, centerActionY, height);
-                    // button.graphic.removeInteractive();
+                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.actionButtons.display, this.scene.settings.positions.actionButtons.spacing, index, centerActionX, centerActionY, height);
                     button.graphic.fillStyle(button.color, this.scene.settings.positions.actionButtons.opacity);
                     button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.actionButtons.width * button.current / button.total);
                     button.border.lineStyle(SETTINGS.BORDER_LINE, this.scene.settings.positions.actionButtons.border, this.scene.settings.positions.actionButtons.opacity);
@@ -638,7 +627,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
-                    // this.setButtonInteractive(button);
                     return button;
                 });
                 break;
@@ -647,17 +635,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 const centerSpecialX = width * x; // width * 0.725 || / 1.375
                 const centerSpecialY = height * y; // height * 0.6 || / 1.675
                 this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
-                    // const angle = startAngle - (index * (startAngle - endAngle)) / (3.57);
-                    // const buttonX = centerSpecialX + radius * Math.cos(angle);
-                    // const buttonY = centerSpecialY - radius * Math.sin(angle); // Negative sign for Y to start from top
                     button.graphic.clear();
                     button.border.clear();
-                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.specialButtons.display, 
-                        this.scene.settings.positions.specialButtons.spacing,
-                        index, centerSpecialX, centerSpecialY, height);
-                    
-                    
-                    // button.graphic.removeInteractive();
+                    const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.specialButtons.display, this.scene.settings.positions.specialButtons.spacing, index, centerSpecialX, centerSpecialY, height);
                     button.graphic.fillStyle(button.color, this.scene.settings.positions.specialButtons.opacity);
                     button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * this.scene.settings.positions.specialButtons.width * SETTINGS.SCALE_SPECIAL * button.current / button.total);
                     button.border.lineStyle(SETTINGS.BORDER_LINE, this.scene.settings.positions.specialButtons.border, this.scene.settings.positions.specialButtons.opacity);
@@ -665,7 +645,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
-                    // this.setButtonInteractive(button);
                     return button;
                 });
                 break;

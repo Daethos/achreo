@@ -86,7 +86,6 @@ export class Preloader extends Scene {
         this.load.audio('leap', '../assets/sounds/leap.wav');
 
         this.assets = sanitize();
-
         this.assets.forEach((asset: { sprite: string; imgUrl: string; }) => {
             this.load.image(asset.sprite, asset.imgUrl);
         });
@@ -97,6 +96,13 @@ export class Preloader extends Scene {
         this.load.image('AncientForestDecorative', '../assets/gui/AncientForestDecorative.png');
         this.load.image('Camp_Graves', '../assets/gui/Camp_Graves.png');
         this.load.image('DeepCaveMainLev', '../assets/gui/MainLev.png');
+        this.load.image('big_tree', '../assets/gui/big_tree.png');
+        this.load.image('old_tree2', '../assets/gui/old_tree2.png');
+        this.load.image('tree1', '../assets/gui/tree1.png');
+        this.load.image('tree2', '../assets/gui/tree2.png');
+        this.load.image('tree3', '../assets/gui/tree3.png');
+        this.load.image('CampFireB', '../assets/gui/CampFireB.png');
+        this.load.image('light1A', '../assets/gui/light1A.png');
         this.load.image('closed', '../assets/images/closed.png');
         this.load.image('open', '../assets/images/open.png');
         this.load.image('caerenic', '../assets/images/caerenic.png');
@@ -134,28 +140,16 @@ export class Preloader extends Scene {
 
     createLoadingBar() {
         this.title = new NewText(
-            this,
-            this.centerX,
-            this.centerY / 2,
-            'Loading Game',
-            'subtitle',
+            this, this.centerX, this.centerY / 2, 'Loading Game', 'subtitle',
             0.5
         );
 
         this.txt_progress = new NewText(
-            this,
-            this.centerX,
-            this.centerY / 0.85,
-            'Loading...',
-            'preload',
+            this, this.centerX, this.centerY / 0.85, 'Loading...', 'preload',
             { x: 0.5, y: 1 }
         );
         this.txt_file = new NewText(
-            this,
-            this.centerX,
-            this.centerY / 0.55,
-            '',
-            'play',
+            this, this.centerX, this.centerY / 0.55, '', 'play',
             { x: 0.5, y: 1 }
         );
         let x = this.centerX - (this.width / 2);
@@ -171,15 +165,12 @@ export class Preloader extends Scene {
         this.progress.clear();
         this.progress.fillStyle(0xFDF6D8, 1);
         this.progress.fillRect(0, 0, this.width * val, this.height);
-        
         this.border.clear();
         this.border.lineStyle(4, 0x000000, 1);
         this.border.strokeRect(0, 0, this.width * val, this.height + 2);
-        
         this.borderBorder.clear();
         this.borderBorder.lineStyle(4, 0xFDF6D8, 1);
         this.borderBorder.strokeRect(0, 0, this.width, this.height + 2);
-        
         this.txt_progress.setText(Math.round(val * 100) + '%');
     };
 

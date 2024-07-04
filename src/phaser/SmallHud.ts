@@ -90,7 +90,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.bar.push(open);
 
         this.bar.forEach((item, index) => {
-            item.setScrollFactor(0);
+            item.setScrollFactor(0, 0);
             item.setDepth(3);
             item.setOrigin(0, 0);
             item.setInteractive();
@@ -112,7 +112,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.stances.push(stealth);
 
         this.stances.forEach((item, index) => {
-            item.setScrollFactor(0);
+            item.setScrollFactor(0, 0);
             item.setDepth(3);
             item.setOrigin(0, 0);
             item.setInteractive();

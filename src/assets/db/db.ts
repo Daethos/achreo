@@ -53,8 +53,6 @@ export const blessAscean = async (id: string, entry: any): Promise<any> => {
         ascean.statistics.relationships.deity.behaviors.push('Blessed');
         ascean.interactions.deity += 1;
         ascean.journal.entries.push(entry);
-        
-        console.log(ascean, 'Bless Ascean');
         // return ascean;
         const update = await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
         return update;
@@ -69,15 +67,12 @@ export const curseAscean = async (id: string, entry: any): Promise<any> => {
         ascean.firewater.charges = 0;
         ascean.experience = 0;
         ascean.health = { ...ascean.health, current: 1 };
-        
         ascean.statistics.relationships.deity.Unfaithful.occurrence += 1;
         ascean.statistics.relationships.deity.Unfaithful.value -= 5;
         ascean.statistics.relationships.deity.value -= 5;
         ascean.statistics.relationships.deity.behaviors.push('Cursed');
         ascean.interactions.deity += 1;
         ascean.journal.entries.push(entry);
-
-        console.log(ascean, 'Curse Ascean');
         const update =  await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
         return update;
     } catch (err) {
@@ -89,7 +84,6 @@ export const blessAsceanRandom = async (id: string) => {
     let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
     const blessExperience = Math.min(ascean.experience + ascean.level * 250, ascean.level * 1000);
     const random = Math.floor(Math.random() * 5);
-    console.log(random, 'Random Bless');
     // Eventually add more blessings, increasing stats
     switch (random) {
         case 0:
@@ -121,14 +115,12 @@ export const blessAsceanRandom = async (id: string) => {
     ascean.statistics.relationships.deity.Faithful.value += 5;
     ascean.statistics.relationships.deity.value += 5;
     ascean.statistics.relationships.deity.behaviors.push('Blessed');
-
     await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
 };
 
 export const curseAsceanRandom = async (id: string) => {
     let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
     const random = Math.floor(Math.random() * 5);
-    console.log(random, 'Random Curse');
     // Eventually add more curses, reducing stats
     switch (random) {
         case 0:
@@ -161,9 +153,7 @@ export const curseAsceanRandom = async (id: string) => {
     ascean.statistics.relationships.deity.Unfaithful.value -= 5;
     ascean.statistics.relationships.deity.value -= 5;
     ascean.statistics.relationships.deity.behaviors.push('Cursed');
-
     await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
-
 };
 
 export const saveEntry = async (id: string, entry: any) => {
@@ -245,7 +235,6 @@ export const getSettings = async (id: string) => {
     } else {
         const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
         const newSettings = new Settings(id, ascean.mastery);
-        // newSettings = { ...newSettings, specials: startingSpecials[ascean.mastery as keyof typeof startingSpecials] }
         await db.collection(SETTINGS).add(newSettings);
         return newSettings;
     };
@@ -330,7 +319,6 @@ export function populateEnemy(enemy: Ascean): Ascean {
 };
 
 export function randomEnemy(min: number, max: number): Ascean {
-    // const random = Math.floor(Math.random() * Asceans.length);
     const random = Asceans.filter(ascean => ascean.level >= min && ascean.level <= max);
     const enemy = random[Math.floor(Math.random() * random.length)];
     return enemy;

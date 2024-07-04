@@ -19,10 +19,14 @@ import Joystick from '../../phaser/Joystick';
 import SmallHud from '../../phaser/SmallHud';
 import { useResizeListener } from '../../utility/dimensions';
 import { Reputation, initReputation } from '../../utility/player';
+import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 
 const dimensions = useResizeListener();
 
 export class Game extends Scene {
+    animatedTiles: any[];
+    offsetX: number;
+    offsetY: number;
     gameText: Phaser.GameObjects.Text;
     gameState: GameState | undefined;
     ascean: Ascean  | undefined;
@@ -100,7 +104,9 @@ export class Game extends Scene {
         super('Game');
     };
 
-    preload() {};
+    preload() {
+        this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
+    };
 
     create () {
         this.gameEvent();
@@ -110,17 +116,27 @@ export class Game extends Scene {
         this.reputation = this.getReputation();
         this.settings = this.getSettings();
         this.rexUI = this.plugins.get('rexuiplugin');
+        this.offsetX = 0;
+        this.offsetY = 0;
         
-        // ================== Camera ================== \\
+    // =========================== Camera =========================== \\
         let camera = this.cameras.main;
         camera.zoom = this.settings.positions?.camera?.zoom || 0.8; // 0.8
 
-        // ================== Ascean Test Map ================== \\
+    // =========================== Ascean Test Map =========================== \\
         const map = this.make.tilemap({ key: 'ascean_test' });
         this.map = map;
-        const camps = map.addTilesetImage('Camp_Graves', 'Camp_Graves', 32, 32, 0, 0);
-        const decorations = map.addTilesetImage('AncientForestDecorative', 'AncientForestDecorative', 32, 32, 0, 0);
-        const tileSet = map.addTilesetImage('AncientForestMain', 'AncientForestMain', 32, 32, 0, 0);
+        const tileSize = 32;
+        const camps = map.addTilesetImage('Camp_Graves', 'Camp_Graves', tileSize, tileSize, 0, 0);
+        // const bigT = map.addTilesetImage('big_tree', 'big_tree', 352, 416, 0, 0);
+        // const oldT = map.addTilesetImage('old_tree2', 'old_tree2', 160, 288, 0, 0);
+        // const t1 = map.addTilesetImage('tree1', 'tree1', 160, 256, 0, 0);
+        // const t2 = map.addTilesetImage('tree2', 'tree2', 160, 288, 0, 0);
+        // const t3 = map.addTilesetImage('tree3', 'tree3', 160, 224, 0, 0);
+        const decorations = map.addTilesetImage('AncientForestDecorative', 'AncientForestDecorative', tileSize, tileSize, 0, 0);
+        const tileSet = map.addTilesetImage('AncientForestMain', 'AncientForestMain', tileSize, tileSize, 0, 0);
+        const campfire = map.addTilesetImage('CampFireB', 'CampFireB', tileSize, tileSize, 0, 0);
+        const light = map.addTilesetImage('light1A', 'light1A', tileSize, tileSize, 0, 0);
         const layer0 = map.createLayer('Tile Layer 0 - Base', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
         const layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
         const layerC = map.createLayer('Tile Layer - Construction', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
@@ -129,32 +145,49 @@ export class Game extends Scene {
         const layer6 = map.createLayer('Tile Layer 6 - Camps', camps as Phaser.Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer 2 - Flowers', decorations as Phaser.Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer 3 - Plants', decorations as Phaser.Tilemaps.Tileset, 0, 0);
-        // map.createLayer('Tile Layer 4 - Primes', decorations as Phaser.Tilemaps.Tileset, 0, 0);
-        // map.createLayer('Tile Layer 5 - Snags', decorations as Phaser.Tilemaps.Tileset, 0, 0);
-        // map.createLayer('Tile Layer 6 - Camps', camps as Phaser.Tilemaps.Tileset, 0, 0);
-        layer0?.setCollisionByProperty({ collides: true });
-        layer1?.setCollisionByProperty({ collides: true });
-        layerC?.setCollisionByProperty({ collides: true });
-        layer4?.setCollisionByProperty({ collides: true });
-        layer5?.setCollisionByProperty({ collides: true });
-        layer6?.setCollisionByProperty({ collides: true });
+        // const bigTree = map.createLayer('Tile Layer - Big Tree', bigT as Phaser.Tilemaps.Tileset, 0, 0);
+        // const oldTree = map.createLayer('Tile Layer - Old Tree 2', oldT as Phaser.Tilemaps.Tileset, 0, 0);
+        // const tree1 = map.createLayer('Tile Layer - Tree 1', t1 as Phaser.Tilemaps.Tileset, 0, 0);
+        // const tree2 = map.createLayer('Tile Layer - Tree 2', t2 as Phaser.Tilemaps.Tileset, 0, 0);
+        // const tree3 = map.createLayer('Tile Layer - Tree 3', t3 as Phaser.Tilemaps.Tileset, 0, 0);
+        map.createLayer('Tile Layer - Campfire', campfire as Phaser.Tilemaps.Tileset, 0, 0);
+        map.createLayer('Tile Layer - Lights', light as Phaser.Tilemaps.Tileset, 0, 0);
+        
+        [layer0, layer1, layerC, layer4, layer5, layer6].forEach(layer => {
+            if (layer) {
+                layer.setPosition(0, 0); // Reset position to default
+                layer.setCollisionByProperty({ collides: true });
+                this.matter.world.convertTilemapLayer(layer);
+            };
+        });
+        // [layer0, layer1, layerC, bigTree, oldTree, tree1, tree2, tree3, layer6].forEach(layer => {
+        //     if (layer) {
+        //         layer.setScale(1); // Ensure no scaling issues
+        //         layer.setPosition(0, 0); // Reset position to default
+        //         layer.setCollisionByProperty({ collides: true });
+        //         this.matter.world.convertTilemapLayer(layer);
+        //     };
+        // });
+        map.createLayer('Tile Layer 4 - Primes', decorations as Phaser.Tilemaps.Tileset, 0, 0);
+        map.createLayer('Tile Layer 5 - Snags', decorations as Phaser.Tilemaps.Tileset, 0, 0);
+        map.createLayer('Tile Layer 6 - Camps', camps as Phaser.Tilemaps.Tileset, 0, 0);
+        // bigTree?.setDepth(3);
+        // oldTree?.setDepth(3);
+        // tree1?.setDepth(3);
+        // tree2?.setDepth(3);
+        // tree3?.setDepth(3);
         layer4?.setDepth(3);
         layer5?.setDepth(3);
-        // layer6?.setDepth(3);
-        this.matter.world.convertTilemapLayer(layer0 as Phaser.Tilemaps.TilemapLayer);
-        this.matter.world.convertTilemapLayer(layer1 as Phaser.Tilemaps.TilemapLayer);
-        this.matter.world.convertTilemapLayer(layerC as Phaser.Tilemaps.TilemapLayer); 
-        this.matter.world.convertTilemapLayer(layer4 as Phaser.Tilemaps.TilemapLayer);
-        this.matter.world.convertTilemapLayer(layer5 as Phaser.Tilemaps.TilemapLayer);
-        this.matter.world.convertTilemapLayer(layer6 as Phaser.Tilemaps.TilemapLayer);
+        layer6?.setDepth(3);
         // this.matter.world.createDebugGraphic(); 
 
         const objectLayer = map.getObjectLayer('navmesh');
-        const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, 32);
+        const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;
         // const debugGraphics = this.add.graphics().setAlpha(0.75);
         // this.navMesh.enableDebug(debugGraphics); 
-        this.matter.world.setBounds(0, 0, 4096, 4096); // Top Down
+        this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
+        (this.sys as any).animatedTiles.init(this.map);
 
         this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
         map?.getObjectLayer('Enemies')?.objects.forEach((enemy: any) => 
@@ -162,29 +195,26 @@ export class Game extends Scene {
         map?.getObjectLayer('Npcs')?.objects.forEach((npc: any) => 
             this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' })));
 
-        // ====================== Camera ====================== \\
-            
-        camera.startFollow(this.player);
-        camera.setLerp(0.1, 0.1);
-        camera.setBounds(0, 0, 4096, 4096);
+    // =========================== Camera =========================== \\
+        camera.startFollow(this.player, false, 0.1, 0.1, );
+        // camera.setLerp(0.1, 0.1);
+        camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+        camera.setRoundPixels(true);
 
         var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
         this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
 
         this.setPostFx(this.settings?.postFx, this.settings?.postFx.enable);
 
-        // ====================== Combat Machine ====================== \\
-
+    // =========================== Combat Machine =========================== \\
         this.combatMachine = new CombatMachine(this);
         this.particleManager = new ParticleManager(this);
 
-        // ================= Action Buttons ================= \\
-
+    // =========================== Action Buttons =========================== \\
         this.target = this.add.sprite(0, 0, "target").setDepth(10).setScale(0.15).setVisible(false);
         this.actionBar = new ActionButtons(this);
 
-        // ====================== Input Keys ====================== \\
-
+    // =========================== Input Keys =========================== \\
         this.player.inputKeys = {
             up: this?.input?.keyboard?.addKeys('W,UP'),
             down: this?.input?.keyboard?.addKeys('S,DOWN'),
@@ -206,19 +236,16 @@ export class Game extends Scene {
             stalwart: this?.input?.keyboard?.addKeys('G'),
         }; 
 
-        // =========================== Lighting =========================== \\
-
+    // =========================== Lighting =========================== \\
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 200, 0.0675, 0.0675); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
         
-        // =========================== Music =========================== \\
-
+    // =========================== Music =========================== \\
         this.musicBackground = this.sound.add('background', { volume: this?.settings?.volume ?? 0 / 2, loop: true });
         if (this.settings?.music === true) {
             this.musicBackground.play();
         };
         this.musicCombat = this.sound.add('combat', { volume: this?.settings?.volume, loop: true });
-        // this.volumeEvent = () => EventBus.on('update-volume', (e) => this.musicBackground.setVolume(e));
         this.spooky = this.sound.add('spooky', { volume: this?.settings?.volume });
         this.righteous = this.sound.add('righteous', { volume: this?.settings?.volume });
         this.wild = this.sound.add('wild', { volume: this?.settings?.volume });
@@ -246,9 +273,7 @@ export class Game extends Scene {
         this.dungeon = this.sound.add('dungeon', { volume: this?.settings?.volume });
         this.frozen = this.sound.add('freeze', { volume: this?.settings?.volume });
 
-        // =========================== FPS =========================== \\
-
-        // window.innerWidth / 2 - 32, -40
+    // =========================== FPS =========================== \\
         this.fpsText = this.add.text(
             dimensions()?.WIDTH * this.settings.positions.fpsText.x, 
             dimensions()?.HEIGHT * this.settings.positions.fpsText.y, 
@@ -264,15 +289,13 @@ export class Game extends Scene {
                 };
             });
 
-        // ========================== Combat Timer ========================== \\
-
+    // =========================== Combat Timer =========================== \\
         this.combatTimerText = this.add.text(window.innerWidth / 2 - 40, window.innerHeight + 30, 'Combat Timer: ', { font: '16px Cinzel', color: '#fdf6d8' });
         this.combatTimerText.setScrollFactor(0);
         this.combatTimerText.setVisible(false);
         this.postFxEvent();
 
-        // ================== Joystick ================== \\
-        // window.innerWidth * 0.05, window.innerHeight * 0.8 || window.innerWidth * 0.95, window.innerHeight * 0.8
+    // =========================== Joystick =========================== \\
         this.joystick = new Joystick(this, 
             camera.width * this.settings.positions.leftJoystick.x, 
             camera.height * this.settings.positions.leftJoystick.y,
@@ -293,12 +316,10 @@ export class Game extends Scene {
         this.rightJoystick.createPointer(this); 
         this.joystickKeys = this.joystick.createCursorKeys();
 
-        // ================== Mini Map ================== \\
+    // =========================== Mini Map =========================== \\
         this.minimap = this.cameras.add((this.scale.width * 0.5) - (this.scale.width * 0.1171875), this.scale.height * 0.75, this.scale.width * 0.234375, this.scale.height * 0.234375).setName('mini');
         this.minimap.setOrigin(0.5); 
         this.minimap.setBounds(0, 0, 4096, 4096);
-        // this.minimap.scrollX = 4096;
-        // this.minimap.scrollY = 4096;
         this.minimap.zoom = 0.125;
         this.minimap.startFollow(this.player);
         this.minimap.setLerp(0.1, 0.1);
@@ -350,11 +371,10 @@ export class Game extends Scene {
         });
         this.minimap.ignore(this.minimapBorder);
 
-        // ================== Small Hud ================== \\
+    // =========================== Small Hud =========================== \\
         this.smallHud = new SmallHud(this);
 
-        // ================== Event Bus ================== \\
-
+    // =========================== Event Bus =========================== \\
         EventBus.emit('current-scene-ready', this);
     };
 
@@ -831,10 +851,6 @@ export class Game extends Scene {
         if (!enemy) return;
         enemy.isRooted = true;
 
-        // const { worldX, worldY } = this.input.activePointer;
-        // console.log(this.player.rightJoystick.pointer.x, this.player.rightJoystick.pointer.y, 'Right Joystick Pointer')
-        
-        // deriving the world x and y from the pointer
         let x = this.rightJoystick.pointer.x;
         let x2 = window.innerWidth / 2;
 
@@ -843,16 +859,11 @@ export class Game extends Scene {
 
         const worldX = (x > x2 ? x : -x) + this.player.x;
         const worldY = (y > y2 ? y : -y) + this.player.y;
-        // const worldX = this.player.rightJoystick.pointer.x;
-        // const worldY = this.player.rightJoystick.pointer.y;
-        // console.log(worldX, worldY, 'World X and Y');
         const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, worldX, worldY);
         const duration = 2 * distance;
         const rise = 0.5 * distance;
-        // console.log(distance, duration, rise, 'Distance, Duration, Rise');
         const sensorRadius = 25;
         const sensorBounds = new Phaser.Geom.Circle(worldX, worldY, sensorRadius);
-        // console.log(this.player.x, this.player.y, 'Player x and y')
         const rootTween = this.add.tween({
             targets: this.target,
             props: {
@@ -1091,6 +1102,21 @@ export class Game extends Scene {
         this.player.update(); 
         this.combatMachine.processor();
         this.playerLight.setPosition(this.player.x, this.player.y);
+        this.setCameraOffset();
+        this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
+    };
+
+    setCameraOffset = () => {
+        if (this.player.flipX === true) {
+            this.offsetX = Math.min(75, this.offsetX + 1.5);
+        } else {
+            this.offsetX = Math.max(this.offsetX - 1.5, -75);
+        };
+        if (this.player.velocity.y > 0) {
+            this.offsetY = Math.max(this.offsetY - 1, -60);
+        } else if (this.player.velocity.y < 0) {
+            this.offsetY = Math.min(60, this.offsetY + 1);
+        };
     };
 
     sortEnemies = (enemies: Enemy[]): Enemy[] => {
@@ -1112,7 +1138,6 @@ export class Game extends Scene {
     startCombatTimer = (): void => {
         if (this.combatTimer) {
             this.combatTimer.destroy();
-            // this.combatTimer = undefined;
         };
         this.combatTimer = this.time.addEvent({
             delay: 1000,
@@ -1147,8 +1172,6 @@ export class Game extends Scene {
             this.npcs[i].update();
         };
         this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2)); 
-        //  + '\n' + 'Height: ' + this.cameras.main.height + '\n' + 'Width: ' + this.cameras.main.width
-        // this.combatTimerText.setText('Combat Timer: ' + this.combatTime);
     };
 
     pause(): void {

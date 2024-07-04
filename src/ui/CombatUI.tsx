@@ -43,9 +43,9 @@ export default function CombatUI({ state, game, stamina }: Props) {
         <div class='playerCombatUi'> 
             <p class='playerName' style={{ 'z-index': 2 }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
             <div class='center playerHealthBar' style={{ 'z-index': 0 }}>
-                <div class='playerPortrait' style={{ 'font-size': '1.05em', color: state().isStealth ? '#fdf6d8' : '#000', 'z-index': 1 }}>{`${Math.round(state().newPlayerHealth)} / ${state().playerHealth} [${playerHealthPercentage()}%]`}</div>
+                <div class='playerPortrait' style={{ 'font-size': '1.075em', 'font-weight': 700, color: state().isStealth ? '#fdf6d8' : 'purple', 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#000' : '#fdf6d8'}`, 'z-index': 1 }}>{`${Math.round(state().newPlayerHealth)} / ${state().playerHealth} [${playerHealthPercentage()}%]`}</div>
                 <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, 'z-index': -1, width: `100%`, 'background-color': 'red' }}></div>
-                <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, 'z-index': -1, width: `${playerHealthPercentage()}%`, background: 'red',  'background-color': state()?.isStealth ? '#444' : '#FFC700' }}></div>
+                <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, 'z-index': -1, width: `${playerHealthPercentage()}%`, background: 'red',  'background-color': state()?.isStealth ? '#444' : '#ffc700' }}></div>
             </div>
             <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar"/>
             <StaminaBubble stamina={stamina} />

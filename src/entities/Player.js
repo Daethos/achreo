@@ -35,7 +35,6 @@ const ORIGIN = {
 export default class Player extends Entity {
     constructor(data) {
         const { scene } = data;
-        console.log(scene.state, 'State');
         super({ ...data, name: 'player', ascean: scene.state.player, health: scene.state.player.health.current }); 
         this.ascean = this.getAscean();
         this.health = this.ascean.health.current;

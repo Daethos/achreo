@@ -5,16 +5,16 @@
     <meta name="description" content="Fantasy Action Role-Playing Game for Mobile">
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/style.css" defer>
     <link rel="manifest" href="manifest.json">
-    <link rel="preload" href="inline.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="inline.css"></noscript>
+    <link rel="stylesheet" href="/style.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="/inline.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="/style.css"></noscript>
+    <noscript><link rel="stylesheet" href="/inline.css"></noscript>
     <title>The Ascean</title>
 </head>
 
 <body>
     <div id="root"></div>
-    <script defer type="module" src="/src/index.tsx"></script>
     <script defer type="module" src="/src/index.tsx"></script>
     <script defer>
         if ('serviceWorker' in navigator) {

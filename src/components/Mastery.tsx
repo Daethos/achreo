@@ -10,14 +10,9 @@ const FaithCard = ({ mastery, newAscean, setNewAscean }: { mastery: any; newAsce
         setNewAscean({ ...newAscean(), mastery: mastery.name });
         setShow(!show());
     };
-
     return (
-        <Show when={show()} fallback={<button onClick={handleMastery} class='highlight' style={{ color: mastery.name === newAscean().mastery ? 'gold' : '#fdf6d8' }}>
-            {mastery.name.charAt(0).toUpperCase() + mastery.name.slice(1)}</button>
-        }>
-            <div class="modal" onClick={handleShow}>
-                <AttributeModal attribute={mastery} />
-            </div>
+        <Show when={show()} fallback={<button onClick={handleMastery} class='highlight' style={{ color: mastery.name === newAscean().mastery ? 'gold' : '#fdf6d8' }}>{mastery.name.charAt(0).toUpperCase() + mastery.name.slice(1)}</button>}>
+            <div class="modal" onClick={handleShow}><AttributeModal attribute={mastery} /></div>
         </Show> 
     );
 };

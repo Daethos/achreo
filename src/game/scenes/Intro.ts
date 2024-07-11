@@ -1,45 +1,7 @@
 import { Scene } from "phaser";
 import TextTyping from 'phaser3-rex-plugins/plugins/texttyping.js';
 import { EventBus } from "../EventBus";
-
-const INTRO_NODES = {
-    0: {
-        key: 0,
-        prev: undefined, // undefined
-        next: 1,
-        text: "Welcome to the Ascean. This world is a menagerie of beauty and horror. Full of bounty and peaceable where folk gather; its jungle's reach is long and wild. Marred and mutated, this land is rife with the blood of Ancients. Beings of fantastic might and worship, commanding and enlightening humans at their lesiure, some of pointed interest, others with apathy. The Sundering eclipsed such flourishing; a War of the Ancients.",
-    },
-    1: {
-        key: 1,
-        prev: 0,
-        next: 2,
-        text: "Most humans died. Those who lived did so from the brilliance of Laetrois Ath'Shaorah, prophet of Daethos, bringing such peace and warring against the Ancients. Humans were free, from the Ancients, and from their homes; the Sundering's last gift to the world. For a thousand years, strange peoples from strange lands clashed, with few coalescing.",
-    },
-    2: {
-        key: 2,
-        prev: 1,
-        next: 3,
-        text: "And yet, the beauty of this world has bloomed once more, and many find themselves traveling, despite whispers of the old and the Ancient being seen again, whether in their mythic forms or of an othernature altogether. Perhaps not all perished in their war. Perhaps its horror has returned.",
-    },
-    3: {
-        key: 3,
-        prev: 2,
-        next: 4,
-        text: "Inside of the last century, warring has ceased into uncomfortable peace. Many great sons and fathers died for it; remembered well. Those reverent still alive, rapt with placidity. For some, the Ascea is satiating, a decennial tournament full of jest and joust, where prestige is now sought, and the va'Esai crowned. To be 'Worthy of the Preservation of Being.'",
-    },
-    4: {
-        key: 4,
-        prev: 3,
-        next: 5,
-        text: "A great, distinguishing burden befall the Ascean who claim the mantle. \n King Mathyus Caderyn II, the Daethic, and Warden of the Eye; \n High Lord Theogeni Spiras, Ghost Hawk of Greyrock, and Fyers Protectorate of the Firelands; \n General Evrio Lorian Peroumes, Proconsul of Licivitas, and current va'Esai. \n Such titles achieved post coronation.",
-    },
-    5: {
-        key: 5,
-        prev: 4,
-        next: undefined, // undefined
-        text: "The Ascea may grant forms of honor, swathes of land, increased prestige, and numerous titles--yet these are base, inert, and material. To become the Ascean, the va'Esai. To be Worthy. That is the offer. Do not listen to whispers otherwise. Do not be led astray. Do not fear the bleating of the fallen and beaten. There is nothing else.",
-    },
-};
+import { INTRO_NODES } from "../../utility/scene";
 
 export class Intro extends Scene {
     private background: Phaser.GameObjects.Graphics;
@@ -49,12 +11,8 @@ export class Intro extends Scene {
     private prevText: Phaser.GameObjects.Text;
     private node: any;
 
-    constructor() {
-        super('Intro');
-    };
-
+    constructor() {super('Intro');};
     preload() {};
-    
     create() {
         EventBus.emit('sleep-scene', 'Game');
         this.node = INTRO_NODES[0];

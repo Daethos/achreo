@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import { BlendModes, GameObjects, Input, Math as pMath, Physics } from "phaser";
 import Entity, { FRAME_COUNT } from "./Entity";  
 import { sprint, walk } from "../phaser/ScreenShake";
 import StateMachine, { States } from "../phaser/StateMachine";
@@ -42,7 +42,7 @@ export default class Player extends Entity {
         const weapon = this.ascean.weaponOne;
         this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
         this.currentWeaponSprite = this.assetSprite(weapon);
-        this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, this.currentWeaponSprite);
+        this.spriteWeapon = new GameObjects.Sprite(this.scene, 0, 0, this.currentWeaponSprite);
         if (weapon.grip === 'One Hand') {
             this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
             this.swingTimer = 1250
@@ -77,7 +77,7 @@ export default class Player extends Entity {
         this.currentShieldSprite = this.assetSprite(this.ascean?.shield);
         this.spriteShield = this.createSprite(this.currentShieldSprite, 0, 0, PLAYER.SCALE.SHIELD, ORIGIN.SHIELD.X, ORIGIN.SHIELD.Y);
 
-        this.playerVelocity = new Phaser.Math.Vector2();
+        this.playerVelocity = new pMath.Vector2();
         this.speed = this.startingSpeed(scene?.ascean);
         this.acceleration = PLAYER.SPEED.ACCELERATION;
         this.deceleration = PLAYER.SPEED.DECELERATION;
@@ -376,7 +376,7 @@ export default class Player extends Entity {
         this.metaMachine.setState(States.CLEAN);
         
         this.setScale(PLAYER.SCALE.SELF);   
-        const { Body, Bodies } = Phaser.Physics.Matter.Matter;
+        const { Body, Bodies } = Physics.Matter.Matter;
         let playerCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { isSensor: false, label: 'playerCollider' }); // Y + 10 For Platformer
         let playerSensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: 'playerSensor' }); // Y + 2 For Platformer
         
@@ -497,7 +497,7 @@ export default class Player extends Entity {
     };
 
     createSprite = (imgUrl, x, y, scale, originX, originY) => {
-        const sprite = new Phaser.GameObjects.Sprite(this.scene, x, y, imgUrl);
+        const sprite = new GameObjects.Sprite(this.scene, x, y, imgUrl);
         sprite.setScale(scale);
         sprite.setOrigin(originX, originY);
         this.scene.add.existing(sprite);
@@ -632,7 +632,7 @@ export default class Player extends Entity {
     };
 
     outOfRange = (range) => {
-        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
+        const distance = pMath.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
         if (distance > range) {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - range, 1000, 'damage')} Distance`);
             return true;    
@@ -941,7 +941,7 @@ export default class Player extends Entity {
                 } else if (this.isValidNeutralCollision(other)) {
                     this.touching.push(other.gameObjectB);
                     this.isValidRushEnemy(other.gameObjectB);
-                    other.gameObjectB.originPoint = new Phaser.Math.Vector2(other.gameObjectB.x, other.gameObjectB.y).clone();
+                    other.gameObjectB.originPoint = new pMath.Vector2(other.gameObjectB.x, other.gameObjectB.y).clone();
                     const isNewNeutral = this.isNewEnemy(other.gameObjectB);
                     if (!isNewNeutral) return;
                     this.targets.push(other.gameObjectB);
@@ -1017,8 +1017,8 @@ export default class Player extends Entity {
             return false;
         };
         const bodyPosition = other.pair.gameObjectB.body.position;
-        const offset = Phaser.Physics.Matter.Matter.Vector.mult(other.pair.collision.normal, other.pair.collision.depth);
-        return Phaser.Physics.Matter.Matter.Vector.add(bodyPosition, offset);
+        const offset = Physics.Matter.Matter.Vector.mult(other.pair.collision.normal, other.pair.collision.depth);
+        return Physics.Matter.Matter.Vector.add(bodyPosition, offset);
     };
     
     getAttackDirection(collisionPoint) {
@@ -1364,7 +1364,7 @@ export default class Player extends Entity {
         } else if (this.velocity.y < 0) {
             this.setVelocityY(-PLAYER.SPEED.BLINK);
         };
-        if (Math.abs(this.velocity.x) || Math.abs(this.velocity.y)) {
+        if (this.moving()) {
             this.scene.useStamina(PLAYER.STAMINA.BLINK);
         };
         const blinkCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
@@ -1378,12 +1378,7 @@ export default class Player extends Entity {
     
     onKyrnaicismEnter = () => {
         if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return;
-        // const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
-        // if (distance > PLAYER.RANGE.MODERATE) {
-        //     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
-        //     return;    
-        // };
+        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return; 
         this.isCasting = true;
         this.scene.useStamina(PLAYER.STAMINA.KYRNAICISM);
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
@@ -1442,12 +1437,7 @@ export default class Player extends Entity {
 
     onConfuseEnter = () => {
         if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return;
-        // const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
-        // if (distance > PLAYER.RANGE.LONG) {
-        //     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
-        //     return;    
-        // };
+        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return; 
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Confusing', PLAYER.DURATIONS.CONFUSE / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.CONFUSE);
         this.isCasting = true;
@@ -1514,11 +1504,6 @@ export default class Player extends Entity {
     onFearingEnter = () => {
         if (this.currentTarget === undefined) return;
         if (this.outOfRange(PLAYER.RANGE.MODERATE)) return;
-        // const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
-        // if (distance > PLAYER.RANGE.LONG) {
-        //     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
-        //     return;    
-        // };
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Fearing', PLAYER.DURATIONS.FEAR / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.FEAR);
         this.isCasting = true;
@@ -1551,12 +1536,7 @@ export default class Player extends Entity {
 
     onParalyzeEnter = () => { 
         if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return;
-        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
-        if (distance > PLAYER.RANGE.LONG) {
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
-            return;    
-        };
+        if (this.outOfRange(PLAYER.RANGE.LONG)) return; 
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Paralyzing', PLAYER.DURATIONS.PARALYZE / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.PARALYZE);
         this.isCasting = true;
@@ -1573,13 +1553,15 @@ export default class Player extends Entity {
         if (this.isCasting === true) this.castbar.update(dt, 'cast');
     };
     onParalyzeExit = () => {
-        console.log('Paralyze Success: ', this.paralyzeSuccess);
         if (this.paralyzeSuccess === true) {
             this.scene.paralyze(this.getEnemyId());
             this.setTimeEvent('paralyzeCooldown', PLAYER.COOLDOWNS.MODERATE);  
             this.scene.useStamina(PLAYER.STAMINA.PARALYZE);
             this.paralyzeSuccess = false;
             this.scene.mysterious.play();
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You paralyze ${this.scene.state.computer?.name} for several seconds!`
+            });
         };
         this.castbar.reset();
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); // !this.isCaerenic && 
@@ -1594,7 +1576,6 @@ export default class Player extends Entity {
         this.castbar.setTime(PLAYER.DURATIONS.FYERUS);
         this.castbar.setVisible(true);  
         if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true); // !this.isCaerenic && 
-        // this.flickerCarenic(6000);  
         this.aoe = new AoE(this.scene, 'fyerus', 6, false, undefined, true);    
         this.scene.useStamina(PLAYER.STAMINA.FYERUS);    
         this.setTimeEvent('fyerusCooldown', 2000); // PLAYER.COOLDOWNS.SHORT
@@ -1780,12 +1761,7 @@ export default class Player extends Entity {
 
     onPolymorphingEnter = () => {
         if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return;
-        // const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
-        // if (distance > PLAYER.RANGE.LONG) {
-        //     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
-        //     return;    
-        // };
+        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return; 
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphing', PLAYER.DURATIONS.POLYMORPH / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.POLYMORPH);
         this.isCasting = true;
@@ -1817,12 +1793,7 @@ export default class Player extends Entity {
     };
 
     onPursuitEnter = () => {
-        if (this.outOfRange(PLAYER.RANGE.LONG)) return;
-        // const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x || this.x, this.currentTarget.y || this.y);
-        // if (distance > PLAYER.RANGE.LONG) {
-        //     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
-        //     return;    
-        // };
+        if (this.outOfRange(PLAYER.RANGE.LONG)) return; 
         this.scene.sound.play('wild', { volume: this.scene.settings.volume });
         if (this.currentTarget) {
             if (this.currentTarget.flipX) {
@@ -1849,12 +1820,7 @@ export default class Player extends Entity {
 
     onRootingEnter = () => {
         if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.LONG)) return;
-        // const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
-        // if (distance > PLAYER.RANGE.LONG) {
-        //     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
-        //     return;    
-        // };
+        if (this.outOfRange(PLAYER.RANGE.LONG)) return; 
         this.isCasting = true;
         this.castbar.setTotal(PLAYER.DURATIONS.ROOTING);
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Rooting', PLAYER.DURATIONS.ROOTING / 2, 'cast');
@@ -1886,12 +1852,7 @@ export default class Player extends Entity {
 
     onSlowEnter = () => {
         if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.LONG)) return;
-        // const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
-        // if (distance > PLAYER.RANGE.LONG) {
-        //     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
-        //     return;    
-        // };
+        if (this.outOfRange(PLAYER.RANGE.LONG)) return; 
         this.isSlowing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slow', 750, 'cast');
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
@@ -1913,12 +1874,7 @@ export default class Player extends Entity {
 
     onSacrificeEnter = () => {
         if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return;
-        // const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
-        // if (distance > PLAYER.RANGE.MODERATE) {
-        //     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
-        //     return;    
-        // };
+        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return; 
         this.isSacrificing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Sacrifice', 750, 'effect');
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
@@ -1937,12 +1893,7 @@ export default class Player extends Entity {
 
     onSnaringEnter = () => {
         if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.LONG)) return;
-        // const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
-        // if (distance > PLAYER.RANGE.LONG) {
-        //     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
-        //     return;    
-        // };
+        if (this.outOfRange(PLAYER.RANGE.LONG)) return; 
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snaring', PLAYER.DURATIONS.SNARE, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.SNARE);
         this.isCasting = true;
@@ -1973,21 +1924,9 @@ export default class Player extends Entity {
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false);
     };
 
-    // Spins and attacks all enemies in range 3 times in 3 seconds.
     onStormEnter = () => {
         this.isStorming = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 750, 'effect');
-        // this.originalLeapPosition = new Phaser.Math.Vector2(this.x, this.y);
-        // this.stormPointer = this.scene.rightJoystick.pointer;
-        // const pointer = this.scene.rightJoystick.pointer;
-        // const worldX = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x;
-        // const worldY = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y;
-        // const target = new Phaser.Math.Vector2(worldX, worldY);
-        // const target = this.scene.getWorldPointer();
-        // const direction = target.subtract(this.position);
-        // const length = direction.length();
-        // direction.normalize();
-        // this.flipX = direction.x < 0;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 750, 'effect'); 
         this.isAttacking = true;
         this.scene.useStamina(PLAYER.STAMINA.STORM);
         this.scene.tweens.add({
@@ -2021,20 +1960,13 @@ export default class Player extends Entity {
     onStormUpdate = (_dt) => {
         this.combatChecker(this.isStorming);
     };
-    onStormExit = () => {
-        // this.originalLeapPosition = undefined;
-        // this.stormPointer = undefined;
-        // const stormCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
+    onStormExit = () => { 
         this.setTimeEvent('stormCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);
     };
 
     onSutureEnter = () => {
         if (this.currentTarget === undefined) return;
-        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
-        if (distance > PLAYER.RANGE.MODERATE) {
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
-            return;    
-        };
+        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return;  
         this.isSuturing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Suture', 750, 'effect');
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
@@ -2056,11 +1988,6 @@ export default class Player extends Entity {
     onTshaeralEnter = () => {
         if (this.currentTarget === undefined) return; 
         if (this.outOfRange(PLAYER.RANGE.MODERATE)) return;
-        // const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
-        // if (distance > PLAYER.RANGE.MODERATE) {
-        //     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - PLAYER.RANGE.MODERATE)} Distance`, 1500, 'damage');
-        //     return;    
-        // };
         this.isCasting = true;
         this.currentTarget.isConsumed = true;
         this.scene.useStamina(PLAYER.STAMINA.TSHAERAL);
@@ -2149,7 +2076,6 @@ export default class Player extends Entity {
         });
     };
     onDiseaseUpdate = (_dt) => {
-        // this.combatChecker(this.isDiseasing);
         if (this.isDiseasing === false) {
             this.metaMachine.setState(States.CLEAN);
         };
@@ -2570,7 +2496,7 @@ export default class Player extends Entity {
         if (stealth) {
             const getStealth = (object) => {
                 object.setAlpha(0.5); // 0.7
-                object.setBlendMode(Phaser.BlendModes.SCREEN);
+                object.setBlendMode(BlendModes.SCREEN);
                 this.scene.tweens.add({
                     targets: object,
                     tint: 0x00AAFF, // 0x00AAFF
@@ -2588,7 +2514,7 @@ export default class Player extends Entity {
                 this.scene.tweens.killTweensOf(object);
                 object.setAlpha(1);
                 object.clearTint();
-                object.setBlendMode(Phaser.BlendModes.NORMAL);
+                object.setBlendMode(BlendModes.NORMAL);
             };
             this.adjustSpeed(PLAYER.SPEED.STEALTH);
             clearStealth(this);
@@ -2723,9 +2649,10 @@ export default class Player extends Entity {
         this.setGlow(this, true);
         let iteration = 0;
         const randomDirection = () => {  
-            const move = Phaser.Math.Between(1, 100);
+            const move = Math.random() * 101;
+            const dir = Math.random() * 4;
             const directions = ['up', 'down', 'left', 'right'];
-            const direction = directions[Phaser.Math.Between(0, 3)];
+            const direction = directions[dir];
             if (move > 25) {
                 if (direction === 'up') {
                     this.confuseVelocity = { x: 0, y: -1.75 };
@@ -2766,7 +2693,7 @@ export default class Player extends Entity {
     onConfusedUpdate = (_dt) => {
         if (!this.isConfused) this.combatChecker(this.isConfused);
         this.setVelocity(this.confuseVelocity.x, this.confuseVelocity.y);
-        if (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0) {
+        if (this.moving()) {
             this.anims.play(`player_running`, true);
         } else {
             this.anims.play(`player_idle`, true);
@@ -2805,9 +2732,9 @@ export default class Player extends Entity {
         let iteration = 0;
         const fears = ['...ahhh!', 'c̶o̷m̷e̷ ̴h̴e̵r̶e̶', 'Stay Away!', 'Somebody HELP ME', 'g̴̠̊ͅu̷͝ͅṱ̶͐ṯ̶̆u̸̼̚̚r̶̰̔ȃ̴̫l̴͈͝ ̶̹̎͛s̸͎͋ḥ̶̛̙́r̵̡̤̋͠ì̶͈̓e̸̬͕̅̈́k̵͔͌ī̸̮̹̎n̷̰̟̂͒g̷̦̓'];
         const randomDirection = () => {  
-            const move = Phaser.Math.Between(1, 100);
+            const move = Math.random() * 101;
             const directions = ['up', 'down', 'left', 'right'];
-            const direction = directions[Phaser.Math.Between(0, 3)];
+            const direction = directions[Math.random() * 4];
             if (move > 25) {
                 if (direction === 'up') {
                     this.fearVelocity = { x: 0, y: -2 };
@@ -2846,7 +2773,7 @@ export default class Player extends Entity {
     onFearedUpdate = (_dt) => {
         if (!this.isFeared) this.combatChecker(this.isFeared);
         this.setVelocity(this.fearVelocity.x, this.fearVelocity.y);
-        if (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0) {
+        if (this.moving()) {
             this.anims.play(`player_running`, true);
         } else {
             this.anims.play(`player_idle`, true);
@@ -2910,9 +2837,10 @@ export default class Player extends Entity {
 
         let iteration = 0;
         const randomDirection = () => {  
-            const move = Phaser.Math.Between(1, 100);
+            const move = Math.random() * 101;
+            const dir = Math.random() * 4;
             const directions = ['up', 'down', 'left', 'right'];
-            const direction = directions[Phaser.Math.Between(0, 3)];
+            const direction = directions[dir];
             if (move > 25) {
                 if (direction === 'up') {
                     this.polymorphVelocity = { x: 0, y: -1.25 };
@@ -3250,6 +3178,10 @@ export default class Player extends Entity {
         );
     };
 
+    moving = () => {
+        return this.body.velocity.x !== 0 || this.body.velocity.y !== 0;
+    };
+
     playerActionSuccess = () => {
         if (this.particleEffect) {
             this.scene.particleManager.removeEffect(this.particleEffect.id);
@@ -3259,7 +3191,7 @@ export default class Player extends Entity {
             const action = this.checkPlayerAction();
             if (!action) return;
             if (this?.attackedTarget?.isShimmering) {
-                const shimmer = Phaser.Math.Between(1, 100);
+                const shimmer = Math.random() * 101;
                 if (shimmer > 50) {
                     this?.attackedTarget?.shimmerHit();
                     return;
@@ -3386,26 +3318,26 @@ export default class Player extends Entity {
 
         // ========================= Player Combat Actions ========================= \\
         if (this.inCombat && this.attacking) {
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.attack.ONE) && this.stamina >= PLAYER.STAMINA.ATTACK && this.canSwing) {
+            if (Input.Keyboard.JustDown(this.inputKeys.attack.ONE) && this.stamina >= PLAYER.STAMINA.ATTACK && this.canSwing) {
                 this.stateMachine.setState(States.ATTACK);
             };
             
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.posture.TWO) && this.stamina >= PLAYER.STAMINA.POSTURE && this.canSwing) {
+            if (Input.Keyboard.JustDown(this.inputKeys.posture.TWO) && this.stamina >= PLAYER.STAMINA.POSTURE && this.canSwing) {
                 this.stateMachine.setState(States.POSTURE);
             };
 
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.parry.FIVE) && this.stamina >= PLAYER.STAMINA.PARRY && this.canSwing) {
+            if (Input.Keyboard.JustDown(this.inputKeys.parry.FIVE) && this.stamina >= PLAYER.STAMINA.PARRY && this.canSwing) {
                 this.scene.combatMachine.input('parryGuess', 'parry');
                 this.stateMachine.setState(States.PARRY);
             };
         };
 
         // ========================= Player Movement Actions ========================= \\
-        if (Phaser.Input.Keyboard.JustDown(this.inputKeys.roll.THREE) && this.stamina >= PLAYER.STAMINA.ROLL && this.movementClear()) {
+        if (Input.Keyboard.JustDown(this.inputKeys.roll.THREE) && this.stamina >= PLAYER.STAMINA.ROLL && this.movementClear()) {
             this.stateMachine.setState(States.ROLL);
         };
 
-        if (Phaser.Input.Keyboard.JustDown(this.inputKeys.dodge.FOUR) && this.stamina >= PLAYER.STAMINA.DODGE && this.movementClear()) {
+        if (Input.Keyboard.JustDown(this.inputKeys.dodge.FOUR) && this.stamina >= PLAYER.STAMINA.DODGE && this.movementClear()) {
             this.stateMachine.setState(States.DODGE);
         };
 
@@ -3435,7 +3367,7 @@ export default class Player extends Entity {
         } else if (this.isAttacking) {
             sprint(this.scene);
             this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isAttacking = false); 
-        } else if ((Math.abs(this.body.velocity.x) > 0.1 || Math.abs(this.body.velocity.y) > 0.1)) {
+        } else if (this.moving()) {
             if (!this.isWalking) {
                 this.isWalking = this.scene.time.delayedCall(400, () => {
                     walk(this.scene);

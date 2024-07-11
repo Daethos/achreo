@@ -22,23 +22,13 @@ export const deleteAscean = async (id: string) => {
     const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
     const equipment = [ascean.weaponOne, ascean.weaponTwo, ascean.weaponThree, ascean.shield, ascean.helmet, ascean.chest, ascean.legs, ascean.ringOne, ascean.ringTwo, ascean.amulet, ascean.trinket];
     const inventory = await getInventoryIds(id);
-    equipment.forEach(async (item: string) => {
-        await db.collection(EQUIPMENT).doc({ _id: item }).delete();
-    });
-    inventory.forEach(async (item: string) => {
-        await db.collection(EQUIPMENT).doc({ _id: item }).delete();
-    });
+    equipment.forEach(async (item: string) => await db.collection(EQUIPMENT).doc({ _id: item }).delete());
+    inventory.forEach(async (item: string) => await db.collection(EQUIPMENT).doc({ _id: item }).delete());
     await db.collection(ASCEANS).doc({ _id: id }).delete();
     const reputation = await db.collection(REPUTATION).doc({ _id: id }).get();
-    if (reputation) {
-        console.log('deleting reputation');
-        await db.collection(REPUTATION).doc({ _id: id }).delete();
-    };
+    if (reputation) await db.collection(REPUTATION).doc({ _id: id }).delete();
     const settings = await db.collection(SETTINGS).doc({ _id: id }).get();
-    if (settings) {
-        console.log('deleting settings');
-        await db.collection(SETTINGS).doc({ _id: id }).delete();
-    };
+    if (settings) await db.collection(SETTINGS).doc({ _id: id }).delete();
 };
 
 export const blessAscean = async (id: string, entry: any): Promise<any> => {
@@ -53,11 +43,10 @@ export const blessAscean = async (id: string, entry: any): Promise<any> => {
         ascean.statistics.relationships.deity.behaviors.push('Blessed');
         ascean.interactions.deity += 1;
         ascean.journal.entries.push(entry);
-        // return ascean;
         const update = await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
         return update;
     } catch (err) {
-        console.log(err, 'Error in Bless Ascean Controller');
+        console.warn(err, 'Error in Bless Ascean Controller');
     };
 };
 
@@ -76,7 +65,7 @@ export const curseAscean = async (id: string, entry: any): Promise<any> => {
         const update =  await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
         return update;
     } catch (err) {
-        console.log(err, 'Error in Curse Ascean Controller');
+        console.warn(err, 'Error in Curse Ascean Controller');
     };
 };
 
@@ -84,7 +73,6 @@ export const blessAsceanRandom = async (id: string) => {
     let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
     const blessExperience = Math.min(ascean.experience + ascean.level * 250, ascean.level * 1000);
     const random = Math.floor(Math.random() * 5);
-    // Eventually add more blessings, increasing stats
     switch (random) {
         case 0:
             ascean.firewater = { ...ascean.firewater, charges: 5 };
@@ -121,7 +109,6 @@ export const blessAsceanRandom = async (id: string) => {
 export const curseAsceanRandom = async (id: string) => {
     let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
     const random = Math.floor(Math.random() * 5);
-    // Eventually add more curses, reducing stats
     switch (random) {
         case 0:
             ascean.firewater = { ...ascean.firewater, charges: 0 };
@@ -159,7 +146,6 @@ export const curseAsceanRandom = async (id: string) => {
 export const saveEntry = async (id: string, entry: any) => {
     try {
         let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
-        console.log(ascean, 'Journal');
         ascean.journal.entries.push(entry);
         await db.collection(ASCEANS).doc({ _id: id }).update(ascean);
     } catch (err: any) {

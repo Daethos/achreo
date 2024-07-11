@@ -1,13 +1,15 @@
-import { Accessor, createSignal, Show } from 'solid-js';
-import AttributeModal, { AttributeCompiler } from './Attributes';
+import { Accessor, createSignal, Show, lazy, Suspense } from 'solid-js';
+import { AttributeCompiler } from './Attributes';
 import { Attributes } from '../utility/attributes';
 import { useResizeListener } from '../utility/dimensions';
-import AsceanImageCard from './AsceanImageCard';
-import ItemModal from './ItemModal';
 import Ascean from '../models/ascean';
 import Equipment from '../models/equipment';
+import { Puff } from 'solid-spinner';
+const AsceanImageCard = lazy(async () => await import('./AsceanImageCard'));
+const ItemModal = lazy(async () => await import('./ItemModal'));
+const AttributeModal = lazy(async () => await import('./Attributes'));
 
-export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
+export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
     const [show, setShow] = createSignal(false);
     const [equipment, setEquipment] = createSignal<Equipment | undefined>(undefined);
     const [attribute, setAttribute] = createSignal(Attributes[0]);
@@ -26,17 +28,23 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                 <p style={viewMargin}>Health: <span class='gold'>{Math.round(ascean().health.current)}</span> / <span class='gold'>{ascean().health.max}</span> | Wealth: <span class='gold'>{ascean().currency.gold}g {ascean().currency.silver}s</span></p>
                 <p style={viewMargin}>Faith: <span class='gold'>{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> | Mastery: <span class='gold'>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span></p>
                 <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
-                <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
+                <Suspense fallback={<Puff color="gold" />}>
+                    <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
+                </Suspense>
                 <br />
                 <Show when={show()}>
                     <div class='modal' onClick={() => setShow(!show())}>
+                    <Suspense fallback={<Puff color="gold" />}>
                         <ItemModal item={equipment() as Equipment} stalwart={false} caerenic={false} /> 
+                    </Suspense>
                     </div>
                 </Show>
 
                 <Show when={attrShow()}>
                 <div class='modal' onClick={() => setAttrShow(!attrShow())}>
-                    <AttributeModal attribute={attribute()} />
+                    <Suspense fallback={<Puff color="gold" />}>
+                        <AttributeModal attribute={attribute()} />
+                    </Suspense>
                 </div> 
                 </Show>
             </div>
@@ -57,7 +65,9 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                 <div class='border right center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
                     <div class='superCenter' style={{ 'margin-top': '0' }}>
                     <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
-                    <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
+                    <Suspense fallback={<Puff color="gold" />}>
+                        <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
+                    </Suspense>
                     </div>
                 </div>
                 
@@ -65,7 +75,9 @@ export function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
             <div class='creature-heading center'>
             <Show when={show()}>
                 <div class='modal' onClick={() => setShow(!show())}>
+                <Suspense fallback={<Puff color="gold" />}>
                     <ItemModal item={equipment() as Equipment} stalwart={false} caerenic={false} /> 
+                </Suspense>
                 </div>
             </Show>
 

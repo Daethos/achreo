@@ -36,6 +36,22 @@ export const initCharacter: CharacterSheet = {
     preference: 'Leather-Cloth',
 };
 
+export const initCharacterSheet: CharacterSheet = {
+    name: 'Stranger', // Dorien Caderyn
+    description: 'Commoner From Elsewhere And Otherlands Unknown', // Prince of the Daethic Kingdom
+    sex: 'Man',
+    origin: "Ashtre", // Notheo
+    constitution: 16, // 12
+    strength: 14, // 16
+    agility: 10,
+    achre: 10,
+    caeren: 13, // 12
+    kyosir: 10, // 13
+    mastery: 'constitution',
+    faith: 'Adherent',
+    preference: 'Plate-Mail',
+};
+
 export type LevelSheet = {
     ascean: Ascean;
     avarice: boolean;

@@ -5,7 +5,6 @@ import HorrifiPipelinePlugin from 'phaser3-rex-plugins/plugins/horrifipipeline-p
 // @ts-ignore
 import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 import { Boot } from './scenes/Boot';
-import { GameOver } from './scenes/GameOver';
 import { Game as MainGame } from './scenes/Game';
 import { MainMenu } from './scenes/MainMenu';
 import Phaser from 'phaser';
@@ -34,7 +33,6 @@ const config: Phaser.Types.Core.GameConfig = {
         MainGame,
         Intro,
         Tent,
-        GameOver
     ],
     physics: {
         default: 'matter',

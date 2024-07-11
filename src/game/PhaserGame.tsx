@@ -1,15 +1,14 @@
-import { onCleanup, onMount, createSignal, Accessor, Setter, Show } from 'solid-js';
+import { onCleanup, onMount, createSignal, Accessor, Setter, Show, lazy, Suspense } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import StartGame from './main';
 import { EventBus } from './EventBus';
 import { Menu } from '../utility/screens';
-import Ascean from '../models/ascean';
 import { Combat, initCombat } from '../stores/combat';
 import { fetchEnemy } from '../utility/enemy';
+import Ascean from '../models/ascean';
 import { GameState, initGame } from '../stores/game';
 import Equipment, { getOneRandom, upgradeEquipment } from '../models/equipment';
 import Settings from '../models/settings';
-import BaseUI from '../ui/BaseUI';
 import { Compiler, LevelSheet, asceanCompiler } from '../utility/ascean';
 import { deleteEquipment, getAscean, getInventory, populate, updateSettings } from '../assets/db/db';
 import { getNpcDialog } from '../utility/dialog';
@@ -20,6 +19,8 @@ import { checkDeificConcerns } from '../utility/deities';
 import { Statistics } from '../utility/statistics';
 import { startingSpecials } from '../utility/abilities';
 import { Reputation, faction } from '../utility/player';
+import { Puff } from 'solid-spinner';
+const BaseUI = lazy(async () => await import('../ui/BaseUI'));
 
 export interface IRefPhaserGame {
     game: Phaser.Game | null;
@@ -39,7 +40,7 @@ interface IProps {
     scene: Accessor<any>;
 };
 
-export const PhaserGame = (props: IProps) => {
+export default function PhaserGame (props: IProps) {
     let gameContainer: HTMLDivElement | undefined;
     const [instance, setInstance] = createStore<IRefPhaserGame>({ game: null, scene: null });
     const [combat, setCombat] = createSignal<Combat>({ ...initCombat, playerBlessing: props.settings().prayer || 'Buff' });
@@ -1061,7 +1062,9 @@ export const PhaserGame = (props: IProps) => {
         <>
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
         <Show when={live() && checkUi() && props.scene() === 'Game'}>
-            <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} stamina={stamina} />
+            <Suspense fallback={<Puff color="gold" />}>
+                <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} stamina={stamina} />
+            </Suspense>
         </Show>
         </>
     );

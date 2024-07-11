@@ -1,7 +1,7 @@
 import Ascean from '../../models/ascean';
 import { Combat, initCombat } from '../../stores/combat';
 import { EventBus } from '../EventBus';
-import { Scene } from 'phaser';
+import { Cameras, GameObjects, Scene, Sound, Tilemaps, Time } from 'phaser';
 import Player from '../../entities/Player';
 import Enemy from '../../entities/Enemy';
 import NPC from '../../entities/NPC';
@@ -27,7 +27,7 @@ export class Game extends Scene {
     animatedTiles: any[];
     offsetX: number;
     offsetY: number;
-    gameText: Phaser.GameObjects.Text;
+    gameText: GameObjects.Text;
     gameState: GameState | undefined;
     ascean: Ascean  | undefined;
     state: Combat = initCombat;
@@ -45,54 +45,54 @@ export class Game extends Scene {
     lootDrops: LootDrop[] = [];
     combat: boolean = false;
     combatTime: number = 0;
-    combatTimer: Phaser.Time.TimerEvent;
+    combatTimer: Time.TimerEvent;
     
     actionBar: ActionButtons;
     combatMachine: CombatMachine;
     particleManager: ParticleManager;
     
-    map: Phaser.Tilemaps.Tilemap;
-    background: Phaser.GameObjects.Image;
-    camera: Phaser.Cameras.Scene2D.Camera;
-    minimap: Phaser.Cameras.Scene2D.Camera;
-    minimapBorder: Phaser.GameObjects.Rectangle;
-    minimapReset: Phaser.GameObjects.Rectangle;
+    map: Tilemaps.Tilemap;
+    background: GameObjects.Image;
+    camera: Cameras.Scene2D.Camera;
+    minimap: Cameras.Scene2D.Camera;
+    minimapBorder: GameObjects.Rectangle;
+    minimapReset: GameObjects.Rectangle;
     rexUI: any;
     navMesh: any;
     navMeshPlugin: any;
     postFxPipeline: any;
 
-    musicBackground: Phaser.Sound.BaseSound;
-    musicCombat: Phaser.Sound.BaseSound;
-    spooky: Phaser.Sound.BaseSound;
-    righteous: Phaser.Sound.BaseSound;
-    wild: Phaser.Sound.BaseSound;
-    earth: Phaser.Sound.BaseSound;
-    fire: Phaser.Sound.BaseSound;
-    frost: Phaser.Sound.BaseSound;
-    lightning: Phaser.Sound.BaseSound;
-    wind: Phaser.Sound.BaseSound;
-    sorcery: Phaser.Sound.BaseSound;
-    bow: Phaser.Sound.BaseSound;
-    slash: Phaser.Sound.BaseSound;
-    blunt: Phaser.Sound.BaseSound;
-    pierce: Phaser.Sound.BaseSound;
-    roll: Phaser.Sound.BaseSound;
-    parry: Phaser.Sound.BaseSound;
-    weaponOrder: Phaser.Sound.BaseSound;
-    actionButton: Phaser.Sound.BaseSound;
-    equip: Phaser.Sound.BaseSound;
-    unequip: Phaser.Sound.BaseSound;
-    purchase: Phaser.Sound.BaseSound;
-    treasure: Phaser.Sound.BaseSound;
-    phenomena: Phaser.Sound.BaseSound;
-    mysterious: Phaser.Sound.BaseSound;
-    tshaeral: Phaser.Sound.BaseSound;
-    dungeon: Phaser.Sound.BaseSound;
-    frozen: Phaser.Sound.BaseSound;
+    musicBackground: Sound.BaseSound;
+    musicCombat: Sound.BaseSound;
+    spooky: Sound.BaseSound;
+    righteous: Sound.BaseSound;
+    wild: Sound.BaseSound;
+    earth: Sound.BaseSound;
+    fire: Sound.BaseSound;
+    frost: Sound.BaseSound;
+    lightning: Sound.BaseSound;
+    wind: Sound.BaseSound;
+    sorcery: Sound.BaseSound;
+    bow: Sound.BaseSound;
+    slash: Sound.BaseSound;
+    blunt: Sound.BaseSound;
+    pierce: Sound.BaseSound;
+    roll: Sound.BaseSound;
+    parry: Sound.BaseSound;
+    weaponOrder: Sound.BaseSound;
+    actionButton: Sound.BaseSound;
+    equip: Sound.BaseSound;
+    unequip: Sound.BaseSound;
+    purchase: Sound.BaseSound;
+    treasure: Sound.BaseSound;
+    phenomena: Sound.BaseSound;
+    mysterious: Sound.BaseSound;
+    tshaeral: Sound.BaseSound;
+    dungeon: Sound.BaseSound;
+    frozen: Sound.BaseSound;
 
-    fpsText: Phaser.GameObjects.Text;
-    combatTimerText: Phaser.GameObjects.Text;
+    fpsText: GameObjects.Text;
+    combatTimerText: GameObjects.Text;
     joystick: Joystick;
     rightJoystick: Joystick;
     joystickKeys: any;
@@ -128,57 +128,30 @@ export class Game extends Scene {
         this.map = map;
         const tileSize = 32;
         const camps = map.addTilesetImage('Camp_Graves', 'Camp_Graves', tileSize, tileSize, 0, 0);
-        // const bigT = map.addTilesetImage('big_tree', 'big_tree', 352, 416, 0, 0);
-        // const oldT = map.addTilesetImage('old_tree2', 'old_tree2', 160, 288, 0, 0);
-        // const t1 = map.addTilesetImage('tree1', 'tree1', 160, 256, 0, 0);
-        // const t2 = map.addTilesetImage('tree2', 'tree2', 160, 288, 0, 0);
-        // const t3 = map.addTilesetImage('tree3', 'tree3', 160, 224, 0, 0);
         const decorations = map.addTilesetImage('AncientForestDecorative', 'AncientForestDecorative', tileSize, tileSize, 0, 0);
         const tileSet = map.addTilesetImage('AncientForestMain', 'AncientForestMain', tileSize, tileSize, 0, 0);
         const campfire = map.addTilesetImage('CampFireB', 'CampFireB', tileSize, tileSize, 0, 0);
         const light = map.addTilesetImage('light1A', 'light1A', tileSize, tileSize, 0, 0);
-        const layer0 = map.createLayer('Tile Layer 0 - Base', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
-        const layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
-        const layerC = map.createLayer('Tile Layer - Construction', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
-        const layer4 = map.createLayer('Tile Layer 4 - Primes', decorations as Phaser.Tilemaps.Tileset, 0, 0);
-        const layer5 = map.createLayer('Tile Layer 5 - Snags', decorations as Phaser.Tilemaps.Tileset, 0, 0);
-        const layer6 = map.createLayer('Tile Layer 6 - Camps', camps as Phaser.Tilemaps.Tileset, 0, 0);
-        map.createLayer('Tile Layer 2 - Flowers', decorations as Phaser.Tilemaps.Tileset, 0, 0);
-        map.createLayer('Tile Layer 3 - Plants', decorations as Phaser.Tilemaps.Tileset, 0, 0);
-        // const bigTree = map.createLayer('Tile Layer - Big Tree', bigT as Phaser.Tilemaps.Tileset, 0, 0);
-        // const oldTree = map.createLayer('Tile Layer - Old Tree 2', oldT as Phaser.Tilemaps.Tileset, 0, 0);
-        // const tree1 = map.createLayer('Tile Layer - Tree 1', t1 as Phaser.Tilemaps.Tileset, 0, 0);
-        // const tree2 = map.createLayer('Tile Layer - Tree 2', t2 as Phaser.Tilemaps.Tileset, 0, 0);
-        // const tree3 = map.createLayer('Tile Layer - Tree 3', t3 as Phaser.Tilemaps.Tileset, 0, 0);
-        map.createLayer('Tile Layer - Campfire', campfire as Phaser.Tilemaps.Tileset, 0, 0);
-        map.createLayer('Tile Layer - Lights', light as Phaser.Tilemaps.Tileset, 0, 0);
+        let layer0 = map.createLayer('Tile Layer 0 - Base', tileSet as Tilemaps.Tileset, 0, 0);
+        let layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Tilemaps.Tileset, 0, 0);
+        let layerC = map.createLayer('Tile Layer - Construction', tileSet as Tilemaps.Tileset, 0, 0);
+        let layer4 = map.createLayer('Tile Layer 4 - Primes', decorations as Tilemaps.Tileset, 0, 0);
+        let layer5 = map.createLayer('Tile Layer 5 - Snags', decorations as Tilemaps.Tileset, 0, 0);
+        let layer6 = map.createLayer('Tile Layer 6 - Camps', camps as Tilemaps.Tileset, 0, 0);
+        map.createLayer('Tile Layer 2 - Flowers', decorations as Tilemaps.Tileset, 0, 0);
+        map.createLayer('Tile Layer 3 - Plants', decorations as Tilemaps.Tileset, 0, 0);
+        map.createLayer('Tile Layer - Campfire', campfire as Tilemaps.Tileset, 0, 0);
+        map.createLayer('Tile Layer - Lights', light as Tilemaps.Tileset, 0, 0);
         
-        [layer0, layer1, layerC, layer4, layer5, layer6].forEach(layer => {
-            if (layer) {
-                layer.setPosition(0, 0); // Reset position to default
-                layer.setCollisionByProperty({ collides: true });
-                this.matter.world.convertTilemapLayer(layer);
-            };
+        [layer0, layer1, layerC, layer4, layer5, layer6].forEach((layer, index) => {
+            layer?.setCollisionByProperty({ collides: true });
+            this.matter.world.convertTilemapLayer(layer!);
+            if (index < 3) return;
+            layer?.setDepth(3);
         });
-        // [layer0, layer1, layerC, bigTree, oldTree, tree1, tree2, tree3, layer6].forEach(layer => {
-        //     if (layer) {
-        //         layer.setScale(1); // Ensure no scaling issues
-        //         layer.setPosition(0, 0); // Reset position to default
-        //         layer.setCollisionByProperty({ collides: true });
-        //         this.matter.world.convertTilemapLayer(layer);
-        //     };
-        // });
-        map.createLayer('Tile Layer 4 - Primes', decorations as Phaser.Tilemaps.Tileset, 0, 0);
-        map.createLayer('Tile Layer 5 - Snags', decorations as Phaser.Tilemaps.Tileset, 0, 0);
-        map.createLayer('Tile Layer 6 - Camps', camps as Phaser.Tilemaps.Tileset, 0, 0);
-        // bigTree?.setDepth(3);
-        // oldTree?.setDepth(3);
-        // tree1?.setDepth(3);
-        // tree2?.setDepth(3);
-        // tree3?.setDepth(3);
-        layer4?.setDepth(3);
-        layer5?.setDepth(3);
-        layer6?.setDepth(3);
+        map.createLayer('Tile Layer 4 - Primes', decorations as Tilemaps.Tileset, 0, 0);
+        map.createLayer('Tile Layer 5 - Snags', decorations as Tilemaps.Tileset, 0, 0);
+        map.createLayer('Tile Layer 6 - Camps', camps as Tilemaps.Tileset, 0, 0);
         // this.matter.world.createDebugGraphic(); 
 
         const objectLayer = map.getObjectLayer('navmesh');
@@ -197,20 +170,15 @@ export class Game extends Scene {
 
     // =========================== Camera =========================== \\
         camera.startFollow(this.player, false, 0.1, 0.1, );
-        // camera.setLerp(0.1, 0.1);
+        camera.setLerp(0.1, 0.1);
         camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         camera.setRoundPixels(true);
-
         var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
         this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
-
         this.setPostFx(this.settings?.postFx, this.settings?.postFx.enable);
 
-    // =========================== Combat Machine =========================== \\
         this.combatMachine = new CombatMachine(this);
         this.particleManager = new ParticleManager(this);
-
-    // =========================== Action Buttons =========================== \\
         this.target = this.add.sprite(0, 0, "target").setDepth(10).setScale(0.15).setVisible(false);
         this.actionBar = new ActionButtons(this);
 
@@ -236,7 +204,6 @@ export class Game extends Scene {
             stalwart: this?.input?.keyboard?.addKeys('G'),
         }; 
 
-    // =========================== Lighting =========================== \\
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 200, 0.0675, 0.0675); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
         
@@ -370,11 +337,7 @@ export class Game extends Scene {
             this.minimap.setScroll(world.x, world.y);
         });
         this.minimap.ignore(this.minimapBorder);
-
-    // =========================== Small Hud =========================== \\
         this.smallHud = new SmallHud(this);
-
-    // =========================== Event Bus =========================== \\
         EventBus.emit('current-scene-ready', this);
     };
 
@@ -414,25 +377,13 @@ export class Game extends Scene {
     };
 
     gameEvent = (): void => {
-        EventBus.on('ascean', (ascean: Ascean) => {
-            this.ascean = ascean;
-        });
-        EventBus.on('combat', (combat: any) => {
-            this.state = combat;
-        });
-        EventBus.on('game', (game: GameState) => {
-            this.gameState = game;
-        });
-        EventBus.on('reputation', (reputation: Reputation) => {
-            this.reputation = reputation;
-        });
-        EventBus.on('settings', (settings: Settings) => {
-            this.settings = settings;
-        });    
+        EventBus.on('ascean', (ascean: Ascean) => this.ascean = ascean);
+        EventBus.on('combat', (combat: any) => this.state = combat);
+        EventBus.on('game', (game: GameState) => this.gameState = game);
+        EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
+        EventBus.on('settings', (settings: Settings) => this.settings = settings);    
         EventBus.on('enemyLootDrop', (drops: any) => {
-            drops.drops.forEach((drop: Equipment) => {
-                this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop }))
-            });
+            drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
         });    
         EventBus.on('minimap', () => {
             if (this.minimap.visible === true) {
@@ -457,21 +408,11 @@ export class Game extends Scene {
             };
         });
 
-        EventBus.on('equip-sound', () => {
-            this.sound.play('equip', { volume: this.settings.volume });
-        });
-        EventBus.on('unequip-sound', () => {
-            this.sound.play('unequip', { volume: this.settings.volume });
-        });
-        EventBus.on('purchase-sound', () => {
-            this.sound.play('purchase', { volume: this.settings.volume });
-        });
-        EventBus.on('weapon-order-sound', () => {
-            this.sound.play('weaponOrder', { volume: this.settings.volume });
-        });
-        EventBus.on('action-button-sound', () => {
-            this.sound.play('TV_Button_Press', { volume: this?.settings?.volume * 2 });
-        });
+        EventBus.on('equip-sound', () => this.sound.play('equip', { volume: this.settings.volume }));
+        EventBus.on('unequip-sound', () => this.sound.play('unequip', { volume: this.settings.volume }));
+        EventBus.on('purchase-sound', () => this.sound.play('purchase', { volume: this.settings.volume }));
+        EventBus.on('weapon-order-sound', () => this.sound.play('weaponOrder', { volume: this.settings.volume }));
+        EventBus.on('action-button-sound', () => this.sound.play('TV_Button_Press', { volume: this?.settings?.volume * 2 }));
         EventBus.on('music', (on: boolean) => {
             if (on === true && !this.scene.isPaused('Game')) {
                 this.resumeMusic();
@@ -481,7 +422,6 @@ export class Game extends Scene {
         });
         EventBus.on('switch-scene', (data: { current: string, next: string }) => {
             if (data.current !== 'Game') return;
-            // this.scene.sleep(data.current);
             if (this.combat) {
                 this.musicCombat.pause();
                 this.stopCombatTimer();    
@@ -492,7 +432,6 @@ export class Game extends Scene {
             this.scene.launch(data.next, { ascean: this.ascean, combat: this.state, game: this.gameState, settings: this.settings });
         });
         EventBus.on('wake-up', (scene: string) => {
-            // this.scene.wake(scene);
             this.scene.resume(scene);
             if (this.combat) {
                 this.musicCombat.resume();
@@ -579,9 +518,8 @@ export class Game extends Scene {
     };
 
 
-    postFxEvent = (): Phaser.Events.EventEmitter => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
+    postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
-        // console.log(type, val, 'Type and Value') 
         if (type === 'bloom') {
             this.postFxPipeline.setBloomRadius(val);
         };
@@ -698,15 +636,12 @@ export class Game extends Scene {
         this.postFxPipeline.crtWidth = settings.crtWidth;
 
     };
-
     changeScene(): void {
         this.scene.start('GameOver');
     };
-
     getAscean(): void {
         EventBus.emit('request-ascean');
     };
-
     getCombat = (): Combat => {
         EventBus.once('request-combat-ready', (combat: Combat) => {
             this.state = combat;
@@ -714,35 +649,30 @@ export class Game extends Scene {
         EventBus.emit('request-combat');
         return this.state;
     };
-
     getGame(): void {
         EventBus.emit('request-game');
     };
-
     getReputation = (): Reputation => {
         EventBus.emit('request-reputation');
         return this.reputation;
     };
-
     getSettings = (): Settings => {
         EventBus.emit('request-settings');
         return this.settings;
     };
 
     // ================== Combat ================== \\
-
     getEnemy = (id: string): Enemy => {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };
 
-    getWorldPointer = (): Phaser.Math.Vector2 => {
+    getWorldPointer = () => {
         const point = this.cameras.main.getWorldPoint(this.rightJoystick.pointer.x, this.rightJoystick.pointer.y);
         const target = new Phaser.Math.Vector2(point.x, point.y);
         return target;
     };
 
     // ============================ Combat Specials ============================ \\ 
-    
     astrave = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
@@ -862,8 +792,6 @@ export class Game extends Scene {
         const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, worldX, worldY);
         const duration = 2 * distance;
         const rise = 0.5 * distance;
-        const sensorRadius = 25;
-        const sensorBounds = new Phaser.Geom.Circle(worldX, worldY, sensorRadius);
         const rootTween = this.add.tween({
             targets: this.target,
             props: {
@@ -879,17 +807,11 @@ export class Game extends Scene {
                 onStart: () => {
                     this.target.setVisible(true);
                 },    
-                onUpdate: (_tween, target: Phaser.GameObjects.Sprite, key: any, current) => {
+                onUpdate: (_tween, target: GameObjects.Sprite, key: any, current) => {
                     if (key !== 'z') return;
                     target.y += current;
                 },
                 onComplete: () => {
-                    // this.enemies.forEach((enemy: any) => {
-                    //     if (Phaser.Geom.Circle.ContainsPoint(sensorBounds, new Phaser.Geom.Point(enemy.x, enemy.y))) {
-                    //         enemy.isRooted = true;
-                    //         console.log(enemy.enemyID, 'Enemy Rooted');
-                    //     };
-                    // });
                     this.time.addEvent({
                         delay: 3000,
                         callback: () => {
@@ -1065,39 +987,28 @@ export class Game extends Scene {
     showDialog = (dialog: boolean): boolean => EventBus.emit('blend-game', { dialogTag: dialog }); // smallHud: dialog
 
     // ============================ Player ============================ \\
-
     caerenic = (): boolean => EventBus.emit('update-caerenic');
     stalwart = (): boolean => EventBus.emit('update-stalwart');
     useStamina = (value: number): boolean => EventBus.emit('update-stamina', value);
-
-    createTextBorder(text: NewText): Phaser.GameObjects.Graphics {
+    createTextBorder(text: NewText): GameObjects.Graphics {
         const border = this.add.graphics();
         border.lineStyle(4, 0x2A0134, 1);
-        border.strokeRect(
-            text.x - text.width * text.origin.x - 2.5,
-            text.y - text.height * text.origin.y - 2.5, 
-            text.width + 5, 
-            text.height + 5 
-        );
-            
+        border.strokeRect(text.x - text.width * text.origin.x - 2.5,text.y - text.height * text.origin.y - 2.5, text.width + 5, text.height + 5 );
         this.add.existing(border);
         return border;
     };   
-
     enemyUpdate = (): void => {
         const enemies = this.sortEnemies(this.enemies);
         for (let i = 0; i < enemies.length; i++) {
             enemies[i].update();
         };
     };
-
     npcUpdate = (): void => {
         const npcs = this.sortNpcs(this.npcs);
         for (let i = 0; i < npcs.length; i++) {
             npcs[i].update();
         };
     };
-
     playerUpdate = (): void => {
         this.player.update(); 
         this.combatMachine.processor();
@@ -1105,20 +1016,18 @@ export class Game extends Scene {
         this.setCameraOffset();
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };
-
     setCameraOffset = () => {
         if (this.player.flipX === true) {
-            this.offsetX = Math.min(75, this.offsetX + 1.5);
+            this.offsetX = Math.min(125, this.offsetX + 2);
         } else {
-            this.offsetX = Math.max(this.offsetX - 1.5, -75);
+            this.offsetX = Math.max(this.offsetX - 2, -125);
         };
         if (this.player.velocity.y > 0) {
-            this.offsetY = Math.max(this.offsetY - 1, -60);
+            this.offsetY = Math.max(this.offsetY - 1.5, -75);
         } else if (this.player.velocity.y < 0) {
-            this.offsetY = Math.min(60, this.offsetY + 1);
+            this.offsetY = Math.min(75, this.offsetY + 1.5);
         };
     };
-
     sortEnemies = (enemies: Enemy[]): Enemy[] => {
         let sorted = [];
         for (let i = 0; i < enemies.length; i++) {
@@ -1126,7 +1035,6 @@ export class Game extends Scene {
         };
         return sorted;
     };
-
     sortNpcs = (npcs: NPC[]): NPC[] => {
         let sorted = [];
         for (let i = 0; i < npcs.length; i++) {
@@ -1134,7 +1042,6 @@ export class Game extends Scene {
         };
         return sorted;
     };
-
     startCombatTimer = (): void => {
         if (this.combatTimer) {
             this.combatTimer.destroy();
@@ -1150,18 +1057,13 @@ export class Game extends Scene {
             loop: true
         });
     };
-
     stopCombatTimer = (): void => {
         if (this.combatTimer) {
             this.combatTimer.destroy();
-            // this.combatTimer = undefined;
         };
         this.combatTime = 0;
         EventBus.emit('update-combat-timer', this.combatTime);
     };
-
-    // ================== Update ================== \\
-
     update(): void {
         this.playerUpdate();
         this.rightJoystick.update();
@@ -1173,10 +1075,8 @@ export class Game extends Scene {
         };
         this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2)); 
     };
-
     pause(): void {
         this.scene.pause();
-        // if (this.settings.music === false) return;
         if (!this.combat) {
             this.musicBackground.pause();
         } else {
@@ -1185,7 +1085,6 @@ export class Game extends Scene {
     };
     resume(): void {
         this.scene.resume();
-        // console.log(this.settings?.music, 'Settings Music -- Would you **want** to resume?');
         if (this.settings?.music === false) return;
         if (!this.combat) {
             if (this.musicBackground.isPaused) {

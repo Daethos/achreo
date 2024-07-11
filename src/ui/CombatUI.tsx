@@ -9,6 +9,7 @@ import StatusEffect from '../utility/prayer';
 import { PrayerModal } from '../utility/buttons';
 import { GameState } from '../stores/game';
 import StaminaBubble from './StaminaBubble';
+import StaminaModal from '../components/StaminaModal';
 
 interface Props {
     state: Accessor<Combat>;
@@ -19,8 +20,9 @@ interface Props {
 export default function CombatUI({ state, game, stamina }: Props) {
     const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal(false);
-    const [shieldShow, setShieldShow] = createSignal(false);
     const [prayerShow, setPrayerShow] = createSignal(false);
+    const [shieldShow, setShieldShow] = createSignal(false);
+    const [staminaShow, setStaminaShow] = createSignal(false);
     const [playerHealthPercentage, setPlayerHealthPercentage] = createSignal(0); 
 
     createEffect(() => setPlayerHealthPercentage(Math.round((state().newPlayerHealth/state().playerHealth) * 100)));  
@@ -41,14 +43,14 @@ export default function CombatUI({ state, game, stamina }: Props) {
 
     return (
         <div class='playerCombatUi'> 
-            <p class='playerName' style={{ 'z-index': 2 }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
+            <p class='playerName' style={{ color: `${state().isStealth ? '#fdf6d8' : 'gold'}`, 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#444' : '#000'}`, 'z-index': 1 }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
             <div class='center playerHealthBar' style={{ 'z-index': 0 }}>
                 <div class='playerPortrait' style={{ 'font-size': '1.075em', 'font-weight': 700, color: state().isStealth ? '#fdf6d8' : 'purple', 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#000' : '#fdf6d8'}`, 'z-index': 1 }}>{`${Math.round(state().newPlayerHealth)} / ${state().playerHealth} [${playerHealthPercentage()}%]`}</div>
-                <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, 'z-index': -1, width: `100%`, 'background-color': 'red' }}></div>
-                <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, 'z-index': -1, width: `${playerHealthPercentage()}%`, background: 'red',  'background-color': state()?.isStealth ? '#444' : '#ffc700' }}></div>
+                <div class='healthbarPosition' style={{ width: `100%`, 'background-color': 'red' }}></div>
+                <div class='healthbarPosition' style={{ width: `${playerHealthPercentage()}%`, background: 'red',  'background-color': state()?.isStealth ? '#444' : '#ffc700' }}></div>
             </div>
             <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar"/>
-            <StaminaBubble stamina={stamina} />
+            <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} />
             <div class='combatUiWeapon' onClick={() => setShow(show => !show)} style={caerenic(state().isCaerenic) as any}>
                 <img src={state()?.weapons?.[0]?.imgUrl} alt={state()?.weapons?.[0]?.name} />
             </div>
@@ -83,6 +85,11 @@ export default function CombatUI({ state, game, stamina }: Props) {
             </Show>
             <Show when={prayerShow()}>
                 <PrayerModal prayer={effect as Accessor<StatusEffect>} show={prayerShow} setShow={setPrayerShow} />
+            </Show>
+            <Show when={staminaShow()}>
+                <div class='modal' onClick={() => setStaminaShow(!staminaShow())}>
+                    <StaminaModal />
+                </div> 
             </Show>
         </div> 
     );

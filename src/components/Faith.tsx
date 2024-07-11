@@ -21,7 +21,7 @@ export const FAITHS = [{
     origin: 'You have no faith and seek other means to hold yourself together. This does not absolve you of any supernatural machinations, though your aim elsewhere may lead toward a wholly new glory.',
     quote: "And yet perchance you seek to twist adherence in its seams, \n To taste its achre burning at the resin of your dreams.",
     worshipers: 'None',
-    character: 'This does not absolve you of any supernatural machinations, though your aim elsewhere may lead toward a wholly new glory.',
+    character: 'Althorugh this does not absolve you of othernatural machinations, your aim elsewhere may lead toward a wholly new glory.',
     iconography: '../assets/images/godHand.png'
 }]; 
 

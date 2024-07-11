@@ -12,46 +12,35 @@ interface Props {
 
 export default function AsceanImageCard({ ascean, setEquipment, show, setShow }: Props) { 
     function item(rarity: string) {
-        return {
-            border: '0.2em solid ' + getRarityColor(rarity),
-            transform: 'scale(1.1)',
-            'background-color': 'black',
-            'margin-top': '0.25em',
-            'margin-bottom': '0.25em',
-            'padding-bottom': '-0.25em'
-        };
+        return { border: '0.2em solid ' + getRarityColor(rarity), transform: 'scale(1.1)', 'background-color': 'black', 'margin-top': '0.25em', 'margin-bottom': '0.25em', 'padding-bottom': '-0.25em'};
     };
     const div = (eqp: Equipment) => {
-        return (
-            <div onClick={() => info(eqp)} style={item(eqp.rarity as string)}>
+        return <div onClick={() => info(eqp)} style={item(eqp.rarity as string)}>
                 <img src={eqp.imgUrl} alt="item" style={image} />
-            </div>
-        );
+            </div>;
     };
     const image = { width: '100%', height: '100%' };
     function info(item: Equipment) {
         setEquipment(item);
         setShow(!show());
     }; 
-    return (
-        <div class='imageCardGrid' style={{ width: '70%', margin: 'auto' }}>
-            <div class='imageCardLeft'>
-                {div(ascean().weaponOne)}
-                {div(ascean().weaponTwo)}
-                {div(ascean().weaponThree)}
-                {div(ascean().shield)}
-            </div>
-            <div class='imageCardMiddle'>
-                {div(ascean().helmet)}
-                {div(ascean().chest)}
-                {div(ascean().legs)}
-            </div>
-            <div class='imageCardRight'>
-                {div(ascean().amulet)}
-                {div(ascean().ringOne)}
-                {div(ascean().ringTwo)}
-                {div(ascean().trinket)}
-            </div>
-        </div> 
-    );
+    return <div class='imageCardGrid' style={{ width: '70%', margin: 'auto' }}>
+        <div class='imageCardLeft'>
+            {div(ascean().weaponOne)}
+            {div(ascean().weaponTwo)}
+            {div(ascean().weaponThree)}
+            {div(ascean().shield)}
+        </div>
+        <div class='imageCardMiddle'>
+            {div(ascean().helmet)}
+            {div(ascean().chest)}
+            {div(ascean().legs)}
+        </div>
+        <div class='imageCardRight'>
+            {div(ascean().amulet)}
+            {div(ascean().ringOne)}
+            {div(ascean().ringTwo)}
+            {div(ascean().trinket)}
+        </div>
+    </div>;
 };

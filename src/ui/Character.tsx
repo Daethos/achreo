@@ -100,16 +100,9 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
     const [highlighted, setHighlighted] = createSignal<{ item: Equipment | undefined; comparing: boolean; type: string }>({ item: undefined, comparing: false, type: '' });
     const [show, setShow] = createSignal<boolean>(false);
     const [actionShow, setActionShow] = createSignal<boolean>(false);
-    const [currentAction, setCurrentAction] = createSignal({
-        action: ACTIONS[0],
-        index: 0,
-    });
-    const [parryShow, setParryShow] = createSignal<boolean>(false);
+    const [currentAction, setCurrentAction] = createSignal({action: ACTIONS[0],index: 0});
     const [specialShow, setSpecialShow] = createSignal<boolean>(false);
-    const [currentSpecial, setCurrentSpecial] = createSignal({
-        special: SPECIALS[0],
-        index: 0,
-    });
+    const [currentSpecial, setCurrentSpecial] = createSignal({special: SPECIALS[0],index: 0});
     const [inspectModalShow, setInspectModalShow] = createSignal<boolean>(false);
     const [inspectItems, setInspectItems] = createSignal<{ item: Equipment | undefined; type: string; } | any[]>([]);
     const [attrShow, setAttrShow] = createSignal<boolean>(false);
@@ -128,7 +121,6 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
     const [deity, setDeity] = createSignal<any>(undefined);
     const [showRestart, setShowRestart] = createSignal<boolean>(false);
     const [entry, setEntry] = createSignal<any>(undefined);
-
     const dimensions = useResizeListener();
  
     createEffect(() => {
@@ -174,10 +166,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
     };
 
     const currentItemStyle = (rarity: string): JSX.CSSProperties => {
-        return {
-            border: `0.15em solid ${getRarityColor(rarity)}`,
-            'background-color': getBackgroundStyle(),
-        };
+        return {border: `0.15em solid ${getRarityColor(rarity)}`, 'background-color': getBackgroundStyle()};
     };
 
     const checkHighlight = () => {
@@ -209,32 +198,9 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
 
     const createReputationBar = (faction: faction) => {
         return (
-            <div class='skill-bar' style={{
-                'align-items': 'center',
-                'border': '0.1em solid gold', 
-                'border-radius': '0.25em', 
-                'justify-content': 'center',
-                'margin-bottom': '3%',
-                'text-align': 'center', 
-            }}>
-            <p class='skill-bar-text' style={{ 
-                    'color': '#fdf6d8', 
-                    'font-weight': 700, 
-                    'margin': '0 auto',
-                    // 'margin-left': '25%',
-                    'position': 'absolute', 
-                    // 'text-align': 'center',
-                    // 'transform': 'translateX(-50%)',
-                    'text-shadow': '#000 0.1em 0 0.5em', 
-                    'width': '90%', 
-                    'z-index': 1, 
-                }}>{faction.name}: {faction.reputation} / 100</p>
-                <div class='skill-bar-fill' style={{ 
-                    'background-color': 'blue', 
-                    'height': '4vh', 
-                    'overflow': 'hidden', 
-                    'width': `${faction.reputation}%`, 
-                }}></div>
+            <div class='skill-bar'>
+            <p class='skill-bar-text'>{faction.name}: {faction.reputation} / 100</p>
+                <div class='skill-bar-fill' style={{'width': `${faction.reputation}%`}}></div>
             </div>
         );    
     };
@@ -244,32 +210,9 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         const skillCap = ascean().level * 100;
         const skillPercentage = Math.round((skillLevel / skillCap) * 100);
         return (
-            <div class='skill-bar' style={{ 
-                'align-items': 'center',
-                'border': '0.1em solid gold', 
-                'border-radius': '0.25em', 
-                'justify-content': 'center',
-                'margin-bottom': '3%',
-                'text-align': 'center', 
-            }}>
-                <p class='skill-bar-text' style={{ 
-                    'color': '#fdf6d8', 
-                    'font-weight': 700, 
-                    'margin': '0 auto',
-                    // 'margin-left': '25%',
-                    'position': 'absolute', 
-                    // 'text-align': 'center',
-                    // 'transform': 'translateX(-50%)',
-                    'text-shadow': '#000 0.1em 0 0.5em', 
-                    'width': '90%', 
-                    'z-index': 1, 
-                }}>{skill}: {skillLevel} / {skillCap}</p>
-                <div class='skill-bar-fill' style={{ 
-                    'background-color': 'blue', 
-                    'height': '4vh', 
-                    'overflow': 'hidden', 
-                    'width': `${skillPercentage}%`, 
-                }}></div>
+            <div class='skill-bar'>
+                <p class='skill-bar-text'>{skill}: {skillLevel} / {skillCap}</p>
+                <div class='skill-bar-fill' style={{'width': `${skillPercentage}%`}}></div>
             </div>
         );
     };
@@ -445,11 +388,8 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                 <For each={deities}>
                     {(deity: any) => (
                         <div>
-                        <h1 style={{ 'font-size': '1.2em' }}>{deity?.name}</h1>
-                        <h2>Favor: 
-                            {/* <span class='gold'></span> */}
-                            {deity?.favor}
-                        </h2> 
+                            <h1 style={{ 'font-size': '1.2em' }}>{deity?.name}</h1>
+                            <h2>Favor: {deity?.favor}</h2> 
                         </div>
                     )}
                 </For>
@@ -513,15 +453,6 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         await saveSettings(newSettings);
         setSettings(newSettings);
         EventBus.emit('reorder-buttons', { list: newActions, type: 'action' }); 
-    };
-
-    function handleParryButton(e: string) {
-        setParryShow(false);
-        EventBus.emit('blend-combat', { parryGuess: e.toLowerCase() })
-    };
-
-    function handleParryShow(e: string) {
-        setParryShow(true);
     };
 
     async function handleSpecialButton(e: string, i: number) {
@@ -613,7 +544,6 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         };
         try {
             console.log(`Upgrading ${highlighted().item?.name} of ${highlighted().item?.rarity} quality.`);
-            // setLoadingContent(`Forging A Greater ${highlighted().item?.name}`);
             const matches = dragAndDropInventory().filter((item) => item.name === highlighted().item?.name && item?.rarity === highlighted().item?.rarity);
             const data = {
                 asceanID: ascean()._id,
@@ -624,11 +554,8 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                 inventoryType: inventoryType(),
                 upgradeMatches: matches,
             };
-            console.log(data, "Upgrading Item?");
-
             EventBus.emit('upgrade-item', data);
             EventBus.emit('play-equip');
-
             setForgeModalShow(false);
             setCanUpgrade(false);
             setInspectModalShow(false);
@@ -740,7 +667,6 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                         <p style={{ color: 'gold', 'font-size': '1.25em' }}>Feedback</p>
                         <Form class='verticalCenter' style={{ 'text-wrap': 'balance' }}>
                         <Form.Group class="mb-3" controlId="formBasicEmail">
-                            {/* <Form.Control as="textarea" placeholder="This game stinks!" /> */}
                             <Form.Text class="text-muted">
                                 Warning: This will prompt your browser to open up a mail service of your choice.
                             </Form.Text>
@@ -1035,8 +961,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                             </div>
                         </Match>
                     </Switch>
-                        <button class='highlight cornerTR' style={{ 'background-color': 'red', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} 
-                        onClick={() => setShowRestart(true)}>
+                        <button class='highlight cornerTR' style={{ 'background-color': 'red', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => setShowRestart(true)}>
                             <p>Restart</p>
                         </button>
                 </div>
@@ -1050,44 +975,26 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         </div>
         {/* <<----- WINDOW THREE ----->> */}
         <Show when={(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) || settings().asceanViews !== VIEWS.SETTINGS}>
-            <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? {
-                height: `${dimensions().HEIGHT * 0.8}px`, left: '66.5vw' 
-            } : { 
-                height: `${dimensions().HEIGHT * 0.31}px`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 'margin-top': '129%'
-            }}>
+            <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? {height: `${dimensions().HEIGHT * 0.8}px`, left: '66.5vw' } : { height: `${dimensions().HEIGHT * 0.31}px`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 'margin-top': '129%' }}>
                 { settings().asceanViews === VIEWS.CHARACTER ? (
                     <div class='center wrap'> 
                         {createCharacterInfo(settings()?.characterViews)}
                     </div>
                 ) : settings().asceanViews === VIEWS.INVENTORY ? ( 
-                    <InventoryPouch ascean={ascean} setRingCompared={setRingCompared} highlighted={highlighted} setHighlighted={setHighlighted} setInventoryType={setInventoryType} inventoryType={inventoryType}
-                        setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} 
-                        scaleImage={scaleImage} setScaleImage={setScaleImage}
-                    />
+                    <InventoryPouch ascean={ascean} setRingCompared={setRingCompared} highlighted={highlighted} setHighlighted={setHighlighted} setInventoryType={setInventoryType} inventoryType={inventoryType} setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} scaleImage={scaleImage} setScaleImage={setScaleImage} />
                 ) : settings().asceanViews === VIEWS.SETTINGS ? (
                     <div style={{ 'scrollbar-width': "none", overflow: 'scroll' }}> 
                         <div class='center' style={{ padding: '5%', 'font-size': '0.75em' }}>
-                            {/* Various kinds of Information on Aspects of the Game. */}
                             <SettingSetter setting={settings} />
                         </div>
                     </div>
                 ) : ( 
                     <div style={{ 'scrollbar-width': 'none', overflow: 'scroll' }}>
-                        <div class='center' style={{ padding: '2.5%' }}>
-                            { settings().faithViews === FAITH.DEITIES ? (
-                               createDeityScroll()
-                            ) : (
-                                journalScroll()
-                            ) }
-                        </div>
+                        <div class='center' style={{ padding: '2.5%' }}>{settings().faithViews === FAITH.DEITIES ? (createDeityScroll()) : (journalScroll())}</div>
                     </div>
                  ) }
             </div>
         </Show>
-
-        {/* <button class='highlight cornerTR' style={{ transform: 'scale(0.85)', position: 'fixed', top: '-1.5%', right: '-0.5%' }} onClick={() => EventBus.emit('show-player')}>
-            <p style={font('0.5em')}>X</p>
-        </button> */}
         <Show when={levelUpModalShow()}>
             <LevelUp asceanState={asceanState} show={levelUpModalShow} setShow={setLevelUpModalShow} />
         </Show>
@@ -1098,7 +1005,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         </Show>
         <Show when={actionShow()}>
             <div class='modal' onClick={() => setActionShow(!actionShow())}>
-                <ActionButtonModal currentAction={currentAction} actions={ACTIONS}  handleAction={handleActionButton} handleParry={handleParryShow} /> 
+                <ActionButtonModal currentAction={currentAction} actions={ACTIONS}  handleAction={handleActionButton} /> 
             </div>
         </Show>
         <Show when={attrShow()}>
@@ -1115,12 +1022,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
             <div class='modal' onClick={() => setShowFaith(!showFaith())}>
                 <FaithModal faith={ascean().faith} />
             </div>
-        </Show>
-        <Show when={parryShow()}> 
-            <div class='modal'>
-                <ActionButtonModal currentAction={currentAction} actions={ACTIONS.filter(actions => actions !== 'Dodge')}  handleAction={handleParryButton} /> 
-            </div>
-        </Show>
+        </Show> 
         <Show when={specialShow()}>
             <div class='modal' onClick={() => setSpecialShow(!specialShow())}>
                 <ActionButtonModal currentAction={currentSpecial} actions={SPECIALS} handleAction={handleSpecialButton} special={true} /> 
@@ -1177,15 +1079,10 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
             <div class='modal'>
 
             <div class='border superCenter creature-heading' style={{ width: '50%' }}>
-            <h1 class='center' style={{ color: 'red', margin: '5%' }}>
-                Restart Game
-            </h1>
-            <p class='center' style={{ 'margin-bottom': '15%' }}>
-            Do you with to go back to the Main Menu?
-            </p>
+            <h1 class='center' style={{ color: 'red', margin: '5%' }}>Restart Game</h1>
+            <p class='center' style={{ 'margin-bottom': '15%' }}>Do you with to go back to the Main Menu?</p>
             <button class='cornerBL highlight' style={{ color: 'gold' }} onClick={() => setShowRestart(false)}>No</button>
             <button class='cornerBR highlight' style={{ color: 'red' }} onClick={() => document.location.reload()}>Yes</button>
-            {/* EventBus.emit('destroy-game') */}
             </div>
             </div> 
         </Show>

@@ -4,7 +4,6 @@ import { useResizeListener } from '../utility/dimensions';
 import { Attributes } from '../utility/attributes';
 import { CombatAttributes } from '../utility/combat';
 import Ascean from '../models/ascean';
-
 const font = { 'font-size': '1em', margin: '0' };
 
 export default function AttributeModal({ attribute }: { attribute: any }) {
@@ -44,13 +43,8 @@ export function AttributeCompiler({ ascean, setAttribute, show, setShow }: { asc
             console.warn(err);
         };
     };
-    createEffect(() => {
-        compiler();    
-    });
-    const inline = {
-        width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`,
-        display: 'inline-block',
-    };
+    createEffect(() => compiler());
+    const inline = { width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block' };
     return (
         <div style={{ width: '100%', display: 'inline-flex' }}>
             <div style={inline}>

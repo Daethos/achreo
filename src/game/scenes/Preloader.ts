@@ -4,6 +4,7 @@ import NewText from '../../phaser/NewText'
 import Entity from "../../entities/Entity";
 import ParticleManager from "../../phaser/ParticleManager";
 import { EventBus } from '../EventBus';
+import { audio, image } from '../../utility/scene';
 
 export class Preloader extends Scene {
     assets: any;
@@ -23,7 +24,7 @@ export class Preloader extends Scene {
         super('Preloader');
         this.centerX = window.innerWidth / 2;
         this.centerY = window.innerHeight / 2;
-        this.height = 36;
+        this.height = 40;
         this.width = this.centerX * 1.5;
     };
 
@@ -38,87 +39,16 @@ export class Preloader extends Scene {
         this.load.plugin('rexglowfilterpipelineplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexglowfilterpipelineplugin.min.js', true);
         this.load.plugin('rextexttypingplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rextexttypingplugin.min.js', true);
         this.load.scenePlugin({ key: 'rexuiplugin', url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', sceneKey: 'rexUI' });
-     
-        this.load.audio('cymbal', '../assets/sounds/cymbal-long-2.wav');
-        this.load.audio('background', '../assets/sounds/background.mp3');
-        this.load.audio('combat', '../assets/sounds/combat.mp3');
-        this.load.audio('death', '../assets/sounds/death-sound.mp3');
-        this.load.audio('blink', '../assets/sounds/blink.wav');
-        this.load.audio('caerenic', '../assets/sounds/caerenic.wav');
-        this.load.audio('consume', '../assets/sounds/consume.wav');
-        this.load.audio('stalwart', '../assets/sounds/stalwart.mp3');
-        this.load.audio('stealth', '../assets/sounds/stealth.mp3');
-        this.load.audio('prayer', '../assets/sounds/religious.mp3');
-        this.load.audio('unequip', '../assets/sounds/unequip.wav');
-        this.load.audio('equip', '../assets/sounds/equip.wav');
-        this.load.audio('purchase', '../assets/sounds/buy_sell.wav');
-        this.load.audio('treasure', '../assets/sounds/treasure.mp3');
-        this.load.audio('action-button', '../assets/sounds/action-button.mp3');
-        this.load.audio('spooky', '../assets/sounds/daethic-magic.mp3');
-        this.load.audio('righteous', '../assets/sounds/religious.mp3');
-        this.load.audio('wild', '../assets/sounds/wild-magic.mp3');
-        this.load.audio('earth', '../assets/sounds/earth-magic.wav');
-        this.load.audio('fire', '../assets/sounds/fire-magic.mp3');
-        this.load.audio('frost', '../assets/sounds/frost-magic.mp3');
-        this.load.audio('lightning', '../assets/sounds/lightning-magic.wav');
-        this.load.audio('wind', '../assets/sounds/wind-magic.mp3');
-        this.load.audio('sorcery', '../assets/sounds/sorcery-magic.mp3');
-        this.load.audio('bow', '../assets/sounds/bow-attack.mp3');
-        this.load.audio('slash', '../assets/sounds/slash-attack.mp3');
-        this.load.audio('blunt', '../assets/sounds/blunt-attack.mp3');
-        this.load.audio('pierce', '../assets/sounds/sword-stab.mp3');
-        this.load.audio('dodge', '../assets/sounds/dodge.wav');
-        this.load.audio('roll', '../assets/sounds/roll-success.mp3');
-        this.load.audio('parry', '../assets/sounds/counter-success.mp3');
-        this.load.audio('weaponOrder', '../assets/sounds/weapon-order.mp3');
-        this.load.audio('phenomena', '../assets/sounds/phenomena.mp3');
-        this.load.audio('TV_Turn_On', '../assets/sounds/TV_Turn_On.wav');
-        this.load.audio('TV_Button_Press', '../assets/sounds/TV_Button_Press.wav');
-        this.load.audio('combat-round', '../assets/sounds/combat-round.mp3');
-        this.load.audio('alien-whoosh', '../assets/sounds/alien-whoosh.mp3');
-        this.load.audio('absorb', '../assets/sounds/absorb.wav');
-        this.load.audio('shield', '../assets/sounds/16_Atk_buff_04.wav');
-        this.load.audio('freeze', '../assets/sounds/freeze.wav');
-        this.load.audio('dungeon', '../assets/sounds/dungeon.mp3');
-        this.load.audio('debuff', '../assets/sounds/21_Debuff_01.wav');
-        this.load.audio('howl', '../assets/sounds/howl.wav');
-        this.load.audio('scream', '../assets/sounds/scream.wav');
-        this.load.audio('leap', '../assets/sounds/leap.wav');
-
+        for (let i = 0; i < audio.length; i++) {
+            this.load.audio(audio[i].key, audio[i].value);
+        };
         this.assets = sanitize();
         this.assets.forEach((asset: { sprite: string; imgUrl: string; }) => {
             this.load.image(asset.sprite, asset.imgUrl);
         });
-
-        this.load.image('cursor', '../assets/images/cursor.png');
-        this.load.image('target', '../assets/gui/target_1.png');
-        this.load.image('AncientForestMain', '../assets/gui/AncientForestMainLev.png');
-        this.load.image('AncientForestDecorative', '../assets/gui/AncientForestDecorative.png');
-        this.load.image('Camp_Graves', '../assets/gui/Camp_Graves.png');
-        this.load.image('DeepCaveMainLev', '../assets/gui/MainLev.png');
-        this.load.image('big_tree', '../assets/gui/big_tree.png');
-        this.load.image('old_tree2', '../assets/gui/old_tree2.png');
-        this.load.image('tree1', '../assets/gui/tree1.png');
-        this.load.image('tree2', '../assets/gui/tree2.png');
-        this.load.image('tree3', '../assets/gui/tree3.png');
-        this.load.image('CampFireB', '../assets/gui/CampFireB.png');
-        this.load.image('light1A', '../assets/gui/light1A.png');
-        this.load.image('closed', '../assets/images/closed.png');
-        this.load.image('open', '../assets/images/open.png');
-        this.load.image('caerenic', '../assets/images/caerenic.png');
-        this.load.image('stalwart', '../assets/images/stalwart.png');
-        this.load.image('minimap', '../assets/images/minimap.png');
-        this.load.image('pause', '../assets/images/pause.png');
-        this.load.image('stealth', '../assets/images/stealth.png');
-        this.load.image('strafe', '../assets/images/strafe.png');
-        this.load.image('info', '../assets/images/info.png');
-        this.load.image('settings', '../assets/images/settings.png');
-        this.load.image('logs', '../assets/images/logs.png');
-        this.load.image('dialog', '../assets/images/dialog.png');
-        this.load.image('loot', '../assets/images/loot.png');
-        this.load.image('cursor-reset', '../assets/images/cursor-reset.png');
-        this.load.image('player-castbar', '../assets/gui/player-castbar.png');
-
+        for (let i = 0; i < image.length; i++) {
+            this.load.image(image[i].key, image[i].value);
+        };
         this.createLoadingBar();
     };
 
@@ -139,21 +69,11 @@ export class Preloader extends Scene {
     }; 
 
     createLoadingBar() {
-        this.title = new NewText(
-            this, this.centerX, this.centerY / 2, 'Loading Game', 'subtitle',
-            0.5
-        );
-
-        this.txt_progress = new NewText(
-            this, this.centerX, this.centerY / 0.85, 'Loading...', 'preload',
-            { x: 0.5, y: 1 }
-        );
-        this.txt_file = new NewText(
-            this, this.centerX, this.centerY / 0.55, '', 'play',
-            { x: 0.5, y: 1 }
-        );
+        this.title = new NewText(this, this.centerX, this.centerY / 2, 'Loading Game', 'subtitle', 0.5);
+        this.txt_progress = new NewText(this, this.centerX, this.centerY / 0.975, 'Loading...', 'preload', { x: 0.5, y: 1 });
+        this.txt_file = new NewText( this, this.centerX, this.centerY / 0.625, '', 'play', { x: 0.5, y: 1 });
         let x = this.centerX - (this.width / 2);
-        let y = this.centerY / 0.8;
+        let y = this.centerY / 0.9;
         this.progress = this.add.graphics({ x: x, y: y });
         this.border = this.add.graphics({ x: x, y: y });
         this.borderBorder = this.add.graphics({ x: x, y: y });

@@ -1,66 +1,41 @@
-import Phaser from 'phaser';
-import { Setter, Show, createEffect, createSignal } from 'solid-js';
-import AsceanBuilder from './components/AsceanBuilder';
-import { AsceanView } from './components/AsceanView';
-import { MenuAscean } from './components/MenuAscean';
-import { Preview } from './components/Preview';
+import { Setter, Show, createEffect, createSignal, lazy, Suspense } from 'solid-js';
+import { Scene } from 'phaser';
+import PhaserGame from'./game/PhaserGame';
 import { Game } from './game/scenes/Game';
-import { PhaserGame } from './game/PhaserGame';
 import { useResizeListener } from './utility/dimensions';
 import Settings, { initSettings } from './models/settings';
-import { LANDSCAPE_SCREENS, Menu, SCREENS } from './utility/screens';
+import { initMenu, LANDSCAPE_SCREENS, Menu, SCREENS } from './utility/screens';
 import Ascean, { createAscean } from './models/ascean';
-import { CharacterSheet, Compiler, asceanCompiler } from './utility/ascean';
+import { CharacterSheet, Compiler, asceanCompiler, initCharacterSheet } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
-import type { IRefPhaserGame } from './game/PhaserGame';
 import { EventBus } from './game/EventBus';
 import { allEquipment, deleteAscean, getAscean, getAsceans, getInventory, getReputation, getSettings, populate, saveTutorial, scrub, updateReputation, updateSettings } from './assets/db/db'; 
-import GameToast from './ui/GameToast';
-import { Puff } from 'solid-spinner';
 import { TIPS } from './utility/tips';
 import { Reputation, initReputation } from './utility/player';
+import type { IRefPhaserGame } from './game/PhaserGame';
+// import { Puff } from 'solid-spinner';
+
+const AsceanBuilder = lazy(async () => await import('./components/AsceanBuilder'));
+const AsceanView = lazy(async () => await import('./components/AsceanView'));
+const MenuAscean = lazy(async () => await import('./components/MenuAscean'));
+const Preview = lazy(async () => await import('./components/Preview'));
+const GameToast = lazy(async () => await import('./ui/GameToast'));
 
 export default function App() {
-    const [startGame, setStartGame] = createSignal(false);
-    const [ascean, setAscean] = createSignal<Ascean>(undefined as unknown as Ascean);
-    const [settings, setSettings] = createSignal(initSettings);
-    const [reputation, setReputation] = createSignal(initReputation);
-    const [menu, setMenu] = createSignal<Menu>({
-        asceans: [] as Ascean[] | [],  
-        characterCreated: false, 
-        choosingCharacter: false,   
-        creatingCharacter: false,
-        gameRunning: false,
-        loaded: false,
-        loading: true,
-        screen: SCREENS.CHARACTER.KEY,
-        deleteModal: false,
-        playModal: false,
-    });
-    const [newAscean, setNewAscean] = createSignal<CharacterSheet>({
-        name: 'Stranger', // Dorien Caderyn
-        description: 'Commoner From Elsewhere And Otherlands Unknown', // Prince of the Daethic Kingdom
-        sex: 'Man',
-        origin: "Ashtre", // Notheo
-        constitution: 16, // 12
-        strength: 14, // 16
-        agility: 10,
-        achre: 10,
-        caeren: 13, // 12
-        kyosir: 10, // 13
-        mastery: 'constitution',
-        faith: 'Adherent',
-        preference: 'Plate-Mail',
-    });
-    const [scene, setScene] = createSignal<string>('');
-    const dimensions = useResizeListener();
     const [alert, setAlert] = createSignal({ header: '', body: '', delay: 0, key: '' });
+    const [ascean, setAscean] = createSignal<Ascean>(undefined as unknown as Ascean);
+    const [menu, setMenu] = createSignal<Menu>(initMenu);
+    const [newAscean, setNewAscean] = createSignal<CharacterSheet>(initCharacterSheet);
+    const [reputation, setReputation] = createSignal(initReputation);
+    const [scene, setScene] = createSignal<string>('');
+    const [settings, setSettings] = createSignal(initSettings);
     const [show, setShow] = createSignal<boolean>(false);
+    const [startGame, setStartGame] = createSignal(false);
+    const dimensions = useResizeListener();
     let phaserRef: IRefPhaserGame;
     let tips: string | number | NodeJS.Timeout | undefined =  undefined;
-
     createEffect(() => fetchAsceans());
-
+    const currentScene = (scene: Scene) => setScene(scene.scene.key);
     function destroyGame(): void {
         try {
             setMenu({ ...menu(), loaded: false }); // choosingCharacter: true,
@@ -74,7 +49,6 @@ export default function App() {
             console.warn('Error destroying Game:', err);
         };
     };
-    
     function fetchAsceans(): void {
         const fetch = async () => {
             try {
@@ -87,18 +61,12 @@ export default function App() {
                 const pop = await Promise.all(res.map(async (asc: Ascean) => await populate(asc)));
                 const hyd = pop.map((asc: Ascean) => asceanCompiler(asc)).map((asc: Compiler) => { return { ...asc.ascean, weaponOne: asc.combatWeaponOne, weaponTwo: asc.combatWeaponTwo, weaponThree: asc.combatWeaponThree }});
                 setMenu({ ...menu(), asceans: hyd, loading: false, loaded: true, choosingCharacter: true }); // choosingCharacter: true
-                if (hyd.length === 1) {
-                    viewAscean(hyd[0]._id);
-                };
             } catch (err: any) {
                 console.warn('Error fetching Asceans:', err);
             };
         };
         fetch();
     };
- 
-    const currentScene = (scene: Phaser.Scene) => setScene(scene.scene.key);
-
     function menuOption(option: string): void {
         switch (option) {
             case 'createCharacter':
@@ -111,16 +79,15 @@ export default function App() {
                 break;
         };
     };
-
     async function createCharacter(character: CharacterSheet): Promise<void> {
         const res = await createAscean(character);
         const pop = await populate(res);
         const beast = asceanCompiler(pop);
         const menuAscean = menu()?.asceans?.length > 0 ? [...menu()?.asceans, beast?.ascean] : [beast?.ascean];
         setAscean(beast?.ascean as Ascean);
-        setMenu({ ...menu(), asceans: menuAscean as Ascean[], creatingCharacter: false });
+        setMenu({ ...menu(), asceans: menuAscean as Ascean[], creatingCharacter: false, screen: SCREENS.CHARACTER.KEY });
+        setNewAscean(initCharacterSheet);
     };
-
     async function deleteCharacter(id: string | undefined): Promise<void> {
         try {
             const newAsceans = menu()?.asceans?.filter((asc: Ascean) => asc._id !== id);
@@ -131,7 +98,6 @@ export default function App() {
             console.warn('Error deleting Ascean:', err);
         };
     };
-
     async function fetchAscean(id: string): Promise<void> {
         try {
             const asc = await getAscean(id);
@@ -144,7 +110,6 @@ export default function App() {
             console.warn('Error fetching Ascean:', err);
         };
     };
-
     async function loadAscean(id: string): Promise<void> {
         try {
             setStartGame(true);
@@ -159,22 +124,17 @@ export default function App() {
             const set = await getSettings(id);
             setReputation(rep);
             setSettings(set);
-            if (set.difficulty.tidbits === true) {
-                setTips(true);
-            };
+            if (set.difficulty.tidbits === true) setTips(true);
             EventBus.emit('preload-ascean', id);
         } catch (err: any) {
             console.warn('Error loading Ascean:', err);
         };
     };
-
     const loadingAscean = () => EventBus.emit('enter-game');
-
     const makeToast = (header: string, body: string, delay = 3000, key = ''): void => {
         setAlert({ header, body, delay, key });
         setShow(true);    
     };
-
     const setTips = (on: boolean): void => {
         if (on) {
             const interval: number = 1000 * 60 * 3; // 3 minutes
@@ -187,7 +147,6 @@ export default function App() {
             clearInterval(tips);
         };
     };
-    
     function togglePause(pause: boolean): void {
         const scene = phaserRef.scene as Game;
         if (scene) {
@@ -199,15 +158,8 @@ export default function App() {
         };
         EventBus.emit('toggle-pause', pause);
     };
-
-    async function quickAscean(vaEsai: Ascean): Promise<void> {
-        try {
-            setAscean(vaEsai);
-        } catch (err: any) {
-            console.warn('Error saving Ascean:', err);
-        };
-    };
-
+    const quickAscean = (a: Ascean): Ascean => setAscean(a);
+    
     async function saveAscean(vaEsai: any): Promise<void> {
         try {
             const save = await updateAscean(vaEsai);
@@ -222,7 +174,6 @@ export default function App() {
             console.warn('Error saving Ascean:', err);
         };
     };
-
     async function silentSave(vaEsai: Ascean): Promise<void> {
         try {
             await scrub(vaEsai);
@@ -230,7 +181,6 @@ export default function App() {
             console.warn('Error saving Ascean:', err);
         };
     };
-
     async function saveSettings(set: Settings): Promise<void> {
         try {
             await updateSettings(set);
@@ -239,7 +189,6 @@ export default function App() {
             console.warn('Error saving Settings:', err);
         };
     };
-
     const updateAscean = async (vaEsai: Ascean): Promise<void> => {
         try {
             const save = await scrub(vaEsai);
@@ -254,7 +203,6 @@ export default function App() {
             console.warn('Error updating Ascean:', err);
         };
     };
-
     const updateRep = async (rep: Reputation): Promise<void> => {
         try {
             const success = await updateReputation(rep);
@@ -264,7 +212,6 @@ export default function App() {
             console.warn('Error updating Reputation:', err);
         };
     };
-
     async function viewAscean(id: string): Promise<void> {
         if (ascean()?._id === id) {
             setMenu({ ...menu(), choosingCharacter: false });
@@ -279,7 +226,6 @@ export default function App() {
         setReputation(rep);
         setSettings(set);
     };
-
     function enterMenu(): void {
         if (menu()?.asceans?.length > 0) {
             setMenu({ ...menu(), choosingCharacter: true, loaded: true });
@@ -287,14 +233,12 @@ export default function App() {
             setMenu({ ...menu(), loaded: true });
         };
     };
-
     function switchScene(next: string): void {
         setShow(false);
-        const scene = phaserRef.scene as Phaser.Scene;
+        const scene = phaserRef.scene as Scene;
         console.log('Switching Scene from ', scene.scene.key, ' to: ', next);
         EventBus.emit('switch-scene', { current: scene.scene.key, next });
     };
-
     const actions = {
         'Enter Tent': () => switchScene('Tent'),
         'Close': () => setShow(false),
@@ -302,7 +246,6 @@ export default function App() {
         'Pause': () => togglePause(true),
         'Resume': () => togglePause(false),
     };
-
     usePhaserEvent('destroy-game', destroyGame);
     usePhaserEvent('alert', (payload: { header: string, body: string, delay?: number, key?: string }) => makeToast(payload.header, payload.body, payload.delay, payload.key));
     usePhaserEvent('set-tips', setTips);
@@ -324,7 +267,7 @@ export default function App() {
         await saveTutorial(ascean()?._id as string, 'intro');
         await fetchAscean(ascean()?._id as string);
 
-        const scene = phaserRef.scene as Phaser.Scene; // 'intro'
+        const scene = phaserRef.scene as Scene; // 'intro'
         scene.scene.stop('Intro');
         scene.scene.wake('Game');
         const game = scene.scene.get('Game') as Game;
@@ -332,7 +275,7 @@ export default function App() {
         EventBus.emit('current-scene-ready', game);
     });
     usePhaserEvent('sleep-scene', (key: string) => {
-        const scene = phaserRef.scene as Phaser.Scene;
+        const scene = phaserRef.scene as Scene;
         const game = scene.scene.get('Game') as Game;
         game.musicBackground.pause();
         scene.scene.sleep(key);
@@ -347,9 +290,13 @@ export default function App() {
                 {menu().creatingCharacter ? (
                     <div id='overlay' class='superCenter'>
                     <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION === 'landscape'}>
-                        <Preview newAscean={newAscean} />
+                        <Suspense fallback={'Loading...'}>
+                            <Preview newAscean={newAscean} />
+                        </Suspense>
                     </Show>
-                    <AsceanBuilder newAscean={newAscean} setNewAscean={setNewAscean} menu={menu} />
+                    <Suspense fallback={'Loading...'}>
+                        <AsceanBuilder newAscean={newAscean} setNewAscean={setNewAscean} menu={menu} />
+                    </Suspense>
                     <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
                         <>
                         { (SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV !== SCREENS.COMPLETE.KEY) && 
@@ -396,14 +343,18 @@ export default function App() {
                     </div>
                 ) : menu()?.choosingCharacter ? ( // menu().asceans.length > 0
                     <div id="overlay" class='superCenter'>
-                        <MenuAscean menu={menu} viewAscean={viewAscean} loadAscean={loadAscean} />
+                        <Suspense fallback={'Loading...'}>
+                            <MenuAscean menu={menu} viewAscean={viewAscean} loadAscean={loadAscean} />
+                        </Suspense>
                         <Show when={menu()?.asceans?.length < 3}>
                             <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'black' }}>Create Character</button>
                         </Show>
                     </div>
                 ) : ascean() ? (
                     <>
-                        <AsceanView ascean={ascean} />
+                        <Suspense fallback={'Loading...'}>
+                            <AsceanView ascean={ascean} />
+                        </Suspense>
                         <Show when={menu()?.asceans?.length > 0}>
                             <button class='highlight cornerTL' onClick={() => setMenu({ ...menu(), choosingCharacter: true })} style={{ 'background-color': 'black' }}>Main Menu</button> 
                         </Show>
@@ -415,39 +366,31 @@ export default function App() {
                                 <button class='highlight superCenter' onClick={() => deleteCharacter(ascean()?._id)} style={{ color: 'red', margin: 0, padding: '1em', width: 'auto', 'font-size': '1.5em', 'font-weight': 700, 'border-radius': '0' }}>Permanently Delete {ascean()?.name}?</button>
                                 <div class='gold verticalBottom super' style={{ 'margin-bottom': '10%' }}>[This action is irreversible. You may click anywhere to cancel.]</div>
                             </div>
-                        </Show>
-                        <Show when={show()}>
-                            <div class='modal' style={{ background: 'rgba(0, 0, 0, 1)' }}>
-                                <div class='superCenter center' style={{ "z-index": 1 }}><Puff color="gold" /></div>
-                            </div>
-                        </Show>
+                        </Show> 
                         <button class="highlight cornerBL" style={{ 'background-color': 'black' }} onClick={() => setMenu({ ...menu(), deleteModal: true })}>Delete {ascean()?.name.split(' ')[0]}</button>
                         <button class='highlight cornerBR' style={{ 'background-color': 'black' }} onClick={() => loadAscean(ascean()?._id)}>Enter Game</button>
                     </>
                 ) : ( 
-                    <div>
+                    <Suspense fallback={'Loading...'}>
                     <div class="cornerTL super">The Ascean v0.0.1</div>
-                    <Show when={menu().loaded}>
-                    <div class='superCenter' style={{ 'font-family': 'Cinzel Regular' }}>
-                        <div class='center' style={{ 'font-size': '2.5em' }}>
-                            The Ascean<br /> 
-                            { menu()?.asceans?.length > 0 ? (
-                                <button class='center highlight' style={{ 'border-radius': '0.5em' }} onClick={() => menuOption('chooseCharacter')}>Main Menu</button>
-                            ) : (
-                                <button class='center highlight' style={{ 'border-radius': '0.5em' }} onClick={() => menuOption('createCharacter')}>Create Character</button>
-                            ) }
+                    <Show when={menu().loaded} fallback={'Loading...'}>
+                    <div class='superCenter cinzel'>
+                        <div class='center title'>The Ascean<br /> 
+                            <button class='center highlight' onClick={() => menuOption('createCharacter')}>Create Character</button>
                         </div>
                     </div>
                     </Show>
-                    </div>
+                    </Suspense>
                 )}
             </>}>
                 <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} scene={scene} />
             </Show>
             <Show when={show()}>
-                <div class='cornerBL realize' style={{ width: '30%', 'z-index': 1 }}>
-                    <GameToast actions={actions} show={show} setShow={setShow} alert={alert} setAlert={setAlert as Setter<{ header: string; body: string; delay: number; key?: string; }>} />
-                </div>
+                <Suspense fallback={'Loading...'}>
+                    <div class='cornerBL realize' style={{ width: '30%', 'z-index': 1 }}>
+                        <GameToast actions={actions} show={show} setShow={setShow} alert={alert} setAlert={setAlert as Setter<{ header: string; body: string; delay: number; key?: string; }>} />
+                    </div>
+            </Suspense>
             </Show>
         </div>
     );

@@ -7,7 +7,7 @@ interface IProps {
     viewAscean: (asc: string) => void;
     loadAscean: (id: string) => Promise<void>;
 };
-export const MenuAscean = ({ menu, viewAscean, loadAscean }: IProps) => {
+export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
     const dimensions = useResizeListener();
     const shortDescription = (desc: string): string => {
         const newDesc = desc.split(' ').slice(0, 3).join(' ') + (desc.length > 4 ? '...' : '');

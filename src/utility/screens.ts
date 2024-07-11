@@ -73,3 +73,16 @@ export type Menu = {
     deleteModal: boolean,
     playModal: boolean,
 }; 
+
+export const initMenu: Menu = {
+    asceans: [] as Ascean[] | [],  
+    characterCreated: false, 
+    choosingCharacter: false,   
+    creatingCharacter: false,
+    gameRunning: false,
+    loaded: false,
+    loading: true,
+    screen: SCREENS.CHARACTER.KEY,
+    deleteModal: false,
+    playModal: false
+};

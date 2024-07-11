@@ -5,9 +5,7 @@ import Equipment from '../models/equipment';
 import { useResizeListener } from './dimensions';
 import StatusEffect from './prayer';
 import { EventBus } from '../game/EventBus';
-
 const specials = ['Avarice', 'Dispel', 'Denial', 'Silence']; // Slow, Fear, Confuse, Charm
-
 const specialDescription = {
     'Avarice': 'Increases the amount of experience and gold gained.',
     'Dispel': 'Removes the last prayer affecting the enemy.',
@@ -37,7 +35,7 @@ export function BackForth({ id, left, right, menu, setMenu, createCharacter, new
     );
 };
 
-export function StaticButton({ style, text, callback, textStyle, disabled = false, background = undefined }: { style: any, text: string, callback: () => void, textStyle: any, disabled?: boolean, background?: string }) {
+export function StaticButton({ text, callback, textStyle, disabled = false }: { text: string, callback: () => void, textStyle: any, disabled?: boolean }) {
     return (
         <button onClick={callback} disabled={disabled} class="button">
             <div style={textStyle}>{text}</div>
@@ -45,17 +43,15 @@ export function StaticButton({ style, text, callback, textStyle, disabled = fals
     );
 };
 
-
-export function DynamicButton({ style, text, callback, opacity, setOpacity, left, right }: { style: any, text: string, callback: () => void, opacity: number, setOpacity: (opacity: number) => void, left: boolean, right: boolean }) {
+export function DynamicButton({ style, text, callback, opacity, left }: { style: any, text: string, callback: () => void, opacity: number, left: boolean }) {
     return (
         <button class={left === true ? 'button cornerBL' : 'button cornerBR'} onClick={callback} style={{ opacity: opacity }}>
             <div>{text}</div>
         </button>
     );
 };
-
                            
-export function ActionButtonModal({ currentAction, actions, handleAction, handleParry, special }: { currentAction: Accessor<any>, actions: string[], handleAction: (action: string, index: number) => void, handleParry?: (counter: string) => void, special?: boolean }) {
+export function ActionButtonModal({ currentAction, actions, handleAction, special }: { currentAction: Accessor<any>, actions: string[], handleAction: (action: string, index: number) => void, special?: boolean }) {
     return (
         <div class='border superCenter' style={{ width: '40%', height: '75%', overflow: 'scroll' }}>
         <div class='creature-heading'>
@@ -65,9 +61,6 @@ export function ActionButtonModal({ currentAction, actions, handleAction, handle
                 return (
                     <button class='highlight' onClick={() => handleAction(action, currentAction().index)} style={{ 'background-color': 'black', margin: '5% auto', width: '75%', display: 'block' }}>
                         <div style={font('1.25em', '#fdf6d8')}>{action}</div>
-                        { (currentAction().action === 'Counter' && handleParry) && ( 
-                            <button class='highlight cornerBR' style={{ margin: '1%' }} onClick={() => handleParry(action)}>Choose Counter</button> 
-                        ) }
                     </button>
                 );
             })} 
@@ -75,7 +68,7 @@ export function ActionButtonModal({ currentAction, actions, handleAction, handle
         </div>
         </div>
     );
-}
+};
 
 export function Modal({ items, inventory, callback, show, setShow, forge, setForge, upgrade, setUpgrade }: { items: Accessor<{ item: Equipment | undefined; type: string; }[]>, inventory: Equipment | undefined, callback: (type: string) => void, show: Accessor<boolean>, setShow: Setter<boolean>, forge: Accessor<boolean>, setForge: Setter<boolean>, upgrade: Accessor<boolean>, setUpgrade: Setter<boolean>}) {
     console.log(items(), 'items')

@@ -67,7 +67,8 @@ export default function App() {
         fetch();
     };
     function menuOption(option: string): void {
-        document.documentElement.requestFullscreen();
+        const app = document.getElementById('app');
+        app?.requestFullscreen();
         switch (option) {
             case 'createCharacter':
                 setMenu({ ...menu(), creatingCharacter: true });

@@ -1,10 +1,12 @@
-import { Accessor, For, Setter, Show, createSignal, onMount } from "solid-js";
+import { Accessor, For, Setter, Show, createMemo, createSignal, onMount } from "solid-js";
 import { EventBus } from "../game/EventBus";
 import { Attributes } from "../utility/attributes";
 import { InputGroup } from "solid-bootstrap";
 import { useResizeListener } from "../utility/dimensions";
 import AttributeModal from "../components/Attributes";
 import { FAITHS } from "../components/Faith";
+import Ascean from "../models/ascean";
+import { LevelSheet } from "../utility/ascean";
 
 const Mastery = ({ mastery, state }: { mastery: any; state: Accessor<any>; }) => {
 const [show, setShow] = createSignal<boolean>(false);
@@ -29,7 +31,8 @@ const [show, setShow] = createSignal<boolean>(false);
 };
 
 interface Props {
-    asceanState: Accessor<any>;
+    ascean: Accessor<Ascean>;
+    asceanState: Accessor<LevelSheet>;
     show: Accessor<boolean>; 
     setShow: Setter<boolean>;
 };
@@ -60,7 +63,7 @@ const Faith = ({ faith, state }: { faith: any; state: Accessor<any>; }) => {
     );
 };
 
-export default function LevelUp({ asceanState, show, setShow }: Props) {
+export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
     const [pool, setPool] = createSignal<number>(0);
     const dimensions = useResizeListener();
 
@@ -79,6 +82,28 @@ export default function LevelUp({ asceanState, show, setShow }: Props) {
     const floor = (name: string): boolean => {
         return (asceanState()?.[name as keyof typeof asceanState] as number + asceanState().ascean[name as keyof typeof asceanState]) > asceanState().ascean[name as keyof typeof asceanState];
     };
+
+    function checkAscean(a: Accessor<Ascean>) {
+        EventBus.emit('update-ascean-state', {
+            ...asceanState(),
+            ascean: ascean()
+        });
+    };
+
+    function valueDiscrepancy(): boolean {
+        return (ascean().constitution !== asceanState().ascean.constitution) 
+            || (ascean().strength !== asceanState().ascean.strength) 
+            || (ascean().agility !== asceanState().ascean.agility) 
+            || (ascean().achre !== asceanState().ascean.achre) 
+            || (ascean().caeren !== asceanState().ascean.caeren) 
+            || (ascean().kyosir !== asceanState().ascean.kyosir);
+    };
+
+    createMemo(() => {
+        if (valueDiscrepancy()) {
+            checkAscean(ascean);
+        };
+    }); 
 
     onMount(() => {
         EventBus.emit('update-ascean-state', {

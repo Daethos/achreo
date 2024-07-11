@@ -697,7 +697,6 @@ export default class Enemy extends Entity {
         this.scene.matterCollision.addOnCollideEnd({
             objectA: [enemySensor],
             callback: other => {
-                // if (!other.gameObjectB || other.gameObjectB.name !== 'player') return;
                 if (other.gameObjectB && other.gameObjectB.name === 'player') {
                     this.touching = this.touching.filter((target) => target === other.gameObjectB);
                     if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
@@ -708,7 +707,7 @@ export default class Enemy extends Entity {
                         } else {
                             this.stateMachine.setState(States.IDLE);
                         };
-                        this.scene.clearNAEnemy();
+                        this.scene.clearNonAggressiveEnemy();
                     };
                 // } else if (other.gameObjectB && other.gameObjectB.name === 'enemy') {
                 //     this.touching = this.touching.filter((target) => target === other.gameObjectB);
@@ -1062,11 +1061,11 @@ export default class Enemy extends Entity {
         };  
         if (distance >= 50 * rangeMultiplier) { // was 75 || 100
             if (this.path && this.path.length > 1) {
-                this.setVelocity(this.pathDirection.x * (this.speed + 0.25), this.pathDirection.y * (this.speed + 0.25)); // 2.5
+                this.setVelocity(this.pathDirection.x * (this.speed), this.pathDirection.y * (this.speed)); // 2.5
             } else {
                 if (this.isPathing) this.isPathing = false;
                 direction.normalize();
-                this.setVelocity(direction.x * (this.speed + 0.25), direction.y * (this.speed + 0.25)); // 2.5
+                this.setVelocity(direction.x * (this.speed), direction.y * (this.speed)); // 2.5
             };
         } else {
             this.stateMachine.setState(States.COMBAT);

@@ -1,12 +1,6 @@
-import { Accessor, Setter, Show, createEffect, createSignal, onMount } from 'solid-js';
+import { Accessor, Setter, Show, createEffect, createSignal, lazy, Suspense } from 'solid-js';
 import Ascean from '../models/ascean';
-import Character from './Character';
-import CombatUI from './CombatUI';
-import EnemyPreview from './EnemyPreview';
-import EnemyUI from './EnemyUI';
 import Settings from '../models/settings';
-import SmallHud from './SmallHud';
-import TutorialOverlay from '../utility/tutorial';
 import { Combat } from "../stores/combat";
 import { EnemySheet } from '../utility/enemy';
 import { EventBus } from "../game/EventBus";
@@ -14,9 +8,16 @@ import { GameState } from '../stores/game';
 import { LevelSheet } from '../utility/ascean';
 import { usePhaserEvent } from '../utility/hooks';
 import { computerCombatCompiler, consumePrayer, instantActionCompiler, prayerEffectTick, prayerRemoveTick, weaponActionCompiler } from '../utility/combat';
-import { Deity } from './Deity';
 import { screenShake } from '../phaser/ScreenShake';
 import { Reputation } from '../utility/player';
+import { Puff } from 'solid-spinner';
+const Character = lazy(async () => await import('./Character'));
+const CombatUI = lazy(async () => await import('./CombatUI'));
+const Deity = lazy(async () => await import('./Deity'));
+const EnemyPreview = lazy(async () => await import('./EnemyPreview'));
+const EnemyUI = lazy(async () => await import('./EnemyUI'));
+const SmallHud = lazy(async () => await import('./SmallHud'));
+const TutorialOverlay = lazy(async () => await import('../utility/tutorial'));
 
 interface Props {
     instance: any;
@@ -27,13 +28,14 @@ interface Props {
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
     stamina: Accessor<number>;
+    tutorial: Accessor<string>;
+    showTutorial: Accessor<boolean>;
+    setShowTutorial: Setter<boolean>;
+    showDeity: Accessor<boolean>;
 };
 
-export default function BaseUI({ instance, ascean, combat, game, reputation, settings, setSettings, stamina }: Props) {
+export default function BaseUI({ instance, ascean, combat, game, reputation, settings, setSettings, stamina, tutorial, showDeity, showTutorial, setShowTutorial }: Props) {
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
-    const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
-    const [tutorial, setTutorial] = createSignal<string>('');
-    const [showDeity, setShowDeity] = createSignal<boolean>(false);
     const [asceanState, setAsceanState] = createSignal<LevelSheet>({
         ascean: ascean(),
         currency: ascean().currency,
@@ -56,23 +58,10 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     var remaining: number = 0, timer: any = undefined;
 
     createEffect(() => EventBus.emit('combat', combat()));  
-
     createEffect(() => EventBus.emit('reputation', reputation()));
-
     createEffect(() => EventBus.emit('settings', settings()));
-
-    onMount(() => {
-        if (!ascean().tutorial.intro) {
-            EventBus.emit('intro');
-        } else if (!ascean().tutorial.boot) {
-            setTutorial('boot');
-            setShowTutorial(true);
-        };
-    });
- 
     const sendEnemyData = () => EventBus.emit('get-enemy', combat().computer);
     const sendSettings = () => EventBus.emit('get-settings', settings);
-
     function computerCombat(data: any, type: string) {
         console.log(`%c Computer Combat: [Type] -- ${type}`, 'color: #ff0000');
         const { computerOne, computerTwo } = data;
@@ -122,7 +111,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             console.warn(err, 'Error in Computer Combat: [Type] --', type);
         };
     };
-
     function initiateCombat(data: any, type: string) {
         try {    
             let playerWin: boolean = false, computerWin: boolean = false, res: any = undefined, affectsHealth: boolean = true, caerenic: number = combat().isCaerenic ? 1.15 : 1, stalwart: number = combat().isStalwart ? 0.85 : 1;
@@ -353,8 +341,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     res = { ...combat(), ...enemyData };
                     res = weaponActionCompiler(res) as Combat;
                     computerWin = res.computerWin;
-                    playerWin = res.playerWin;
-                    // console.log(res, 'Res in Enemy');
+                    playerWin = res.playerWin; 
                     EventBus.emit('blend-combat', res);
                     break;
                 case 'Sacrifice':
@@ -449,13 +436,11 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             console.log(err, 'Error Initiating Combat');
         };
     };
-
     function resolveCombat(res: Combat) {
         try {
             adjustTime(0, 0, true);
             if (res.playerWin === true) {
-                let experience = 
-                    Math.round((res.computer?.level as number) * 100 
+                let experience = Math.round((res.computer?.level as number) * 100 
                     * (res.computer?.level as number / res?.player?.level!) 
                     + (res?.playerAttributes?.rawKyosir as number));
                 experience = balanceExperience(experience, res?.player?.level as number);
@@ -475,37 +460,13 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     experience: newState
                 });
                 EventBus.emit('enemy-loot', loot);
-                if (!ascean().tutorial.deity) {
-                    if (newState.opponentExp >= 750 && ascean().level >= 1) { // 1000
-                        setTutorial('deity');
-                        setShowTutorial(true);  
-                        if (game().pauseState === false) {
-                            EventBus.emit('update-pause', true);
-                            EventBus.emit('toggle-bar', true);    
-                            EventBus.emit('update-small-hud');
-                        };
-                    };
-                };
-                if (checkDeificInteractions(newState.opponentExp)) {
-                    setShowDeity(true);
-                    if (game().pauseState === false) {
-                        EventBus.emit('update-pause', true);
-                        EventBus.emit('toggle-bar', true);    
-                        EventBus.emit('update-small-hud');
-                    };
-                };
             } else {
-                EventBus.emit('record-statistics', res);
-                if (!ascean().tutorial.death) {
-                    setTutorial('death');
-                    setShowTutorial(true);
-                };
+                EventBus.emit('record-loss', res);
             };
         } catch (err: any) {
             console.log(err, 'Error Resolving Combat');
         };
     };    
-
     function startCountdown(health: number) {
         if (!timer) {
             if (combat().combatEngaged === false) {
@@ -523,7 +484,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             }, 1000);
         };
     };
-    
     function adjustTime(amount: number, health: number, cancel?: boolean) {
         if (cancel === true) {
             clearInterval(timer);
@@ -535,19 +495,15 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             startCountdown(health);
         };
     };
-
     function balanceExperience(experience: number, level: number) {
         experience *= (110 - (level * 10)) / 100;
         experience = Math.round(experience);
         return experience;
     };
-
-    function checkDeificInteractions(currentExperience: number) {
-        return ascean().interactions.deity <= ascean().level - 1 // <=
-            && ascean().level === 2 
-            && ascean().level * 750 <= currentExperience;
-    };
-
+    function fetchEnemy(enemy: any) {
+        EventBus.emit('setup-enemy', enemy);
+        EventBus.emit('tab-target', enemy);    
+    }; 
     function filterEnemies(id: string) {
         let newEnemies = enemies();
         newEnemies = newEnemies.filter((enemy) => {
@@ -561,49 +517,41 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     usePhaserEvent('remove-enemy', filterEnemies);
     usePhaserEvent('request-enemy', sendEnemyData);
     usePhaserEvent('request-settings', sendSettings);
-    usePhaserEvent('show-deity', (e: boolean) => setShowDeity(e));
-    usePhaserEvent('special-combat-text', (e: { playerSpecialDescription: string }) => {
-        const logs = {
-            ...combat(),
-            playerActionDescription: e.playerSpecialDescription,
-        };
-        EventBus.emit('add-combat-logs', logs);
-    });
-    usePhaserEvent('enemy-combat-text', (e: { computerSpecialDescription: string }) => {
-        const logs = {
-            ...combat(),
-            computerActionDescription: e.computerSpecialDescription,
-        };
-        EventBus.emit('add-combat-logs', logs);
-    });
+    usePhaserEvent('special-combat-text', (e: { playerSpecialDescription: string }) => EventBus.emit('add-combat-logs', { ...combat(), playerActionDescription: e.playerSpecialDescription }));
+    usePhaserEvent('enemy-combat-text', (e: { computerSpecialDescription: string }) => EventBus.emit('add-combat-logs', { ...combat(), computerActionDescription: e.computerSpecialDescription }));
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
-
-    function fetchEnemy(enemy: any) {
-        EventBus.emit('setup-enemy', enemy);
-        EventBus.emit('tab-target', enemy);    
-    }; 
 
     return (
         <div id='base-ui'>
         <Show when={game().showPlayer} fallback={
             <div style={{ position: "absolute", 'z-index': 1 }}>
+            <Suspense fallback={<Puff color="gold" />}>
                 <CombatUI state={combat} game={game} stamina={stamina} />
-                <Show when={combat().computer} fallback={
-                    <EnemyPreview enemies={enemies} fetchEnemy={fetchEnemy} />
-                }>
+            </Suspense>
+                <Show when={combat().computer} fallback={<EnemyPreview enemies={enemies} fetchEnemy={fetchEnemy} />}>
+                <Suspense fallback={<Puff color="gold" />}>
                     <EnemyUI state={combat} game={game} enemies={enemies} />
+                </Suspense>
                 </Show> 
             </div>
         }>
-            <Character reputation={reputation} settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} game={game} combatState={combat} />
+            <Suspense fallback={<Puff color="gold" />}>
+                <Character reputation={reputation} settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} game={game} combatState={combat} />
+            </Suspense>
         </Show>
-        <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} settings={settings} /> 
+        <Suspense fallback={<Puff color="gold" />}>
+            <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} settings={settings} /> 
+        </Suspense>
         <Show when={showTutorial()}>
+        <Suspense fallback={<Puff color="gold" />}>
             <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
+        </Suspense>
         </Show>
         <Show when={showDeity()}>
+        <Suspense fallback={<Puff color="gold" />}>
             <Deity ascean={ascean} combat={combat} game={game} />
+        </Suspense>
         </Show>
         </div>
     );

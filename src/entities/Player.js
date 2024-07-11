@@ -356,7 +356,14 @@ export default class Player extends Entity {
                 onEnter: this.onWritheEnter,
                 onUpdate: this.onWritheUpdate,
                 onExit: this.onWritheExit,
-            }) // ==================== NEGATIVE META STATES ==================== //
+            });
+            
+        // ==================== NEGATIVE META STATES ==================== //
+        this.negMetaMachine = new StateMachine(this, 'player')
+            .addState(States.CLEAN, {
+                onEnter: this.onCleanEnter,
+                onExit: this.onCleanExit,
+            })
             .addState(States.FROZEN, {
                 onEnter: this.onFrozenEnter,
                 // onUpdate: this.onFrozenUpdate,
@@ -2783,7 +2790,7 @@ export default class Player extends Entity {
             delay: DURATION.FROZEN,
             callback: () => {
                 this.isFrozen = false;
-                this.metaMachine.setState(States.CLEAN);
+                this.negMetaMachine.setState(States.CLEAN);
             },
             callbackScope: this,
             loop: false,
@@ -2885,7 +2892,7 @@ export default class Player extends Entity {
         this.adjustSpeed(-PLAYER.SPEED.SLOW);
         this.scene.time.delayedCall(this.slowDuration, () =>{
             this.isSlowed = false;
-            this.metaMachine.setState(States.CLEAN);
+            this.negMetaMachine.setState(States.CLEAN);
         });
     };
 
@@ -2902,7 +2909,7 @@ export default class Player extends Entity {
         this.adjustSpeed(-PLAYER.SPEED.SNARE);
         this.scene.time.delayedCall(this.snareDuration, () =>{
             this.isSnared = false;
-            this.metaMachine.setState(States.CLEAN);
+            this.negMetaMachine.setState(States.CLEAN);
         });
     };
     // onSnaredUpdate = (dt) => {};
@@ -2921,9 +2928,7 @@ export default class Player extends Entity {
         };
         const type = cooldown.split('Cooldown')[0];
         this.scene.actionBar.setCurrent(0, limit, type);
-        const button = this.scene.actionBar.getButton(type);
-        // this.scene.actionBar.cooldownButton(button, limit / 1000);
-        // console.log('Button:', button);
+        const button = this.scene.actionBar.getButton(type); 
         if (this.inCombat || type === 'blink' || type || 'desperation') {
             this.scene.time.delayedCall(limit, () => {
                 this.scene.actionBar.setCurrent(limit, limit, type);
@@ -2931,22 +2936,7 @@ export default class Player extends Entity {
                 if (evasion === false) {
                     this[cooldown] = 0;
                 };
-            }, undefined, this);
-            // let current = 0;
-            // const timer = this.scene.time.addEvent({
-            //     delay: 1000,
-            //     callback: () => {
-            //         current += 1000;
-            //         this.scene.actionBar.setCurrent(current, limit, type);
-            //         if (current >= limit) {
-            //             if (!evasion) {
-            //                 this[cooldown] = 0;
-            //             };
-            //             this.scene.actionBar.animateButton(button);
-            //             timer.destroy();
-            //         };
-            //     },
-            // });
+            }, undefined, this); 
         } else {
             this.scene.actionBar.setCurrent(limit, limit, type);
             if (!evasion) {
@@ -2957,15 +2947,12 @@ export default class Player extends Entity {
 
     swingReset = (type, primary = false) => {
         this.canSwing = false;
-        const time = 
-            (type === 'dodge' || type === 'parry' || type === 'roll') ? 1000 : 
+        const time = (type === 'dodge' || type === 'parry' || type === 'roll') ? 1000 : 
             this.isAttacking === true ? this.swingTimer : 
             this.isPosturing === true ? this.swingTimer - 250 :
             this.swingTimer;
         const button = this.scene.actionBar.getButton(type);
         this.scene.actionBar.setCurrent(0, time, type);
-        // this.scene.actionBar.cooldownButton(button, time / 1000);
-        
         this.scene.time.delayedCall(time, () => {
             this.canSwing = true;
             this.scene.actionBar.setCurrent(time, time, type);
@@ -3475,6 +3462,7 @@ export default class Player extends Entity {
         this.handleConcerns();
         this.stateMachine.update(this.dt);
         this.metaMachine.update(this.dt);
+        this.negMetaMachine.update(this.dt);
         this.handleActions();
         this.handleAnimations();
         this.handleMovement(); 

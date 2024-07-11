@@ -36,15 +36,15 @@ export default function App() {
     let tips: string | number | NodeJS.Timeout | undefined =  undefined;
     var fullscreen: Screen | undefined = undefined;
     createEffect(() => fetchAsceans());
-    function checkScreen() {
-        if (!fullscreen) {
-            const app = document.getElementById('app');
-            fullscreen = fullScreen(app as HTMLElement);
-        };
-        if (fullscreen.available) {
-            fullscreen.set(fullscreen.target as HTMLElement);
-        };
-    };
+    // function checkScreen() {
+    //     if (!fullscreen) {
+    //         const app = document.getElementById('app');
+    //         fullscreen = fullScreen(app as HTMLElement);
+    //     };
+    //     if (fullscreen.available) {
+    //         fullscreen.set(fullscreen.target as HTMLElement);
+    //     };
+    // };
     const currentScene = (scene: Scene) => setScene(scene.scene.key);
     function destroyGame(): void {
         try {
@@ -79,7 +79,7 @@ export default function App() {
     };
     function menuOption(option: string): void {
         // fetchAsceans();
-        checkScreen();
+        // checkScreen();
         switch (option) {
             case 'createCharacter':
                 setMenu({ ...menu(), creatingCharacter: true });
@@ -281,6 +281,7 @@ export default function App() {
         scene.scene.wake('Game');
         const game = scene.scene.get('Game') as Game;
         game.musicBackground.resume();
+        EventBus.emit('boot-tutorial');
         EventBus.emit('current-scene-ready', game);
     });
     usePhaserEvent('sleep-scene', (key: string) => {

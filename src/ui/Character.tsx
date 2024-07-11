@@ -996,7 +996,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
             </div>
         </Show>
         <Show when={levelUpModalShow()}>
-            <LevelUp asceanState={asceanState} show={levelUpModalShow} setShow={setLevelUpModalShow} />
+            <LevelUp ascean={ascean} asceanState={asceanState} show={levelUpModalShow} setShow={setLevelUpModalShow} />
         </Show>
         <Show when={show()}>
             <div class='modal' onClick={() => setShow(!show)}>

@@ -131,7 +131,6 @@ export const PLAYER = {
 };
 
 export const staminaCheck = (stamina: number, cost: number): { success: boolean; cost: number } => {
-    // console.log(input, stamina, cost, 'Input, Stamina, Cost');
     let success: boolean = stamina >= cost;
     return { success, cost };
 };

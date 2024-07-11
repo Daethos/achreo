@@ -58,7 +58,7 @@ interface DeityProps {
     game: Accessor<GameState>;
 };
 
-export function Deity({ ascean, combat, game }: DeityProps) {
+export default function Deity({ ascean, combat, game }: DeityProps) {
     const [playerResponses, setPlayerResponses] = createSignal<string[]>([]);
     const [keywordResponses, setKeywordResponses] = createSignal<string[]>([]);
     const [dialogNodes, setDialogNodes] = createSignal<DialogNode[]>([]);

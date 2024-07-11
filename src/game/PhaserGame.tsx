@@ -22,6 +22,19 @@ import { Reputation, faction } from '../utility/player';
 import { Puff } from 'solid-spinner';
 const BaseUI = lazy(async () => await import('../ui/BaseUI'));
 
+function rebalanceCurrency(currency: { silver: number; gold: number; }): { silver: number; gold: number; } {
+    let { silver, gold } = currency;
+    if (silver > 99) {
+        gold += Math.floor(silver / 100);
+        silver = silver % 100;
+    };
+    if (silver < 0) {
+        gold -= 1;
+        silver += 100;
+    };
+    return { silver, gold };
+};
+
 export interface IRefPhaserGame {
     game: Phaser.Game | null;
     scene: Phaser.Scene | null;
@@ -47,6 +60,9 @@ export default function PhaserGame (props: IProps) {
     const [game, setGame] = createSignal<GameState>(initGame);
     const [stamina, setStamina] = createSignal(0);
     const [live, setLive] = createSignal(false);
+    const [tutorial, setTutorial] = createSignal<string>('');
+    const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
+    const [showDeity, setShowDeity] = createSignal<boolean>(false);
 
     async function lootDrop({ enemyID, level }: { enemyID: string; level: number }) {
         try {
@@ -196,19 +212,6 @@ export default function PhaserGame (props: IProps) {
         };
     };
 
-    function rebalanceCurrency(currency: { silver: number; gold: number; }): { silver: number; gold: number; } {
-        let { silver, gold } = currency;
-        if (silver > 99) {
-            gold += Math.floor(silver / 100);
-            silver = silver % 100;
-        };
-        if (silver < 0) {
-            gold -= 1;
-            silver += 100;
-        };
-        return { silver, gold };
-    };
-
     const recordCombat = (stats: any) => {
         let { wins, losses, total, actionData, typeAttackData, typeDamageData, totalDamageData, prayerData, deityData } = stats;
         let statistic = props.ascean().statistics.combat;
@@ -303,13 +306,9 @@ export default function PhaserGame (props: IProps) {
 
     function saveChanges(state: any) {
         try {
-            let silver: number = state.currency.silver, gold: number = state.currency.gold, 
-                experience: number = state.opponentExp, firewater = { ...props.ascean().firewater };
-
-            let computerLevel: number = state.opponent;
+            let silver: number = state.currency.silver, gold: number = state.currency.gold, experience: number = state.opponentExp, firewater = { ...props.ascean().firewater }, computerLevel: number = state.opponent;
             if (state.avarice) experience *= 1.2;
             let health = state.currentHealth > props.ascean().health.max ? props.ascean().health.max : state.currentHealth;
-
             if (computerLevel === 1) {
                 silver = Math.floor(Math.random() * 2) + 1;
                 gold = 0;
@@ -327,18 +326,15 @@ export default function PhaserGame (props: IProps) {
                     };
                 };
             };
-
             silver += state.currency.silver;
             gold += state.currency.gold;
             let currency = rebalanceCurrency({ silver, gold });
-
             if (props.ascean().firewater.current < 5 && props.ascean().level <= state.opponent) {
                 firewater = {
                     current: props.ascean().firewater.current + 1,
                     max: props.ascean().firewater.max
                 };
             };
-
             const newAscean = {
                 ...props.ascean(),
                 experience: experience,
@@ -353,7 +349,7 @@ export default function PhaserGame (props: IProps) {
         };
     };
 
-    const statFiler = (data: Combat) => {
+    const recordLoss = (data: Combat) => {
         let stat = {
             wins: data.playerWin ? 1 : 0,
             losses: data.playerWin ? 0 : 1,
@@ -397,6 +393,10 @@ export default function PhaserGame (props: IProps) {
             skills: newSkills,
             statistics: newStats, 
             health: { ...props.ascean().health, current: data.newPlayerHealth } 
+        };
+        if (!update.tutorial.death) {
+            setTutorial('death');
+            setShowTutorial(true);
         };
         EventBus.emit('update-ascean', update);
     };
@@ -502,9 +502,33 @@ export default function PhaserGame (props: IProps) {
             firewater: firewater,
             inventory: game().inventory, 
         };
-
+        if (!update.tutorial.deity) {
+            if (update.experience >= 750 && update.level >= 1) { // 1000
+                setTutorial('deity');
+                setShowTutorial(true);  
+                if (game().pauseState === false) {
+                    EventBus.emit('update-pause', true);
+                    EventBus.emit('toggle-bar', true);    
+                    EventBus.emit('update-small-hud');
+                };
+            };
+        };
+        if (checkDeificInteractions(update)) {
+            setShowDeity(true);
+            if (game().pauseState === false) {
+                EventBus.emit('update-pause', true);
+                EventBus.emit('toggle-bar', true);    
+                EventBus.emit('update-small-hud');
+            };
+        };
         EventBus.emit('update-ascean', update);
         EventBus.emit('update-reputation', newReputation);
+    };
+
+    function checkDeificInteractions(ascean: Ascean) {
+        return ascean.interactions.deity <= ascean.level - 1 // <=
+            && ascean.level === 2 
+            && ascean.level * 750 <= ascean.experience;
     };
 
     async function swapEquipment(e: { type: string; item: Equipment }) {
@@ -631,18 +655,25 @@ export default function PhaserGame (props: IProps) {
         EventBus.emit('update-total-stamina', res?.attributes.stamina as number);    
     };
 
+    function bootTutorial() {
+        setTutorial('boot');
+        setShowTutorial(true);
+    };
+
     function enterGame() {
+        if (!props.ascean().tutorial.intro) {
+            EventBus.emit('intro');
+        };
         setLive(!live());
     };
 
     onMount(() => {
         const gameInstance = StartGame("game-container");
         setInstance("game", gameInstance);
-
         if (props.ref) {
             props.ref({ game: gameInstance, scene: null });
         };
-
+        EventBus.on('boot-tutorial', bootTutorial);
         EventBus.on('current-scene-ready', (sceneInstance: Phaser.Scene) => {
             if (props.currentActiveScene) {
                 props.currentActiveScene(sceneInstance);
@@ -653,12 +684,10 @@ export default function PhaserGame (props: IProps) {
                 props.ref({ game: gameInstance, scene: sceneInstance });
             };
         });
-
         EventBus.on('main-menu', (_sceneInstance: Phaser.Scene) => props.setMenu({ ...props?.menu, gameRunning: false }));
         EventBus.on('enter-game', enterGame);
         EventBus.on('preload-ascean', createUi)
         EventBus.on('set-player', setPlayer);
-
         EventBus.on('add-item', (e: Equipment[]) => {
             const cleanInventory = [...game().inventory];
             const newInventory = cleanInventory.length > 0 ? [...cleanInventory, ...e] : e;
@@ -669,9 +698,7 @@ export default function PhaserGame (props: IProps) {
             const update = { ...props.ascean(), inventory: newInventory };
             EventBus.emit('update-ascean', update);
         });
-
         EventBus.on('upgrade-item', (data: any) => upgradeItem(data));
-
         EventBus.on('clear-enemy', () => {
             setCombat({
                 ...combat(),
@@ -724,7 +751,6 @@ export default function PhaserGame (props: IProps) {
             await deleteMerchantEquipment();
             setGame({ ...game(), merchantEquipment: [], dialogTag: false, currentNode: undefined, currentNodeIndex: 0 });    
         });
-
         EventBus.on('fetch-enemy', fetchEnemy);
         EventBus.on('fetch-npc', fetchNpc);
         EventBus.on('request-ascean', () => {
@@ -732,7 +758,6 @@ export default function PhaserGame (props: IProps) {
         });
         EventBus.on('request-combat', requestCombat);
         EventBus.on('request-game', () => EventBus.emit('game', game()));
-
         EventBus.on('setup-enemy', (e: any) => {
             setCombat({
                 ...combat(),
@@ -792,7 +817,6 @@ export default function PhaserGame (props: IProps) {
             const dialog = getNodesForNPC(npcIds[e.type]);
             setGame({ ...game(), dialog: dialog });    
         });
-
         EventBus.on('changeDamageType', (e: string) => setCombat({ ...combat(), playerDamageType: e }));
         EventBus.on('changePrayer', (e: string) => {
             setCombat({ ...combat(), playerBlessing: e });
@@ -804,7 +828,6 @@ export default function PhaserGame (props: IProps) {
             const update = { ...props.ascean(), weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2] };
             EventBus.emit('update-ascean', update);
         });
-
         EventBus.on('combat-engaged', (e: boolean) => setCombat({ ...combat(), combatEngaged: e }));
         EventBus.on('delete-merchant-equipment', deleteMerchantEquipment);
         EventBus.on('drink-firewater', () => {
@@ -862,6 +885,7 @@ export default function PhaserGame (props: IProps) {
                 smallHud: (!game().showCombat || game().scrollEnabled || game().showDialog || game().showPlayer) 
             });
         });
+        EventBus.on('show-deity', (e: boolean) => setShowDeity(e));
         EventBus.on('show-dialogue', () => {
             if (game().scrollEnabled === false && game().showPlayer === false && game().showCombat === false) {
                 EventBus.emit('update-pause', !game().showDialog);
@@ -958,8 +982,7 @@ export default function PhaserGame (props: IProps) {
                 scrollEnabled: !game().scrollEnabled, 
                 smallHud: (!game().scrollEnabled || game().showPlayer || game().showDialog) 
             });
-        });
-
+        }); 
         EventBus.on('create-prayer', (e: any) => {
             setCombat({ ...combat(), playerEffects: combat().playerEffects.length > 0 ? [...combat().playerEffects, e] : [e] });
         });
@@ -977,9 +1000,8 @@ export default function PhaserGame (props: IProps) {
             const { persuasion, persuaded } = e;
             EventBus.emit('enemy-persuasion', { enemy: combat().enemyID, persuaded, persuasion });
             setCombat({ ...combat(), playerTrait: persuasion, enemyPersuaded: persuaded, persuasionScenario: true });   
-        });
-
-        EventBus.on('record-statistics', (e: Combat) => statFiler(e));
+        }); 
+        EventBus.on('record-loss', (e: Combat) => recordLoss(e));
         EventBus.on('record-win', (e: { record: Combat; experience: LevelSheet }) => {
             recordWin(e.record, e.experience);
         });
@@ -991,6 +1013,7 @@ export default function PhaserGame (props: IProps) {
                 setInstance({ game: null, scene: null });
             };
             
+            EventBus.removeListener('boot-tutorial');
             EventBus.removeListener('current-scene-ready');
             EventBus.removeListener('main-menu');
             EventBus.removeListener('enter-game');
@@ -1039,6 +1062,7 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener('setup-npc');
             // EventBus.removeListener('show-combat-logs');
             EventBus.removeListener('show-combat');
+            EventBus.removeListener('show-deity');
             EventBus.removeListener('show-dialogue');
             EventBus.removeListener('show-player');
             EventBus.removeListener('set-player');
@@ -1063,7 +1087,7 @@ export default function PhaserGame (props: IProps) {
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
         <Show when={live() && checkUi() && props.scene() === 'Game'}>
             <Suspense fallback={<Puff color="gold" />}>
-                <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} stamina={stamina} />
+                <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} stamina={stamina} tutorial={tutorial} showDeity={showDeity} showTutorial={showTutorial} setShowTutorial={setShowTutorial} />
             </Suspense>
         </Show>
         </>

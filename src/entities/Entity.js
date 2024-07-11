@@ -172,7 +172,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     startingSpeed = (entity) => {
-        let speed = (this.name === 'player' ? 1.25: 1.4); // PLAYER.SPEED.INITIAL
+        let speed = (this.name === 'player' ? 1.5: 1.5); // PLAYER.SPEED.INITIAL
         const helmet = entity.helmet.type;
         const chest = entity.chest.type;
         const legs = entity.legs.type;
@@ -180,16 +180,16 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const addModifier = (item) => {
             switch (item) {
                 case 'Leather-Cloth':
-                    modifier += 0.05;
+                    modifier -= 0.025; // += 0.05;
                     break;
                 case 'Leather-Mail':
-                    modifier += 0.025;
+                    modifier -= 0.04; // += 0.025;
                     break;
                 case 'Chain-Mail':
-                    modifier += 0.0;
+                    modifier -= 0.06 // += 0.0;
                     break;
                 case 'Plate-Mail':
-                    modifier -= 0.025;
+                    modifier -= 0.075 // -= 0.025;
                     break;
                 default:
                     break;

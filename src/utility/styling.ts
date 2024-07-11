@@ -1,8 +1,8 @@
 const COLORS = {
     'Aqua': 0x00FFFF,
-    'Bone': 0xFDF6D8,
     'Black': 0x000000,
     'Blue': 0x0000FF,
+    'Bone': 0xFDF6D8,
     'Brown': 0x8B4513,
     'Burned': 0xCC5500,
     'Cerise': 0xDE3163,
@@ -95,7 +95,6 @@ const getShadowColor = (prayer: string): string => {
     };
 };
 
-
 const masteryColor = (mastery: string): string => {
     switch (mastery) {
         case 'constitution':
@@ -114,7 +113,6 @@ const masteryColor = (mastery: string): string => {
             return '#fdf6d8';
     };
 };
-
 
 const border = (color: string, width: number): string => `${width}em solid ${color}`;
 
@@ -144,12 +142,7 @@ const itemStyle = (rarity: string) => {
 };
 
 const shadow = (color: string, intensity: number): Object => {
-    return {
-        textShadowColor: color,
-        textShadowOffset: { width: intensity, height: intensity },
-        textShadowRadius: intensity,
-        elevation: 2,
-    };
+    return { 'text-shadow': `${intensity} ${intensity} ${intensity} ${color}` };
 };
 
 const sellRarity = (rarity: string): string => {

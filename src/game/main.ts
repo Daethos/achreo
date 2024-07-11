@@ -18,10 +18,10 @@ const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
     height: dimensions()?.ORIENTATION === 'landscape' ? dimensions().HEIGHT : dimensions().WIDTH,
     width: dimensions()?.ORIENTATION === 'landscape' ? dimensions().WIDTH : dimensions().HEIGHT,
-    // scale: {
-    //     // mode: Phaser.Scale.NONE, // RESIZE
-    //     autoCenter: Phaser.Scale.CENTER_BOTH // CENTER_BOTH
-    // },
+    scale: {
+        mode: Phaser.Scale.RESIZE, // RESIZE
+        autoCenter: Phaser.Scale.CENTER_BOTH // CENTER_BOTH
+    },
     parent: 'game-container',
     backgroundColor: '#000',
     dom: { createContainer: true },

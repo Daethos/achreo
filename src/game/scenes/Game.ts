@@ -185,14 +185,12 @@ export class Game extends Scene {
             'FPS: ', { font: '16px Cinzel', color: '#fdf6d8' }
         );
         this.fpsText.setScrollFactor(0);
-        // this.fpsText.setInteractive()
-        //     .on('pointerup', () => {
-        //         if (this.scale.isFullscreen) {
-        //             this.scale.stopFullscreen();
-        //         } else {
-        //             this.scale.startFullscreen();
-        //         };
-        //     });
+        this.fpsText.setInteractive()
+            .on('pointerup', () => {
+                if (!this.scale.isFullscreen) {
+                    this.scale.startFullscreen();
+                };
+            });
 
     // =========================== Combat Timer =========================== \\
         this.combatTimerText = this.add.text(window.innerWidth / 2 - 40, window.innerHeight + 30, 'Combat Timer: ', { font: '16px Cinzel', color: '#fdf6d8' });

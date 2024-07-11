@@ -1,17 +1,28 @@
-var Fullscreen = {
+export type Screen = {
+    available: boolean;
+    cancel: string;
+    keyboard: boolean;
+    request: string;
+    target: HTMLElement | undefined;
+    set: (el: HTMLElement) => void;
+};
+
+var Fullscreen: Screen = {
     available: false,
     cancel: '',
     keyboard: false,
     request: '',
-    target: document.getElementById('base-ui')
+    target: undefined,
+    set: (el: HTMLElement) => el.requestFullscreen()
 };
 
-export function fullScreen() {
+export function fullScreen(el: HTMLElement) {
     // @ts-ignore
     if (typeof importScripts === 'function') {
         console.log('returning fullscreen')
         return Fullscreen;
     };
+    Fullscreen.target = el;
     var i;
     var suffix1 = 'Fullscreen';
     var suffix2 = 'FullScreen';
@@ -28,7 +39,7 @@ export function fullScreen() {
     ];
     for (i = 0; i < fs.length; i++) {
         // @ts-ignore
-        if (document.documentElement[fs[i]]) {
+        if (el[fs[i]]) {
             Fullscreen.available = true;
             Fullscreen.request = fs[i];
             break;
@@ -63,5 +74,6 @@ export function fullScreen() {
 
     // @ts-ignore
     Object.defineProperty(Fullscreen, 'active', { get: function () { return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement); } });
+    // Object.defineProperty(Fullscreen, 'target', { set: function () { return el.requestFullscreen() } });
     return Fullscreen;
 };

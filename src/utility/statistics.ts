@@ -30,7 +30,6 @@ export type Statistics = {
             wild: number,
             wind: number,
         },
-        // deities: { type: Array, default: [] }, // Deities Invoked via Prayer
         deities: {
             Daethos: number,
             Achreo: number,

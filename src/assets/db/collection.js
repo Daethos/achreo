@@ -9,9 +9,7 @@ export default function collection(name) {
         return this;
     } else {
         this.name = name;
-
         let db = this.db;
-
         if (!(name in this.lf)) {
             this.lf[name] = localforage.createInstance({
                 driver: localforage.INDEXEDDB,

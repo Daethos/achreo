@@ -26,16 +26,10 @@ export function getNpcDialog(): Dialog {
     return createDialog();
 };
 
-type MerchantDialog = {
-    farewell: {};
-    services: {};
-};
+type MerchantDialog = { farewell: {}; services: {}; };
 
 const NPC: Record<string, MerchantDialog> = {
-    "Traveling General Merchant" : {
-        farewell: {},
-        services: {},
-    },
+    "Traveling General Merchant" : { farewell: {}, services: {} },
 };
 
 export function getMerchantDialog(merchant: string): MerchantDialog {

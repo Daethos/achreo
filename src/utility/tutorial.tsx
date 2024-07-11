@@ -1,5 +1,5 @@
-import { Accessor, Setter, createEffect, createSignal, onMount } from "solid-js";
-import { blessAscean, curseAscean, saveEntry, saveTutorial } from "../assets/db/db";
+import { Accessor, Setter, createEffect, createSignal } from "solid-js";
+import { blessAscean, curseAscean, saveTutorial } from "../assets/db/db";
 import { EventBus } from "../game/EventBus";
 import Typewriter from "./Typewriter";
 import Ascean from "../models/ascean";
@@ -58,13 +58,6 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
         rebukePlayer: () => rebukePlayer(),
     };
 
-    // ${ ascean()?.faith === 'adherent' ? (
-    //     `<p class='adherentText'>You feel the presence of... ^750 ${highestFaith()}^1000?</p>`
-    // ) : ascean()?.faith === 'devoted' ? (
-    //     `<p class='devotedText'>You feel the presence of... ^750 ${highestFaith()}^1000?</p>`
-    // ) : (
-    //     '<p>You feel the presence of an overwhelming power...</p>'
-    // ) } <br />
     createEffect(() => {
         if (tutorial() === 'deity') {
             setDeity(`<div class='typewriterContainer' key='phenomena'>
@@ -106,8 +99,6 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
     };
     async function blessPlayer(): Promise<void> {
         try {
-            // console.log('blessing player!')
-            
             const entry = {
                 title: 'Who am I?',
                 body: `You felt the presence of... ${highestFaith()}? \n\n You become attuned to a halt and paltry whisper, ringing, it stretches your soft edges, serenity begging you hither. \n\n "Who are you?"`,
@@ -116,7 +107,6 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 location: 'Unknown',
             };
             const res = await blessAscean(ascean()._id, entry);
-            console.log(res, 'res')
             EventBus.emit('fetch-ascean', res.data._id);
             EventBus.emit('update-pause', false);
             EventBus.emit('update-small-hud');
@@ -135,7 +125,6 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 location: 'Unknown',
             };
             const res = await curseAscean(ascean()._id, entry);
-            console.log(res, 'res');
             EventBus.emit('fetch-ascean', res.data._id);
             EventBus.emit('update-pause', false);
             EventBus.emit('update-small-hud');
@@ -153,7 +142,6 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
             console.warn(err.message);
         };
     };
-    // background: tutorial() === 'deity' ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.75)',
     return (
         <div class='modal' style={{ background: tutorial() === 'deity' ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.75)', 'z-index': 1000 }}>
             { tutorial() === 'boot' && <div>
@@ -322,11 +310,9 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 <Typewriter stringText={deity} styling={{ 'overflow-y': 'auto' }} performAction={performAction} />
             </div> }
 
-            { tutorial() !== 'deity' &&
-            <button class='cornerBR gold highlight' style={{ bottom: '0', right: '0', 'font-weight': 700 }} onClick={() => exitTutorial()}>
+            { tutorial() !== 'deity' && <button class='cornerBR gold highlight' style={{ bottom: '0', right: '0', 'font-weight': 700 }} onClick={() => exitTutorial()}>
                 {arrows.right} Exit
-            </button>
-            }
+            </button> }
         </div>
     );
 };

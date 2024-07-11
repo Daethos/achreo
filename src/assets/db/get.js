@@ -45,8 +45,6 @@ export default function get(options = { keys: false }) {
                 collection = collection.splice(0, limitBy);
             }
             logMessage += `:`;
-            // logger.log.call(this, logMessage, collection);
-            // reset.call(this);
             console.log(logMessage);
             reset.call(this);
             return collection;

@@ -80,8 +80,8 @@ export const initMenu: Menu = {
     choosingCharacter: false,   
     creatingCharacter: false,
     gameRunning: false,
-    loaded: false,
-    loading: true,
+    loaded: true, // false
+    loading: false, // true
     screen: SCREENS.CHARACTER.KEY,
     deleteModal: false,
     playModal: false

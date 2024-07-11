@@ -13,5 +13,21 @@
             "purpose": "maskable any"
         }
     ],
+    "screenshots": [
+        {
+            "src": "screenshot.png",
+            "sizes": "886x412",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "World"
+        },
+        {
+            "src": "screenshot.png",
+            "sizes": "886x412",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "World"
+        }
+    ],
     "orientation": "landscape"
 }

@@ -122,9 +122,6 @@ export class Game extends Scene {
             if (index < 3) return;
             layer?.setDepth(3);
         });
-        map.createLayer('Tile Layer 4 - Primes', decorations as Tilemaps.Tileset, 0, 0);
-        map.createLayer('Tile Layer 5 - Snags', decorations as Tilemaps.Tileset, 0, 0);
-        map.createLayer('Tile Layer 6 - Camps', camps as Tilemaps.Tileset, 0, 0);
         // this.matter.world.createDebugGraphic(); 
 
         const objectLayer = map.getObjectLayer('navmesh');
@@ -166,15 +163,9 @@ export class Game extends Scene {
             dodge: this?.input?.keyboard?.addKeys('FOUR'),
             posture: this?.input?.keyboard?.addKeys('TWO'),
             roll: this?.input?.keyboard?.addKeys('THREE'), 
-            hurt: this?.input?.keyboard?.addKeys('H'),
-            consume: this?.input?.keyboard?.addKeys('F'),
-            pray: this?.input?.keyboard?.addKeys('R'),
             strafe: this?.input?.keyboard?.addKeys('E,Q'),
             shift: this?.input?.keyboard?.addKeys('SHIFT'),
             firewater: this?.input?.keyboard?.addKeys('T'),
-            target: this?.input?.keyboard?.addKeys('TAB'),
-            snare: this?.input?.keyboard?.addKeys('V'),
-            stalwart: this?.input?.keyboard?.addKeys('G'),
         }; 
 
         this.lights.enable();
@@ -938,7 +929,10 @@ export class Game extends Scene {
     // ============================ Player ============================ \\
     caerenic = (): boolean => EventBus.emit('update-caerenic');
     stalwart = (): boolean => EventBus.emit('update-stalwart');
-    useStamina = (value: number): boolean => EventBus.emit('update-stamina', value);
+    useStamina = (value: number) => {
+        EventBus.emit('update-stamina', value);
+        this.player.stamina -= value;
+    };
     createTextBorder(text: NewText): GameObjects.Graphics {
         const border = this.add.graphics();
         border.lineStyle(4, 0x2A0134, 1);

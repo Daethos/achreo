@@ -7,9 +7,7 @@ export default function add(data, keyProvided) {
     } else if (typeof data !== 'string' && typeof data !== 'object') {
         console.log('Data must be a string or an object.');
     };
-
     let name = this.name;
-
     return new Promise((res, rej) => {
         let key = null;
         if (!keyProvided) {
@@ -28,17 +26,10 @@ export default function add(data, keyProvided) {
 
 export function success(message, data) {
     reset.call(this);
-    return {
-        success: true,
-        message,
-        data
-    };
+    return { success: true, message, data };
 };
 
 export function error(message) {
     reset.call(this);
-    return {
-        success: false,
-        message
-    };
+    return { success: false, message };
 };

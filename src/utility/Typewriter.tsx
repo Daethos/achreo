@@ -40,8 +40,6 @@ const styleMap: StyleMap = {
     },
     button: {
         'z-index': 9999,
-        // position: 'fixed',
-        // width: '45vw',
         border: "none",
         'text-decoration': "none",
         'background-color': "transparent",
@@ -60,7 +58,6 @@ const styleMap: StyleMap = {
         'margin-bottom': "5%",
         width: "25em",
         'margin-left': '-87.5%',
-        // position: 'absolute',
         'margin-top': "5%",
         'border-radius': "50%",
         border: "2px solid #fdf6d8",
@@ -70,7 +67,6 @@ const styleMap: StyleMap = {
         'margin-bottom': "5%",
         width: "25em",
         'margin-left': '-87.5%',
-        // position: 'absolute',
         'margin-top': "5%",
         'border-radius': "50%",
         border: "2px solid #ff0000",
@@ -80,7 +76,6 @@ const styleMap: StyleMap = {
         'margin-bottom': "5%",
         width: "25em",
         'margin-left': '-87.5%',
-        // position: 'absolute',
         'margin-top': "5%",
         'border-radius': "50%",
         border: "2px solid #00ff00",
@@ -90,7 +85,6 @@ const styleMap: StyleMap = {
         'margin-bottom': "5%",
         width: "25em",
         'margin-left': '-87.5%',
-        // position: 'absolute',
         'margin-top': "5%",
         'border-radius': "50%",
         border: "2px solid blue",
@@ -100,7 +94,6 @@ const styleMap: StyleMap = {
         'margin-bottom': "5%",
         width: "25em",
         'margin-left': '-87.5%',
-        // position: 'absolute',
         'margin-top': "5%",
         'border-radius': "50%",
         border: "2px solid purple",
@@ -110,7 +103,6 @@ const styleMap: StyleMap = {
         'margin-bottom': "5%",
         width: "25em",
         'margin-left': '-87.5%',
-        // position: 'absolute',
         'margin-top': "5%",
         'border-radius': "50%",
         border: "2px solid gold",
@@ -169,10 +161,7 @@ interface TypewriterProps {
 const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => {
     const [el, setEl] = createSignal<HTMLDivElement | null>(null);
     let typed: Typed | null = null;
-
-    (window as any).handleButton = (button: string) => {
-        performAction(button);
-    };
+    (window as any).handleButton = (button: string) => performAction(button);
 
     const applyStyles = (element: any): void => {
         for (const [property, value] of Object.entries(styleMap[element?.attributes?.class?.value])) {
@@ -188,7 +177,6 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
     const styleHTML = (html: string) => {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, "text/html");
-
         const traverseElement = (element: any): void => {
             if (element?.attributes?.class?.value) applyStyles(element);
             if (element?.tagName === "BUTTON" && element?.attributes?.["data-function-name"]?.value) applyEventListeners(element as HTMLElement);
@@ -200,13 +188,8 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
     };
 
     createEffect(() => {
-        if (typed) {
-            (typed as Typed).destroy();
-        };
-
-        if (el()) {
-            typewriter(stringText);
-        };
+        if (typed) (typed as Typed).destroy();
+        if (el()) typewriter(stringText);
     });
     function typewriter(text: string | Accessor<string>) {
         const check = typeof text === 'function' ? text() : text;

@@ -1143,8 +1143,8 @@ export default class Player extends Entity {
     onDodgeEnter = () => {
         if (this.isStalwart || this.isStorming || this.isRolling) return;
         this.isDodging = true;
-        this.swingReset(States.DODGE, true);
         this.scene.useStamina(PLAYER.STAMINA.DODGE);
+        this.swingReset(States.DODGE, true);
         this.scene.sound.play('dodge', { volume: this.scene.settings.volume });
         this.wasFlipped = this.flipX; 
         this.body.parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;
@@ -1177,9 +1177,9 @@ export default class Player extends Entity {
     onRollEnter = () => {
         if (this.isStalwart || this.isStorming || this.isDodging) return;
         this.isRolling = true;
+        this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.ROLL);
         this.swingReset(States.ROLL, true);
         // this.swingReset(States.DODGE);
-        this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.ROLL);
         this.scene.sound.play('roll', { volume: this.scene.settings.volume });
         this.body.parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;
         this.body.parts[2].circleRadius = PLAYER.SENSOR.EVADE;
@@ -2958,7 +2958,7 @@ export default class Player extends Entity {
     swingReset = (type, primary = false) => {
         this.canSwing = false;
         const time = 
-            (type === 'dodge' || type === 'parry' || type === 'roll') ? 750 : 
+            (type === 'dodge' || type === 'parry' || type === 'roll') ? 1000 : 
             this.isAttacking === true ? this.swingTimer : 
             this.isPosturing === true ? this.swingTimer - 250 :
             this.swingTimer;

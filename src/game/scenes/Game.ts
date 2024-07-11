@@ -17,7 +17,7 @@ import { States } from '../../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
 import Joystick from '../../phaser/Joystick';
 import SmallHud from '../../phaser/SmallHud';
-import { useResizeListener } from '../../utility/dimensions';
+import { DIMS, useResizeListener } from '../../utility/dimensions';
 import { Reputation, initReputation } from '../../utility/player';
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 
@@ -185,12 +185,12 @@ export class Game extends Scene {
             'FPS: ', { font: '16px Cinzel', color: '#fdf6d8' }
         );
         this.fpsText.setScrollFactor(0);
-        this.fpsText.setInteractive()
-            .on('pointerup', () => {
-                if (!this.scale.isFullscreen) {
-                    this.scale.startFullscreen();
-                };
-            });
+        // this.fpsText.setInteractive()
+        //     .on('pointerup', () => {
+        //         if (!this.scale.isFullscreen) {
+        //             this.scale.startFullscreen();
+        //         };
+        //     });
 
     // =========================== Combat Timer =========================== \\
         this.combatTimerText = this.add.text(window.innerWidth / 2 - 40, window.innerHeight + 30, 'Combat Timer: ', { font: '16px Cinzel', color: '#fdf6d8' });
@@ -315,6 +315,9 @@ export class Game extends Scene {
     gameEvent = (): void => {
         EventBus.on('ascean', (ascean: Ascean) => this.ascean = ascean);
         EventBus.on('combat', (combat: any) => this.state = combat);
+        EventBus.on('updated-dimensions', (dimensions: DIMS) => {
+            this.scale.resize(dimensions.WIDTH, dimensions.HEIGHT);
+        });
         EventBus.on('game', (game: GameState) => this.gameState = game);
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
         EventBus.on('settings', (settings: Settings) => {

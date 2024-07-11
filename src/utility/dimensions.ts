@@ -1,4 +1,5 @@
 import { createSignal } from "solid-js";
+import { EventBus } from "../game/EventBus";
 export type DIMS = {
     WIDTH: number,
     HEIGHT: number,
@@ -17,6 +18,7 @@ const useResizeListener = () => {
             ORIENTATION: window.innerWidth > window.innerHeight ? 'landscape' : 'portrait'
         };
         setDimensions(updated);
+        EventBus.emit('updated-dimensions', updated);
     };
     window.addEventListener('resize', handleResize);
     return dimensions;

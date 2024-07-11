@@ -16,11 +16,11 @@ import { Tent } from './scenes/Interior';
 const dimensions = useResizeListener();
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
-    height: dimensions()?.ORIENTATION === 'landscape' ? dimensions().HEIGHT : dimensions().WIDTH,
-    width: dimensions()?.ORIENTATION === 'landscape' ? dimensions().WIDTH : dimensions().HEIGHT,
+    height: dimensions().HEIGHT,
+    width: dimensions().WIDTH,
     scale: {
         mode: Phaser.Scale.RESIZE, // RESIZE
-        autoCenter: Phaser.Scale.CENTER_BOTH // CENTER_BOTH
+        autoCenter: Phaser.Scale.CENTER_BOTH, // CENTER_BOTH
     },
     parent: 'game-container',
     backgroundColor: '#000',

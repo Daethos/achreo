@@ -61,35 +61,8 @@ export class Game extends Scene {
     navMesh: any;
     navMeshPlugin: any;
     postFxPipeline: any;
-
-    musicBackground: Sound.BaseSound;
-    musicCombat: Sound.BaseSound;
-    spooky: Sound.BaseSound;
-    righteous: Sound.BaseSound;
-    wild: Sound.BaseSound;
-    earth: Sound.BaseSound;
-    fire: Sound.BaseSound;
-    frost: Sound.BaseSound;
-    lightning: Sound.BaseSound;
-    wind: Sound.BaseSound;
-    sorcery: Sound.BaseSound;
-    bow: Sound.BaseSound;
-    slash: Sound.BaseSound;
-    blunt: Sound.BaseSound;
-    pierce: Sound.BaseSound;
-    roll: Sound.BaseSound;
-    parry: Sound.BaseSound;
-    weaponOrder: Sound.BaseSound;
-    actionButton: Sound.BaseSound;
-    equip: Sound.BaseSound;
-    unequip: Sound.BaseSound;
-    purchase: Sound.BaseSound;
-    treasure: Sound.BaseSound;
-    phenomena: Sound.BaseSound;
-    mysterious: Sound.BaseSound;
-    tshaeral: Sound.BaseSound;
-    dungeon: Sound.BaseSound;
-    frozen: Sound.BaseSound;
+    musicBackground: any;
+    musicCombat: any;
 
     fpsText: GameObjects.Text;
     combatTimerText: GameObjects.Text;
@@ -213,32 +186,6 @@ export class Game extends Scene {
             this.musicBackground.play();
         };
         this.musicCombat = this.sound.add('combat', { volume: this?.settings?.volume, loop: true });
-        this.spooky = this.sound.add('spooky', { volume: this?.settings?.volume });
-        this.righteous = this.sound.add('righteous', { volume: this?.settings?.volume });
-        this.wild = this.sound.add('wild', { volume: this?.settings?.volume });
-        this.earth = this.sound.add('earth', { volume: this?.settings?.volume });
-        this.fire = this.sound.add('fire', { volume: this?.settings?.volume });
-        this.frost = this.sound.add('frost', { volume: this?.settings?.volume });
-        this.lightning = this.sound.add('lightning', { volume: this?.settings?.volume });
-        this.wind = this.sound.add('wind', { volume: this?.settings?.volume });
-        this.sorcery = this.sound.add('sorcery', { volume: this?.settings?.volume });
-        this.bow = this.sound.add('bow', { volume: this?.settings?.volume });
-        this.slash = this.sound.add('slash', { volume: this?.settings?.volume });
-        this.blunt = this.sound.add('blunt', { volume: this?.settings?.volume });
-        this.pierce = this.sound.add('pierce', { volume: this?.settings?.volume });
-        this.roll = this.sound.add('roll', { volume: this?.settings?.volume });
-        this.parry = this.sound.add('parry', { volume: this?.settings?.volume });
-        this.weaponOrder = this.sound.add('weaponOrder', { volume: this?.settings?.volume });
-        this.actionButton = this.sound.add('action-button', { volume: this?.settings?.volume });
-        this.equip = this.sound.add('equip', { volume: this?.settings?.volume });
-        this.unequip = this.sound.add('unequip', { volume: this?.settings?.volume });
-        this.purchase = this.sound.add('purchase', { volume: this?.settings?.volume });
-        this.treasure = this.sound.add('treasure', { volume: this?.settings?.volume });
-        this.phenomena = this.sound.add('phenomena', { volume: this?.settings?.volume });
-        this.mysterious = this.sound.add('combat-round', { volume: this?.settings?.volume });
-        this.tshaeral = this.sound.add('absorb', { volume: this?.settings?.volume });
-        this.dungeon = this.sound.add('dungeon', { volume: this?.settings?.volume });
-        this.frozen = this.sound.add('freeze', { volume: this?.settings?.volume });
 
     // =========================== FPS =========================== \\
         this.fpsText = this.add.text(
@@ -381,7 +328,9 @@ export class Game extends Scene {
         EventBus.on('combat', (combat: any) => this.state = combat);
         EventBus.on('game', (game: GameState) => this.gameState = game);
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
-        EventBus.on('settings', (settings: Settings) => this.settings = settings);    
+        EventBus.on('settings', (settings: Settings) => {
+            this.settings = settings;
+        });    
         EventBus.on('enemyLootDrop', (drops: any) => {
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
         });    
@@ -937,7 +886,7 @@ export class Game extends Scene {
     checkPlayerSuccess = (): void => {
         if (!this.player.actionSuccess && (this.state.action !== 'parry' && this.state.action !== 'roll' && this.state.action !== '')) this.combatMachine.input('action', '');
     };
-    clearNAEnemy = (): boolean => EventBus.emit('clear-enemy');
+    clearNonAggressiveEnemy = (): boolean => EventBus.emit('clear-enemy');
     clearNPC = (): boolean => EventBus.emit('clear-npc'); 
     combatEngaged = (bool: boolean) => {
         EventBus.emit('combat-engaged', bool);

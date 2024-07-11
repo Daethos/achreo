@@ -13,7 +13,6 @@ import { allEquipment, deleteAscean, getAscean, getAsceans, getInventory, getRep
 import { TIPS } from './utility/tips';
 import { Reputation, initReputation } from './utility/player';
 import type { IRefPhaserGame } from './game/PhaserGame';
-// import { Puff } from 'solid-spinner';
 
 const AsceanBuilder = lazy(async () => await import('./components/AsceanBuilder'));
 const AsceanView = lazy(async () => await import('./components/AsceanView'));
@@ -60,7 +59,7 @@ export default function App() {
                 };
                 const pop = await Promise.all(res.map(async (asc: Ascean) => await populate(asc)));
                 const hyd = pop.map((asc: Ascean) => asceanCompiler(asc)).map((asc: Compiler) => { return { ...asc.ascean, weaponOne: asc.combatWeaponOne, weaponTwo: asc.combatWeaponTwo, weaponThree: asc.combatWeaponThree }});
-                setMenu({ ...menu(), asceans: hyd, loading: false, loaded: true, choosingCharacter: true }); // choosingCharacter: true
+                setMenu({ ...menu(), asceans: hyd, loading: false, loaded: true, creatingCharacter: false }); // choosingCharacter: true
             } catch (err: any) {
                 console.warn('Error fetching Asceans:', err);
             };
@@ -68,6 +67,7 @@ export default function App() {
         fetch();
     };
     function menuOption(option: string): void {
+        document.documentElement.requestFullscreen();
         switch (option) {
             case 'createCharacter':
                 setMenu({ ...menu(), creatingCharacter: true });
@@ -159,7 +159,6 @@ export default function App() {
         EventBus.emit('toggle-pause', pause);
     };
     const quickAscean = (a: Ascean): Ascean => setAscean(a);
-    
     async function saveAscean(vaEsai: any): Promise<void> {
         try {
             const save = await updateAscean(vaEsai);
@@ -236,7 +235,6 @@ export default function App() {
     function switchScene(next: string): void {
         setShow(false);
         const scene = phaserRef.scene as Scene;
-        console.log('Switching Scene from ', scene.scene.key, ' to: ', next);
         EventBus.emit('switch-scene', { current: scene.scene.key, next });
     };
     const actions = {
@@ -266,7 +264,6 @@ export default function App() {
     usePhaserEvent('save-intro', async () => {
         await saveTutorial(ascean()?._id as string, 'intro');
         await fetchAscean(ascean()?._id as string);
-
         const scene = phaserRef.scene as Scene; // 'intro'
         scene.scene.stop('Intro');
         scene.scene.wake('Game');
@@ -376,7 +373,7 @@ export default function App() {
                     <Show when={menu().loaded} fallback={'Loading...'}>
                     <div class='superCenter cinzel'>
                         <div class='center title'>The Ascean<br /> 
-                            <button class='center highlight' onClick={() => menuOption('createCharacter')}>Create Character</button>
+                            <button class='center highlight' onClick={() => menuOption(menu().asceans.length > 0 ? 'chooseCharacter' : 'createCharacter')}>Enter Game</button>
                         </div>
                     </div>
                     </Show>

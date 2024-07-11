@@ -379,7 +379,6 @@ export default class Player extends Entity {
         const { Body, Bodies } = Physics.Matter.Matter;
         let playerCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { isSensor: false, label: 'playerCollider' }); // Y + 10 For Platformer
         let playerSensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: 'playerSensor' }); // Y + 2 For Platformer
-        
         const compoundBody = Body.create({
             parts: [playerCollider, playerSensor],
             frictionAir: 0.35, 
@@ -393,7 +392,6 @@ export default class Player extends Entity {
         this.knocking = false;
         this.isCounterSpelling = false;
         this.isCaerenic = false;
-        
         this.tshaeringTimer = undefined; 
         this.highlight = this.scene.add.graphics()
             .lineStyle(4, 0xFF0000) // 3
@@ -414,9 +412,7 @@ export default class Player extends Entity {
     };   
 
     getAscean = () => {
-        EventBus.once('player-ascean-ready', (ascean) => {
-            this.ascean = ascean;
-        });
+        EventBus.once('player-ascean-ready', (ascean) => this.ascean = ascean);
         EventBus.emit('player-ascean');
         return this.ascean;
     };
@@ -425,7 +421,6 @@ export default class Player extends Entity {
         this.speed = this.startingSpeed(e);
     };
 
-    
     stealthUpdate = () => {
         if (this.isStealthing) {
             this.isStealthing = false;
@@ -460,7 +455,6 @@ export default class Player extends Entity {
         this.targets = this.targets.filter(obj => obj.enemyID !== e);
         if (this.targets.length > 0) {
             const newTarg = this.targets[index] || this.targets[0];
-            // console.log(`%c New Target: ${newTarg}`, 'color: #ff0000')
             if (!newTarg) return;
             this.currentTarget = newTarg;
             this.highlightTarget(this.currentTarget);
@@ -503,18 +497,7 @@ export default class Player extends Entity {
         this.scene.add.existing(sprite);
         sprite.setDepth(this);
         return sprite;
-    };
-
-    multiplayerMovement = () => {
-        EventBus.emit('playerMoving', { 
-            x: this.x, y: this.y, flipX: this.flipX, attacking: this.isAttacking, parrying: this.isParrying,
-            dodging: this.isDodging, posturing: this.isPosturing, rolling: this.isRolling, isMoving: this.isMoving,
-            consuming: this.isConsuming, caerenic: this.isCaerenic, tshaering: this.isTshaering, polymorphing: this.isPolymorphing,
-            praying: this.isPraying, healing: this.isHealing, stunned: this.isStunned, stealthing: this.isStealthing,
-            currentWeaponSprite: this.currentWeaponSprite, currentShieldSprite: this.currentShieldSprite, health: this.health,
-            velocity: { x: this.playerVelocity.x, y: this.playerVelocity.y },
-        });
-    };
+    }; 
 
     cleanUp() {
         EventBus.off('set-player', this.setPlayer);
@@ -572,7 +555,7 @@ export default class Player extends Entity {
         this.inCombat = false;
         this.attacking = undefined;
         this.currentTarget = undefined;
-        this.scene.clearNAEnemy();
+        this.scene.clearNonAggressiveEnemy();
         this.removeHighlight();
         this.scene.combatEngaged(false);
     };
@@ -723,9 +706,7 @@ export default class Player extends Entity {
                 this.tshaeringTimer.remove(false);
                 this.tshaeringTimer = undefined;
             };
-            
             this.defeatedEnemyCheck(e.enemyID);
-            // this.winningCombatText = new ScrollingCombatText(this.scene, this.x, this.y - 64, 'Victory', 1000, 'effect', true);    
         };
         if (e.computerWin === true) {
             this.anims.play('player_pray', true).on('animationcomplete', () => {
@@ -3216,11 +3197,6 @@ export default class Player extends Entity {
             if (match) { // Target Player Attack
                 this.scene.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: action } });
             } else { // Blind Player Attack
-                let blindStrike = false;
-                if (this.inCombat === false || !this.attacking || !this.currentTarget || this.scene.combat === false) {
-                    // Jump player into combat
-                    blindStrike = true;
-                };
                 this.scene.combatMachine.action({ type: 'Player', data: { 
                     playerAction: { action: action, parry: this.scene.state.parryGuess }, 
                     enemyID: this.attackedTarget.enemyID, 
@@ -3230,13 +3206,11 @@ export default class Player extends Entity {
                     weapons: this.attackedTarget.weapons, 
                     health: this.attackedTarget.health, 
                     actionData: { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction },
-                    blindStrike: blindStrike
                 }});
             };
 
             this.knockback(this.attackedTarget.enemyID);
         };
-        // if (this.actionTarget && !this.isRanged) this.knockback(this.actionTarget); // actionTarget
         if (this.isStealthing) {
             this.scene.stun(this.attackedTarget.enemyID);
             this.isStealthing = false;
@@ -3252,22 +3226,19 @@ export default class Player extends Entity {
         const dodgeDistance = 2800; // 126 || 2304
         const dodgeDuration = 350; // 18 || 288  
         let currentDistance = 0;
-
         const dodgeLoop = (timestamp) => {
             if (!startTime) startTime = timestamp;
             const progress = timestamp - startTime;
-        
             if (progress >= dodgeDuration || currentDistance >= dodgeDistance) {
                 this.spriteWeapon.setVisible(true);
                 this.dodgeCooldown = 0;
                 this.isDodging = false;
                 return;
             };
-        
             const direction = this.flipX ? -(dodgeDistance / dodgeDuration) : (dodgeDistance / dodgeDuration);
-            if (Math.abs(this.velocity.x) > 0.1) this.setVelocityX(direction);
-            if (this.velocity.y > 0.1) this.setVelocityY(dodgeDistance / dodgeDuration);
-            if (this.velocity.y < -0.1) this.setVelocityY(-dodgeDistance / dodgeDuration);
+            if (Math.abs(this.velocity.x) > 0) this.setVelocityX(direction);
+            if (this.velocity.y > 0) this.setVelocityY(dodgeDistance / dodgeDuration);
+            if (this.velocity.y < 0) this.setVelocityY(-dodgeDistance / dodgeDuration);
             currentDistance += Math.abs(dodgeDistance / dodgeDuration);
             requestAnimationFrame(dodgeLoop);
         };
@@ -3278,25 +3249,21 @@ export default class Player extends Entity {
     playerRoll = () => {
         this.rollCooldown = 50; // Was a x7 Mult for Roll Prev aka 2240
         const rollDistance = 1920; // 140
-        
         const rollDuration = 320; // 20
         let currentDistance = 0;
-        
         const rollLoop = (timestamp) => {
             if (!startTime) startTime = timestamp;
             const progress = timestamp - startTime;
-        
             if (progress >= rollDuration || currentDistance >= rollDistance) {
                 this.spriteWeapon.setVisible(true);
                 this.rollCooldown = 0;
                 this.isRolling = false;
                 return;
             };
-
             const direction = this.flipX ? -(rollDistance / rollDuration) : (rollDistance / rollDuration);
             if (Math.abs(this.velocity.x) > 0.1) this.setVelocityX(direction);
-            if (this.velocity.y > 0.1) this.setVelocityY(rollDistance / rollDuration);
-            if (this.velocity.y < -0.1) this.setVelocityY(-rollDistance / rollDuration);
+            if (this.velocity.y > 0) this.setVelocityY(rollDistance / rollDuration);
+            if (this.velocity.y < 0) this.setVelocityY(-rollDistance / rollDuration);
             currentDistance += Math.abs(rollDistance / rollDuration);
             requestAnimationFrame(rollLoop);
         };

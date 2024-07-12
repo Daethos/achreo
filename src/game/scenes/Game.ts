@@ -1,7 +1,7 @@
 import Ascean from '../../models/ascean';
 import { Combat, initCombat } from '../../stores/combat';
 import { EventBus } from '../EventBus';
-import { Cameras, GameObjects, Scene, Sound, Tilemaps, Time } from 'phaser';
+import { Cameras, GameObjects, Scene, Tilemaps, Time } from 'phaser';
 import Player from '../../entities/Player';
 import Enemy from '../../entities/Enemy';
 import NPC from '../../entities/NPC';
@@ -17,7 +17,7 @@ import { States } from '../../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
 import Joystick from '../../phaser/Joystick';
 import SmallHud from '../../phaser/SmallHud';
-import { DIMS, useResizeListener } from '../../utility/dimensions';
+import { useResizeListener } from '../../utility/dimensions';
 import { Reputation, initReputation } from '../../utility/player';
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 
@@ -185,12 +185,6 @@ export class Game extends Scene {
             'FPS: ', { font: '16px Cinzel', color: '#fdf6d8' }
         );
         this.fpsText.setScrollFactor(0);
-        // this.fpsText.setInteractive()
-        //     .on('pointerup', () => {
-        //         if (!this.scale.isFullscreen) {
-        //             this.scale.startFullscreen();
-        //         };
-        //     });
 
     // =========================== Combat Timer =========================== \\
         this.combatTimerText = this.add.text(window.innerWidth / 2 - 40, window.innerHeight + 30, 'Combat Timer: ', { font: '16px Cinzel', color: '#fdf6d8' });
@@ -314,10 +308,7 @@ export class Game extends Scene {
 
     gameEvent = (): void => {
         EventBus.on('ascean', (ascean: Ascean) => this.ascean = ascean);
-        EventBus.on('combat', (combat: any) => this.state = combat);
-        EventBus.on('updated-dimensions', (dimensions: DIMS) => {
-            this.scale.resize(dimensions.WIDTH, dimensions.HEIGHT);
-        });
+        EventBus.on('combat', (combat: any) => this.state = combat); 
         EventBus.on('game', (game: GameState) => this.gameState = game);
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
         EventBus.on('settings', (settings: Settings) => {
@@ -717,8 +708,8 @@ export class Game extends Scene {
         const health = Math.min(enemy.health + heal, enemy.ascean.health.max);
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
     };
-    root = (): void => {
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === this.state.enemyID);
+    root = (id: string): void => {
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) return;
         enemy.isRooted = true;
 
@@ -962,14 +953,14 @@ export class Game extends Scene {
     };
     setCameraOffset = () => {
         if (this.player.flipX === true) {
-            this.offsetX = Math.min(125, this.offsetX + 2);
+            this.offsetX = Math.min(125, this.offsetX + 3);
         } else {
-            this.offsetX = Math.max(this.offsetX - 2, -125);
+            this.offsetX = Math.max(this.offsetX - 3, -125);
         };
         if (this.player.velocity.y > 0) {
-            this.offsetY = Math.max(this.offsetY - 1.5, -75);
+            this.offsetY = Math.max(this.offsetY - 2, -90);
         } else if (this.player.velocity.y < 0) {
-            this.offsetY = Math.min(75, this.offsetY + 1.5);
+            this.offsetY = Math.min(90, this.offsetY + 2);
         };
     };
     sortEnemies = (enemies: Enemy[]): Enemy[] => {

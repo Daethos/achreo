@@ -77,19 +77,19 @@ export const INTRO_NODES = {
         key: 0,
         prev: undefined, // undefined
         next: 1,
-        text: "Welcome to the Ascean. This world is a menagerie of beauty and horror. Full of bounty and peaceable where folk gather; its jungle's reach is long and wild. Marred and mutated, this land is rife with the blood of Ancients. Beings of fantastic might and worship, commanding and enlightening humans at their lesiure, some of pointed interest, others with apathy. The Sundering eclipsed such flourishing; a War of the Ancients.",
+        text: "This world is a menagerie of beauty and horror; full of bounty where humans gather, its jungle's reach is long and wild. Marred and mutated, this land is rife with the blood of Ancients. Beings of fantastic might and worship a thousand years past, grew civilization and genius from their worshipers. The Sundering eclipsed such flourishing; a War of the Ancients.",
     },
     1: {
         key: 1,
         prev: 0,
         next: 2,
-        text: "Most humans died. Those who lived did so from the brilliance of Laetrois Ath'Shaorah, prophet of Daethos, bringing such peace and warring against the Ancients. Humans were free, from the Ancients, and from their homes; the Sundering's last gift to the world. For a thousand years, strange peoples from strange lands clashed, with few coalescing.",
+        text: "Most humans died. Most who lived did so from the brilliance of General Laetrois Ath'Shaorah, prophet of Daethos, who warred against the Ancients. Humans freed from the Ancients and their homes; the Sundering's last gift to the world. For a thousand years, strange people from stranger lands clashed, few coalescing.",
     },
     2: {
         key: 2,
         prev: 1,
         next: 3,
-        text: "And yet, the beauty of this world has bloomed once more, and many find themselves traveling, despite whispers of the old and the Ancient being seen again, whether in their mythic forms or of an othernature altogether. Perhaps not all perished in their war. Perhaps its horror has returned.",
+        text: "Yet, the beauty of this world bloomed once more, with many now traveling and curious about the world, despite whispers of the old and the Ancient being seen again. Whether in their mythic forms or of an othernature altogether, perhaps not all perished in their war. Perhaps its horror has returned.",
     },
     3: {
         key: 3,

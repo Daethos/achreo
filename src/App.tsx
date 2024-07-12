@@ -13,7 +13,6 @@ import { allEquipment, deleteAscean, getAscean, getAsceans, getInventory, getRep
 import { TIPS } from './utility/tips';
 import { Reputation, initReputation } from './utility/player';
 import type { IRefPhaserGame } from './game/PhaserGame';
-import { fullScreen, Screen } from './utility/fullscreen';
 import { Puff } from 'solid-spinner';
 
 const AsceanBuilder = lazy(async () => await import('./components/AsceanBuilder'));
@@ -35,17 +34,7 @@ export default function App() {
     const dimensions = useResizeListener();
     let phaserRef: IRefPhaserGame;
     let tips: string | number | NodeJS.Timeout | undefined =  undefined;
-    var fullscreen: Screen | undefined = undefined;
     createEffect(() => fetchAsceans());
-    // function checkScreen() {
-    //     if (!fullscreen) {
-    //         const app = document.getElementById('app');
-    //         fullscreen = fullScreen(app as HTMLElement);
-    //     };
-    //     if (fullscreen.available) {
-    //         fullscreen.set(fullscreen.target as HTMLElement);
-    //     };
-    // };
     const currentScene = (scene: Scene) => setScene(scene.scene.key);
     function destroyGame(): void {
         try {
@@ -79,8 +68,6 @@ export default function App() {
         fetch();
     };
     function menuOption(option: string): void {
-        // fetchAsceans();
-        // checkScreen();
         switch (option) {
             case 'createCharacter':
                 setMenu({ ...menu(), creatingCharacter: true });

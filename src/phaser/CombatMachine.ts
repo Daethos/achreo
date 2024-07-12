@@ -1,9 +1,8 @@
-import { EventBus } from "../game/EventBus";
-import * as Dispatcher from "./Dispatcher";
 import { Combat } from "../stores/combat";
+import * as Dispatcher from "./Dispatcher";
+import { EventBus } from "../game/EventBus";
 
 type ActionHandler = (data: any) => void;
-
 interface Action {
     type: string;
     data: any;
@@ -20,21 +19,17 @@ export default class CombatMachine {
     private actionQueue: Action[];
     private clearQueue: string[];
     private inputQueue: KVI[];
-    private state: any;
 
     constructor(context: any) { // dispatch: any
         this.context = context;
         this.actionQueue = [];
         this.clearQueue = [];
         this.inputQueue = [];
-        this.state = {};
         this.listener();
     };
     
     private actionHandlers: { [key: string]: ActionHandler } = {
-        Weapon: (data: KVI) => {
-            Dispatcher.weapon(data);
-        },
+        Weapon: (data: KVI) => Dispatcher.weapon(data),
         Health: (data: KVI) => Dispatcher.health(data),
         Instant: (data: string) => Dispatcher.instant(data),
         Consume: (data: any[]) => Dispatcher.prayer(data),
@@ -51,29 +46,24 @@ export default class CombatMachine {
     };
 
     public cleanUp = () => EventBus.off('combat', this.listener);
-
     private listener = () => EventBus.on('combat', (e: Combat): Combat => (this.context = e));
-
     private process = (): void => {
-        if (this.context.computerWin) {
+        if (this.context.computerWin === true) {
             this.inputQueue = [];
             this.actionQueue = [];
         };
-
-        while (this.clearQueue.length) {
+        while (this.clearQueue.length > 0) {
             const clearId = this.clearQueue.shift()!;
             this.inputQueue = this.inputQueue.filter(({ id }) => id !== clearId);
             this.actionQueue = this.actionQueue.filter(({ id }) => id !== clearId);
         };
-
-        while (this.inputQueue.length) {
+        while (this.inputQueue.length > 0) {
             const { key, value, id } = this.inputQueue.shift()!;
             if (!id || this.context.enemyID === id) {
                 EventBus.emit('update-combat-state', { key, value });
             };
         };
-
-        while (this.actionQueue.length) {
+        while (this.actionQueue.length > 0) {
             const action = this.actionQueue.shift()!;
             const handler = this.actionHandlers[action.type as keyof typeof this.actionHandlers];
             if (handler) {

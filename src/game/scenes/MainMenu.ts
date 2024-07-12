@@ -41,13 +41,6 @@ export class MainMenu extends Scene {
         this.text.on('pointerup', this.mainMenu, this);
         EventBus.emit('current-scene-ready', this);
         EventBus.on('enter-menu', this.changeScene, this);
-        // EventBus.on('full-screen', () => {
-        //     if (this.scale.isFullscreen) {
-        //         this.scale.stopFullscreen();
-        //     } else {
-        //         this.scale.startFullscreen();
-        //     };
-        // });
     };
     
     changeScene () {
@@ -62,8 +55,5 @@ export class MainMenu extends Scene {
         this.title.destroy();
         this.text.destroy();
         EventBus.emit('enter-menu');
-        // if (!this.scale.isFullscreen) {
-        //    this.scale.startFullscreen();
-        // };
     };
 };

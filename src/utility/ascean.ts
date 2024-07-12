@@ -248,8 +248,8 @@ const attributeCompiler = (ascean: Ascean, rarities: { helmet: number; chest: nu
 
     newAttributes.healthTotal = 15 + ((newAttributes.totalConstitution * ascean.level) + ((newAttributes.constitutionMod + Math.round((newAttributes.caerenMod + newAttributes.strengthMod) / 4)) * ascean.level));
     newAttributes.initiative = 10 + ((newAttributes.agilityMod + newAttributes.achreMod) / 2);
-    newAttributes.stamina = 100 + (newAttributes.constitutionMod + newAttributes.agilityMod + newAttributes.caerenMod) / 2;
-    newAttributes.grace = 100 + (newAttributes.strengthMod + newAttributes.achreMod + newAttributes.kyosirMod) / 2; // Future Idea Maybe
+    newAttributes.stamina = 100 + (newAttributes.constitutionMod + newAttributes.agilityMod + newAttributes.caerenMod);
+    newAttributes.grace = 100 + (newAttributes.strengthMod + newAttributes.achreMod + newAttributes.kyosirMod); // Future Idea Maybe
 
     return newAttributes;
 };
@@ -496,10 +496,12 @@ const coefficientCompiler = (ascean: Ascean, item: Equipment): number => {
     // console.log(item, 'Item')
     switch (item.rarity) {
         case 'Common':
-            coefficient = ascean.level / 4;
+            coefficient = 1;
+            // coefficient = ascean.level / 4;
             break;
         case 'Uncommon':
-            coefficient = ascean.level / 8;
+            coefficient = 1;
+            // coefficient = ascean.level / 8;
             break;
         case 'Rare':
             coefficient = 1;

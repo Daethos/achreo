@@ -10,7 +10,7 @@ function createStamina(stam: Accessor<number>) {
 
     const recover = () => {
         if (remaining > 0) {
-            remaining -= 200 - stamina();
+            remaining -= 185 - stamina();
             return;    
         };
         if (remaining < 0) remaining = 0;
@@ -26,7 +26,7 @@ function createStamina(stam: Accessor<number>) {
 
     const startRecovery = () => {
         setUsedStamina(0);
-        interval = setInterval(recover, 200 - stamina());
+        interval = setInterval(recover, 185 - stamina());
     };
 
     const updateStamina = (e: number) => {

@@ -299,20 +299,19 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                         case 'player':
                             const healed = Math.floor(combat().playerHealth * (value / 100));
                             const newPlayerHealth = combat().newPlayerHealth + healed > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + healed;
-                            const healthDescription = 
-                                `You heal for ${healed}, back to ${Math.round(newPlayerHealth)}.`
+                            const healthDescription = `You heal for ${healed}, back to ${Math.round(newPlayerHealth)}.`;
                             res = { ...combat(), newPlayerHealth, playerActionDescription: healthDescription };
                             EventBus.emit('blend-combat', { newPlayerHealth });
                             break;
                         case 'enemy':
                             const enemyHealth = value > 0 ? value : 0;
                             playerWin = enemyHealth === 0;
-                            const enemyDescription =
-                                `${combat().computer?.name} health shifts to ${Math.round(enemyHealth)}.`;
-                            res = { ...combat(), newComputerHealth: enemyHealth, playerWin, computerActionDescription: enemyDescription };
+                            const enemyDescription = `${combat().computer?.name} health shifts to ${Math.round(enemyHealth)}.`;
                             if (combat().enemyID === id) {
+                                res = { ...combat(), newComputerHealth: enemyHealth, playerWin, computerActionDescription: enemyDescription };
                                 EventBus.emit('blend-combat', { newComputerHealth: enemyHealth, playerWin });
                             } else {
+                                res = { ...combat(), playerWin, computerActionDescription: enemyDescription };
                                 EventBus.emit('update-enemy-health', { id, health: enemyHealth, glancing: false, critical: false });
                             };
                             affectsHealth = false;
@@ -454,12 +453,12 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     opponent: res.computer?.level,
                     opponentExp: Math.min(experience, res?.player?.level! * 1000),
                 };
-                const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
+                // const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
                 EventBus.emit('record-win', {
                     record: res,
                     experience: newState
                 });
-                EventBus.emit('enemy-loot', loot);
+                // EventBus.emit('enemy-loot', loot);
             } else {
                 EventBus.emit('record-loss', res);
             };

@@ -1,9 +1,6 @@
-import { useResizeListener } from "../utility/dimensions";
-
 export default function StaminaModal() {
-    const dimensions = useResizeListener();
     return (
-        <div class="border superCenter" style={{ width: dimensions()?.ORIENTATION === 'landscape' ? '50%' : '75%' }}> 
+        <div class="border superCenter" style={{ width: '50%' }}> 
         <div class='creature-heading wrap' style={{ height: '100%' }}>
                 <h1 style={{ 'text-align': 'center', width: '100%' }}>Stamina</h1>
             <svg height="5" width="100%" class="tapered-rule" style={{ 'margin-bottom': '3%', 'margin-top': '2%' }}>

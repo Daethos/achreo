@@ -58,9 +58,7 @@ export class Intro extends Scene {
             }, // callback before set-text
             setTextCallbackScope: undefined,
         });
-    
         typing.start(this.node.text);
-     
         this.nextText = this.add.text(this.game.canvas.width * 0.9, this.game.canvas.height * 0.85, 'Next', {
             color: '#fdf6d8',
             fontFamily: 'Cinzel',
@@ -70,7 +68,6 @@ export class Intro extends Scene {
             align: 'center',
         });
         this.nextText.setOrigin(0);
-
         this.prevText = this.add.text(this.game.canvas.width * 0.075, this.game.canvas.height * 0.85, 'Previous', {
             color: '#fdf6d8',
             fontFamily: 'Cinzel',
@@ -80,14 +77,12 @@ export class Intro extends Scene {
             align: 'center',
         });
         this.prevText.setOrigin(0); 
-
         if (this.node.prev === undefined) {
             this.prevText.visible = false;
         };
         if (this.node.next === undefined) {
             this.nextText.visible = false;
         };
-
         this.nextText.setInteractive()
             .on('pointerdown', () => {
                 this.nextText.setColor('gold');

@@ -53,7 +53,7 @@ export default function App() {
         const fetch = async () => {
             try {
                 const res = await getAsceans();
-                await allEquipment();
+                // await allEquipment();
                 if (!res.length) {
                     setMenu({ ...menu(), loading: false, loaded: true, creatingCharacter: false });
                     return;

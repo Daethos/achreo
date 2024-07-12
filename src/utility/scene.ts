@@ -77,36 +77,39 @@ export const INTRO_NODES = {
         key: 0,
         prev: undefined, // undefined
         next: 1,
-        text: "This world is a menagerie of beauty and horror; full of bounty where humans gather, its jungle's reach is long and wild. Marred and mutated, this land is rife with the blood of Ancients. Beings of fantastic might and worship a thousand years past, grew civilization and genius from their worshipers. The Sundering eclipsed such flourishing; a War of the Ancients.",
+        text: `This world is a menagerie of beauty and horror; full of bounty where humans gather, its jungle's reach is long and wild. Marred and mutated, this land is rife with the blood of Ancients. Beings of fantastic might and worship a thousand years past, grew civilization and genius from their worshipers. The Sundering eclipsed such flourishing; a War of the Ancients.`,
     },
     1: {
         key: 1,
         prev: 0,
         next: 2,
-        text: "Most humans died. Most who lived did so from the brilliance of General Laetrois Ath'Shaorah, prophet of Daethos, who warred against the Ancients. Humans freed from the Ancients and their homes; the Sundering's last gift to the world. For a thousand years, strange people from stranger lands clashed, few coalescing.",
+        text: `Most humans died. Most who lived did so from the brilliance of General Laetrois Ath'Shaorah, prophet of Daethos, who warred against the Ancients. Humans freed from the Ancients and their homes; the Sundering's last gift to the world. For a thousand years, strange people from stranger lands clashed. Few coalesced.`,
     },
     2: {
         key: 2,
         prev: 1,
         next: 3,
-        text: "Yet, the beauty of this world bloomed once more, with many now traveling and curious about the world, despite whispers of the old and the Ancient being seen again. Whether in their mythic forms or of an othernature altogether, perhaps not all perished in their war. Perhaps its horror has returned.",
+        text: `And yet, the beauty of this world bloomed once more, with many curious and traversing this world, despite whispers of the old and the Ancient being seen again. Whether in their mythic forms or of an othernature altogether, perhaps not all perished in their war. Perhaps its horror has returned.`,
     },
     3: {
         key: 3,
         prev: 2,
         next: 4,
-        text: "Inside of the last century, warring has ceased into uncomfortable peace. Many great sons and fathers died for it; remembered well. Those reverent still alive, rapt with placidity. For some, the Ascea is satiating, a decennial tournament full of jest and joust, where prestige is now sought, and the va'Esai crowned. To be 'Worthy of the Preservation of Being.'",
+        text: `Inside of the last century, warring has ceased into uncomfortable peace. Many fathers and sons died in its making; remembered well. And those alive, rapt with ennui, or perhaps placidity. For some, the Ascea is satiating; a decennial tournament full of jest and joust, where prestige and wealth is sought, and the 'va'Esai' crowned. To be 'Worthy of the Preservation of Being.'`,
     },
     4: {
         key: 4,
         prev: 3,
         next: 5,
-        text: "A great, distinguishing burden befall the Ascean who claim the mantle. \n King Mathyus Caderyn II, the Daethic, and Warden of the Eye; \n High Lord Theogeni Spiras, Ghost Hawk of Greyrock, and Fyers Protectorate of the Firelands; \n General Evrio Lorian Peroumes, Proconsul of Licivitas, and current va'Esai. \n Such titles achieved post coronation.",
+        text: `A great, distinguishing burden befall the Ascean who claim the mantle. 
+            King Mathyus Caderyn II, the Daethic, and Warden of the Eye; 
+            High Lord Theogeni Spiras, Ghost Hawk of Greyrock, and Fyers Protectorate of the Firelands; 
+            Evrio Lorian Peroumes, General of Licivitas, Proconsul of Licivitas, [Current va'Esai]. \n Such titles achieved post coronation.`,
     },
     5: {
         key: 5,
         prev: 4,
         next: undefined, // undefined
-        text: "The Ascea may grant forms of honor, swathes of land, increased prestige, and numerous titles--yet these are base, inert, and material. To become the Ascean, the va'Esai. To be Worthy. That is the offer. Do not listen to whispers otherwise. Do not be led astray. Do not fear the bleating of the fallen and beaten. There is nothing else.",
+        text: `The Ascea may grant forms of honor, swathes of land, increased prestige, and numerous titles--yet these are base, inert. To become the Ascean, the va'Esai. To be Worthy. That is the offer. Do not listen to whispers otherwise. Do not be led astray. Do not fear the bleating of the fallen and beaten. There is nothing else.`,
     },
 };

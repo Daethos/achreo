@@ -24,23 +24,19 @@ export default function CombatUI({ state, game, stamina }: Props) {
     const [shieldShow, setShieldShow] = createSignal(false);
     const [staminaShow, setStaminaShow] = createSignal(false);
     const [playerHealthPercentage, setPlayerHealthPercentage] = createSignal(0); 
-
     createEffect(() => setPlayerHealthPercentage(Math.round((state().newPlayerHealth/state().playerHealth) * 100)));  
-
     const disengage = () => EventBus.emit('disengage');
     const showPlayer = () => {
         EventBus.emit('show-player');
         EventBus.emit('action-button-sound');
         EventBus.emit('update-small-hud');
     };
-
     function caerenic(caerenic: boolean) {
         return {
             'background-color': caerenic ? masteryColor(state()?.player?.mastery as string) : 'black',
             'border': border(borderColor(state()?.playerBlessing), 0.15),
         };
     };
-
     return (
         <div class='playerCombatUi'> 
             <p class='playerName' style={{ color: `${state().isStealth ? '#fdf6d8' : 'gold'}`, 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#444' : '#000'}`, 'z-index': 1 }} onClick={() => showPlayer()}>{state()?.player?.name}</p>

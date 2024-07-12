@@ -2947,7 +2947,7 @@ export default class Player extends Entity {
 
     swingReset = (type, primary = false) => {
         this.canSwing = false;
-        const time = (type === 'dodge' || type === 'parry' || type === 'roll') ? 1000 : 
+        const time = (type === 'dodge' || type === 'parry' || type === 'roll') ? 750 : 
             this.isAttacking === true ? this.swingTimer : 
             this.isPosturing === true ? this.swingTimer - 250 :
             this.swingTimer;
@@ -2971,7 +2971,6 @@ export default class Player extends Entity {
         if (this.isCaerenic === false && this.isGlowing === false) {
             this.checkCaerenic(true);
             this.scene.time.delayedCall(duration, () => {
-                // if (!this.isCaerenic && this.isGlowing) 
                 this.checkCaerenic(false);
             });
         };
@@ -2984,34 +2983,21 @@ export default class Player extends Entity {
                 this.scene.combatEngaged(false);
                 this.inCombat = false;
             };
-            
-            if (playerCombat === true && (
-                // (gameObject !== this.currentTarget && gameObject.inCombat !== true) ||
-                // gameObject.inCombat === false || 
-                gameObject.isDefeated === true ||
-                gameObject.isTriumphant === true ||
-                gameObject.isLuckout === true ||
-                gameObject.isPersuaded === true
-            )) {
+            if (playerCombat === true && (gameObject.isDefeated === true || gameObject.isTriumphant === true || gameObject.isLuckout === true || gameObject.isPersuaded === true)) {
                 return false;
             };
             return true;
         });
-        
         if (!this.touching.length && (this.triggeredActionAvailable || this.actionAvailable)) {
             if (this.triggeredActionAvailable) this.triggeredActionAvailable = undefined;
             if (this.actionAvailable) this.actionAvailable = false;
         };
-
         this.sendEnemies(this.targets);
-        
         if (this.targets.length === 0) { // && this.scene.state.computer
             this.disengage();
             return;
         };
-        
         const someInCombat = this.targets.some(gameObject => gameObject.inCombat);
-
         if (someInCombat && !playerCombat) {
             this.scene.combatEngaged(true);
             this.inCombat = true;
@@ -3041,7 +3027,6 @@ export default class Player extends Entity {
             this.currentTarget.clearTint();
             this.currentTarget.setTint(0x000000);
         };
-
         if (!this.inCombat) {
             this.setCurrentTarget(undefined);
             if (this.highlight.visible) {
@@ -3049,7 +3034,6 @@ export default class Player extends Entity {
             };
             return;
         };
-
         const currentTargetIndex = this.targets.findIndex(obj => obj.enemyID === enemyID);
         const newTarget = this.targets[currentTargetIndex + 1] || this.targets[0];
         if (!newTarget) return;

@@ -14,6 +14,7 @@ import { TIPS } from './utility/tips';
 import { Reputation, initReputation } from './utility/player';
 import type { IRefPhaserGame } from './game/PhaserGame';
 import { fullScreen, Screen } from './utility/fullscreen';
+import { Puff } from 'solid-spinner';
 
 const AsceanBuilder = lazy(async () => await import('./components/AsceanBuilder'));
 const AsceanView = lazy(async () => await import('./components/AsceanView'));
@@ -300,11 +301,11 @@ export default function App() {
                 {menu().creatingCharacter ? (
                     <div id='overlay' class='superCenter'>
                     <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION === 'landscape'}>
-                        <Suspense fallback={'Loading...'}>
+                        <Suspense fallback={<Puff color="gold"/>}>
                             <Preview newAscean={newAscean} />
                         </Suspense>
                     </Show>
-                    <Suspense fallback={'Loading...'}>
+                    <Suspense fallback={<Puff color="gold"/>}>
                         <AsceanBuilder newAscean={newAscean} setNewAscean={setNewAscean} menu={menu} />
                     </Suspense>
                     <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
@@ -353,7 +354,7 @@ export default function App() {
                     </div>
                 ) : menu()?.choosingCharacter ? ( // menu().asceans.length > 0
                     <div id="overlay" class='superCenter'>
-                        <Suspense fallback={'Loading...'}>
+                        <Suspense fallback={<Puff color="gold"/>}>
                             <MenuAscean menu={menu} viewAscean={viewAscean} loadAscean={loadAscean} />
                         </Suspense>
                         <Show when={menu()?.asceans?.length < 3}>
@@ -362,7 +363,7 @@ export default function App() {
                     </div>
                 ) : ascean() ? (
                     <>
-                        <Suspense fallback={'Loading...'}>
+                        <Suspense fallback={<Puff color="gold"/>}>
                             <AsceanView ascean={ascean} />
                         </Suspense>
                         <Show when={menu()?.asceans?.length > 0}>
@@ -381,9 +382,9 @@ export default function App() {
                         <button class='highlight cornerBR' style={{ 'background-color': 'black' }} onClick={() => loadAscean(ascean()?._id)}>Enter Game</button>
                     </>
                 ) : ( 
-                    <Suspense fallback={'Loading...'}>
+                    <Suspense fallback={<Puff color="gold"/>}>
                     <div class="cornerTL super">The Ascean v0.0.1</div>
-                    <Show when={menu().loaded} fallback={'Loading...'}>
+                    <Show when={menu().loaded} fallback={<Puff color="gold"/>}>
                     <div class='superCenter cinzel'>
                         <div class='center title'>The Ascean<br /> 
                             <button class='center highlight' onClick={() => menuOption(menu().asceans.length > 0 ? 'chooseCharacter' : 'createCharacter')}>Enter Game</button>
@@ -396,7 +397,7 @@ export default function App() {
                 <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} scene={scene} />
             </Show>
             <Show when={show()}>
-                <Suspense fallback={'Loading...'}>
+                <Suspense fallback={<Puff color="gold"/>}>
                     <div class='cornerBL realize' style={{ width: '30%', 'z-index': 1 }}>
                         <GameToast actions={actions} show={show} setShow={setShow} alert={alert} setAlert={setAlert as Setter<{ header: string; body: string; delay: number; key?: string; }>} />
                     </div>

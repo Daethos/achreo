@@ -1,8 +1,9 @@
 const { Bodies } = Phaser.Physics.Matter.Matter;
 
 const COLORS = {
-    'achire': 0x00FFFF,
     'astrave': 0xFFFF00,
+    'blind': 0xCC5500,
+    'caerenesis': 0x00FFFF,
     'chiomic': 0xFFC700,
     'freeze': 0x0000FF,
     'fyerus': 0xE0115F,
@@ -16,7 +17,7 @@ const COLORS = {
 };
 
 export default class AoE extends Phaser.Physics.Matter.Sprite {
-    constructor(scene, type, count = 1, positive = false, enemy = undefined, manual = false) {
+    constructor(scene, type, count = 1, positive = false, enemy = undefined, manual = false, target = undefined) {
         super(scene.matter.world, scene.player.x, scene.player.y + 6, 'target');
         this.setVisible(false);
         this.setScale(0.375); // 375
@@ -42,7 +43,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         } else {
             this.setupSensor(scene, manual);
             this.setupListener(scene);
-            this.setTimer(scene, manual);
+            this.setTimer(scene, manual, target);
             this.setCount(scene, type, positive);
         };
     };
@@ -156,11 +157,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         });
     };
     
-    setTimer = (scene, manual) => {
+    setTimer = (scene, manual, target) => {
         let scale = 0;
         let count = 0;
-        const target = manual === true ? scene.getWorldPointer() : scene.player;
-        const y = manual === true ? target.y : target.y + 6;
+        const targ = target !== undefined ? targ : manual === true ? scene.getWorldPointer() : scene.player;
+        const y = manual === true ? targ.y : targ.y + 6;
         this.timer = scene.time.addEvent({
             delay: 50,
             callback: () => {
@@ -169,7 +170,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                     scale += 0.01875;
                     this.setScale(scale);
                     this.setVisible(true);
-                    this.setPosition(target.x, y);
+                    this.setPosition(targ.x, y);
                 };
                 count++;
             },

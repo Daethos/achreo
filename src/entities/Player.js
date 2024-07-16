@@ -2704,8 +2704,10 @@ export default class Player extends Entity {
     onBlindExit = () => this.setTimeEvent('blindCooldown', PLAYER.COOLDOWNS.SHORT);
 
     onCaerenesisEnter = () => {
+        if (this.currentTarget === undefined) return;
+        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return; 
         this.scene.useStamina(PLAYER.STAMINA.CAERENESIS);    
-        this.aoe = new AoE(this.scene, 'caerenesis', 1);    
+        this.aoe = new AoE(this.scene, 'caerenesis', 1, false, undefined, false, this.currentTarget);    
         this.scene.sound.play('blink', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Caerenesis', 750, 'cast');
         this.isCaerenesis = true;
@@ -2723,12 +2725,13 @@ export default class Player extends Entity {
     onConvictionEnter = () => {
         this.scene.useStamina(PLAYER.STAMINA.CONVICTION);    
         this.setTimeEvent('convictionCooldown', PLAYER.COOLDOWNS.LONG);  
-        this.aoe = new AoE(this.scene, 'conviction', 1);    
+        this.scene.combatMachine.input('conviction', {active:true,charges:0});
         this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Conviction', 750, 'tendril');
         this.isConvicted = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.CONVICTION, () => {
             this.isConvicted = false;
+            this.scene.combatMachine.input('conviction', {active:false,charges:0});
         });
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `Your caeren steels itself in admiration of your physical form.`

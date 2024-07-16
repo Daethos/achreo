@@ -615,6 +615,34 @@ export class Game extends Scene {
             enemy.isStunned = true;
         };
     };
+    blind = (id: string): void => {
+        if (id === '') return;
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
+            enemy.isFeared = true;
+            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 1);
+            const health = enemy.health - damage;
+            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
+        };
+    };
+    caerenesis = (id: string): void => {
+        if (id === '') return;
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
+            enemy.isParalyzed = true;
+            if (this.player.currentTarget && this.player.currentTarget.enemyID === this.player.getEnemyId()) {
+                this.combatMachine.action({ type: 'Tshaeral', data: 10 });
+            } else {
+                const drained = Math.round(this.state.playerHealth * 0.1 * (this.player.isCaerenic ? 1.15 : 1) * ((this.state.player?.level as number + 9) / 10));
+                const newPlayerHealth = drained / this.state.playerHealth * 100;
+                const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
+                const tshaeralDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
+                EventBus.emit('add-combat-logs', { ...this.state, playerActionDescription: tshaeralDescription });
+                this.combatMachine.action({ type: 'Health', data: { key: 'player', value: newPlayerHealth, id: this.player.playerID } });
+                this.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newHealth, id: enemy.enemyID } });
+            };
+        };
+    };
     chiomic = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);

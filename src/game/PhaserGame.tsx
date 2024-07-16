@@ -88,12 +88,12 @@ export default function PhaserGame (props: IProps) {
                 ...props.ascean(),
                 level: state().ascean.level + 1,
                 experience: 0,
-                constitution: Math.round((state().ascean.constitution + constitution) * (newMastery === 'constitution' ? 1.07 : 1.04)), // 1.04 = +1 stat once the stat is 13 as it rounds up from .52 (1.04 * 13 = 13.52)
-                strength: Math.round((state().ascean.strength + strength) * (newMastery === 'strength' ? 1.07 : 1.04)), // 1.07 = +1 stat always, even at base 8. Requires 22 Stat points to increase by 2 / level. 22 * 1.07 = 23.54, rounded up to 24 
-                agility: Math.round((state().ascean.agility + agility) * (newMastery === 'agility' ? 1.07 : 1.04)),
-                achre: Math.round((state().ascean.achre + achre) * (newMastery === 'achre' ? 1.07 : 1.04)),
-                caeren: Math.round((state().ascean.caeren + caeren) * (newMastery === 'caeren' ? 1.07 : 1.04)),
-                kyosir: Math.round((state().ascean.kyosir + kyosir) * (newMastery === 'kyosir' ? 1.07 : 1.04)),
+                constitution: Math.round((state().ascean.constitution + constitution) * masteryCheck('constitution', newMastery)), // 1.04 = +1 stat once the stat is 13 as it rounds up from .52 (1.04 * 13 = 13.52)
+                strength: Math.round((state().ascean.strength + strength) * masteryCheck('strength', newMastery)), // 1.07 = +1 stat always, even at base 8. Requires 22 Stat points to increase by 2 / level. 22 * 1.07 = 23.54, rounded up to 24 
+                agility: Math.round((state().ascean.agility + agility) * masteryCheck('agility', newMastery)),
+                achre: Math.round((state().ascean.achre + achre) * masteryCheck('achre', newMastery)),
+                caeren: Math.round((state().ascean.caeren + caeren) * masteryCheck('caeren', newMastery)),
+                kyosir: Math.round((state().ascean.kyosir + kyosir) * masteryCheck('kyosir', newMastery)),
                 mastery: newMastery, 
                 faith: state().faith,
                 inventory: game().inventory,
@@ -144,6 +144,10 @@ export default function PhaserGame (props: IProps) {
         };
     };
 
+    function masteryCheck(attribute: string, mastery: string): number {
+        return attribute === mastery ? 1.07 : 1.04;
+    };
+
     async function deleteMerchantEquipment() {
         try {
             if (game().merchantEquipment.length === 0) return;
@@ -162,11 +166,7 @@ export default function PhaserGame (props: IProps) {
                 gold: props.ascean().currency.gold - purchase.cost.gold
             };
             cost = rebalanceCurrency(cost);
-            const update = {
-                ...props.ascean(),
-                currency: cost,
-                inventory: inventory
-            };
+            const update = { ...props.ascean(), currency: cost, inventory: inventory };
             let merchantEquipment = [ ...game().merchantEquipment ];
             merchantEquipment = merchantEquipment.filter((eqp) => eqp._id !== purchase.item._id);
             setGame({ ...game(), merchantEquipment });
@@ -295,9 +295,7 @@ export default function PhaserGame (props: IProps) {
     function recordSkills(skills: string[]) {
         let newSkills = { ...props.ascean().skills };
         skills.forEach((skill: string, index: number) => {
-            if (index % 3 !== 0) {
-                return;
-            };
+            if (index % 3 !== 0) return;
             newSkills[skill as keyof typeof newSkills] += 1;
             newSkills[skill as keyof typeof newSkills] = Math.min(newSkills[skill as keyof typeof newSkills], props.ascean().level * 100);
         });

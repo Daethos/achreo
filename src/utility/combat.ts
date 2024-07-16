@@ -328,16 +328,17 @@ function damageTypeCompiler(damageType: string, enemy: Ascean, weapon: Equipment
     return { physicalDamage, magicalDamage };
 };
 
-function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, critClearance: number, weapon: Equipment, physicalDamage: number, magicalDamage: number, weather: string, glancingBlow: boolean, criticalSuccess: boolean):{ criticalSuccess: boolean, glancingBlow: boolean, physicalDamage: number, magicalDamage: number } {
+function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, critClearance: number, weapon: Equipment, physicalDamage: number, magicalDamage: number, weather: string, glancingBlow: boolean, criticalSuccess: boolean, isSeering: boolean = false):{ criticalSuccess: boolean, glancingBlow: boolean, physicalDamage: number, magicalDamage: number, isSeering: boolean } {
     if (weather === 'Alluring Isles') critChance -= 10;
     if (weather === 'Astralands') critChance += 10;
     if (weather === 'Kingdom') critChance += 5;
 
     if (player === true) {
-        if (critChance >= critClearance) {
+        if (critChance >= critClearance || isSeering === true) {
             physicalDamage *= weapon.criticalDamage;
             magicalDamage *= weapon.criticalDamage;
             criticalSuccess = true;
+            isSeering = false;
         } else {
             const skills = ascean.skills;
             let skill: number = 1;
@@ -419,7 +420,7 @@ function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, c
             glancingBlow = true;
         };
     };
-    return { criticalSuccess, glancingBlow, physicalDamage, magicalDamage };
+    return { criticalSuccess, glancingBlow, physicalDamage, magicalDamage, isSeering };
 }; 
 
 function phaserActionConcerns(action: string): boolean {
@@ -1310,7 +1311,7 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     let weapTwoCrit = combat.weapons[1]?.criticalChance as number;
     weapOneCrit -= combat.computerAttributes?.kyosirMod as number;
     weapTwoCrit -= combat.computerAttributes?.kyosirMod as number;
-    const resultOne = criticalCompiler(true, combat.player as Ascean, weapOneCrit, weapOneClearance, combat.weapons[0] as Equipment, playerWeaponOnePhysicalDamage as number, playerWeaponOneMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess);
+    const resultOne = criticalCompiler(true, combat.player as Ascean, weapOneCrit, weapOneClearance, combat.weapons[0] as Equipment, playerWeaponOnePhysicalDamage as number, playerWeaponOneMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess, combat.isSeering);
     combat.criticalSuccess = resultOne.criticalSuccess;
     combat.glancingBlow = resultOne.glancingBlow;
     playerWeaponOnePhysicalDamage = resultOne.physicalDamage;
@@ -1318,9 +1319,10 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     if (weapOneCrit >= weapOneClearance) {
         firstWeaponCrit = true;
     };
-    const resultTwo = criticalCompiler(true, combat.player as Ascean, weapTwoCrit, weapTwoClearance, combat.weapons[1] as Equipment, playerWeaponTwoPhysicalDamage as number, playerWeaponTwoMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess);
+    const resultTwo = criticalCompiler(true, combat.player as Ascean, weapTwoCrit, weapTwoClearance, combat.weapons[1] as Equipment, playerWeaponTwoPhysicalDamage as number, playerWeaponTwoMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess, combat.isSeering);
     combat.criticalSuccess = resultTwo.criticalSuccess;
     combat.glancingBlow = resultTwo.glancingBlow;
+    combat.isSeering = resultTwo.isSeering;
     playerWeaponTwoPhysicalDamage = resultTwo.physicalDamage;
     playerWeaponTwoMagicalDamage = resultTwo.magicalDamage;
     if (weapTwoCrit >= weapTwoClearance) {
@@ -1386,6 +1388,16 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     };
     if (combat.isCaerenic === true) {
         combat.realizedPlayerDamage *= 1.15;
+    };
+    if (combat.astrication.active === true) {
+        combat.astrication.charges += 1;
+    };
+    if (combat.conviction.active === true) {
+        combat.realizedPlayerDamage *= (1 + combat.conviction.charges * 0.03);
+
+    };
+    if (combat.berserk.active === true) {
+        combat.realizedPlayerDamage *= (1 + combat.berserk.charges * 0.03);
     };
 
     combat.newComputerHealth -= combat.realizedPlayerDamage;
@@ -1555,9 +1567,10 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     criticalChance -= combat.computerAttributes?.kyosirMod as number;
     if (combat.weather === 'Astralands') criticalChance += 10;
     if (combat.weather === 'Astralands' && combat.weapons[0]?.influences?.[0] === 'Astra') criticalChance += 10;
-    const criticalResult = criticalCompiler(true, combat.player as Ascean, criticalChance, criticalClearance, combat.weapons[0] as Equipment, playerPhysicalDamage, playerMagicalDamage, combat.weather, combat.glancingBlow, combat.criticalSuccess);
+    const criticalResult = criticalCompiler(true, combat.player as Ascean, criticalChance, criticalClearance, combat.weapons[0] as Equipment, playerPhysicalDamage, playerMagicalDamage, combat.weather, combat.glancingBlow, combat.criticalSuccess, combat.isSeering);
     combat.criticalSuccess = criticalResult.criticalSuccess;
     combat.glancingBlow = criticalResult.glancingBlow;
+    combat.isSeering = criticalResult.isSeering;
     playerPhysicalDamage = criticalResult.physicalDamage;
     playerMagicalDamage = criticalResult.magicalDamage;
 
@@ -1583,7 +1596,15 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     if (combat.isCaerenic) {
         combat.realizedPlayerDamage *= 1.15;
     };
-
+    if (combat.astrication.active === true) {
+        combat.astrication.charges += 1;
+    };
+    if (combat.conviction.active === true) {
+        combat.realizedPlayerDamage *= (1 + combat.conviction.charges * 0.03);
+    };
+    if (combat.berserk.active === true) {
+        combat.realizedPlayerDamage *= (1 + combat.berserk.charges * 0.03);
+    };
     combat.newComputerHealth -= combat.realizedPlayerDamage;
     combat.typeAttackData.push(combat.weapons[0]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
@@ -2084,6 +2105,10 @@ function newDataCompiler(combat: Combat): any {
         playerTrait: combat.playerTrait,
         soundEffects: combat.soundEffects,
         blindStrike: combat.blindStrike,
+        isSeering: combat.isSeering,
+        astrication: combat.astrication,
+        berserk: combat.berserk,
+        conviction: combat.conviction,
     };
     return newData;
 };

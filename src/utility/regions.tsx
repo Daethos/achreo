@@ -1,4 +1,3 @@
-
 export interface Region { 
     Astralands: string;
     Kingdom: string;

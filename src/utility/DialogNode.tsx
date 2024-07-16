@@ -1,11 +1,10 @@
-import { Accessor, Setter, createSignal, onMount } from "solid-js";
+import { Accessor, Setter, onMount } from "solid-js";
 import Ascean from "../models/ascean";
 import { GameState } from "../stores/game";
 import DialogNodes from "./DialogNodes.json";
 import EnemyDialogNodes from './EnemyDialogNodes.json';
 import { NPC } from "./npc";
 import { EventBus } from "../game/EventBus";
-// import { Ascean, Enemy, GAME_ACTIONS, GameState, NPC } from "./GameStore";
 
 export interface DialogNodeOption {
     text: string;
@@ -102,17 +101,15 @@ export const DialogOption = ({ option, onClick, actions }: DialogOptionProps) =>
 
 interface DialogTreeProps {
   ascean: Ascean;
-  enemy: NPC | Ascean;
   dialogNodes: DialogNode[];
   engageCombat: () => Promise<void>;
   getLoot: (type: string) => void;
   refillFlask: () => void;
   state: any;
   game: Accessor<GameState>;
-  gameDispatch: Setter<GameState>;
 };
 
-const DialogTree = ({ ascean, enemy, engageCombat, getLoot, dialogNodes, game, gameDispatch, state, refillFlask }: DialogTreeProps) => {
+const DialogTree = ({ ascean, engageCombat, getLoot, dialogNodes, game, state, refillFlask }: DialogTreeProps) => {
     const actions = {
         getCombat: () => engageCombat(),
         getArmor: () => getLoot('armor'),
@@ -123,12 +120,6 @@ const DialogTree = ({ ascean, enemy, engageCombat, getLoot, dialogNodes, game, g
         getWeapon: () => getLoot('physical-weapon'),
         getFlask: () => refillFlask()
     };
-    // const [currentNodeIndex, setCurrentNodeIndex] = createSignal(game()?.currentNodeIndex || 0);
-
-    // onMount(() => {
-    //     console.log("We made it here!", dialogNodes[currentNodeIndex()]);
-    //     setCurrentNodeIndex(game()?.currentNodeIndex || 0);
-    // });
 
     onMount(() => {
         if (game()?.currentNode) {
@@ -170,19 +161,16 @@ const DialogTree = ({ ascean, enemy, engageCombat, getLoot, dialogNodes, game, g
                 }) as DialogNodeOption[];
             };
             EventBus.emit('blend-game', { renderedText: newText, renderedOptions: newOptions });
-            // gameDispatch({ type: GAME_ACTIONS.SET_RENDERING, payload: { text: newText, options: newOptions } });
         };
     });
 
     const handleOptionClick = (nextNodeId: string | null) => {
         if (nextNodeId === null) {
             EventBus.emit('blend-game', { setCurrentNodeIndex: 0 });
-            //   gameDispatch({ type: GAME_ACTIONS.SET_CURRENT_NODE_INDEX, payload: 0 });
         } else {
             let nextNodeIndex = dialogNodes.findIndex((node) => node.id === nextNodeId);
             if (nextNodeIndex === -1) nextNodeIndex = 0;
             EventBus.emit('blend-game', { setCurrentNodeIndex: nextNodeIndex });
-            //   gameDispatch({ type: GAME_ACTIONS.SET_CURRENT_NODE_INDEX, payload: nextNodeIndex });
         };
     };
 

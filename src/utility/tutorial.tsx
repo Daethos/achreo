@@ -152,8 +152,7 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 </p>
                 <p class='verticalTop gold highlight' style={{ top: '2em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                    FPS {arrows.up} <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[Current Game FPS (Frames Per Second), <br />
-                        click this to toggle Fullscreen Mode]</span>
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Current Game FPS (Frames Per Second)</span>
                 </p>
                 <p class='cornerTR gold highlight' style={{ right: '0', top: '10%', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                     Specials (Black) {arrows.down} <br />

@@ -244,10 +244,10 @@ export default class Player extends Entity {
                 onUpdate: this.onStormUpdate,
                 onExit: this.onStormExit,
             })
-            .addState(States.TSHAERAL, {
-                onEnter: this.onTshaeralEnter,
-                onUpdate: this.onTshaeralUpdate,
-                onExit: this.onTshaeralExit,
+            .addState(States.DEVOUR, {
+                onEnter: this.onDevourEnter,
+                onUpdate: this.onDevourUpdate,
+                onExit: this.onDevourExit,
             }) // ==================== NEGATIVE STATES ==================== //
             .addState(States.CONFUSED, {
                 onEnter: this.onConfusedEnter,
@@ -357,7 +357,52 @@ export default class Player extends Entity {
                 onEnter: this.onWritheEnter,
                 onUpdate: this.onWritheUpdate,
                 onExit: this.onWritheExit,
-            });
+            }) // ========== TRAITS ========== \\
+            .addState(States.ASTRICATION, {
+                onEnter: this.onAstricationEnter,
+                onUpdate: this.onAstricationUpdate,
+                onExit: this.onAstricationExit,
+            })
+            .addState(States.BERSERK, {
+                onEnter: this.onBerserkEnter,
+                onUpdate: this.onBerserkUpdate,
+                onExit: this.onBerserkExit,
+            })
+            .addState(States.BLIND, {
+                onEnter: this.onBlindEnter,
+                onUpdate: this.onBlindUpdate,
+                onExit: this.onBlindExit,
+            })
+            .addState(States.CAERENESIS, {
+                onEnter: this.onCaerenesisEnter,
+                onUpdate: this.onCaerenesisUpdate,
+                onExit: this.onCaerenesisExit,
+            })
+            .addState(States.CONVICTION, {
+                onEnter: this.onConvictionEnter,
+                onUpdate: this.onConvictionUpdate,
+                onExit: this.onConvictionExit,
+            })
+            .addState(States.ENDURANCE, {
+                onEnter: this.onEnduranceEnter,
+                onUpdate: this.onEnduranceUpdate,
+                onExit: this.onEnduranceExit,
+            })
+            .addState(States.IMPERMANENCE, {
+                onEnter: this.onImpermanenceEnter,
+                onUpdate: this.onImpermanenceUpdate,
+                onExit: this.onImpermanenceExit,
+            })
+            .addState(States.SEER, {
+                onEnter: this.onSeerEnter,
+                onUpdate: this.onSeerUpdate,
+                onExit: this.onSeerExit,
+            })
+            .addState(States.STIMULATE, {
+                onEnter: this.onStimulateEnter,
+                onUpdate: this.onStimulateUpdate,
+                onExit: this.onStimulateExit,
+            })
             
         // ==================== NEGATIVE META STATES ==================== //
         this.negMetaMachine = new StateMachine(this, 'player');
@@ -1986,18 +2031,18 @@ export default class Player extends Entity {
     };
     onSutureExit = () => {};
 
-    onTshaeralEnter = () => {
+    onDevourEnter = () => {
         if (this.currentTarget === undefined) return; 
         if (this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.spellTarget = this.currentTarget.enemyID;
         this.isCasting = true;
         this.currentTarget.isConsumed = true;
-        this.scene.useStamina(PLAYER.STAMINA.TSHAERAL);
+        this.scene.useStamina(PLAYER.STAMINA.DEVOUR);
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         this.flickerCarenic(2000); 
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAERAL / 2, 'damage');
-        this.castbar.setTotal(PLAYER.DURATIONS.TSHAERAL);
-        this.castbar.setTime(PLAYER.DURATIONS.TSHAERAL);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.DEVOUR / 2, 'damage');
+        this.castbar.setTotal(PLAYER.DURATIONS.DEVOUR);
+        this.castbar.setTime(PLAYER.DURATIONS.DEVOUR);
         this.tshaeringTimer = this.scene.time.addEvent({
             delay: 250,
             callback: () => this.tshaeralTick(),
@@ -2016,11 +2061,11 @@ export default class Player extends Entity {
         this.setStatic(true);
         this.castbar.setVisible(true); 
     };
-    onTshaeralUpdate = (dt) => {
+    onDevourUpdate = (dt) => {
         this.combatChecker(this.isCasting);
         if (this.isCasting === true) this.castbar.update(dt, 'channel', 0xA700FF);
     };
-    onTshaeralExit = () => {
+    onDevourExit = () => {
         this.castbar.reset(); 
         this.spellTarget = '';
         this.setStatic(false);
@@ -2607,6 +2652,176 @@ export default class Player extends Entity {
         if (!this.inCombat) return;
         this.setTimeEvent('writheCooldown', PLAYER.COOLDOWNS.SHORT);  
     };
+
+    // ==================== TRAITS ==================== \\
+    onAstricationEnter = () => {
+        this.scene.useStamina(PLAYER.STAMINA.ASTRICATION);    
+        this.setTimeEvent('astricationCooldown', PLAYER.COOLDOWNS.LONG);
+        this.scene.sound.play('lightning', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Astrication', 750, 'effect');
+        this.isAstrifying = true;
+        this.flickerCarenic(PLAYER.DURATIONS.ASTRICATION); 
+        this.scene.time.delayedCall(PLAYER.DURATIONS.ASTRICATION, () => {
+            this.isAstrifying = false;
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `Your caeren astrifies, wrapping round your attacks.`
+        });
+    };
+    onAstricationUpdate = (_dt) => {if (!this.isAstrifying) this.metaMachine.setState(States.CLEAN);};
+    onAstricationExit = () => {};
+
+    onBerserkEnter = () => {
+        this.scene.useStamina(PLAYER.STAMINA.BERSERK);    
+        this.setTimeEvent('berserkCooldown', PLAYER.COOLDOWNS.LONG);  
+        this.scene.sound.play('howl', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Berserking', 750, 'damage');
+        this.isBerserking = true;
+        this.scene.time.delayedCall(PLAYER.DURATIONS.BERSERK, () => {
+            this.isBerserking = false;
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `Your caeren feeds off the pain, its hush shrieking forth.`
+        });
+    };
+    onBerserkUpdate = (_dt) => {if (!this.isBerserking) this.metaMachine.setState(States.CLEAN);};
+    onBerserkExit = () => {};
+
+    onBlindEnter = () => {
+        this.scene.useStamina(PLAYER.STAMINA.BLIND);    
+        this.aoe = new AoE(this.scene, 'blind', 1);    
+        this.scene.sound.play('righteous', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Brilliance', 750, 'effect');
+        this.isBlinding = true;
+        this.scene.time.delayedCall(PLAYER.DURATIONS.BLIND, () => {
+            this.isBlinding = false;
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `Your caeren shines with brilliance, blinding those around you.`
+        });
+    };
+    onBlindUpdate = (_dt) => {if (!this.isBlinding) this.metaMachine.setState(States.CLEAN);};
+    onBlindExit = () => this.setTimeEvent('blindCooldown', PLAYER.COOLDOWNS.SHORT);
+
+    onCaerenesisEnter = () => {
+        this.scene.useStamina(PLAYER.STAMINA.CAERENESIS);    
+        this.aoe = new AoE(this.scene, 'caerenesis', 1);    
+        this.scene.sound.play('blink', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Caerenesis', 750, 'cast');
+        this.isCaerenesis = true;
+        this.setTimeEvent('caerenesisCooldown', PLAYER.COOLDOWNS.SHORT);  
+        this.scene.time.delayedCall(PLAYER.DURATIONS.CAERENESIS, () => {
+            this.isCaerenesis = false;
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `Your caeren grips your body and contorts, writhing around you.`
+        });
+    };
+    onCaerenesisUpdate = (_dt) => {if (!this.isCaerenesis) this.metaMachine.setState(States.CLEAN);};
+    onCaerenesisExit = () => {};
+
+    onConvictionEnter = () => {
+        this.scene.useStamina(PLAYER.STAMINA.CONVICTION);    
+        this.setTimeEvent('convictionCooldown', PLAYER.COOLDOWNS.LONG);  
+        this.aoe = new AoE(this.scene, 'conviction', 1);    
+        this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Conviction', 750, 'tendril');
+        this.isConvicted = true;
+        this.scene.time.delayedCall(PLAYER.DURATIONS.CONVICTION, () => {
+            this.isConvicted = false;
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `Your caeren steels itself in admiration of your physical form.`
+        });
+    };
+    onConvictionUpdate = (_dt) => {if (!this.isConvicted) this.metaMachine.setState(States.CLEAN)};
+    onConvictionExit = () => {};
+
+    onEnduranceEnter = () => {
+        this.scene.useStamina(PLAYER.STAMINA.ENDURANCE);    
+        this.scene.sound.play('shield', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Endurance', 750, 'heal');
+        this.isEnduring = true;
+        this.flickerCarenic(PLAYER.DURATIONS.ASTRICATION); 
+        this.scene.time.addEvent({
+            delay: 1000,
+            callback: () => this.scene.useStamina(-20),
+            repeat: 5,
+            callbackScope: this
+        });
+        this.scene.time.delayedCall(PLAYER.DURATIONS.ENDURANCE, () => {
+            this.isEnduring = false;
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `Your caeren's hush pours into other faculties, invigorating you.`
+        });
+    };
+    onEnduranceUpdate = (_dt) => {
+        if (!this.isEnduring) {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onEnduranceExit = () => this.setTimeEvent('enduranceCooldown', PLAYER.COOLDOWNS.LONG);  
+
+    onImpermanenceEnter = () => {
+        this.scene.useStamina(PLAYER.STAMINA.IMPERMANENCE);    
+        this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Impermanence', 750, 'hush');
+        this.isImpermanent = true;
+        this.flickerCarenic(1500); 
+        this.setTimeEvent('impermanenceCooldown', PLAYER.COOLDOWNS.MODERATE);  
+        this.scene.time.delayedCall(PLAYER.DURATIONS.IMPERMANENCE, () => {
+            this.isImpermanent = false;
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `Your caeren grips your body and fades, its hush concealing.`
+        });
+    };
+    onImpermanenceUpdate = (_dt) => {if (!this.isImpermanent) this.metaMachine.setState(States.CLEAN);};
+    onImpermanenceExit = () => {};
+
+    onSeerEnter = () => {
+        this.scene.useStamina(PLAYER.STAMINA.SEER);    
+        this.scene.sound.play('fire', { volume: this.scene.settings.volume });
+        this.scene.combatMachine.input('isSeering', true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Seer', 750, 'damage');
+        this.isSeering = true;
+        this.setTimeEvent('seerCooldown', PLAYER.COOLDOWNS.LONG);
+        this.flickerCarenic(1500); 
+        this.scene.time.delayedCall(PLAYER.DURATIONS.SEER, () => {
+            this.isSeering = false;
+            if (this.scene.state.isSeering === true) {
+                this.scene.combatMachine.input('isSeering', false);
+            };
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `Your caeren grips your body and contorts, writhing around you.`
+        });
+    };
+    onSeerUpdate = (_dt) => {if (!this.isSeering) this.metaMachine.setState(States.CLEAN);};
+    onSeerExit = () => {};
+
+    onStimulateEnter = () => {
+        this.scene.useStamina(PLAYER.STAMINA.STIMULATE);    
+        this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stimulate', 750, 'effect');
+        this.isStimulating = true;
+        this.flickerCarenic(1500); 
+        this.scene.time.delayedCall(PLAYER.DURATIONS.STIMULATE, () => {
+            this.isStimulating = false;
+        });
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `Your caeren grants reprieve, refreshing you.`
+        });
+        for (let i = 0; i < this.scene.actionBar.specialButtons.length; i++) {
+            const name = this.scene.settings.specials[i].toLowerCase();
+            if (name === "stimulate") return;
+            console.log(`%c Resetting the cooldown on ${name}}`, 'color: gold');
+            this.setTimeEvent(`${name}Cooldown`, 0);
+        };
+    };
+    onStimulateUpdate = (_dt) => {if (!this.isStimulating) this.metaMachine.setState(States.CLEAN);};
+    onStimulateExit = () => this.setTimeEvent('stimulateCooldown', PLAYER.COOLDOWNS.LONG);  
 
     onStunEnter = () => {
         this.scene.joystick.joystick.setVisible(false);

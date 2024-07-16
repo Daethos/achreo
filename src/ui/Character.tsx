@@ -23,7 +23,7 @@ import SettingSetter from '../utility/settings';
 import TutorialOverlay from '../utility/tutorial';
 import LevelUp from './LevelUp';
 import { playerTraits } from '../utility/ascean';
-import { ACTIONS, SPECIALS } from '../utility/abilities';
+import { ACTIONS, SPECIALS, TRAIT_SPECIALS } from '../utility/abilities';
 import { OriginModal } from '../components/Origin';
 import { FaithModal } from '../components/Faith';
 import { DEITIES } from '../utility/deities';
@@ -72,7 +72,6 @@ const GET_FORGE_COST = {
     Rare: 12,
     Epic: 60,
 };
-
 const GET_NEXT_RARITY = {
     Common: "Uncommon",
     Uncommon: 'Rare',
@@ -103,6 +102,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
     const [currentAction, setCurrentAction] = createSignal({action: ACTIONS[0],index: 0});
     const [specialShow, setSpecialShow] = createSignal<boolean>(false);
     const [currentSpecial, setCurrentSpecial] = createSignal({special: SPECIALS[0],index: 0});
+    const [specials, setSpecials] = createSignal<any[]>([]);
     const [inspectModalShow, setInspectModalShow] = createSignal<boolean>(false);
     const [inspectItems, setInspectItems] = createSignal<{ item: Equipment | undefined; type: string; } | any[]>([]);
     const [attrShow, setAttrShow] = createSignal<boolean>(false);
@@ -127,6 +127,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         if (ascean) {
             setAsceanPic(`../assets/images/${ascean().origin}-${ascean().sex}.jpg`);
             playerTraits(game, setPlayerTraitWrapper);
+            checkSpecials();
         };
     });
 
@@ -153,6 +154,23 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         setDragAndDropInventory(game().inventory);
         checkHighlight();
     }); 
+
+    function checkSpecials() {
+        const potential = [playerTraitWrapper().primary.name, playerTraitWrapper().secondary.name, playerTraitWrapper().tertiary.name];
+        const extra = [];
+        for (let i = 0; i < 3; i++) {
+            const trait = TRAIT_SPECIALS[potential[i] as keyof typeof TRAIT_SPECIALS];
+            if (trait) {
+                extra.push(trait);
+            };
+        };
+        console.log(extra, 'Extra Specials');
+        if (extra.length > 0) {
+            let start = [...SPECIALS, ...extra];
+            start.sort();
+            setSpecials([...SPECIALS, ...extra]);
+        };
+    };
 
     const getBackgroundStyle = () => {
         if (scaleImage().scale > 48 && scaleImage().id === highlighted()?.item?._id) {
@@ -1025,7 +1043,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         </Show> 
         <Show when={specialShow()}>
             <div class='modal' onClick={() => setSpecialShow(!specialShow())}>
-                <ActionButtonModal currentAction={currentSpecial} actions={SPECIALS} handleAction={handleSpecialButton} special={true} /> 
+                <ActionButtonModal currentAction={currentSpecial} actions={specials()} handleAction={handleSpecialButton} special={true} /> 
             </div>
         </Show>
         <Show when={(inspectModalShow() && inspectItems())}> 

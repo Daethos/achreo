@@ -15,7 +15,7 @@ export const SPECIAL = {
         'Ward'
     ], // 13
 
-    'strength': [ // 13
+    'strength': [ // 12
         'Achire',
         'Arc', 
         'Consume', 
@@ -26,10 +26,10 @@ export const SPECIAL = {
         'Scream', 
         'Storm', 
         'Suture', 
-        'Tshaeral', 
+        // 'Devour', 
         'Ward', 
         'Writhe'
-    ], // 13
+    ], // 12
 
     'agility': [ // 13
         'Consume', 
@@ -79,7 +79,7 @@ export const SPECIAL = {
         'Suture'
     ], // 12
 
-    'kyosir': [ // 13
+    'kyosir': [ // 12
         'Astrave',
         'Chiomic',
         'Confuse', 
@@ -92,11 +92,23 @@ export const SPECIAL = {
         'Protect', 
         'Scream', 
         'Suture', 
-        'Tshaeral'
-    ], // 13
+    ], // 12
 };
 
 export const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
+
+export const TRAIT_SPECIALS = {
+    "Astral": 'Astrication',
+    "Cambiren": 'Caerenesis', // Target Enemy, AoE, after 1s it stuns and tshaers for 10% ?
+    "Fyeran": 'Seer',
+    "Ilian": 'Blind',
+    "Kyn'gian": 'Endurance',
+    "Sedyrist" : 'Stimulate', // Preparation
+    "Se'van": 'Berserk',
+    "Shaorahi": 'Conviction',
+    "Shrygeian": 'Impermanence',
+    "Tshaeral": 'Devour',
+};
 
 export const SPECIALS = [
     'Achire',
@@ -137,10 +149,9 @@ export const SPECIALS = [
     'Sprint',
     'Storm',
     'Suture',
-    'Tshaeral',
     'Ward',
     'Writhe',
-]; // 'Charm', 'Counter', 'Shroud'
+]; // 'Charm', 'Shroud'
 
 export const startingSpecials = {
     'constitution': ['Healing', 'Kyrnaicism', 'Mend', 'Shield', 'Ward'],
@@ -148,5 +159,5 @@ export const startingSpecials = {
     'agility': ['Pursuit', 'Recover', 'Rush', 'Shimmer', 'Sprint'],
     'achre': ['Blink', 'Envelop', 'Polymorph', 'Root', 'Slow'],
     'caeren': ['Desperation', 'Fear', 'Protect', 'Sacrifice', 'Suture'],
-    'kyosir': ['Chiomic', 'Confuse', 'Malice', 'Scream', 'Tshaeral'],
+    'kyosir': ['Chiomic', 'Confuse', 'Malice', 'Paralyze', 'Scream'],
 };

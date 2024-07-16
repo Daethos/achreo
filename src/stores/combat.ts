@@ -113,9 +113,14 @@ export interface Combat {
     skillData: string[];
 
     weather: string;
+    astrication: { active: boolean; charges: number; };
+    berserk: { active: boolean; charges: number; };
+    conviction: { active: boolean; charges: number; };
+    impermanent: { active: boolean; charges: number; };
     isStalwart: boolean; // +15% Defense, Cannot Dodge, Roll
     isCaerenic: boolean; // +15% Attack, -15% Defense
     isStealth: boolean; //
+    isSeering: boolean;
     enemyID: string;
     combatTimer: number;
     soundEffects: boolean;
@@ -241,9 +246,14 @@ export const initCombat: Combat = {
     skillData: [],
 
     weather: '',
+    astrication: { active: false, charges: 0 },
+    berserk: { active: false, charges: 0 },
+    conviction: { active: false, charges: 0 },
+    impermanent: { active: false, charges: 0 },
     isStalwart: false, // +15% Defense, Cannot Dodge, Roll
     isCaerenic: false, // +15% Attack, -15% Defense
     isStealth: false,
+    isSeering: false,
     enemyID: '',
     combatTimer: 0,
     soundEffects: false,

@@ -1402,7 +1402,7 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     combat.skillData.push(skill as string);
     const skillTwo = combat.weapons[1]?.type === 'Spell' ? combat.weapons[1]?.damageType?.[0] : combat.weapons[1]?.type;
     combat.skillData.push(skillTwo as string);
-    combat.totalDamageData = combat.realizedPlayerDamage > combat.totalDamageData ? combat.realizedPlayerDamage : combat.totalDamageData;
+    combat.totalDamageData = Math.max(combat.realizedPlayerDamage, combat.totalDamageData);
     // ==================== STATISTIC LOGIC ====================
     
     combat.playerActionDescription = 
@@ -1585,15 +1585,14 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     };
 
     combat.newComputerHealth -= combat.realizedPlayerDamage;
-
     combat.typeAttackData.push(combat.weapons[0]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
     const skill = combat.weapons[0]?.type === 'Spell' ? combat.weapons[0]?.damageType?.[0] : combat.weapons[0]?.type;
     combat.skillData.push(skill as string);
-    combat.totalDamageData = combat.realizedPlayerDamage > combat.totalDamageData ? combat.realizedPlayerDamage : combat.totalDamageData;
+    combat.totalDamageData = Math.max(combat.realizedPlayerDamage, combat.totalDamageData);
 
     combat.playerActionDescription = 
-        `You ${ATTACKS[playerAction as keyof typeof ATTACKS]} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(playerTotalDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'damage (Critical)' : combat.glancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
+        `You ${ATTACKS[playerAction as keyof typeof ATTACKS]} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'damage (Critical)' : combat.glancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
 
     if (combat.newComputerHealth <= 0) {
         combat.newComputerHealth = 0;

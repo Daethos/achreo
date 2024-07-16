@@ -164,9 +164,6 @@ const deities = {
             achre: 1,
             caeren: 1,
         },
-        miniGames: {
-            tshaeral: -1,
-        },
         persuasion: {
             arbituous: 1,
             chiomic: -1,
@@ -184,16 +181,12 @@ const deities = {
             achre: 3,
             caeren: -1, 
         },
-        miniGames: {
-            cambiren: -1,
-        },
         persuasion: {
             arbituous: 1,
             kyrnaic: 1,
         }
     }, 
     "Ahn've": { // Ancient of Wind
-
         mastery: {
             constitution: 1,
             achre: 1,
@@ -203,8 +196,7 @@ const deities = {
             chiomic: 1,
             fyeran: -1,
             shaorahi: 1,
-        },
-
+        }
     }, 
     "Astra": { // Ancient of Lightning
 
@@ -222,9 +214,6 @@ const deities = {
         mastery: {  
             achre: -1,
             caeren: 3,
-        },
-        miniGames: {
-            cambiren: 1,
         }
     },
     "Chiomyr": { // Ancient of Humor
@@ -379,11 +368,7 @@ const deities = {
         },
         mastery: {
             strength: 2,
-        },
-        miniGames: {
-            sevan: 2,
-            tshaeral: 1,
-        },
+        }
     }, 
     "Senari": { // Ancient of Wisdom
         luckout: {
@@ -404,13 +389,10 @@ const deities = {
             agility: 1,
             kyosir: 1,
         },
-        miniGames: {
-            shrygeian: 2,
-        },
         persuasion: {
             chiomic: 1,
             fyeran: 1,
-        },
+        }
     },
     "Tshaer": { // Ancient of Animals
         combat: {
@@ -419,11 +401,7 @@ const deities = {
         mastery: { 
             strength: 1,
             agility: 1,
-        },
-        miniGames: {
-            sevan: 1,
-            tshaeral: 2,
-        },
+        }
     }, 
 };
 

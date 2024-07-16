@@ -1,6 +1,5 @@
 import { Accessor } from "solid-js";
-import Settings from "../models/settings";
-// fdfd68
+import Settings from "../models/settings"; 
 
 const svg = (type: string) => {
     switch (type) {

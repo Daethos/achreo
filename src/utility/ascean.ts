@@ -477,8 +477,8 @@ const coefficientCompiler = (ascean: Ascean, item: Equipment): number => {
     // console.log(item, 'Item')
     switch (item.rarity) {
         case 'Common':
-            coefficient = 1;
-            // coefficient = ascean.level / 4;
+            // coefficient = 1;
+            coefficient = ascean.level / 2;
             break;
         case 'Uncommon':
             coefficient = 1;
@@ -632,7 +632,7 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
             case "Astral":
                 return {
                     name: "Astral",
-                    traitOneName: "Impermanence",
+                    traitOneName: "Astrication",
                     traitOneDescription: "Perform combat maneuvers that are impossible to follow, and thus impossible to counter.",
                     traitTwoName: "Pursuit",
                     traitTwoDescription: "Force encounters, even with enemies that would normally avoid you."
@@ -642,8 +642,8 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     name: "Cambiren",
                     traitOneName: "Caerenicism",
                     traitOneDescription: "Your caer explodes and engulfs you.",
-                    traitTwoName: "Caerenisis",
-                    traitTwoDescription: "You can disarm and evoke your enemy's caer into a battle of its own."
+                    traitTwoName: "Caerenesis",
+                    traitTwoDescription: "You can disarm and evoke your enemy's caer into yours."
                 };
             case "Chiomic":
                 return {
@@ -667,7 +667,7 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     traitOneName: "Avoidance",
                     traitOneDescription: "You can avoid most encounters.",
                     traitTwoName: "Endurance",
-                    traitTwoDescription: "You are able to recover your health over time."
+                    traitTwoDescription: "You are able to dramatically recover your stamina."
                 };
             case "Kyr'naic":
                 return {
@@ -680,8 +680,8 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
             case "Ilian":
                 return {
                     name: "Ilian",
-                    traitOneName: "Heroism",
-                    traitOneDescription: "You exude a nature that touches others inexplicably.",
+                    traitOneName: "Blind",
+                    traitOneDescription: "Your brilliance enraptures all enemies.",
                     traitTwoName: "Persuasion",
                     traitTwoDescription: "The weight of your words can sway the minds of others."
                 };
@@ -704,8 +704,8 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
             case "Sedyrist":
                 return {
                     name: "Sedyrist",
-                    traitOneName: "Investigative",
-                    traitOneDescription: "You have a knack for piecing together peculiarities.",
+                    traitOneName: "Stimulate",
+                    traitOneDescription: "You can refresh your ability to tap into your caeren.",
                     traitTwoName: "Tinkerer",
                     traitTwoDescription: "You can deconstruct and reconstruct armor and weapons."
                 };
@@ -730,13 +730,13 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     name: "Shrygeian",
                     traitOneName: "Knavery",
                     traitOneDescription: "Your explorations are amusing.",
-                    traitTwoName: "Mini-Game",
-                    traitTwoDescription: "You can duel the enemy."
+                    traitTwoName: "Impermanence",
+                    traitTwoDescription: "You may avoid attacks."
                 };
             case "Tshaeral":
                 return {
                     name: "Tshaeral",
-                    traitOneName: "Tshaering",
+                    traitOneName: "Devour",
                     traitOneDescription: "Your caer is imbued with tshaeral desire, a hunger to devour the world.",
                     traitTwoName: "Persuasion",
                     traitTwoDescription: "Your nature has a way of wilting the caer of your enemies."

@@ -1,4 +1,4 @@
-import { Setter, Show, createEffect, createSignal, lazy, Suspense } from 'solid-js';
+import { Setter, Show, createSignal, lazy, Suspense, onMount } from 'solid-js';
 import { Scene } from 'phaser';
 import PhaserGame from'./game/PhaserGame';
 import { Game } from './game/scenes/Game';
@@ -9,12 +9,11 @@ import Ascean, { createAscean } from './models/ascean';
 import { CharacterSheet, Compiler, asceanCompiler, initCharacterSheet } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
 import { EventBus } from './game/EventBus';
-import { allEquipment, deleteAscean, getAscean, getAsceans, getInventory, getReputation, getSettings, populate, saveTutorial, scrub, updateReputation, updateSettings } from './assets/db/db'; 
+import { deleteAscean, getAscean, getAsceans, getInventory, getReputation, getSettings, populate, saveTutorial, scrub, updateReputation, updateSettings } from './assets/db/db'; 
 import { TIPS } from './utility/tips';
 import { Reputation, initReputation } from './utility/player';
-import type { IRefPhaserGame } from './game/PhaserGame';
 import { Puff } from 'solid-spinner';
-
+import type { IRefPhaserGame } from './game/PhaserGame';
 const AsceanBuilder = lazy(async () => await import('./components/AsceanBuilder'));
 const AsceanView = lazy(async () => await import('./components/AsceanView'));
 const MenuAscean = lazy(async () => await import('./components/MenuAscean'));
@@ -26,34 +25,20 @@ export default function App() {
     const [ascean, setAscean] = createSignal<Ascean>(undefined as unknown as Ascean);
     const [menu, setMenu] = createSignal<Menu>(initMenu);
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>(initCharacterSheet);
-    const [reputation, setReputation] = createSignal(initReputation);
+    const [reputation, setReputation] = createSignal<Reputation>(initReputation);
     const [scene, setScene] = createSignal<string>('');
-    const [settings, setSettings] = createSignal(initSettings);
+    const [settings, setSettings] = createSignal<Settings>(initSettings);
     const [show, setShow] = createSignal<boolean>(false);
-    const [startGame, setStartGame] = createSignal(false);
+    const [startGame, setStartGame] = createSignal<boolean>(false);
     const dimensions = useResizeListener();
     let phaserRef: IRefPhaserGame;
     let tips: string | number | NodeJS.Timeout | undefined =  undefined;
-    createEffect(() => fetchAsceans());
+    onMount(() => fetchAsceans());
     const currentScene = (scene: Scene) => setScene(scene.scene.key);
-    function destroyGame(): void {
-        try {
-            setMenu({ ...menu(), loaded: false }); // choosingCharacter: true,
-            const scene = phaserRef.scene as Game;
-            scene.cleanUp();            
-            scene.scene.stop('Game');
-            scene.scene.stop('Intro');
-            scene.scene.start('MainMenu');
-            setAscean(undefined as unknown as Ascean);
-        } catch (err: any) {
-            console.warn('Error destroying Game:', err);
-        };
-    };
     function fetchAsceans(): void {
         const fetch = async () => {
             try {
                 const res = await getAsceans();
-                // await allEquipment();
                 if (!res.length) {
                     setMenu({ ...menu(), loading: false, loaded: true, creatingCharacter: false });
                     return;
@@ -80,11 +65,11 @@ export default function App() {
         };
     };
     async function createCharacter(character: CharacterSheet): Promise<void> {
-        const res = await createAscean(character);
-        const pop = await populate(res);
-        const beast = asceanCompiler(pop);
-        const menuAscean = menu()?.asceans?.length > 0 ? [...menu()?.asceans, beast?.ascean] : [beast?.ascean];
-        setAscean(beast?.ascean as Ascean);
+        const cre = await createAscean(character);
+        const pop = await populate(cre);
+        const comp = asceanCompiler(pop);
+        const menuAscean = menu()?.asceans?.length > 0 ? [...menu()?.asceans, comp?.ascean] : [comp?.ascean];
+        setAscean(comp?.ascean as Ascean);
         setMenu({ ...menu(), asceans: menuAscean as Ascean[], creatingCharacter: false, screen: SCREENS.CHARACTER.KEY });
         setNewAscean(initCharacterSheet);
     };
@@ -103,8 +88,8 @@ export default function App() {
             const asc = await getAscean(id);
             const inv = await getInventory(asc?._id as string);
             const pop = await populate(asc);
-            const beast = asceanCompiler(pop);
-            const full = { ...beast?.ascean, inventory: inv };
+            const comp = asceanCompiler(pop);
+            const full = { ...comp?.ascean, inventory: inv };
             setAscean(full as Ascean);
         } catch (err: any) {
             console.warn('Error fetching Ascean:', err);
@@ -136,13 +121,13 @@ export default function App() {
         setShow(true);    
     };
     const setTips = (on: boolean): void => {
-        if (on) {
+        if (on === true) {
             const interval: number = 1000 * 60 * 3; // 3 minutes
             tips = setInterval(() => {
-                const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
-                setAlert({ header: 'Gameplay Tidbit', body: tip, delay: 12000, key: 'Close' }); // 10000
-                setShow(true);    
-            }, interval); 
+                    const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
+                    setAlert({ header: 'Gameplay Tidbit', body: tip, delay: 12000, key: 'Close' }); // 10000
+                    setShow(true);    
+                }, interval); 
         } else {
             clearInterval(tips);
         };
@@ -244,7 +229,6 @@ export default function App() {
         'Pause': () => togglePause(true),
         'Resume': () => togglePause(false),
     };
-    usePhaserEvent('destroy-game', destroyGame);
     usePhaserEvent('alert', (payload: { header: string, body: string, delay?: number, key?: string }) => makeToast(payload.header, payload.body, payload.delay, payload.key));
     usePhaserEvent('set-tips', setTips);
     usePhaserEvent('enter-menu', enterMenu);
@@ -295,8 +279,7 @@ export default function App() {
                     <Suspense fallback={<Puff color="gold"/>}>
                         <AsceanBuilder newAscean={newAscean} setNewAscean={setNewAscean} menu={menu} />
                     </Suspense>
-                    <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
-                        <>
+                    <Show when={dimensions().ORIENTATION === 'landscape'} fallback={<>
                         { (SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV !== SCREENS.COMPLETE.KEY) && 
                             <button class='highlight cornerBL' onClick={() => setMenu({ ...menu(), screen: SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV})}>
                                 <div>Back ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV as keyof typeof SCREENS]?.TEXT})</div>
@@ -315,27 +298,26 @@ export default function App() {
                         <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
                             <div>Back</div>
                         </button>
-                        </>
-                    }>
+                    </>}>
                         <>
-                        { (LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV !== LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                            <button class='highlight cornerBL' onClick={() => setMenu({ ...menu(), screen: LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV})}>
-                                <div>Back ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
+                            {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV !== LANDSCAPE_SCREENS.COMPLETE.KEY) && 
+                                <button class='highlight cornerBL' onClick={() => setMenu({ ...menu(), screen: LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV})}>
+                                    <div>Back ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
+                                </button>
+                            }
+                            {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT !== LANDSCAPE_SCREENS.CHARACTER.KEY) && 
+                                <button class='highlight cornerBR' onClick={() => setMenu({ ...menu(), screen: LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT})}>
+                                    <div>Next ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
+                                </button>
+                            }
+                            {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.COMPLETE.KEY) && 
+                                <button class='highlight cornerBR' onClick={() => createCharacter(newAscean())}>
+                                    <div>Create {newAscean()?.name?.split(' ')[0]}</div>
+                                </button>
+                            }
+                            <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
+                                <div>Back</div>
                             </button>
-                        }
-                        { (LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT !== LANDSCAPE_SCREENS.CHARACTER.KEY) && 
-                            <button class='highlight cornerBR' onClick={() => setMenu({ ...menu(), screen: LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT})}>
-                                <div>Next ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
-                            </button>
-                        }
-                        { (LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                            <button class='highlight cornerBR' onClick={() => createCharacter(newAscean())}>
-                                <div>Create {newAscean()?.name?.split(' ')[0]}</div>
-                            </button>
-                        }
-                        <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
-                            <div>Back</div>
-                        </button>
                         </>
                     </Show>
                     </div>
@@ -384,10 +366,10 @@ export default function App() {
                 <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} scene={scene} />
             </Show>
             <Show when={show()}>
-                <Suspense fallback={<Puff color="gold"/>}>
-                    <div class='cornerBL realize' style={{ width: '30%', 'z-index': 1 }}>
-                        <GameToast actions={actions} show={show} setShow={setShow} alert={alert} setAlert={setAlert as Setter<{ header: string; body: string; delay: number; key?: string; }>} />
-                    </div>
+            <Suspense fallback={<Puff color="gold"/>}>
+                <div class='cornerBL realize' style={{ width: '30%', 'z-index': 1 }}>
+                    <GameToast actions={actions} show={show} setShow={setShow} alert={alert} setAlert={setAlert as Setter<{ header: string; body: string; delay: number; key?: string; }>} />
+                </div>
             </Suspense>
             </Show>
         </div>

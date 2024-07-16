@@ -57,9 +57,9 @@ export const TRAIT_DESCRIPTIONS = {
             success: ["My, its been some time since I have witnessed a design such as yours. Careful whom you show your nature to, {ascean.name}, others may be fearful of the Sundering.", "`No, you cannot be Him.` Concern marks the {enemy.name}, for whomever they believe you are, it arrests their confidence in any action. `Yet I am not to thwart naked fate, good day {ascean.name}.`"],
             failure: "Failure!",
         },
-        heroism: {
-            description: "your Ilian nature exudes a heroism that touches others inexplicably.",
-            action: "You evoke a sense of heroism in others, and can change the outcome of encounters.",
+        blind: {
+            description: "your Ilian nature may blind all aggressive enemies.",
+            action: "You evoke a brilliance that blinds others.",
             success: "Success!",
             failure: "Failure!",
         }
@@ -72,10 +72,10 @@ export const TRAIT_DESCRIPTIONS = {
             failure: "You are unable to escape {enemy.name}'s grasp despite your stride.",
         },
         endurance: {
-            description: "you are able to recover your health over time.",
+            description: "you are able to recover your stamina over time.",
             action: "The blood of the Tshios course through your veins.",
-            success: "You regenerate health over time.",
-            failure: "You regenerate health over time.",
+            success: "You dramatically recover stamina over time.",
+            failure: "You dramatically recover stamina over time.",
         }
     },
     "Arbituous": {
@@ -141,9 +141,9 @@ export const TRAIT_DESCRIPTIONS = {
         }
     },
     "Sedyrist": {
-        investigative: {
-            description: "your ability to notice things is heightened.",
-            action: "Allow furhter inquiry.",
+        stiumlate: {
+            description: "your refresh your ability to tap into your caeren.",
+            action: "Refresh special abilities.",
             success: "Success!",
             failure: "Failure!"
         },
@@ -190,9 +190,9 @@ export const TRAIT_DESCRIPTIONS = {
             success: "Success!",
             failure: "Failure!"
         },
-        miniGame: {
-            description: "you can duel the enemy in a game of chance.",
-            action: "Enter a stage of dueling with {enemy.name}.",
+        impermanence: {
+            description: "you can evade the enemies attacks.",
+            action: "Avoid the next 3 attacks.",
             success: "Success!",
             failure: "Failure!"
         }
@@ -206,8 +206,8 @@ export const TRAIT_DESCRIPTIONS = {
             failure: "Failure!"
         },
         seer: {
-            description: "your next attack is fyers.",
-            action: "Channel raw Fyeran Caer into your next attack.",
+            description: "your next action is fyers.",
+            action: "Your next attack is a critical strike.",
             success: "Success!",
             failure: "Failure!"
         }
@@ -258,7 +258,7 @@ export const TRAIT_DESCRIPTIONS = {
         }
     },
     "Astral": {
-        impermanence: {
+        negation: {
             description: "you can perform combat maneuvers that are impossible to follow, and thus impossible to counter.",
             action: "Your caeren leads in traces {enemy.name}'s flesh cannot follow.",
             success: "Success!",

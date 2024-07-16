@@ -60,6 +60,17 @@ export const States = {
     TSHAER: "tshaer",
     TSHAERING: "tshaering",
 
+    ASTRICATION: "astrication",
+    BERSERK: "berserk",
+    BLIND: "blind",
+    CAERENESIS: "caerenesis",
+    CONVICTION: "conviction",
+    DEVOUR: "devour",
+    ENDURANCE: "endurance",
+    IMPERMANENCE: "impermanence",
+    SEER: "seer",
+    STIMULATE: "stimulate",
+
     // Meta Machine
     CLEAN: "clean",
     CHIOMIC: "chiomic",

@@ -51,7 +51,7 @@ class Particle {
             objectA: [sensor],
             callback: (other) => {
                 if (other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && !other.gameObjectB.isDefeated && player.name === 'player') {
-                    if (other.gameObjectB?.isShimmering) {
+                    if (other.gameObjectB?.isShimmering && !player.isAstrifying) {
                         const shimmer = Phaser.Math.Between(1, 100);
                         if (shimmer > 50) {
                             player.particleEffect.success = true;
@@ -59,7 +59,7 @@ class Particle {
                             return;
                         };
                     };
-                    if (other.gameObjectB?.isProtecting || other.gameObjectB?.isShielding || other.gameObjectB?.isWarding) {
+                    if ((other.gameObjectB?.isProtecting || other.gameObjectB?.isShielding || other.gameObjectB?.isWarding) && !player.isAstrifying) {
                         if (other.gameObjectB?.isShielding) {
                             other.gameObjectB?.shieldHit();
                         };
@@ -70,17 +70,17 @@ class Particle {
                         return;
                     };
 
-                    if (other.gameObjectB?.isMalicing) {
+                    if (other.gameObjectB?.isMalicing && !player.isAstrifying) {
                         other.gameObjectB?.maliceHit();
                     };
-                    if (other.gameObjectB?.isMending) {
+                    if (other.gameObjectB?.isMending && !player.isAstrifying) {
                         other.gameObjectB?.mendHit();
                     };
 
                     const match = this.scene.state?.enemyID === other.gameObjectB.enemyID;
                     player.attackedTarget = other.gameObjectB;
                     
-                    if (match === true ) {
+                    if (match === true) {
                         this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: this.action }});
                     } else {
                         this.scene.combatMachine.action({ type: 'Player', data: { 
@@ -102,7 +102,7 @@ class Particle {
                     };
                     player.particleEffect.success = true;
                 };
-                if (other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy' && !other.gameObjectB.isProtecting) {
+                if (other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy' && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
                     player.particleEffect.success = true;
                 };
             },

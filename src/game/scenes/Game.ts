@@ -619,6 +619,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
+            console.log('BLIND!');
             enemy.isFeared = true;
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 1);
             const health = enemy.health - damage;
@@ -629,6 +630,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
+            console.log('CAERENESIS!');
             enemy.isParalyzed = true;
             if (this.player.currentTarget && this.player.currentTarget.enemyID === this.player.getEnemyId()) {
                 this.combatMachine.action({ type: 'Tshaeral', data: 10 });

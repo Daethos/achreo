@@ -9,19 +9,13 @@ function createStamina(stam: Accessor<number>) {
     let remaining = 0;
 
     const recover = () => {
-        if (remaining > 0) {
-            remaining -= 185 - stamina();
-            return;    
-        };
+        if (remaining > 0) {remaining -= 185 - stamina(); return;};
         if (remaining < 0) remaining = 0;
         setUsedStamina(0);
         const newStamina = Math.min(100, staminaPercentage() + 1);
         setStaminaPercentage(newStamina);
         EventBus.emit('updated-stamina', newStamina);
-        if (newStamina >= 100) {
-            clearInterval(interval);
-            interval = undefined;
-        };
+        if (newStamina >= 100) {clearInterval(interval); interval = undefined;};
     };
 
     const startRecovery = () => {
@@ -30,11 +24,8 @@ function createStamina(stam: Accessor<number>) {
     };
 
     const updateStamina = (e: number) => {
-        remaining += 1000;
-        if (interval === undefined) {
-            startRecovery();
-        };
-
+        if (e > 0) remaining += 1000;
+        if (interval === undefined) {startRecovery();};
         const oldStamina = stamina() * staminaPercentage() / 100;
         const newStamina = Math.max(0, oldStamina - e);
         const newStaminaPercentage = Math.max(0, Math.min(100, Math.round(newStamina / stamina() * 100)));

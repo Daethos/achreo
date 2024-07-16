@@ -63,17 +63,16 @@ export const PLAYER = {
         SUTURE: 25,
         TSHAERAL: 40,
         // Trait
-        ASTRICATION: 25,
+        ASTRICATION: 10,
         BERSERK: 10,
         BLIND: 25,
         CAERENESIS: 40,
         CONVICTION: 10,
         DEVOUR: 40,
         ENDURANCE: 0,
-        IMPERMANENCE: 25,
-        NEGATION: 25,
+        IMPERMANENCE: 10,
         SEER: 10,
-        STIMULATE: 25,
+        STIMULATE: 10,
         
         DISEASE: 25,
         ENVELOP: 10,
@@ -135,16 +134,16 @@ export const PLAYER = {
         WARD: 10000,
         WRITHE: 1000,
         // Trait
-        ASTRICATION: 10000, // -1
+        ASTRICATION: 7500, // -1
         BERSERK: 7500,
         BLIND: 1000,
         CAERENESIS: 1000,
         CONVICTION: 7500,
-        DEVOUR: 8000,
+        DEVOUR: 2000,
         ENDURANCE: 5000,
-        IMPERMANENCE: 10000, // -1
-        NEGATION: 10000, // -1
-        SEER: 10000, // -1
+        IMPERMANENCE: 7500, // -1
+        NEGATION: 7500, // -1
+        SEER: 7500, // -1
         STIMULATE: 1500,
     },
     RANGE: {

@@ -258,11 +258,19 @@ const SpecialSettings = () => {
             </p>
             Entwine your achre and caer through your weapon to release a powerful projectile. Cast. Short Cooldown. Moderate Stamina.
             </div>
-            <br /><div>
+            <br />
+            <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('AOE')} Astrave
             </p>
             Uproot tendrils, damaging all caught in its grasp. AoE. Short Cooldown. Moderate Stamina. Manual Aim.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('CAST')} Astrication
+            </p>
+            Attacks cannot be evaded, i.e. protect, shield, shimmer, roll, parry. Instant. Long Cooldown. Low Stamina.
             </div>
             <br />
             <div>
@@ -274,9 +282,30 @@ const SpecialSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('CONSUME')} Berserk
+            </p>
+            Attacks grow stronger the more you are attacked. Instant. Long Cooldown. Low Stamina. Trait.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('CAST')} Blind
+            </p>
+            Your brilliance blinds all who are impure. Instant. Long Cooldown. Moderate Stamina. Trait.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('INVOKE')} Blink
             </p>
             Use your caeren to teleport a short distance forward, if you are moving.  Instant. Short Cooldown. Low Stamina.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('AOE')} Caerenesis
+            </p>
+            You can fear and evoke your enemy's caer into yours. AoE. Short Cooldown. High Stamina. Trait.
             </div>
             <br />
             <div>
@@ -295,6 +324,13 @@ const SpecialSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('CAST')} Conviction
+            </p>
+            Your attacks grow stronger the more you realize them. Instant. Long Cooldown. Low Stamina. Trait.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('INVOKE')} Desperation
             </p>
             Heals you for a dramatic amount. Instant. Long cooldown. High Stamina.
@@ -302,9 +338,23 @@ const SpecialSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('VOICE')} Devour
+            </p>
+            Lifedrain your opponent of their caer, restoring your own. Channel. Long Cooldown. High Stamina. Trait.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('AOE')} Disease
             </p>
             A hush that proliferates, damaging enemies caught in its malice every second. Instant. Moderate Cooldown. Moderate Stamina.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('BEAM')} Endurance
+            </p>
+            Pour your caeren back into your physical form, dramatically recovering stamina. Instant. Long Cooldown. Trait.
             </div>
             <br />
             <div>
@@ -347,6 +397,13 @@ const SpecialSettings = () => {
             {svg('VOICE')} Howl
             </p>
             A hush that proliferates, stunning enemies caught in its piercing blast for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('BEAM')} Impermanence
+            </p>
+            Your evasion becomes ethereal. Instant. Long Cooldown. Low Stamina. Trait.
             </div>
             <br />
             <div>
@@ -456,6 +513,13 @@ const SpecialSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('INVOKE')} Seer
+            </p>
+            Your next strike is augured to be fyers. Instant. Long Cooldown Cooldown. Low Stamina. Trait.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('SHIELD')} Shield
             </p>
             A warped tendril wrapped round you that absorbs 6 successful attacks from the enemy. Instant. Moderate Cooldown. Moderate Stamina.
@@ -491,6 +555,13 @@ const SpecialSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('INVOKE')} Stimulate
+            </p>
+            Your caeren taps into your physical form, refreshing its ability to host its othernature. Instant. Long Cooldown Cooldown. Low Stamina. Trait.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('WEAPONS')} Storm
             </p>
             A hush that proliferates, damaging enemies caught in your contortions with your weapon / 2 every second for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
@@ -501,13 +572,6 @@ const SpecialSettings = () => {
             {svg('SACRIFICE')} Suture
             </p>
             Rip the caeren from the enemy and blend it into you, healing for a portion of damage done. Instant. Moderate Cooldown. Moderate Stamina.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('BEAM')} Tshaeral
-            </p>
-            Lifedrain your opponent of their caer, restoring your own. Channel. Long Cooldown. High Stamina.
             </div>
             <br />
             <div>

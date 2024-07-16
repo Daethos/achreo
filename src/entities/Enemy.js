@@ -896,7 +896,6 @@ export default class Enemy extends Entity {
 
     isSuffering = () => {
         const suffering = this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed;
-        // console.log(`%c Is ${this.ascean.name} suffering? ${suffering}`, 'color: red');
         return suffering;
     };
     
@@ -914,11 +913,7 @@ export default class Enemy extends Entity {
     };
 
     onDefeatedEnter = () => {
-        this.anims.play('player_pray', true).on('animationcomplete', () => {
-            this.anims.play('player_idle', true);
-        });
-        EventBus.emit('enemy-loot', { enemyID: this.enemyID, level: this.ascean?.level });
-        // this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Defeated', 1500, 'damage', false);
+        this.anims.play('player_pray', true).on('animationcomplete', () => this.anims.play('player_idle', true));
         this.isDefeated = true;
         this.inCombat = false;
         this.setSpecialCombat(false);
@@ -973,47 +968,10 @@ export default class Enemy extends Entity {
         this.scene.time.delayedCall(delay, () => {
             this.setVelocity(0, 0);
             if (this.stateMachine.isCurrentState(States.PATROL)) this.stateMachine.setState(States.IDLE);
-        });
-
-        // this.patrolTimer = this.scene.time.addEvent({
-        //     delay: delay,
-        //     callback: () => {
-        //         this.setVelocity(0, 0);
-        //         if (this.stateMachine.isCurrentState(States.PATROL)) this.stateMachine.setState(States.IDLE);
-        //         // const wasX = this.flipX;
-        //         // this.scene.tweens.add({
-        //         //     delay: 1000,
-        //         //     targets: this,
-        //         //     x: this.originalPosition.x,
-        //         //     y: this.originalPosition.y,
-        //         //     duration: delay,
-        //         //     // onUpdate: () => {
-        //         //     //     if (this.flipX === wasX) this.flipX = !this.flipX;
-        //         //     //     this.anims.play('player_running', true);
-        //         //     //     // Need an if that's checking if the enemy has 'seen' the player through the AWARE state being in the stateMachine stack
-        //         //     //     if (this.changeStateQueue?.[0] === States.AWARE) {
-        //         //     //         console.log('Changing to Aware');
-        //         //     //         this.setVelocity(0, 0);
-        //         //     //         this.changeStateQueue.shift();
-        //         //     //         this.stateMachine.setState(States.AWARE);
-        //         //     //     };
-        //         //     // },
-        //         //     onComplete: () => { 
-        //         //         this.setVelocity(0, 0);
-        //         //         if (this.stateMachine.isCurrentState(States.PATROL)) this.stateMachine.setState(States.IDLE);
-        //         //     }
-        //         // });
-        //     },
-        //     callbackScope: this,
-        //     loop: false,
-        // });
+        }, undefined, this);
     }; 
-    onPatrolUpdate = (_dt) => { 
-        this.setVelocity(this.patrolVelocity.x, this.patrolVelocity.y);
-    };
-    onPatrolExit = () => {
-        // this.patrolTimer.destroy();
-    };
+    onPatrolUpdate = (_dt) => this.setVelocity(this.patrolVelocity.x, this.patrolVelocity.y);
+    onPatrolExit = () => {};
 
     onAwarenessEnter = () => {
         this.anims.play('player_idle', true);
@@ -1064,7 +1022,6 @@ export default class Enemy extends Entity {
         const distance = direction.length();
         if (Math.abs(this.originPoint.x - this.position.x) > RANGE.LEASH * rangeMultiplier || Math.abs(this.originPoint.y - this.position.y) > RANGE.LEASH * rangeMultiplier || !this.inCombat || distance > RANGE.LEASH * rangeMultiplier) {
             this.stateMachine.setState(States.LEASH);
-            // this.clearCombatWin();
             return;
         };  
         if (distance >= 50 * rangeMultiplier) { // was 75 || 100
@@ -1091,27 +1048,12 @@ export default class Enemy extends Entity {
 
     onCombatEnter = () => {
         this.anims.play('player_running', true);
-        // this.combat(this.attacking);
         this.scene.time.delayedCall(this.swingTimer, () => {
             this.combat(this.attacking);
-        });
-        
-        // this.attackTimer = this.scene.time.addEvent({
-        //     delay: this.swingTimer,
-        //     callback: () => {
-        //         this.combat(this.attacking);
-        //     },
-        //     callbackScope: this,
-        //     loop: true,
-        // });
+        }, undefined, this);
     };
-    onCombatUpdate = (_dt) => {
-        this.evaluateCombatDistance();
-    };
-    onCombatExit = () => { 
-        // this.attackTimer.destroy();
-        // this.attackTimer = undefined;
-    };
+    onCombatUpdate = (_dt) => this.evaluateCombatDistance();
+    onCombatExit = () => {};
 
     onEvasionEnter = () => { 
         const x = Phaser.Math.Between(1, 100);
@@ -1153,13 +1095,10 @@ export default class Enemy extends Entity {
     };
     onAttackUpdate = (_dt) => {
         if (this.frameCount === FRAME_COUNT.ATTACK_LIVE && !this.isRanged) this.scene.combatMachine.input('computerAction', 'attack', this.enemyID);
-        // && (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0)
         if (!this.isRanged) this.swingMomentum(this.attacking);
         if (!this.isAttacking) this.evaluateCombatDistance(); 
     };
-    onAttackExit = () => {
-        if (this.scene.state.computerAction !== '') this.scene.combatMachine.input('computerAction', '', this.enemyID);
-    };
+    onAttackExit = () => {if (this.scene.state.computerAction !== '') this.scene.combatMachine.input('computerAction', '', this.enemyID);};
 
     onParryEnter = () => {
         this.isParrying = true;
@@ -1167,7 +1106,6 @@ export default class Enemy extends Entity {
     };
     onParryUpdate = (_dt) => {
         if (this.frameCount === FRAME_COUNT.PARRY_LIVE && !this.isRanged) this.scene.combatMachine.input('computerAction', 'parry', this.enemyID);
-        // && (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0)
         if (!this.isRanged) this.swingMomentum(this.attacking);
         if (!this.isParrying) this.evaluateCombatDistance();
     };
@@ -1189,9 +1127,7 @@ export default class Enemy extends Entity {
         this.body.parts[1].vertices[0].x += this.wasFlipped ? this.colliderDisp : -this.colliderDisp;
         this.handleAnimations();
     };
-    onDodgeUpdate = (_dt) => {
-        if (!this.isDodging) this.evaluateCombatDistance();
-    };
+    onDodgeUpdate = (_dt) => {if (!this.isDodging) this.evaluateCombatDistance();};
     onDodgeExit = () => {
         this.body.parts[2].position.y -= this.sensorDisp;
         this.body.parts[2].circleRadius = 36;
@@ -1209,13 +1145,10 @@ export default class Enemy extends Entity {
     };
     onPostureUpdate = (_dt) => {
         if (this.frameCount === FRAME_COUNT.POSTURE_LIVE && !this.isRanged) this.scene.combatMachine.input('computerAction', 'posture', this.enemyID);
-        // && (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0)
         if (!this.isRanged) this.swingMomentum(this.attacking);
         if (!this.isPosturing) this.evaluateCombatDistance();
     };
-    onPostureExit = () => {
-        if (this.scene.state.computerAction !== '') this.scene.combatMachine.input('computerAction', '', this.enemyID);
-    };
+    onPostureExit = () => {if (this.scene.state.computerAction !== '') this.scene.combatMachine.input('computerAction', '', this.enemyID);};
 
     onRollEnter = () => {
         this.isRolling = true; 
@@ -1314,7 +1247,7 @@ export default class Enemy extends Entity {
             this.scene.time.delayedCall(500, () => {
                 this.checkCaerenic(false);
                 this.stateMachine.setState(States.HEALING);
-            });
+            }, undefined, this);
         };
     };
     onBlinkUpdate = (_dt) => {};
@@ -1341,7 +1274,7 @@ export default class Enemy extends Entity {
             };    
             this.checkCaerenic(false);
             this.stateMachine.setState(States.HEALING);    
-        });
+        }, undefined, this);
     };
     onConfuseUpdate = (_dt) => {
         this.anims.play('player_health', true);
@@ -1369,7 +1302,7 @@ export default class Enemy extends Entity {
             this.checkCaerenic(false);
             this.isStunned = true;
             this.stateMachine.setState(States.STUNNED);
-        });
+        }, undefined, this);
     };
     onDesperationExit = () => {
         this.isPerformingSpecial = false;
@@ -1397,7 +1330,7 @@ export default class Enemy extends Entity {
             } else {
                 this.stateMachine.setState(States.LEASH);
             };
-        });
+        }, undefined, this);
     };
     onFearingUpdate = (_dt) => {
         this.anims.play('player_health', true);
@@ -1567,7 +1500,7 @@ export default class Enemy extends Entity {
             };
             this.checkCaerenic(false);
             this.stateMachine.setState(States.HEALING);
-        });
+        }, undefined, this);
     };
     onPolymorphingUpdate = (_dt) => {
         this.anims.play('player_health', true);
@@ -1595,7 +1528,7 @@ export default class Enemy extends Entity {
             this.checkCaerenic(true);
             this.scene.time.delayedCall(500, () => {
                 this.checkCaerenic(false);
-            });
+            }, undefined, this);
         }; 
         this.stateMachine.setState(States.COMBAT);    
     };
@@ -1659,7 +1592,7 @@ export default class Enemy extends Entity {
             } else {
                 this.stateMachine.setState(States.LEASH);
             };
-        });
+        }, undefined, this);
     };
     onSacrificeExit = () => {
         this.isPerformingSpecial = false;
@@ -1678,7 +1611,7 @@ export default class Enemy extends Entity {
             this.checkCaerenic(true);
             this.scene.time.delayedCall(500, () => {
                 this.checkCaerenic(false);
-            });
+            }, undefined, this);
         };
     };
     onSlowingUpdate = (_dt) => this.evaluateCombatDistance();
@@ -1708,7 +1641,7 @@ export default class Enemy extends Entity {
             } else {
                 this.stateMachine.setState(States.LEASH);
             };
-        });    
+        }, undefined, this);    
     };
     onSnaringUpdate = (_dt) => {
         this.anims.play('player_health', true);
@@ -1744,7 +1677,7 @@ export default class Enemy extends Entity {
             } else {
                 this.stateMachine.setState(States.LEASH);
             };
-        });
+        }, undefined, this);
         
     };
     onSutureExit = () => {
@@ -1827,7 +1760,7 @@ export default class Enemy extends Entity {
         this.isChiomic = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.CHIOMIC, () => {
             this.isChiomic = false;
-        });
+        }, undefined, this);
         EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} mocks and confuses their surrounding foes.`
         });
@@ -1846,7 +1779,7 @@ export default class Enemy extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tendrils Swirl', 750, 'tendril');
         this.scene.time.delayedCall(PLAYER.DURATIONS.DISEASE, () => {
             this.isDiseasing = false;
-        });
+        }, undefined, this);
         EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} swirls such sweet tendrils which wrap round and reach to writhe.`
         });
@@ -1865,7 +1798,7 @@ export default class Enemy extends Entity {
         this.isFreezing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.FREEZE, () => {
             this.isFreezing = false;
-        });
+        }, undefined, this);
         EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} freezes nearby foes.`
         });
@@ -1884,7 +1817,7 @@ export default class Enemy extends Entity {
         this.isHowling = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.HOWL, () => {
             this.isHowling = false;
-        });
+        }, undefined, this);
         EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} howls, it's otherworldly nature stunning nearby foes.`
         });
@@ -1903,7 +1836,7 @@ export default class Enemy extends Entity {
         this.maliceBubble = new Bubble(this.scene, this.x, this.y, 'purple', PLAYER.DURATIONS.MALICE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MALICE, () => {
             this.isMalicing = false;    
-        });
+        }, undefined, this);
         EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} wracks malicious foes with the hush of their own attack.`
         });
@@ -1950,7 +1883,7 @@ export default class Enemy extends Entity {
         this.mendBubble = new Bubble(this.scene, this.x, this.y, 'purple', PLAYER.DURATIONS.MEND);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MEND, () => {
             this.isMending = false;    
-        });
+        }, undefined, this);
         EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} seeks to mend oncoming attacks.`
         });
@@ -1996,7 +1929,7 @@ export default class Enemy extends Entity {
         this.protectBubble = new Bubble(this.scene, this.x, this.y, 'gold', PLAYER.DURATIONS.PROTECT);
         this.scene.time.delayedCall(PLAYER.DURATIONS.PROTECT, () => {
             this.isProtecting = false;    
-        });
+        }, undefined, this);
         EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} protects themself from oncoming attacks.`
         });
@@ -2042,7 +1975,7 @@ export default class Enemy extends Entity {
         this.isScreaming = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.SCREAM, () => {
             this.isScreaming = false;
-        });
+        }, undefined, this);
         EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} screams, fearing nearby foes.`
         });
@@ -2061,7 +1994,7 @@ export default class Enemy extends Entity {
         this.shieldBubble = new Bubble(this.scene, this.x, this.y, 'bone', PLAYER.DURATIONS.SHIELD);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIELD, () => {
             this.isShielding = false;    
-        });
+        }, undefined, this);
         EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} shields themself from oncoming attacks.`
         });
@@ -2104,7 +2037,7 @@ export default class Enemy extends Entity {
         if (!this.isStealthing) this.stealthEffect(true);    
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIMMER, () => {
             this.isShimmering = false;
-        });
+        }, undefined, this);
         EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} shimmers, fading in and out of this world.`
         });
@@ -2152,7 +2085,7 @@ export default class Enemy extends Entity {
         this.wardBubble = new Bubble(this.scene, this.x, this.y, 'red', PLAYER.DURATIONS.WARD);
         this.scene.time.delayedCall(PLAYER.DURATIONS.WARD, () => {
             this.isWarding = false;    
-        });
+        }, undefined, this);
         EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} wards themself from oncoming attacks.`
         });
@@ -2200,7 +2133,7 @@ export default class Enemy extends Entity {
         this.isWrithing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.WRITHE, () => {
             this.isWrithing = false;
-        });
+        }, undefined, this);
         EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name}'s caeren grips their body and contorts, writhing around them.`
         });
@@ -2369,7 +2302,7 @@ export default class Enemy extends Entity {
         this.clearTint();
         this.scene.time.delayedCall(1000, () => {
             this.isCounterSpelled = false;
-        });
+        }, undefined, this);
     };
     onCounterSpelledUpdate = (_dt) => {
         this.anims.play('player_hurt', true);
@@ -2500,7 +2433,7 @@ export default class Enemy extends Entity {
         this.isHurt = true;
         this.scene.time.delayedCall(250, () => {
             this.isHurt = false;
-        });
+        }, undefined, this);
     };
     onHurtUpdate = (_dt) => {
         this.anims.play('player_hurt', true);
@@ -2531,7 +2464,7 @@ export default class Enemy extends Entity {
         this.setStatic(true);
         this.scene.time.delayedCall(this.paralyzeDuration, () => {
             this.isParalyzed = false;
-        });
+        }, undefined, this);
     };
     onParalyzedUpdate = (dt) => {
         this.setVelocity(0);
@@ -2708,7 +2641,7 @@ export default class Enemy extends Entity {
         this.scene.time.delayedCall(this.slowDuration, () =>{
             this.isSlowed = false;
             this.negMetaMachine.setState(States.CLEAN);
-        });
+        }, undefined, this);
     };
 
     onSlowExit = () => {
@@ -2725,7 +2658,7 @@ export default class Enemy extends Entity {
         this.scene.time.delayedCall(this.snareDuration, () =>{
             this.isSnared = false;
             this.negMetaMachine.setState(States.CLEAN);
-        });
+        }, undefined, this);
     };
     // onSnareUpdate = (dt) => {};
     onSnareExit = () => { 

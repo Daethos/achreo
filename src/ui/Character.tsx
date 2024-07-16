@@ -286,6 +286,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                 const highestPrayer = Object.entries(ascean()?.statistics?.combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
                 let highestMastery = Object.entries(ascean()?.statistics?.mastery).reduce((a, b) => a[1] > b[1] ? a : b);
                 if (highestMastery?.[1] === 0) highestMastery = [ascean()?.mastery, 0];
+                console.log(ascean().statistics.combat.attacks, 'Attacks')
                 return (
                     <div class='creature-heading'>
                         <h1 style={{ 'margin-bottom': '3%' }}>Attacks</h1>

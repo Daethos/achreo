@@ -643,7 +643,7 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     traitOneName: "Caerenicism",
                     traitOneDescription: "Your caer explodes and engulfs you.",
                     traitTwoName: "Caerenesis",
-                    traitTwoDescription: "You can disarm and evoke your enemy's caer into yours."
+                    traitTwoDescription: "You can fear and evoke your enemy's caer into yours."
                 };
             case "Chiomic":
                 return {

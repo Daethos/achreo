@@ -621,8 +621,7 @@ export default function PhaserGame (props: IProps) {
     };
 
     function checkUi(): boolean {
-        if (props.scene() === 'Game' || props.scene() === 'Tent') return true;
-        return false;
+        return props.scene() === 'Game' || props.scene() === 'Tent';
     };
     
     async function createUi(id: string): Promise<void> {
@@ -659,9 +658,7 @@ export default function PhaserGame (props: IProps) {
     };
 
     function enterGame() {
-        if (!props.ascean().tutorial.intro) {
-            EventBus.emit('intro');
-        };
+        if (!props.ascean().tutorial.intro) EventBus.emit('intro');
         setLive(!live());
     };
 

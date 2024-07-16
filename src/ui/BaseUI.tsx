@@ -453,12 +453,12 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     opponent: res.computer?.level,
                     opponentExp: Math.min(experience, res?.player?.level! * 1000),
                 };
-                // const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
                 EventBus.emit('record-win', {
                     record: res,
                     experience: newState
                 });
-                // EventBus.emit('enemy-loot', loot);
+                const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
+                EventBus.emit('enemy-loot', loot);
             } else {
                 EventBus.emit('record-loss', res);
             };

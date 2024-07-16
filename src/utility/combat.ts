@@ -942,7 +942,6 @@ function computerActionCompiler(combat: Combat, playerAction: string): Combat {
 function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultiplier: number, playerMagicalDefenseMultiplier: number): Combat { // Triggers if 40+ Str/Caer for 2h, 1h + Agi/Achre Mastery and 2nd weapon is 1h
     const computer = combat.computer;
     const weapons = combat.computerWeapons;
-
     let computerWeaponOnePhysicalDamage: number = weapons[0].physicalDamage;
     let computerWeaponOneMagicalDamage: number = weapons[0].magicalDamage;
     let computerWeaponTwoOhysicalDamage: number = weapons[1].physicalDamage;
@@ -1037,14 +1036,15 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
     if (combat.prayerData.includes('Avarice')) {
         combat.realizedComputerDamage *= 1.1;
     };
-    // ================== PHASER EFFECTS ================== \\
     if (combat.isStalwart) {
         combat.realizedComputerDamage *= 0.85;
     };
     if (combat.isCaerenic) {
         combat.realizedComputerDamage *= 1.25;
     };
-
+    if (combat.berserk.active === true) {
+        combat.berserk.charges += 1;
+    };
     combat.newPlayerHealth -= combat.realizedComputerDamage;
 
     if (combat.newPlayerHealth < 0) {
@@ -1236,10 +1236,10 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     if (combat.isCaerenic) {
         combat.realizedComputerDamage *= 1.25;
     };
-
-
+    if (combat.berserk.active === true) {
+        combat.berserk.charges += 1;
+    };
     combat.newPlayerHealth -= combat.realizedComputerDamage;
-
 
     combat.computerActionDescription = 
         `${combat.computer?.name} ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? 'damage (Critical)' : combat.computerGlancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
@@ -1276,7 +1276,7 @@ function computerRollCompiler(combat: Combat, playerAction: string, computerActi
     if (combat.weather === 'Fangs' || combat.weather === 'Roll') {
         computerRoll += 5;
     };
-    if (computerRoll > rollCatch) {
+    if (computerRoll > rollCatch && !combat.astrication.active) {
         combat.computerRollSuccess = true;
         combat.computerSpecialDescription = `${combat.computer?.name} successfully rolls against you, avoiding your ${playerAction === 'attack' ? 'focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack.`
         computerAttackCompiler(combat, computerAction);
@@ -1399,7 +1399,9 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     if (combat.berserk.active === true) {
         combat.realizedPlayerDamage *= (1 + combat.berserk.charges * 0.03);
     };
-
+    if (combat.conviction.active === true) {
+        combat.conviction.charges += 1;
+    };
     combat.newComputerHealth -= combat.realizedPlayerDamage;
 
     if (combat.newComputerHealth <= 0) {
@@ -1432,7 +1434,6 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     let computerPhysicalDefenseMultiplier = 1 - (combat.computerDefense?.physicalDefenseModifier as number / 100);
     let computerMagicalDefenseMultiplier = 1 - (combat.computerDefense?.magicalDefenseModifier as number / 100);
     
-    // This is for Opponent's who are Posturing
     if (combat.computerAction === 'posture' && !combat.parrySuccess && !combat.rollSuccess) {
         computerPhysicalDefenseMultiplier = 1 - (combat.computerDefense?.physicalPosture as number / 100);
         computerMagicalDefenseMultiplier = 1 - (combat.computerDefense?.magicalPosture as number / 100);
@@ -1605,11 +1606,15 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     if (combat.berserk.active === true) {
         combat.realizedPlayerDamage *= (1 + combat.berserk.charges * 0.03);
     };
+    if (combat.conviction.active === true) {
+        combat.conviction.charges += 1;
+    };
     combat.newComputerHealth -= combat.realizedPlayerDamage;
     combat.typeAttackData.push(combat.weapons[0]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
     const skill = combat.weapons[0]?.type === 'Spell' ? combat.weapons[0]?.damageType?.[0] : combat.weapons[0]?.type;
     combat.skillData.push(skill as string);
+    console.log(combat.realizedPlayerDamage, combat.totalDamageData, Math.max(combat.realizedPlayerDamage, combat.totalDamageData), 'RPD, TDD, MAX')
     combat.totalDamageData = Math.max(combat.realizedPlayerDamage, combat.totalDamageData);
 
     combat.playerActionDescription = 
@@ -1671,7 +1676,7 @@ function doubleRollCompiler(combat: Combat, playerInitiative: number, computerIn
             combat.playerSpecialDescription = 
                 `You successfully roll against ${combat.computer?.name}, avoiding their ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
             attackCompiler(combat, playerAction);
-        } else if (computerRoll > rollCatch) { // The Player Fails the Roll and the Computer Succeeds
+        } else if (computerRoll > rollCatch && !combat.astrication.active) { // The Player Fails the Roll and the Computer Succeeds
             combat.playerSpecialDescription = 
                 `You failed to roll against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
             combat.computerSpecialDescription = 
@@ -1686,7 +1691,7 @@ function doubleRollCompiler(combat: Combat, playerInitiative: number, computerIn
             computerAttackCompiler(combat, computerAction);
         }
     } else { // The Computer has Higher Initiative
-        if (computerRoll > rollCatch) { // The Computer Succeeds the Roll
+        if (computerRoll > rollCatch && !combat.astrication.active) { // The Computer Succeeds the Roll
             combat.computerSpecialDescription = 
                 `${combat.computer?.name} successfully rolls against you, avoiding your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} attack`;
             computerAttackCompiler(combat, computerAction);
@@ -1793,8 +1798,7 @@ function dualActionSplitter(combat: Combat): Combat {
     const playerAction = newCombat.action;
     const playerParry = newCombat.parryGuess;
     const computerAction = newCombat.computerAction;
-    const computerParry = newCombat.computerParryGuess;
-
+    const computerParry = newCombat.computerParryGuess; 
     computerWeaponMaker(newCombat);
     computerActionCompiler(newCombat, playerAction);
 
@@ -1811,7 +1815,7 @@ function dualActionSplitter(combat: Combat): Combat {
             if (playerInitiative > computerInitiative) {
                 newCombat.parrySuccess = true;
                 newCombat.playerSpecialDescription = `You successfully parried ${newCombat.computer.name}'s parry-parry! Absolutely Brutal`;
-            } else {
+            } else if (!newCombat.astrication.active) {
                 newCombat.computerParrySuccess = true;
                 newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully parried your parry-parry! Absolutely Brutal`; 
             };
@@ -1825,7 +1829,7 @@ function dualActionSplitter(combat: Combat): Combat {
         return newCombat;
     };
 
-    if (computerAction === 'parry' && playerAction !== 'parry') {
+    if (computerAction === 'parry' && playerAction !== 'parry' && !newCombat.astrication.active) {
         newCombat.computerParrySuccess = true;
         newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully parried your ${ newCombat.action === 'attack' ? 'focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack.`;
         return newCombat;    
@@ -2401,39 +2405,30 @@ function prayerRemoveTickSplitter(combat: Combat, statusEffect: StatusEffect): C
 function computerCombatSplitter(data: { computerOne: Combat, computerTwo: Combat }) {
     try {
         let { computerOne, computerTwo } = data;
-        console.log(computerOne, computerTwo, 'Computer Combat Splitter Data');
         newDataCompiler(computerOne);
         newDataCompiler(computerTwo);
         const computerOneActionLive = computerOne.computerAction !== '' ? true : false;
         const computerTwoActionLive = computerTwo.computerAction !== '' ? true : false;
-
         if (computerOneActionLive && computerTwoActionLive) {
-            console.log("Dual Actions");
             computerOne = dualActionSplitter(computerOne);
             computerTwo = dualActionSplitter(computerTwo);
         } else if (computerOneActionLive && !computerTwoActionLive) {
-            console.log("Actions");
             computerActionCompiler(computerTwo, computerOne.computerAction);
             computerAttackCompiler(computerTwo, computerOne.computerAction);
         } else if (!computerOneActionLive && computerTwoActionLive) {
-            console.log("Dual Actions");
             computerActionCompiler(computerOne, computerTwo.computerAction);
             computerAttackCompiler(computerOne, computerTwo.computerAction);
         };
-
         return { computerOne, computerTwo } as { computerOne: Combat, computerTwo: Combat };
     } catch (err) {
-        console.log(err, 'Error in the Phaser Effect Tick of Game Services');
+        console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
     };
 };
 
 // ================================= VALIDATOR - SPLITTERS ===================================== \\
 
 function validate(combat: Combat): boolean {
-    if (combat.player != undefined && combat.computer != undefined && combat.player != null && combat.computer != null && combat.player !== undefined && combat.computer !== null && combat.player !== undefined && combat.computer !== null) {
-        return true;
-    };
-    return false;
+    return (combat.player != undefined && combat.computer != undefined && combat.player != null && combat.computer != null && combat.player !== undefined && combat.computer !== null && combat.player !== undefined && combat.computer !== null);
 };
 
 // ================================= CONTROLLER - SERVICE ===================================== \\
@@ -2462,17 +2457,14 @@ function weaponActionCompiler(combat: Combat): Combat | undefined {
     try {
         if (validate(combat) === false) return combat;
         const res = weaponActionSplitter(combat);
+        console.log(res.totalDamageData, 'Highest Damage Marker');
         return res as Combat;
     } catch (err) {
         console.warn(err, 'Error in the Phaser Action Compiler of Game Services');
     };
 };
 
-function prayerEffectTick(data: {
-    combat: Combat;
-    effect: StatusEffect;
-    effectTimer: number;
-}): Combat | undefined {
+function prayerEffectTick(data: { combat: Combat; effect: StatusEffect; effectTimer: number; }): Combat | undefined {
     try {
         if (!validate(data.combat)) return data.combat;
         const res = prayerEffectTickSplitter(data);
@@ -2484,7 +2476,6 @@ function prayerEffectTick(data: {
 
 function prayerRemoveTick(combat: Combat, statusEffect: StatusEffect): Combat | undefined {
     try {
-        // if (validate(combat) === false) return combat;
         const res = prayerRemoveTickSplitter(combat, statusEffect);
         return res;
     } catch (err) {

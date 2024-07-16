@@ -164,11 +164,12 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                 extra.push(trait);
             };
         };
-        console.log(extra, 'Extra Specials');
         if (extra.length > 0) {
             let start = [...SPECIALS, ...extra];
             start.sort();
-            setSpecials([...SPECIALS, ...extra]);
+            setSpecials(start);
+        } else {
+            setSpecials([...SPECIALS]);
         };
     };
 

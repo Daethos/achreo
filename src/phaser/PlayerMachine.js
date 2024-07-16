@@ -367,7 +367,6 @@ export class PlayerMachine {
         this.metaMachine.setState(States.CLEAN);
     };
 
-    
     onNonCombatEnter = () => {
         this.player.anims.play('player_idle', true);
         if (this.scene.combatTimer) this.scene.stopCombatTimer();

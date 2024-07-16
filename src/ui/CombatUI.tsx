@@ -10,6 +10,9 @@ import { PrayerModal } from '../utility/buttons';
 import { GameState } from '../stores/game';
 import StaminaBubble from './StaminaBubble';
 import StaminaModal from '../components/StaminaModal';
+// import { CombatAttributes } from '../utility/combat';
+// import Equipment from '../models/equipment';
+// import Ascean, { initAscean } from '../models/ascean';
 
 interface Props {
     state: Accessor<Combat>;
@@ -37,6 +40,18 @@ export default function CombatUI({ state, game, stamina }: Props) {
             'border': border(borderColor(state()?.playerBlessing), 0.15),
         };
     };
+    // function createPrayer() {
+    //     const computer = initAscean;
+    //     const exists = new StatusEffect(
+    //         state(), 
+    //         state().player as Ascean, 
+    //         computer as Ascean, 
+    //         state().weapons[0] as Equipment, 
+    //         state().playerAttributes as CombatAttributes, 
+    //         state().playerBlessing
+    //     );
+    //     EventBus.emit('create-prayer', exists);
+    // };
     return (
         <div class='playerCombatUi'> 
             <p class='playerName' style={{ color: `${state().isStealth ? '#fdf6d8' : 'gold'}`, 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#444' : '#000'}`, 'z-index': 1 }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
@@ -66,7 +81,7 @@ export default function CombatUI({ state, game, stamina }: Props) {
                 </div>
             </Show>  
             <Show when={state().playerEffects.length > 0}>
-                <div class='combatEffects' style={{ left: '-3.5vw', top: '15vh', 'height': '14vh', width: 'auto', transform: 'scale(0.75)' }}>
+                <div class='combatEffects' style={{ left: '-3vw', top: '15vh', 'height': '14vh', width: 'auto', transform: 'scale(0.75)' }}>
                     <For each={state().playerEffects}>{(effect) => ( 
                         <PrayerEffects combat={state} effect={effect} enemy={false} game={game} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
                     )}</For>
@@ -87,6 +102,11 @@ export default function CombatUI({ state, game, stamina }: Props) {
                     <StaminaModal />
                 </div> 
             </Show>
+            {/* <button class='highlight center' onClick={() => createPrayer()} style={{ }}>
+                <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>
+                    Create Prayer
+                </div>
+            </button> */}
         </div> 
     );
 };

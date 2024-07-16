@@ -39,18 +39,13 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
     };
 
     createEffect(() => {
-        if (game().pauseState === true) {
-            return;    
-        };
+        if (game().pauseState === true) return;    
         timeout = setInterval(tick, 1000);
         onCleanup(() => clearInterval(timeout));
     });
 
     function canTick(prayer: StatusEffect, prayerTimer: number, combatTimer: number) {
-        return prayerTimer % 3 === 0 && 
-               combat().combatEngaged === true &&
-               prayer.startTime !== combatTimer && 
-               (prayer.prayer === 'Heal' || prayer.prayer === 'Damage');
+        return prayerTimer % 3 === 0 && combat().combatEngaged === true &&prayer.startTime !== combatTimer && (prayer.prayer === 'Heal' || prayer.prayer === 'Damage');
     }; 
 
     function showEffect() {
@@ -58,14 +53,12 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
         setShow(!show());
     };
 
-    return (
-        <div class={enemy ? 'enemyStatusEffects' : 'playerStatusEffects'}>
-        <button style={itemStyle(combat()?.weapons?.[0]?.rarity as string)} onClick={() => showEffect()}>
+    return <div class={enemy ? 'enemyStatusEffects' : 'playerStatusEffects'} style={{ 'margin-left': '0.5vw' }}>
+        <button style={{...itemStyle(combat()?.weapons?.[0]?.rarity as string) }} onClick={() => showEffect()}>
             <img src={effect?.imgUrl} />
             <div class='center gold' style={{ 'font-size': '0.75em' }}>
                 {effectTimer()}s
             </div>
         </button>
-        </div>
-    );
+    </div>;
 };

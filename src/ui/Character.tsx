@@ -157,6 +157,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
     }); 
 
     function checkSpecials() {
+        console.log(ascean().statistics)
         const potential = [playerTraitWrapper().primary.name, playerTraitWrapper().secondary.name, playerTraitWrapper().tertiary.name];
         const extra = [];
         for (let i = 0; i < 3; i++) {
@@ -231,7 +232,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         const skillPercentage = Math.round((skillLevel / skillCap) * 100);
         return (
             <div class='skill-bar'>
-                <p class='skill-bar-text'>{skill}: {Math.round(skillLevel / 10)} / {skillCap / 10}</p>
+                <p class='skill-bar-text'>{skill}: {Math.floor(skillLevel / 10)} / {skillCap / 10}</p>
                 <div class='skill-bar-fill' style={{'width': `${skillPercentage}%`}}></div>
             </div>
         );

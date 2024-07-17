@@ -298,6 +298,9 @@ export default function PhaserGame (props: IProps) {
             if (index % 3 !== 0) return;
             newSkills[skill as keyof typeof newSkills] += 1;
             newSkills[skill as keyof typeof newSkills] = Math.min(newSkills[skill as keyof typeof newSkills], props.ascean().level * 100);
+            if (newSkills[skill as keyof typeof newSkills] % 10 === 0) {
+                EventBus.emit('alert', {header: 'Skill Up!', body: `You have increased your skill in ${skill} by 1 to ${newSkills[skill as keyof typeof newSkills] / 10}`, delay: 3000, key: 'Close'});    
+            };
         });
         return newSkills;
     };

@@ -2722,7 +2722,7 @@ export default class Player extends Entity {
             };
         }, undefined, this);
         EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `Your caeren grips your body and contorts, writhing around you.`
+            playerSpecialDescription: `Your caeren calms your body to focus, its hush bleeding into you.`
         });
     };
     onSeerUpdate = (_dt) => {if (!this.isSeering) this.metaMachine.setState(States.CLEAN);};
@@ -2739,7 +2739,7 @@ export default class Player extends Entity {
         }, undefined, this);
         this.setTimeEvent('stimulateCooldown', PLAYER.COOLDOWNS.LONG);
         EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `Your caeren grants reprieve, refreshing you.`
+            playerSpecialDescription: `Your caeren's hush grants reprieve, refreshing you.`
         });
         for (let i = 0; i < this.scene.actionBar.specialButtons.length; i++) {
             const name = this.scene.settings.specials[i].toLowerCase();

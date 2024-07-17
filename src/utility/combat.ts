@@ -1614,7 +1614,6 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     combat.typeDamageData.push(combat.playerDamageType);
     const skill = combat.weapons[0]?.type === 'Spell' ? combat.weapons[0]?.damageType?.[0] : combat.weapons[0]?.type;
     combat.skillData.push(skill as string);
-    console.log(combat.realizedPlayerDamage, combat.totalDamageData, Math.max(combat.realizedPlayerDamage, combat.totalDamageData), 'RPD, TDD, MAX')
     combat.totalDamageData = Math.max(combat.realizedPlayerDamage, combat.totalDamageData);
 
     combat.playerActionDescription = 
@@ -2458,7 +2457,6 @@ function weaponActionCompiler(combat: Combat): Combat | undefined {
     try {
         if (validate(combat) === false) return combat;
         const res = weaponActionSplitter(combat);
-        console.log(res.totalDamageData, 'Highest Damage Marker');
         return res as Combat;
     } catch (err) {
         console.warn(err, 'Error in the Phaser Action Compiler of Game Services');

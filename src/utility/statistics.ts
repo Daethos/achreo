@@ -57,7 +57,11 @@ export type Statistics = {
             buff: number, 
             damage: number, 
             debuff: number, 
-            heal: number 
+            heal: number,
+            avarice: number, 
+            denial: number, 
+            dispel: number, 
+            silence: number, 
          },
     },
     luckout: {
@@ -247,7 +251,11 @@ export const initStatistics: Statistics = {
             buff: 0, 
             damage: 0, 
             debuff: 0, 
-            heal: 0 
+            heal: 0,
+            avarice: 0, 
+            denial: 0, 
+            dispel: 0, 
+            silence: 0, 
          },
     },
     luckout: {

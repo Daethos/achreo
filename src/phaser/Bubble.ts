@@ -26,7 +26,6 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
             innerStrength: 1,
             glowColor: this.color,
             intensity: 0.25,
-            // knockout: true,
         });
         this.drawBubble(scene, time);
         scene.add.existing(this);
@@ -36,7 +35,7 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
         this.lineStyle(3, this.color, 1);
         this.strokeCircle(0, 0, 35);
         this.setDepth(100);
-        const reps = time / 250;
+        const reps = time / 250; 
         this.warp = this.scene.time.addEvent({
             delay: 250, // 125 Adjust the delay as needed
             callback: () => {

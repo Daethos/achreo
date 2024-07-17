@@ -19,9 +19,9 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
 
     return (
         <div class='stat-block superCenter' style={{ overflow: 'scroll' }}>
-        <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION !== 'landscape'}>
-            <Preview newAscean={newAscean} />
-        </Show>
+            <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION !== 'landscape'}>
+                <Preview newAscean={newAscean} />
+            </Show>
             {/* <<---------- PORTRAIT ---------->> */}
             <Show when={dimensions()?.ORIENTATION === 'landscape'} fallback={ 
                 <Switch>

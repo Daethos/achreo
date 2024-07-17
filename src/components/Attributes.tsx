@@ -45,38 +45,36 @@ export function AttributeCompiler({ ascean, setAttribute, show, setShow }: { asc
     };
     createEffect(() => compiler());
     const inline = { width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block' };
-    return (
-        <div style={{ width: '100%', display: 'inline-flex' }}>
-            <div style={inline}>
-                <button class='buttonBorderless' onClick={() => toggle('constitution')} style={font}>Con</button>
-                <p class='gold' style={font}>{abilities()?.totalConstitution}</p>
-            </div>
-            <div>{'\n'}</div>
-            <div style={inline}>
-                <button class='buttonBorderless' onClick={() => toggle('strength')} style={font}>Str</button>
-                <p class='gold' style={font}>{abilities()?.totalStrength}</p>
-            </div>
-            <div>{'\n'}</div>
-
-            <div style={inline}>
-                <button class='buttonBorderless' onClick={() => toggle('agility')} style={font}>Agi</button>
-                <p class='gold' style={font}> {abilities()?.totalAgility}</p>
-            </div>
-            <div>{'\n'}</div>
-            <div style={inline}>
-                <button class='buttonBorderless' onClick={() => toggle('achre')} style={font}>Ach</button>
-                <p class='gold' style={font}>{abilities()?.totalAchre}</p>
-            </div>
-            <div>{'\n'}</div>
-            <div style={inline}>
-                <button class='buttonBorderless' onClick={() => toggle('caeren')} style={font}>Caer</button>
-                <p class='gold' style={font}>{abilities()?.totalCaeren}</p>
-            </div>
-            <div>{'\n'}</div>
-            <div style={inline}>
-                <button class='buttonBorderless' onClick={() => toggle('kyosir')} style={font}>Kyo</button>
-                <p class='gold' style={font}>{abilities()?.totalKyosir}</p>
-            </div>
+    return <div style={{ width: '100%', display: 'inline-flex' }}>
+        <div style={inline}>
+            <button class='buttonBorderless' onClick={() => toggle('constitution')} style={font}>Con</button>
+            <p class='gold' style={font}>{abilities()?.totalConstitution}</p>
         </div>
-    );
+        <div>{'\n'}</div>
+        <div style={inline}>
+            <button class='buttonBorderless' onClick={() => toggle('strength')} style={font}>Str</button>
+            <p class='gold' style={font}>{abilities()?.totalStrength}</p>
+        </div>
+        <div>{'\n'}</div>
+
+        <div style={inline}>
+            <button class='buttonBorderless' onClick={() => toggle('agility')} style={font}>Agi</button>
+            <p class='gold' style={font}> {abilities()?.totalAgility}</p>
+        </div>
+        <div>{'\n'}</div>
+        <div style={inline}>
+            <button class='buttonBorderless' onClick={() => toggle('achre')} style={font}>Ach</button>
+            <p class='gold' style={font}>{abilities()?.totalAchre}</p>
+        </div>
+        <div>{'\n'}</div>
+        <div style={inline}>
+            <button class='buttonBorderless' onClick={() => toggle('caeren')} style={font}>Caer</button>
+            <p class='gold' style={font}>{abilities()?.totalCaeren}</p>
+        </div>
+        <div>{'\n'}</div>
+        <div style={inline}>
+            <button class='buttonBorderless' onClick={() => toggle('kyosir')} style={font}>Kyo</button>
+            <p class='gold' style={font}>{abilities()?.totalKyosir}</p>
+        </div>
+    </div>;
 };

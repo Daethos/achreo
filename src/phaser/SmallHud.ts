@@ -199,52 +199,50 @@ export default class SmallHud extends Phaser.GameObjects.Container {
 
     pressButton = (item: Phaser.GameObjects.Image) => {
         this.bar.forEach((button) => {
-            if (button === item) {
-                switch (button.texture.key) {
-                    case 'open':
-                        this.closed = true;
-                        EventBus.emit('closed');
-                        EventBus.emit('action-button-sound');
-                        this.draw();
-                        break;
-                    case 'closed':
-                        this.closed = false;
-                        EventBus.emit('open');
-                        EventBus.emit('action-button-sound');
-                        this.draw();
-                        break;
-                    case 'pause':
-                        EventBus.emit('action-button-sound');
-                        EventBus.emit('update-pause', true); // variable
-                        this.setVisible(false);
-                        break;
-                    case 'minimap':
-                        EventBus.emit('action-button-sound');
-                        EventBus.emit('minimap');
-                        this.switches.minimap = !this.switches.minimap;
-                        break;
-                    case 'cursor-reset':
-                        EventBus.emit('action-button-sound');
-                        EventBus.emit('update-cursor');
-                        break; 
-                    case 'logs':
-                        EventBus.emit('action-button-sound');
-                        EventBus.emit('show-combat'); // variable
-                        break;
-                    case 'settings':
-                        EventBus.emit('action-button-sound');
-                        EventBus.emit('useScroll');
-                        this.setVisible(false);
-                        break;
-                    case 'info':
-                        EventBus.emit('action-button-sound');
-                        EventBus.emit('show-player'); // variable
-                        this.setVisible(false);
-                        break;
-                    default:
-                        break;
-                        
-                };
+            if (button !== item) return;
+            switch (button.texture.key) {
+                case 'open':
+                    this.closed = true;
+                    EventBus.emit('closed');
+                    EventBus.emit('action-button-sound');
+                    this.draw();
+                    break;
+                case 'closed':
+                    this.closed = false;
+                    EventBus.emit('open');
+                    EventBus.emit('action-button-sound');
+                    this.draw();
+                    break;
+                case 'pause':
+                    EventBus.emit('action-button-sound');
+                    EventBus.emit('update-pause', true); // variable
+                    this.setVisible(false);
+                    break;
+                case 'minimap':
+                    EventBus.emit('action-button-sound');
+                    EventBus.emit('minimap');
+                    this.switches.minimap = !this.switches.minimap;
+                    break;
+                case 'cursor-reset':
+                    EventBus.emit('action-button-sound');
+                    EventBus.emit('update-cursor');
+                    break; 
+                case 'logs':
+                    EventBus.emit('action-button-sound');
+                    EventBus.emit('show-combat'); // variable
+                    break;
+                case 'settings':
+                    EventBus.emit('action-button-sound');
+                    EventBus.emit('useScroll');
+                    this.setVisible(false);
+                    break;
+                case 'info':
+                    EventBus.emit('action-button-sound');
+                    EventBus.emit('show-player'); // variable
+                    this.setVisible(false);
+                    break;
+                default:
+                    break;
             };
             if (this.switches[button.texture.key as keyof typeof this.switches] === true) {
                 button.setBlendMode(Phaser.BlendModes.SCREEN);

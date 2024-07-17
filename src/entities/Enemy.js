@@ -907,8 +907,7 @@ export default class Enemy extends Entity {
     };
 
     isSuffering = () => {
-        const suffering = this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed;
-        return suffering;
+        return this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed;
     };
     
     setStun = () => {
@@ -987,10 +986,10 @@ export default class Enemy extends Entity {
         this.anims.play('player_idle', true);
         this.setVelocity(0);
         this.scene.showDialog(true);
+        this.setStatic(true);
     };
     onAwarenessUpdate = (_dt) => {
         this.anims.play('player_idle', true);
-        this.setStatic(true);
     };
     onAwarenessExit = () => {
         this.anims.stop('player_idle');

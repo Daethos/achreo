@@ -16,8 +16,8 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow }:
     };
     const div = (eqp: Equipment) => {
         return <div onClick={() => info(eqp)} style={item(eqp.rarity as string)}>
-                <img src={eqp.imgUrl} alt="item" style={image} />
-            </div>;
+            <img src={eqp.imgUrl} alt="item" style={image} />
+        </div>;
     };
     const image = { width: '100%', height: '100%' };
     function info(item: Equipment) {

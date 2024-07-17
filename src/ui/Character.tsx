@@ -1,34 +1,35 @@
-import { Accessor, For, JSX, Match, Setter, Show, Switch, createEffect, createSignal } from 'solid-js';
+import { Accessor, For, JSX, lazy, Match, Setter, Show, Suspense, Switch, createEffect, createSignal } from 'solid-js';
 import { Form } from 'solid-bootstrap';
-import AsceanImageCard from '../components/AsceanImageCard';
 import AttributeModal, { AttributeCompiler } from '../components/Attributes';
-import InventoryPouch from './InventoryPouch';
-import { EventBus } from '../game/EventBus';
-import HealthBar from './HealthBar';
-import ExperienceBar from './ExperienceBar';
-import Firewater from './Firewater';
-import { ActionButtonModal, Modal } from '../utility/buttons';
-import { font, getRarityColor } from '../utility/styling';
-import ItemModal from '../components/ItemModal';
-import Equipment from '../models/equipment';
-import { useResizeListener } from '../utility/dimensions';
-import { Attributes } from '../utility/attributes';
-import Settings from '../models/settings';
 import Ascean from '../models/ascean';
-import { GameState } from '../stores/game';
-import { Combat } from '../stores/combat';
-import Highlight from './Highlight';
+import Equipment from '../models/equipment';
+import Settings from '../models/settings';
 import { deleteEquipment, updateSettings } from '../assets/db/db';
-import SettingSetter from '../utility/settings';
-import TutorialOverlay from '../utility/tutorial';
-import LevelUp from './LevelUp';
-import { playerTraits } from '../utility/ascean';
-import { ACTIONS, SPECIALS, TRAIT_SPECIALS } from '../utility/abilities';
 import { OriginModal } from '../components/Origin';
 import { FaithModal } from '../components/Faith';
-import { DEITIES } from '../utility/deities';
-import { PhaserShaper } from './PhaserShaper';
+import { EventBus } from '../game/EventBus';
+import { GameState } from '../stores/game';
+import { Combat } from '../stores/combat';
+import { ActionButtonModal, Modal } from '../utility/buttons';
+import { font, getRarityColor } from '../utility/styling';
+import { useResizeListener } from '../utility/dimensions';
+import { Attributes } from '../utility/attributes';
 import { Reputation, faction } from '../utility/player';
+import { playerTraits } from '../utility/ascean';
+import { ACTIONS, SPECIALS, TRAIT_SPECIALS } from '../utility/abilities';
+import { DEITIES } from '../utility/deities';
+import { Puff } from 'solid-spinner';
+const AsceanImageCard = lazy(async () => await import('../components/AsceanImageCard'));
+const ExperienceBar = lazy(async () => await import('./ExperienceBar'));
+const Firewater = lazy(async () => await import('./Firewater'));
+const HealthBar = lazy(async () => await import('./HealthBar'));
+const Highlight = lazy(async () => await import('./Highlight'));
+const InventoryPouch = lazy(async () => await import('./InventoryPouch'));
+const ItemModal = lazy(async () => await import('../components/ItemModal'));
+const LevelUp = lazy(async () => await import('./LevelUp'));
+const PhaserShaper = lazy(async () => await import('./PhaserShaper'));
+const SettingSetter = lazy(async () => await import('../utility/settings'));
+const TutorialOverlay = lazy(async () => await import('../utility/tutorial'));
 
 export const viewCycleMap = {
     Character: 'Inventory',
@@ -215,7 +216,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         await saveSettings(newSettings);
     };
 
-    const createReputationBar = (faction: faction) => {
+    const createReputationBar = (faction: faction): JSX.Element => {
         return (
             <div class='skill-bar'>
             <p class='skill-bar-text'>{faction.name}: {faction.reputation} / 100</p>
@@ -224,19 +225,19 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         );    
     };
 
-    const createSkillBar = (skill: string) => {
+    const createSkillBar = (skill: string): JSX.Element => {
         const skillLevel = (ascean().skills as any)[skill];
         const skillCap = ascean().level * 100;
         const skillPercentage = Math.round((skillLevel / skillCap) * 100);
         return (
             <div class='skill-bar'>
-                <p class='skill-bar-text'>{skill}: {skillLevel} / {skillCap}</p>
+                <p class='skill-bar-text'>{skill}: {Math.round(skillLevel / 10)} / {skillCap / 10}</p>
                 <div class='skill-bar-fill' style={{'width': `${skillPercentage}%`}}></div>
             </div>
         );
     };
 
-    const createCharacterInfo = (character: string) => {
+    const createCharacterInfo = (character: string): JSX.Element | "" => {
         switch (character) {
             case CHARACTERS.REPUTATION:
                 const unnamed = reputation().factions.filter((faction) => faction.named === false);
@@ -287,7 +288,6 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                 const highestPrayer = Object.entries(ascean()?.statistics?.combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
                 let highestMastery = Object.entries(ascean()?.statistics?.mastery).reduce((a, b) => a[1] > b[1] ? a : b);
                 if (highestMastery?.[1] === 0) highestMastery = [ascean()?.mastery, 0];
-                console.log(ascean().statistics.combat.attacks, 'Attacks')
                 return (
                     <div class='creature-heading'>
                         <h1 style={{ 'margin-bottom': '3%' }}>Attacks</h1>
@@ -323,7 +323,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         };
     }; 
 
-    const createPrayerInfo = () => {
+    const createPrayerInfo = (): JSX.Element => {
         const highestDeity = Object.entries(ascean()?.statistics?.combat?.deities).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
         const highestPrayer = Object.entries(ascean()?.statistics?.combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
         let highestMastery = Object.entries(ascean()?.statistics?.mastery).reduce((a, b) => a[1] > b[1] ? a : b);
@@ -356,7 +356,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         );
     };
 
-    const createDeityInfo = (deity: string) => {
+    const createDeityInfo = (deity: string): JSX.Element => {
         const info = DEITIES[deity as keyof typeof DEITIES];
         return (
             <div class='creature-heading'>
@@ -368,7 +368,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         );
     };
 
-    const journalScroll = () => {
+    const journalScroll = (): JSX.Element => {
         if (ascean().journal.entries.length === 0) {
             setEntry(undefined);
             return (
@@ -397,7 +397,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         );
     };
 
-    const createDeityScroll = () => {
+    const createDeityScroll = (): JSX.Element => {
         const deities = [];
         for (const deity in DEITIES) {
             deities.push(DEITIES[deity as keyof typeof DEITIES]);
@@ -584,7 +584,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         };
     };
 
-    function handleInspect(type: string) {
+    function handleInspect(type: string): void {
         try {
             if (type === 'weaponOne' || type === 'weaponTwo' || type === 'weaponThree') {
                 setWeaponCompared(type);
@@ -597,7 +597,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         };
     };
 
-    async function removeItem(id: string) {
+    async function removeItem(id: string): Promise<void> {
         await deleteEquipment(id);
         const newInventory = game().inventory.filter((item) => item._id !== id);
         EventBus.emit('refresh-inventory', newInventory);
@@ -606,8 +606,8 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
 
     function item(rarity: string) {
         return {
-            border: '0.2em solid ' + getRarityColor(rarity),
-            transform: 'scale(1.1)',
+            'border': '0.2em solid ' + getRarityColor(rarity),
+            'transform': 'scale(1.1)',
             'background-color': 'black',
             'margin-top': '0.25em',
             'margin-bottom': '0.25em',
@@ -649,7 +649,9 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
             <button class='highlight p-3' onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em',position: 'fixed', top: 0, right: '10vh', 'z-index': 1 }}>
                 <div>{expandedCharacter() === true ? 'Stats' : 'Equipment'}</div>
             </button>
-            <Firewater ascean={ascean} />
+            <Suspense fallback={<Puff color="gold"/>}>
+                <Firewater ascean={ascean} />
+            </Suspense>
         </> ) : settings().asceanViews === VIEWS.SETTINGS ? ( <>
             <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Gameplay</div></button>
             {(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) && (
@@ -753,12 +755,18 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                         <div class='gold' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5%', 'text-align': 'center' } : { margin: '5%', 'text-align': 'center' }}>
                             {combatState()?.player?.name}
                         </div>
-                        <HealthBar combat={combatState} />
+                        <Suspense fallback={<Puff color="gold"/>}>
+                            <HealthBar combat={combatState} />
+                        </Suspense>
                         <div style={dimensions().ORIENTATION === 'landscape' ? { 'margin-left': '0', 'margin-top': '7.5%', transform: 'scale(0.9)' } : { 'margin-left': '5%', transform: 'scale(0.75)', 'margin-top': '20%' }}>
+                        <Suspense fallback={<Puff color="gold"/>}>
                             <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
+                        </Suspense>
                         </div>
                         <div style={{ 'margin-top': '-5%' }}>
-                            <ExperienceBar ascean={ascean} />
+                            <Suspense fallback={<Puff color="gold"/>}>
+                                <ExperienceBar ascean={ascean} />
+                            </Suspense>
                         </div>
                     </div>
                 </Match>
@@ -808,7 +816,6 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                             {combatState()?.player?.description}
                         </h2>
                     </> ) }
-
                     <div class='propertyBlock' style={{ 'margin-bottom': '0%', 'font-size': '0.9em', 'font-family': 'Cinzel Regular' }}>
                         <div>Level: <span class='gold'>{combatState()?.player?.level}</span>{'\n'}</div>
                         <div>Silver: <span class='gold'>{ascean().currency.silver}</span> Gold: <span class='gold'>{ascean().currency.gold} {'\n'}</span></div>
@@ -825,6 +832,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                 </div>
             ) : settings().asceanViews === VIEWS.INVENTORY ? (
                 highlighted().comparing && (
+                    <Suspense fallback={<Puff color="gold"/>}>
                     <Highlight ascean={ascean} pouch={dragAndDropInventory} 
                         highlighted={highlighted as Accessor<{item: Equipment, comparing: boolean, type: string}>} 
                         inventoryType={inventoryType} ringCompared={ringCompared} weaponCompared={weaponCompared} 
@@ -834,6 +842,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                         forge={forgeModalShow} setForge={setForgeModalShow} 
                         upgrade={canUpgrade} setUpgrade={setCanUpgrade}
                     />
+                    </Suspense>
                 )
             ) : settings().asceanViews === VIEWS.SETTINGS ? (
                 <div class='center' style={{ display: 'flex', 'flex-direction': 'row' }}>
@@ -976,8 +985,10 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                         </Match>
                         <Match when={settings().control === CONTROLS.PHASER_UI}>
                             <div class='center creature-heading' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
+                            <Suspense fallback={<Puff color="gold"/>}>
                                 <PhaserShaper settings={settings} />
                                 <br />
+                            </Suspense>
                             </div>
                         </Match>
                     </Switch>
@@ -1001,11 +1012,15 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                         {createCharacterInfo(settings()?.characterViews)}
                     </div>
                 ) : settings().asceanViews === VIEWS.INVENTORY ? ( 
-                    <InventoryPouch ascean={ascean} setRingCompared={setRingCompared} highlighted={highlighted} setHighlighted={setHighlighted} setInventoryType={setInventoryType} inventoryType={inventoryType} setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} scaleImage={scaleImage} setScaleImage={setScaleImage} />
+                    <Suspense fallback={<Puff color="gold"/>}>
+                        <InventoryPouch ascean={ascean} setRingCompared={setRingCompared} highlighted={highlighted} setHighlighted={setHighlighted} setInventoryType={setInventoryType} inventoryType={inventoryType} setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} scaleImage={scaleImage} setScaleImage={setScaleImage} />
+                    </Suspense>
                 ) : settings().asceanViews === VIEWS.SETTINGS ? (
                     <div style={{ 'scrollbar-width': "none", overflow: 'scroll' }}> 
                         <div class='center' style={{ padding: '5%', 'font-size': '0.75em' }}>
+                        <Suspense fallback={<Puff color="gold"/>}>
                             <SettingSetter setting={settings} />
+                        </Suspense>
                         </div>
                     </div>
                 ) : ( 
@@ -1016,11 +1031,15 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
             </div>
         </Show>
         <Show when={levelUpModalShow()}>
+        <Suspense fallback={<Puff color="gold"/>}>
             <LevelUp ascean={ascean} asceanState={asceanState} show={levelUpModalShow} setShow={setLevelUpModalShow} />
+        </Suspense>
         </Show>
         <Show when={show()}>
             <div class='modal' onClick={() => setShow(!show)}>
+            <Suspense fallback={<Puff color="gold"/>}>
                 <ItemModal item={equipment()} stalwart={combatState().isStalwart} caerenic={combatState().isCaerenic} /> 
+            </Suspense>
             </div> 
         </Show>
         <Show when={actionShow()}>
@@ -1052,9 +1071,8 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
             <div class='modal'>
                 <Modal 
                     items={inspectItems as Accessor<{ item: Equipment | undefined; type: string; }[]>} 
-                    inventory={highlighted().item} callback={handleInspect} 
-                    forge={forgeModalShow} setForge={setForgeModalShow} upgrade={canUpgrade} setUpgrade={setCanUpgrade} 
-                    show={inspectModalShow} setShow={setInspectModalShow} 
+                    inventory={highlighted().item} callback={handleInspect} forge={forgeModalShow} setForge={setForgeModalShow} 
+                    upgrade={canUpgrade} setUpgrade={setCanUpgrade} show={inspectModalShow} setShow={setInspectModalShow} 
                 />
             </div>
         </Show>
@@ -1097,7 +1115,6 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         </Show>
         <Show when={showRestart()}>
             <div class='modal'>
-
             <div class='border superCenter creature-heading' style={{ width: '50%' }}>
             <h1 class='center' style={{ color: 'red', margin: '5%' }}>Restart Game</h1>
             <p class='center' style={{ 'margin-bottom': '15%' }}>Do you with to go back to the Main Menu?</p>
@@ -1106,11 +1123,16 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
             </div>
             </div> 
         </Show>
+        
         <Show when={showTutorial()}>
+        <Suspense fallback={<Puff color="gold"/>}>
             <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} /> 
+        </Suspense>
         </Show>
         <Show when={showInventory()}>
+        <Suspense fallback={<Puff color="gold"/>}>
             <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showInventory} setShow={setShowInventory} /> 
+        </Suspense>
         </Show>
         </div>
     );

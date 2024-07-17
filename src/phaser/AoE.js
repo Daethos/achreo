@@ -1,3 +1,4 @@
+import ScrollingCombatText from "./ScrollingCombatText";
 const { Bodies } = Phaser.Physics.Matter.Matter;
 
 const COLORS = {
@@ -19,6 +20,7 @@ const COLORS = {
 export default class AoE extends Phaser.Physics.Matter.Sprite {
     constructor(scene, type, count = 1, positive = false, enemy = undefined, manual = false, target = undefined) {
         super(scene.matter.world, scene.player.x, scene.player.y + 6, 'target');
+        this.setAngle(0);
         this.setVisible(false);
         this.setScale(0.375); // 375
         this.setOrigin(0.5, 0.5);
@@ -174,6 +176,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         };
         const y = manual === true ? targ.y : targ.y + 6;
         this.setOrigin(0.5, 0.5);
+        // let tweenCount = 0;
+        scene.player.specialCombatText = new ScrollingCombatText(scene.player.scene, scene.player.x, scene.player.y, 'Spin to Win!', 1000, 'damage');
+        scene.rotateTween(this, this.count * 450);
+        // Start the rotation tween
+        // this.startRotationTween();
         this.timer = scene.time.addEvent({
             delay: 50,
             callback: () => {
@@ -188,6 +195,30 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             },
             callbackScope: this,
             loop: 20,
+        });
+    };
+
+    startRotationTween() {
+        this.scene.tweens.addCounter({
+            from: 0,
+            to: 360,
+            duration: 900, // Duration in milliseconds
+            repeat: -1, // Repeat indefinitely
+            onUpdate: (tween) => {
+                const angle = Phaser.Math.DegToRad(tween.getValue());
+                this.x = this.scene.player.x + this.radius * Math.cos(angle);
+                this.y = this.scene.player.y + this.radius * Math.sin(angle);
+            },
+            onStart: () => {
+                this.setVisible(true);
+                console.log('Tween started');
+            },
+            onComplete: () => {
+                console.log('Tween completed');
+            },
+            onRepeat: () => {
+                console.log('Tween repeated');
+            }
         });
     };
 

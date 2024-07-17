@@ -601,7 +601,6 @@ export class Game extends Scene {
     getWorldPointer = () => {
         const pointer = this.rightJoystick.pointer;
         const point = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
-        console.log(point, 'Point in World Pointer');
         return point;
     };
 
@@ -897,6 +896,20 @@ export class Game extends Scene {
 
     // ============================ Game ============================ \\
 
+    rotateTween = (tween: any, duration: number) => {
+        this.tweens.add({
+            targets: tween,
+            angle: 360,
+            duration,
+            ease: 'Linear',
+            yoyo: true,
+            // onUpdate: (tween) => {
+            //     const angle = Phaser.Math.DegToRad(tween.getValue());
+            //     this.graphic.x = this.player.x + this.radius * Math.cos(angle);
+            //     this.graphic.y = this.player.y + this.radius * Math.sin(angle);
+            // },
+        });
+    };
     checkPlayerSuccess = (): void => {
         if (!this.player.actionSuccess && (this.state.action !== 'parry' && this.state.action !== 'roll' && this.state.action !== '')) this.combatMachine.input('action', '');
     };

@@ -28,15 +28,13 @@ export const FAITHS = [{
 export const FaithModal = ({ faith }: { faith: string }) => {
     const dimensions = useResizeListener();
     const religion = FAITHS.find((f) => f.worshipers === faith);
-    return (
-        <div class="border verticalCenter" style={dimensions()?.ORIENTATION === 'landscape' ? { position: 'absolute', left: '15%', width: '70%' } : { }}>
-            <div class="creature-heading border" style={{ 'text-wrap': 'balance' }}> 
-                <img src={religion?.iconography} alt={religion?.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === 'landscape' ? '15%' : '', 'margin-top': '3%' }} />
-                <p class='gold small wrap' style={{ margin: '3%' }}>{religion?.origin}</p>
-                <h2 class='gold wrap' style={{ margin: '3%' }}>{religion?.quote}</h2>
-            </div>
+    return <div class="border verticalCenter" style={dimensions()?.ORIENTATION === 'landscape' ? { position: 'absolute', left: '15%', width: '70%' } : { }}>
+        <div class="creature-heading border" style={{ 'text-wrap': 'balance' }}> 
+            <img src={religion?.iconography} alt={religion?.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === 'landscape' ? '15%' : '', 'margin-top': '3%' }} />
+            <p class='gold small wrap' style={{ margin: '3%' }}>{religion?.origin}</p>
+            <h2 class='gold wrap' style={{ margin: '3%' }}>{religion?.quote}</h2>
         </div>
-    );
+    </div>;
 };
  
 const FaithCard = ({ faith, newAscean, setNewAscean }: { faith: any; newAscean: Accessor<CharacterSheet>; setNewAscean: Setter<CharacterSheet>; }) => {
@@ -47,24 +45,21 @@ const FaithCard = ({ faith, newAscean, setNewAscean }: { faith: any; newAscean: 
         setNewAscean({ ...newAscean(), faith: faith.worshipers });
         setShow(!show());
     };
-    return (
-        <Show when={show()} fallback={<button onClick={handleFaith} class='highlight' style={{ color: faith.worshipers === newAscean().faith ? 'gold' : '#fdf6d8' }}>{faith.name}</button>}>
-            <div class='modal' onClick={handleShow}>
-            <div class="border verticalCenter" style={dimensions()?.ORIENTATION === 'landscape' ?{ position: 'absolute', left: '15%', width: '70%' } : { }}>
-            <div class="creature-heading border" style={{ 'text-wrap': 'balance' }}> 
-                <img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === 'landscape' ? '15%' : '', 'margin-top': '3%' }} />
-                <p class='gold small wrap' style={{ margin: '3%' }}>{faith.origin}</p>
-                <h2 class='gold wrap' style={{ margin: '3%' }}>{faith.quote}</h2>
-            </div>
-            </div>
-            </div>
-        </Show> 
-    );
+    return <Show when={show()} fallback={<button onClick={handleFaith} class='highlight' style={{ color: faith.worshipers === newAscean().faith ? 'gold' : '#fdf6d8' }}>{faith.name}</button>}>
+        <div class='modal' onClick={handleShow}>
+        <div class="border verticalCenter" style={dimensions()?.ORIENTATION === 'landscape' ?{ position: 'absolute', left: '15%', width: '70%' } : { }}>
+        <div class="creature-heading border" style={{ 'text-wrap': 'balance' }}> 
+            <img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === 'landscape' ? '15%' : '', 'margin-top': '3%' }} />
+            <p class='gold small wrap' style={{ margin: '3%' }}>{faith.origin}</p>
+            <h2 class='gold wrap' style={{ margin: '3%' }}>{faith.quote}</h2>
+        </div>
+        </div>
+        </div>
+    </Show>;
 };
 
 export default function Faith({ newAscean, setNewAscean }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet> }) {
-  return (
-        <div class='center creature-heading' style={{ 'margin-bottom': '3%' }}>
+    return <div class='center creature-heading' style={{ 'margin-bottom': '3%' }}>
         <h1 class='gold'>Faith</h1>
         <div>
             <For each={FAITHS}>
@@ -73,6 +68,5 @@ export default function Faith({ newAscean, setNewAscean }: { newAscean: Accessor
                 )}
             </For>
         </div> 
-        </div>
-    );
+    </div>;
 };

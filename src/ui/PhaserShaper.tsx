@@ -11,7 +11,7 @@ interface IPhaserShape {
     settings: Accessor<Settings>;
 };
 
-export function PhaserShaper({ settings }: IPhaserShape) {
+export default function PhaserShaper({ settings }: IPhaserShape) {
     const dimensions = useResizeListener();
 
     async function handleCastbar(type: string, value: number) {

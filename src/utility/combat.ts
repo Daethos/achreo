@@ -1975,6 +1975,7 @@ function weaponActionSplitter(combat: Combat): Combat {
         'actionData': cleanData.actionData,
         'typeAttackData': cleanData.typeAttackData,
         'typeDamageData': cleanData.typeDamageData,
+        'totalDamageData': cleanData.totalDamageData,
         'deityData': cleanData.deityData,
         'prayerData': cleanData.prayerData,
         'skillData': cleanData.skillData,

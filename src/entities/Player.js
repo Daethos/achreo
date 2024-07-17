@@ -441,6 +441,7 @@ export default class Player extends Entity {
         this.scene.add.existing(this.weaponHitbox);
 
         this.knocking = false;
+        this.castingSuccess = false;
         this.isCounterSpelling = false;
         this.isCaerenic = false;
         this.devourTimer = undefined; 
@@ -1113,18 +1114,16 @@ export default class Player extends Entity {
     }; 
 
     onAttackEnter = () => {
+        if (this.isPosturing || this.isParrying) return;
         if (this.isRanged === true && this.inCombat === true) {
             const correct = this.getEnemyDirection(this.currentTarget);
             if (!correct) {
-                // console.log(`%c Error (Attack): You are not looking at or targeting an enemy.`, 'color: #ff0000');
-                this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Skill Issue: You are not looking at the enemy', 1500, 'damage');
+                this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Skill Issue: Look at the Enemy!', 1500, 'damage');
                 return;
             };
         };
-        if (this.isPosturing || this.isParrying) return;
         this.isAttacking = true;
         this.swingReset(States.ATTACK, true);
-        // this.swingReset(States.POSTURE);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.ATTACK);
     }; 
     onAttackUpdate = (_dt) => {
@@ -1133,11 +1132,7 @@ export default class Player extends Entity {
         };
         this.combatChecker(this.isAttacking);
     }; 
-    onAttackExit = () => {
-        if (this.scene.state.action !== '') {
-            this.scene.combatMachine.input('action', '');
-        };
-    };
+    onAttackExit = () => {if (this.scene.state.action === 'attack') this.scene.combatMachine.input('action', '');};
 
     onParryEnter = () => {
         this.isParrying = true;    
@@ -1158,27 +1153,21 @@ export default class Player extends Entity {
         };
         this.combatChecker(this.isParrying);
     };
-    onParryExit = () => {
-        if (this.scene.state.action !== '') {
-            this.scene.combatMachine.input('action', '');
-        };
-    };
+    onParryExit = () => {if (this.scene.state.action === 'parry') this.scene.combatMachine.input('action', '');};
 
     onPostureEnter = () => {
+        if (this.isAttacking || this.isParrying) return;
         if (this.isRanged === true) {
             if (this.isMoving === true) { // The || needs to be a check that the player is 'looking at' the enemy
-                // console.log(`%c Error (Posture): You are moving. Please Stand Still.`, 'color: #ff0');
-                this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Posture Issue: You are moving', 1500, 'damage');
+                this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Posture Issue: You are Moving', 1500, 'damage');
                 return;
             };
             const correct = this.getEnemyDirection(this.currentTarget);
             if (!correct && this.inCombat === true) {
-                // console.log(`%c Error (Posture): You are not looking at nor targeting an enemy.`, 'color: #f00');
-                this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Skill Issue: You are not looking at the enemy', 1500, 'damage');
+                this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Skill Issue: Look at the Enemy!', 1500, 'damage');
                 return;
             };
         };
-        if (this.isAttacking || this.isParrying) return;
         this.isPosturing = true;
         this.swingReset(States.POSTURE, true);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.POSTURE);
@@ -1189,11 +1178,7 @@ export default class Player extends Entity {
         };
         this.combatChecker(this.isPosturing);
     };
-    onPostureExit = () => {
-        if (this.scene.state.action !== '') {
-            this.scene.combatMachine.input('action', '');
-        };
-    };
+    onPostureExit = () => {if (this.scene.state.action === 'posture') this.scene.combatMachine.input('action', '');};
 
     onDodgeEnter = () => {
         if (this.isStalwart || this.isStorming || this.isRolling) return;
@@ -1211,9 +1196,7 @@ export default class Player extends Entity {
         this.body.parts[0].vertices[1].x += this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT : -PLAYER.COLLIDER.DISPLACEMENT;
         this.body.parts[1].vertices[0].x += this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT : -PLAYER.COLLIDER.DISPLACEMENT;
     };
-    onDodgeUpdate = (_dt) => { 
-        this.combatChecker(this.isDodging);
-    };
+    onDodgeUpdate = (_dt) => this.combatChecker(this.isDodging);
     onDodgeExit = () => {
         if (this.isStalwart || this.isStorming) return;
         this.spriteWeapon.setVisible(true);
@@ -1234,7 +1217,6 @@ export default class Player extends Entity {
         this.isRolling = true;
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.ROLL);
         this.swingReset(States.ROLL, true);
-        // this.swingReset(States.DODGE);
         this.scene.sound.play('roll', { volume: this.scene.settings.volume });
         this.body.parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;
         this.body.parts[2].circleRadius = PLAYER.SENSOR.EVADE;
@@ -1264,9 +1246,7 @@ export default class Player extends Entity {
         this.isHealing = true;
         this.setStatic(true);
     };
-    onFlaskUpdate = (_dt) => {
-        this.combatChecker(this.isHealing);
-    };
+    onFlaskUpdate = (_dt) => this.combatChecker(this.isHealing);
     onFlaskExit = () => {
         this.scene.drinkFlask();
         this.setStatic(false);
@@ -1283,22 +1263,20 @@ export default class Player extends Entity {
         if (this.isMoving === true) this.isCasting = false;
         this.combatChecker(this.isCasting);
         if (this.castbar.time >= PLAYER.DURATIONS.ACHIRE) {
-            this.achireSuccess = true;
+            this.castingSuccess = true;
             this.isCasting = false;
         };
-        if (this.isCasting === true) {
-            this.castbar.update(dt, 'cast');
-        };
+        if (this.isCasting === true) this.castbar.update(dt, 'cast');
     };
     onAchireExit = () => {
-        if (this.achireSuccess === true) {
+        if (this.castingSuccess === true) {
             const anim = this.getWeaponAnim();
             this.particleEffect =  this.scene.particleManager.addEffect('achire', this, anim, true);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `Your Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0].name}.`
             });
             this.setTimeEvent('achireCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000); // PLAYER.COOLDOWNS.SHORT
-            this.achireSuccess = false;
+            this.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
             this.scene.useStamina(PLAYER.STAMINA.ACHIRE);    
         };
@@ -1318,7 +1296,7 @@ export default class Player extends Entity {
         if (this.isMoving === true) this.isCasting = false;
         this.combatChecker(this.isCasting);
         if (this.castbar.time >= PLAYER.DURATIONS.ASTRAVE) {
-            this.astraveSuccess = true;
+            this.castingSuccess = true;
             this.isCasting = false;
         };
         if (this.isCasting === true) {
@@ -1326,13 +1304,13 @@ export default class Player extends Entity {
         };
     };
     onAstraveExit = () => {
-        if (this.astraveSuccess === true) {
+        if (this.castingSuccess === true) {
             this.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, true);    
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You unearth the winds and lightning from the land of hush and tendril.`
             });
             this.setTimeEvent('astraveCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000); // PLAYER.COOLDOWNS.SHORT
-            this.astraveSuccess = false;
+            this.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
             this.scene.useStamina(PLAYER.STAMINA.ASTRAVE);    
         };
@@ -1360,14 +1338,14 @@ export default class Player extends Entity {
             this.isAttacking = true;
         };
         if (this.castbar.time <= 0) {
-            this.arcSuccess = true;
+            this.castingSuccess = true;
             this.isArcing = false;
         };
     };
     onArcExit = () => {
-        if (this.arcSuccess) {
+        if (this.castingSuccess) {
             this.setTimeEvent('arcCooldown', PLAYER.COOLDOWNS.SHORT);  
-            this.arcSuccess = false;
+            this.castingSuccess = false;
             this.scene.useStamina(PLAYER.STAMINA.ARC);
             if (this.currentTarget && this.inCombat === true) {
                 if (this.flipX) {
@@ -1489,19 +1467,19 @@ export default class Player extends Entity {
         if (this.isMoving === true) this.isCasting = false;
         this.combatChecker(this.isCasting);
         if (this.castbar.time >= PLAYER.DURATIONS.CONFUSE) {
-            this.confuseSuccess = true;
+            this.castingSuccess = true;
             this.isCasting = false;
         };
         if (this.isCasting === true) this.castbar.update(dt, 'cast');
     };
     onConfuseExit = () => {
-        if (this.confuseSuccess === true) {
+        if (this.castingSuccess === true) {
             this.scene.confuse(this.spellTarget);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You confuse ${this.scene.state.computer?.name}, and they stumble around in a daze.`
             });
             this.setTimeEvent('confuseCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
-            this.confuseSuccess = false;
+            this.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
             this.scene.useStamina(PLAYER.STAMINA.CONFUSE);    
         };
@@ -1557,19 +1535,19 @@ export default class Player extends Entity {
         if (this.isMoving === true) this.isCasting = false;
         this.combatChecker(this.isCasting);
         if (this.castbar.time >= PLAYER.DURATIONS.FEAR) {
-            this.fearSuccess = true;
+            this.castingSuccess = true;
             this.isCasting = false;
         };
         if (this.isCasting === true) this.castbar.update(dt, 'cast');
     };
     onFearingExit = () => {
-        if (this.fearSuccess === true) {
+        if (this.castingSuccess === true) {
             this.scene.fear(this.spellTarget);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You strike fear into ${this.scene.state.computer?.name}!`
             });
             this.setTimeEvent('fearCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
-            this.fearSuccess = false;
+            this.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
             this.scene.useStamina(PLAYER.STAMINA.FEAR);    
         };
@@ -1592,17 +1570,17 @@ export default class Player extends Entity {
         if (this.isMoving === true) this.isCasting = false;
         this.combatChecker(this.isCasting);
         if (this.castbar.time >= PLAYER.DURATIONS.PARALYZE) {
-            this.paralyzeSuccess = true;
+            this.castingSuccess = true;
             this.isCasting = false;
         };
         if (this.isCasting === true) this.castbar.update(dt, 'cast');
     };
     onParalyzeExit = () => {
-        if (this.paralyzeSuccess === true) {
+        if (this.castingSuccess === true) {
             this.scene.paralyze(this.spellTarget);
             this.setTimeEvent('paralyzeCooldown', PLAYER.COOLDOWNS.MODERATE);  
             this.scene.useStamina(PLAYER.STAMINA.PARALYZE);
-            this.paralyzeSuccess = false;
+            this.castingSuccess = false;
             this.scene.mysterious.play();
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You paralyze ${this.scene.state.computer?.name} for several seconds!`
@@ -1657,16 +1635,16 @@ export default class Player extends Entity {
         if (this.isMoving === true) this.isCasting = false;
         this.combatChecker(this.isCasting);
         if (this.castbar.time >= PLAYER.DURATIONS.HEALING) {
-            this.healingSuccess = true;
+            this.castingSuccess = true;
             this.isCasting = false;
         };
         if (this.isCasting === true) this.castbar.update(dt, 'cast', 0x00C200);
     };
     onHealingExit = () => {
-        if (this.healingSuccess === true) {
+        if (this.castingSuccess === true) {
             this.setTimeEvent('healingCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
             this.scene.useStamina(PLAYER.STAMINA.HEALING);
-            this.healingSuccess = false;
+            this.castingSuccess = false;
             this.scene.combatMachine.action({ data: { key: 'player', value: 25, id: this.playerID }, type: 'Health' });
             this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
         };
@@ -1815,20 +1793,20 @@ export default class Player extends Entity {
         if (this.isMoving === true) this.isCasting = false;
         this.combatChecker(this.isCasting);
         if (this.castbar.time >= PLAYER.DURATIONS.POLYMORPH) {
-            this.polymorphSuccess = true;
+            this.castingSuccess = true;
             this.isCasting = false;
         };
         if (this.isCasting === true) this.castbar.update(dt, 'cast');
     };
     onPolymorphingExit = () => {
-        if (this.polymorphSuccess === true) {
+        if (this.castingSuccess === true) {
             this.scene.polymorph(this.spellTarget);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, polymorphing them!`
             });
             this.setTimeEvent('polymorphCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.scene.useStamina(PLAYER.STAMINA.POLYMORPH);
-            this.polymorphSuccess = false;
+            this.castingSuccess = false;
             this.scene.mysterious.play();
             this.spellTarget = '';
         };
@@ -1874,14 +1852,14 @@ export default class Player extends Entity {
         if (this.isMoving === true) this.isCasting = false;
         this.combatChecker(this.isCasting);
         if (this.castbar.time >= PLAYER.DURATIONS.ROOTING) {
-            this.rootingSuccess = true;
+            this.castingSuccess = true;
             this.isCasting = false;
         };
         if (this.isCasting === true) this.castbar.update(dt, 'cast');
     };
     onRootingExit = () => { 
-        if (this.rootingSuccess === true) {
-            this.rootingSuccess = false;
+        if (this.castingSuccess === true) {
+            this.castingSuccess = false;
             this.scene.root(this.spellTarget);
             this.setTimeEvent('rootCooldown', PLAYER.COOLDOWNS.SHORT); 
             this.scene.useStamina(PLAYER.STAMINA.ROOT);
@@ -1943,20 +1921,20 @@ export default class Player extends Entity {
         if (this.isMoving === true) this.isCasting = false;
         this.combatChecker(this.isCasting);
         if (this.castbar.time >= PLAYER.DURATIONS.SNARE) {
-            this.snaringSuccess = true;
+            this.castingSuccess = true;
             this.isCasting = false;
         };
         if (this.isCasting === true) this.castbar.update(dt, 'cast');
     };
     onSnaringExit = () => {
-        if (this.snaringSuccess === true) {
+        if (this.castingSuccess === true) {
             this.setTimeEvent('snareCooldown', PLAYER.DURATIONS.SHORT);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, snaring them!`
             });
             this.scene.useStamina(PLAYER.STAMINA.SNARE);
             this.scene.snare(this.spellTarget);
-            this.snaringSuccess = false;
+            this.castingSuccess = false;
             this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         };
         this.spellTarget = '';
@@ -1966,7 +1944,7 @@ export default class Player extends Entity {
 
     onStormEnter = () => {
         this.isStorming = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'effect'); 
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'damage'); 
         this.isAttacking = true;
         this.scene.useStamina(PLAYER.STAMINA.STORM);
         this.scene.tweens.add({
@@ -1974,17 +1952,14 @@ export default class Player extends Entity {
             angle: 360,
             duration: 800,
             onStart: () => {
-                this.flickerCarenic(3000); 
+                this.flickerCarenic(3200); 
             },
             onLoop: () => {
-                console.log('Storming!');
-                // if (this.inCombat === false) return;
                 this.isAttacking = true;
-                this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'effect');
+                this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'damage');
                 if (this.touching.length > 0) {
                     this.touching.forEach(enemy => {
                         if (enemy.isDefeated === true) return;
-                        // console.log(`%c Touched Enemy: ${enemy.enemyID}`, 'color: #ff0000');
                         this.scene.storm(enemy.enemyID);
                     });
                 };

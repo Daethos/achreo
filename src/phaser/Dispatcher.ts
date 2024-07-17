@@ -29,7 +29,6 @@ function instant(data: string): void {
 };
 
 function prayer(data: any[]): void {
-    console.log('Prayer action: ', data);
     EventBus.emit('initiate-combat', { data: { prayerSacrificeId: data }, type: ActionTypes.CONSUME });
 };
 
@@ -42,7 +41,6 @@ function enemy(data: any): void {
 };
 
 function actionInput({ key, value }: { key: string, value: string | number | boolean }): void {
-    console.log(`Action input: ${key} with value: ${value}`);
     EventBus.emit('update-combat-state', { key, value });
 };
 
@@ -65,7 +63,6 @@ function enemyChiomic(data: number): void {
 function enemySacrifice(): void {
     EventBus.emit('initiate-combat', { type: ActionTypes.ENEMY_SACRIFICE });
 };
-
 
 function enemySuture(): void {
     EventBus.emit('initiate-combat', { type: ActionTypes.ENEMY_SUTURE });

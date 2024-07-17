@@ -18,8 +18,7 @@ const FaithCard = ({ mastery, newAscean, setNewAscean }: { mastery: any; newAsce
 };
 
 export default function Mastery({ newAscean, setNewAscean }: { newAscean: Accessor<CharacterSheet>; setNewAscean: Setter<CharacterSheet> }) {
-    return (
-        <div class='center creature-heading'>
+    return <div class='center creature-heading'>
         <h1 class='gold'>Mastery</h1>
         <div>
             <For each={Attributes}>
@@ -28,6 +27,5 @@ export default function Mastery({ newAscean, setNewAscean }: { newAscean: Access
                 )}
             </For>
         </div> 
-        </div>
-    );
+    </div>;
 };

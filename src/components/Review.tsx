@@ -20,47 +20,45 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
         return { color: newAscean()?.mastery === attr ? 'gold' : '#fdf6d8' };
     };
 
-    return (
-        <div class='center wrap'>
-            <div class='creature-heading'>
-                <h1>Review Character</h1>
-                <h2 class='p-3'>
-                    You are <span class='gold'>{newAscean()?.name}</span>, {originArticle} <span class='gold'>{newAscean()?.origin} {newAscean()?.sex === 'Man' ? 'male' : 'female'}</span> of your homeland, recently matured and venturing to the Ascea. 
-                    By your own admission, you are {descArticle} <span class='gold'>{newAscean()?.description}</span>.
-                    The armor which keeps you safe is <span class='gold'>{newAscean()?.preference}</span>--may you wear it well. Your mastery lies in <span class='gold'>{newAscean()?.mastery.charAt(0).toUpperCase() + newAscean()?.mastery.slice(1)}</span>,
-                    in a sense it's how you perceive this world. Your faith is <span class='gold'>{newAscean()?.faith}</span>, the worship of <span class='gold'>{name()}</span>. {character()} 
-                </h2>
-            </div>
-            <Show when={dimensions().ORIENTATION === 'landscape'} fallback={<>
-                <div class='center'>
-                <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id='origin-pic' style={{ width: dimensions().ORIENTATION === 'landscape' ? '50%' : '25%', height: dimensions().ORIENTATION === 'landscape' ? '50%' : '25%', border: '0.15em solid gold' }} />
-                </div>
-                <br />
-                <div class='creature-heading'>
-                    <h2 style={mastery('constitution')}>Constitution: {newAscean()?.constitution}</h2>
-                    <h2 style={mastery('strength')}>Strength: {newAscean()?.strength}</h2>
-                    <h2 style={mastery('agility')}>Agility: {newAscean()?.agility}</h2>
-                    <h2 style={mastery('achre')}>Achre: {newAscean()?.achre}</h2>
-                    <h2 style={mastery('caeren')}>Caeren: {newAscean()?.caeren}</h2>
-                    <h2 style={mastery('kyosir')}>Kyosir: {newAscean()?.kyosir}</h2>
-                </div>
-            </>}>
-                <div style={{ position: 'absolute', width: '70%', left: '15%' }}>
-                <div class='left' style={{ width: '48%' }}>
-                    <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id='' style={{ width: '75%', height: '50%', border: '0.15em solid gold', 'border-radius': '50%' }} />
-                </div>
-                <div class='right' style={{ width: '48%' }}>
-                <div class='creature-heading center'>
-                    <h2 style={mastery('constitution')}>Constitution: {newAscean()?.constitution}</h2>
-                    <h2 style={mastery('strength')}>Strength: {newAscean()?.strength}</h2>
-                    <h2 style={mastery('agility')}>Agility: {newAscean()?.agility}</h2>
-                    <h2 style={mastery('achre')}>Achre: {newAscean()?.achre}</h2>
-                    <h2 style={mastery('caeren')}>Caeren: {newAscean()?.caeren}</h2>
-                    <h2 style={mastery('kyosir')}>Kyosir: {newAscean()?.kyosir}</h2>
-                </div>
-                </div>
-                </div>
-            </Show>
+    return <div class='center wrap'>
+        <div class='creature-heading'>
+            <h1>Review Character</h1>
+            <h2 class='p-3'>
+                You are <span class='gold'>{newAscean()?.name}</span>, {originArticle} <span class='gold'>{newAscean()?.origin} {newAscean()?.sex === 'Man' ? 'male' : 'female'}</span> of your homeland, recently matured and venturing to the Ascea. 
+                By your own admission, you are {descArticle} <span class='gold'>{newAscean()?.description}</span>.
+                The armor which keeps you safe is <span class='gold'>{newAscean()?.preference}</span>--may you wear it well. Your mastery lies in <span class='gold'>{newAscean()?.mastery.charAt(0).toUpperCase() + newAscean()?.mastery.slice(1)}</span>,
+                in a sense it's how you perceive this world. Your faith is <span class='gold'>{newAscean()?.faith}</span>, the worship of <span class='gold'>{name()}</span>. {character()} 
+            </h2>
         </div>
-    );
+        <Show when={dimensions().ORIENTATION === 'landscape'} fallback={<>
+            <div class='center'>
+            <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id='origin-pic' style={{ width: dimensions().ORIENTATION === 'landscape' ? '50%' : '25%', height: dimensions().ORIENTATION === 'landscape' ? '50%' : '25%', border: '0.15em solid gold' }} />
+            </div>
+            <br />
+            <div class='creature-heading'>
+                <h2 style={mastery('constitution')}>Constitution: {newAscean()?.constitution}</h2>
+                <h2 style={mastery('strength')}>Strength: {newAscean()?.strength}</h2>
+                <h2 style={mastery('agility')}>Agility: {newAscean()?.agility}</h2>
+                <h2 style={mastery('achre')}>Achre: {newAscean()?.achre}</h2>
+                <h2 style={mastery('caeren')}>Caeren: {newAscean()?.caeren}</h2>
+                <h2 style={mastery('kyosir')}>Kyosir: {newAscean()?.kyosir}</h2>
+            </div>
+        </>}>
+            <div style={{ position: 'absolute', width: '70%', left: '15%' }}>
+            <div class='left' style={{ width: '48%' }}>
+                <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id='' style={{ width: '75%', height: '50%', border: '0.15em solid gold', 'border-radius': '50%' }} />
+            </div>
+            <div class='right' style={{ width: '48%' }}>
+            <div class='creature-heading center'>
+                <h2 style={mastery('constitution')}>Constitution: {newAscean()?.constitution}</h2>
+                <h2 style={mastery('strength')}>Strength: {newAscean()?.strength}</h2>
+                <h2 style={mastery('agility')}>Agility: {newAscean()?.agility}</h2>
+                <h2 style={mastery('achre')}>Achre: {newAscean()?.achre}</h2>
+                <h2 style={mastery('caeren')}>Caeren: {newAscean()?.caeren}</h2>
+                <h2 style={mastery('kyosir')}>Kyosir: {newAscean()?.kyosir}</h2>
+            </div>
+            </div>
+            </div>
+        </Show>
+    </div>;
 };

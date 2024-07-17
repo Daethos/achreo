@@ -17,62 +17,20 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
     const dimensions = useResizeListener();
     const viewMargin = { margin: '4%' };
 
-    return (
-        <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
-            <div class='border superCenter center' style={{ height: '100', width: '85%', overflow: 'scroll' }}>
-            <div class='creature-heading' style={{ width: '100%', height: '100%' }}>
-                <h1>{ascean().name}</h1>
-                <h2 class='mb-3'>{ascean().description}</h2>
-                <img src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} alt={`${ascean().origin} ${ascean().sex}`} id='origin-pic' />
-                <p style={viewMargin}>Level: <span class='gold'>{ascean().level}</span> | Experience: <span class='gold'>{ascean().experience}</span></p>
-                <p style={viewMargin}>Health: <span class='gold'>{Math.round(ascean().health.current)}</span> / <span class='gold'>{ascean().health.max}</span> | Wealth: <span class='gold'>{ascean().currency.gold}g {ascean().currency.silver}s</span></p>
-                <p style={viewMargin}>Faith: <span class='gold'>{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> | Mastery: <span class='gold'>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span></p>
-                <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
-                <Suspense fallback={<Puff color="gold" />}>
-                    <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
-                </Suspense>
-                <br />
-                <Show when={show()}>
-                    <div class='modal' onClick={() => setShow(!show())}>
-                    <Suspense fallback={<Puff color="gold" />}>
-                        <ItemModal item={equipment() as Equipment} stalwart={false} caerenic={false} /> 
-                    </Suspense>
-                    </div>
-                </Show>
-
-                <Show when={attrShow()}>
-                <div class='modal' onClick={() => setAttrShow(!attrShow())}>
-                    <Suspense fallback={<Puff color="gold" />}>
-                        <AttributeModal attribute={attribute()} />
-                    </Suspense>
-                </div> 
-                </Show>
-            </div>
-            </div>
-        }>
-            <div class='stat-block superCenter' style={{ width: '90%', overflow: 'scroll' }}>
-                <div class='border left center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
-                    <div class='creature-heading superCenter' style={{ width: '100%' }}>
-                        <h1>{ascean().name}</h1>
-                        <h2>{ascean().description}</h2>
-                        <img src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} id='origin-pic' />
-                        <p style={viewMargin}>Level: <span class='gold'>{ascean().level}</span> | Experience: <span class='gold'>{ascean().experience}</span></p>
-                        <p style={viewMargin}>Health: <span class='gold'>{Math.round(ascean().health.current)}</span> / <span class='gold'>{ascean().health.max}</span> | Wealth: <span class='gold'>{ascean().currency.gold}g {ascean().currency.silver}s</span></p>
-                        <p style={viewMargin}>Faith: <span class='gold'>{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> | Mastery: <span class='gold'>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span></p>
-                    </div>
-                </div>
-
-                <div class='border right center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
-                    <div class='superCenter' style={{ 'margin-top': '0' }}>
-                    <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
-                    <Suspense fallback={<Puff color="gold" />}>
-                        <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
-                    </Suspense>
-                    </div>
-                </div>
-                
-            </div>
-            <div class='creature-heading center'>
+    return <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
+        <div class='border superCenter center' style={{ height: '100', width: '85%', overflow: 'scroll' }}>
+        <div class='creature-heading' style={{ width: '100%', height: '100%' }}>
+            <h1>{ascean().name}</h1>
+            <h2 class='mb-3'>{ascean().description}</h2>
+            <img src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} alt={`${ascean().origin} ${ascean().sex}`} id='origin-pic' />
+            <p style={viewMargin}>Level: <span class='gold'>{ascean().level}</span> | Experience: <span class='gold'>{ascean().experience}</span></p>
+            <p style={viewMargin}>Health: <span class='gold'>{Math.round(ascean().health.current)}</span> / <span class='gold'>{ascean().health.max}</span> | Wealth: <span class='gold'>{ascean().currency.gold}g {ascean().currency.silver}s</span></p>
+            <p style={viewMargin}>Faith: <span class='gold'>{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> | Mastery: <span class='gold'>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span></p>
+            <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
+            <Suspense fallback={<Puff color="gold" />}>
+                <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
+            </Suspense>
+            <br />
             <Show when={show()}>
                 <div class='modal' onClick={() => setShow(!show())}>
                 <Suspense fallback={<Puff color="gold" />}>
@@ -83,10 +41,50 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
 
             <Show when={attrShow()}>
             <div class='modal' onClick={() => setAttrShow(!attrShow())}>
-                <AttributeModal attribute={attribute()}/>
+                <Suspense fallback={<Puff color="gold" />}>
+                    <AttributeModal attribute={attribute()} />
+                </Suspense>
             </div> 
             </Show>
+        </div>
+        </div>
+    }>
+        <div class='stat-block superCenter' style={{ width: '90%', overflow: 'scroll' }}>
+            <div class='border left center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
+                <div class='creature-heading superCenter' style={{ width: '100%' }}>
+                    <h1>{ascean().name}</h1>
+                    <h2>{ascean().description}</h2>
+                    <img src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} id='origin-pic' />
+                    <p style={viewMargin}>Level: <span class='gold'>{ascean().level}</span> | Experience: <span class='gold'>{ascean().experience}</span></p>
+                    <p style={viewMargin}>Health: <span class='gold'>{Math.round(ascean().health.current)}</span> / <span class='gold'>{ascean().health.max}</span> | Wealth: <span class='gold'>{ascean().currency.gold}g {ascean().currency.silver}s</span></p>
+                    <p style={viewMargin}>Faith: <span class='gold'>{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> | Mastery: <span class='gold'>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span></p>
+                </div>
+            </div>
+
+            <div class='border right center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
+                <div class='superCenter' style={{ 'margin-top': '0' }}>
+                <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
+                <Suspense fallback={<Puff color="gold" />}>
+                    <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
+                </Suspense>
+                </div>
+            </div>
+            
+        </div>
+        <div class='creature-heading center'>
+        <Show when={show()}>
+            <div class='modal' onClick={() => setShow(!show())}>
+            <Suspense fallback={<Puff color="gold" />}>
+                <ItemModal item={equipment() as Equipment} stalwart={false} caerenic={false} /> 
+            </Suspense>
             </div>
         </Show>
-    );
+
+        <Show when={attrShow()}>
+        <div class='modal' onClick={() => setAttrShow(!attrShow())}>
+            <AttributeModal attribute={attribute()}/>
+        </div> 
+        </Show>
+        </div>
+    </Show>;
 };

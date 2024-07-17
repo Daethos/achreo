@@ -1619,6 +1619,7 @@ export default class Player extends Entity {
         };
     };
     onFyerusExit = () => {
+        this.aoe.cleanAnimation(this.scene);
         this.castbar.reset();
         this.isFyerus = false;
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); // !this.isCaerenic && 
@@ -2098,7 +2099,7 @@ export default class Player extends Entity {
         });
     };
     onDiseaseUpdate = (_dt) => {if (this.isDiseasing === false) this.metaMachine.setState(States.CLEAN);};
-    onDiseaseExit = () => {};
+    onDiseaseExit = () => this.aoe.cleanAnimation(this.scene);
 
     onHowlEnter = () => {
         this.scene.useStamina(PLAYER.STAMINA.HOWL);    
@@ -2115,7 +2116,7 @@ export default class Player extends Entity {
         });
     };
     onHowlUpdate = (_dt) => {if (this.isHowling === false) this.metaMachine.setState(States.CLEAN);};
-    onHowlExit = () => {};
+    onHowlExit = () => this.aoe.cleanAnimation(this.scene);
 
     onEnvelopEnter = () => {
         this.isEnveloping = true;
@@ -2429,8 +2430,9 @@ export default class Player extends Entity {
     onShimmerExit = () => this.stealthEffect(false);
 
     shimmerHit = () => {
+        const shimmers = ['It fades through you', "You simply weren't there", "Perhaps you never were", "They don't seem certain of you at all"];
         this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `You simply weren't there`, 500, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, Math.round(shimmers[Math.random() * 4]), 1000, 'effect');
     };
 
     onSprintEnter = () => {
@@ -2564,7 +2566,7 @@ export default class Player extends Entity {
         };
     };
     onWritheExit = () => {
-        if (!this.inCombat) return;
+        this.aoe.cleanAnimation(this.scene)
         this.setTimeEvent('writheCooldown', PLAYER.COOLDOWNS.SHORT);  
     };
 

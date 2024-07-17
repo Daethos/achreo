@@ -1994,6 +1994,15 @@ function weaponActionSplitter(combat: Combat): Combat {
         'computerDeathDescription': cleanData.computerDeathDescription,
         'playerWin': cleanData.playerWin,
         'computerWin': cleanData.computerWin,
+
+        'isSeering': cleanData.isSeering,
+        'isCaerenic': cleanData.isCaerenic,
+        'isStalwart': cleanData.isStalwart,
+        'isStealth': cleanData.isStealth,
+        'astrication': cleanData.astrication,
+        'berserk': cleanData.berserk,
+        'conviction': cleanData.conviction,
+        
     };
     return changes;
 };

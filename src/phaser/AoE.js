@@ -20,6 +20,7 @@ const COLORS = {
 export default class AoE extends Phaser.Physics.Matter.Sprite {
     constructor(scene, type, count = 1, positive = false, enemy = undefined, manual = false, target = undefined) {
         super(scene.matter.world, scene.player.x, scene.player.y + 6, 'target');
+        this.name = type;
         this.setAngle(0);
         this.setVisible(false);
         this.setScale(0.375); // 375
@@ -51,6 +52,10 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         };
     };
 
+    cleanAnimation = (scene) => {
+        scene.rotateTween(this, 0, false);
+    };
+
     setCount = (scene, type, positive) => {
         if (type === 'fyerus') {
             if (scene.player.isMoving) {
@@ -64,7 +69,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             };
         };
         if (positive === true) {
-            scene.time.delayedCall(950, () => {
+            scene.time.delayedCall(975, () => {
                 this.bless.forEach((_target) => {
                     scene[type]();
                 });
@@ -81,7 +86,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 };
             });
         } else {
-            scene.time.delayedCall(950, () => {
+            scene.time.delayedCall(975, () => {
                 this.hit.forEach((target) => {
                     scene[type](target.enemyID);
                 });
@@ -102,7 +107,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
 
     setupEnemyCount = (scene, type, positive, enemy) => {
         if (positive === true) {
-            scene.time.delayedCall(950, () => {
+            scene.time.delayedCall(975, () => {
                 this.hit.forEach((target) => {
                     if (this.scene.player.checkPlayerResist() === true && target.playerID === this.scene.player.playerID) {
                         scene[type](target.playerID, enemy.enemyID);
@@ -121,7 +126,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 };
             });
         } else {
-            scene.time.delayedCall(950, () => {
+            scene.time.delayedCall(975, () => {
                 this.bless.forEach((target) => {
                     scene[`enemy${type.charAt(0).toUpperCase() + type.slice(1)}`](target.enemyID);
                 });
@@ -161,7 +166,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     };
     
     setTimer = (scene, manual, target) => {
-        let scale = 0;
+        let scale = 0.01875;
         let count = 0;
         let targ = target !== undefined ? target : manual === true ? scene.getWorldPointer() : scene.player;
         if (manual === true) {
@@ -170,21 +175,16 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             const point = scene.cameras.main.getWorldPoint(centerX, centerY);
             const offsetX = (targ.x - point.x);
             const offsetY = (targ.y - point.y);
-            console.log(offsetX, offsetY, 'Offsets?');
             targ.x -= offsetX / 5;
             targ.y -= offsetY / 5;
         };
         const y = manual === true ? targ.y : targ.y + 6;
         this.setOrigin(0.5, 0.5);
-        // let tweenCount = 0;
-        scene.player.specialCombatText = new ScrollingCombatText(scene.player.scene, scene.player.x, scene.player.y, 'Spin to Win!', 1000, 'damage');
-        scene.rotateTween(this, this.count * 450);
-        // Start the rotation tween
-        // this.startRotationTween();
+        scene.rotateTween(this, this.count, true);
         this.timer = scene.time.addEvent({
             delay: 50,
             callback: () => {
-                if (count >= 20) return;
+                if (count >= 19) return;
                 if (this && this.timer) {
                     scale += 0.01875;
                     this.setScale(scale);
@@ -194,31 +194,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 count++;
             },
             callbackScope: this,
-            loop: 20,
-        });
-    };
-
-    startRotationTween() {
-        this.scene.tweens.addCounter({
-            from: 0,
-            to: 360,
-            duration: 900, // Duration in milliseconds
-            repeat: -1, // Repeat indefinitely
-            onUpdate: (tween) => {
-                const angle = Phaser.Math.DegToRad(tween.getValue());
-                this.x = this.scene.player.x + this.radius * Math.cos(angle);
-                this.y = this.scene.player.y + this.radius * Math.sin(angle);
-            },
-            onStart: () => {
-                this.setVisible(true);
-                console.log('Tween started');
-            },
-            onComplete: () => {
-                console.log('Tween completed');
-            },
-            onRepeat: () => {
-                console.log('Tween repeated');
-            }
+            loop: 19,
         });
     };
 
@@ -237,7 +213,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             targ = target;
         } else if (manual === true) {
             targ = scene.getWorldPointer();
-            console.log(targ, 'World Pointer');
         } else {
             targ = scene.player;
         };
@@ -258,7 +233,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setStatic(true);
         this.setOrigin(0.5, 0.5);
         this.sensor = aoeSensor;
-        console.log(`Sensor Position - X: ${targ.x}, Y: ${y}`);
     };
 
     setupEnemyListener = (scene) => {

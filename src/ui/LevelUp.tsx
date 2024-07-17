@@ -174,7 +174,7 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
                 </div>
                 </div>
                 <Show when={pool() === 2}>
-                    <button class='highlight cornerTL' style={{ 'background-color': 'gold', color: '#000', 'font-weight': 700 }} onClick={() => levelUp(asceanState)}>Level Up</button>
+                    <button class='highlight cornerTL animate' style={{ 'background-color': 'gold', color: '#000', 'font-weight': 700 }} onClick={() => levelUp(asceanState)}>Level Up</button>
                 </Show>
             </div>
                 <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setShow(!show())}>X</button>

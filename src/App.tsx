@@ -311,7 +311,7 @@ export default function App() {
                                 </button>
                             }
                             {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                                <button class='highlight cornerBR' onClick={() => createCharacter(newAscean())}>
+                                <button class='highlight cornerBR animate' onClick={() => createCharacter(newAscean())}>
                                     <div>Create {newAscean()?.name?.split(' ')[0]}</div>
                                 </button>
                             }
@@ -355,8 +355,9 @@ export default function App() {
                     <div class="cornerTL super">The Ascean v0.0.1</div>
                     <Show when={menu().loaded} fallback={<Puff color="gold"/>}>
                     <div class='superCenter cinzel'>
-                        <div class='center title'>The Ascean<br /> 
-                            <button class='center highlight' onClick={() => menuOption(menu().asceans.length > 0 ? 'chooseCharacter' : 'createCharacter')}>Enter Game</button>
+                        <div class='center'>
+                            <div class='title'>The Ascean</div>
+                            <button class='center highlight animate' style={{ 'font-size': '1.25em', 'font-family': 'Cinzel Regular' }} onClick={() => menuOption(menu().asceans.length > 0 ? 'chooseCharacter' : 'createCharacter')}>Enter Game</button>
                         </div>
                     </div>
                     </Show>

@@ -71,7 +71,6 @@ export function ActionButtonModal({ currentAction, actions, handleAction, specia
 };
 
 export function Modal({ items, inventory, callback, show, setShow, forge, setForge, upgrade, setUpgrade }: { items: Accessor<{ item: Equipment | undefined; type: string; }[]>, inventory: Equipment | undefined, callback: (type: string) => void, show: Accessor<boolean>, setShow: Setter<boolean>, forge: Accessor<boolean>, setForge: Setter<boolean>, upgrade: Accessor<boolean>, setUpgrade: Setter<boolean>}) {
-    console.log(items(), 'items')
     return (
         <div class='border superCenter' style={{ width: '40%' }}>
         <div class='creature-heading' >

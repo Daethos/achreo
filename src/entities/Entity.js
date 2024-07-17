@@ -180,16 +180,16 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const addModifier = (item) => {
             switch (item) {
                 case 'Leather-Cloth':
-                    modifier -= 0.025; // += 0.05;
+                    modifier -= 0.02; // += 0.05;
                     break;
                 case 'Leather-Mail':
-                    modifier -= 0.04; // += 0.025;
+                    modifier -= 0.03; // += 0.025;
                     break;
                 case 'Chain-Mail':
-                    modifier -= 0.06 // += 0.0;
+                    modifier -= 0.04 // += 0.0;
                     break;
                 case 'Plate-Mail':
-                    modifier -= 0.075 // -= 0.025;
+                    modifier -= 0.05 // -= 0.025;
                     break;
                 default:
                     break;

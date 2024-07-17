@@ -750,7 +750,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                             </button> */}
                             { ascean().experience >= ascean().level * 1000 && (
                                 <button class='highlight cornerTR' style={{ 'background-color': 'purple', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
-                                    <p>Level++</p>
+                                    <p class='animate' style={{ 'padding-left': '0.75em', 'padding-right': '0.75em' }}>Level++</p>
                                 </button>
                             ) }
                         <div class='gold' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5%', 'text-align': 'center' } : { margin: '5%', 'text-align': 'center' }}>

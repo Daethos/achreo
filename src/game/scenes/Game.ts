@@ -46,6 +46,7 @@ export class Game extends Scene {
     combat: boolean = false;
     combatTime: number = 0;
     combatTimer: Time.TimerEvent;
+    tweenManager: any;
     
     actionBar: ActionButtons;
     combatMachine: CombatMachine;
@@ -91,7 +92,7 @@ export class Game extends Scene {
         this.rexUI = this.plugins.get('rexuiplugin');
         this.offsetX = 0;
         this.offsetY = 0;
-        
+        this.tweenManager = {};
     // =========================== Camera =========================== \\
         let camera = this.cameras.main;
         camera.zoom = this.settings.positions?.camera?.zoom || 0.8; // 0.8
@@ -896,19 +897,18 @@ export class Game extends Scene {
 
     // ============================ Game ============================ \\
 
-    rotateTween = (tween: any, duration: number) => {
-        this.tweens.add({
-            targets: tween,
-            angle: 360,
-            duration,
-            ease: 'Linear',
-            yoyo: true,
-            // onUpdate: (tween) => {
-            //     const angle = Phaser.Math.DegToRad(tween.getValue());
-            //     this.graphic.x = this.player.x + this.radius * Math.cos(angle);
-            //     this.graphic.y = this.player.y + this.radius * Math.sin(angle);
-            // },
-        });
+    rotateTween = (tween: any, count: number, active: boolean) => {
+        if (active === true) {
+            this.tweenManager[tween.name] = this.tweens.add({
+                targets: tween,
+                angle: count * 360,
+                duration: count * 950,
+                ease: 'Circ.easeInO',
+                yoyo: false,
+            });
+        } else {
+            this.tweenManager[tween.name].stop();
+        };
     };
     checkPlayerSuccess = (): void => {
         if (!this.player.actionSuccess && (this.state.action !== 'parry' && this.state.action !== 'roll' && this.state.action !== '')) this.combatMachine.input('action', '');

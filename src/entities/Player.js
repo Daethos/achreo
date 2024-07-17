@@ -1760,9 +1760,7 @@ export default class Player extends Entity {
             playerSpecialDescription: `You launch yourself through the air!`
         });
     };
-    onLeapUpdate = (_dt) => {
-        this.combatChecker(this.isLeaping);
-    };
+    onLeapUpdate = (_dt) => this.combatChecker(this.isLeaping);
     onLeapExit = () => {
         const leapCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
         this.setTimeEvent('leapCooldown', leapCooldown);
@@ -1795,9 +1793,7 @@ export default class Player extends Entity {
             },
         });         
     };
-    onRushUpdate = (_dt) => {
-        this.combatChecker(this.isRushing);
-    };
+    onRushUpdate = (_dt) => this.combatChecker(this.isRushing);
     onRushExit = () => {
         this.rushedEnemies = [];
         const rushCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
@@ -1856,9 +1852,7 @@ export default class Player extends Entity {
         this.setTimeEvent('pursuitCooldown', pursuitCooldown);
         this.flickerCarenic(750); 
     };
-    onPursuitUpdate = (_dt) => {
-        this.combatChecker(this.isPursuing);
-    };
+    onPursuitUpdate = (_dt) => this.combatChecker(this.isPursuing);
     onPursuitExit = () => {
         if (!this.inCombat && !this.isStealthing && !this.isShimmering) {
             const button = this.scene.smallHud.stances.find(b => b.texture.key === 'stealth');
@@ -2004,12 +1998,8 @@ export default class Player extends Entity {
             playerSpecialDescription: `You begin storming with your ${this.scene.state.weapons[0].name}.`
         });
     };
-    onStormUpdate = (_dt) => {
-        this.combatChecker(this.isStorming);
-    };
-    onStormExit = () => { 
-        this.setTimeEvent('stormCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);
-    };
+    onStormUpdate = (_dt) => this.combatChecker(this.isStorming);
+    onStormExit = () => this.setTimeEvent('stormCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);
 
     onSutureEnter = () => {
         if (this.currentTarget === undefined) return;
@@ -2027,9 +2017,7 @@ export default class Player extends Entity {
         }, undefined, this);
         
     };
-    onSutureUpdate = (_dt) => {
-        this.combatChecker(this.isSuturing);
-    };
+    onSutureUpdate = (_dt) => this.combatChecker(this.isSuturing);
     onSutureExit = () => {};
 
     onDevourEnter = () => {
@@ -2117,11 +2105,7 @@ export default class Player extends Entity {
             playerSpecialDescription: `You mock and confuse your surrounding foes.`
         });
     };
-    onChiomicUpdate = (_dt) => {
-        if (this.isChiomic === false) {
-            this.metaMachine.setState(States.CLEAN);
-        };
-    };
+    onChiomicUpdate = (_dt) => {if (this.isChiomic === false) this.metaMachine.setState(States.CLEAN);};
     onChiomicExit = () => {};
 
     onDiseaseEnter = () => {
@@ -2138,11 +2122,7 @@ export default class Player extends Entity {
             playerSpecialDescription: `You swirl such sweet tendrils which wrap round and reach to writhe.`
         });
     };
-    onDiseaseUpdate = (_dt) => {
-        if (this.isDiseasing === false) {
-            this.metaMachine.setState(States.CLEAN);
-        };
-    };
+    onDiseaseUpdate = (_dt) => {if (this.isDiseasing === false) this.metaMachine.setState(States.CLEAN);};
     onDiseaseExit = () => {};
 
     onHowlEnter = () => {
@@ -2159,12 +2139,7 @@ export default class Player extends Entity {
             playerSpecialDescription: `You howl, it's otherworldly nature stunning nearby foes.`
         });
     };
-    onHowlUpdate = (_dt) => {
-        // this.combatChecker(this.isHowling);
-        if (this.isHowling === false) {
-            this.metaMachine.setState(States.CLEAN);
-        };
-    };
+    onHowlUpdate = (_dt) => {if (this.isHowling === false) this.metaMachine.setState(States.CLEAN);};
     onHowlExit = () => {};
 
     onEnvelopEnter = () => {
@@ -2226,15 +2201,8 @@ export default class Player extends Entity {
             playerSpecialDescription: `You freeze nearby foes.`
         });
     };
-    onFreezeUpdate = (_dt) => { 
-        if (!this.isFreezing) {
-            this.metaMachine.setState(States.CLEAN);
-        };
-    };
-    onFreezeExit = () => {
-        if (this.inCombat === false) return;
-        this.setTimeEvent('freezeCooldown', PLAYER.COOLDOWNS.SHORT);
-    };
+    onFreezeUpdate = (_dt) => {if (!this.isFreezing) this.metaMachine.setState(States.CLEAN);};
+    onFreezeExit = () => this.setTimeEvent('freezeCooldown', PLAYER.COOLDOWNS.SHORT);
 
     onMaliceEnter = () => {
         this.scene.useStamina(PLAYER.STAMINA.MALICE);    
@@ -2371,7 +2339,6 @@ export default class Player extends Entity {
         });
     };
     onRecoverUpdate = (_dt) => {
-        this.combatChecker(this.isRecovering);
         if (this.isRecovering) {
             this.recoverBubble.update(this.x, this.y);
         } else {
@@ -2405,11 +2372,7 @@ export default class Player extends Entity {
             playerSpecialDescription: `Tears of a Hush proliferate and heal old wounds.`
         });
     };
-    onRenewalUpdate = (_dt) => {
-        if (this.isRenewing) {
-            this.metaMachine.setState(States.CLEAN);
-        };
-    };
+    onRenewalUpdate = (_dt) => {if (this.isRenewing) this.metaMachine.setState(States.CLEAN);};
     onRenewalExit = () => {};
 
     onScreamEnter = () => {
@@ -2425,15 +2388,8 @@ export default class Player extends Entity {
             playerSpecialDescription: `You scream, fearing nearby foes.`
         });
     };
-    onScreamUpdate = (_dt) => { 
-        if (!this.isScreaming) {
-            this.metaMachine.setState(States.CLEAN);
-        };
-    };
-    onScreamExit = () => {
-        if (this.inCombat === false) return;
-        this.setTimeEvent('screamCooldown', PLAYER.COOLDOWNS.SHORT);  
-    };
+    onScreamUpdate = (_dt) => {if (!this.isScreaming) this.metaMachine.setState(States.CLEAN);};
+    onScreamExit = () => this.setTimeEvent('screamCooldown', PLAYER.COOLDOWNS.SHORT);
 
     onShieldEnter = () => {
         this.scene.useStamina(PLAYER.STAMINA.SHIELD);    
@@ -2494,14 +2450,8 @@ export default class Player extends Entity {
             playerSpecialDescription: `You shimmer, fading in and out of this world.`
         });
     };
-    onShimmerUpdate = (_dt) => {
-        if (!this.isShimmering) {
-            this.metaMachine.setState(States.CLEAN); 
-        };
-    };
-    onShimmerExit = () => { 
-        this.stealthEffect(false);
-    };
+    onShimmerUpdate = (_dt) => {if (!this.isShimmering) this.metaMachine.setState(States.CLEAN);};
+    onShimmerExit = () => this.stealthEffect(false);
 
     shimmerHit = () => {
         this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
@@ -2514,7 +2464,7 @@ export default class Player extends Entity {
         this.adjustSpeed(PLAYER.SPEED.SPRINT);
         this.scene.useStamina(PLAYER.STAMINA.SPRINT);
         this.setTimeEvent('sprintCooldown', PLAYER.COOLDOWNS.MODERATE);
-        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+        this.flickerCarenic(PLAYER.DURATIONS.SPRINT);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT, () => {
             this.isSprinting = false;
         }, undefined, this);
@@ -2522,15 +2472,8 @@ export default class Player extends Entity {
             playerSpecialDescription: `You tap into your caeren, bursting into an otherworldly sprint.`
         });
     };
-    onSprintUpdate = (_dt) => {
-        if (!this.isSprinting) {
-            this.metaMachine.setState(States.CLEAN);
-        };
-    };
-    onSprintExit = () => {
-        if (this.isGlowing) this.checkCaerenic(false); // !this.isCaerenic && 
-        this.adjustSpeed(-PLAYER.SPEED.SPRINT);
-    };
+    onSprintUpdate = (_dt) => {if (!this.isSprinting) this.metaMachine.setState(States.CLEAN);};
+    onSprintExit = () => this.adjustSpeed(-PLAYER.SPEED.SPRINT);
 
     onStealthEnter = () => {
         if (!this.isShimmering) this.isStealthing = true; 
@@ -2539,11 +2482,7 @@ export default class Player extends Entity {
             playerSpecialDescription: `You step halfway into the land of hush and tendril.`
         });
     };
-    onStealthUpdate = (_dt) => {
-        if (!this.isStealthing || this.currentRound > 1 || this.scene.combat) {
-            this.metaMachine.setState(States.CLEAN); 
-        };
-    };
+    onStealthUpdate = (_dt) => {if (!this.isStealthing || this.currentRound > 1 || this.scene.combat) this.metaMachine.setState(States.CLEAN);};
     onStealthExit = () => { 
         this.isStealthing = false;
         this.stealthEffect(false);
@@ -3016,9 +2955,8 @@ export default class Player extends Entity {
             loop: false,
         });
     };
-    onFrozenExit = () => {
-        this.setStatic(false);
-    };
+    onFrozenExit = () => this.setStatic(false);
+    
 
     onPolymorphedEnter = () => {
         this.scene.joystick.joystick.setVisible(false);
@@ -3132,7 +3070,6 @@ export default class Player extends Entity {
             this.negMetaMachine.setState(States.CLEAN);
         }, undefined, this);
     };
-    // onSnaredUpdate = (dt) => {};
     onSnaredExit = () => { 
         this.clearTint();
         this.setTint(0x000000);

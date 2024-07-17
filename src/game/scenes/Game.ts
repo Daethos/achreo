@@ -599,9 +599,10 @@ export class Game extends Scene {
     };
 
     getWorldPointer = () => {
-        const point = this.cameras.main.getWorldPoint(this.rightJoystick.pointer.x, this.rightJoystick.pointer.y);
-        const target = new Phaser.Math.Vector2(point.x, point.y);
-        return target;
+        const pointer = this.rightJoystick.pointer;
+        const point = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+        console.log(point, 'Point in World Pointer');
+        return point;
     };
 
     // ============================ Combat Specials ============================ \\ 

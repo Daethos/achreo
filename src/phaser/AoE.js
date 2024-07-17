@@ -21,6 +21,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         super(scene.matter.world, scene.player.x, scene.player.y + 6, 'target');
         this.setVisible(false);
         this.setScale(0.375); // 375
+        this.setOrigin(0.5, 0.5);
         // this.setOrigin(0.5, -1);
         scene.add.existing(this);
         this.glowFilter = this.scene.plugins.get('rexGlowFilterPipeline');
@@ -41,7 +42,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             this.setEnemyTimer(scene, enemy);
             this.setupEnemyCount(scene, type, positive, enemy);
         } else {
-            this.setupSensor(scene, manual);
+            this.setupSensor(scene, manual, target);
             this.setupListener(scene);
             this.setTimer(scene, manual, target);
             this.setCount(scene, type, positive);
@@ -160,8 +161,19 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     setTimer = (scene, manual, target) => {
         let scale = 0;
         let count = 0;
-        const targ = target !== undefined ? target : manual === true ? scene.getWorldPointer() : scene.player;
+        let targ = target !== undefined ? target : manual === true ? scene.getWorldPointer() : scene.player;
+        if (manual === true) {
+            const centerX = scene.cameras.main.width / 2;
+            const centerY = scene.cameras.main.height / 2;
+            const point = scene.cameras.main.getWorldPoint(centerX, centerY);
+            const offsetX = (targ.x - point.x);
+            const offsetY = (targ.y - point.y);
+            console.log(offsetX, offsetY, 'Offsets?');
+            targ.x -= offsetX / 5;
+            targ.y -= offsetY / 5;
+        };
         const y = manual === true ? targ.y : targ.y + 6;
+        this.setOrigin(0.5, 0.5);
         this.timer = scene.time.addEvent({
             delay: 50,
             callback: () => {
@@ -188,21 +200,34 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.sensor = aoeSensor;
     };
 
-    setupSensor = (scene, manual) => {
-        let target;
-        if (manual === true) {
-            target = scene.getWorldPointer();
+    setupSensor = (scene, manual, target) => {
+        let targ;
+        if (target !== undefined) {
+            targ = target;
+        } else if (manual === true) {
+            targ = scene.getWorldPointer();
+            console.log(targ, 'World Pointer');
         } else {
-            target = scene.player;
+            targ = scene.player;
         };
-        const y = manual === true ? target.y : target.y + 6;
-
-        const aoeSensor = Bodies.circle(target.x, y, 60, { 
+        if (manual === true) {
+            const centerX = scene.cameras.main.width / 2;
+            const centerY = scene.cameras.main.height / 2;
+            const point = scene.cameras.main.getWorldPoint(centerX, centerY);
+            const offsetX = (targ.x - point.x);
+            const offsetY = (targ.y - point.y);
+            targ.x -= offsetX / 5;
+            targ.y -= offsetY / 5;
+        };
+        const y = manual === true ? targ.y : targ.y + 6;
+        const aoeSensor = Bodies.circle(targ.x, y, 60, { 
             isSensor: true, label: 'aoeSensor' 
         });
         this.setExistingBody(aoeSensor);
         this.setStatic(true);
+        this.setOrigin(0.5, 0.5);
         this.sensor = aoeSensor;
+        console.log(`Sensor Position - X: ${targ.x}, Y: ${y}`);
     };
 
     setupEnemyListener = (scene) => {
@@ -252,21 +277,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             },
             context: scene
         });
-        
-        // scene.matterCollision.addOnCollideActive({
-        //     objectA: [this.sensor],
-        //     callback: (collision) => {
-        //         const { gameObjectB, bodyB } = collision;
-        //         if (gameObjectB instanceof Phaser.Physics.Matter.Sprite) {
-        //             if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
-        //                 this.hit.push(gameObjectB);    
-        //             } else if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
-        //                 this.bless.push(gameObjectB);
-        //             };
-        //         };
-        //     },
-        //     context: scene
-        // });
         scene.matterCollision.addOnCollideEnd({
             objectA: [this.sensor],
             callback: (collision) => {

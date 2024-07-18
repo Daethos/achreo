@@ -151,3 +151,4 @@ export const TRAIT_SPECIALS = {
     "Shrygeian": 'Impermanence',
     "Tshaeral": 'Devour',
 };
+export const TRAITS = ["Astrication", "Caerenesis", "Seer", "Blind", "Endurance", "Stimulate", "Berserk", "Conviction", "Impermanence", "Devour"];

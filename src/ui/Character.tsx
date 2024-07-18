@@ -16,7 +16,7 @@ import { useResizeListener } from '../utility/dimensions';
 import { Attributes } from '../utility/attributes';
 import { Reputation, faction } from '../utility/player';
 import { playerTraits } from '../utility/ascean';
-import { ACTIONS, SPECIALS, TRAIT_SPECIALS } from '../utility/abilities';
+import { ACTIONS, SPECIALS, TRAIT_SPECIALS, TRAITS } from '../utility/abilities';
 import { DEITIES } from '../utility/deities';
 import { Puff } from 'solid-spinner';
 const AsceanImageCard = lazy(async () => await import('../components/AsceanImageCard'));
@@ -157,14 +157,17 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
     }); 
 
     function checkSpecials() {
-        const potential = [playerTraitWrapper().primary.name, playerTraitWrapper().secondary.name, playerTraitWrapper().tertiary.name];
+        // const potential = [playerTraitWrapper().primary.name, playerTraitWrapper().secondary.name, playerTraitWrapper().tertiary.name];
         const extra = [];
-        for (let i = 0; i < 3; i++) {
-            const trait = TRAIT_SPECIALS[potential[i] as keyof typeof TRAIT_SPECIALS];
-            if (trait) {
-                extra.push(trait);
-            };
+        for (let i = 0; i < TRAITS.length; i++) {
+            extra.push(TRAITS[i]);
         };
+        // for (let i = 0; i < 3; i++) {
+        //     const trait = TRAIT_SPECIALS[potential[i] as keyof typeof TRAIT_SPECIALS];
+        //     if (trait) {
+        //         extra.push(trait);
+        //     };
+        // };
         if (extra.length > 0) {
             let start = [...SPECIALS, ...extra];
             start.sort();

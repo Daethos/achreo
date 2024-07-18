@@ -16,7 +16,7 @@ body {margin:0; padding:0; width: 100%; height: 100vh; color: rgba(253, 246, 216
 .highlight:focus {color: gold;}
 .highlight:hover {color: gold;}
 .cinzel {font-family: 'Cinzel Regular'}
-.title {font-size: 5.5em; margin-bottom: 0.5em; color:#fdf6d8; text-shadow: 0em 0em 0.1em #ffd700}
+.title {font-size: 6em; font-weight: 525; margin-bottom: 0.35em; margin-top: -0.5em; color:#fdf6d8; text-shadow: 0em 0em 0.1em #ffd700;}
 .animate {animation: gradient 1s ease infinite;}
 @keyframes gradient {
     0% { color:#fdf6d8; text-shadow: 0.025em 0.025em 0.05em #ffd700, -0.025em -0.025em 0.05em #ffd700 }

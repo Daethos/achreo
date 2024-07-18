@@ -362,10 +362,10 @@ export default function App() {
                     <Suspense fallback={<Puff color="gold"/>}>
                     <div class="cornerTL super">The Ascean v0.0.1</div>
                     <Show when={menu().loaded} fallback={<Puff color="gold"/>}>
-                    <div class='superCenter cinzel'>
+                    <div class='superCenter cinzel' style={{ width: '100%' }}>
                         <div class='center'>
                             <div class='title'>The Ascean</div>
-                            <button class='center highlight animate' style={{ 'font-size': '1em', 'font-family': 'Cinzel Regular' }} onClick={() => menuOption(menu().asceans.length > 0 ? 'chooseCharacter' : 'createCharacter')}>Enter Game</button>
+                            <button class='center highlight animate' style={{ 'font-size': '1.25em', 'font-family': 'Cinzel Regular' }} onClick={() => menuOption(menu().asceans.length > 0 ? 'chooseCharacter' : 'createCharacter')}>Enter Game</button>
                         </div>
                     </div>
                     </Show>

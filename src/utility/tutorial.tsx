@@ -309,7 +309,7 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 <Typewriter stringText={deity} styling={{ 'overflow-y': 'auto' }} performAction={performAction} />
             </div> }
 
-            { tutorial() !== 'deity' && <button class='cornerBR gold highlight' style={{ bottom: '0', right: '0', 'font-weight': 700 }} onClick={() => exitTutorial()}>
+            { tutorial() !== 'deity' && <button class='cornerBR gold highlight animate' style={{ bottom: '0', right: '0', 'font-weight': 700 }} onClick={() => exitTutorial()}>
                 {arrows.right} Exit
             </button> }
         </div>

@@ -32,7 +32,6 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.setScrollFactor(0);
         this.visible = false;
         this.barY = scene.settings.positions.castbar.barY;
-
         this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - this.barY);
     };
 

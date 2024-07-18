@@ -77,7 +77,6 @@ export default class Player extends Entity {
 
         this.currentShieldSprite = this.assetSprite(this.ascean?.shield);
         this.spriteShield = this.createSprite(this.currentShieldSprite, 0, 0, PLAYER.SCALE.SHIELD, ORIGIN.SHIELD.X, ORIGIN.SHIELD.Y);
-
         this.playerVelocity = new pMath.Vector2();
         this.speed = this.startingSpeed(scene?.ascean);
         this.acceleration = PLAYER.SPEED.ACCELERATION;
@@ -1581,7 +1580,7 @@ export default class Player extends Entity {
             this.setTimeEvent('paralyzeCooldown', PLAYER.COOLDOWNS.MODERATE);  
             this.scene.useStamina(PLAYER.STAMINA.PARALYZE);
             this.castingSuccess = false;
-            this.scene.mysterious.play();
+            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });        
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You paralyze ${this.scene.state.computer?.name} for several seconds!`
             });
@@ -1654,7 +1653,7 @@ export default class Player extends Entity {
     };
 
     onInvokeEnter = () => {
-        if (!this.inCombat || !this.currentTarget) return;
+        if (!this.currentTarget) return;
         this.isPraying = true;
         this.setStatic(true);
         this.flickerCarenic(1000); 
@@ -1668,8 +1667,8 @@ export default class Player extends Entity {
         this.combatChecker(this.isPraying);
     };
     onInvokeExit = () => {
-        if (!this.inCombat || !this.currentTarget) return;
         this.setStatic(false);
+        if (!this.currentTarget || this.currentTarget.isDefeated) return;
         this.scene.combatMachine.action({ type: 'Instant', data: this.scene.state.playerBlessing });
         this.scene.sound.play('prayer', { volume: this.scene.settings.volume });
         this.scene.useStamina(PLAYER.STAMINA.INVOKE);
@@ -1808,7 +1807,7 @@ export default class Player extends Entity {
             this.setTimeEvent('polymorphCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.scene.useStamina(PLAYER.STAMINA.POLYMORPH);
             this.castingSuccess = false;
-            this.scene.mysterious.play();
+            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });        
             this.spellTarget = '';
         };
         this.castbar.reset();

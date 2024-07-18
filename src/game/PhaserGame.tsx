@@ -24,14 +24,8 @@ const BaseUI = lazy(async () => await import('../ui/BaseUI'));
 
 function rebalanceCurrency(currency: { silver: number; gold: number; }): { silver: number; gold: number; } {
     let { silver, gold } = currency;
-    if (silver > 99) {
-        gold += Math.floor(silver / 100);
-        silver = silver % 100;
-    };
-    if (silver < 0) {
-        gold -= 1;
-        silver += 100;
-    };
+    if (silver > 99) { gold += Math.floor(silver / 100); silver = silver % 100; };
+    if (silver < 0) { gold -= 1; silver += 100; };
     return { silver, gold };
 };
 
@@ -230,6 +224,11 @@ export default function PhaserGame (props: IProps) {
         statistic.prayers.heal += prayerData.reduce((count: number, prayer: string) => prayer === 'Heal' ? count + 1 : count, 0);
         statistic.prayers.damage += prayerData.reduce((count: number, prayer: string) => prayer === 'Damage' ? count + 1 : count, 0);
         statistic.prayers.debuff += prayerData.reduce((count: number, prayer: string) => prayer === 'Debuff' ? count + 1 : count, 0);
+        statistic.prayers.avarice += prayerData.reduce((count: number, prayer: string) => prayer === 'Avarice' ? count + 1 : count, 0);
+        statistic.prayers.denial += prayerData.reduce((count: number, prayer: string) => prayer === 'Denial' ? count + 1 : count, 0);
+        statistic.prayers.dispel += prayerData.reduce((count: number, prayer: string) => prayer === 'Dispel' ? count + 1 : count, 0);
+        statistic.prayers.silence += prayerData.reduce((count: number, prayer: string) => prayer === 'Silence' ? count + 1 : count, 0);
+
         statistic.attacks.magical += typeAttackData.reduce((count: number, type: string) => type === 'Magic' ? count + 1 : count, 0);
         statistic.attacks.physical += typeAttackData.reduce((count: number, type: string) => type === 'Physical' ? count + 1 : count, 0);
         statistic.attacks.blunt += typeDamageData.reduce((count: number, type: string) => type === 'Blunt' ? count + 1 : count, 0);
@@ -757,6 +756,7 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('request-combat', requestCombat);
         EventBus.on('request-game', () => EventBus.emit('game', game()));
         EventBus.on('setup-enemy', (e: any) => {
+            // console.log(combat().combatEngaged, combat().combatTimer);
             setCombat({
                 ...combat(),
                 computer: e.game,
@@ -780,7 +780,7 @@ export default function PhaserGame (props: IProps) {
                 playerLuckout: e.isLuckout,
                 playerTrait: e.playerTrait,
                 playerWin: e.isDefeated,
-                computerWin: e.isTriumphant,
+                // computerWin: combat().combatEngaged || combat().combatTimer > 0 ? false : e.isTriumphant,
                 enemyID: e.id,
             });
             const dialog = getNpcDialog();

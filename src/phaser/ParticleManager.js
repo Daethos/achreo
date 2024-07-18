@@ -6,17 +6,9 @@ export const PARTICLES = ['arrow', 'earth',  'fire',  'frost',  'lightning', 'ri
 function angleTarget(target) {
     let angle = 0;
     if (target.x > 0) {
-        if (target.y > 0) { 
-            angle = 90;
-        } else { 
-            angle = 0;
-        };
+        if (target.y > 0) { angle = 90; } else { angle = 0; };
     } else {
-        if (target.y > 0) { 
-            angle = 180;
-        } else {
-            angle = 270
-        };
+        if (target.y > 0) { angle = 180; } else { angle = 270 };
     };
     return angle;
 };
@@ -38,7 +30,6 @@ class Particle {
         this.timer = this.setTimer(action, id);
         this.triggered = false;
         this.velocity = this.setVelocity(action);
-
         const { Bodies } = Phaser.Physics.Matter.Matter;
         const effectSensor = Bodies.circle(player.x, player.y, this.sensorSize, { isSensor: true, label: `effectSensor-${id}`}); 
         this.effect.setExistingBody(effectSensor); 

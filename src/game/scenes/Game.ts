@@ -902,7 +902,7 @@ export class Game extends Scene {
             this.tweenManager[tween.name] = this.tweens.add({
                 targets: tween,
                 angle: count * 360,
-                duration: count * 950,
+                duration: count * 925,
                 ease: 'Circ.easeInO',
                 yoyo: false,
             });

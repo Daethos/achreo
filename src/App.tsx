@@ -19,6 +19,7 @@ const AsceanView = lazy(async () => await import('./components/AsceanView'));
 const MenuAscean = lazy(async () => await import('./components/MenuAscean'));
 const Preview = lazy(async () => await import('./components/Preview'));
 const GameToast = lazy(async () => await import('./ui/GameToast'));
+var click = new Audio("../assets/sounds/TV_Button_Press.wav");
 
 export default function App() {
     const [alert, setAlert] = createSignal({ header: '', body: '', delay: 0, key: '' });
@@ -31,8 +32,8 @@ export default function App() {
     const [show, setShow] = createSignal<boolean>(false);
     const [startGame, setStartGame] = createSignal<boolean>(false);
     const dimensions = useResizeListener();
-    let phaserRef: IRefPhaserGame;
-    let tips: string | number | NodeJS.Timeout | undefined =  undefined;
+    var phaserRef: IRefPhaserGame;
+    var tips: string | number | NodeJS.Timeout | undefined =  undefined;
     onMount(() => fetchAsceans());
     const currentScene = (scene: Scene) => setScene(scene.scene.key);
     function fetchAsceans(): void {
@@ -53,6 +54,7 @@ export default function App() {
         fetch();
     };
     function menuOption(option: string): void {
+        click.play();
         switch (option) {
             case 'createCharacter':
                 setMenu({ ...menu(), creatingCharacter: true });
@@ -65,6 +67,7 @@ export default function App() {
         };
     };
     async function createCharacter(character: CharacterSheet): Promise<void> {
+        click.play();
         const cre = await createAscean(character);
         const pop = await populate(cre);
         const comp = asceanCompiler(pop);
@@ -75,6 +78,7 @@ export default function App() {
     };
     async function deleteCharacter(id: string | undefined): Promise<void> {
         try {
+            click.play();
             const newAsceans = menu()?.asceans?.filter((asc: Ascean) => asc._id !== id);
             setMenu({ ...menu(), asceans: newAsceans, choosingCharacter: newAsceans.length > 0 });
             setAscean(undefined as unknown as Ascean);
@@ -222,6 +226,10 @@ export default function App() {
         const scene = phaserRef.scene as Scene;
         EventBus.emit('switch-scene', { current: scene.scene.key, next });
     };
+
+    function setScreen(screen: string) {
+        setMenu({ ...menu(), screen });
+    };
     const actions = {
         'Enter Tent': () => switchScene('Tent'),
         'Close': () => setShow(false),
@@ -281,12 +289,12 @@ export default function App() {
                     </Suspense>
                     <Show when={dimensions().ORIENTATION === 'landscape'} fallback={<>
                         { (SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV !== SCREENS.COMPLETE.KEY) && 
-                            <button class='highlight cornerBL' onClick={() => setMenu({ ...menu(), screen: SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV})}>
+                            <button class='highlight cornerBL' onClick={() => setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV)}>
                                 <div>Back ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV as keyof typeof SCREENS]?.TEXT})</div>
                             </button>
                         }
                         { (SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT !== SCREENS.CHARACTER.KEY) && 
-                            <button class='highlight cornerBR' onClick={() => setMenu({ ...menu(), screen: SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT})}>
+                            <button class='highlight cornerBR' onClick={() => setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT)}>
                                 <div>Next ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT as keyof typeof SCREENS]?.TEXT})</div>
                             </button>
                         }
@@ -296,17 +304,17 @@ export default function App() {
                             </button>
                         }
                         <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
-                            <div>Back</div>
+                            <div>Back (Menu)</div>
                         </button>
                     </>}>
                         <>
                             {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV !== LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                                <button class='highlight cornerBL' onClick={() => setMenu({ ...menu(), screen: LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV})}>
+                                <button class='highlight cornerBL' onClick={() => setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV)}>
                                     <div>Back ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
                                 </button>
                             }
                             {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT !== LANDSCAPE_SCREENS.CHARACTER.KEY) && 
-                                <button class='highlight cornerBR' onClick={() => setMenu({ ...menu(), screen: LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT})}>
+                                <button class='highlight cornerBR' onClick={() => setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT)}>
                                     <div>Next ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
                                 </button>
                             }
@@ -316,7 +324,7 @@ export default function App() {
                                 </button>
                             }
                             <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
-                                <div>Back</div>
+                                <div>Back (Menu)</div>
                             </button>
                         </>
                     </Show>
@@ -357,7 +365,7 @@ export default function App() {
                     <div class='superCenter cinzel'>
                         <div class='center'>
                             <div class='title'>The Ascean</div>
-                            <button class='center highlight animate' style={{ 'font-size': '1.25em', 'font-family': 'Cinzel Regular' }} onClick={() => menuOption(menu().asceans.length > 0 ? 'chooseCharacter' : 'createCharacter')}>Enter Game</button>
+                            <button class='center highlight animate' style={{ 'font-size': '1em', 'font-family': 'Cinzel Regular' }} onClick={() => menuOption(menu().asceans.length > 0 ? 'chooseCharacter' : 'createCharacter')}>Enter Game</button>
                         </div>
                     </div>
                     </Show>

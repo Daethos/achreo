@@ -30,7 +30,7 @@ export default class NPC extends Entity {
                 onEnter: this.onAwarenessEnter,
                 onUpdate: this.onAwarenessUpdate,
                 onExit: this.onAwarenessExit,
-            }) 
+            });
 
         this.stateMachine.setState(States.IDLE);
         this.setScale(0.8);
@@ -59,7 +59,7 @@ export default class NPC extends Entity {
         this.npcSensor = npcSensor;
         this.npcCollision(npcSensor); 
         this.setStatic(true);
-    }; 
+    };
 
     cleanUp() {
         EventBus.off('npc-fetched', this.npcFetched);

@@ -1500,7 +1500,7 @@ export default class Enemy extends Entity {
                     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Countered Polymorph', 750, 'red');
                 } else {
                     this.scene.polymorph(this.attacking?.enemyID);
-                    this.scene.mysterious.play();
+                    this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });        
                 };
             };
             this.checkCaerenic(false);

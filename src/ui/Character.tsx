@@ -157,7 +157,6 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
     }); 
 
     function checkSpecials() {
-        console.log(ascean().statistics)
         const potential = [playerTraitWrapper().primary.name, playerTraitWrapper().secondary.name, playerTraitWrapper().tertiary.name];
         const extra = [];
         for (let i = 0; i < 3; i++) {

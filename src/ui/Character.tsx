@@ -807,7 +807,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
             height: `${dimensions().HEIGHT * 0.31}px`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 'margin-top': '64%'
         }}>
             { settings().asceanViews === VIEWS.CHARACTER ? (
-                <div class='center creature-heading' style={{ overflow: 'scroll' }}>
+                <div class='center creature-heading' style={{ overflow: 'scroll', 'scrollbar-width': 'none' }}>
                     { dimensions().ORIENTATION === 'landscape' ? ( <>
                         <img onClick={() => setShowOrigin(!showOrigin())} id='origin-pic' src={asceanPic()} alt={ascean().name} style={{ 'margin-top': '2.5%', 'margin-bottom': '2.5%' }} />
                         <h2 style={{ margin: '2%' }}>{combatState()?.player?.description}</h2>

@@ -53,10 +53,10 @@ export function DynamicButton({ style, text, callback, opacity, left }: { style:
                            
 export function ActionButtonModal({ currentAction, actions, handleAction, special }: { currentAction: Accessor<any>, actions: string[], handleAction: (action: string, index: number) => void, special?: boolean }) {
     return (
-        <div class='border superCenter' style={{ width: '40%', height: '75%', overflow: 'scroll' }}>
+        <div class='border superCenter' style={{ width: '40%', height: '75%', overflow: 'scroll', 'scrollbar-width': 'none' }}>
         <div class='creature-heading'>
             <h1 style={{ 'text-align': 'center' }}>{special ? currentAction().special : currentAction().action}</h1>
-            <div class='center' style={{ overflow: 'scroll', width: '100%', height: '100%' }}>
+            <div class='center' style={{ overflow: 'scroll', width: '100%', height: '100%', 'scrollbar-width': 'none' }}>
             {actions.map((action) => {
                 return (
                     <button class='highlight' onClick={() => handleAction(action, currentAction().index)} style={{ 'background-color': 'black', margin: '5% auto', width: '75%', display: 'block' }}>
@@ -72,8 +72,8 @@ export function ActionButtonModal({ currentAction, actions, handleAction, specia
 
 export function Modal({ items, inventory, callback, show, setShow, forge, setForge, upgrade, setUpgrade }: { items: Accessor<{ item: Equipment | undefined; type: string; }[]>, inventory: Equipment | undefined, callback: (type: string) => void, show: Accessor<boolean>, setShow: Setter<boolean>, forge: Accessor<boolean>, setForge: Setter<boolean>, upgrade: Accessor<boolean>, setUpgrade: Setter<boolean>}) {
     return (
-        <div class='border superCenter' style={{ width: '40%' }}>
-        <div class='creature-heading' >
+        <div class='border superCenter' style={{ width: '40%', 'scrollbar-width': 'none' }}>
+        <div class='creature-heading'>
             <h1 style={{ 'text-align': 'center' }}>{inventory?.name}</h1>
             {items().length > 0 && items().map((item) => {
                 return (

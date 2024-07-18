@@ -178,7 +178,7 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
                 `Influence: ${highlighted()?.item?.influences?.[0]}` : undefined;
 
         return (
-            <table style={dimensions().ORIENTATION === 'landscape' ? { width: `${dimensions().WIDTH * 0.32}px`, overflow: 'scroll' } : { width: `${dimensions().WIDTH * 0.975}px` }}>
+            <table style={dimensions().ORIENTATION === 'landscape' ? { width: `${dimensions().WIDTH * 0.32}px`, overflow: 'scroll', 'scrollbar-width': 'none' } : { width: `${dimensions().WIDTH * 0.975}px`, 'scrollbar-width': 'none' }}>
             <tbody>
                 <tr>
                     <td class='border gold' style={{ 'font-size': responsiveSizeStyle(asceanName?.length) }}>{asceanName}
@@ -282,7 +282,7 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
     };
     return (
         <>
-            <div style={{ overflow: 'scroll', height: `${dimensions().HEIGHT * 0.7}px` }}>
+            <div style={{ overflow: 'scroll', height: `${dimensions().HEIGHT * 0.7}px`, 'scrollbar-width': 'none' }}>
                 {createTable(trueType)}
             </div>
             {/* <br /> */}

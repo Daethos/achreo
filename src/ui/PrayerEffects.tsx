@@ -11,8 +11,9 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
     const [effectTimer, setEffectTimer] = createSignal(effect.endTime - effect.startTime);
     var timeout: any = undefined;
     
-    function tick() {
-        if (combat().combatEngaged === false) {
+    function tick(): void {
+        if (combat().combatEngaged === false || (enemy === true && combat().playerWin === true)) { 
+            console.log('%c Prayer Effect Removed', 'color: red');
             EventBus.emit('initiate-combat', { data: effect, type: 'Remove Tick' });
             clearInterval(timeout);
             return;
@@ -21,8 +22,8 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
             clearInterval(timeout);
             return;
         };
-        if (canTick(effect, effectTimer(), combat().combatTimer)) {
-            console.log('%c Prayer Effect Ticking...', 'color: gold');
+        if (canTick(effect, effectTimer, combat().combatTimer)) { 
+            // console.log('%c Prayer Effect Ticking...', 'color: gold');
             EventBus.emit('initiate-combat', { data: { effect, effectTimer: effectTimer() }, type: 'Tick' });    
         };
         if (effectTimer() <= 0) {
@@ -35,7 +36,6 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
         } else {
             setEffectTimer((prev) => prev - 1);
         };
-
     };
 
     createEffect(() => {
@@ -44,16 +44,16 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
         onCleanup(() => clearInterval(timeout));
     });
 
-    function canTick(prayer: StatusEffect, prayerTimer: number, combatTimer: number) {
-        return prayerTimer % 3 === 0 && combat().combatEngaged === true &&prayer.startTime !== combatTimer && (prayer.prayer === 'Heal' || prayer.prayer === 'Damage');
+    function canTick(prayer: StatusEffect, prayerTimer: Accessor<number>, combatTimer: number): boolean {
+        return prayerTimer() % 3 === 0 && combat().combatEngaged === true && prayer.startTime !== combatTimer && (prayer.prayer === 'Heal' || prayer.prayer === 'Damage');
     }; 
 
-    function showEffect() {
+    function showEffect(): void {
         setEffect(effect);
         setShow(!show());
     };
 
-    return <div class={enemy ? 'enemyStatusEffects' : 'playerStatusEffects'} style={{ 'margin-left': '0.5vw' }}>
+    return <div class={enemy === true ? 'enemyStatusEffects' : 'playerStatusEffects'} style={{ 'margin-left': '0.5vw' }}>
         <button style={{...itemStyle(combat()?.weapons?.[0]?.rarity as string) }} onClick={() => showEffect()}>
             <img src={effect?.imgUrl} />
             <div class='center gold' style={{ 'font-size': '0.75em' }}>

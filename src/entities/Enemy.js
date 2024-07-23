@@ -888,7 +888,7 @@ export default class Enemy extends Entity {
 
     chiomic = (strength) => {
         if (this.isCurrentTarget === true) {
-            this.scene.combatMachine.action({ type: 'Enemy Chiomic', data: 10 });
+            this.scene.combatMachine.action({ type: 'Enemy Chiomic', data: strength });
         } else {
             const caerenic = this.scene.state.isCaerenic ? 1.25 : 1;
             const stalwart = this.scene.state.isStalwart ? 0.85 : 1;
@@ -1816,7 +1816,7 @@ export default class Enemy extends Entity {
             computerSpecialDescription: `${this.ascean.name} swirls such sweet tendrils which wrap round and reach to writhe.`
         });
     };
-    onDiseaseUpdate = (_dt) => {if (this.isDiseasing) this.metaMachine.setState(States.CLEAN);};
+    onDiseaseUpdate = (_dt) => {if (!this.isDiseasing) this.metaMachine.setState(States.CLEAN);};
     onDiseaseExit = () => {};
 
     onFreezeEnter = () => {

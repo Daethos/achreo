@@ -459,6 +459,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 });
                 const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
                 EventBus.emit('enemy-loot', loot);
+                setAsceanState({ ...asceanState(), avarice: false });
             } else {
                 EventBus.emit('record-loss', res);
             };

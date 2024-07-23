@@ -2,7 +2,7 @@ import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { Combat } from "../stores/combat";
 import StatusEffect from "./prayer";
-
+const ARMOR_WEIGHT: any = {helmet:2,chest:1.5,legs:1};
 const ATTACKS = {
     achire: 'achire',
     attack: 'attack',
@@ -13,7 +13,6 @@ const ATTACKS = {
     rush: 'rush through',
     writhe: 'writhe into',
 };
-
 const ENEMY_ATTACKS = {
     attack: 'attacks',
     posture: 'postures against',
@@ -23,7 +22,12 @@ const ENEMY_ATTACKS = {
     rush: 'rushes through',
     writhe: 'writhes into',
 };
-
+const STRONG_TYPES = {
+    "Leather-Cloth": ["Frost","Lightning","Righteous","Pierce"],
+    "Leather-Mail": ["Pierce","Slash","Wind","Sorcery","Wild"],
+    "Chain-Mail": ["Blunt","Slash","Sorcery","Wind","Wild"],
+    "Plate-Mail": ["Blunt","Earth","Fire","Spooky"],
+};
 export type CombatAttributes = {
     rawConstitution: number;
     rawStrength: number;
@@ -424,13 +428,11 @@ function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, c
 }; 
 
 function phaserActionConcerns(action: string): boolean {
-    if (action === 'attack' || action === 'posture' || action === 'roll') return true;
-    return false;
+    return action === 'attack' || action === 'posture' || action === 'roll';
 };
 
 function phaserSuccessConcerns(parrySuccess: boolean, rollSuccess: boolean, computerParrySuccess: boolean, computerRollSuccess: boolean): boolean {
-    if (parrySuccess || rollSuccess || computerParrySuccess || computerRollSuccess) return true;
-    return false;
+    return parrySuccess || rollSuccess || computerParrySuccess || computerRollSuccess;
 };
 
 function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, weather: string, critical: boolean): { magicalDamage: number, physicalDamage: number } {
@@ -466,7 +468,7 @@ function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, 
         case 'Firelands':
             physicalDamage *= 1.1;
             magicalDamage *= 1.1;
-            if (critical) {
+            if (critical === true) {
                 magicalDamage *= 1.25;
                 physicalDamage *= 1.25;
             };
@@ -483,7 +485,7 @@ function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, 
                 magicalDamage *= 1.15;
                 physicalDamage *= 1.15;
             };
-            if (critical) {
+            if (critical === true) {
                 magicalDamage *= 1.25;
                 physicalDamage *= 1.25;
             };
@@ -498,7 +500,7 @@ function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, 
                 physicalDamage *= 1.1;
                 magicalDamage *= 1.1;
             };
-            if (critical) {
+            if (critical === true) {
                 magicalDamage *= 1.1;
                 physicalDamage *= 1.1;
             };
@@ -547,12 +549,14 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
 function healTick(combat: Combat, effect:StatusEffect, player: boolean): Combat {
     if (player) {
         const playerHeal = effect.effect.healing as number * 0.33 * (combat.isCaerenic === true ? 1.15 : 1);
-        combat.newPlayerHealth += playerHeal;
+        // combat.newPlayerHealth += playerHeal;
+        combat.newPlayerHealth = Math.min(playerHeal + combat.newPlayerHealth, combat.playerHealth);
         combat.playerSpecialDescription = `You heal for ${Math.round(playerHeal)} from your ${effect.name}.`;
         if (combat.newPlayerHealth > 0) combat.computerWin = false;
     } else {
         const computerHeal = effect.effect.healing as number * 0.33 * (combat.isCaerenic === true ? 1.15 : 1);
-        combat.newComputerHealth += computerHeal;
+        // combat.newComputerHealth += computerHeal;
+        combat.newComputerHealth = Math.min(computerHeal + combat.newComputerHealth, combat.computerHealth);
         combat.computerSpecialDescription = `${combat.computer?.name} heals for ${Math.round(computerHeal)} from their ${effect.name}.`;
         if (combat.newComputerHealth > 0) combat.playerWin = false;
     };
@@ -657,8 +661,7 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
         combat.religiousSuccess = true;
         const negativeEffect = blessing === 'Damage' || blessing === 'Debuff';
         let exists: StatusEffect | undefined;
-
-        if (negativeEffect) {
+        if (negativeEffect === true) {
             exists = combat.computerEffects.find(effect => effect.name === `Gift of ${weapon.influences?.[0]}` && effect.prayer === blessing);
         } else {
             exists = combat.playerEffects.find(effect => effect.name === `Gift of ${weapon.influences?.[0]}` && effect.prayer === blessing);   
@@ -687,7 +690,6 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
                 weapon = debuff.weapon;
             };
             if (exists.prayer === 'Heal') healTick(combat, exists, true);
-            
             combat[`playerInfluenceDescription${desc}`] = exists.description;
         } else {
             if (exists.stacks) {
@@ -698,7 +700,6 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
                     combat.playerDefense = buff.defense;
                     weapon = buff.weapon;
                 };
-                
                 if (exists.prayer === 'Damage') damageTick(combat, exists, true);
             }; 
             if (exists.refreshes) {
@@ -706,9 +707,7 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
                 exists.tick.end += exists.duration;
                 exists.endTime += 6;
                 exists.activeRefreshes += 1;
-                
                 if (exists.prayer === 'Heal') healTick(combat, exists, true);
-                
                 combat[`playerInfluenceDescription${desc}`] = `${exists.description} Refreshed ${exists.activeRefreshes} time(s).`;
             };
         };
@@ -811,20 +810,16 @@ function faithCompiler(combat: Combat): Combat { // The influence will add a cha
 
     combat.weapons[0]!.criticalChance = Number(combat.weapons[0]?.criticalChance);
     combat.weapons[0]!.criticalDamage = Number(combat.weapons[0]?.criticalDamage);
-
     combat.weapons[1]!.criticalChance = Number(combat.weapons[1]?.criticalChance);
     combat.weapons[1]!.criticalDamage = Number(combat.weapons[1]?.criticalDamage);
-
     combat.computerWeapons[0].criticalChance = Number(combat.computerWeapons[0].criticalChance);
     combat.computerWeapons[0].criticalDamage = Number(combat.computerWeapons[0].criticalDamage);
-
     combat.computerWeapons[1].criticalChance = Number(combat.computerWeapons[1].criticalChance);
     combat.computerWeapons[1].criticalDamage = Number(combat.computerWeapons[1].criticalDamage);
 
     const playerFaith = faithModCompiler(combat.player as Ascean, faithNumber, combat.weapons[0] as Equipment, faithNumberTwo, combat.weapons[1] as Equipment, combat.player?.amulet?.influences?.[0] as string, combat.player?.trinket?.influences?.[0] as string);
     faithNumber = playerFaith.faithOne;
     faithNumberTwo = playerFaith.faithTwo;
-
     const computerFaith = faithModCompiler(combat.computer as Ascean, computerFaithNumber, combat.computerWeapons[0], computerFaithNumberTwo, combat.computerWeapons[1], combat.computer?.amulet?.influences?.[0] as string, combat.computer?.trinket?.influences?.[0] as string);
     computerFaithNumber = computerFaith.faithOne;
     computerFaithNumberTwo = computerFaith.faithTwo;
@@ -846,7 +841,6 @@ function faithCompiler(combat: Combat): Combat { // The influence will add a cha
             faithSuccess(combat, 'computer', combat.computerWeapons[1], 1);
         };
     };
-
     return combat;
 };
 
@@ -1058,7 +1052,7 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
     };
     
     combat.computerActionDescription = 
-        `${computer?.name} dual-wield ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedComputerDamage)} ${combat.computerDamageType} and ${weapons[1].damageType?.[0] ? weapons[1].damageType[0] : ''}${weapons[1]?.damageType?.[1] ? ' / ' + weapons[1].damageType?.[1] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'damage (Partial Crit)' : combat.computerGlancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
+        `${computer?.name} dual-wield ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedComputerDamage)} ${combat.computerDamageType} and ${weapons[1].damageType?.[0] ? weapons[1].damageType[0] : ''}${weapons[1]?.damageType?.[1] ? ' / ' + weapons[1].damageType?.[1] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'damage (Partial Critical)' : combat.computerGlancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
     
     return combat;
 };
@@ -1420,7 +1414,7 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     // ==================== STATISTIC LOGIC ====================
     
     combat.playerActionDescription = 
-        `You dual-wield ${combat.action} ${computer?.name} with ${weapons[0]?.name} and ${weapons[1]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} and ${weapons[1]?.damageType?.[0] ? weapons[1]?.damageType?.[0] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'damage (Partial Crit)' : combat.glancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
+        `You dual-wield ${combat.action} ${computer?.name} with ${weapons[0]?.name} and ${weapons[1]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} and ${weapons[1]?.damageType?.[0] ? weapons[1]?.damageType?.[0] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'damage (Partial Critical)' : combat.glancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
         
     return combat;
 };
@@ -1438,7 +1432,6 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
         computerPhysicalDefenseMultiplier = 1 - (combat.computerDefense?.physicalPosture as number / 100);
         computerMagicalDefenseMultiplier = 1 - (combat.computerDefense?.magicalPosture as number / 100);
     };
-
     // This is for the focused attack Action i.e. you chose to attack over adding a defensive component
     if (playerAction === 'achire' || playerAction === 'attack' || playerAction === 'arc' || 'leap' || 'rush' || playerAction === 'special' || playerAction === 'storm' || playerAction === 'writhe') {
         if (combat.weapons[0]?.grip === 'One Hand') {
@@ -1724,44 +1717,24 @@ function computerWeaponMaker(combat: Combat): Combat {
         return combat;
     };
 
-    let defenseTypes: any = {
-        "Leather-Cloth": 0,
-        "Leather-Mail": 0,
-        "Chain-Mail": 0,
-        "Plate-Mail": 0,
-    };
-    let armorWeights: any = {
-        "helmet": 2,
-        "chest": 1.5,
-        "legs": 1,
-    };
-    defenseTypes[combat.player?.helmet.type as keyof typeof defenseTypes] += armorWeights.helmet;
-    defenseTypes[combat.player?.chest.type as keyof typeof defenseTypes] += armorWeights.chest;
-    defenseTypes[combat.player?.legs.type as keyof typeof defenseTypes] += armorWeights.legs;
+    let defenseTypes: any = {"Leather-Cloth": 0,"Leather-Mail": 0,"Chain-Mail": 0,"Plate-Mail": 0};
+    defenseTypes[combat.player?.helmet.type as keyof typeof defenseTypes] += ARMOR_WEIGHT.helmet;
+    defenseTypes[combat.player?.chest.type as keyof typeof defenseTypes] += ARMOR_WEIGHT.chest;
+    defenseTypes[combat.player?.legs.type as keyof typeof defenseTypes] += ARMOR_WEIGHT.legs;
     const sortedDefenses = Object.entries(defenseTypes)
         .sort((a, b) => b[1] as number - (a[1] as number)) // Sort based on the values in descending order
         .map(([type, weight]) => ({ type, weight })); // Convert back to an array of objects
-    
-    let strongTypes = {
-        "Leather-Cloth": ["Frost", "Lightning", "Righteous", "Pierce"],
-        "Leather-Mail": ["Pierce", "Slash", "Wind", "Sorcery", "Wild"],
-        "Chain-Mail": ["Blunt", "Slash", "Sorcery", "Wind", "Wild"],
-        "Plate-Mail": ["Blunt", "Earth", "Fire", "Spooky"],
-    };
-    let computerTypes: any = {
-        0: [],
-        1: [],
-        2: [],
-    };
+
+    let computerTypes: any = {0: [],1: [],2: []};
     combat.computerWeapons.forEach((weapon, index) => {
         weapon.damageType?.forEach((type) => {
-            if (strongTypes[sortedDefenses[0].type as keyof typeof strongTypes].includes(type)) {
+            if (STRONG_TYPES[sortedDefenses[0].type as keyof typeof STRONG_TYPES].includes(type)) {
                 computerTypes[index as keyof typeof computerTypes].push({ type, rank: 1 });
-            } else if (strongTypes[sortedDefenses[1].type as keyof typeof strongTypes].includes(type)) {
+            } else if (STRONG_TYPES[sortedDefenses[1].type as keyof typeof STRONG_TYPES].includes(type)) {
                 computerTypes[index].push({ type, rank: 2 });
-            } else if (strongTypes[sortedDefenses[2].type  as keyof typeof strongTypes].includes(type)) {
+            } else if (STRONG_TYPES[sortedDefenses[2].type  as keyof typeof STRONG_TYPES].includes(type)) {
                 computerTypes[index].push({ type, rank: 3 });
-            } else if (strongTypes[sortedDefenses[3].type  as keyof typeof strongTypes].includes(type)) {
+            } else if (STRONG_TYPES[sortedDefenses[3].type  as keyof typeof STRONG_TYPES].includes(type)) {
                 computerTypes[index].push({ type, rank: 4 });
             };
         });      
@@ -1940,17 +1913,13 @@ function weaponActionSplitter(combat: Combat): Combat {
         };
     };
     faithCompiler(cleanData);
-    
     if (cleanData.playerWin === true) cleanData.computerDeathDescription = `${cleanData.computer.name} has been defeated.`;
     if (cleanData.computerWin === true) cleanData.playerDeathDescription = `You have been defeated.`;
-    
     cleanData.action = '';
     cleanData.computerAction = '';
     cleanData.combatRound += 1;
     cleanData.sessionRound += 1;
-    
     if (cleanData.playerWin === true || cleanData.computerWin === true) statusEffectCheck(cleanData);
-
     changes = {
         ...changes,
         'action': cleanData.action,
@@ -2002,7 +1971,6 @@ function weaponActionSplitter(combat: Combat): Combat {
         'astrication': cleanData.astrication,
         'berserk': cleanData.berserk,
         'conviction': cleanData.conviction,
-        
     };
     return changes;
 };
@@ -2113,12 +2081,12 @@ function newDataCompiler(combat: Combat): any {
         isAggressive: combat.isAggressive,
         startedAggressive: combat.startedAggressive,
         isStealth: combat.isStealth,
+        isSeering: combat.isSeering,
         persuasionScenario: combat.persuasionScenario,
         luckoutScenario: combat.luckoutScenario,
         playerTrait: combat.playerTrait,
         soundEffects: combat.soundEffects,
         blindStrike: combat.blindStrike,
-        isSeering: combat.isSeering,
         astrication: combat.astrication,
         berserk: combat.berserk,
         conviction: combat.conviction,

@@ -3,16 +3,12 @@ import Phaser from "phaser";
 export const FRAME_COUNT = {
     ATTACK_LIVE: 16,
     ATTACK_SUCCESS: 39,
-    
     PARRY_LIVE: 5, 
     PARRY_SUCCESS: 10,
-
     POSTURE_LIVE: 16, // 11 for frameRate: 12
     POSTURE_SUCCESS: 17, // 11 for frameRate: 12
-    
     ROLL_LIVE: 10,
     ROLL_SUCCESS: 20,
-    
     DISTANCE_CLEAR: 51,
 }; 
 

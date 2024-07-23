@@ -428,14 +428,10 @@ export default function PhaserGame (props: IProps) {
         const newStats = recordCombat(stat);
         const newReputation = recordCombatReputation(record.computer as Ascean);
         const newSkills = recordSkills(record.skillData);
-        
-        let silver: number = experience.currency.silver, gold: number = experience.currency.gold, 
-            exp: number = experience.opponentExp, firewater = { ...props.ascean().firewater };
-
+        let silver: number = experience.currency.silver, gold: number = experience.currency.gold, exp: number = experience.opponentExp, firewater = { ...props.ascean().firewater };
         let computerLevel: number = experience.opponent;
-        if (experience.avarice) exp *= 1.2;
+        if (experience.avarice === true) exp *= 1.2;
         let health = experience.currentHealth > props.ascean().health.max ? props.ascean().health.max : experience.currentHealth;
-
         if (computerLevel === 1) {
             silver = Math.floor(Math.random() * 2) + 1;
             gold = 0;
@@ -444,28 +440,18 @@ export default function PhaserGame (props: IProps) {
             gold = 0;
         } else if (computerLevel > 10 && computerLevel <= 20) {
             if (computerLevel <= 15) {
-                if (Math.random() >= 0.5) {
-                    silver = Math.floor(Math.random() * 10) + 1;
-                    gold = 1;
-                } else {
-                    silver = Math.floor(Math.random() * 10) + 35;
-                    gold = 0;
-                };
+                if (Math.random() >= 0.5) { silver = Math.floor(Math.random() * 10) + 1; gold = 1; } else { silver = Math.floor(Math.random() * 10) + 35; gold = 0; };
             };
         };
-
         silver += experience.currency.silver;
         gold += experience.currency.gold;
-
         let currency = rebalanceCurrency({ silver, gold });
-
         if (props.ascean().firewater.current < 5 && props.ascean().level <= experience.opponent) {
             firewater = {
                 current: props.ascean().firewater.current + 1,
                 max: props.ascean().firewater.max
             };
         };
-        
         setCombat({
             ...combat(),
             ...record,
@@ -491,7 +477,6 @@ export default function PhaserGame (props: IProps) {
             playerWin: false,
             computerWin: false,
         });
-
         const update = { 
             ...props.ascean(), 
             skills: newSkills,
@@ -525,25 +510,23 @@ export default function PhaserGame (props: IProps) {
         EventBus.emit('update-reputation', newReputation);
     };
 
-    function checkDeificInteractions(ascean: Ascean) {
-        return ascean.interactions.deity <= ascean.level - 1 // <=
-            && ascean.level === 2 
-            && ascean.level * 750 <= ascean.experience;
+    function checkDeificInteractions(ascean: Ascean): boolean {
+        return ascean.interactions.deity <= ascean.level - 1 && ascean.level === 2  && ascean.level * 750 <= ascean.experience;
     };
 
     async function swapEquipment(e: { type: string; item: Equipment }) {
-        const { type, item } = e;
+        const {type,item} = e;
         const oldEquipment = props.ascean()[type as keyof Ascean] as Equipment;
         const newEquipment = item;
-        let newAscean = { ...props.ascean(), [type]: newEquipment };
-        let inventory = [ ...game().inventory ];
+        let newAscean = {...props.ascean(),[type]:newEquipment};
+        let inventory = [...game().inventory];
         inventory = inventory.filter((inv) => inv._id !== newEquipment._id);
         if (!oldEquipment.name.includes('Empty') && !oldEquipment.name.includes('Starter')) {
             inventory.push(oldEquipment);
         } else {
             await deleteEquipment(oldEquipment?._id as string);
         };
-        newAscean = { ...newAscean, inventory: inventory };
+        newAscean = {...newAscean,inventory:inventory};
         EventBus.emit('equip-sound');
         EventBus.emit('speed', newAscean);
         EventBus.emit('update-ascean', newAscean);
@@ -571,33 +554,21 @@ export default function PhaserGame (props: IProps) {
         EventBus.emit('update-total-stamina', stats.attributes.stamina as number);    
     };
 
-    function requestCombat(): void {
-        try {
-            EventBus.emit('request-combat-ready', combat());
-        } catch (err: any) {
-            console.warn(err, 'Error Requesting Combat');
-        };
-    };
-
     async function upgradeItem(data: any): Promise<void> {
         try {
             const item: Equipment[] = await upgradeEquipment(data) as Equipment[];
-
             let itemsToRemove = data.upgradeMatches;
             if (itemsToRemove.length > 3) {
                 itemsToRemove = itemsToRemove.slice(0, 3);
             };
             const itemsIdsToRemove = itemsToRemove.map((itr: Equipment) => itr._id);
-
             let inventory: Equipment[] = game().inventory?.length > 0 ? [ ...game().inventory ] : [];
             inventory.push(item[0]);
-
             itemsIdsToRemove.forEach(async (itemID: string) => {
                 const itemIndex = inventory.findIndex((item: Equipment) => item._id === itemID);
                 inventory.splice(itemIndex, 1);
                 await deleteEquipment(itemID);
             });
-
             let gold = 0;
             if (item?.[0].rarity === 'Uncommon') {
                 gold = 1;
@@ -608,9 +579,7 @@ export default function PhaserGame (props: IProps) {
             } else if (item?.[0].rarity === 'Legendary') {
                 gold = 60;
             };
-
             const update = { ...props.ascean(), inventory: inventory, currency: { ...props.ascean().currency, gold: props.ascean().currency.gold - gold } };
-
             setGame({ ...game(), inventory: inventory });
             setCombat({
                 ...combat(),
@@ -654,12 +623,12 @@ export default function PhaserGame (props: IProps) {
         EventBus.emit('update-total-stamina', res?.attributes.stamina as number);    
     };
 
-    function bootTutorial() {
+    function bootTutorial(): void {
         setTutorial('boot');
         setShowTutorial(true);
     };
 
-    function enterGame() {
+    function enterGame(): void {
         if (!props.ascean().tutorial.intro) EventBus.emit('intro');
         setLive(!live());
     };
@@ -676,7 +645,6 @@ export default function PhaserGame (props: IProps) {
                 props.currentActiveScene(sceneInstance);
                 setInstance("scene", sceneInstance);
             };
-
             if (props.ref) {
                 props.ref({ game: gameInstance, scene: sceneInstance });
             };
@@ -750,13 +718,10 @@ export default function PhaserGame (props: IProps) {
         });
         EventBus.on('fetch-enemy', fetchEnemy);
         EventBus.on('fetch-npc', fetchNpc);
-        EventBus.on('request-ascean', () => {
-            EventBus.emit('ascean', props.ascean());
-        });
-        EventBus.on('request-combat', requestCombat);
+        EventBus.on('request-ascean', () => EventBus.emit('ascean', props.ascean()));
+        EventBus.on('request-combat', () => EventBus.emit('request-combat-ready', combat()));
         EventBus.on('request-game', () => EventBus.emit('game', game()));
         EventBus.on('setup-enemy', (e: any) => {
-            // console.log(combat().combatEngaged, combat().combatTimer);
             setCombat({
                 ...combat(),
                 computer: e.game,
@@ -851,7 +816,7 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('clear-loot', () => setGame({ ...game(), lootDrops: [], showLoot: false, showLootIds: [] }));
         EventBus.on('enemy-loot', (e: { enemyID: string; level: number }) => lootDrop(e));
         EventBus.on('interacting-loot', (e: { interacting: boolean; loot: string }) => {
-            if (e.interacting) {
+            if (e.interacting === true) {
                 setGame({ ...game(), showLootIds: [...game().showLootIds, e.loot], lootTag: true });
             } else {
                 const updatedShowLootIds = game().showLootIds.filter((id) => id !== e.loot);
@@ -1000,9 +965,7 @@ export default function PhaserGame (props: IProps) {
             setCombat({ ...combat(), playerTrait: persuasion, enemyPersuaded: persuaded, persuasionScenario: true });   
         }); 
         EventBus.on('record-loss', (e: Combat) => recordLoss(e));
-        EventBus.on('record-win', (e: { record: Combat; experience: LevelSheet }) => {
-            recordWin(e.record, e.experience);
-        });
+        EventBus.on('record-win', (e: { record: Combat; experience: LevelSheet }) => recordWin(e.record, e.experience));
         EventBus.on('save-health', saveHealth);
 
         onCleanup(() => {
@@ -1058,7 +1021,6 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener('set-equipper');
             EventBus.removeListener('setup-enemy');  
             EventBus.removeListener('setup-npc');
-            // EventBus.removeListener('show-combat-logs');
             EventBus.removeListener('show-combat');
             EventBus.removeListener('show-deity');
             EventBus.removeListener('show-dialogue');
@@ -1068,7 +1030,6 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener('toggle-pause');
             EventBus.removeListener('update-combat-state');
             EventBus.removeListener('update-combat-timer');
-            // EventBus.removeListener('update-combat');
             EventBus.removeListener('update-health');
             EventBus.removeListener('update-lootdrops');
             EventBus.removeListener('update-caerenic');

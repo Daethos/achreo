@@ -42,9 +42,8 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
         stealth: false,
         phaser: false,
     });
-    const [combatHistory, setCombatHistory] = createSignal<any>(undefined);
+    const [combatHistory, setCombatHistory] = createSignal<any>("");
     const dimensions = useResizeListener(); 
-    
     createMemo(() => {
         if (ascean()?.experience as number > experience()) {
             setToastShow(true);

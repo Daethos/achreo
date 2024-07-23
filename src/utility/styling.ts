@@ -95,6 +95,25 @@ const getShadowColor = (prayer: string): string => {
     };
 };
 
+const masteryNumber = (mastery: string): number => {
+    switch (mastery) {
+        case 'constitution':
+            return 0xfdf6d8;
+        case 'strength':
+            return 0xff0000;
+        case 'agility':
+            return 0x00ff00;
+        case 'achre':
+            return 0x0000ff;
+        case 'caeren':
+            return 0x800080;
+        case 'kyosir':
+            return 0xffd700;
+        default:
+            return 0xfdf6d9;
+    };
+};
+
 const masteryColor = (mastery: string): string => {
     switch (mastery) {
         case 'constitution':
@@ -156,4 +175,4 @@ const sellRarity = (rarity: string): string => {
     };
 };
 
-export { COLORS, NUMBERS, getRarityColor, getShadowColor, borderColor, itemStyle, masteryColor, border, font, shadow, sellRarity };
+export { COLORS, NUMBERS, getRarityColor, getShadowColor, borderColor, itemStyle, masteryColor, masteryNumber, border, font, shadow, sellRarity };

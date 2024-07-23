@@ -8,8 +8,7 @@ const font = { 'font-size': '1em', margin: '0' };
 
 export default function AttributeModal({ attribute }: { attribute: any }) {
     const dimensions = useResizeListener();
-    return (
-        <div class="border superCenter" style={dimensions()?.ORIENTATION === 'landscape' ? { width: '50%', padding: '1%' } : { width: '75%' }}>
+    return <div class="border superCenter" style={dimensions()?.ORIENTATION === 'landscape' ? { width: '50%', padding: '1%' } : { width: '75%' }}>
         <div class="creature-heading wrap" style={{ 'text-wrap': 'balance' }}>
             <h1>{attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)}</h1>
             <br />
@@ -24,8 +23,7 @@ export default function AttributeModal({ attribute }: { attribute: any }) {
             <p class="gold" style={font}>{attribute.gameplay}</p>
             <br />
         </div>
-        </div>            
-    );
+    </div>;
 };
 
 export function AttributeCompiler({ ascean, setAttribute, show, setShow }: { ascean: Accessor<Ascean>, setAttribute: Setter<any>, show: Accessor<boolean>, setShow: Setter<boolean> }) {

@@ -8,9 +8,7 @@ interface IProps {
 };
 export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
     const dimensions = useResizeListener();
-    const shortDescription = (desc: string): string => {
-        return desc.split(' ').slice(0, 3).join(' ') + (desc.length > 4 ? '...' : '');
-    };
+    const shortDescription = (desc: string): string => desc.split(' ').slice(0, 3).join(' ') + (desc.length > 4 ? '...' : '');
     const style = (m: Accessor<Menu>, d: Accessor<DIMS>) => {
         return {
             'height': d().ORIENTATION === 'landscape' ? 'auto' 

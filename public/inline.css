@@ -120,3 +120,4 @@
 .skill-bar {align-items:center;border: 0.1em solid gold;border-radius:0.25em;justify-content:center;margin-bottom:3%;text-align:center;}
 .skill-bar-text {color:#fdf6d8;font-weight: 700;margin:0 auto;position:absolute;text-shadow:#000 0.1em 0 0.5em;width:90%;z-index:1;}
 .skill-bar-fill {background-color:blue;height:4vh;overflow:hidden}
+.combatText {position:absolute;left:25vw;height:30vh;width:50vw;top:60vh;margin:auto 0;text-align:center;align-items:center;justify-content: center;overflow:scroll;scrollbar-width:none;background-color:#000;border:0.15em solid #ffc700;border-radius:0.25em;box-shadow:0 0 0.25em #ffc700;white-space:pre;}

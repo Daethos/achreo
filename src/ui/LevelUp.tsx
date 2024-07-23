@@ -19,15 +19,11 @@ const [show, setShow] = createSignal<boolean>(false);
         setShow(!show());
     };
 
-    return (
-        <Show when={show()} fallback={<button onClick={handleMastery} class='highlight' style={{ color: mastery.name === state().mastery ? 'gold' : '#fdf6d8' }}>
-            {mastery.name.charAt(0).toUpperCase() + mastery.name.slice(1)}</button>
-        }>
-            <div class="modal" onClick={handleShow}>
-                <AttributeModal attribute={mastery} />
-            </div>
-        </Show> 
-    );
+    return <Show when={show()} fallback={<button onClick={handleMastery} class='highlight' style={{ color: mastery.name === state().mastery ? 'gold' : '#fdf6d8' }}>{mastery.name.charAt(0).toUpperCase() + mastery.name.slice(1)}</button>}>
+        <div class="modal" onClick={handleShow}>
+            <AttributeModal attribute={mastery} />
+        </div>
+    </Show>;
 };
 
 interface Props {
@@ -48,19 +44,17 @@ const Faith = ({ faith, state }: { faith: any; state: Accessor<any>; }) => {
         });
         setShow(!show());
     };
-    return (
-        <Show when={show()} fallback={<button onClick={handleFaith} class='highlight' style={{ color: faith.worshipers === state().faith ? 'gold' : '#fdf6d8' }}>{faith.name}</button>}>
-            <div class='modal' onClick={handleShow}>
-            <div class="border verticalCenter" style={dimensions()?.ORIENTATION === 'landscape' ?{ position: 'absolute', left: '15%', width: '70%' } : { }}>
-            <div class="creature-heading border" style={{ 'text-wrap': 'balance' }}> 
-                <img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === 'landscape' ? '15%' : '', 'margin-top': '3%' }} />
-                <p class='gold small'>{faith.origin}</p>
-                <h2 class='gold'>{faith.quote}</h2>
-            </div>
-            </div>
-            </div>
-        </Show> 
-    );
+    return <Show when={show()} fallback={<button onClick={handleFaith} class='highlight' style={{ color: faith.worshipers === state().faith ? 'gold' : '#fdf6d8' }}>{faith.name}</button>}>
+        <div class='modal' onClick={handleShow}>
+        <div class="border verticalCenter" style={dimensions()?.ORIENTATION === 'landscape' ?{ position: 'absolute', left: '15%', width: '70%' } : { }}>
+        <div class="creature-heading border" style={{ 'text-wrap': 'balance' }}> 
+            <img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === 'landscape' ? '15%' : '', 'margin-top': '3%' }} />
+            <p class='gold small'>{faith.origin}</p>
+            <h2 class='gold'>{faith.quote}</h2>
+        </div>
+        </div>
+        </div>
+    </Show>;
 };
 
 export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
@@ -76,20 +70,14 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
         setPool(pool() + value);
     };
 
-    const ceiling = (): boolean => {
-        return pool() < 2;
-    };
-    const floor = (name: string): boolean => {
-        return (asceanState()?.[name as keyof typeof asceanState] as number + asceanState().ascean[name as keyof typeof asceanState]) > asceanState().ascean[name as keyof typeof asceanState];
-    };
-
+    const ceiling = (): boolean => pool() < 2;
+    const floor = (name: string): boolean => (asceanState()?.[name as keyof typeof asceanState] as number + asceanState().ascean[name as keyof typeof asceanState]) > asceanState().ascean[name as keyof typeof asceanState];
     function checkAscean(a: Accessor<Ascean>) {
         EventBus.emit('update-ascean-state', {
             ...asceanState(),
             ascean: ascean()
         });
     };
-
     function valueDiscrepancy(): boolean {
         return (ascean().constitution !== asceanState().ascean.constitution) 
             || (ascean().strength !== asceanState().ascean.strength) 
@@ -99,12 +87,7 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
             || (ascean().kyosir !== asceanState().ascean.kyosir);
     };
 
-    createMemo(() => {
-        if (valueDiscrepancy()) {
-            checkAscean(ascean);
-        };
-    }); 
-
+    createMemo(() => {if (valueDiscrepancy()) checkAscean(ascean);}); 
     onMount(() => {
         EventBus.emit('update-ascean-state', {
             ...asceanState(),
@@ -118,46 +101,34 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
         const asceanStateAttributeTotal = asceanState().strength + asceanState().agility + asceanState().constitution + asceanState().achre + asceanState().caeren + asceanState().kyosir;
         setPool(asceanStateAttributeTotal);
     });
-
     const levelUp = (state: Accessor<any>) => {
-        console.log('level up', state())
         EventBus.emit('level-up', state);
         setShow(false);
     };
-    
-    return (
-        <div class='modal' style={{ 'z-index': 5 }}>
-            <div class='stat-block superCenter' style={{ width: '100%', background: 'rgba(0, 0, 0, 0.9' }}>
-                <div class='left center' style={{ height: '80%', width: '48%',  top: '10%',display: 'inline-block', border: '0.15em solid #fdf6d8' }}>
-                    <h3 class='gold wrap' style={{ 'margin': '5%' }}>Congratulations {asceanState().ascean.name}, You Can Now Level Up To {asceanState().ascean.level + 1}</h3>
-                    <p class='gold wrap' style={{ 'margin-bottom': '3%' }}>
-                        You may change your faith at this time.
-                    </p>
-                    <div>
-                        <For each={FAITHS}>
-                            {(faith) => (
-                                <Faith faith={faith} state={asceanState} />
-                            )}
-                        </For>
-                    </div>
-                    <div class='gold wrap' style={{ 'margin': '3%' }}>
-                        You may also change your focus of mastery at this time.
-                    </div>
-                    <div>
-                        <For each={Attributes}>
-                            {(mastery) => (
-                                <Mastery mastery={mastery} state={asceanState} />
-                            )}
-                        </For>
-                    </div>      
+    return <div class='modal' style={{ 'z-index': 5 }}>
+        <div class='stat-block superCenter' style={{ width: '100%', background: 'rgba(0, 0, 0, 0.9' }}>
+            <div class='left center' style={{ height: '80%', width: '48%',  top: '10%',display: 'inline-block', border: '0.15em solid #fdf6d8' }}>
+                <h3 class='gold wrap' style={{ 'margin': '5%' }}>Congratulations {asceanState().ascean.name}, You Can Now Level Up To {asceanState().ascean.level + 1}</h3>
+                <p class='gold wrap' style={{ 'margin-bottom': '3%' }}>You may change your faith at this time.</p>
+                <div>
+                    <For each={FAITHS}>
+                        {(faith) => (
+                            <Faith faith={faith} state={asceanState} />
+                        )}
+                    </For>
                 </div>
-                    
-                <div class='right center' style={{ height: '80%', width: '48%', top: '10%', display: 'inline-block', border: '0.15em solid #fdf6d8' }}>
-                <div class='' style={{ width: 'auto' }}>
-                <p class='gold'>
-                    You will gain 2 attribute points <br />
-                    Would you like to allocate them now?
-                    </p>
+                <div class='gold wrap' style={{ 'margin': '3%' }}>You may also change your focus of mastery at this time.</div>
+                <div>
+                    <For each={Attributes}>
+                        {(mastery) => (
+                            <Mastery mastery={mastery} state={asceanState} />
+                        )}
+                    </For>
+                </div>      
+            </div>
+            <div class='right center' style={{ height: '80%', width: '48%', top: '10%', display: 'inline-block', border: '0.15em solid #fdf6d8' }}>
+            <div class='' style={{ width: 'auto' }}>
+                <p class='gold'>You will gain 2 attribute points <br />Would you like to allocate them now?</p>
                 <h3 class='gold' style={{ 'margin-bottom' : '5%' }}>Attribute Pool: {pool()} / 2</h3>
                 <For each={Attributes}>
                     {(attribute) => (
@@ -171,13 +142,12 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
                         </InputGroup>
                     )}
                 </For>
-                </div>
-                </div>
-                <Show when={pool() === 2}>
-                    <button class='highlight cornerTL animate' style={{ 'background-color': 'gold', color: '#000', 'font-weight': 700 }} onClick={() => levelUp(asceanState)}>Level Up</button>
-                </Show>
             </div>
-                <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setShow(!show())}>X</button>
+            </div>
+            <Show when={pool() === 2}>
+                <button class='highlight cornerTL animate' style={{ 'background-color': 'green', color: '#000', 'font-weight': 700 }} onClick={() => levelUp(asceanState)}>Level Up</button>
+            </Show>
         </div>
-    );
+        <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setShow(!show())}>X</button>
+    </div>;
 };

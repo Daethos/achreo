@@ -9,6 +9,7 @@ import CastingBar from "../phaser/CastingBar";
 import { PLAYER } from "../utility/player";
 import AoE from "../phaser/AoE";
 import Bubble from "../phaser/Bubble";
+import Beam from "../matter/Beam";
 
 const DURATION = {
     CONSUMED: 2000,
@@ -460,6 +461,7 @@ export default class Player extends Entity {
         this.setFixedRotation();   
         this.checkEnemyCollision(playerSensor);
         this.checkWorldCollision(playerSensor);
+        this.beam = new Beam(this);
     };   
 
     getAscean = () => {
@@ -2007,6 +2009,7 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Devouring', PLAYER.DURATIONS.DEVOUR / 2, 'damage');
         this.castbar.setTotal(PLAYER.DURATIONS.DEVOUR);
         this.castbar.setTime(PLAYER.DURATIONS.DEVOUR);
+        this.beam.createEmitter(this.currentTarget);
         this.devourTimer = this.scene.time.addEvent({
             delay: 250,
             callback: () => this.devour(),
@@ -2027,10 +2030,13 @@ export default class Player extends Entity {
     };
     onDevourUpdate = (dt) => {
         this.combatChecker(this.isCasting);
-        if (this.isCasting === true) this.castbar.update(dt, 'channel', 0xA700FF);
+        if (this.isCasting === true) {
+            this.castbar.update(dt, 'channel', 0xA700FF);
+        };
     };
     onDevourExit = () => {
         this.castbar.reset(); 
+        this.beam.reset();
         this.spellTarget = '';
         this.setStatic(false);
         if (this.devourTimer !== undefined) {

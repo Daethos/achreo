@@ -1,10 +1,11 @@
+// @ts-ignore
+import PseudoBase from './pseudo';
 import { Weapons } from './weaponry';
 import { Amulets, Rings, Trinkets } from './jewelry';
 import { Helmets, Chests, Legs, Shields } from './equipment';
 import Settings from '../../models/settings';
 import Ascean from '../../models/ascean';
 import { Asceans } from './ascean';
-import PseudoBase from './pseudo';
 import Equipment, { getOneRandom } from '../../models/equipment';
 import { Reputation } from '../../utility/player';
 let db = new PseudoBase('db');

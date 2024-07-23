@@ -47,6 +47,7 @@ export const audio: { key: string, value: string }[] = [
 ];
 
 export const image: {key: string, value:string}[] = [
+    {key: 'beam', value: '../assets/gui/beam.png'},
     {key: 'cursor', value: '../assets/images/cursor.png'},
     {key: 'target', value: '../assets/gui/target_1.png'},
     {key: 'AncientForestMain', value: '../assets/gui/AncientForestMainLev.png'},

@@ -148,7 +148,7 @@ export default function Deity({ ascean, combat, game }: DeityProps) {
         <img style={deityBorder(ascean().mastery as string)} class={showDeity() === true ? 'fade-in' : 'fade-out'} src={ascean()?.faith === 'Adherent' ? '../assets/images/achreo-rising.jpg' : ascean()?.faith === 'Devoted' ? '../assets/images/daethos-forming.jpg' : '../assets/images/' + ascean().origin + '-' + ascean().sex + '.jpg'} alt={ascean().faith} id={'godBorder-'+ascean().mastery} />
         <div style={{ 
             position: 'absolute', height: '40%', width: '60%', left: '20%', background: 'rgba(0, 0, 0, 0.95)', top: '50%', 
-            border: '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', display: 'inline-flex', overflow: 'scroll' 
+            border: '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', display: 'inline-flex', overflow: 'scroll', 'scrollbar-width': 'none' 
         }}>
             <div class='wrap' style={{ width: '100%' }}>
             <br />

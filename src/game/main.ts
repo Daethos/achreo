@@ -12,7 +12,6 @@ import { Preloader } from './scenes/Preloader';
 import { useResizeListener } from '../utility/dimensions';
 import { Intro } from './scenes/Intro';
 import { Tent } from './scenes/Interior';
-
 const dimensions = useResizeListener();
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
@@ -25,13 +24,13 @@ const config: Phaser.Types.Core.GameConfig = {
     parent: 'game-container',
     backgroundColor: '#000',
     dom: {createContainer: true},
-    input: {activePointers: 3},
-    scene: [Boot, Preloader, MainMenu, MainGame, Intro, Tent],
+    input: {activePointers: 10},
+    scene: [Boot,Preloader,MainMenu,MainGame,Intro,Tent],
     physics: {
         default: 'matter',
         matter: {gravity: {x: 0, y: 0}} // debug: true,
     },
-    fps: { limit: 90, target: 60 },
+    fps: {limit:90,target:60},
     fullscreenTarget: 'base-ui',
     plugins: {
         global: [{
@@ -59,9 +58,7 @@ const config: Phaser.Types.Core.GameConfig = {
         }],
     }
 };
-
-const StartGame = (parent: string) => {
+const StartGame = (parent: string): Phaser.Game => {
     return new Phaser.Game({ ...config, parent });
 };
-
 export default StartGame;

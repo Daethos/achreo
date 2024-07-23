@@ -2,11 +2,7 @@ import Ascean from '../../models/ascean';
 import { Combat, initCombat } from '../../stores/combat';
 import { EventBus } from '../EventBus';
 import { Cameras, GameObjects, Scene, Tilemaps, Time } from 'phaser';
-import Player from '../../entities/Player';
-import Enemy from '../../entities/Enemy';
-import NPC from '../../entities/NPC';
 import NewText from '../../phaser/NewText';
-import ParticleManager from '../../phaser/ParticleManager';
 import LootDrop from '../../matter/LootDrop';
 import CombatMachine from '../../phaser/CombatMachine';
 import ActionButtons from '../../phaser/ActionButtons';
@@ -19,6 +15,15 @@ import Joystick from '../../phaser/Joystick';
 import SmallHud from '../../phaser/SmallHud';
 import { useResizeListener } from '../../utility/dimensions';
 import { Reputation, initReputation } from '../../utility/player';
+// @ts-ignore
+import Player from '../../entities/Player';
+// @ts-ignore
+import Enemy from '../../entities/Enemy';
+// @ts-ignore
+import NPC from '../../entities/NPC';
+// @ts-ignore
+import ParticleManager from '../../phaser/ParticleManager';
+// @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 
 const dimensions = useResizeListener();
@@ -73,6 +78,7 @@ export class Game extends Scene {
     volumeEvent: () => void;
     matterCollision: any;
     smallHud: SmallHud;
+    beam: any;
 
     constructor () {
         super('Game');

@@ -1501,7 +1501,6 @@ export default class Player extends Entity {
         this.combatChecker(this.isCasting);
         if (this.isCasting === true) {
             this.castbar.update(dt, 'channel', 0xA700FF);
-            // this.beam.update();
         };
     };
     onDevourExit = () => {
@@ -1721,10 +1720,7 @@ export default class Player extends Entity {
     };
     onKyrnaicismUpdate = (dt) => {
         this.combatChecker(this.isCasting);
-        if (this.isCasting) {
-            this.castbar.update(dt, 'channel', 0xA700FF);
-            // this.beam.update();
-        };
+        if (this.isCasting) this.castbar.update(dt, 'channel', 0xA700FF);
     };
     onKyrnaicismExit = () => {
         this.castbar.reset();
@@ -1895,6 +1891,7 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Rooting', PLAYER.DURATIONS.ROOTING / 2, 'cast');
         if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true);
         this.castbar.setVisible(true);
+        this.beam.createEmitter(this.currentTarget, PLAYER.DURATIONS.ROOTING);
     };
     onRootingUpdate = (dt) => {
         if (this.isMoving === true) this.isCasting = false;
@@ -1917,6 +1914,7 @@ export default class Player extends Entity {
         };
         this.spellTarget = '';
         this.castbar.reset();
+        this.beam.reset();
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false);
     };
 
@@ -1996,6 +1994,7 @@ export default class Player extends Entity {
         this.spellTarget = this.currentTarget.enemyID;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snaring', PLAYER.DURATIONS.SNARE, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.SNARE);
+        this.beam.createEmitter(this.currentTarget, PLAYER.DURATIONS.SNARE);
         this.isCasting = true;
         if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true);
         this.castbar.setVisible(true); 
@@ -2022,6 +2021,7 @@ export default class Player extends Entity {
         };
         this.spellTarget = '';
         this.castbar.reset();
+        this.beam.reset();
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false);
     };
 

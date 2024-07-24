@@ -1830,7 +1830,7 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphing', PLAYER.DURATIONS.POLYMORPH / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.POLYMORPH);
         this.isCasting = true;
-        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+        if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true);
         this.castbar.setVisible(true);  
     };
     onPolymorphingUpdate = (dt) => {

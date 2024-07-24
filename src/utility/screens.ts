@@ -67,7 +67,6 @@ export type Menu = {
     choosingCharacter: boolean,
     creatingCharacter: boolean,
     gameRunning: boolean,
-    loaded: boolean,
     loading: boolean,
     screen: string,
     deleteModal: boolean,
@@ -80,8 +79,7 @@ export const initMenu: Menu = {
     choosingCharacter: false,   
     creatingCharacter: false,
     gameRunning: false,
-    loaded: true, // false
-    loading: false, // true
+    loading: true, // true
     screen: SCREENS.CHARACTER.KEY,
     deleteModal: false,
     playModal: false

@@ -320,6 +320,15 @@ export class Game extends Scene {
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
         EventBus.on('settings', (settings: Settings) => {
             this.settings = settings;
+            if (settings.desktop === true) {
+                this.joystick?.joystick?.setVisible(false);
+                this.rightJoystick?.joystick?.setVisible(false);
+                this.actionBar?.setVisible(false);
+            } else {
+                this.joystick?.joystick?.setVisible(true);
+                this.rightJoystick?.joystick?.setVisible(true);
+                this.actionBar?.setVisible(true);
+            };
         });    
         EventBus.on('enemyLootDrop', (drops: any) => {
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
@@ -860,7 +869,7 @@ export class Game extends Scene {
             enemy.isStunned = true;
         };
     };
-    tendril = (id: string): void => {
+    tendril = (id: string, _enemyID: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {

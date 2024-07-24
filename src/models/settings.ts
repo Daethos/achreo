@@ -20,6 +20,7 @@ export default class Settings {
     public control: string;
     public creationLeft: string;
     public creationRight: string;
+    public desktop: boolean;
     public difficulty: { 
         aggression: number; 
         aim: boolean; 
@@ -138,6 +139,7 @@ export default class Settings {
         this.characterViews = 'Statistics';
         this.faithViews = 'Deities';
         this.control = 'Buttons';
+        this.desktop = false;
         this.difficulty = {
             aggression: 0.5,
             aim: false,

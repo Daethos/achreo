@@ -16,7 +16,6 @@ export interface Combat {
     newPlayerHealth: number;
     
     weapons: [Equipment | undefined, Equipment | undefined, Equipment | undefined];
-
     weaponOne: Equipment | undefined;
     weaponTwo: Equipment | undefined;
     weaponThree: Equipment | undefined;

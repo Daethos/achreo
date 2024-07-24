@@ -10,20 +10,25 @@ export default class NewText {
     public width: number;
     public height: number;
     
-    constructor(ctx: Phaser.Scene, x: number, y: number, string: string, style: string, origin: any) {
+    constructor(ctx: Phaser.Scene, x: number, y: number, string: string, style: string, origin: any, shadow: string = '') {
         this.ctx = ctx;
         this.x = x;
         this.y = y;
         this.text = string;
         this.code = style;
-        this.style = this.initStyle(style);
+        this.style = this.initStyle(style, shadow);
         this.origin = this.initOrigin(origin);
         this.obj = this.createText();
         this.width = this.obj.width;
         this.height = this.obj.height;
     };
 
-    initStyle(key: string) {
+    initStyle(key: string, shadow?: string) {
+        if (shadow === '') {
+            const masteries = ['#fdf6d8', 'red', 'green', 'blue', 'purple', 'gold'];
+            const index = Math.round(Math.random() * masteries.length);
+            shadow = masteries[index];
+        };
         let style = {
             fontFamily: 'Cinzel',
             fontSize: 28,
@@ -34,8 +39,8 @@ export default class NewText {
             shadow: {
                 offsetX: 2,
                 offsetY: 2,
-                color: '#000000',
-                blur: 2,
+                color: shadow,
+                blur: 5,
                 stroke: true,
                 fill: true
             },
@@ -66,6 +71,8 @@ export default class NewText {
                 style.strokeThickness = 1;
                 style.shadow.blur = 1;
                 style.wordWrap.width = 640;
+                break;
+            case 'clear':
                 break;
         };
         return style;

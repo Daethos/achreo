@@ -329,7 +329,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.clearTint();
         this.anims.play('player_hurt', true).on('animationcomplete', () => {
             this.isHurt = false;
-            this.setTint(0x000000);    
+            this.setTint(0xFF0000);    
         }); 
     };
 
@@ -519,7 +519,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
             if (this.frameCount === FRAME_COUNT.PARRY_SUCCESS) {
                 if (this.isRanged === false) this.checkActionSuccess(entity, target);
-                if (entity === 'enemy') this.setTint(0x000000);
+                if (entity === 'enemy') this.setTint(0xFF0000);
             };
             
             this.frameCount += 1; 
@@ -536,7 +536,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
             if (this.frameCount === (FRAME_COUNT.ROLL_SUCCESS - 2) && entity === 'enemy') {
                 this.checkActionSuccess(entity, target);
-                this.setTint(0x000000);
+                this.setTint(0xFF0000);
             };
             this.frameCount += 1;
         } else if (this.isAttacking) {
@@ -741,7 +741,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.frameCount === 39) {
                         this.spriteWeapon.setAngle(-170);
                         if (this.isRanged === false) this.checkActionSuccess(entity, target);
-                        if (entity === 'enemy') this.setTint(0x000000);
+                        if (entity === 'enemy') this.setTint(0xFF0000);
                     };
                     if (this.frameCount === 40) {
                         this.spriteWeapon.setAngle(-210);
@@ -804,7 +804,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.frameCount === 39) {
                         this.spriteWeapon.setAngle(90);
                         if (this.isRanged === false) this.checkActionSuccess(entity, target);
-                        if (entity === 'enemy') this.setTint(0x000000);
+                        if (entity === 'enemy') this.setTint(0xFF0000);
                     };
                     if (this.frameCount === 40) {
                         this.spriteWeapon.setAngle(120);
@@ -891,7 +891,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.spriteWeapon.setAngle(-250);
                         this.spriteShield.setOrigin(1, 0.15);
                         if (this.isRanged === false) this.checkActionSuccess(entity, target);
-                        if (entity === 'enemy') this.setTint(0x000000);
+                        if (entity === 'enemy') this.setTint(0xFF0000);
                     }; 
                 } else {
                     if (this.frameCount === 0) { // 0
@@ -923,7 +923,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.spriteWeapon.setAngle(-175);
                         this.spriteShield.setOrigin(0, 0.15);
                         if (this.isRanged === false) this.checkActionSuccess(entity, target);
-                        if (entity === 'enemy') this.setTint(0x000000);
+                        if (entity === 'enemy') this.setTint(0xFF0000);
                     };
                 };
             };

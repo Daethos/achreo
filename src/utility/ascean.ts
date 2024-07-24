@@ -246,7 +246,7 @@ const attributeCompiler = (ascean: Ascean, rarities: { helmet: number; chest: nu
     newAttributes.equipCaeren = newAttributes.totalCaeren - newAttributes.rawCaeren;
     newAttributes.equipKyosir = newAttributes.totalKyosir - newAttributes.rawKyosir;
 
-    newAttributes.healthTotal = 15 + ((newAttributes.totalConstitution * ascean.level) + ((newAttributes.constitutionMod + Math.round((newAttributes.caerenMod + newAttributes.strengthMod) / 2)) * ascean.level));
+    newAttributes.healthTotal = 40 + ((newAttributes.totalConstitution * ascean.level) + ((newAttributes.constitutionMod + Math.round((newAttributes.caerenMod + newAttributes.strengthMod) / 2)) * ascean.level));
     newAttributes.initiative = 10 + (newAttributes.agilityMod + newAttributes.achreMod);
     newAttributes.stamina = 100 + (newAttributes.constitutionMod + newAttributes.agilityMod + newAttributes.caerenMod);
     newAttributes.grace = (100 + (newAttributes.strengthMod + newAttributes.achreMod + newAttributes.kyosirMod)) * (ascean.origin === "Quor'eite" ? 1.1 : (ascean.origin === "Li'ivi" || ascean.origin === "Ashtre") ? 1.05 : 1); // Future Idea Maybe
@@ -358,8 +358,6 @@ function critCompiler(weapon: Equipment, attributes: CombatAttributes, combatSta
         weapon.criticalDamage += 
             (combatStats.criticalDamage / WEIGHTS.ATTRIBUTE_START) + (attributes.constitutionMod + attributes.caerenMod + (weapon.caeren / WEIGHTS.MODIFIER)) / 50;
     };
-    // weapon.criticalChance += combatStats.criticalChance + ((attributes.agilityMod + attributes.achreMod + ((weapon.agility + weapon.achre) / 2)) / 3);
-    // weapon.criticalDamage += (combatStats.criticalDamage / 10) + ((attributes.constitutionMod + attributes.strengthMod + attributes.caerenMod + ((weapon.strength + weapon.caeren) / 2)) / 50);
     weapon.criticalChance = Math.round(weapon.criticalChance * 100) / 100;
     weapon.criticalDamage = Math.round(weapon.criticalDamage * 100) / 100;
     return weapon;
@@ -474,7 +472,6 @@ const defenseCompiler = (ascean: any, attributes: CombatAttributes, combatStats:
 
 const coefficientCompiler = (ascean: Ascean, item: Equipment): number => {
     let coefficient = 0;
-    // console.log(item, 'Item')
     switch (item.rarity) {
         case 'Common':
             // coefficient = 1;
@@ -486,11 +483,9 @@ const coefficientCompiler = (ascean: Ascean, item: Equipment): number => {
             break;
         case 'Rare':
             coefficient = 1;
-            // coefficient = ascean.level / 12;
             break;
         case 'Epic':
             coefficient = 1;
-            // coefficient = ascean.level / 16;
             break;
         case 'Legendary':
             coefficient = 1;

@@ -49,6 +49,7 @@ export type ActionButton = {
     width: number;
     height: number;
     circle?: number;
+    isReady: boolean;
     on?: (event: string, fn: () => void, context?: any) => void;
 };
 
@@ -183,6 +184,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 y: buttonY,
                 height: this.buttonHeight,
                 width: this.buttonWidth,
+                isReady: true,
             };
 
             button.graphic.fillStyle(scene.settings.positions.actionButtons.color, scene.settings.positions.actionButtons.opacity);
@@ -227,6 +229,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 y: buttonY,
                 height: this.buttonHeight,
                 width: this.buttonWidth,
+                isReady: true
             };
 
             button.graphic.fillStyle(scene.settings.positions.specialButtons.color, scene.settings.positions.specialButtons.opacity);
@@ -676,7 +679,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         };
     };
 
-    private pressButton = (button: ActionButton, scene: any): void => {
+    public pressButton = (button: ActionButton, scene: any): void => {
         if (this.scene.scene.isActive('Game') === false) return;
         const input = button.name.toLowerCase();
         const check = staminaCheck(this.scene.player.stamina, PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA]);
@@ -693,9 +696,11 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 const progressPercentage = current / limit;
                 if (current / limit >= 1) {
                     button.graphic.fillCircle(button.x, button.y, this.buttonHeight * 1.25);
+                    button.isReady = true;    
                 } else {
                     button.graphic.fillCircle(button.x, button.y, this.buttonHeight * progressPercentage);
                     button.graphic.disableInteractive();
+                    button.isReady = false;    
                 };
                 button.current = progressPercentage * button.total;
             };
@@ -706,9 +711,11 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 const progressPercentage = current / limit;
                 if (current / limit >= 1) {
                     button.graphic.fillCircle(button.x, button.y, this.buttonHeight * 1.25 * 0.75);
+                    button.isReady = true;    
                 } else {
                     button.graphic.fillCircle(button.x, button.y, this.buttonHeight * progressPercentage * 0.75);
                     button.graphic.disableInteractive();
+                    button.isReady = false;    
                 };
                 button.current = progressPercentage * button.total;
             };

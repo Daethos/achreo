@@ -72,7 +72,7 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
 
     const ceiling = (): boolean => pool() < 2;
     const floor = (name: string): boolean => (asceanState()?.[name as keyof typeof asceanState] as number + asceanState().ascean[name as keyof typeof asceanState]) > asceanState().ascean[name as keyof typeof asceanState];
-    function checkAscean(a: Accessor<Ascean>) {
+    function checkAscean() {
         EventBus.emit('update-ascean-state', {
             ...asceanState(),
             ascean: ascean()
@@ -87,7 +87,7 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
             || (ascean().kyosir !== asceanState().ascean.kyosir);
     };
 
-    createMemo(() => {if (valueDiscrepancy()) checkAscean(ascean);}); 
+    createMemo(() => {if (valueDiscrepancy()) checkAscean();}); 
     onMount(() => {
         EventBus.emit('update-ascean-state', {
             ...asceanState(),

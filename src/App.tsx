@@ -41,12 +41,12 @@ export default function App() {
             try {
                 const res = await getAsceans();
                 if (!res.length) {
-                    setMenu({ ...menu(), loading: false, loaded: true, creatingCharacter: false });
+                    setMenu({ ...menu(), loading: false });
                     return;
                 };
                 const pop = await Promise.all(res.map(async (asc: Ascean) => await populate(asc)));
                 const hyd = pop.map((asc: Ascean) => asceanCompiler(asc)).map((asc: Compiler) => { return { ...asc.ascean, weaponOne: asc.combatWeaponOne, weaponTwo: asc.combatWeaponTwo, weaponThree: asc.combatWeaponThree }});
-                setMenu({ ...menu(), asceans: hyd, loading: false, loaded: true, creatingCharacter: false }); // choosingCharacter: true
+                setMenu({ ...menu(), asceans: hyd, loading: false }); // choosingCharacter: true
             } catch (err: any) {
                 console.warn('Error fetching Asceans:', err);
             };
@@ -55,16 +55,7 @@ export default function App() {
     };
     function menuOption(option: string): void {
         click.play();
-        switch (option) {
-            case 'createCharacter':
-                setMenu({ ...menu(), creatingCharacter: true });
-                break;
-            case 'chooseCharacter':
-                setMenu({ ...menu(), choosingCharacter: true });
-                break;
-            default:
-                break;
-        };
+        setMenu({ ...menu(), [option]: true });
     };
     async function createCharacter(character: CharacterSheet): Promise<void> {
         click.play();
@@ -216,9 +207,9 @@ export default function App() {
     };
     function enterMenu(): void {
         if (menu()?.asceans?.length > 0) {
-            setMenu({ ...menu(), choosingCharacter: true, loaded: true });
+            setMenu({ ...menu(), choosingCharacter: true});
         } else {
-            setMenu({ ...menu(), loaded: true });
+            setMenu({ ...menu()});
         };
     };
     function switchScene(next: string): void {
@@ -274,113 +265,109 @@ export default function App() {
         EventBus.emit('reorder-buttons', { list: settings().actions, type: 'action' });
         EventBus.emit('reorder-buttons', { list: settings().specials, type: 'special' });
     });
-    return (
-        <div id="app">
-            <Show when={startGame()} fallback={<>
-                {menu().creatingCharacter ? (
-                    <div id='overlay' class='superCenter'>
-                    <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION === 'landscape'}>
-                        <Suspense fallback={<Puff color="gold"/>}>
-                            <Preview newAscean={newAscean} />
-                        </Suspense>
-                    </Show>
-                    <Suspense fallback={<Puff color="gold"/>}>
-                        <AsceanBuilder newAscean={newAscean} setNewAscean={setNewAscean} menu={menu} />
-                    </Suspense>
-                    <Show when={dimensions().ORIENTATION === 'landscape'} fallback={<>
-                        { (SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV !== SCREENS.COMPLETE.KEY) && 
-                            <button class='highlight cornerBL' onClick={() => setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV)}>
-                                <div>Back ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV as keyof typeof SCREENS]?.TEXT})</div>
-                            </button>
-                        }
-                        { (SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT !== SCREENS.CHARACTER.KEY) && 
-                            <button class='highlight cornerBR' onClick={() => setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT)}>
-                                <div>Next ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT as keyof typeof SCREENS]?.TEXT})</div>
-                            </button>
-                        }
-                        { SCREENS[menu()?.screen as keyof typeof SCREENS]?.KEY === SCREENS.COMPLETE.KEY && 
-                            <button class='highlight cornerBR' onClick={() => createCharacter(newAscean())}>
-                                <div>Create {newAscean()?.name?.split(' ')[0]}</div>
-                            </button>
-                        }
-                        <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
-                            <div>Back (Menu)</div>
-                        </button>
-                    </>}>
-                        <>
-                            {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV !== LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                                <button class='highlight cornerBL' onClick={() => setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV)}>
-                                    <div>Back ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
-                                </button>
-                            }
-                            {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT !== LANDSCAPE_SCREENS.CHARACTER.KEY) && 
-                                <button class='highlight cornerBR' onClick={() => setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT)}>
-                                    <div>Next ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
-                                </button>
-                            }
-                            {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                                <button class='highlight cornerBR animate' onClick={() => createCharacter(newAscean())}>
-                                    <div>Create {newAscean()?.name?.split(' ')[0]}</div>
-                                </button>
-                            }
-                            <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
-                                <div>Back (Menu)</div>
-                            </button>
-                        </>
-                    </Show>
-                    </div>
-                ) : menu()?.choosingCharacter ? ( // menu().asceans.length > 0
-                    <div id="overlay" class='superCenter'>
-                        <Suspense fallback={<Puff color="gold"/>}>
-                            <MenuAscean menu={menu} viewAscean={viewAscean} loadAscean={loadAscean} />
-                        </Suspense>
-                        <Show when={menu()?.asceans?.length < 3}>
-                            <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'black' }}>Create Character</button>
-                        </Show>
-                    </div>
-                ) : ascean() ? (
-                    <>
-                        <Suspense fallback={<Puff color="gold"/>}>
-                            <AsceanView ascean={ascean} />
-                        </Suspense>
-                        <Show when={menu()?.asceans?.length > 0}>
-                            <button class='highlight cornerTL' onClick={() => setMenu({ ...menu(), choosingCharacter: true })} style={{ 'background-color': 'black' }}>Main Menu</button> 
-                        </Show>
-                        <Show when={menu()?.asceans?.length < 3}>
-                            <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'black' }}>Create Character</button>
-                        </Show>
-                        <Show when={menu().deleteModal}>
-                            <div class='modal' onClick={() => setMenu({ ...menu(), deleteModal: false })} style={{ background: 'rgba(0, 0, 0, 1)' }}>
-                                <button class='highlight superCenter' onClick={() => deleteCharacter(ascean()?._id)} style={{ color: 'red', margin: 0, padding: '1em', width: 'auto', 'font-size': '1.5em', 'font-weight': 700, 'border-radius': '0' }}>Permanently Delete {ascean()?.name}?</button>
-                                <div class='gold verticalBottom super' style={{ 'margin-bottom': '10%' }}>[This action is irreversible. You may click anywhere to cancel.]</div>
-                            </div>
-                        </Show> 
-                        <button class="highlight cornerBL" style={{ 'background-color': 'black' }} onClick={() => setMenu({ ...menu(), deleteModal: true })}>Delete {ascean()?.name.split(' ')[0]}</button>
-                        <button class='highlight cornerBR' style={{ 'background-color': 'black' }} onClick={() => loadAscean(ascean()?._id)}>Enter Game</button>
-                    </>
-                ) : ( 
-                    <Suspense fallback={<Puff color="gold"/>}>
-                    <div class="cornerTL super">The Ascean v0.0.1</div>
-                    <Show when={menu().loaded} fallback={<Puff color="gold"/>}>
-                    <div class='superCenter cinzel' style={{ width: '100%' }}>
-                        <div class='center'>
-                            <div class='title'>The Ascean</div>
-                            <button class='center highlight animate' style={{ 'font-size': '1.25em', 'font-family': 'Cinzel Regular' }} onClick={() => menuOption(menu().asceans.length > 0 ? 'chooseCharacter' : 'createCharacter')}>Enter Game</button>
-                        </div>
-                    </div>
-                    </Show>
-                    </Suspense>
-                )}
-            </>}>
-                <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} scene={scene} />
+    return <div id="app">
+        <Show when={startGame()} fallback={<>
+        {menu().creatingCharacter ? (
+            <div id='overlay' class='superCenter'>
+            <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION === 'landscape'}>
+                <Suspense fallback={<Puff color="gold"/>}>
+                    <Preview newAscean={newAscean} />
+                </Suspense>
             </Show>
-            <Show when={show()}>
             <Suspense fallback={<Puff color="gold"/>}>
-                <div class='cornerBL realize' style={{ width: '30%', 'z-index': 1 }}>
-                    <GameToast actions={actions} show={show} setShow={setShow} alert={alert} setAlert={setAlert as Setter<{ header: string; body: string; delay: number; key?: string; }>} />
-                </div>
+                <AsceanBuilder newAscean={newAscean} setNewAscean={setNewAscean} menu={menu} />
             </Suspense>
+            <Show when={dimensions().ORIENTATION === 'landscape'} fallback={<>
+                { (SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV !== SCREENS.COMPLETE.KEY) && 
+                    <button class='highlight cornerBL' onClick={() => setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV)}>
+                        <div>Back ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV as keyof typeof SCREENS]?.TEXT})</div>
+                    </button>
+                }
+                { (SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT !== SCREENS.CHARACTER.KEY) && 
+                    <button class='highlight cornerBR' onClick={() => setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT)}>
+                        <div>Next ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT as keyof typeof SCREENS]?.TEXT})</div>
+                    </button>
+                }
+                { SCREENS[menu()?.screen as keyof typeof SCREENS]?.KEY === SCREENS.COMPLETE.KEY && 
+                    <button class='highlight cornerBR' onClick={() => createCharacter(newAscean())}>
+                        <div>Create {newAscean()?.name?.split(' ')[0]}</div>
+                    </button>
+                }
+                <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
+                    <div>Back (Menu)</div>
+                </button>
+            </>}>
+                <>
+                    {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV !== LANDSCAPE_SCREENS.COMPLETE.KEY) && 
+                        <button class='highlight cornerBL' onClick={() => setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV)}>
+                            <div>Back ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
+                        </button>
+                    }
+                    {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT !== LANDSCAPE_SCREENS.CHARACTER.KEY) && 
+                        <button class='highlight cornerBR' onClick={() => setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT)}>
+                            <div>Next ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
+                        </button>
+                    }
+                    {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.COMPLETE.KEY) && 
+                        <button class='highlight cornerBR animate' onClick={() => createCharacter(newAscean())}>
+                            <div>Create {newAscean()?.name?.split(' ')[0]}</div>
+                        </button>
+                    }
+                    <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
+                        <div>Back (Menu)</div>
+                    </button>
+                </>
             </Show>
-        </div>
-    );
+            </div>
+        ) : menu()?.choosingCharacter ? ( // menu().asceans.length > 0
+            <div id="overlay" class='superCenter'>
+                <Suspense fallback={<Puff color="gold"/>}>
+                    <MenuAscean menu={menu} viewAscean={viewAscean} loadAscean={loadAscean} />
+                </Suspense>
+                <Show when={menu()?.asceans?.length < 3}>
+                    <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'black' }}>Create Character</button>
+                </Show>
+            </div>
+        ) : ascean() ? (
+            <>
+                <Suspense fallback={<Puff color="gold"/>}>
+                    <AsceanView ascean={ascean} />
+                </Suspense>
+                <Show when={menu()?.asceans?.length > 0}>
+                    <button class='highlight cornerTL' onClick={() => setMenu({ ...menu(), choosingCharacter: true })} style={{ 'background-color': 'black' }}>Main Menu</button> 
+                </Show>
+                <Show when={menu()?.asceans?.length < 3}>
+                    <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'black' }}>Create Character</button>
+                </Show>
+                <Show when={menu().deleteModal}>
+                    <div class='modal' onClick={() => setMenu({ ...menu(), deleteModal: false })} style={{ background: 'rgba(0, 0, 0, 1)' }}>
+                        <button class='highlight superCenter' onClick={() => deleteCharacter(ascean()?._id)} style={{ color: 'red', margin: 0, padding: '1em', width: 'auto', 'font-size': '1.5em', 'font-weight': 700, 'border-radius': '0' }}>Permanently Delete {ascean()?.name}?</button>
+                        <div class='gold verticalBottom super' style={{ 'margin-bottom': '10%' }}>[This action is irreversible. You may click anywhere to cancel.]</div>
+                    </div>
+                </Show> 
+                <button class="highlight cornerBL" style={{ 'background-color': 'black' }} onClick={() => setMenu({ ...menu(), deleteModal: true })}>Delete {ascean()?.name.split(' ')[0]}</button>
+                <button class='highlight cornerBR' style={{ 'background-color': 'black' }} onClick={() => loadAscean(ascean()?._id)}>Enter Game</button>
+            </>
+        ) : ( 
+            <Suspense fallback={<Puff color="gold"/>}>
+            <div class="cornerTL super">The Ascean v0.0.1</div>
+            <Show when={menu().loading === false} fallback={<Puff color="gold"/>}>
+            <div class='superCenter cinzel' style={{ width: '100%' }}>
+                <div class='center'>
+                    <div class='title'>The Ascean</div>
+                    <button class='center highlight animate' style={{ 'font-size': '1.25em', 'font-family': 'Cinzel Regular' }} onClick={() => menuOption(menu().asceans.length > 0 ? 'choosingCharacter' : 'creatingCharacter')}>Enter Game</button>
+                </div>
+            </div>
+            </Show>
+            </Suspense>
+        )}
+        </>}>
+            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} scene={scene} />
+        </Show>
+        <Show when={show()}>
+        <Suspense fallback={<Puff color="gold"/>}>
+            <GameToast actions={actions} show={show} setShow={setShow} alert={alert} setAlert={setAlert as Setter<{ header: string; body: string; delay: number; key?: string; }>} />
+        </Suspense>
+        </Show>
+    </div>;
 };

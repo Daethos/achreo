@@ -59,6 +59,7 @@ export default class NPC extends Entity {
         this.npcSensor = npcSensor;
         this.npcCollision(npcSensor); 
         this.setStatic(true);
+        this.setTint(0x0000FF);
     };
 
     cleanUp() {

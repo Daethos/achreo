@@ -202,20 +202,28 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
     const saveSettings = async (newSettings: Settings) => {
         try {
             await updateSettings(newSettings);
+            setSettings(newSettings);
         } catch (err) {
             console.warn(err, "Error Saving Game Settings");
         };
     };
 
+    const handleDesktop = async (desktop: boolean) => {
+        try {
+            const newSettings = { ...settings(), desktop };
+            await saveSettings(newSettings);
+        } catch (err) {
+            console.warn(err, 'Error Handling Desktop');
+        };
+    };
+
     const currentCharacterView = async (e: string) => {
         const newSettings: Settings = { ...settings(), characterViews: e };
-        setSettings(newSettings);
         await saveSettings(newSettings);
     };
 
     const currentFaithView = async (e: string) => {
         const newSettings: Settings = { ...settings(), faithViews: e };
-        setSettings(newSettings);
         await saveSettings(newSettings);
     };
 
@@ -431,7 +439,6 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
 
     async function currentControl(e: string) {
         const newSettings: Settings = { ...settings(), control: e };
-        setSettings(newSettings);
         await saveSettings(newSettings);
         if (e === CONTROLS.PHASER_UI) {
             EventBus.emit('show-castbar', true);
@@ -440,7 +447,6 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
 
     async function currentView(e: string) {
         const newSettings: Settings = { ...settings(), settingViews: e };
-        setSettings(newSettings);
         await saveSettings(newSettings);
     };
 
@@ -449,7 +455,6 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         if (nextView) {
             showExpandedCharacter(false);
             const newSettings: Settings = { ...settings(), asceanViews: nextView };
-            setSettings(newSettings);
             await saveSettings(newSettings);
         };
     }; 
@@ -467,28 +472,23 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
     async function handleActionButton(e: string, i: number) {
         const newActions = [...settings().actions];
         const newAction = e;
-        
         const oldAction = newActions[i];
         newActions[newActions.indexOf(newAction)] = oldAction;
         newActions[i] = newAction;
-        
         const newSettings: Settings = { ...settings(), actions: newActions };
         await saveSettings(newSettings);
-        setSettings(newSettings);
         EventBus.emit('reorder-buttons', { list: newActions, type: 'action' }); 
     };
 
     async function handleSpecialButton(e: string, i: number) {
         const newSpecials = [...settings().specials];
         const newSpecial = e;
-
         if (newSpecials.includes(newSpecial)) {
             const oldSpecial = newSpecials[i];
             newSpecials[newSpecials.indexOf(newSpecial)] = oldSpecial;
         };
         newSpecials[i] = newSpecial;
         const newSettings: Settings = { ...settings(), specials: newSpecials };
-        setSettings(newSettings);
         await saveSettings(newSettings);
         EventBus.emit('reorder-buttons', { list: newSpecials, type: 'special' }); 
     };
@@ -497,50 +497,42 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         EventBus.emit('update-postfx', { type, val });
         const newSettings = { ...settings(), postFx: { ...settings().postFx, [type]: val } };
         await saveSettings(newSettings);
-        setSettings(newSettings);
     };
 
     async function handleAim() {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, aim: !settings().difficulty.aim } };
-        setSettings(newSettings);
         await saveSettings(newSettings);
     };
 
     async function handleAggression(e: any) {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, aggression: e.target.value } };
-        setSettings(newSettings);
         await saveSettings(newSettings);
     };
 
     async function handleComputerCombat() {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, computer: !settings().difficulty.computer } };
-        setSettings(newSettings);
         await saveSettings(newSettings);
     };
  
     async function handleSpecial(e: any) {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, special: e.target.value } };
-        setSettings(newSettings);
         await saveSettings(newSettings);
     };
 
     async function handleMusic() {
         const newSettings = { ...settings(), music: !settings().music };
-        setSettings(newSettings);
         await saveSettings(newSettings);
         EventBus.emit('music', newSettings.music);
     };
 
     async function handleTidbits() {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, tidbits: !settings().difficulty.tidbits } };
-        setSettings(newSettings);
         await saveSettings(newSettings);
         EventBus.emit('set-tips', newSettings.difficulty.tidbits);
     };
 
     async function handleVolume(e: number) {
         const newSettings = { ...settings(), volume: e };
-        setSettings(newSettings);
         await saveSettings(newSettings);
         EventBus.emit('update-volume', e);
     };
@@ -955,6 +947,12 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                                     <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'Manual' : 'Auto'} Aim</button>
                                 </div>
                                 <div style={font('0.5em')}>[Whether You Use the Second Joystick to Aim Ranged Attacks in Combat]</div>
+
+                                <div style={font('1em', '#fdf6d8')}>
+                                    <h1 style={font('1.25em')}>Desktop</h1>
+                                    <button class='gold highlight' onClick={() => handleDesktop(!settings().desktop)}>{settings().desktop ? 'Enabled' : 'Disabled'}</button>
+                                </div>
+                                <div style={font('0.5em')}>[Desktop allows you to hide the button and joystick UI, and enable keyboard for actions.]</div>
 
                                 <div style={font('1em', '#fdf6d8')}>
                                     <h1 style={font('1.25em')}>Enemy Aggression</h1>

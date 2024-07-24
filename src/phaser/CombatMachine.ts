@@ -48,10 +48,10 @@ export default class CombatMachine {
     public cleanUp = () => EventBus.off('combat', this.listener);
     private listener = () => EventBus.on('combat', (e: Combat): Combat => (this.context = e));
     private process = (): void => {
-        if (this.context.computerWin === true) {
-            this.inputQueue = [];
-            this.actionQueue = [];
-        };
+        // if (this.context.computerWin === true) {
+        //     this.inputQueue = [];
+        //     this.actionQueue = [];
+        // };
         while (this.clearQueue.length > 0) {
             const clearId = this.clearQueue.shift()!;
             this.inputQueue = this.inputQueue.filter(({ id }) => id !== clearId);

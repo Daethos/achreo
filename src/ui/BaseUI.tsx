@@ -522,20 +522,17 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
 
-    return (
-        <div id='base-ui'>
-        <Show when={game().showPlayer} fallback={
-            <div style={{ position: "absolute", 'z-index': 1 }}>
+    return <div id='base-ui'>
+        <Show when={game().showPlayer} fallback={<div style={{ position: "absolute", 'z-index': 1 }}>
             <Suspense fallback={<Puff color="gold" />}>
                 <CombatUI state={combat} game={game} stamina={stamina} />
             </Suspense>
-                <Show when={combat().computer} fallback={<EnemyPreview enemies={enemies} fetchEnemy={fetchEnemy} />}>
-                <Suspense fallback={<Puff color="gold" />}>
-                    <EnemyUI state={combat} game={game} enemies={enemies} />
-                </Suspense>
-                </Show> 
-            </div>
-        }>
+            <Show when={combat().computer} fallback={<EnemyPreview enemies={enemies} fetchEnemy={fetchEnemy} />}>
+            <Suspense fallback={<Puff color="gold" />}>
+                <EnemyUI state={combat} game={game} enemies={enemies} />
+            </Suspense>
+            </Show> 
+        </div>}>
             <Suspense fallback={<Puff color="gold" />}>
                 <Character reputation={reputation} settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} game={game} combatState={combat} />
             </Suspense>
@@ -553,6 +550,5 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             <Deity ascean={ascean} combat={combat} game={game} />
         </Suspense>
         </Show>
-        </div>
-    );
+    </div>;
 };

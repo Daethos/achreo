@@ -99,7 +99,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                     this.timer = undefined;
                     this.destroy();    
                 } else {
-                    this.setCount(scene, type);
+                    this.setCount(scene, type, false);
                 };
             });
         };
@@ -122,7 +122,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                     this.timer = undefined;
                     this.destroy();
                 } else {
-                    this.setupEnemyCount(scene, type, positive);
+                    this.setupEnemyCount(scene, type, positive, enemy);
                 };
             });
         } else {
@@ -139,7 +139,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                     this.timer = undefined;
                     this.destroy();    
                 } else {
-                    this.setupEnemyCount(scene, type);
+                    this.setupEnemyCount(scene, type, false, enemy);
                 };
             });
         };

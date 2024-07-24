@@ -17,13 +17,17 @@ export class MainMenu extends Scene {
     };
 
     create () {
+        const masteries = ['#fdf6d8', 'red', 'green', 'blue', 'purple', 'gold'];
+        const index = Math.round(Math.random() * masteries.length);
+        const shadow = masteries[index];
         this.title = new NewText(
             this,
             this.centerX,
             this.centerY * 0.7,
             'The Ascean',
             'title',
-            0.5
+            0.5,
+            shadow
         );
         this.text = this.add.text(
             this.centerX, 
@@ -35,6 +39,14 @@ export class MainMenu extends Scene {
             color: '#fdf6d8',
             stroke: '#000000', 
             strokeThickness: 8,
+            shadow: {
+                offsetX: 2,
+                offsetY: 2,
+                color: shadow,
+                blur: 5,
+                stroke: true,
+                fill: true
+            },
             align: 'center'
         }).setOrigin(0.5).setDepth(100);
         this.text.setInteractive();

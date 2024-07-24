@@ -119,7 +119,7 @@ export default class Enemy extends Entity {
         this.scene.add.existing(this);
         this.enemyID = uuidv4();
         this.createEnemy();
-        this.setTint(0x000000);
+        this.setTint(0xFF0000);
         this.stateMachine = new StateMachine(this, 'enemy');
         this.stateMachine
             .addState(States.IDLE, {
@@ -488,6 +488,7 @@ export default class Enemy extends Entity {
         ), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
                 this.scene.setupEnemy(this);
+                this.clearTint();
                 this.setTint(0x00FF00);
                 const newEnemy = this.isNewEnemy(this.scene.player);
                 if (newEnemy) {
@@ -497,7 +498,8 @@ export default class Enemy extends Entity {
                 this.scene.player.setCurrentTarget(this);
             })
             .on('pointerout', () => {
-                this.setTint(0x000000);
+                this.clearTint();
+                this.setTint(0xFF0000);
             });
     };
 
@@ -574,7 +576,6 @@ export default class Enemy extends Entity {
             this.stateMachine.setState(States.DEFEATED);
             return;
         };
-
         if (this.health > e.newComputerHealth) { 
             let damage = Math.round(this.health - e.newComputerHealth);
             damage = e.criticalSuccess === true ? `${damage} (Critical)` : e.glancingBlow === true ? `${damage} (Glancing)` : damage;
@@ -602,12 +603,11 @@ export default class Enemy extends Entity {
         this.weapons = e.computerWeapons;
         this.setWeapon(e.computerWeapons[0]); 
         this.checkDamage(e.computerDamageType.toLowerCase()); 
-        
+        this.checkMeleeOrRanged(e.computerWeapons?.[0]);
+        this.currentRound = e.combatRound;
         if (e.newPlayerHealth <= 0 && e.computerWin === true) {
             this.clearCombatWin();
         };
-        this.checkMeleeOrRanged(e.computerWeapons?.[0]);
-        this.currentRound = e.combatRound;
     };
 
     computerCombatUpdate = (e) => {
@@ -809,12 +809,16 @@ export default class Enemy extends Entity {
     }; 
 
     clearCombatWin = () => {
-        if (!this.stateMachine.isCurrentState(States.LEASH)) this.stateMachine.setState(States.LEASH);
+        if (!this.stateMachine.isCurrentState(States.LEASH)) {
+            this.stateMachine.setState(States.LEASH);
+        };
         this.inCombat = false;
         this.setSpecialCombat(false);
         this.attacking = undefined;
         this.isTriumphant = true;
         this.isAggressive = false; // Added to see if that helps with post-combat losses for the player
+        this.health = this.ascean.health.max;
+        this.healthbar.setValue(this.ascean.health.max);    
     };
 
     createCombat = (collision, _when) => {
@@ -906,9 +910,7 @@ export default class Enemy extends Entity {
         this.hasMagic = this.checkDamageType(damage, 'magic');
     };
 
-    isSuffering = () => {
-        return this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed;
-    };
+    isSuffering = () => this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed;
     
     setStun = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', 2500, 'effect', true);
@@ -2172,7 +2174,7 @@ export default class Enemy extends Entity {
             clearStealth(this);
             clearStealth(this.spriteWeapon);
             clearStealth(this.spriteShield);
-            this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
+            this.setTint(0xFF0000);
         };
         this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
     };
@@ -2306,7 +2308,7 @@ export default class Enemy extends Entity {
         };
     };
     onCounterSpelledend = () => {
-        this.setTint(0x000000);
+        this.setTint(0xFF0000);
     };
 
     onFearEnter = () => { 
@@ -2410,7 +2412,7 @@ export default class Enemy extends Entity {
     };
     onFrozenExit = () => {
         this.clearTint();
-        this.setTint(0x000000);
+        this.setTint(0xFF0000);
         this.setStatic(false);
     };
 
@@ -2434,7 +2436,7 @@ export default class Enemy extends Entity {
     };
     onHurtExit = () => {
         this.isHurt = false;
-        this.setTint(0x000000);
+        this.setTint(0xFF0000);
     };
 
     onParalyzedEnter = () => {
@@ -2458,7 +2460,7 @@ export default class Enemy extends Entity {
         if (this.isParalyzed === false) this.evaluateCombatDistance(); // Wasn't if (!this.isStunned)
     };
     onParalyzedExit = () => {
-        this.setTint(0x000000)
+        this.setTint(0xFF0000)
         this.setStatic(false);
         this.anims.resume();
     };
@@ -2543,7 +2545,7 @@ export default class Enemy extends Entity {
         this.evaluateCombatDistance();
         this.clearAnimations();
         this.anims.play('player_running', true);
-        this.setTint(0x000000);
+        this.setTint(0xFF0000);
         this.spriteWeapon.setVisible(true);ScrollingCombatText
         if (this.polymorphTimer) {
             this.polymorphTimer.destroy();
@@ -2584,7 +2586,7 @@ export default class Enemy extends Entity {
         if (!this.isStunned) this.evaluateCombatDistance(); // Wasn't if (!this.isStunned)
     };
     onStunExit = () => { 
-        this.setTint(0x000000)
+        this.setTint(0xFF0000)
         this.setStatic(false);
         this.anims.resume();
     };
@@ -2615,7 +2617,7 @@ export default class Enemy extends Entity {
     };
     onRootExit = () => {  
         this.clearTint();
-        this.setTint(0x000000);
+        this.setTint(0xFF0000);
         this.setStatic(false);
     };
 
@@ -2632,7 +2634,7 @@ export default class Enemy extends Entity {
 
     onSlowExit = () => {
         this.clearTint();
-        this.setTint(0x000000);
+        this.setTint(0xFF0000);
         this.adjustSpeed(PLAYER.SPEED.SLOW);
     };
 
@@ -2649,7 +2651,7 @@ export default class Enemy extends Entity {
     // onSnareUpdate = (dt) => {};
     onSnareExit = () => { 
         this.clearTint();
-        this.setTint(0x000000);
+        this.setTint(0xFF0000);
         this.adjustSpeed(PLAYER.SPEED.SNARE);
     };
 

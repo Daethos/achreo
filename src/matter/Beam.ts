@@ -12,45 +12,118 @@ export default class Beam {
         this.target = undefined;    
         this.emitter = this.scene.add.particles(player.x, player.y, 'beam', {
             alpha: 0.25,
-            angle: {min: -5, max: 5},
-            blendMode: Phaser.BlendModes.ADD,
+            angle: {min:-2, max:2},
             color: [masteryNumber(player.ascean.mastery)],
-            frequency: 30,
-            lifespan: {min: 100, max: 300},
-            accelerationX: {min: 500, max: 1000},
-            accelerationY: {min: 500, max: 1000},
-            scale: {start: 0.0001, end: 0, ease: 'Quad.easeOut'},
-            speedX: {min: 25, max: 50},
-            speedY: {min: 25, max: 50},
-            reserve: 1000,
-            visible: false,
+            // frequency: 30,
+            // lifespan: 2000,
+            lifespan: {min:100, max:300},
+            accelerationX: {min:35, max:55},
+            accelerationY: {min:35, max:55},
+            scale: 0.1,
+            quantity: 100,
+            speedX: {min:35, max:55},
+            speedY: {min:35, max:55},
+            reserve: 100,
+            follow: this.player,
+            followOffset: { x: -265, y: -165 },
+            // emitZone: {
+            //     type: 'edge',
+            //     source: new Phaser.Geom.Line(this.player.x, this.player.y, this.player.x, this.player.y),
+            //     quantity: 100
+            // },
+            visible: false
         });
+        // this.emitter.setVisible(true);
     };
     
-    createEmitter = (target: any) => {
+    createEmitter = (target: any, time: number) => {
         this.target = target;
+        // this.emitter.setVisible(true);
+        // this.emitter.addEmitZone({
+        //     source: new Phaser.Geom.Line(this.player.x, this.player.y, target.x, target.y),
+        //     type: 'edge',
+        //     quantity: 100
+        // } as any);
+        // const world = this.scene.cameras.main.getWorldPoint(this.player.x, this.player.y);
+        // const targ = this.scene.cameras.main.getWorldPoint(target.x, target.y);
         this.emitter.setConfig({
-            visible: true,
-            quantity: 50,
-            x: this.player.x - 10,
-            y: this.player.y,
+            alpha: 0.25,
+            angle: {min:-2, max:2},
+            x: this.player.x - 265,
+            y: this.player.y - 165,
             color: [masteryNumber(this.player.ascean.mastery)],
-            moveToX: this.target.x,
-            moveToY: this.target.y,
-            scale: {start: 0.0001, end: 0, ease: 'Quad.easeOut'},
+            moveToX: target.x - 265,
+            moveToY: target.y - 165,
+            scale: 0.1, // {start: 0.0001, end: 0, ease: 'Quad.easeOut'},
+            frequency: 30,
+            quantity: 100,
+            lifespan: {min: 100, max: 300},
+            accelerationX: {min: 35, max: 55},
+            accelerationY: {min: 35, max: 55},
+            speedX: {min: 35, max: 55},
+            speedY: {min: 35, max: 55},
+            visible: true
+        });
+        this.scene.time.addEvent({
+            delay: time / 20,
+            callback: () => {
+                if (this.target) this.checkEmitter();
+            },
+            callbackScope: this,
+            repeat: 19
+        });
+    };
+
+    checkEmitter = () => {
+        this.emitter.setConfig({
+            alpha: 0.25,
+            angle: {min:-2, max:2},
+            x: this.player.x - 265,
+            y: this.player.y - 165,
+            color: [masteryNumber(this.player.ascean.mastery)],
+            moveToX: this.target.x - 265,
+            moveToY: this.target.y - 165,
+            scale: 0.1, // {start: 0.0001, end: 0, ease: 'Quad.easeOut'},
+            frequency: 30,
+            quantity: 100,
+            lifespan: {min: 100, max: 300},
+            accelerationX: {min: 35, max: 55},
+            accelerationY: {min: 35, max: 55},
+            speedX: {min: 35, max: 55},
+            speedY: {min: 35, max: 55},
+            visible: true
         });
     };
 
     reset = () => {
-        this.emitter.setConfig({
-            visible: false,
-            x: 0,
-            y: 0
-        });
+        this.emitter.setVisible(false);
         this.target = undefined;
     };
 
     update = () => {
-        
+        if (this.target) {
+            // this.emitter.setConfig({
+            //     alpha: 0.25,
+            //     x: this.player.x - 265,
+            //     y: this.player.y - 165,
+            //     color: [masteryNumber(this.player.ascean.mastery)],
+            //     moveToX: this.target.x - 265,
+            //     moveToY: this.target.y - 165,
+            //     scale: 0.1, // {start: 0.0001, end: 0, ease: 'Quad.easeOut'},
+            //     frequency: 30,
+            //     quantity: 100,
+            //     lifespan: {min: 100, max: 300},
+            //     accelerationX: {min: 35, max: 55},
+            //     accelerationY: {min: 35, max: 55},
+            //     speedX: {min: 35, max: 55},
+            //     speedY: {min: 35, max: 55},
+            //     visible: true
+            // });
+            // this.emitter.setEmitZone({
+            //     source: new Phaser.Geom.Line(this.player.x, this.player.y, this.target.x, this.target.y),
+            //     type: 'edge',
+            //     quantity: 100
+            // } as any); 
+        };
     };
 };

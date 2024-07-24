@@ -71,9 +71,12 @@ export class Preloader extends Scene {
     }; 
 
     createLoadingBar() {
-        this.title = new NewText(this, this.centerX, this.centerY / 2, 'Loading Game', 'subtitle', 0.5);
-        this.txt_progress = new NewText(this, this.centerX, this.centerY / 0.975, 'Loading...', 'preload', { x: 0.5, y: 1 });
-        this.txt_file = new NewText( this, this.centerX, this.centerY / 0.625, '', 'play', { x: 0.5, y: 1 });
+        const masteries = ['#fdf6d8', 'red', 'green', 'blue', 'purple', 'gold'];
+        const index = Math.round(Math.random() * masteries.length);
+        const shadow = masteries[index];
+        this.title = new NewText(this, this.centerX, this.centerY / 2, 'Loading Game', 'subtitle', 0.5, shadow);
+        this.txt_progress = new NewText(this, this.centerX, this.centerY / 0.975, 'Loading...', 'preload', { x: 0.5, y: 1 }, shadow);
+        this.txt_file = new NewText( this, this.centerX, this.centerY / 0.625, '', 'play', { x: 0.5, y: 1 }, shadow);
         let x = this.centerX - (this.width / 2);
         let y = this.centerY / 0.9;
         this.progress = this.add.graphics({ x: x, y: y });

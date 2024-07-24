@@ -121,3 +121,7 @@
 .skill-bar-text {color:#fdf6d8;font-weight: 700;margin:0 auto;position:absolute;text-shadow:#000 0.1em 0 0.5em;width:90%;z-index:1;}
 .skill-bar-fill {background-color:blue;height:4vh;overflow:hidden}
 .combatText {position:absolute;left:25vw;height:30vh;width:50vw;top:60vh;margin:auto 0;text-align:center;align-items:center;justify-content: center;overflow:scroll;scrollbar-width:none;background-color:#000;border:0.15em solid #ffc700;border-radius:0.25em;box-shadow:0 0 0.25em #ffc700;white-space:pre;}
+.toast {background-color: #000; padding: 0.5em; margin: 0.5em; border: 0.1em solid #ffc700; border-radius: 0.5em; box-shadow: 0 0 1em #ffc700;}
+.toastBody {color:#fdf6d8; font-size:0.75em; font-weight:500; margin: 0.75em;}
+.toastButton {font-size: 0.75em; margin-left: 50%; transform: translateX(-50%)}
+.toastHeader {color:gold; font-size:0.875em; font-weight:600; margin: 0.25em;}

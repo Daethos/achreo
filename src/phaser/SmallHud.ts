@@ -197,6 +197,12 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         });
     };
 
+    getButton = (key: string) => {
+        const bar = this.bar.find((b: any) => b.texture.key === key.toLowerCase());
+        const stance = this.stances.find((b: any) => b.texture.key === key.toLowerCase());
+        return bar || stance;    
+    };
+
     pressButton = (item: Phaser.GameObjects.Image) => {
         this.bar.forEach((button) => {
             if (button !== item) return;

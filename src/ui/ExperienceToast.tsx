@@ -1,28 +1,22 @@
 import { Toast } from 'solid-bootstrap'
 import { Accessor, Setter } from 'solid-js'
-
 interface Props {
     show: Accessor<boolean>;
     setShow: Setter<boolean>;
     alert: Accessor<{ header: string; body: string } | undefined>;
     setAlert: Setter<{ header: string; body: string } | undefined>;
 };
-
 export default function ExperienceToast({ show, setShow, alert, setAlert }: Props) {
     function close(): void {
         setShow(!show());
         setAlert(undefined)
     };
     const toast = {
-        'background-color': '#000',
-        padding: '0.5em',
-        margin: '0.5em',
-        border: '0.05em solid #00ff00',
-        'border-radius': '0.5em',
-        bottom: '0',
+        'border': '0.05em solid #0f0',
+        'box-shadow': '0 0 1em #0f0',
+        'bottom': '0',
     };
-    return (
-        <Toast onClose={() => close()} show={show()} delay={3000} autohide style={toast}>
+    return <Toast class='toast' onClose={() => close()} show={show()} delay={3000} autohide style={toast}>
         <p style={{ 'font-size': '0.875em', margin: '0.25em' }}>
             <strong class="me-auto">{alert()?.header}</strong>
         </p>
@@ -32,6 +26,5 @@ export default function ExperienceToast({ show, setShow, alert, setAlert }: Prop
         <p class='center' style={{ 'font-size': '0.75em', margin: '0.75em', color: 'green', 'font-weight': 600 }}>
             {alert()?.body}
         </p>
-        </Toast>
-    );
+    </Toast>;
 };

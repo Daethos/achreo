@@ -13,10 +13,12 @@ import Beam from "../matter/Beam";
 
 const DURATION = {
     CONSUMED: 2000,
-    FEARED: 3000,
+    CONFUSED: 6000,
+    POLYMORPHED: 8000,
+    FEARED: 4000,
     FROZEN: 3000,
-    SLOWED: 2500,
-    SNARED: 4000,
+    SLOWED: 5000,
+    SNARED: 5000,
     ROOTED: 3000,
     STUNNED: 3000,
     TEXT: 1500,
@@ -31,6 +33,13 @@ const ORIGIN = {
     HELMET: { X: 0.5, Y: 1.15 },
     CHEST: { X: 0.5, Y: 0.25 },
     LEGS: { X: 0.5, Y: -0.5 },
+};
+
+const MOVEMENT = {
+    'up': { x: 0, y: -5 },
+    'down': { x: 0, y: 5 },
+    'left': { x: -5, y: 0 },
+    'right': { x: 5, y: 0 },
 };
  
 export default class Player extends Entity {
@@ -2792,7 +2801,6 @@ export default class Player extends Entity {
     onStimulateExit = () => {};  
 
     // ================= NEGATIVE MACHINE STATES ================= \\
-
     onConfusedEnter = () => { 
         this.scene.joystick.joystick.setVisible(false);
         this.scene.rightJoystick.joystick.setVisible(false);
@@ -2801,7 +2809,6 @@ export default class Player extends Entity {
         this.spriteWeapon.setVisible(false);
         this.spriteShield.setVisible(false);
         this.confuseDirection = 'down';
-        this.confuseMovement = 'idle';
         this.confuseVelocity = { x: 0, y: 0 };
         this.isAttacking = false;
         this.isParrying = false;
@@ -2812,24 +2819,16 @@ export default class Player extends Entity {
         let iteration = 0;
         const randomDirection = () => {  
             const move = Math.random() * 101;
-            const dir = Math.round(Math.random() * 4);
+            const dir = Math.floor(Math.random() * 4);
             const directions = ['up', 'down', 'left', 'right'];
             const direction = directions[dir];
             if (move > 25) {
-                if (direction === 'up') {
-                    this.confuseVelocity = { x: 0, y: -1.75 };
-                } else if (direction === 'down') {
-                    this.confuseVelocity = { x: 0, y: 1.75 };
-                } else if (direction === 'right') {
-                    this.confuseVelocity = { x: -1.75, y: 0 };
-                } else if (direction === 'left') {
-                    this.confuseVelocity = { x: 1.75, y: 0 };
-                };
-                this.confuseMovement = 'move';
+                this.confuseVelocity = MOVEMENT[direction];
             } else {
                 this.confuseVelocity = { x: 0, y: 0 };
-                this.confuseMovement = 'idle';                
             };
+            this.playerVelocity.x = this.confuseVelocity.x;
+            this.playerVelocity.y = this.confuseVelocity.y;
             this.confuseDirection = direction;
         };
         const confusions = ['~?  ? ?!', 'Hhwat?', 'Wh-wor; -e ma i?', 'Woh `re ewe?', '...'];
@@ -2854,7 +2853,7 @@ export default class Player extends Entity {
     };
     onConfusedUpdate = (_dt) => {
         if (!this.isConfused) this.combatChecker(this.isConfused);
-        this.setVelocity(this.confuseVelocity.x, this.confuseVelocity.y);
+        // this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
         if (this.moving()) {
             this.anims.play(`player_running`, true);
         } else {
@@ -2882,8 +2881,6 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'F̶e̷a̴r̷e̵d̴', DURATION.TEXT, 'damage');
         this.spriteWeapon.setVisible(false);
         this.spriteShield.setVisible(false);
-        this.fearDirection = 'down';
-        this.fearMovement = 'idle';
         this.fearVelocity = { x: 0, y: 0 };
         this.isAttacking = false;
         this.isParrying = false;
@@ -2896,30 +2893,20 @@ export default class Player extends Entity {
         const randomDirection = () => {  
             const move = Math.random() * 101;
             const directions = ['up', 'down', 'left', 'right'];
-            const direction = directions[Math.round(Math.random() * 4)];
+            const direction = directions[Math.floor(Math.random() * 4)];
             if (move > 25) {
-                if (direction === 'up') {
-                    this.fearVelocity = { x: 0, y: -2 };
-                } else if (direction === 'down') {
-                    this.fearVelocity = { x: 0, y: 2 };
-                } else if (direction === 'right') {
-                    this.fearVelocity = { x: -2, y: 0 };
-                } else if (direction === 'left') {
-                    this.fearVelocity = { x: 2, y: 0 };
-                };
-                this.fearMovement = 'move';
+                this.fearVelocity = MOVEMENT[direction];
             } else {
                 this.fearVelocity = { x: 0, y: 0 };
-                this.fearMovement = 'idle';                
             };
-            this.fearDirection = direction;
+            this.playerVelocity.x = this.fearVelocity.x;
+            this.playerVelocity.y = this.fearVelocity.y;
         };
-
         this.fearTimer = this.scene.time.addEvent({
             delay: 1500,
             callback: () => {
                 iteration++;
-                if (iteration === 4) {
+                if (iteration === 3) {
                     iteration = 0;
                     this.isFeared = false;
                 } else {   
@@ -2928,13 +2915,12 @@ export default class Player extends Entity {
                 };
             },
             callbackScope: this,
-            repeat: 3,
+            repeat: 2,
         }); 
-
     };
     onFearedUpdate = (_dt) => {
         if (!this.isFeared) this.combatChecker(this.isFeared);
-        this.setVelocity(this.fearVelocity.x, this.fearVelocity.y);
+        // this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
         if (this.moving()) {
             this.anims.play(`player_running`, true);
         } else {
@@ -2999,25 +2985,19 @@ export default class Player extends Entity {
         let iteration = 0;
         const randomDirection = () => {  
             const move = Math.random() * 101;
-            const dir = Math.round(Math.random() * 4);
             const directions = ['up', 'down', 'left', 'right'];
+            const dir = Math.floor(Math.random() * directions.length);
             const direction = directions[dir];
             if (move > 25) {
-                if (direction === 'up') {
-                    this.polymorphVelocity = { x: 0, y: -1.25 };
-                } else if (direction === 'down') {
-                    this.polymorphVelocity = { x: 0, y: 1.25 };
-                } else if (direction === 'right') {
-                    this.polymorphVelocity = { x: -1.25, y: 0 };
-                } else if (direction === 'left') {
-                    this.polymorphVelocity = { x: 1.25, y: 0 };
-                };
                 this.polymorphMovement = 'move';
+                this.polymorphVelocity = MOVEMENT[direction]; 
             } else {
-                this.polymorphVelocity = { x: 0, y: 0 };
                 this.polymorphMovement = 'idle';                
+                this.polymorphVelocity = { x: 0, y: 0 };
             };
             this.polymorphDirection = direction;
+            this.playerVelocity.x = this.polymorphVelocity.x;
+            this.playerVelocity.y = this.polymorphVelocity.y;
         };
 
         this.polymorphTimer = this.scene.time.addEvent({
@@ -3041,7 +3021,7 @@ export default class Player extends Entity {
     onPolymorphedUpdate = (_dt) => {
         if (!this.isPolymorphed) this.combatChecker(this.isPolymorphed);
         this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
-        this.setVelocity(this.polymorphVelocity.x, this.polymorphVelocity.y);
+        // this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
     };
     onPolymorphedExit = () => { 
         this.scene.joystick.joystick.setVisible(true);
@@ -3077,7 +3057,7 @@ export default class Player extends Entity {
 
     onSnaredEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snared', DURATION.TEXT, 'damage');
-        this.snareDuration = 3000;
+        this.snareDuration = DURATION.SNARED;
         this.setTint(0x0000FF); // 0x888888
         this.adjustSpeed(-(PLAYER.SPEED.SNARE - 0.25));
         this.scene.time.delayedCall(this.snareDuration, () =>{

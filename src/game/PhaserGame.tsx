@@ -1,14 +1,14 @@
 import { onCleanup, onMount, createSignal, Accessor, Setter, Show, lazy, Suspense } from 'solid-js';
 import { createStore } from 'solid-js/store';
+import Ascean from '../models/ascean';
+import Equipment, { getOneRandom, upgradeEquipment } from '../models/equipment';
+import Settings from '../models/settings';
 import StartGame from './main';
 import { EventBus } from './EventBus';
 import { Menu } from '../utility/screens';
 import { Combat, initCombat } from '../stores/combat';
 import { fetchEnemy } from '../utility/enemy';
-import Ascean from '../models/ascean';
 import { GameState, initGame } from '../stores/game';
-import Equipment, { getOneRandom, upgradeEquipment } from '../models/equipment';
-import Settings from '../models/settings';
 import { Compiler, LevelSheet, asceanCompiler } from '../utility/ascean';
 import { deleteEquipment, getAscean, getInventory, populate, updateSettings } from '../assets/db/db';
 import { getNpcDialog } from '../utility/dialog';
@@ -1027,15 +1027,12 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener('upgrade-item');
         });
     });
-
-    return (
-        <>
+    return <>
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
         <Show when={live() && checkUi() && props.scene() === 'Game'}>
             <Suspense fallback={<Puff color="gold" />}>
                 <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} stamina={stamina} tutorial={tutorial} showDeity={showDeity} showTutorial={showTutorial} setShowTutorial={setShowTutorial} />
             </Suspense>
         </Show>
-        </>
-    );
+    </>;
 };

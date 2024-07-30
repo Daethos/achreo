@@ -59,7 +59,6 @@ export default class Equipment {
         this.imgUrl = equipment.imgUrl;
     };
     [key: string]: any;
-
 };
 
 async function create(data: any): Promise<Equipment> {

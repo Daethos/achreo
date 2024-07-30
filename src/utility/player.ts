@@ -145,6 +145,9 @@ export const PLAYER = {
         NEGATION: 7500, // -1
         SEER: 7500, // -1
         STIMULATE: 1500,
+        // Negative Durations
+        SNARED: 5000,
+        SLOWED: 5000,
     },
     RANGE: {
         SHORT: 200,

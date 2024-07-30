@@ -95,10 +95,10 @@ const DURATION = {
     CONSUMED: 2000,
     FEARED: 3000,
     FROZEN: 3000,
-    PARALYZED: 5000,
+    PARALYZED: 4000,
     ROOTED: 3000,
-    SLOWED: 2500,
-    SNARED: 4000,
+    SLOWED: 5000,
+    SNARED: 5000,
     STUNNED: 3000,
     TEXT: 1500,
     DODGE: 288, // 288
@@ -869,6 +869,8 @@ export default class Enemy extends Entity {
                     return;
                 };
                 const special = ENEMY_SPECIAL[mastery][Math.floor(Math.random() * ENEMY_SPECIAL[mastery].length)].toLowerCase();
+                // const alter = ['confuse', 'fear', 'polymorph'][Math.floor(Math.random() * 3)];
+                // console.log('Altered Special', alter);
                 this.specialAction = special;
                 this.currentAction = 'special';
                 if (this.stateMachine.isState(special)) {
@@ -1078,12 +1080,8 @@ export default class Enemy extends Entity {
         this.handleAnimations();
     };
     onEvasionUpdate = (_dt) => {
-        if (this.isDodging) { 
-            this.anims.play('player_slide', true);
-        };
-        if (this.isRolling) { 
-            this.anims.play('player_roll', true);
-        };
+        if (this.isDodging) this.anims.play('player_slide', true);
+        if (this.isRolling) this.anims.play('player_roll', true);        
         if (this.evadeRight) {
             this.setVelocityX(this.speed); // Was 2
         } else {
@@ -2638,7 +2636,7 @@ export default class Enemy extends Entity {
 
     onSnareEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snared', DURATION.TEXT, 'damage');
-        this.snareDuration = 3000;
+        this.snareDuration = DURATION.SNARED;
         this.setTint(0x0000FF); // 0x888888
         this.adjustSpeed(-PLAYER.SPEED.SNARE);
         this.scene.time.delayedCall(this.snareDuration, () =>{

@@ -71,6 +71,8 @@ export default class Player extends Entity {
         this.spellTarget = '';
         this.stamina = scene?.state?.playerAttributes?.stamina;
         this.maxStamina = scene?.state?.playerAttributes?.stamina;
+        this.grace = scene?.state.playerAttributes?.grace;
+        this.maxGrace = scene?.state?.playerAttributes?.grace;
         this.isMoving = false;
         this.targetID = undefined;
         this.attackedTarget = undefined;
@@ -610,8 +612,13 @@ export default class Player extends Entity {
         EventBus.on('update-stalwart', this.stalwartUpdate);
         EventBus.on('remove-enemy', this.enemyUpdate);
         EventBus.on('tab-target', this.tabUpdate);
+        EventBus.on('updated-grace', this.updateGrace);
         EventBus.on('updated-stamina', this.updateStamina);
     }; 
+
+    updateGrace = (percentage) => {
+        this.grace = Math.round(this.maxGrace * percentage / 100);
+    };
 
     updateStamina = (percentage) => {
         this.stamina = Math.round(this.maxStamina * percentage / 100);
@@ -816,6 +823,7 @@ export default class Player extends Entity {
         this.healthbar.setValue(this.health);
         if (this.healthbar.getTotal() < e.playerHealth) this.healthbar.setTotal(e.playerHealth);
         if (e.playerAttributes.stamina > this.maxStamina) this.maxStamina = e.playerAttributes.stamina;
+        if (e.playerAttributes.grace > this.maxGrace) this.maxGrace = e.playerAttributes.grace;
         if (this.inCombat === false) {
             if (this.scene.combat === true) {
                 console.log(`Aligning Scene's combat to the Player's`);
@@ -1319,7 +1327,7 @@ export default class Player extends Entity {
             this.setTimeEvent('achireCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000); // PLAYER.COOLDOWNS.SHORT
             this.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
-            this.scene.useStamina(PLAYER.STAMINA.ACHIRE);    
+            this.scene.useGrace(PLAYER.STAMINA.ACHIRE);    
         };
         this.castbar.reset();
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); // !this.isCaerenic && 
@@ -1353,7 +1361,7 @@ export default class Player extends Entity {
             this.setTimeEvent('astraveCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000); // PLAYER.COOLDOWNS.SHORT
             this.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
-            this.scene.useStamina(PLAYER.STAMINA.ASTRAVE);    
+            this.scene.useGrace(PLAYER.STAMINA.ASTRAVE);    
         };
         this.castbar.reset();
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); // !this.isCaerenic && 
@@ -1387,7 +1395,7 @@ export default class Player extends Entity {
         if (this.castingSuccess) {
             this.setTimeEvent('arcCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.castingSuccess = false;
-            this.scene.useStamina(PLAYER.STAMINA.ARC);
+            this.scene.useGrace(PLAYER.STAMINA.ARC);
             if (this.currentTarget && this.inCombat === true) {
                 if (this.flipX) {
                     this.weaponHitbox.setAngle(270);
@@ -1420,7 +1428,7 @@ export default class Player extends Entity {
             this.setVelocityY(-PLAYER.SPEED.BLINK);
         };
         if (this.moving()) {
-            this.scene.useStamina(PLAYER.STAMINA.BLINK);
+            this.scene.useGrace(PLAYER.STAMINA.BLINK);
         };
         const blinkCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
         this.setTimeEvent('blinkCooldown', blinkCooldown);
@@ -1459,7 +1467,7 @@ export default class Player extends Entity {
             this.setTimeEvent('confuseCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
             this.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
-            this.scene.useStamina(PLAYER.STAMINA.CONFUSE);    
+            this.scene.useGrace(PLAYER.STAMINA.CONFUSE);    
         };
         this.spellTarget = '';
         this.castbar.reset();
@@ -1478,12 +1486,12 @@ export default class Player extends Entity {
     onConsumeExit = () => {
         if (this.scene.state.playerEffects.length === 0) return;
         this.scene.combatMachine.action({ type: 'Consume', data: this.scene.state.playerEffects[0].id });        
-        this.scene.useStamina(PLAYER.STAMINA.CONSUME);
+        this.scene.useGrace(PLAYER.STAMINA.CONSUME);
     };
 
     onDesperationEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Desperation', PLAYER.DURATIONS.HEALING / 2, 'heal');
-        this.scene.useStamina(PLAYER.STAMINA.DESPERATION);
+        this.scene.useGrace(PLAYER.STAMINA.DESPERATION);
         this.flickerCarenic(PLAYER.DURATIONS.HEALING); 
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `Your caeren shrieks like a beacon, and a hush of ${this.scene.state.weapons[0].influences[0]} soothes your body.`
@@ -1503,7 +1511,7 @@ export default class Player extends Entity {
         this.spellTarget = this.currentTarget.enemyID;
         this.isCasting = true;
         this.currentTarget.isConsumed = true;
-        this.scene.useStamina(PLAYER.STAMINA.DEVOUR);
+        this.scene.useGrace(PLAYER.STAMINA.DEVOUR);
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         this.flickerCarenic(2000); 
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Devouring', PLAYER.DURATIONS.DEVOUR / 2, 'damage');
@@ -1595,7 +1603,7 @@ export default class Player extends Entity {
             this.setTimeEvent('fearCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
             this.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
-            this.scene.useStamina(PLAYER.STAMINA.FEAR);    
+            this.scene.useGrace(PLAYER.STAMINA.FEAR);    
         };
         this.spellTarget = '';
         this.castbar.reset();
@@ -1612,7 +1620,7 @@ export default class Player extends Entity {
         this.castbar.setVisible(true);  
         if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true); // !this.isCaerenic && 
         this.aoe = new AoE(this.scene, 'fyerus', 6, false, undefined, true);    
-        this.scene.useStamina(PLAYER.STAMINA.FYERUS);    
+        this.scene.useGrace(PLAYER.STAMINA.FYERUS);    
         this.setTimeEvent('fyerusCooldown', 2000); // PLAYER.COOLDOWNS.SHORT
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
         EventBus.emit('special-combat-text', {
@@ -1655,7 +1663,7 @@ export default class Player extends Entity {
     onHealingExit = () => {
         if (this.castingSuccess === true) {
             this.setTimeEvent('healingCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
-            this.scene.useStamina(PLAYER.STAMINA.HEALING);
+            this.scene.useGrace(PLAYER.STAMINA.HEALING);
             this.castingSuccess = false;
             this.scene.combatMachine.action({ data: { key: 'player', value: 25, id: this.playerID }, type: 'Health' });
             this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
@@ -1681,7 +1689,7 @@ export default class Player extends Entity {
         if (!this.currentTarget || this.currentTarget.isDefeated) return;
         this.scene.combatMachine.action({ type: 'Instant', data: this.scene.state.playerBlessing });
         this.scene.sound.play('prayer', { volume: this.scene.settings.volume });
-        this.scene.useStamina(PLAYER.STAMINA.INVOKE);
+        this.scene.useGrace(PLAYER.STAMINA.INVOKE);
     };
 
     onKynisosEnter = () => { 
@@ -1711,7 +1719,7 @@ export default class Player extends Entity {
             this.setTimeEvent('kynisosCooldown', 2000); // PLAYER.COOLDOWNS.SHORT
             this.kynisosSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
-            this.scene.useStamina(PLAYER.STAMINA.KYNISOS);    
+            this.scene.useGrace(PLAYER.STAMINA.KYNISOS);    
         };
         this.castbar.reset();
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); // !this.isCaerenic && 
@@ -1722,7 +1730,7 @@ export default class Player extends Entity {
         if (this.outOfRange(PLAYER.RANGE.MODERATE)) return; 
         this.spellTarget = this.currentTarget.enemyID;
         this.isCasting = true;
-        this.scene.useStamina(PLAYER.STAMINA.KYRNAICISM);
+        this.scene.useGrace(PLAYER.STAMINA.KYRNAICISM);
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         this.flickerCarenic(3000); 
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Kyrnaicism', PLAYER.DURATIONS.KYRNAICISM / 2, 'damage');
@@ -1800,7 +1808,7 @@ export default class Player extends Entity {
                 this.flickerCarenic(750); 
             },
             onComplete: () => { 
-                this.scene.useStamina(PLAYER.STAMINA.LEAP);
+                this.scene.useGrace(PLAYER.STAMINA.LEAP);
                 this.isLeaping = false; 
                 if (this.touching.length > 0 && this.inCombat === true) {
                     this.touching.forEach(enemy => {
@@ -1842,7 +1850,7 @@ export default class Player extends Entity {
         if (this.castingSuccess === true) {
             this.scene.paralyze(this.spellTarget);
             this.setTimeEvent('paralyzeCooldown', PLAYER.COOLDOWNS.MODERATE);  
-            this.scene.useStamina(PLAYER.STAMINA.PARALYZE);
+            this.scene.useGrace(PLAYER.STAMINA.PARALYZE);
             this.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });        
             EventBus.emit('special-combat-text', {
@@ -1880,7 +1888,7 @@ export default class Player extends Entity {
                 playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, polymorphing them!`
             });
             this.setTimeEvent('polymorphCooldown', PLAYER.COOLDOWNS.SHORT);  
-            this.scene.useStamina(PLAYER.STAMINA.POLYMORPH);
+            this.scene.useGrace(PLAYER.STAMINA.POLYMORPH);
             this.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });        
             this.spellTarget = '';
@@ -1900,7 +1908,7 @@ export default class Player extends Entity {
             };
         };
 
-        this.scene.useStamina(PLAYER.STAMINA.PURSUIT);
+        this.scene.useGrace(PLAYER.STAMINA.PURSUIT);
         const pursuitCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
         this.setTimeEvent('pursuitCooldown', pursuitCooldown);
         this.flickerCarenic(750); 
@@ -1938,7 +1946,7 @@ export default class Player extends Entity {
             this.castingSuccess = false;
             this.scene.root(this.spellTarget);
             this.setTimeEvent('rootCooldown', PLAYER.COOLDOWNS.SHORT); 
-            this.scene.useStamina(PLAYER.STAMINA.ROOT);
+            this.scene.useGrace(PLAYER.STAMINA.ROOT);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, rooting them!`
             });
@@ -1981,7 +1989,7 @@ export default class Player extends Entity {
         this.rushedEnemies = [];
         const rushCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
         this.setTimeEvent('rushCooldown', rushCooldown);
-        this.scene.useStamina(PLAYER.STAMINA.RUSH);
+        this.scene.useGrace(PLAYER.STAMINA.RUSH);
     };
 
     onSlowEnter = () => {
@@ -1992,7 +2000,7 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slow', 750, 'cast');
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.scene.slow(this.spellTarget);
-        this.scene.useStamina(PLAYER.STAMINA.SLOW);
+        this.scene.useGrace(PLAYER.STAMINA.SLOW);
         this.setTimeEvent('slowCooldown', PLAYER.COOLDOWNS.SHORT); 
         this.flickerCarenic(500); 
         this.scene.time.delayedCall(500, () => this.isSlowing = false, undefined, this);
@@ -2010,7 +2018,7 @@ export default class Player extends Entity {
         this.isSacrificing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Sacrifice', 750, 'effect');
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
-        this.scene.useStamina(PLAYER.STAMINA.SACRIFICE);
+        this.scene.useGrace(PLAYER.STAMINA.SACRIFICE);
         this.scene.combatMachine.action({ type: 'Sacrifice', data: undefined });
         this.setTimeEvent('sacrificeCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.flickerCarenic(500);  
@@ -2045,7 +2053,7 @@ export default class Player extends Entity {
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, snaring them!`
             });
-            this.scene.useStamina(PLAYER.STAMINA.SNARE);
+            this.scene.useGrace(PLAYER.STAMINA.SNARE);
             this.scene.snare(this.spellTarget);
             this.castingSuccess = false;
             this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
@@ -2060,7 +2068,7 @@ export default class Player extends Entity {
         this.isStorming = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'damage'); 
         this.isAttacking = true;
-        this.scene.useStamina(PLAYER.STAMINA.STORM);
+        this.scene.useGrace(PLAYER.STAMINA.STORM);
         this.scene.tweens.add({
             targets: this,
             angle: 360,
@@ -2096,7 +2104,7 @@ export default class Player extends Entity {
         this.isSuturing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Suture', 750, 'effect');
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
-        this.scene.useStamina(PLAYER.STAMINA.SUTURE);
+        this.scene.useGrace(PLAYER.STAMINA.SUTURE);
         this.scene.combatMachine.action({ type: 'Suture', data: undefined });
         this.setTimeEvent('sutureCooldown', PLAYER.COOLDOWNS.MODERATE);
         
@@ -2115,7 +2123,7 @@ export default class Player extends Entity {
     onCleanExit = () => {};
 
     onChiomicEnter = () => {
-        this.scene.useStamina(PLAYER.STAMINA.CHIOMIC);    
+        this.scene.useGrace(PLAYER.STAMINA.CHIOMIC);    
         this.aoe = new AoE(this.scene, 'chiomic', 1);    
         this.scene.sound.play('death', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Hah! Hah!', PLAYER.DURATIONS.CHIOMIC, 'effect');
@@ -2133,7 +2141,7 @@ export default class Player extends Entity {
 
     onDiseaseEnter = () => {
         this.isDiseasing = true;
-        this.scene.useStamina(PLAYER.STAMINA.DISEASE);    
+        this.scene.useGrace(PLAYER.STAMINA.DISEASE);    
         this.aoe = new AoE(this.scene, 'tendril', 6);    
         this.scene.sound.play('dungeon', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tendrils Swirl', 750, 'tendril');
@@ -2149,7 +2157,7 @@ export default class Player extends Entity {
     onDiseaseExit = () => this.aoe.cleanAnimation(this.scene);
 
     onHowlEnter = () => {
-        this.scene.useStamina(PLAYER.STAMINA.HOWL);    
+        this.scene.useGrace(PLAYER.STAMINA.HOWL);    
         this.aoe = new AoE(this.scene, 'howl', 1);    
         this.scene.sound.play('howl', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Howling', PLAYER.DURATIONS.HOWL, 'damage');
@@ -2167,7 +2175,7 @@ export default class Player extends Entity {
 
     onEnvelopEnter = () => {
         this.isEnveloping = true;
-        this.scene.useStamina(PLAYER.STAMINA.ENVELOP);    
+        this.scene.useGrace(PLAYER.STAMINA.ENVELOP);    
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Enveloping', 750, 'cast');
         this.envelopBubble = new Bubble(this.scene, this.x, this.y, 'blue', PLAYER.DURATIONS.ENVELOP);
@@ -2205,7 +2213,7 @@ export default class Player extends Entity {
         };
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Enveloped', 500, 'effect');
-        this.scene.useStamina(40);
+        this.scene.useGrace(40);
         if (this.stamina - 40 <= 0) {
             this.isEnveloping = false;
         };
@@ -2214,7 +2222,7 @@ export default class Player extends Entity {
     onFreezeEnter = () => {
         this.aoe = new AoE(this.scene, 'freeze', 1);
         this.scene.sound.play('freeze', { volume: this.scene.settings.volume });
-        this.scene.useStamina(PLAYER.STAMINA.FREEZE);
+        this.scene.useGrace(PLAYER.STAMINA.FREEZE);
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Freezing', PLAYER.DURATIONS.FREEZE, 'cast');
         this.isFreezing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.FREEZE, () => {
@@ -2228,7 +2236,7 @@ export default class Player extends Entity {
     onFreezeExit = () => this.setTimeEvent('freezeCooldown', PLAYER.COOLDOWNS.SHORT);
 
     onMaliceEnter = () => {
-        this.scene.useStamina(PLAYER.STAMINA.MALICE);    
+        this.scene.useGrace(PLAYER.STAMINA.MALICE);    
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.isMalicing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush');
@@ -2274,7 +2282,7 @@ export default class Player extends Entity {
     };
 
     onMendEnter = () => {
-        this.scene.useStamina(PLAYER.STAMINA.MEND);    
+        this.scene.useGrace(PLAYER.STAMINA.MEND);    
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.isMending = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 750, 'tendril');
@@ -2321,7 +2329,7 @@ export default class Player extends Entity {
 
     onProtectEnter = () => {
         this.isProtecting = true;
-        this.scene.useStamina(PLAYER.STAMINA.PROTECT);    
+        this.scene.useGrace(PLAYER.STAMINA.PROTECT);    
         this.scene.sound.play('shield', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Protecting', 750, 'effect');
         this.protectBubble = new Bubble(this.scene, this.x, this.y, 'gold', PLAYER.DURATIONS.PROTECT);
@@ -2349,7 +2357,7 @@ export default class Player extends Entity {
 
     onRecoverEnter = () => {
         this.isRecovering = true;
-        this.scene.useStamina(PLAYER.STAMINA.RECOVER);    
+        this.scene.useGrace(PLAYER.STAMINA.RECOVER);    
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Recovering', 750, 'effect');
         this.recoverBubble = new Bubble(this.scene, this.x, this.y, 'green', PLAYER.DURATIONS.RECOVER);
@@ -2378,12 +2386,12 @@ export default class Player extends Entity {
     recoverHit = () => {
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Recovered', 500, 'effect');
-        this.scene.useStamina(-25);
+        this.scene.useGrace(-25);
     };
 
     onRenewalEnter = () => {
         this.isRenewing = true;
-        this.scene.useStamina(PLAYER.STAMINA.RENEWAL);    
+        this.scene.useGrace(PLAYER.STAMINA.RENEWAL);    
         this.aoe = new AoE(this.scene, 'renewal', 6, true);    
         this.scene.sound.play('shield', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Hush Tears', 750, 'bone');
@@ -2399,7 +2407,7 @@ export default class Player extends Entity {
     onRenewalExit = () => {};
 
     onScreamEnter = () => {
-        this.scene.useStamina(PLAYER.STAMINA.SCREAM);    
+        this.scene.useGrace(PLAYER.STAMINA.SCREAM);    
         this.aoe = new AoE(this.scene, 'scream', 1);    
         this.scene.sound.play('scream', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Screaming', 750, 'hush');
@@ -2415,7 +2423,7 @@ export default class Player extends Entity {
     onScreamExit = () => this.setTimeEvent('screamCooldown', PLAYER.COOLDOWNS.SHORT);
 
     onShieldEnter = () => {
-        this.scene.useStamina(PLAYER.STAMINA.SHIELD);    
+        this.scene.useGrace(PLAYER.STAMINA.SHIELD);    
         this.scene.sound.play('shield', { volume: this.scene.settings.volume });
         this.isShielding = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shielding', 750, 'bone');
@@ -2463,7 +2471,7 @@ export default class Player extends Entity {
     onShimmerEnter = () => {
         this.isShimmering = true; 
         this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
-        this.scene.useStamina(PLAYER.STAMINA.SHIMMER);
+        this.scene.useGrace(PLAYER.STAMINA.SHIMMER);
         this.setTimeEvent('shimmerCooldown', PLAYER.COOLDOWNS.MODERATE);
         if (!this.isStealthing) this.stealthEffect(true);    
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIMMER, () => {
@@ -2486,7 +2494,7 @@ export default class Player extends Entity {
         this.isSprinting = true;
         this.scene.sound.play('blink', { volume: this.scene.settings.volume / 3 });
         this.adjustSpeed(PLAYER.SPEED.SPRINT);
-        this.scene.useStamina(PLAYER.STAMINA.SPRINT);
+        this.scene.useGrace(PLAYER.STAMINA.SPRINT);
         this.setTimeEvent('sprintCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.flickerCarenic(PLAYER.DURATIONS.SPRINT);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT, () => {
@@ -2547,7 +2555,7 @@ export default class Player extends Entity {
 
     onWardEnter = () => {
         this.isWarding = true;
-        this.scene.useStamina(PLAYER.STAMINA.WARD);    
+        this.scene.useGrace(PLAYER.STAMINA.WARD);    
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Warding', 750, 'damage');
         this.wardBubble = new Bubble(this.scene, this.x, this.y, 'red', PLAYER.DURATIONS.WARD);
@@ -2594,7 +2602,7 @@ export default class Player extends Entity {
     };
 
     onWritheEnter = () => {
-        this.scene.useStamina(PLAYER.STAMINA.WRITHE);    
+        this.scene.useGrace(PLAYER.STAMINA.WRITHE);    
         this.aoe = new AoE(this.scene, 'writhe', 1);    
         this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Writhing', 750, 'tendril');
@@ -2620,7 +2628,7 @@ export default class Player extends Entity {
     // ==================== TRAITS ==================== \\
     onAstricationEnter = () => {
         if (this.isAstrifying === true) return;
-        this.scene.useStamina(PLAYER.STAMINA.ASTRICATION);    
+        this.scene.useGrace(PLAYER.STAMINA.ASTRICATION);    
         this.setTimeEvent('astricationCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.combatMachine.input('astrication', {active:true,charges:0});
         this.scene.sound.play('lightning', { volume: this.scene.settings.volume });
@@ -2641,7 +2649,7 @@ export default class Player extends Entity {
 
     onBerserkEnter = () => {
         if (this.isBerserking === true) return;
-        this.scene.useStamina(PLAYER.STAMINA.BERSERK);    
+        this.scene.useGrace(PLAYER.STAMINA.BERSERK);    
         this.setTimeEvent('berserkCooldown', PLAYER.COOLDOWNS.LONG);  
         this.scene.sound.play('howl', { volume: this.scene.settings.volume });
         this.scene.combatMachine.input('berserk', {active:true,charges:1});
@@ -2660,7 +2668,7 @@ export default class Player extends Entity {
     onBerserkExit = () => {};
 
     onBlindEnter = () => {
-        this.scene.useStamina(PLAYER.STAMINA.BLIND);    
+        this.scene.useGrace(PLAYER.STAMINA.BLIND);    
         this.aoe = new AoE(this.scene, 'blind', 1);    
         this.scene.sound.play('righteous', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Brilliance', 750, 'effect');
@@ -2678,7 +2686,7 @@ export default class Player extends Entity {
     onCaerenesisEnter = () => {
         if (this.currentTarget === undefined) return;
         if (this.outOfRange(PLAYER.RANGE.MODERATE)) return; 
-        this.scene.useStamina(PLAYER.STAMINA.CAERENESIS);    
+        this.scene.useGrace(PLAYER.STAMINA.CAERENESIS);    
         this.aoe = new AoE(this.scene, 'caerenesis', 1, false, undefined, false, this.currentTarget);    
         this.scene.sound.play('blink', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Caerenesis', 750, 'cast');
@@ -2696,7 +2704,7 @@ export default class Player extends Entity {
 
     onConvictionEnter = () => {
         if (this.isConvicted === true) return;
-        this.scene.useStamina(PLAYER.STAMINA.CONVICTION);    
+        this.scene.useGrace(PLAYER.STAMINA.CONVICTION);    
         this.setTimeEvent('convictionCooldown', PLAYER.COOLDOWNS.LONG);  
         this.scene.combatMachine.input('conviction', {active:true,charges:0});
         this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
@@ -2716,7 +2724,7 @@ export default class Player extends Entity {
 
     onEnduranceEnter = () => {
         if (this.isEnduring === true) return;
-        this.scene.useStamina(PLAYER.STAMINA.ENDURANCE);    
+        this.scene.useGrace(PLAYER.STAMINA.ENDURANCE);    
         this.scene.sound.play('shield', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Endurance', 750, 'heal');
         this.isEnduring = true;
@@ -2739,7 +2747,7 @@ export default class Player extends Entity {
 
     onImpermanenceEnter = () => {
         if (this.isImpermanent === true) return;
-        this.scene.useStamina(PLAYER.STAMINA.IMPERMANENCE);    
+        this.scene.useGrace(PLAYER.STAMINA.IMPERMANENCE);    
         this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Impermanence', 750, 'hush');
         this.isImpermanent = true;
@@ -2757,7 +2765,7 @@ export default class Player extends Entity {
 
     onSeerEnter = () => {
         if (this.isSeering === true) return;
-        this.scene.useStamina(PLAYER.STAMINA.SEER);    
+        this.scene.useGrace(PLAYER.STAMINA.SEER);    
         this.scene.sound.play('fire', { volume: this.scene.settings.volume });
         this.scene.combatMachine.input('isSeering', true);
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Seer', 750, 'damage');
@@ -2778,7 +2786,7 @@ export default class Player extends Entity {
     onSeerExit = () => {};
 
     onStimulateEnter = () => {
-        this.scene.useStamina(PLAYER.STAMINA.STIMULATE);    
+        this.scene.useGrace(PLAYER.STAMINA.STIMULATE);    
         this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stimulate', 750, 'effect');
         this.isStimulating = true;

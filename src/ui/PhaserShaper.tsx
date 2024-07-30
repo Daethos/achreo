@@ -648,7 +648,7 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
                 <button class='highlight' onClick={() => handleButtons(Math.min(1, settings().positions.specialButtons.y + 0.0025), 'special', 'y')}>+</button>
             </div>
 
-            <h1 style={font('1.25em')}>FPS Text</h1>
+            {/* <h1 style={font('1.25em')}>FPS Text</h1>
             <div style={font('1em')}>X: ({settings().positions.fpsText.x})</div>
             <Form.Range 
                 min={0} max={1} step={0.025} 
@@ -660,7 +660,7 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
                 min={-0.5} max={1} step={0.05} 
                 onChange={(e) => handleFPS(e, 'y')} 
                 value={settings().positions.fpsText.y} 
-            />
+            /> */}
 
             <h1 style={font('1.25em')}>Left (Stance) HUD</h1>
             <div style={font('1em')}>

@@ -622,27 +622,27 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
             </button>
             <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1 }}>
                 { settings().characterViews === CHARACTERS.REPUTATION ? (
-                    <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.SKILLS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
+                    <button class='highlight menuButton' onClick={() => currentCharacterView(CHARACTERS.SKILLS)}>
                         <div>Reputation</div>
                     </button>
                 ) : settings().characterViews === CHARACTERS.SKILLS ? (
-                    <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.STATISTICS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
+                    <button class='highlight menuButton' onClick={() => currentCharacterView(CHARACTERS.STATISTICS)}>
                         <div>Skills</div>
                     </button>
                 ) : settings().characterViews === CHARACTERS.STATISTICS ? (
-                    <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.TRAITS)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
+                    <button class='highlight menuButton' onClick={() => currentCharacterView(CHARACTERS.TRAITS)}>
                         <div>Statistics</div>
                     </button>
                 ) : (
-                    <button class='highlight p-3' onClick={() => currentCharacterView(CHARACTERS.REPUTATION)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
+                    <button class='highlight menuButton' onClick={() => currentCharacterView(CHARACTERS.REPUTATION)}>
                         <div>Traits</div>
                     </button>
                 ) }     
             </div> 
         </> ) : settings().asceanViews === VIEWS.INVENTORY ? ( <>
             <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Inventory</div></button>
-            <button class='highlight p-3' onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em',position: 'fixed', top: 0, right: '10vh', 'z-index': 1 }}>
-                <div>{expandedCharacter() === true ? 'Stats' : 'Equipment'}</div>
+            <button class='highlight menuButton' onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ position: 'fixed', top: 0, right: '10vh', 'z-index': 1 }}>
+                <div>{expandedCharacter() === true ? 'Player Stats' : 'Equipment'}</div>
             </button>
             <Suspense fallback={<Puff color="gold"/>}>
                 <Firewater ascean={ascean} />
@@ -650,24 +650,24 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         </> ) : settings().asceanViews === VIEWS.SETTINGS ? ( <>
             <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Gameplay</div></button>
             {(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) && (
-                <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1 }}>
-                    <button class='highlight p-3' onClick={() => currentView(SETTINGS.ACTIONS)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Actions</div></button>
-                    <button class='highlight p-3' onClick={() => currentView(SETTINGS.SPECIALS)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Specials</div></button>
-                    <button class='highlight p-3' onClick={() => currentView(SETTINGS.CONTROL)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Control</div></button>
-                    <button class='highlight p-3' onClick={() => currentView(SETTINGS.GENERAL)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>General</div></button>
-                    <button class='highlight p-3' onClick={() => currentView(SETTINGS.INVENTORY)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Inventory</div></button>
-                    <button class='highlight p-3' onClick={() => currentView(SETTINGS.TACTICS)}><div style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '1em' : '0.65em' }}>Tactics</div></button>
+                <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1, 'font-family': 'Cinzel-Regular' }}>
+                    <button class='highlight menuButton' onClick={() => currentView(SETTINGS.ACTIONS)}><div>Actions</div></button>
+                    <button class='highlight menuButton' onClick={() => currentView(SETTINGS.SPECIALS)}><div>Specials</div></button>
+                    <button class='highlight menuButton' onClick={() => currentView(SETTINGS.CONTROL)}><div>Control</div></button>
+                    <button class='highlight menuButton' onClick={() => currentView(SETTINGS.GENERAL)}><div>General</div></button>
+                    <button class='highlight menuButton' onClick={() => currentView(SETTINGS.INVENTORY)}><div>Inventory</div></button>
+                    <button class='highlight menuButton' onClick={() => currentView(SETTINGS.TACTICS)}><div>Tactics</div></button>
                 </div>
             )}
         </> ) : ( <>
             <button class='highlight' style={{ 'margin-left': '4%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Personal</div></button>
             <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1 }}>
             { settings().faithViews === FAITH.DEITIES ? (
-                <button class='highlight p-3' onClick={() => currentFaithView(FAITH.JOURNAL)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
+                <button class='highlight menuButton' onClick={() => currentFaithView(FAITH.JOURNAL)}>
                     <div>Deities</div>
                 </button>
             ) : (
-                <button class='highlight p-3' onClick={() => currentFaithView(FAITH.DEITIES)} style={{ 'font-size': dimensions().ORIENTATION === 'landscape' ? '0.9em' : '0.65em' }}>
+                <button class='highlight menuButton' onClick={() => currentFaithView(FAITH.DEITIES)}>
                     <div>Journal</div>
                 </button>
             ) }     
@@ -718,7 +718,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                         <div>Level: <span class='gold'>{combatState()?.player?.level}</span>{'\n'}</div>
                         <div>Silver: <span class='gold'>{ascean().currency.silver}</span> Gold: <span class='gold'>{ascean().currency.gold} {'\n'}</span></div>
                         <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class='gold'>{ascean().faith}</span> | Mastery: <span class='gold'>{combatState()?.player?.mastery?.charAt(0).toUpperCase() as string + combatState()?.player?.mastery.slice(1)}</span></div>
-                        <div>Health: <span class='gold'>{Math.round(combatState()?.newPlayerHealth)} / {combatState()?.playerHealth}</span> Stamina: <span class='gold'>{combatState()?.playerAttributes?.stamina}</span></div>
+                        <div>Health: <span class='gold'>{Math.round(combatState()?.newPlayerHealth)} / {combatState()?.playerHealth}</span> Stamina: <span class='gold'>{Math.round(combatState()?.playerAttributes?.stamina as number)}</span> Grace: <span class='gold'>{Math.round(combatState()?.playerAttributes?.grace as number)}</span></div>
                         <div>Damage: <span class='gold'>{combatState()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class='gold'>{combatState()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
                         <div>Critical: <span class='gold'>{combatState()?.weapons?.[0]?.criticalChance}%</span> | <span class='gold'>{combatState()?.weapons?.[0]?.criticalDamage}x</span></div>
                         <div>Magical Defense: <span class='gold'>{combatState()?.playerDefense?.magicalDefenseModifier}% / [{combatState()?.playerDefense?.magicalPosture}%]</span>{'\n'}</div>
@@ -815,7 +815,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                         <div>Level: <span class='gold'>{combatState()?.player?.level}</span>{'\n'}</div>
                         <div>Silver: <span class='gold'>{ascean().currency.silver}</span> Gold: <span class='gold'>{ascean().currency.gold} {'\n'}</span></div>
                         <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class='gold'>{ascean().faith}</span> | Mastery: <span class='gold'>{combatState()?.player?.mastery?.charAt(0).toUpperCase() as string + combatState()?.player?.mastery.slice(1)}</span></div>
-                        <div>Health: <span class='gold'>{Math.round(combatState()?.newPlayerHealth)} / {combatState()?.playerHealth}</span> Stamina: <span class='gold'>{combatState()?.playerAttributes?.stamina}</span></div>
+                        <div>Health: <span class='gold'>{Math.round(combatState()?.newPlayerHealth)} / {combatState()?.playerHealth}</span> Stamina: <span class='gold'>{Math.round(combatState()?.playerAttributes?.stamina as number)}</span> Grace: <span class='gold'>{Math.round(combatState()?.playerAttributes?.grace as number)}</span></div>
                         <div>Damage: <span class='gold'>{combatState()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class='gold'>{combatState()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
                         <div>Critical: <span class='gold'>{combatState()?.weapons?.[0]?.criticalChance}%</span> | <span class='gold'>{combatState()?.weapons?.[0]?.criticalDamage}x</span></div>
                         <div>Magical Defense: <span class='gold'>{combatState()?.playerDefense?.magicalDefenseModifier}% / [{combatState()?.playerDefense?.magicalPosture}%]</span>{'\n'}</div>

@@ -49,7 +49,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
         </div>
         </div>
     }>
-        <div class='stat-block superCenter' style={{ width: '90%', overflow: 'scroll' }}>
+        <div class='stat-block superCenter' style={{ width: '90%', overflow: 'scroll', 'scrollbar-width': 'none' }}>
             <div class='border left center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
                 <div class='creature-heading superCenter' style={{ width: '100%' }}>
                     <h1>{ascean().name}</h1>

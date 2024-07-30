@@ -53,6 +53,7 @@ export default function PhaserGame (props: IProps) {
     const [combat, setCombat] = createSignal<Combat>({ ...initCombat, playerBlessing: props.settings().prayer || 'Buff' });
     const [game, setGame] = createSignal<GameState>(initGame);
     const [stamina, setStamina] = createSignal(0);
+    const [grace, setGrace] = createSignal(0);
     const [live, setLive] = createSignal(false);
     const [tutorial, setTutorial] = createSignal<string>('');
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
@@ -548,8 +549,10 @@ export default function PhaserGame (props: IProps) {
             playerBlessing: props.settings().prayer,
         });
         setStamina(stats.attributes.stamina as number);
+        setGrace(stats.attributes.grace as number);
         setGame({ ...game(), inventory: stats.ascean.inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary });
         EventBus.emit('update-total-stamina', stats.attributes.stamina as number);    
+        EventBus.emit('update-total-grace', stats.attributes.grace as number);    
     };
 
     async function upgradeItem(data: any): Promise<void> {
@@ -615,6 +618,7 @@ export default function PhaserGame (props: IProps) {
         setCombat(cleanCombat);
         EventBus.emit('combat', cleanCombat);
         setStamina(res?.attributes?.stamina as number);
+        setGrace(res?.attributes?.grace as number);
         const inventory = await getInventory(id);
         const traits = getAsceanTraits(props.ascean());
         setGame({ ...game(), inventory: inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary });
@@ -1030,7 +1034,7 @@ export default function PhaserGame (props: IProps) {
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
         <Show when={live() && checkUi() && props.scene() === 'Game'}>
             <Suspense fallback={<Puff color="gold" />}>
-                <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} stamina={stamina} tutorial={tutorial} showDeity={showDeity} showTutorial={showTutorial} setShowTutorial={setShowTutorial} />
+                <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} stamina={stamina} grace={grace} tutorial={tutorial} showDeity={showDeity} showTutorial={showTutorial} setShowTutorial={setShowTutorial} />
             </Suspense>
         </Show>
     </>;

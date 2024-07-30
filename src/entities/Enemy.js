@@ -558,6 +558,20 @@ export default class Enemy extends Entity {
         this.setGlow(this.spriteWeapon, caerenic, 'weapon');
         this.setGlow(this.spriteShield, caerenic, 'shield');
     };
+
+    currentNegativeState = (type) => {
+        switch (type) {
+            case States.FROZEN:
+                return this.isRooted || this.isSlowed || this.isSnared; 
+            case States.ROOTED:
+                return this.isFrozen || this.isSlowed || this.isSnared; 
+            case States.SLOWED:
+                return this.isFrozen || this.isRooted || this.isSnared; 
+            case States.SNARED:
+                return this.isFrozen || this.isRooted || this.isSlowed; 
+            default: return false;
+        };
+    };
     
     combatDataUpdate = (e) => {
         if (this.enemyID !== e.enemyID) {
@@ -2592,29 +2606,25 @@ export default class Enemy extends Entity {
 
     onRootEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Rooted', DURATION.TEXT, 'damage');
-        if (!this.isRooted) this.clearAnimations();
         this.setTint(0x888888); // 0x888888
         this.setStatic(true);
-        this.scene.time.addEvent({
-            delay: DURATION.ROOTED,
-            callback: () => {
-                this.isRooted = false;
-                this.negMetaMachine.setState(States.CLEAN);
-            },
-            callbackScope: this,
-            loop: false,
-        });
+        this.scene.time.delayedCall(DURATION.ROOTED, () => {
+            this.isRooted = false;
+            this.negMetaMachine.setState(States.CLEAN);
+        }, undefined, this);
     };
     onRootUpdate = (_dt) => {
-        if (!this.isRooted) {
-            if (!this.checkIfAnimated()) this.anims.play('player_idle', true);
+        if (this.isRooted === false) {
             this.evaluateCombatDistance();
-        }; 
+        } else {
+            this.anims.play('player_idle', true);
+        };
     };
     onRootExit = () => {  
         this.clearTint();
         this.setTint(0xFF0000);
         this.setStatic(false);
+        this.evaluateCombatDistance();
     };
 
     onSlowEnter = () => {
@@ -2931,19 +2941,19 @@ export default class Enemy extends Entity {
             return;
         };
         
-        if (this.isFrozen && !this.negMetaMachine.isCurrentState(States.FROZEN)) {
+        if (this.isFrozen && !this.negMetaMachine.isCurrentState(States.FROZEN) && !this.currentNegativeState(States.FROZEN)) {
             this.negMetaMachine.setState(States.FROZEN);
             return;
         };
-        if (this.isRooted && !this.negMetaMachine.isCurrentState(States.ROOTED)) {
+        if (this.isRooted && !this.negMetaMachine.isCurrentState(States.ROOTED) && !this.currentNegativeState(States.ROOTED)) {
             this.negMetaMachine.setState(States.ROOTED);
             return;
         };
-        if (this.isSlowed && !this.negMetaMachine.isCurrentState(States.SLOWED)) {
+        if (this.isSlowed && !this.negMetaMachine.isCurrentState(States.SLOWED) && !this.currentNegativeState(States.SLOWED)) {
             this.negMetaMachine.setState(States.SLOWED);
             return;
         };
-        if (this.isSnared && !this.negMetaMachine.isCurrentState(States.SNARED)) {
+        if (this.isSnared && !this.negMetaMachine.isCurrentState(States.SNARED) && !this.currentNegativeState(States.SNARED)) {
             this.negMetaMachine.setState(States.SNARED); 
             return;    
         };

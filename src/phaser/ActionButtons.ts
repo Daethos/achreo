@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { Game } from '../game/scenes/Game';
 import { EventBus } from '../game/EventBus';
-import { PLAYER, staminaCheck } from '../utility/player';
+import { PLAYER, STAMINA, staminaCheck } from '../utility/player';
 
 const ACTIONS = [
     { ATTACK: 0x800080 }, // 0xFA0000 
@@ -682,10 +682,23 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     public pressButton = (button: ActionButton, scene: any): void => {
         if (this.scene.scene.isActive('Game') === false) return;
         const input = button.name.toLowerCase();
-        const check = staminaCheck(this.scene.player.stamina, PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA]);
+        // const check = staminaCheck(this.scene.player.stamina, PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA]);
+        // if (check.success === true && scene.player.stateMachine.isState(input)) {
+        //     scene.player.stateMachine.setState(`${input}`);
+        // } else if (check.success === true && scene.player.metaMachine.isState(input)) {
+        //     scene.player.metaMachine.setState(`${input}`);
+        // };
+        const type = STAMINA.includes(input);
+        let check: {success: boolean; cost: number;} = {success: false, cost: 0};
+        if (type === true) {
+            check = staminaCheck(this.scene.player.stamina, PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA]);
+        } else {
+            check = staminaCheck(this.scene.player.grace, PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA]);
+        };
         if (check.success === true && scene.player.stateMachine.isState(input)) {
             scene.player.stateMachine.setState(`${input}`);
         } else if (check.success === true && scene.player.metaMachine.isState(input)) {
+            // const check = graceCheck(this.scene.player.grace, PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA]);
             scene.player.metaMachine.setState(`${input}`);
         };
     };

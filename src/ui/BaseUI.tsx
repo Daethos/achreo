@@ -28,13 +28,14 @@ interface Props {
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
     stamina: Accessor<number>;
+    grace: Accessor<number>;
     tutorial: Accessor<string>;
     showTutorial: Accessor<boolean>;
     setShowTutorial: Setter<boolean>;
     showDeity: Accessor<boolean>;
 };
 
-export default function BaseUI({ instance, ascean, combat, game, reputation, settings, setSettings, stamina, tutorial, showDeity, showTutorial, setShowTutorial }: Props) {
+export default function BaseUI({ instance, ascean, combat, game, reputation, settings, setSettings, stamina, grace, tutorial, showDeity, showTutorial, setShowTutorial }: Props) {
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [asceanState, setAsceanState] = createSignal<LevelSheet>({
         ascean: ascean(),
@@ -525,7 +526,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     return <div id='base-ui'>
         <Show when={game().showPlayer} fallback={<div style={{ position: "absolute", 'z-index': 1 }}>
             <Suspense fallback={<Puff color="gold" />}>
-                <CombatUI state={combat} game={game} stamina={stamina} />
+                <CombatUI state={combat} game={game} stamina={stamina} grace={grace} />
             </Suspense>
             <Show when={combat().computer} fallback={<EnemyPreview enemies={enemies} fetchEnemy={fetchEnemy} />}>
             <Suspense fallback={<Puff color="gold" />}>

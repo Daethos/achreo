@@ -186,12 +186,12 @@ export class Game extends Scene {
         this.musicCombat = this.sound.add('combat', { volume: this?.settings?.volume, loop: true });
 
     // =========================== FPS =========================== \\
-        this.fpsText = this.add.text(
-            dimensions()?.WIDTH * this.settings.positions.fpsText.x, 
-            dimensions()?.HEIGHT * this.settings.positions.fpsText.y, 
-            'FPS: ', { font: '16px Cinzel', color: '#fdf6d8' }
-        );
-        this.fpsText.setScrollFactor(0);
+        // this.fpsText = this.add.text(
+        //     dimensions()?.WIDTH * this.settings.positions.fpsText.x, 
+        //     dimensions()?.HEIGHT * this.settings.positions.fpsText.y, 
+        //     'FPS: ', { font: '16px Cinzel', color: '#fdf6d8' }
+        // );
+        // this.fpsText.setScrollFactor(0);
 
     // =========================== Combat Timer =========================== \\
         this.combatTimerText = this.add.text(window.innerWidth / 2 - 40, window.innerHeight + 30, 'Combat Timer: ', { font: '16px Cinzel', color: '#fdf6d8' });
@@ -229,7 +229,7 @@ export class Game extends Scene {
         this.minimap.setLerp(0.1, 0.1);
         this.minimap.setBackgroundColor(0x000000); // Suggested
         this.minimap.ignore(this.actionBar);
-        this.minimap.ignore(this.fpsText);
+        // this.minimap.ignore(this.fpsText);
         this.minimap.ignore(this.combatTimerText);
         this.minimap.ignore(this.target);
         this.minimap.ignore(this.joystick.joystick.base);
@@ -755,49 +755,29 @@ export class Game extends Scene {
     root = (id: string): void => {
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) return;
-        enemy.isRooted = true;
-
-        let x = this.rightJoystick.pointer.x;
+        let x = enemy.x; // this.rightJoystick.pointer.x;
         let x2 = window.innerWidth / 2;
-
-        let y = this.rightJoystick.pointer.y;
+        let y = enemy.y; // this.rightJoystick.pointer.y;
         let y2 = window.innerHeight / 2;
-
         const worldX = (x > x2 ? x : -x) + this.player.x;
         const worldY = (y > y2 ? y : -y) + this.player.y;
-        const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, worldX, worldY);
-        const duration = 2 * distance;
-        const rise = 0.5 * distance;
+        const duration = Phaser.Math.Distance.Between(this.player.x, this.player.y, worldX, worldY);
         const rootTween = this.add.tween({
             targets: this.target,
-            props: {
-                x: { from: this.player.x, to: worldX, duration: duration },
-                y: { from: this.player.y, to: worldY, duration: duration }, 
-                z: {
-                    from: 0,
-                    to: -rise,
-                    duration: 0.5 * duration,
-                    ease: 'Quad.easeOut',
-                    yoyo: true
-                },
-                onStart: () => {
-                    this.target.setVisible(true);
-                },    
-                onUpdate: (_tween, target: GameObjects.Sprite, key: any, current) => {
-                    if (key !== 'z') return;
-                    target.y += current;
-                },
-                onComplete: () => {
-                    this.time.addEvent({
-                        delay: 3000,
-                        callback: () => {
-                            this.target.setVisible(false);
-                            rootTween.destroy();
-                        },
-                        callbackScope: this
-                    });
-                }, 
-            },
+            x: { from: this.player.x, to: worldX, duration: 1000 },
+            y: { from: this.player.y, to: worldY, duration: 1000 }, 
+            ease: 'Linear',
+            yoyo: false,
+            onStart: () => {
+                this.target.setVisible(true);
+                enemy.isRooted = true;
+            },    
+            onComplete: () => {
+                this.time.delayedCall(3000 - duration, () => {
+                    this.target.setVisible(false);
+                    rootTween.destroy();
+                }, undefined, this);
+            }, 
         });
     };
     scream = (id: string): void => {
@@ -978,6 +958,10 @@ export class Game extends Scene {
     // ============================ Player ============================ \\
     caerenic = (): boolean => EventBus.emit('update-caerenic');
     stalwart = (): boolean => EventBus.emit('update-stalwart');
+    useGrace = (value: number) => {
+        EventBus.emit('update-grace', value);
+        this.player.grace -= value;
+    };
     useStamina = (value: number) => {
         EventBus.emit('update-stamina', value);
         this.player.stamina -= value;
@@ -1065,8 +1049,8 @@ export class Game extends Scene {
         for (let i = 0; i < this.npcs.length; i++) {
             this.npcs[i].update();
         };
-        this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2)); 
     };
+    // this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2)); 
     pause(): void {
         this.scene.pause();
         if (!this.combat) {

@@ -1,7 +1,7 @@
 import Ascean from '../../models/ascean';
+import { Cameras, GameObjects, Scene, Tilemaps, Time } from 'phaser';
 import { Combat, initCombat } from '../../stores/combat';
 import { EventBus } from '../EventBus';
-import { Cameras, GameObjects, Scene, Tilemaps, Time } from 'phaser';
 import NewText from '../../phaser/NewText';
 import LootDrop from '../../matter/LootDrop';
 import CombatMachine from '../../phaser/CombatMachine';

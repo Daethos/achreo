@@ -14,9 +14,8 @@ export default function ExperienceToast({ show, setShow, alert, setAlert }: Prop
     const toast = {
         'border': '0.05em solid #0f0',
         'box-shadow': '0 0 1em #0f0',
-        'bottom': '0',
     };
-    return <Toast class='toast' onClose={() => close()} show={show()} delay={3000} autohide style={toast}>
+    return <Toast class='toast' onClose={() => close()} show={show()} delay={3000} animation={true} autohide style={toast}>
         <p style={{ 'font-size': '0.875em', margin: '0.25em' }}>
             <strong class="me-auto">{alert()?.header}</strong>
         </p>

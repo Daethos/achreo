@@ -1,7 +1,6 @@
 import { error, success } from "./add";
 import level from "./level";
 import subset from "./subset";
-
 export default function deleteIt() {
     return new Promise((res, rej) => {
         this.deleteDb = () => {
@@ -13,7 +12,6 @@ export default function deleteIt() {
                 { database: db }
             ));
         };
-
         this.deleteCollection = () => {
             let db = this.db;
             let name = this.name;
@@ -52,7 +50,6 @@ export default function deleteIt() {
             };
             this.addToDeleteCollectionQueue(name);
         };
-
         this.deleteDocument = () => {
             let name = this.name;
             let criteria = this.criteria;
@@ -118,7 +115,6 @@ export default function deleteIt() {
                 return this.deleteDocumentByKey();
             };
         };
-
         let documentLevel = level.call(this);
         if (documentLevel === 'db') {
             return this.deleteDatabase();

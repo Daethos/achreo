@@ -13,11 +13,11 @@
     &:active {border: 0.15em solid gold;color: gold;}
     &:disabled {cursor: not-allowed;border: 0.15em solid rgba(253, 246, 216, 0.3);color: rgba(253, 246, 216, 0.3);}
 }
-.middleLeft {position: absolute; top: 50%; left: 0; transform: translateY(-50%);}
-.middleRight {position: absolute; top: 50%; right: 0; transform: translateY(-50%);}
-.verticalBottom {position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);}
-.verticalCenter {position: absolute; top: 50%; transform: translateY(-50%);}
-.verticalTop {position: absolute; top: 0; left: 50%; transform: translateX(-50%);}
+.middleLeft {position: absolute; top: 50%; left: 0; transform: translateY(-50%); font-size: 0.8em;}
+.middleRight {position: absolute; top: 50%; right: 0; transform: translateY(-50%); font-size: 0.8em;}
+.verticalBottom {position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-size: 0.8em;}
+.verticalCenter {position: absolute; top: 50%; transform: translateY(-50%); font-size: 0.8em;}
+.verticalTop {position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 0.8em;}
 .right {position: absolute; left: 51%;}
 .fade-in {opacity: 1; transition: opacity 1s ease-in;}
 .fade-out {opacity: 0; transition: opacity 1s ease-in;}

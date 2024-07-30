@@ -1,4 +1,3 @@
-
 import { EventBus } from '../game/EventBus';
 import { Accessor, Show, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
 import { useResizeListener } from '../utility/dimensions';
@@ -13,7 +12,6 @@ import Dialog from './Dialog';
 import { LevelSheet } from '../utility/ascean';
 import Settings from '../models/settings';
 import { text } from '../utility/text';
-
 interface Props {
     ascean: Accessor<Ascean>;
     asceanState: Accessor<LevelSheet>;
@@ -21,7 +19,6 @@ interface Props {
     game: Accessor<GameState>;
     settings: Accessor<Settings>; 
 };
-
 export default function SmallHud({ ascean, asceanState, combat, game, settings }: Props) { 
     const [show, setShow] = createSignal<boolean>(true);
     const [alert, setAlert] = createSignal<{ header: string; body: string } | undefined>(undefined);
@@ -57,9 +54,8 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
         };     
         setExperience(ascean().experience as number);
     });
-
-
     onMount(() => {
+        
         EventBus.on('combat-engaged', (e: boolean) => {
             if (e === false) return;
             setClicked({ ...clicked(), dialog: false, loot: false });
@@ -79,12 +75,8 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
                 EventBus.emit('toggle-bar', false);
             };
         });
-        EventBus.on('open', () => {
-            setClicked({ ...clicked(), phaser: true });
-        });
-        EventBus.on('closed', () => {
-            setClicked({ ...clicked(), phaser: false });
-        });
+        EventBus.on('open', () => setClicked({ ...clicked(), phaser: true }));
+        EventBus.on('closed', () => setClicked({ ...clicked(), phaser: false }));
         EventBus.on('add-combat-logs', (data: Combat) => {
             const newText = text(combatHistory(), data);
             setCombatHistory(newText);
@@ -104,7 +96,6 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
             });
         });
     });
-
     onCleanup(() => {
         EventBus.off('combat-engaged');
         EventBus.off('update-small-hud');
@@ -113,11 +104,6 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
         EventBus.off('add-combat-logs');
     });
 
-    const map = () => {
-        EventBus.emit('action-button-sound');
-        EventBus.emit('minimap');
-        setClicked({ ...clicked(), map: !clicked().map });
-    };
     const combatSettings = () => {
         EventBus.emit('useScroll');
         EventBus.emit('action-button-sound');
@@ -138,7 +124,11 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
         EventBus.emit('action-button-sound');
         setClicked({ ...clicked(), loot: !clicked().loot });
     };
-
+    const map = () => {
+        EventBus.emit('action-button-sound');
+        EventBus.emit('minimap');
+        setClicked({ ...clicked(), map: !clicked().map });
+    };
     const pause = () => {
         if (game().showPlayer || game().scrollEnabled || game().showDialog || game().showCombat) return;
         EventBus.emit('update-pause', !game().pauseState);
@@ -168,23 +158,16 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
     };
 
     const icon = (click: boolean) => {
-        return {
-            width: '1.75rem', // 2em
-            'filter': click === true ? 'invert(100%)' : 'sepia(100%)',
-            border: '1px solid #fdf6d8',
-        };
+        return { width: '1.75rem', filter: click === true ? 'invert(100%)' : 'sepia(100%)', border: '1px solid #fdf6d8' };
     };
 
     const overview = (right: number) => {
-        return {
-            height: '7.5%', width: '3.75%', right: `${right}%`
-        };
+        return {height: '7.5%', width: '3.75%', right: `${right}%`};
     };
 
-    return (
-        <>
+    return <>
         <Show when={toastShow()}>
-            <div class='cornerBL realize' style={{ width: '30%' }}>
+            <div class='verticalBottom realize' style={{ width: '30%' }}>
                 <ExperienceToast show={toastShow} setShow={setToastShow} alert={alert} setAlert={setAlert} />
             </div>
         </Show>
@@ -271,6 +254,5 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
         </div>
         </button>
         </Show>
-        </>
-    );
+    </>;
 };

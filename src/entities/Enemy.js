@@ -1,4 +1,3 @@
-import Phaser from "phaser";
 import Entity, { FRAME_COUNT } from "./Entity"; 
 import StateMachine, { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
@@ -81,7 +80,6 @@ export const ENEMY_SPECIAL = {
         'Tshaeral'
     ], // 9
 };
-
 const DISTANCE = {
     MIN: 0,
     ATTACK: 25,
@@ -93,7 +91,6 @@ const DISTANCE = {
     DODGE: 1152, // 2304
     ROLL: 960, // 1920
 };
-
 const DURATION = {
     CONSUMED: 2000,
     FEARED: 3000,
@@ -108,11 +105,9 @@ const DURATION = {
     ROLL: 320, // 320
     SPECIAL: 10000,
 };
-
 const RANGE = {
     LEASH: 750,
 }; 
-
 export default class Enemy extends Entity {
     constructor(data) {
         super({ ...data, name: "enemy", ascean: undefined, health: 1 }); 
@@ -808,10 +803,7 @@ export default class Enemy extends Entity {
         this.spriteWeapon.setAngle(-195);
     }; 
 
-    clearCombatWin = () => {
-        if (!this.stateMachine.isCurrentState(States.LEASH)) {
-            this.stateMachine.setState(States.LEASH);
-        };
+    clearCombatWin = () => { 
         this.inCombat = false;
         this.setSpecialCombat(false);
         this.attacking = undefined;
@@ -819,6 +811,7 @@ export default class Enemy extends Entity {
         this.isAggressive = false; // Added to see if that helps with post-combat losses for the player
         this.health = this.ascean.health.max;
         this.healthbar.setValue(this.ascean.health.max);    
+        this.stateMachine.setState(States.LEASH); 
     };
 
     createCombat = (collision, _when) => {
@@ -1058,6 +1051,11 @@ export default class Enemy extends Entity {
     };
 
     onCombatEnter = () => {
+        if (this.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
+            this.inCombat = false;
+            this.stateMachine.setState(States.LEASH);
+            return;
+        };
         this.anims.play('player_running', true);
         this.scene.time.delayedCall(this.swingTimer, () => {
             this.combat(this.attacking);
@@ -1183,10 +1181,10 @@ export default class Enemy extends Entity {
 
     onLeashEnter = () => {
         this.anims.play('player_running', true);
-        if (this.attacking) {
+        this.inCombat = false;
+        if (this.attacking !== undefined) {
             this.attacking.removeTarget(this.enemyID);
             this.attacking = undefined;
-            this.inCombat = false;
             this.setSpecialCombat(false);
             this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Leashing', 1500, 'effect');
         };
@@ -2427,7 +2425,7 @@ export default class Enemy extends Entity {
     onHurtUpdate = (_dt) => {
         this.anims.play('player_hurt', true);
         if (!this.isHurt) {
-            if (this.inCombat) {
+            if (this.inCombat === true) {
                 this.stateMachine.setState(States.COMBAT);
             } else {
                 this.stateMachine.setState(States.IDLE);
@@ -2698,7 +2696,6 @@ export default class Enemy extends Entity {
                 this.scene.combatMachine.action({ type: 'Enemy', data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.currentAction, parry: this.parryAction, id: this.enemyID }}});
             };
         }; 
-        // screenShake(this.scene);
     };
 
     enemyDodge = () => {
@@ -2773,20 +2770,14 @@ export default class Enemy extends Entity {
         this.setVelocity(direction.x * DISTANCE.MOMENTUM, direction.y * DISTANCE.MOMENTUM);
     };
 
-    rangedDistanceMultiplier = (num) => {
-        return this.isRanged ? num : 1;
-    };
+    rangedDistanceMultiplier = (num) => this.isRanged ? num : 1;
 
     evaluateCombatDistance = () => {
-        if (!this.attacking || !this.inCombat) {
+        if (this.isPerformingSpecial) return;
+        if (this.attacking === undefined || this.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
             this.stateMachine.setState(States.LEASH);
             return;
         };  
-        if (this.isPerformingSpecial) {
-            return;
-        };
-        
-        // console.log('===================== Evaluating Combat Distance =====================') 
         let direction = this.attacking.position.subtract(this.position);
         const distanceY = Math.abs(direction.y);
         const multiplier = this.rangedDistanceMultiplier(DISTANCE.RANGED_MULTIPLIER);
@@ -3021,7 +3012,7 @@ export default class Enemy extends Entity {
     };
 
     combat = (target) => { 
-        if (!this.inCombat) return;
+        if (this.inCombat === false) return;
         const action = this.evaluateCombat(target);
         this.currentAction = action;
     };

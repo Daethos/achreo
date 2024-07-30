@@ -8,7 +8,6 @@ export function limit(ceiling) {
     };
     return this;
 };
-
 export function order(property,direction) {
     if (!property) {
         console.log('No property specified');
@@ -25,4 +24,4 @@ export function order(property,direction) {
         };
     };
     return this;
-}
+};

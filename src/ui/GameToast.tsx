@@ -16,7 +16,7 @@ export default function GameToast({ actions, show, setShow, alert, setAlert }: P
         setShow(!show());
         setAlert(undefined as unknown as { header: string; body: string, delay: number })
     };
-    const toast: any = { 'position': alert()?.key !== '' ? 'absolute' : '',  'bottom': alert()?.key !== '' ? '45vh' : '0'};
+    const toast: any = {'position': alert()?.key !== '' ? 'absolute' : '', 'bottom': alert()?.key !== '' ? '45vh' : '0'};
     return <div class='cornerBL realize' style={{ width: '30%', 'z-index': 1 }}>
         <Toast class='toast' onClose={() => close()} show={show()} delay={alert()?.delay} autohide style={toast}>
             <p class='toastHeader'>{alert()?.header}</p>

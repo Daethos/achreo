@@ -1,5 +1,4 @@
 import localforage from "localforage";
-
 export default function collection(name) {
     if (!name) {
         console.log('No collection name specified. Provide a string value.');

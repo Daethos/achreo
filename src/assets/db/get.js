@@ -8,7 +8,6 @@ export default function get(options = { keys: false }) {
         let property = this.property;
         let direction = this.direction;
         let limitBy = this.limitBy;
-
         let collection = [];
 
         return this.lf[name].iterate((value, key) => {
@@ -101,12 +100,9 @@ export default function get(options = { keys: false }) {
         if (!options.hasOwnProperty('keys')) {
             console.log('Data must be an object with a key.')
         } else {
-            if (typeof options.keys !== 'boolean') {
-                console.log('Data must be an object with a boolean key.')
-            }
-        }
+            if (typeof options.keys !== 'boolean') console.log('Data must be an object with a boolean key.');
+        };
     };
-
     let currentSelectionLevel = level.call(this);
     if (currentSelectionLevel == 'collection') {
         return this.getCollection();

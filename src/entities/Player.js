@@ -613,6 +613,7 @@ export default class Player extends Entity {
     };
 
     disengage = () => {
+        this.clearAggression();
         this.scene.combatEngaged(false);
         this.inCombat = false;
         this.attacking = undefined;
@@ -631,6 +632,21 @@ export default class Player extends Entity {
         };
     };
 
+    clearAggression = () => {
+        const enemies = this.scene.enemies;
+        for (let i = 0; i < enemies.length; i++) {
+            if (enemies[i].inCombat === true) {
+                console.log('CLEARING COMPUTER COMBAT WIN');
+                enemies[i].clearCombatWin();
+            };
+        };
+    };
+
+    clearEnemy = (enemy) => {
+        enemy.clearCombatWin();
+        this.disengage();
+    };
+
     findEnemy = () => {
         console.log('%c ----- Attempting To Find Enemy -----', 'color: gold');
         const first = this.scene.state.enemyID;
@@ -641,9 +657,15 @@ export default class Player extends Entity {
                 for (let i = 0; i < this.targets.length; i++) {
                     const combat = this.targets[i].inCombat;
                     if (combat === true) {
-                        console.log(`%c ----- TARGET In Combat: ${this.targets[i].ascean?.name}, Becoming Current Target -----`, 'color: green');
-                        this.quickTarget(this.targets[i]);
-                        return;
+                        if (this.scene.state.newPlayerHealth <= 0) {
+                            console.log(`%c ----- TARGET In Combat: ${this.targets[i].ascean?.name}, However, Player is at 0 Health. Ejecting Enemy From Combat -----`, 'color: red');
+                            this.clearEnemy(this.targets[i]);
+                            return;
+                        } else {
+                            console.log(`%c ----- TARGET In Combat: ${this.targets[i].ascean?.name}, Becoming Current Target -----`, 'color: green');
+                            this.quickTarget(this.targets[i]);
+                            return;
+                        };
                     };
                 };
                 console.log('%c Made it to the other side, no targets but in combat? Flush targets, refindEnemy', 'color: gold');
@@ -778,7 +800,7 @@ export default class Player extends Entity {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Defeat', PLAYER.DURATIONS.TEXT * 2, 'damage');
         };
         if (e.newPlayerHealth <= 0) {
-            this.isDead = true;
+            // this.isDead = true;
             this.disengage();    
         };
         this.health = e.newPlayerHealth;

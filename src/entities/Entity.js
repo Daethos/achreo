@@ -1,5 +1,3 @@
-import Phaser from "phaser"; 
-
 export const FRAME_COUNT = {
     ATTACK_LIVE: 16,
     ATTACK_SUCCESS: 39,

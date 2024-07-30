@@ -1,6 +1,5 @@
 import reset from "./reset";
 import { v4 as uuidv4 } from 'uuid';
-
 export default function add(data, keyProvided) {
     if (!data) {
         console.log('No data specified. Provide keyProvided-value pair ala { name: "John" }');
@@ -15,7 +14,6 @@ export default function add(data, keyProvided) {
         } else {
             key = keyProvided;
         };
-
         return this.lf[name].setItem(key, data).then(() => {
             res(success.call(this, `Document added to "${name}" collection.`, { key, data }));
         }).catch(_err => {
@@ -23,12 +21,10 @@ export default function add(data, keyProvided) {
         });
     });
 };
-
 export function success(message, data) {
     reset.call(this);
     return { success: true, message, data };
 };
-
 export function error(message) {
     reset.call(this);
     return { success: false, message };

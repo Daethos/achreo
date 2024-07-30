@@ -38,6 +38,7 @@ function styleText(text: string) {
         const isHush = HUSH.includes(t);
         const isTendril = TENDRIL.includes(t);
         const isCritical = t.includes('Critical');
+        const isPartial = t.includes('Partial');
         const isGlancing = t.includes('Glancing');
         const color = 
             isCast === true ? COLORS.BLUE :
@@ -46,7 +47,7 @@ function styleText(text: string) {
             isHeal === true ? COLORS.HEAL :
             isGlancing ? COLORS.LIGHT_BLUE : 
             isTendril === true ? COLORS.FUCHSIA : 
-            (isAttack === true || isCritical === true) ? COLORS.RED : 
+            (isAttack === true || isCritical === true || isPartial === true) ? COLORS.RED : 
             isHush === true ? COLORS.FUCHSIA :
             COLORS.BONE;
             
@@ -55,7 +56,7 @@ function styleText(text: string) {
         const textShadow = lush ? `#fdf6d8 0 0 0` : 'none';
         const fontSize = lush ? '0.75em' : '0.65em';
         const newLine = t === '\n' ? '<br>' : t;
-        const style = (isGlancing || isCritical || isAttack || isNumber) ? 'italic' : 'normal';
+        const style = (isGlancing || isCritical || isAttack || isNumber || isPartial) ? 'italic' : 'normal';
         return `<span style="color: ${color}; font-style: ${style}; font-weight: ${fontWeight}; text-shadow: ${textShadow}; font-size: ${fontSize}; margin: 0;">${newLine}</span>`;
     };
 

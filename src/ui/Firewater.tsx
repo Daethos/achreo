@@ -16,8 +16,7 @@ interface FirewaterProps {
 
 function FirewaterModal({ ascean, showFirewater, setShowFirewater, drinkFirewater, showBleed, setShowBleed, repelenishFirewater }: FirewaterProps) {
     const dimensions = useResizeListener();
-    return(
-        <>
+    return <>
         <div class='modal'>
             <button class='border superCenter' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '85%' : '50%', 'max-width': dimensions().ORIENTATION === 'landscape' ? '35%' : '70%' }}>
             <div class='creature-heading wrap' style={{ height: '100%' }}>
@@ -31,7 +30,7 @@ function FirewaterModal({ ascean, showFirewater, setShowFirewater, drinkFirewate
                 <p class='gold'>
                     Do you wish to drink from the flask?<br />
                     <span style={font('0.75em', '#fdf6d8')}>
-                        [This replenishes 40% of your maximum health. Defeating enemies of comparable or greater strength will replenish the Firewater]
+                        [This replenishes 100% of your maximum health. Defeating enemies of comparable or greater strength will replenish the Firewater]
                     </span>
                 </p>
                 {ascean().firewater.current === 0 ? ( <div>
@@ -75,46 +74,35 @@ function FirewaterModal({ ascean, showFirewater, setShowFirewater, drinkFirewate
             </button>
             </div>
         </Show>
-        </>
-    );
+    </>;
 };
 
-interface Props {
-    ascean: Accessor<Ascean>;
-};
-
-export default function Firewater({ ascean }: Props) {
+export default function Firewater({ ascean }: {ascean: Accessor<Ascean>;}) {
     const [showFirewater, setShowFirewater] = createSignal<boolean>(false);
     const [showBleed, setShowBleed] = createSignal<boolean>(false);
-
     const drinkFirewater = async (): Promise<void> => {
         try {
             if (ascean().firewater.current === 0) return;
-            console.log('Drinking Firewater');
             EventBus.emit('drink-firewater');
             setShowFirewater(false);
         } catch (err: any) {
-            console.error(err.message);
+            console.warn(err.message);
         };
     };
-
     async function repelenishFirewater(): Promise<void> {
         try {
-            console.log('Replenishing Firewater');
             setShowBleed(false);
             setShowFirewater(false);
         } catch (err: any) {
-            console.error(err.message);
+            console.warn(err.message);
         };
     };
-    return (
-        <>
+    return <>
         <button class='playerSaveInventoryOuter' style={{ transform: 'scale(0.7)', top: '0.2em', right: '0.2em' }} onClick={() => setShowFirewater(!showFirewater())}>
             <img src={'../assets/images/firewater.png'} alt="Firewater" />
         </button>
         <Show when={showFirewater()}>
             <FirewaterModal ascean={ascean} showFirewater={showFirewater} setShowFirewater={setShowFirewater} drinkFirewater={drinkFirewater} showBleed={showBleed} setShowBleed={setShowBleed} repelenishFirewater={repelenishFirewater} />
         </Show>
-        </>
-    );
+    </>;
 };

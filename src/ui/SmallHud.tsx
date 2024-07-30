@@ -54,8 +54,7 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
         };     
         setExperience(ascean().experience as number);
     });
-    onMount(() => {
-        
+    onMount(() => { 
         EventBus.on('combat-engaged', (e: boolean) => {
             if (e === false) return;
             setClicked({ ...clicked(), dialog: false, loot: false });
@@ -158,7 +157,7 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
     };
 
     const icon = (click: boolean) => {
-        return { width: '1.75rem', filter: click === true ? 'invert(100%)' : 'sepia(100%)', border: '1px solid #fdf6d8' };
+        return { width: '1.75rem', filter: click === true ? 'invert(100%)' : 'sepia(100%)' }; // , border: '1px solid #fdf6d8'
     };
 
     const overview = (right: number) => {
@@ -185,50 +184,50 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
         </Show>   
         <Show when={show()} fallback={
             <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { ...overview(settings()?.positions?.solidHud?.right + 0.5) } : { height: '3.5%', width: '7.5%', right: '4%' }} onClick={showButtons}>
-                <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%' }}>
                     <img src={'../assets/images/closed.png'} style={icon(clicked().closed)} alt='!' />
                 </div>
             </button>
         }> 
             <Show when={game().smallHud}>
                 <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { ...overview(settings()?.positions?.solidHud?.right + 0.5) } : { height: '3.5%', width: '7.5%', right: '4%' }}>
-                    <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                    <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%' }}>
                         <img src={'../assets/images/open.png'} style={icon(clicked().open)} alt='?' />
                     </div>
                 </button>
 
                 <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { ...overview(settings()?.positions?.solidHud?.right + 4.5) } : { height: '3.5%', width: '7.5%', right: '12%' }} onClick={pause}>
-                    <div class='p-3' style={{ color: clicked().pause === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                    <div class='p-3' style={{ color: clicked().pause === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%' }}>
                         <img src={'../assets/images/pause.png'} style={icon(clicked().pause)} alt='Sh' />
                     </div>
                 </button>
 
                 <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { ...overview(settings()?.positions?.solidHud?.right + 8.5) } : { height: '3.5%', width: '7.5%', right: '20%' }} onClick={map}>
-                    <div class='p-3' style={{ color: clicked().map === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                    <div class='p-3' style={{ color: clicked().map === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%' }}>
                         <img src={'../assets/images/minimap.png'} style={icon(clicked().map)} alt='M' />
                     </div>
                 </button>
 
                 <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { ...overview(settings()?.positions?.solidHud?.right + 12.5) } : { height: '3.5%', width: '7.5%', right: '20%' }} onClick={cursor}>
-                    <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                    <div class='p-3' style={{ color: '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%' }}>
                         <img class='p-3' style={icon(false)} src={'../assets/images/cursor-reset.png'} />
                     </div>
                 </button>
 
                 <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { ...overview(settings()?.positions?.solidHud?.right + 16.5) } : { height: '3.5%', width: '7.5%', right: '60%' }} onClick={showCombat}>
-                    <div class='p-3' style={{ color: clicked().showCombat === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                    <div class='p-3' style={{ color: clicked().showCombat === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%' }}>
                         <img src={'../assets/images/logs.png'} style={icon(clicked().showCombat)} alt='Sh' />
                     </div>
                 </button>
 
                 <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { ...overview(settings()?.positions?.solidHud?.right + 20.5) } : { height: '3.5%', width: '7.5%', right: '60%' }} onClick={combatSettings}>
-                    <div class='p-3' style={{ color: clicked().combatSettings === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                    <div class='p-3' style={{ color: clicked().combatSettings === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%' }}>
                         <img src={'../assets/images/settings.png'} style={icon(clicked().combatSettings)} alt='Sh' />
                     </div>
                 </button>
 
                 <button class='smallHudButtons' style={dimensions().ORIENTATION === 'landscape' ? { ...overview(settings()?.positions?.solidHud?.right + 24.5) } : { height: '3.5%', width: '7.5%', right: '68%' }} onClick={showPlayer}>
-                    <div class='p-3' style={{ color: clicked().showPlayer === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+                    <div class='p-3' style={{ color: clicked().showPlayer === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%' }}>
                         <img src={'../assets/images/info.png'} style={icon(clicked().showPlayer)} alt='Sh' />
                     </div>
                 </button> 
@@ -239,7 +238,7 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
             { ...overview((game().smallHud !== true && !clicked().phaser) ? 4.5 + settings().positions.solidHud.right : 28.5 + settings().positions.solidHud.right ) } : // if game().smallHud === true ? right: '4.5%'
             { height: '3.5%', width: '7.5%', right: '52%' }} 
             onClick={dialog}>
-        <div class='p-3' style={{ color: clicked().dialog === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+        <div class='p-3' style={{ color: clicked().dialog === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%' }}>
             <img src={'../assets/images/dialog.png'} style={icon(clicked().dialog)} alt='Sh' />
         </div>
         </button>
@@ -249,7 +248,7 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
             { ...overview((game().smallHud !== true && !clicked().phaser) ? 8.5 + settings().positions.solidHud.right : 32.5 + settings().positions.solidHud.right) } : // right: game().smallHud === true ? '4.5' : '0.5%', top: '82.5%' SECOND ROW
             { height: '3.5%', width: '7.5%', right: game().dialogTag ? '56%' : '52%' }} // right: game().dialogTag ? '8%' : '4%', bottom: '4.75%' SECOND ROW
             onClick={loot}>
-        <div class='p-3' style={{ color: clicked().loot === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%', 'text-align': 'center' }}>
+        <div class='p-3' style={{ color: clicked().loot === true ? 'gold' : '#fdf6d8', 'margin-left': '-37.5%', 'margin-top': '-1.25%' }}>
             <img src={'../assets/images/loot.png'} style={icon(clicked().loot)} alt='Sh' />
         </div>
         </button>

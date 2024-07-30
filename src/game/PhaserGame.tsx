@@ -792,7 +792,6 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('combat-engaged', (e: boolean) => setCombat({ ...combat(), combatEngaged: e }));
         EventBus.on('delete-merchant-equipment', deleteMerchantEquipment);
         EventBus.on('drink-firewater', () => {
-            // const newHealth = (combat().newPlayerHealth + (combat().playerHealth * 0.6)) > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + (combat().playerHealth * 0.6);
             const newCharges = props.ascean().firewater.current > 0 ? props.ascean().firewater.current - 1 : 0;
             setCombat({...combat(), newPlayerHealth: props.ascean().health.max, player: {...combat().player as Ascean, health: {...props.ascean().health, current: props.ascean().health.max}}});
             const newAscean = {...props.ascean(), firewater: {...props.ascean().firewater, current: newCharges}, health: {...props.ascean().health, current: props.ascean().health.max}, inventory: game().inventory};

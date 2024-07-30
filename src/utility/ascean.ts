@@ -249,8 +249,9 @@ const attributeCompiler = (ascean: Ascean, rarities: { helmet: number; chest: nu
     newAttributes.healthTotal = 40 + ((newAttributes.totalConstitution * ascean.level) + ((newAttributes.constitutionMod + Math.round((newAttributes.caerenMod + newAttributes.strengthMod) / 2)) * ascean.level));
     newAttributes.initiative = 10 + (newAttributes.agilityMod + newAttributes.achreMod);
     newAttributes.stamina = 100 + (newAttributes.constitutionMod + newAttributes.agilityMod + newAttributes.caerenMod);
-    newAttributes.grace = (100 + (newAttributes.strengthMod + newAttributes.achreMod + newAttributes.kyosirMod)) * (ascean.origin === "Quor'eite" ? 1.1 : (ascean.origin === "Li'ivi" || ascean.origin === "Ashtre") ? 1.05 : 1); // Future Idea Maybe
-
+    newAttributes.grace = (100 + (newAttributes.strengthMod + newAttributes.achreMod + newAttributes.kyosirMod)); // Future Idea Maybe
+    newAttributes.stamina *= (ascean.origin === "Quor'eite" ? 1.1 : (ascean.origin === "Li'ivi" || ascean.origin === "Ashtre") ? 1.05 : 1);
+    newAttributes.grace *= (ascean.origin === "Quor'eite" ? 1.1 : (ascean.origin === "Li'ivi" || ascean.origin === "Ashtre") ? 1.05 : 1);
     return newAttributes;
 };
 

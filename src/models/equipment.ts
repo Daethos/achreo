@@ -4,6 +4,19 @@ import { Amulets, Rings, Trinkets } from '../assets/db/jewelry';
 import { v4 as uuidv4 } from 'uuid';
 import { addEquipment } from '../assets/db/db';
 
+const ATTRIBUTE_RANGE = {
+    Default: [0, 0, 0, 0, 0, 0],
+    Common: [0, 1, 1, 1, 2, 3],
+    Uncommon: [1, 1, 2, 2, 3, 5],
+    Rare: [2, 3, 4, 5, 6, 8],
+    Epic: [4, 5, 6, 7, 10, 12],
+    Legendary: [10, 14, 17, 20, 24, 30],
+};
+const ATTRIBUTES = ['strength', 'constitution', 'agility', 'achre', 'caeren', 'kyosir'];
+const CHANCE = ['criticalChance', 'physicalPenetration', 'magicalPenetration', 'roll', 'dodge'];
+const DAMAGE = ['physicalDamage', 'magicalDamage'];
+const CRITICAL = ['criticalDamage'];
+
 export default class Equipment {
     public _id: string | number[] = uuidv4();
     public name: string;
@@ -80,26 +93,11 @@ async function defaultMutate(equipment: Equipment[]) {
 
 async function mutate(equipment: Equipment[], rarity?: string | 'Common') { 
     try {
-        const attributeRanges = {
-            Default: [0, 0, 0, 0, 0, 0],
-            Common: [0, 1, 1, 1, 2, 3],
-            Uncommon: [1, 1, 2, 2, 3, 5],
-            Rare: [2, 3, 4, 5, 6, 8],
-            Epic: [4, 5, 6, 7, 10, 12],
-            Legendary: [10, 14, 17, 20, 24, 30],
-        };
-        const range = attributeRanges[rarity as keyof typeof attributeRanges];
-        const attributes = ['strength', 'constitution', 'agility', 'achre', 'caeren', 'kyosir'];
-        const chance = ['criticalChance', 'physicalPenetration', 'magicalPenetration', 'roll', 'dodge'];
-        const damage = ['physicalDamage', 'magicalDamage'];
-        const critDamage = ['criticalDamage'];
-        
-    
+        const range = ATTRIBUTE_RANGE[rarity as keyof typeof ATTRIBUTE_RANGE];
         for (const item of equipment) {
             item._id = uuidv4(); // uuidv4();
-            const attributeCount = attributes.filter(attribute => item[attribute] > 0).length;
-    
-            for (const attribute of attributes) {   
+            const attributeCount = ATTRIBUTES.filter(attribute => item[attribute] > 0).length;
+            for (const attribute of ATTRIBUTES) {   
                 if (item[attribute] > 0) {
                     if (attributeCount === 1) {
                         item[attribute] = randomIntFromInterval(range[4], range[5]);
@@ -107,56 +105,56 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
                         item[attribute] = randomIntFromInterval(range[2], range[4]);
                     } else if (attributeCount === 3) {
                         item[attribute] = randomIntFromInterval(range[1], range[3]);
-                    } else if (attributeCount === 4) { // 4-6
+                    } else if (attributeCount === 4) {
                         item[attribute] = randomIntFromInterval(range[0], range[2]);
-                    } else if (attributeCount === 5) { // 5-6
+                    } else if (attributeCount === 5) {
                         item[attribute] = randomIntFromInterval(range[0], range[1]);
-                    } else { // 6
+                    } else {
                         item[attribute] = randomIntFromInterval(range[0], range[0]);
                     };
                 };
             };
-            for (const att of chance) {    
-                if (item[att] > 10) {
-                    item[att] = randomIntFromInterval(item[att] -2, item[att] + 5);
-                } else if (item[att] > 5) { // 6-10
-                    item[att] = randomIntFromInterval(item[att] - 1, item[att] + 3);
-                } else if (item[att] >= 3) { // 3-5
-                    item[att] = randomIntFromInterval(item[att], item[att] + 2);
-                } else if (item[att] > 0) { // 1-2
-                    item[att] = randomIntFromInterval(item[att], item[att] + 1);
+            for (const attribute of CHANCE) {    
+                if (item[attribute] > 10) {
+                    item[attribute] = randomIntFromInterval(item[attribute] -2, item[attribute] + 5);
+                } else if (item[attribute] > 5) { // 6-10
+                    item[attribute] = randomIntFromInterval(item[attribute] - 1, item[attribute] + 3);
+                } else if (item[attribute] >= 3) { // 3-5
+                    item[attribute] = randomIntFromInterval(item[attribute], item[attribute] + 2);
+                } else if (item[attribute] > 0) { // 1-2
+                    item[attribute] = randomIntFromInterval(item[attribute], item[attribute] + 1);
                 };
             };
-            for (const dam of damage) {    
-                if (item[dam] > 20) { // 21 +/- 5/3
-                    item[dam] = randomIntFromInterval(item[dam] - 1, item[dam] + 5);
-                } else if (item[dam] > 10) { // 11-20 +/- 3/2
-                    item[dam] = randomIntFromInterval(item[dam] - 1, item[dam] + 3);
-                } else if (item[dam] > 5) { // 6-10 +/- 2/1
-                    item[dam] = randomIntFromInterval(item[dam], item[dam] + 2);
-                } else if (item[dam] > 1) { // 2-5 +/- 1/0
-                    item[dam] = randomIntFromInterval(item[dam], item[dam] + 1);
+            for (const damage of DAMAGE) {    
+                if (item[damage] > 20) { // 21 +/- 5/3
+                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage] + 5);
+                } else if (item[damage] > 10) { // 11-20 +/- 3/2
+                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage] + 3);
+                } else if (item[damage] > 5) { // 6-10 +/- 2/1
+                    item[damage] = randomIntFromInterval(item[damage], item[damage] + 2);
+                } else if (item[damage] > 1) { // 2-5 +/- 1/0
+                    item[damage] = randomIntFromInterval(item[damage], item[damage] + 1);
                 };
             };
-            for (const dam of critDamage) {    
-                if (item[dam] > 1.99) { // 2.0 +/- 0.3/0.25 (0.55 Range)
-                    item[dam] = randomFloatFromInterval(item[dam] - 0.25, item[dam] + 0.3);
-                } else if (item[dam] > 1.74) { // 1.75 +/- 0.25/0.2 (0.45 Range)
-                    item[dam] = randomFloatFromInterval(item[dam] - 0.2, item[dam] + 0.25);
-                } else if (item[dam] > 1.49) { // 1.5 +/- 0.2/0.15 (0.35 Range)
-                    item[dam] = randomFloatFromInterval(item[dam] - 0.15, item[dam] + 0.2);
-                } else if (item[dam] > 1.24) { // 1.25 +/- 0.15/0.1 (0.25 Range)
-                    item[dam] = randomFloatFromInterval(item[dam] - 0.1, item[dam] + 0.15);
-                } else if (item[dam] > 1.09) { // 1.1 +/- 0.05/0.02 (0.07 Range)
-                    item[dam] = randomFloatFromInterval(item[dam] - 0.02, item[dam] + 0.05);
-                } else if (item[dam] > 1.05) { // 1.05 +/- 0.04/0.01 (0.05 Range)
-                    item[dam] = randomFloatFromInterval(item[dam] - 0.01, item[dam] + 0.04);
-                } else if (item[dam] === 1.03) { // 1.00 +/- 0.03/0 (0.03 Range)
-                    item[dam] = randomFloatFromInterval(item[dam], item[dam] + 0.03);
-                } else if (item[dam] === 1.02) { // 1.00 +/- 0.02/0 (0.02 Range)
-                    item[dam] = randomFloatFromInterval(item[dam], item[dam] + 0.02);
-                } else if (item[dam] === 1.01) { // 1.00 +/- 0.01/0 (0.01 Range)
-                    item[dam] = randomFloatFromInterval(item[dam], item[dam] + 0.01);
+            for (const damage of CRITICAL) {    
+                if (item[damage] > 1.99) { // 2.0 +/- 0.3/0.25 (0.55 Range)
+                    item[damage] = randomFloatFromInterval(item[damage] - 0.25, item[damage] + 0.3);
+                } else if (item[damage] > 1.74) { // 1.75 +/- 0.25/0.2 (0.45 Range)
+                    item[damage] = randomFloatFromInterval(item[damage] - 0.2, item[damage] + 0.25);
+                } else if (item[damage] > 1.49) { // 1.5 +/- 0.2/0.15 (0.35 Range)
+                    item[damage] = randomFloatFromInterval(item[damage] - 0.15, item[damage] + 0.2);
+                } else if (item[damage] > 1.24) { // 1.25 +/- 0.15/0.1 (0.25 Range)
+                    item[damage] = randomFloatFromInterval(item[damage] - 0.1, item[damage] + 0.15);
+                } else if (item[damage] > 1.09) { // 1.1 +/- 0.05/0.02 (0.07 Range)
+                    item[damage] = randomFloatFromInterval(item[damage] - 0.02, item[damage] + 0.05);
+                } else if (item[damage] > 1.05) { // 1.05 +/- 0.04/0.01 (0.05 Range)
+                    item[damage] = randomFloatFromInterval(item[damage] - 0.01, item[damage] + 0.04);
+                } else if (item[damage] === 1.03) { // 1.00 +/- 0.03/0 (0.03 Range)
+                    item[damage] = randomFloatFromInterval(item[damage], item[damage] + 0.03);
+                } else if (item[damage] === 1.02) { // 1.00 +/- 0.02/0 (0.02 Range)
+                    item[damage] = randomFloatFromInterval(item[damage], item[damage] + 0.02);
+                } else if (item[damage] === 1.01) { // 1.00 +/- 0.01/0 (0.01 Range)
+                    item[damage] = randomFloatFromInterval(item[damage], item[damage] + 0.01);
                 };
             };
             await addEquipment(item);
@@ -173,11 +171,7 @@ async function getOneRandom(level: number = 1) {
         let type = determineEquipmentType();
         let equipment: Equipment[] = []; // Initialize equipment as an empty array
         let eqpCheck = Math.floor(Math.random() * 100  + 1);
-
-        if ((type === 'Amulet' || type === 'Ring' || type === 'Trinket') && rarity === 'Common') {
-            rarity = 'Uncommon';
-        };
-
+        if ((type === 'Amulet' || type === 'Ring' || type === 'Trinket') && rarity === 'Common') rarity = 'Uncommon';
         if (level < 4) {
             rarity = 'Common';
             if (eqpCheck > 75) {
@@ -192,12 +186,11 @@ async function getOneRandom(level: number = 1) {
                 type = 'Legs';
             };
         };
-
         equipment = await aggregate(rarity, type, 1) as Equipment[];
         equipment.forEach(item => new Equipment(item));
         return equipment;
     } catch (err) {
-        console.log(err, 'Error Getting One Equipment');
+        console.warn(err, 'Error Getting One Equipment');
     };
 };
 
@@ -270,7 +263,6 @@ async function aggregate(rarity: string, type: string, size: number, name?: stri
                     return equipment = {...filteredEquipment[randomIndex]};
             };                       
         };
-
         for (let i = 0; i < size; i++) {
             fetcher();
             total.push(equipment);
@@ -577,11 +569,9 @@ function deepClone<T>(obj: T): T {
     if (obj === null || typeof obj !== 'object') {
         return obj;
     };
-
     if (obj instanceof Date) {
         return new Date(obj.getTime()) as unknown as T;
     };
-
     if (obj instanceof Array) {
         const arrCopy = [] as unknown as T;
         (obj as unknown as Array<unknown>).forEach((item, index) => {
@@ -589,14 +579,11 @@ function deepClone<T>(obj: T): T {
         });
         return arrCopy;
     };
-
     const objCopy = {} as T;
     Object.keys(obj).forEach((key) => {
         (objCopy as unknown as Record<string, unknown>)[key] = deepClone((obj as unknown as Record<string, unknown>)[key]);
     });
-
     return objCopy;
 };
-
 
 export { create, defaultMutate, mutate, getOneRandom, upgradeEquipment, getPhysicalWeaponEquipment, getMagicalWeaponEquipment, getArmorEquipment, getJewelryEquipment, getMerchantEquipment, getClothEquipment };

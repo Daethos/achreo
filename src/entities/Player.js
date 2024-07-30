@@ -1630,9 +1630,9 @@ export default class Player extends Entity {
         };
     };
     onFyerusExit = () => {
-        this.aoe.cleanAnimation(this.scene);
+        if (this.aoe) this.aoe.cleanAnimation(this.scene);
         this.castbar.reset();
-        this.isFyerus = false;
+        this.isCasting = false;
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); // !this.isCaerenic && 
     };
 

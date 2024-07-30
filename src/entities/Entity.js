@@ -9,10 +9,13 @@ export const FRAME_COUNT = {
     ROLL_SUCCESS: 20,
     DISTANCE_CLEAR: 51,
 }; 
-
+const SPEED = 1.5
 export const SWING_TIME = { 'One Hand': 1250, 'Two Hand': 1650 }; // 750, 1250 [old]
 export const ENEMY_SWING_TIME = { 'One Hand': 950, 'Two Hand': 1250 }; // 750, 1250 [old]
-
+const DAMAGE_TYPES = { 
+    'magic': ['earth', 'fire', 'frost', 'lightning', 'righteous', 'spooky', 'sorcery', 'wild', 'wind'], 
+    'physical': ['blunt', 'pierce', 'slash'] 
+};
 export default class Entity extends Phaser.Physics.Matter.Sprite {
     static preload(scene) { 
         scene.load.atlas(`player_actions`, '../assets/gui/player_actions.png', '../assets/gui/player_actions_atlas.json');
@@ -166,7 +169,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     startingSpeed = (entity) => {
-        let speed = (this.name === 'player' ? 1.5: 1.5); // PLAYER.SPEED.INITIAL
+        let speed = SPEED; // PLAYER.SPEED.INITIAL
         const helmet = entity.helmet.type;
         const chest = entity.chest.type;
         const legs = entity.legs.type;
@@ -273,7 +276,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const outerStrength = 2 + Math.sin(this.scene.time.now * 0.005) * 2; // Adjust the frequency and amplitude as needed
         const innerStrength = 2 + Math.cos(this.scene.time.now * 0.005) * 2;
         const intensity = 0.25;
-
         this.glowFilter.add(object, {
             outerStrength,
             innerStrength,
@@ -283,16 +285,12 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         });
     }; 
 
-
     adjustSpeed = (speed) => {
         return this.speed += speed;
     };
 
     checkIfAnimated = () => {
-        if (this.anims.currentAnim) {
-            return true;
-        };
-        return false;
+        return this.anims.currentAnim ? true : false;
     };
 
     clearAnimations = () => {
@@ -333,29 +331,19 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     knockback(id) {
         const enemy = this.scene.getEnemy(id);
-        if (enemy === undefined) {
-            return;
-        };
-
-        const multiplier = (Math.abs(enemy.velocity.x) > 0.1) ? 0.0075 : 0.00375;
-        let xAngle = (enemy.x - this.x) * multiplier;
-        let yAngle = (enemy.y - this.y) * multiplier;
-        this.knockbackDirection = { x: xAngle, y: yAngle };
-
+        if (enemy === undefined) return;
+        const x = this.x > enemy.x ? -0.05 : 0.05;
+        const y = this.y > enemy.y ? -0.05 : 0.05;
+        this.knockbackDirection = { x, y };
         const accelerationFrames = 10; 
         const accelerationStep = this.knockbackForce / accelerationFrames; // this.knockbackForce / accelerationFrames
         const dampeningFactor = 0.9; 
-        const knockbackDuration = 750;
+        const knockbackDuration = 500;
         let currentForce = 0; 
-
         const knockbackLoop = (timestamp) => {
             if (!startTime) startTime = timestamp;
             const elapsed = timestamp - startTime;
-
-            if (elapsed >= knockbackDuration) {
-                return;
-            };
-
+            if (elapsed >= knockbackDuration)  return;
             if (currentForce < this.knockbackForce) currentForce += accelerationStep;
             const forceX = (this.knockbackDirection.x * currentForce); // * (this.flipX ? -5 : 5)
             const forceY = (this.knockbackDirection.y * currentForce); // * (this.flipX ? -5 : 5)
@@ -363,26 +351,17 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             currentForce *= dampeningFactor;
             requestAnimationFrame(knockbackLoop);
         };
-
         let startTime = undefined;
         requestAnimationFrame(knockbackLoop);
-        
-        if ("vibrate" in navigator) {
-            navigator.vibrate(100);
-        };
+        if ("vibrate" in navigator) navigator.vibrate(100);
     };
 
     checkDamageType = (type, concern) => {
-        const types = { 
-            'magic': ['earth', 'fire', 'frost', 'lightning', 'righteous', 'spooky', 'sorcery', 'wild', 'wind'], 
-            'physical': ['blunt', 'pierce', 'slash'] 
-        };
-        if (types[concern].includes(type)) return true;
-        return false;
+        return DAMAGE_TYPES[concern].includes(type);
     };
 
-    checkBow = (weapon) => {
-        return weapon.type === 'Bow' || weapon.type === 'Greatbow';
+    checkBow = (type) => {
+        return type === 'Bow' || type === 'Greatbow';
     };
 
     checkMeleeOrRanged = (weapon) => {
@@ -394,7 +373,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         } else {
             this.swingTimer = ENEMY_SWING_TIME[weapon?.grip] || 1000;
         };
-        this.hasBow = this.checkBow(weapon);
+        this.hasBow = this.checkBow(weapon.type);
     };
 
     checkPlayerResist = () => {
@@ -431,7 +410,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     checkActionSuccess = (entity, target) => {
-        if (entity === 'player' && !this.isStorming && !this.isArcing) {
+        if (entity === 'player') { // && !this.isStorming && !this.isArcing
             if (this.flipX) {
                 this.weaponHitbox.setAngle(270);
             } else {
@@ -444,7 +423,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.touching.length === 0) {
                         return;
                     } else {
-                        console.log('checking TOUCHING');
                         for (let i = 0; i < this.touching.length; i++) {
                             this.hitBoxCheck(this.touching[i]);
                         };

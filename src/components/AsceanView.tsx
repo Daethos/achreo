@@ -18,7 +18,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
     const viewMargin = { margin: '4%' };
 
     return <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
-        <div class='border superCenter center' style={{ height: '100', width: '85%', overflow: 'scroll' }}>
+        <div class='border superCenter center' style={{ height: '100', width: '85%', overflow: 'scroll', 'scrollbar-width': 'none' }}>
         <div class='creature-heading' style={{ width: '100%', height: '100%' }}>
             <h1>{ascean().name}</h1>
             <h2 class='mb-3'>{ascean().description}</h2>

@@ -16,7 +16,7 @@ const Preview = lazy(async () => await import("./Preview"));
 export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet>, menu: Accessor<Menu> }) {
     const [prevMastery, setPrevMastery] = createSignal('');
     const dimensions = useResizeListener();
-    return <div class='stat-block superCenter' style={{ overflow: 'scroll' }}>
+    return <div class='stat-block superCenter' style={{ overflow: 'scroll', 'scrollbar-width': 'none' }}>
         <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION !== 'landscape'}>
             <Preview newAscean={newAscean} />
         </Show>

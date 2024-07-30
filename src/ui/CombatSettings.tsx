@@ -1,10 +1,15 @@
-import { Accessor, For, JSX, Match, Show, Switch } from 'solid-js';
+import { Accessor, For, JSX, Match, Show, Switch, onMount } from 'solid-js';
 import { EventBus } from '../game/EventBus';
 import { borderColor } from '../utility/styling'; 
 import { useResizeListener } from '../utility/dimensions';
 import { GameState } from '../stores/game';
 import { Combat } from '../stores/combat';
-
+const BUTTONS = [
+    {direction: 'left', symbol: '<-'}, 
+    {direction:'up', symbol: '^'}, 
+    {direction:'down', symbol:'v'},
+    {direction:'right', symbol:'->'}, 
+];
 const highlightCycle = { 
     Weapon: {
         next: 'Damage',
@@ -19,10 +24,16 @@ const highlightCycle = {
         prev: 'Damage'
     }
 };
+const PRAYERS = ['Buff', 'Heal', 'Debuff', 'Damage', 'Avarice', 'Denial', 'Dispel', 'Silence'];
 
 export default function CombatSettings({ combat, game }: { combat: Accessor<Combat>; game: Accessor<GameState>; }) {
-    const prayers = ['Buff', 'Heal', 'Debuff', 'Damage', 'Avarice', 'Denial', 'Dispel', 'Silence'];
     const dimensions = useResizeListener();
+    const prayer = (el: string) => {
+        return el === combat().playerBlessing ?  true : false;
+    };
+    onMount(() => {
+        EventBus.emit('selectPrayer', { index: PRAYERS.findIndex(prayer), highlight: game().selectedHighlight });
+    });
     const mapTypes = (types: any) => {
         let newTypes = []; 
         for (let i = 0; i < types.length; i++) {
@@ -40,19 +51,14 @@ export default function CombatSettings({ combat, game }: { combat: Accessor<Comb
     const optionStyle: JSX.CSSProperties = {
         color: '#fdf6d8', 'font-size': '0.9em', 'font-weight': 700, 'text-align': 'center'
     };
-    const Buttons = [
-        {direction: 'left', symbol: '<-'}, 
-        {direction:'up', symbol: '^'}, 
-        {direction:'down', symbol:'v'},
-        {direction:'right', symbol:'->'}, 
-    ];
+
     function handleButton(direction: string) {
         if (direction === 'up' || direction === 'down') {
             if (game().selectedHighlight === 'Prayer') {
                 const index = direction === 'up' ? -1 : 1;
-                const newIndex = (game().selectedPrayerIndex + index + prayers.length) % prayers.length;
+                const newIndex = (game().selectedPrayerIndex + index + PRAYERS.length) % PRAYERS.length;
                 EventBus.emit('selectPrayer', { index: newIndex, highlight: 'Prayer' });
-                EventBus.emit('changePrayer', prayers[newIndex]);
+                EventBus.emit('changePrayer', PRAYERS[newIndex]);
             } else if (game().selectedHighlight === 'Damage') {
                 const index = direction === 'up' ? -1 : 1;
                 const newIndex = (game().selectedDamageTypeIndex + index + (combat()?.weapons?.[0]?.damageType?.length ?? 0)) % (combat()?.weapons?.[0]?.damageType?.length ?? 0) as number;
@@ -87,39 +93,36 @@ export default function CombatSettings({ combat, game }: { combat: Accessor<Comb
         : `${highlightCycle[game().selectedHighlight as keyof typeof highlightCycle].next}`;
     };
 
-    return (
-        <div class='center combatSettings' style={dimensions().ORIENTATION === 'landscape' ? { height: '40%', width: "50%", top: '50%', left: '25%', background: '#000', 'border': '0.1em solid #FFC700', 'border-radius': '0.25em', 'box-shadow': '0 0 0.1em 0.1em #FFC700' }: { top: '70%', left: '10%' }}>
-            <div class='center shadow' style={{ display: 'flex', 'flex-direction': 'row', 'margin-top': '1%', width: '100%', 'z-index': 1 }}>
-            <For each={Buttons}>{((button) => {
-                return <button class='highlight gold' style={{ 'z-index': 1 }} onClick={() => handleButton(button.direction)}>
-                    {buttonText(button.direction, game().selectedHighlight)}
-                </button>;
-            })}</For>
-            </div>
-            <Show when={game().scrollEnabled}>
-                <Switch>
-                <Match when={game().selectedHighlight === 'Weapon'}>
-                    <div>
-                        <p class='shadow' style={highlightStyle}>Main Weapon: {combat()?.weapons?.[0]?.name}</p>
-                        <p style={optionStyle}>Up{' ->> '} {combat()?.weapons?.[1]?.name} {' <<- '}Up</p>
-                        <Show when={combat()?.weapons?.[2]}><p class='shadow' style={optionStyle}>Down{' ->> '} {combat()?.weapons?.[2]?.name} {' <<- '}Down</p></Show> 
-                    </div>
-                </Match>
-                <Match when={game().selectedHighlight === 'Damage'}>
-                    <div>
-                        <p class='shadow' style={highlightStyle}>Damage Style: {combat()?.weapons?.[0]?.damageType?.[game().selectedDamageTypeIndex]}</p>
-                        <p style={optionStyle}>{mapTypes(combat()?.weapons?.[0]?.damageType)}</p>
-                    </div>
-                </Match>
-                <Match when={game().selectedHighlight === 'Prayer'}>
-                    <div class='center'>
-                        <p class='shadow' style={highlightStyle}>Current Prayer: {prayers[game().selectedPrayerIndex]}</p>
-                        <div style={optionStyle}>{mapTypes(prayers)}</div>
-                    </div>
-                </Match>
-                </Switch>
-            </Show>
-            <br />
+    return <div class='center combatSettings' style={dimensions().ORIENTATION === 'landscape' ? { height: '40%', width: "50%", top: '50%', left: '25%', background: '#000', 'border': '0.1em solid #FFC700', 'border-radius': '0.25em', 'box-shadow': '0 0 0.1em 0.1em #FFC700' }: { top: '70%', left: '10%' }}>
+        <div class='center shadow' style={{ display: 'flex', 'flex-direction': 'row', 'margin-top': '1%', width: '100%', 'z-index': 1 }}>
+        <For each={BUTTONS}>{((button) => {
+            return <button class='highlight gold' style={{ 'z-index': 1 }} onClick={() => handleButton(button.direction)}>
+                {buttonText(button.direction, game().selectedHighlight)}
+            </button>;
+        })}</For>
         </div>
-    );
+        <Show when={game().scrollEnabled}>
+            <Switch>
+            <Match when={game().selectedHighlight === 'Weapon'}>
+                <div>
+                    <p class='shadow' style={highlightStyle}>Main Weapon: {combat()?.weapons?.[0]?.name}</p>
+                    <p style={optionStyle}>Up{' ->> '} {combat()?.weapons?.[1]?.name} {' <<- '}Up</p>
+                    <Show when={combat()?.weapons?.[2]}><p class='shadow' style={optionStyle}>Down{' ->> '} {combat()?.weapons?.[2]?.name} {' <<- '}Down</p></Show> 
+                </div>
+            </Match>
+            <Match when={game().selectedHighlight === 'Damage'}>
+                <div>
+                    <p class='shadow' style={highlightStyle}>Damage Style: {combat()?.weapons?.[0]?.damageType?.[game().selectedDamageTypeIndex]}</p>
+                    <p style={optionStyle}>{mapTypes(combat()?.weapons?.[0]?.damageType)}</p>
+                </div>
+            </Match>
+            <Match when={game().selectedHighlight === 'Prayer'}>
+                <div class='center'>
+                    <p class='shadow' style={highlightStyle}>Current Prayer: {PRAYERS[game().selectedPrayerIndex]}</p>
+                    <div style={optionStyle}>{mapTypes(PRAYERS)}</div>
+                </div>
+            </Match>
+            </Switch>
+        </Show>
+    </div>;
 };

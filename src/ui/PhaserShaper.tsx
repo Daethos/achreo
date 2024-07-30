@@ -13,7 +13,6 @@ interface IPhaserShape {
 
 export default function PhaserShaper({ settings }: IPhaserShape) {
     const dimensions = useResizeListener();
-
     async function handleCastbar(type: string, value: number) {
         console.log(type, value, 'Type and Value');
         const newSettings = {
@@ -127,9 +126,7 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
     };
 
     async function handleButtons(e: number, type: string, axis: string) {
-        // const newButtons = { type, [axis]: Number(e.target.value) };
         const change = roundToTwoDecimals(e, 4);
-
         const newSettings = { 
             ...settings(), 
             positions: { 
@@ -270,13 +267,10 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
         await updateSettings(newSettings);
         EventBus.emit('save-settings', newSettings);
         EventBus.emit('update-camera-zoom', zoom);
-        // EventBus.emit('castbar-zoom-update', zoom);
     };
 
     async function handleFPS(e: any, axis: string) {
         const change = Number(e.target.value);
-        // const newFPS = { [axis]: Number(e.target.value) };
-        // console.log(newFPS, 'New FPS');
         const newSettings = { 
             ...settings(), 
             positions: { 
@@ -298,7 +292,6 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
 
     async function handleHudOffset(e: number, side: string) {
         const offset = roundToTwoDecimals(e, 2);
-        // const offset = Number(e.target.value);
         console.log(offset, 'Scale', side, 'Side');
         switch (side) {
             case 'left':
@@ -350,9 +343,9 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
         };
     };
 
-    async function handleHudScale(e: any, side: string) {
-        const scale = Number(e.target.value);
-        console.log(scale, 'Scale', side, 'Side');
+    async function handleHudScale(scale: number, side: string) {
+        // const scale = Number(e.target.value);
+        // console.log(scale, 'Scale', side, 'Side');
         switch (side) {
             case 'left':
                 const newSettings = { 
@@ -391,7 +384,6 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
 
     async function handleRightHud(e: number, axis: string) {
         const change = roundToTwoDecimals(e, 4);
-
         const newSettings = { 
             ...settings(), 
             positions: { 
@@ -413,7 +405,6 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
 
     async function handleLeftHud(e: number, axis: string) {
         const change = roundToTwoDecimals(e, 4);
-
         const newSettings = { 
             ...settings(), 
             positions: { 
@@ -424,13 +415,11 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
                 } 
             }
         };
-        // console.log(newSettings, 'New Settings');
         await updateSettings(newSettings);
         const update = { 
             x: axis === 'x' ? change : settings().positions.leftHud.x, 
             y: axis === 'y' ? change : settings().positions.leftHud.y 
         };
-        // console.log(update, 'Update');
         EventBus.emit('save-settings', newSettings);
         EventBus.emit('update-left-hud-position', update);
     };
@@ -439,13 +428,12 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
     return (
         <div class='center creature-heading' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '0' } : { 'margin-top': '50%' }}>
             <h1 style={font('1.25em')}>Camera</h1>
-            <div style={font('1em')}>Zoom: ({settings().positions.camera?.zoom})</div>
-            <Form.Range 
-                min={0.1} max={1.5} step={0.05} 
-                onChange={(e) => handleCamera(Number(e.target.value))} 
-                value={settings().positions.camera?.zoom} 
-            />
-
+            <div style={font('1em')}>
+            <button class='highlight' onClick={() => handleCamera(Math.max(roundToTwoDecimals(Number(settings().positions.camera?.zoom - 0.05)), 0.5))}
+            >-</button>
+            Zoom: ({settings().positions.camera?.zoom})
+            <button class='highlight' onClick={() => handleCamera(Math.min(roundToTwoDecimals(Number(settings().positions.camera?.zoom + 0.05)), 1.5))}
+            >+</button></div>
             <h1 style={font('1.25em')}>Castbar</h1>
             <div style={font('1em')}>
             <button class='highlight' onClick={() => handleCastbar('Height', settings().positions.castbar.barHeight - 2)}
@@ -596,14 +584,14 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
                 value={settings().positions.actionButtons.spacing} 
             />
             <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleButtons(Math.max(0, settings().positions.actionButtons.x - 0.0125), 'action', 'x')}>-</button>
+                <button class='highlight' onClick={() => handleButtons(Math.max(0, settings().positions.actionButtons.x - 0.0025), 'action', 'x')}>-</button>
                 X: ({settings().positions.actionButtons.x})
-                <button class='highlight' onClick={() => handleButtons(Math.min(1, settings().positions.actionButtons.x + 0.0125), 'action', 'x')}>+</button>
+                <button class='highlight' onClick={() => handleButtons(Math.min(1, settings().positions.actionButtons.x + 0.0025), 'action', 'x')}>+</button>
             </div>
             <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleButtons(Math.max(0, settings().positions.actionButtons.y - 0.0125), 'action', 'y')}>-</button>
+                <button class='highlight' onClick={() => handleButtons(Math.max(0, settings().positions.actionButtons.y - 0.0025), 'action', 'y')}>-</button>
                 Y: ({settings().positions.actionButtons.y})
-                <button class='highlight' onClick={() => handleButtons(Math.min(1, settings().positions.actionButtons.y + 0.0125), 'action', 'y')}>+</button>
+                <button class='highlight' onClick={() => handleButtons(Math.min(1, settings().positions.actionButtons.y + 0.0025), 'action', 'y')}>+</button>
             </div>
 
             <h1 style={font('1.25em')}>Special Buttons</h1>
@@ -650,14 +638,14 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
                 value={settings().positions.specialButtons.spacing} 
             />
             <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleButtons(Math.max(0, settings().positions.specialButtons.x - 0.0125), 'special', 'x')}>-</button>
+                <button class='highlight' onClick={() => handleButtons(Math.max(0, settings().positions.specialButtons.x - 0.0025), 'special', 'x')}>-</button>
                 X: ({settings().positions.specialButtons.x})
-                <button class='highlight' onClick={() => handleButtons(Math.min(1, settings().positions.specialButtons.x + 0.0125), 'special', 'x')}>+</button>
+                <button class='highlight' onClick={() => handleButtons(Math.min(1, settings().positions.specialButtons.x + 0.0025), 'special', 'x')}>+</button>
             </div>
             <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleButtons(Math.max(0, settings().positions.specialButtons.y - 0.0125), 'special', 'y')}>-</button>
+                <button class='highlight' onClick={() => handleButtons(Math.max(0, settings().positions.specialButtons.y - 0.0025), 'special', 'y')}>-</button>
                 Y: ({settings().positions.specialButtons.y})
-                <button class='highlight' onClick={() => handleButtons(Math.min(1, settings().positions.specialButtons.y + 0.0125), 'special', 'y')}>+</button>
+                <button class='highlight' onClick={() => handleButtons(Math.min(1, settings().positions.specialButtons.y + 0.0025), 'special', 'y')}>+</button>
             </div>
 
             <h1 style={font('1.25em')}>FPS Text</h1>
@@ -676,55 +664,53 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
 
             <h1 style={font('1.25em')}>Left (Stance) HUD</h1>
             <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleHudOffset(Math.max(25, settings().positions.leftHud.offset - 0.25), 'left')}>-</button>
+                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.max(25, settings().positions.leftHud.offset - 0.25)), 'left')}>-</button>
                 Offset ({settings().positions.leftHud.offset})
-                <button class='highlight' onClick={() => handleHudOffset(Math.min(60, settings().positions.leftHud.offset + 0.25), 'left')}>+</button>
+                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.min(60, settings().positions.leftHud.offset + 0.25)), 'left')}>+</button>
             </div>
-            <div style={font('1em')}>Scale ({settings().positions.leftHud.scale})</div>
-            <Form.Range 
-                min={0.05} max={0.2} step={0.005} 
-                onChange={(e) => handleHudScale(e, 'left')} 
-                value={settings().positions.leftHud.scale} 
-            />
             <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleLeftHud(Math.max(-0.0125, settings().positions.leftHud.x - 0.0125), 'x')}>-</button>
+                <button class='highlight' onClick={() => handleHudScale(roundToTwoDecimals(Math.max(0.05, settings().positions.leftHud.scale - 0.0025), 4), 'left')}>-</button>
+                    Scale ({settings().positions.leftHud.scale})
+                <button class='highlight' onClick={() => handleHudScale(roundToTwoDecimals(Math.min(0.2, settings().positions.leftHud.scale + 0.0025), 4), 'left')}>+</button>
+            </div>
+            <div style={font('1em')}>
+                <button class='highlight' onClick={() => handleLeftHud(roundToTwoDecimals(Math.max(-0.0025, settings().positions.leftHud.x - 0.0025), 4), 'x')}>-</button>
                 X: ({settings().positions.leftHud.x})
-                <button class='highlight' onClick={() => handleLeftHud(Math.min(1, settings().positions.leftHud.x + 0.0125), 'x')}>+</button>
+                <button class='highlight' onClick={() => handleLeftHud(roundToTwoDecimals(Math.min(1, settings().positions.leftHud.x + 0.0025), 4), 'x')}>+</button>
             </div>
             <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleLeftHud(Math.max(-0.0125, settings().positions.leftHud.y - 0.0125), 'y')}>-</button>
+                <button class='highlight' onClick={() => handleLeftHud(roundToTwoDecimals(Math.max(-0.0025, settings().positions.leftHud.y - 0.0025), 4), 'y')}>-</button>
                 Y: ({settings().positions.leftHud.y})
-                <button class='highlight' onClick={() => handleLeftHud(Math.min(1.1, settings().positions.leftHud.y + 0.0125), 'y')}>+</button>
+                <button class='highlight' onClick={() => handleLeftHud(roundToTwoDecimals(Math.min(1.1, settings().positions.leftHud.y + 0.0025), 4), 'y')}>+</button>
             </div>
 
             <h1 style={font('1.25em')}>Right (Settings) HUD</h1>
             <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleHudOffset(Math.max(25, settings().positions.smallHud.offset - 0.25), 'right')}>-</button>
+                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.max(25, settings().positions.smallHud.offset - 0.25)), 'right')}>-</button>
                 Offset ({settings().positions.smallHud.offset})
-                <button class='highlight' onClick={() => handleHudOffset(Math.min(60, settings().positions.smallHud.offset + 0.25), 'right')}>+</button>
+                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.min(60, settings().positions.smallHud.offset + 0.25)), 'right')}>+</button>
             </div>
-            <div style={font('1em')}>Scale ({settings().positions.smallHud.scale})</div>
-            <Form.Range 
-                min={0.05} max={0.2} step={0.005} 
-                onChange={(e) => handleHudScale(e, 'right')} 
-                value={settings().positions.smallHud.scale} 
-            />
             <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleRightHud(Math.max(-0.0125, settings().positions.smallHud.x - 0.0125), 'x')}>-</button>
+                <button class='highlight' onClick={() => handleHudScale(roundToTwoDecimals(Math.max(0.05, settings().positions.smallHud.scale - 0.0025), 4), 'right')}>-</button>
+                Scale ({settings().positions.smallHud.scale})
+                <button class='highlight' onClick={() => handleHudScale(roundToTwoDecimals(Math.min(0.2, settings().positions.smallHud.scale + 0.0025), 4), 'right')}>+</button>
+            </div>
+            <div style={font('1em')}>
+                <button class='highlight' onClick={() => handleRightHud(roundToTwoDecimals(Math.max(-0.0025, settings().positions.smallHud.x - 0.0025), 4), 'x')}>-</button>
                 X: ({settings().positions.smallHud.x})
-                <button class='highlight' onClick={() => handleRightHud(Math.min(1, settings().positions.smallHud.x + 0.0125), 'x')}>+</button>
+                <button class='highlight' onClick={() => handleRightHud(roundToTwoDecimals(Math.min(1, settings().positions.smallHud.x + 0.0025), 4), 'x')}>+</button>
             </div>
             <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleRightHud(Math.max(-0.0125, settings().positions.smallHud.y - 0.0125), 'y')}>-</button>
+                <button class='highlight' onClick={() => handleRightHud(roundToTwoDecimals(Math.max(-0.0025, settings().positions.smallHud.y - 0.0025), 4), 'y')}>-</button>
                 Y: ({settings().positions.smallHud.y})
-                <button class='highlight' onClick={() => handleRightHud(Math.min(1.1, settings().positions.smallHud.y + 0.0125), 'y')}>+</button>
+                <button class='highlight' onClick={() => handleRightHud(roundToTwoDecimals(Math.min(1.1, settings().positions.smallHud.y + 0.0025), 4), 'y')}>+</button>
             </div>
 
             <h1 style={font('1.25em')}>Solid (Overview) HUD</h1>
             <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleHudOffset(Math.max(0, settings().positions.solidHud.right - 0.5), 'solid')}>-</button>
+                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.max(0, settings().positions.solidHud.right - 0.5)), 'solid')}>-</button>
                 X: ({settings().positions.solidHud.right})
-                <button class='highlight' onClick={() => handleHudOffset(Math.min(20, settings().positions.solidHud.right + 0.5), 'solid')}>+</button>
+                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.min(20, settings().positions.solidHud.right + 0.5)), 'solid')}>+</button>
                 </div>
         </div>
     );

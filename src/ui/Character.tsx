@@ -212,6 +212,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         try {
             const newSettings = { ...settings(), desktop };
             await saveSettings(newSettings);
+            EventBus.emit('update-desktop-cursor', desktop);
         } catch (err) {
             console.warn(err, 'Error Handling Desktop');
         };

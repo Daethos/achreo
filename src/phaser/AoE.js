@@ -1,6 +1,4 @@
-import ScrollingCombatText from "./ScrollingCombatText";
 const { Bodies } = Phaser.Physics.Matter.Matter;
-
 const COLORS = {
     'astrave': 0xFFFF00,
     'blind': 0xCC5500,
@@ -16,7 +14,6 @@ const COLORS = {
     'tendril': 0x00FF00,
     'writhe': 0x080080,
 };
-
 export default class AoE extends Phaser.Physics.Matter.Sprite {
     constructor(scene, type, count = 1, positive = false, enemy = undefined, manual = false, target = undefined) {
         super(scene.matter.world, scene.player.x, scene.player.y + 6, 'target');
@@ -25,7 +22,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setVisible(false);
         this.setScale(0.375); // 375
         this.setOrigin(0.5, 0.5);
-        // this.setOrigin(0.5, -1);
         scene.add.existing(this);
         this.glowFilter = this.scene.plugins.get('rexGlowFilterPipeline');
         this.glowFilter.add(this, {
@@ -51,11 +47,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             this.setCount(scene, type, positive);
         };
     };
-
     cleanAnimation = (scene) => {
         scene.rotateTween(this, 0, false);
     };
-
     setCount = (scene, type, positive) => {
         if (type === 'fyerus') {
             if (scene.player.isMoving) {
@@ -104,7 +98,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             });
         };
     };
-
     setupEnemyCount = (scene, type, positive, enemy) => {
         if (positive === true) {
             scene.time.delayedCall(975, () => {
@@ -144,7 +137,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             });
         };
     };
-
     setEnemyTimer = (scene, enemy) => {
         let scale = 0;
         let count = 0;
@@ -164,7 +156,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             loop: 20,
         });
     };
-    
     setTimer = (scene, manual, target) => {
         let scale = 0.01875;
         let count = 0;
@@ -197,7 +188,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             loop: 19,
         });
     };
-
     setupEnemySensor = (enemy) => {
         const aoeSensor = Bodies.circle(enemy.x, enemy.y, 60, { 
             isSensor: true, label: 'aoeSensor' 
@@ -206,7 +196,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setStatic(true);
         this.sensor = aoeSensor;
     };
-
     setupSensor = (scene, manual, target) => {
         let targ;
         if (target !== undefined) {
@@ -234,7 +223,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setOrigin(0.5, 0.5);
         this.sensor = aoeSensor;
     };
-
     setupEnemyListener = (scene) => {
         scene.matterCollision.addOnCollideStart({
             objectA: [this.sensor],
@@ -266,7 +254,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             context: scene
         });
     };
-
     setupListener = (scene) => {
         scene.matterCollision.addOnCollideStart({
             objectA: [this.sensor],

@@ -80,7 +80,7 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                     </Show>
                     <Show when={caerenic}>
                         <p class='gold' style={{ 'font-size': '0.75em' }}>
-                            Caerenic - You attempt to harnass your caer with your achre, increasing your damage by 15%. 
+                            Caerenic - You attempt to harness your caer with your achre, increasing your damage by 15%. 
                             You move significantly faster. 
                             You receive 25% more damage. 
                         </p>

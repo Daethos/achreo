@@ -269,26 +269,26 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
         EventBus.emit('update-camera-zoom', zoom);
     };
 
-    async function handleFPS(e: any, axis: string) {
-        const change = Number(e.target.value);
-        const newSettings = { 
-            ...settings(), 
-            positions: { 
-                ...settings().positions, 
-                fpsText: {
-                    ...settings().positions.fpsText,
-                    [axis]: change
-                } 
-            } 
-        };
-        await updateSettings(newSettings);
-        const update = { 
-            x: axis === 'x' ? change : settings().positions.fpsText.x, 
-            y: axis === 'y' ? change : settings().positions.fpsText.y 
-        };
-        EventBus.emit('save-settings', newSettings);
-        EventBus.emit('update-fps', update);
-    };
+    // async function handleFPS(e: any, axis: string) {
+    //     const change = Number(e.target.value);
+    //     const newSettings = { 
+    //         ...settings(), 
+    //         positions: { 
+    //             ...settings().positions, 
+    //             fpsText: {
+    //                 ...settings().positions.fpsText,
+    //                 [axis]: change
+    //             } 
+    //         } 
+    //     };
+    //     await updateSettings(newSettings);
+    //     const update = { 
+    //         x: axis === 'x' ? change : settings().positions.fpsText.x, 
+    //         y: axis === 'y' ? change : settings().positions.fpsText.y 
+    //     };
+    //     EventBus.emit('save-settings', newSettings);
+    //     EventBus.emit('update-fps', update);
+    // };
 
     async function handleHudOffset(e: number, side: string) {
         const offset = roundToTwoDecimals(e, 2);

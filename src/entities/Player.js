@@ -1808,7 +1808,7 @@ export default class Player extends Entity {
             onComplete: () => { 
                 this.scene.useGrace(PLAYER.STAMINA.LEAP);
                 this.isLeaping = false; 
-                if (this.touching.length > 0 && this.inCombat === true) {
+                if (this.touching.length > 0) {
                     this.touching.forEach(enemy => {
                         this.scene.writhe(enemy.enemyID, 'leap');
                     });
@@ -1965,15 +1965,15 @@ export default class Player extends Entity {
         this.isParrying = true;
         this.scene.tweens.add({
             targets: this,
-            x: this.x + (direction.x * 250),
-            y: this.y + (direction.y * 250),
-            duration: 500,
+            x: this.x + (direction.x * 300),
+            y: this.y + (direction.y * 300),
+            duration: 600,
             ease: 'Circ.easeOut',
             onStart: () => {
-                this.flickerCarenic(500);  
+                this.flickerCarenic(600);  
             },
             onComplete: () => {
-                if (this.rushedEnemies.length > 0 && this.inCombat === true) {
+                if (this.rushedEnemies.length > 0) {
                     this.rushedEnemies.forEach(enemy => {
                         this.scene.writhe(enemy.enemyID, 'rush');
                     });
@@ -2071,9 +2071,7 @@ export default class Player extends Entity {
             targets: this,
             angle: 360,
             duration: 800,
-            onStart: () => {
-                this.flickerCarenic(3200); 
-            },
+            onStart: () => this.flickerCarenic(3200),
             onLoop: () => {
                 this.isAttacking = true;
                 this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'damage');
@@ -2812,9 +2810,11 @@ export default class Player extends Entity {
 
     // ================= NEGATIVE MACHINE STATES ================= \\
     onConfusedEnter = () => { 
-        this.scene.joystick.joystick.setVisible(false);
-        this.scene.rightJoystick.joystick.setVisible(false);
-        this.scene.actionBar.setVisible(false);
+        if (this.scene.settings.desktop === false) {
+            this.scene.joystick.joystick.setVisible(false);
+            this.scene.rightJoystick.joystick.setVisible(false);
+            this.scene.actionBar.setVisible(false);
+        };
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '?c .on-f-u`SeD~', DURATION.TEXT, 'effect');
         this.spriteWeapon.setVisible(false);
         this.spriteShield.setVisible(false);
@@ -2863,7 +2863,6 @@ export default class Player extends Entity {
     };
     onConfusedUpdate = (_dt) => {
         if (!this.isConfused) this.combatChecker(this.isConfused);
-        // this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
         if (this.moving()) {
             this.anims.play(`player_running`, true);
         } else {
@@ -2872,9 +2871,11 @@ export default class Player extends Entity {
     };
     onConfusedExit = () => { 
         if (this.isConfused) this.isConfused = false;
-        this.scene.joystick.joystick.setVisible(true);
-        this.scene.rightJoystick.joystick.setVisible(true);
-        this.scene.actionBar.setVisible(true);
+        if (this.scene.settings.desktop === false) {  
+            this.scene.joystick.joystick.setVisible(true);
+            this.scene.rightJoystick.joystick.setVisible(true);
+            this.scene.actionBar.setVisible(true);
+        };
         this.anims.play('player_running', true);
         this.spriteWeapon.setVisible(true);
         if (this.confuseTimer) {
@@ -2885,9 +2886,11 @@ export default class Player extends Entity {
     };
 
     onFearedEnter = () => { 
-        this.scene.joystick.joystick.setVisible(false);
-        this.scene.rightJoystick.joystick.setVisible(false);
-        this.scene.actionBar.setVisible(false);
+        if (this.scene.settings.desktop === false) {
+            this.scene.joystick.joystick.setVisible(false);
+            this.scene.rightJoystick.joystick.setVisible(false);
+            this.scene.actionBar.setVisible(false);
+        };
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'F̶e̷a̴r̷e̵d̴', DURATION.TEXT, 'damage');
         this.spriteWeapon.setVisible(false);
         this.spriteShield.setVisible(false);
@@ -2930,7 +2933,6 @@ export default class Player extends Entity {
     };
     onFearedUpdate = (_dt) => {
         if (!this.isFeared) this.combatChecker(this.isFeared);
-        // this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
         if (this.moving()) {
             this.anims.play(`player_running`, true);
         } else {
@@ -2938,9 +2940,11 @@ export default class Player extends Entity {
         };
     };
     onFearedExit = () => { 
-        this.scene.joystick.joystick.setVisible(true);
-        this.scene.rightJoystick.joystick.setVisible(true);
-        this.scene.actionBar.setVisible(true);
+        if (this.scene.settings.desktop === false) {
+            this.scene.joystick.joystick.setVisible(true);
+            this.scene.rightJoystick.joystick.setVisible(true);
+            this.scene.actionBar.setVisible(true);
+        };
         if (this.isFeared) this.isFeared = false;
         this.anims.play('player_running', true);
         this.spriteWeapon.setVisible(true);
@@ -2967,7 +2971,6 @@ export default class Player extends Entity {
         });
     };
     onFrozenExit = () => this.setStatic(false);
-    
 
     onPolymorphedEnter = () => {
         this.scene.joystick.joystick.setVisible(false);
@@ -3026,12 +3029,10 @@ export default class Player extends Entity {
             callbackScope: this,
             repeat: 5,
         }); 
-
     };
     onPolymorphedUpdate = (_dt) => {
         if (!this.isPolymorphed) this.combatChecker(this.isPolymorphed);
         this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
-        // this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
     };
     onPolymorphedExit = () => { 
         this.scene.joystick.joystick.setVisible(true);
@@ -3082,9 +3083,11 @@ export default class Player extends Entity {
     };
 
     onStunnedEnter = () => {
-        this.scene.joystick.joystick.setVisible(false);
-        this.scene.rightJoystick.joystick.setVisible(false);
-        this.scene.actionBar.setVisible(false);
+        if (this.scene.settings.desktop === false) {
+            this.scene.joystick.joystick.setVisible(false);
+            this.scene.rightJoystick.joystick.setVisible(false);
+            this.scene.actionBar.setVisible(false);
+        };
         this.isStunned = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', PLAYER.DURATIONS.STUNNED, 'effect');
         this.scene.input.keyboard.enabled = false;
@@ -3103,9 +3106,11 @@ export default class Player extends Entity {
         this.combatChecker(this.isStunned);
     };
     onStunnedExit = () => {
-        this.scene.joystick.joystick.setVisible(true);
-        this.scene.rightJoystick.joystick.setVisible(true);
-        this.scene.actionBar.setVisible(true);
+        if (this.scene.settings.desktop === false) {
+            this.scene.joystick.joystick.setVisible(true);
+            this.scene.rightJoystick.joystick.setVisible(true);
+            this.scene.actionBar.setVisible(true);
+        };
         this.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.scene.input.keyboard.enabled = true;
         this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);

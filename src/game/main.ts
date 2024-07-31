@@ -23,8 +23,9 @@ const config: Phaser.Types.Core.GameConfig = {
     },
     parent: 'game-container',
     backgroundColor: '#000',
+    disableContextMenu: true,
     dom: {createContainer: true},
-    input: {activePointers: 10},
+    input: {activePointers: 10, mouse:true},
     scene: [Boot,Preloader,MainMenu,MainGame,Intro,Tent],
     physics: {
         default: 'matter',

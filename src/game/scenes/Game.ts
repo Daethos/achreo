@@ -169,7 +169,7 @@ export class Game extends Scene {
         }; 
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 200, 0.0675, 0.0675); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
-        this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+        // this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     // =========================== Music =========================== \\
         this.musicBackground = this.sound.add('background', { volume: this?.settings?.volume ?? 0 / 2, loop: true });
         if (this.settings?.music === true) {
@@ -811,7 +811,6 @@ export class Game extends Scene {
     storm = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
-
         const match = this.player.enemyIdMatch();
         if (match) { // Target Player Attack
             console.log('Matched Storm')
@@ -861,9 +860,7 @@ export class Game extends Scene {
     };
     writhe = (id: string, special?: string): void => {
         if (id === '') return;
-        if (!this.player.inCombat) return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
-
         if (!enemy) {
             if (id === this.player.playerID) {
                 this.combatMachine.action({ data: 20, type: 'Enemy Chiomic' });
@@ -954,7 +951,6 @@ export class Game extends Scene {
         EventBus.emit('setup-npc', data);    
     };
     showDialog = (dialog: boolean): boolean => EventBus.emit('blend-game', { dialogTag: dialog }); // smallHud: dialog
-
     // ============================ Player ============================ \\
     caerenic = (): boolean => EventBus.emit('update-caerenic');
     stalwart = (): boolean => EventBus.emit('update-stalwart');

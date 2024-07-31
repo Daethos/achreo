@@ -1540,7 +1540,6 @@ export default class Enemy extends Entity {
         } else {
             this.setPosition(this.scene.player.x - 16, this.scene.player.y);
         };
-
         if (this.isGlowing === false) {
             this.checkCaerenic(true);
             this.scene.time.delayedCall(500, () => {
@@ -1550,9 +1549,7 @@ export default class Enemy extends Entity {
         this.stateMachine.setState(States.COMBAT);    
     };
     onPursuitUpdate = (_dt) => {};
-    onPursuitExit = () => {
-        this.evaluateCombatDistance();
-    };
+    onPursuitExit = () => this.evaluateCombatDistance();
 
     onRushEnter = () => {
         this.isPerformingSpecial = true;
@@ -1568,9 +1565,9 @@ export default class Enemy extends Entity {
         this.isParrying = true;
         this.scene.tweens.add({
             targets: this,
-            x: this.x + (direction.x * 250),
-            y: this.y + (direction.y * 250),
-            duration: 500,
+            x: this.x + (direction.x * 300),
+            y: this.y + (direction.y * 300),
+            duration: 600,
             ease: 'Circ.easeOut',
             onComplete: () => {
                 if (this.rushedEnemies.length > 0) {
@@ -1603,11 +1600,12 @@ export default class Enemy extends Entity {
             const caerenic = this.scene.state.isCaerenic ? 1.25 : 1;
             const stalwart = this.scene.state.isStalwart ? 0.85 : 1;
             const sacrifice = Math.round(this.ascean?.[this.ascean?.mastery] * caerenic * stalwart * ((this.ascean?.level + 9) / 10));
-            let newPlayerHealth = this.scene.state.newPlayerHealth - sacrifice < 0 ? 0 : this.scene.state.newPlayerHealth - sacrifice;
+            const ratio = sacrifice / this.scene.state.playerHealth;
+            // let newPlayerHealth = this.scene.state.newPlayerHealth - sacrifice < 0 ? 0 : this.scene.state.newPlayerHealth - sacrifice;
             let newComputerHealth = this.health + (sacrifice / 2) > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + (sacrifice / 2);
             const computerActionDescription = `${this.ascean?.name} sacrifices ${sacrifice / 2} health to rip ${sacrifice} from you.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
-            this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: newPlayerHealth, id: this.scene.player.playerID } });
+            this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: -ratio, id: this.scene.player.playerID } });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
         };
         if (this.isGlowing === false) this.checkCaerenic(true);
@@ -1698,12 +1696,13 @@ export default class Enemy extends Entity {
             const caerenic = this.scene.state.isCaerenic ? 1.25 : 1;
             const stalwart = this.scene.state.isStalwart ? 0.85 : 1;
             const suture = Math.round(this.ascean?.[this.ascean?.mastery] / 2 * caerenic * stalwart * ((this.ascean?.level + 9) / 10));
-            let newPlayerHealth = this.scene.state.newPlayerHealth - (suture * 1.25) < 0 ? 0 : this.scene.state.newPlayerHealth - (suture * 1.25);
+            const ratio = suture * 1.25 / this.scene.state.playerHealth;
+            // let newPlayerHealth = this.scene.state.newPlayerHealth - (suture * 1.25) < 0 ? 0 : this.scene.state.newPlayerHealth - (suture * 1.25);
             let newComputerHealth = this.health + suture > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + suture;
             const computerActionDescription = `${this.ascean?.name} sutured ${suture} health from you, absorbing ${suture}.`;
             
             EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
-            this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: newPlayerHealth, id: this.scene.player.playerID } });
+            this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: -ratio, id: this.scene.player.playerID } });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
         };
         
@@ -1753,11 +1752,12 @@ export default class Enemy extends Entity {
                     const caerenic = this.scene.state.isCaerenic ? 1.25 : 1;
                     const stalwart = this.scene.state.isStalwart ? 0.85 : 1;
                     const devour = Math.round(this.combatStats.attributes.healthTotal * 0.03 * caerenic * stalwart * (this.ascean.level + 9) / 10);
-                    let newPlayerHealth = this.scene.state.newPlayerHealth - devour < 0 ? 0 : this.scene.state.newPlayerHealth - devour;
+                    // const ratio = devour / this.scene.state.playerHealth;
+                    // let newPlayerHealth = this.scene.state.newPlayerHealth - devour < 0 ? 0 : this.scene.state.newPlayerHealth - devour;
                     let newComputerHealth = this.health + devour > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + devour;
                     const computerActionDescription = `${this.ascean?.name} tshaers and devours ${devour} health from you.`;
                     EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
-                    this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: newPlayerHealth, id: this.scene.player.playerID } });
+                    this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: -3, id: this.scene.player.playerID } });
                     this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
                 };
             },

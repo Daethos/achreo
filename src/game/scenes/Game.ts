@@ -25,7 +25,6 @@ import NPC from '../../entities/NPC';
 import ParticleManager from '../../phaser/ParticleManager';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
-
 const dimensions = useResizeListener();
 
 export class Game extends Scene {
@@ -102,8 +101,7 @@ export class Game extends Scene {
         this.tweenManager = {};
     // =========================== Camera =========================== \\
         let camera = this.cameras.main;
-        camera.zoom = this.settings.positions?.camera?.zoom || 0.8; // 0.8
-
+        camera.zoom = this.settings.positions?.camera?.zoom || 0.8; // 0.8 
     // =========================== Ascean Test Map =========================== \\
         const map = this.make.tilemap({ key: 'ascean_test' });
         this.map = map;
@@ -142,7 +140,6 @@ export class Game extends Scene {
             this.enemies.push(new Enemy({ scene: this, x: enemy.x, y: enemy.y, texture: 'player_actions', frame: 'player_idle_0' })));
         map?.getObjectLayer('Npcs')?.objects.forEach((npc: any) => 
             this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' })));
-
     // =========================== Camera =========================== \\
         camera.startFollow(this.player, false, 0.1, 0.1, );
         camera.setLerp(0.1, 0.1);
@@ -151,12 +148,10 @@ export class Game extends Scene {
         var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
         this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
         this.setPostFx(this.settings?.postFx, this.settings?.postFx.enable);
-
         this.combatMachine = new CombatMachine(this);
         this.particleManager = new ParticleManager(this);
         this.target = this.add.sprite(0, 0, "target").setDepth(10).setScale(0.15).setVisible(false);
         this.actionBar = new ActionButtons(this);
-
     // =========================== Input Keys =========================== \\
         this.player.inputKeys = {
             up: this?.input?.keyboard?.addKeys('W,UP'),
@@ -189,13 +184,11 @@ export class Game extends Scene {
         //     'FPS: ', { font: '16px Cinzel', color: '#fdf6d8' }
         // );
         // this.fpsText.setScrollFactor(0);
-
     // =========================== Combat Timer =========================== \\
-        this.combatTimerText = this.add.text(window.innerWidth / 2 - 40, window.innerHeight + 30, 'Combat Timer: ', { font: '16px Cinzel', color: '#fdf6d8' });
-        this.combatTimerText.setScrollFactor(0);
-        this.combatTimerText.setVisible(false);
+        // this.combatTimerText = this.add.text(window.innerWidth / 2 - 40, window.innerHeight + 30, 'Combat Timer: ', { font: '16px Cinzel', color: '#fdf6d8' });
+        // this.combatTimerText.setScrollFactor(0);
+        // this.combatTimerText.setVisible(false);
         this.postFxEvent();
-
     // =========================== Joystick =========================== \\
         this.joystick = new Joystick(this, 
             camera.width * this.settings.positions.leftJoystick.x, 
@@ -227,7 +220,7 @@ export class Game extends Scene {
         this.minimap.setBackgroundColor(0x000000); // Suggested
         this.minimap.ignore(this.actionBar);
         // this.minimap.ignore(this.fpsText);
-        this.minimap.ignore(this.combatTimerText);
+        // this.minimap.ignore(this.combatTimerText);
         this.minimap.ignore(this.target);
         this.minimap.ignore(this.joystick.joystick.base);
         this.minimap.ignore(this.joystick.joystick.thumb);
@@ -235,7 +228,6 @@ export class Game extends Scene {
         this.minimap.ignore(this.rightJoystick.joystick.thumb);
         this.minimap.ignore(this.rightJoystick.pointer);
         this.minimap.setVisible(false);
-
         this.minimap.on('pointerdown', (pointer: any) => {
             this.minimap.scrollX = pointer.worldX; 
             this.minimap.scrollY = pointer.worldY; 
@@ -352,7 +344,6 @@ export class Game extends Scene {
                 enemy.stateMachine.setState(States.CHASE);
             };
         });
-
         EventBus.on('equip-sound', () => this.sound.play('equip', { volume: this.settings.volume }));
         EventBus.on('unequip-sound', () => this.sound.play('unequip', { volume: this.settings.volume }));
         EventBus.on('purchase-sound', () => this.sound.play('purchase', { volume: this.settings.volume }));
@@ -607,12 +598,10 @@ export class Game extends Scene {
         EventBus.emit('request-settings');
         return this.settings;
     };
-
     // ================== Combat ================== \\
     getEnemy = (id: string): Enemy => {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };
-
     getWorldPointer = () => {
         // if (this.settings.desktop === true) {
         //     console.log('Desktop Enabled, Fetching Mouse Pointer');
@@ -620,7 +609,6 @@ export class Game extends Scene {
         //     // const pointer = this.rightJoystick.pointer;
         //     const pointer = this.input.activePointer;  // Ensure activePointer is correct
         //     const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
-        
         //     console.log(worldPoint, 'Mouse?', pointer, 'Pointer?');
         //     const point = this.cameras.main.getWorldPoint(this.mousePointer.x, this.mousePointer.y);
         //     return point;
@@ -902,7 +890,6 @@ export class Game extends Scene {
     };
 
     // ============================ Game ============================ \\
-
     rotateTween = (tween: any, count: number, active: boolean) => {
         if (active === true) {
             this.tweenManager[tween.name] = this.tweens.add({

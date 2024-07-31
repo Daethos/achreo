@@ -16,7 +16,7 @@ import { PrayerModal } from '../utility/buttons';
 import { GameState } from '../stores/game';
 import { EnemySheet } from '../utility/enemy';
 
-function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: Accessor<boolean>, setShow: Setter<boolean> }) {
+function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, show: Accessor<boolean>, setShow: Setter<boolean>; game: Accessor<GameState> }) {
     const [enemy, setEnemy] = createSignal(state().computer);
     const [attribute, setAttribute] = createSignal(Attributes[0]);
     const [equipment, setEquipment] = createSignal<Equipment | undefined>(state().computerWeapons[0]);
@@ -60,7 +60,7 @@ function EnemyModal({ state, show, setShow }: { state: Accessor<Combat>, show: A
                     {state().computer?.description}
                 </h2>
                 <div style={{ transform: 'scale(0.875)', 'margin-top': '3%' }}>
-                    <HealthBar combat={state} enemy={true} />
+                    <HealthBar combat={state} enemy={true} game={game} />
                 </div>
                 <div style={{ color: '#fdf6d8', 'margin-top': '9.5%', 'font-size': '0.875em' }}>
                     Level <span class='gold'>{state().computer?.level}</span> | Mastery <span class='gold'>{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
@@ -94,12 +94,9 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
     const [prayerShow, setPrayerShow] = createSignal(false);
     const [effect, setEffect] = createSignal<StatusEffect>();
 
-    createEffect(() => {
-        setEnemyHealthPercentage(Math.round((state().newComputerHealth/state().computerHealth) * 100));
-    }); 
+    createEffect(() => setEnemyHealthPercentage(Math.round((state().newComputerHealth/state().computerHealth) * 100))); 
 
     function fetchEnemy(enemy: EnemySheet) {
-        // console.log(enemy.id, enemy.game.name, 'fetchEnemy');
         EventBus.emit('setup-enemy', enemy);
         EventBus.emit('tab-target', enemy);    
     };
@@ -183,7 +180,7 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
                     </Show> 
             )})}
             <Show when={showModal()}>
-                <EnemyModal state={state} show={showModal} setShow={setShowModal} /> 
+                <EnemyModal state={state} show={showModal} setShow={setShowModal} game={game} /> 
             </Show>
             <Show when={itemShow() && state().computerWeapons?.[0]}>
                 <div class='modal' onClick={() => setItemShow(!itemShow)}>

@@ -37,7 +37,7 @@ export default function CombatUI({ state, game, stamina, grace }: Props) {
     const [staminaShow, setStaminaShow] = createSignal(false);
     const [graceShow, setGraceShow] = createSignal(false);
     const [playerHealthPercentage, setPlayerHealthPercentage] = createSignal(0); 
-    const [display, setDisplay] = createSignal<any>('FULL');
+    const [display, setDisplay] = createSignal<any>(game().healthDisplay);
     const [healthDisplay, setHealthDisplay] = createSignal<any>('');
     createEffect(() => setPlayerHealthPercentage(Math.round((state().newPlayerHealth/state().playerHealth) * 100)));  
     createEffect(() => {
@@ -67,8 +67,8 @@ export default function CombatUI({ state, game, stamina, grace }: Props) {
     };
     const changeDisplay = () => {
         const nextView = DISPLAYS[display() as keyof typeof DISPLAYS].NEXT;
-        console.log(nextView, 'Next View');
-        setDisplay(nextView)
+        setDisplay(nextView);
+        EventBus.emit('blend-game', { healthDisplay: nextView });
     };
     // function createPrayer() {
     //     const computer = initAscean;

@@ -26,8 +26,8 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
             <h2 class='p-3'>
                 You are <span class='gold'>{newAscean()?.name}</span>, {originArticle} <span class='gold'>{newAscean()?.origin} {newAscean()?.sex === 'Man' ? 'male' : 'female'}</span> of your homeland, recently matured and venturing to the Ascea. 
                 By your own admission, you are {descArticle} <span class='gold'>{newAscean()?.description}</span>.
-                The armor which keeps you safe is <span class='gold'>{newAscean()?.preference}</span>--may you wear it well. Your mastery lies in <span class='gold'>{newAscean()?.mastery.charAt(0).toUpperCase() + newAscean()?.mastery.slice(1)}</span>,
-                in a sense it's how you perceive this world. Your faith is <span class='gold'>{newAscean()?.faith}</span>, the worship of <span class='gold'>{name()}</span>. {character()} 
+                Your armor of choice which keeps you safe is <span class='gold'>{newAscean()?.preference}</span>. Your mastery lies in <span class='gold'>{newAscean()?.mastery.charAt(0).toUpperCase() + newAscean()?.mastery.slice(1)}</span>, and it is said that,
+                in some sense, that is how one perceives this world. Your faith is <span class='gold'>{newAscean()?.faith}</span>, the worship of <span class='gold'>{name()}</span>. {character()} 
             </h2>
         </div>
         <Show when={dimensions().ORIENTATION === 'landscape'} fallback={<>

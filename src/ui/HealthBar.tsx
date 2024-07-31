@@ -1,5 +1,7 @@
-import { createSignal, createEffect, Accessor } from 'solid-js';
+import { createSignal, Accessor, createMemo } from 'solid-js';
 import { Combat } from '../stores/combat';
+import { GameState } from '../stores/game';
+import { EventBus } from '../game/EventBus';
 const DISPLAYS = {
     FULL: {KEY:'FULL', NEXT:'NUMBER'},
     NUMBER: {KEY:'NUMBER', NEXT:'BARE'},
@@ -7,13 +9,13 @@ const DISPLAYS = {
     PERCENT: {KEY:'PERCENT', NEXT:'NONE'},
     NONE: {KEY:'NONE', NEXT:'FULL'},
 };
-interface Props {combat: Accessor<Combat>;enemy?: boolean;};
-export default function HealthBar({ combat, enemy }: Props) {
+interface Props {combat: Accessor<Combat>;enemy?: boolean;game: Accessor<GameState>};
+export default function HealthBar({ combat, enemy, game }: Props) {
     const [playerHealthPercentage, setPlayerHealthPercentage] = createSignal(0);
     const [computerHealthPercentage, setComputerHealthPercentage] = createSignal(0);
-    const [display, setDisplay] = createSignal<any>('FULL');
+    const [display, setDisplay] = createSignal<any>(game().healthDisplay);
     const [healthDisplay, setHealthDisplay] = createSignal<any>('');
-    createEffect(() => {
+    createMemo(() => {
         if (enemy) {
             setComputerHealthPercentage(Math.round((combat().newComputerHealth/combat().computerHealth) * 100));
         } else {
@@ -33,8 +35,8 @@ export default function HealthBar({ combat, enemy }: Props) {
     });
     const changeDisplay = () => {
         const nextView = DISPLAYS[display() as keyof typeof DISPLAYS].NEXT;
-        console.log(nextView, 'Next View')
-        setDisplay(nextView)
+        setDisplay(nextView);
+        EventBus.emit('blend-game', { healthDisplay: nextView });
     };
     return <div class='healthbar' style={{ 'align-self': 'center', height: '6.5%' }} onClick={changeDisplay}>
         <p class='playerPortrait center' style={{ color: 'purple', 'font-family': 'Cinzel Regular', 'text-shadow': '0 0 0 #000' }}>

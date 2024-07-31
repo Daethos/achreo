@@ -8,10 +8,16 @@ export type Screen = {
 };
 
 export const SCREENS = {
+    'PREMADE': {
+        KEY: 'PREMADE',
+        TEXT: 'Name',
+        PREV: 'COMPLETE',
+        NEXT: 'CHARACTER'
+    },
     'CHARACTER': {
         KEY: 'CHARACTER',
         TEXT: 'Name',
-        PREV: 'COMPLETE',
+        PREV: 'PREMADE',
         NEXT: 'ORIGIN'
     },
     'ORIGIN': {
@@ -36,15 +42,21 @@ export const SCREENS = {
         KEY: 'COMPLETE',
         TEXT: 'Create',
         PREV: 'ATTRIBUTES',
-        NEXT: 'CHARACTER'
+        NEXT: 'PREMADE'
     }
 };
 
 export const LANDSCAPE_SCREENS = {
+    'PREMADE': {
+        KEY: 'PREMADE',
+        TEXT: 'Premade',
+        PREV: 'COMPLETE',
+        NEXT: 'CHARACTER'
+    },
     'CHARACTER': {
         KEY: 'CHARACTER',
         TEXT: 'Name',
-        PREV: 'COMPLETE',
+        PREV: 'PREMADE',
         NEXT: 'ATTRIBUTES'
     },
     'ATTRIBUTES': {
@@ -57,7 +69,7 @@ export const LANDSCAPE_SCREENS = {
         KEY: 'COMPLETE',
         TEXT: 'Create',
         PREV: 'ATTRIBUTES',
-        NEXT: 'CHARACTER'
+        NEXT: 'PREMADE'
     }
 };
 

@@ -60,17 +60,14 @@ class Particle {
                         player.particleEffect.success = true;
                         return;
                     };
-
                     if (other.gameObjectB?.isMalicing && !player.isAstrifying) {
                         other.gameObjectB?.maliceHit();
                     };
                     if (other.gameObjectB?.isMending && !player.isAstrifying) {
                         other.gameObjectB?.mendHit();
                     };
-
                     const match = this.scene.state?.enemyID === other.gameObjectB.enemyID;
                     player.attackedTarget = other.gameObjectB;
-                    
                     if (match === true) {
                         this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: this.action }});
                     } else {

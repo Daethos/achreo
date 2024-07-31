@@ -652,7 +652,6 @@ export default class Player extends Entity {
         const enemies = this.scene.enemies;
         for (let i = 0; i < enemies.length; i++) {
             if (enemies[i].inCombat === true) {
-                console.log('CLEARING COMPUTER COMBAT WIN');
                 enemies[i].clearCombatWin();
             };
         };
@@ -1566,8 +1565,7 @@ export default class Player extends Entity {
             const drained = Math.round(this.scene.state.playerHealth * 0.03 * (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10));
             const newPlayerHealth = drained / this.scene.state.playerHealth * 100;
             const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
-            const tshaeralDescription =
-                `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
+            const tshaeralDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
 
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription: tshaeralDescription });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: newPlayerHealth, id: this.playerID } });
@@ -2214,7 +2212,7 @@ export default class Player extends Entity {
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Enveloped', 500, 'effect');
         this.scene.useGrace(40);
-        if (this.stamina - 40 <= 0) {
+        if (this.grace - 40 <= 0) {
             this.isEnveloping = false;
         };
     };
@@ -2386,7 +2384,7 @@ export default class Player extends Entity {
     recoverHit = () => {
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Recovered', 500, 'effect');
-        this.scene.useGrace(-25);
+        this.scene.useStamina(-25);
     };
 
     onRenewalEnter = () => {
@@ -2473,6 +2471,7 @@ export default class Player extends Entity {
         this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
         this.scene.useGrace(PLAYER.STAMINA.SHIMMER);
         this.setTimeEvent('shimmerCooldown', PLAYER.COOLDOWNS.MODERATE);
+        this.adjustSpeed(PLAYER.SPEED.STEALTH);
         if (!this.isStealthing) this.stealthEffect(true);    
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIMMER, () => {
             this.isShimmering = false;
@@ -2482,7 +2481,10 @@ export default class Player extends Entity {
         });
     };
     onShimmerUpdate = (_dt) => {if (!this.isShimmering) this.metaMachine.setState(States.CLEAN);};
-    onShimmerExit = () => this.stealthEffect(false);
+    onShimmerExit = () => {
+        this.stealthEffect(false)
+        this.adjustSpeed(-PLAYER.SPEED.STEALTH);
+    };
 
     shimmerHit = () => {
         const shimmers = ['It fades through you', "You simply weren't there", "Perhaps you never were", "They don't seem certain of you at all"];

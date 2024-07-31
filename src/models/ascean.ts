@@ -144,14 +144,12 @@ async function createAscean(data: any, template?: boolean): Promise<Ascean> {
         default:
             break;
     };
-
     const strength = parseInt(data.strength);
     const agility = parseInt(data.agility);
     const achre = parseInt(data.achre);
     const caeren = parseInt(data.caeren);
     const physical = strength + agility;
     const magical = achre + caeren;
-
     if (faith === 'Adherent') {
         if (physical > magical) {
             if (strength > agility) {
@@ -201,20 +199,17 @@ async function createAscean(data: any, template?: boolean): Promise<Ascean> {
             };
         };
     };
-
     const weaponOne = Weapons.find(item => (item.name === data.weaponOne && item.rarity === 'Common'));
     const weaponTwo = Weapons.find(item => (item.name === data.weaponTwo && item.rarity === 'Common'));
     const helmet = data.helmet;
     const chest = data.chest;
     const legs = data.legs;
     const shield = data.shield;
-
     const weaponThree = Weapons.find(item => item.rarity === 'Default');
     const ringOne = Rings.find(ring => ring.name === "Empty Ring Slot");
     const ringTwo = Rings.find(ring => ring.name === "Empty Ring Slot Two");
     const amulet = Amulets.find(amulet => amulet.rarity === 'Default');
     const trinket = Trinkets.find(trinket => trinket.rarity === 'Default');
-
     if (!template) {
         await mutate([weaponOne, weaponTwo, shield, weaponThree, helmet, chest, legs, ringOne, ringTwo, amulet, trinket] as any[], 'Common');
     };
@@ -235,14 +230,13 @@ async function createAscean(data: any, template?: boolean): Promise<Ascean> {
             amulet: amulet,
             trinket: trinket,
             currency: {
-                silver: data.kyosir * 3,
-                gold: 0
+                silver: Math.round(Math.random() * data.kyosir * 5.5),
+                gold: data.kyosir === 18 ? 1 : 0
             },
             experience: 0,
             imgUrl: `../assets/images/${data.origin}-${data.sex}.jpg`
         });
         return ascean;
-    
     } else {
         const ascean = new Ascean({
             ...data,
@@ -259,8 +253,8 @@ async function createAscean(data: any, template?: boolean): Promise<Ascean> {
             amulet: amulet?._id,
             trinket: trinket?._id,
             currency: {
-                silver: data.kyosir * 3,
-                gold: 0
+                silver: Math.round(Math.random() * data.kyosir * 5.5),
+                gold: data.kyosir === 18 ? 1 : 0
             },
             experience: 0,
             imgUrl: `../assets/images/${data.origin}-${data.sex}.jpg`

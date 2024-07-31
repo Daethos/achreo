@@ -79,6 +79,7 @@ export class Game extends Scene {
     matterCollision: any;
     smallHud: SmallHud;
     beam: any;
+    mousePointer: PointerEvent;
 
     constructor () {
         super('Game');
@@ -122,7 +123,6 @@ export class Game extends Scene {
         map.createLayer('Tile Layer 3 - Plants', decorations as Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer - Campfire', campfire as Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer - Lights', light as Tilemaps.Tileset, 0, 0);
-        
         [layer0, layer1, layerC, layer4, layer5, layer6].forEach((layer, index) => {
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
@@ -130,7 +130,6 @@ export class Game extends Scene {
             layer?.setDepth(3);
         });
         // this.matter.world.createDebugGraphic(); 
-
         const objectLayer = map.getObjectLayer('navmesh');
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;
@@ -138,7 +137,6 @@ export class Game extends Scene {
         // this.navMesh.enableDebug(debugGraphics); 
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
         (this.sys as any).animatedTiles.init(this.map);
-
         this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
         map?.getObjectLayer('Enemies')?.objects.forEach((enemy: any) => 
             this.enemies.push(new Enemy({ scene: this, x: enemy.x, y: enemy.y, texture: 'player_actions', frame: 'player_idle_0' })));
@@ -174,10 +172,9 @@ export class Game extends Scene {
             shift: this?.input?.keyboard?.addKeys('SHIFT'),
             firewater: this?.input?.keyboard?.addKeys('T'),
         }; 
-
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 200, 0.0675, 0.0675); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
-        
+        this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     // =========================== Music =========================== \\
         this.musicBackground = this.sound.add('background', { volume: this?.settings?.volume ?? 0 / 2, loop: true });
         if (this.settings?.music === true) {
@@ -463,6 +460,10 @@ export class Game extends Scene {
             let camera = this.cameras.main;
             camera.zoom = zoom;
         });
+        // this.input.on('pointermove', (pointer: PointerEvent) => {
+        //     console.log(pointer, 'Pointer Over!');
+        //     this.mousePointer = pointer;
+        // });
     };
 
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
@@ -613,6 +614,18 @@ export class Game extends Scene {
     };
 
     getWorldPointer = () => {
+        // if (this.settings.desktop === true) {
+        //     console.log('Desktop Enabled, Fetching Mouse Pointer');
+        //     const mouse = { x: this.input.activePointer.worldX, y: this.input.activePointer.worldY };
+        //     // const pointer = this.rightJoystick.pointer;
+        //     const pointer = this.input.activePointer;  // Ensure activePointer is correct
+        //     const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+        
+        //     console.log(worldPoint, 'Mouse?', pointer, 'Pointer?');
+        //     const point = this.cameras.main.getWorldPoint(this.mousePointer.x, this.mousePointer.y);
+        //     return point;
+        // } else {
+        // };
         const pointer = this.rightJoystick.pointer;
         const point = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
         return point;
@@ -700,7 +713,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.65) * (this.player.isCaerenic ? 1.15 : 1) * ((this.state.player?.level as number + 9) / 10);
+            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.5) * (this.player.isCaerenic ? 1.15 : 1) * ((this.state.player?.level as number + 9) / 10);
             const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
             enemy.isSlowed = true;

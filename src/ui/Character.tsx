@@ -751,7 +751,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                             {combatState()?.player?.name}
                         </div>
                         <Suspense fallback={<Puff color="gold"/>}>
-                            <HealthBar combat={combatState} />
+                            <HealthBar combat={combatState} enemy={false} game={game} />
                         </Suspense>
                         <div style={dimensions().ORIENTATION === 'landscape' ? { 'margin-left': '0', 'margin-top': '7.5%', transform: 'scale(0.9)' } : { 'margin-left': '5%', transform: 'scale(0.75)', 'margin-top': '20%' }}>
                         <Suspense fallback={<Puff color="gold"/>}>
@@ -760,7 +760,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                         </div>
                         <div style={{ 'margin-top': '-5%' }}>
                             <Suspense fallback={<Puff color="gold"/>}>
-                                <ExperienceBar ascean={ascean} />
+                                <ExperienceBar ascean={ascean} game={game} />
                             </Suspense>
                         </div>
                     </div>

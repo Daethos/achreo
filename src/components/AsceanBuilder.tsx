@@ -1,8 +1,11 @@
-import { createSignal, Show, Switch, Match, Accessor, Setter, lazy, Suspense } from "solid-js";
+import { createSignal, For, Show, Switch, Match, Accessor, Setter, lazy, Suspense } from "solid-js";
 import { useResizeListener } from "../utility/dimensions";
 import { Menu, SCREENS } from "../utility/screens";
-import { CharacterSheet } from "../utility/ascean";
+import { CharacterSheet, STARTING_CHARACTERS } from "../utility/ascean";
 import { Puff } from 'solid-spinner';
+import { masteryColor } from "../utility/styling";
+import { Attributes } from "../utility/attributes";
+import AttributeModal from "./Attributes";
 const Character = lazy(async () => await import("./Character"));
 const Sex = lazy(async () => await import('./Sex'));
 const Origin = lazy(async () => await import("./Origin"));
@@ -15,7 +18,18 @@ const Preview = lazy(async () => await import("./Preview"));
 
 export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet>, menu: Accessor<Menu> }) {
     const [prevMastery, setPrevMastery] = createSignal('');
+    const [attrShow, setAttrShow] = createSignal(false);
+    const [attribute, setAttribute] = createSignal(Attributes[0]);
     const dimensions = useResizeListener();
+    const photo = { 'height': dimensions().ORIENTATION === 'landscape' ? 'auto' : 'auto', 'width': dimensions().ORIENTATION === 'landscape' ? '5vw' : '15vw', 'top': dimensions().ORIENTATION === 'landscape' ? '3vh' : '0', 'left': dimensions().ORIENTATION === 'landscape' ? '20vw' : '3vw', 'border': '0.15em solid #fdf6d8', 'border-radius': '50%',  };
+    const font = { 'font-size': '1em', margin: '0' };
+    const inline = { width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block' };
+    function toggle(attr: string) {
+        const attribute = Attributes.find(a => a.name === attr);
+        console.log(attribute, 'Attribute?');
+        setAttribute(Attributes.find(a => a.name === attr) as any);
+        setAttrShow(!attrShow());
+    };
     return <div class='stat-block superCenter' style={{ overflow: 'scroll', 'scrollbar-width': 'none' }}>
         <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION !== 'landscape'}>
             <Preview newAscean={newAscean} />
@@ -82,6 +96,64 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
         }> 
         {/* <<---------- LANDSCAPE ---------->> */}
             <Switch>
+                <Match when={menu().screen === SCREENS.PREMADE.KEY}>
+                    <div class='drop-25 left' style={{ height: '82.5%', width: '48%', display: 'inline-block', 'margin-top': '2.5%', overflow: 'scroll', 'scrollbar-width': 'none' }}>
+                        <Suspense fallback={<Puff color="gold" />}>
+                        <For each={STARTING_CHARACTERS}>
+                            {(ascean, _index) => (
+                                <div class='border' onClick={() => setNewAscean(ascean)} style={{ width: '70%', margin: '0.5em auto', 'border-color': masteryColor(ascean.mastery) }}>
+                                    <h5 class='highlight gold' style={{ 'font-family': 'Cinzel-Regular' }}>{ascean.name.split(' ')[0]}</h5>
+                                    <img style={{...photo, 'border-color': masteryColor(ascean.mastery)}} src={`../assets/images/${ascean.origin}-${ascean.sex}.jpg`} /><br />
+                                    <h5 class='highlight gold' style={{ 'font-family': 'Cinzel-Regular' }}>{ascean.mastery.charAt(0).toUpperCase() + ascean.mastery.slice(1)}</h5>
+                                </div>
+                            )}
+                        </For>
+                        </Suspense>
+                    </div>
+                    <div class='drop-25 right' style={{ height: '82.5%', width: '48%', display: 'inline-block' }}>
+                        <Suspense fallback={<Puff color="gold" />}>
+                        <div class='creature-heading center' style={{ width: '90%' }}>
+                            <h1>{newAscean().name}</h1>
+                            <h2>{newAscean().description}</h2>
+                            <img src={`../assets/images/${newAscean().origin}-${newAscean().sex}.jpg`} id='origin-pic' style={{ 'border-color': masteryColor(newAscean().mastery) }} />
+                            <p style={{margin:'2%'}}>Armor: <span class='gold'>{newAscean().preference}</span></p>
+                            <p style={{margin:'2%'}}>Faith: <span class='gold'>{newAscean().faith}</span> | Mastery: <span class='gold'>{newAscean().mastery.charAt(0).toUpperCase() + newAscean().mastery.slice(1)}</span></p>
+                            <div style={{ display: 'inline-flex' }}>
+                            <div style={inline}>
+                                <button class='buttonBorderless' onClick={() => toggle('constitution')} style={font}>Con</button>
+                                <p class='gold' style={font}>{newAscean()?.constitution}</p>
+                            </div>
+                            <div>{'\n'}</div>
+                            <div style={inline}>
+                                <button class='buttonBorderless' onClick={() => toggle('strength')} style={font}>Str</button>
+                                <p class='gold' style={font}>{newAscean()?.strength}</p>
+                            </div>
+                            <div>{'\n'}</div>
+
+                            <div style={inline}>
+                                <button class='buttonBorderless' onClick={() => toggle('agility')} style={font}>Agi</button>
+                                <p class='gold' style={font}> {newAscean()?.agility}</p>
+                            </div>
+                            <div>{'\n'}</div>
+                            <div style={inline}>
+                                <button class='buttonBorderless' onClick={() => toggle('achre')} style={font}>Ach</button>
+                                <p class='gold' style={font}>{newAscean()?.achre}</p>
+                            </div>
+                            <div>{'\n'}</div>
+                            <div style={inline}>
+                                <button class='buttonBorderless' onClick={() => toggle('caeren')} style={font}>Caer</button>
+                                <p class='gold' style={font}>{newAscean()?.caeren}</p>
+                            </div>
+                            <div>{'\n'}</div>
+                            <div style={inline}>
+                                <button class='buttonBorderless' onClick={() => toggle('kyosir')} style={font}>Kyo</button>
+                                <p class='gold' style={font}>{newAscean()?.kyosir}</p>
+                            </div>
+                            </div>
+                        </div>
+                        </Suspense>
+                    </div>
+                </Match>
                 <Match when={menu().screen === SCREENS.CHARACTER.KEY}>
                     <div class='drop-25 left' style={{ height: '82.5%', width: '48%', display: 'inline-block' }}>
                         <Suspense fallback={<Puff color="gold" />}>
@@ -121,6 +193,11 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
                         </Suspense>
                 </Match>
             </Switch> 
+        </Show>
+        <Show when={attrShow()}>
+        <div class='modal' onClick={() => setAttrShow(!attrShow())}>
+            <AttributeModal attribute={attribute()}/>
+        </div> 
         </Show>
     </div>;
 };

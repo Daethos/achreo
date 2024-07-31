@@ -53,6 +53,9 @@ export interface GameState {
     currentNode: DialogNode | undefined;
     renderedOptions: DialogNodeOption[];
     renderedText: string;
+
+    healthDisplay: string;
+    experienceDisplay: string;
 };
 
 export const initGame: GameState = {
@@ -108,4 +111,7 @@ export const initGame: GameState = {
     currentNode: undefined,
     renderedOptions: [],
     renderedText: '',
+
+    healthDisplay: 'FULL',
+    experienceDisplay: 'FULL',
 };

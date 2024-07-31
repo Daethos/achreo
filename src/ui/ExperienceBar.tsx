@@ -1,5 +1,7 @@
 import { createSignal, createEffect, Accessor } from 'solid-js';
 import Ascean from '../models/ascean';
+import { GameState } from '../stores/game';
+import { EventBus } from '../game/EventBus';
 const DISPLAYS = {
     FULL: {KEY:'FULL', NEXT:'NUMBER'},
     NUMBER: {KEY:'NUMBER', NEXT:'BARE'},
@@ -7,11 +9,11 @@ const DISPLAYS = {
     PERCENT: {KEY:'PERCENT', NEXT:'NONE'},
     NONE: {KEY:'NONE', NEXT:'FULL'},
 };
-interface Props {ascean: Accessor<Ascean>;};
-export default function ExperienceBar({ ascean }: Props) {
+interface Props {ascean: Accessor<Ascean>;game: Accessor<GameState>};
+export default function ExperienceBar({ ascean, game }: Props) {
     const [experiencePercentage, setExperiencePercentage] = createSignal(0);
     const [experience, setExperience] = createSignal(0);
-    const [display, setDisplay] = createSignal<any>('FULL');
+    const [display, setDisplay] = createSignal<any>(game().experienceDisplay);
     const [experienceDisplay, setExperienceDisplay] = createSignal<any>('');
     createEffect(() => {
         let newPercentage = Math.round((ascean().experience/(ascean().level * 1000) * 100));
@@ -31,8 +33,8 @@ export default function ExperienceBar({ ascean }: Props) {
     });
     const changeDisplay = () => {
         const nextView = DISPLAYS[display() as keyof typeof DISPLAYS].NEXT;
-        console.log(nextView, 'Next View')
-        setDisplay(nextView)
+        setDisplay(nextView);
+        EventBus.emit('blend-game', { experienceDisplay: nextView });
     };
     return <div class='healthbar' onClick={changeDisplay} style={{ height: '6.25%' }}>
         <p class='playerPortrait center' style={{ color: '#ffd700' }}>{experienceDisplay()}</p>

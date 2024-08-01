@@ -57,7 +57,6 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
         blessPlayer: () => blessPlayer(),
         rebukePlayer: () => rebukePlayer(),
     };
-
     createEffect(() => {
         if (tutorial() === 'deity') {
             setDeity(`<div class='typewriterContainer' key='phenomena'>
@@ -77,7 +76,7 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 ^500 "Who are you?" 
                 </p>
                 <p class='journeyText'>
-                    [If you wish to peer into the land of Hush and Tendril and begin a journey of yourself and what you mean to this world, click upon the avatar. You may rebuke this ^500 calling.] 
+                    [If you wish to peer into the land of Hush and Tendril and begin a journey of yourself and what you mean to this world, click upon the avatar. You may rebuke this calling.] 
                 </p>
                 <button class='rebukeButton' data-function-name='rebukePlayer'>X</button>
                 </div>`
@@ -112,7 +111,7 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
             EventBus.emit('update-small-hud');
             await exitTutorial();
         } catch (err: any) {
-            console.log(err, '%c <- You have an error in blessing a player', 'color: red')
+            console.warn(err, '%c <- You have an error in blessing a player', 'color: red');
         };
     };
     async function rebukePlayer(): Promise<void> {
@@ -130,7 +129,7 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
             EventBus.emit('update-small-hud');
             await exitTutorial();
         } catch (err: any) {
-            console.log(err, '%c <- You have an error in rebuking a player', 'color: red');
+            console.warn(err, '%c <- You have an error in rebuking a player', 'color: red');
         };
     };
     async function exitTutorial(): Promise<void> {
@@ -147,8 +146,8 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
             { tutorial() === 'boot' && <div>
                 <p class='cornerTL gold highlight' style={{ left: '0', top: '17.5%', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                    Game HUD {arrows.up} <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[This Displays your Name, Health, Stamina, and main Weapon <br />
-                        Click your Name or Weapon to Display More Information]</span>
+                    <span class='super' style={{ color: '#fdf6d8' }}>[This Displays your Name, Health, Stamina, Grace and Weapon <br />
+                        Click your name, weapon or something else to Display More Information]</span>
                 </p>
                 <p class='verticalTop gold highlight' style={{ top: '2em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                    FPS {arrows.up} <br />
@@ -156,13 +155,13 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 </p>
                 <p class='cornerTR gold highlight' style={{ right: '0', top: '10%', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                     Specials (Black) {arrows.down} <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[Actions of an Othernature that are only available during Combat. <br />
-                        These abilities are much more varied than physical actions.]</span>
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Actions of an othernature that are only available during combat. <br />
+                        These abilities are much more varied than physical actions, augmented by your mastery.]</span>
                 </p>
                 <p class='verticalBottom gold highlight' style={{ bottom: '10%', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                     Actions (Purple) {arrows.right} <br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[Physical Actions that perform various attacks and movements. <br />
-                        Movement can still be used outside of combat, attacks become ineffective.]</span>
+                        Each action performs a similar but distinct behavior.]</span>
                 </p>
                 <p class='middleRight gold highlight' style={{ right: '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                     Joystick (Aim) {arrows.down} <br />
@@ -175,24 +174,24 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
             </div> }
             { tutorial() === 'death' && <div>
                 <p class='cornerTL gold highlight' style={{ left: '0', top: '5em', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
-                   Your Health {arrows.up} <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[It's 0 and Red. Get used to seeing that.]</span>
+                   Your Health! {arrows.up} <br />
+                    <span class='super' style={{ color: '#fdf6d8' }}>[It's 0 and Red. You may get used to seeing that, unfortunately.]</span>
                 </p>
                 <p class='verticalTop gold highlight' style={{ 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
-                    {arrows.left} Your Weapon <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[Perhaps it isn't your fault, it's simply the tool. <br /> Don't forget its damage types and your prayers!]</span>
+                    {arrows.left} Your Weapon? <br />
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Perhaps it isn't your fault, it's simply the tool you possess. Do you have another? <br /> Don't forget its damage types and your prayers!]</span>
                 </p>
                 <p class='cornerTR gold highlight' style={{ top: '5em', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                     Specials Actions {arrows.down} <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[Perhaps there are too many buttons? Maybe just have one big one?]</span>
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Perhaps there are too many buttons? Juggling five specials on top of physicals. Maybe just have one big one?]</span>
                 </p>
                 <p class='verticalBottom gold highlight' style={{ bottom: '0', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                     So You Died (I'm Sorry) <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[At the moment, death isn't so bad. The enemies that were attacking you revert to a docile state. You can still travel and play with 0 health, although combat is inaccessible until you gain at least 1 health point back. You can drink your firewater flask in your inventory, or acquire the healing special action and cast it. Good luck!]</span>
+                    <span class='super' style={{ color: '#fdf6d8' }}>[At the moment, death isn't so bad. The enemies that were attacking you revert to a docile state (I hope). You can still travel and play with 0 health, although combat is inaccessible until you gain at least 1 health point back. You can drink your firewater flask in your inventory, or acquire the healing special action and cast it. Good luck!]</span>
                 </p>
                 <p class='middleRight gold highlight' style={{ 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                     Joystick (Aim) {arrows.down} <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[Manual Aim, Should I Even Bother? Is this Absurd or Reasonable?]</span>
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Manual Aim, Should I Even Bother? Is this absurd or reasonable? It seems like it works fine, and auto aim is the default.]</span>
                 </p>
             </div> }
             { tutorial() === 'character' && <div>
@@ -304,11 +303,10 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                     height: '100%', 
                     width: '100%', 
                     background: 'rgba(0, 0, 0, 1)', 
-                    display: 'inline-flex', overflow: 'scroll' 
+                    display: 'inline-flex', overflow: 'scroll', 'scrollbar-width': 'none' 
             }}>
-                <Typewriter stringText={deity} styling={{ 'overflow-y': 'auto' }} performAction={performAction} />
+                <Typewriter stringText={deity} styling={{ 'overflow-y': 'auto', 'scrollbar-width': 'none' }} performAction={performAction} />
             </div> }
-
             { tutorial() !== 'deity' && <button class='cornerBR gold highlight animate' style={{ bottom: '0', right: '0', 'font-weight': 700 }} onClick={() => exitTutorial()}>
                 {arrows.right} Exit
             </button> }

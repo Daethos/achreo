@@ -19,10 +19,13 @@
 .verticalCenter {position: absolute; top: 50%; transform: translateY(-50%); font-size: 0.8em;}
 .verticalTop {position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 0.8em;}
 .right {position: absolute; left: 51%;}
-.fade-in {opacity: 1; transition: opacity 1s ease-in;}
-.fade-out {opacity: 0; transition: opacity 1s ease-in;}
+.fade-in {opacity: 1; transition: opacity 3s ease-in;}
+.fade-out {opacity: 0; transition: opacity 3s ease-in;}
 .header {display: flex; justify-content: space-between; padding: 5; margin-bottom: 5; color: #fdf6d8; font-family: 'Cinzel-Regular'; font-size: 1.25em; border-bottom-color: #fdf6d8; border-bottom-width: 2;}
 @keyframes visible {0% {opacity: 0;}100% {opacity: 1;}}
+@keyframes invisible {0% {opacity: 1;}100% {opacity: 0;}}
+.superfade-in {animation: 3s 1 visible;}
+.superfade-out {animation: 3s 1 invisible;}
 .flash {animation: 3s 1 invert;}
 @keyframes invert {50% {filter: invert(100%);transform: scale(1.1);}100% {filter: invert(0%);transform: scale(1);}}
 .shadow {text-shadow: 0 0 0.5em rgba(0, 0, 0, 1);}
@@ -128,3 +131,4 @@
 .toastBody {color:#fdf6d8; font-size:0.75em; font-weight:500; margin: 0.75em;}
 .toastButton {font-size: 0.75em; margin-left: 50%; transform: translateX(-50%)}
 .toastHeader {color:gold; font-size:0.875em; font-weight:600; margin: 0.25em;}
+.deity-box {position:absolute;height:40%;width:60%;left:20%;background:rgba(0,0,0,0.95);top:50%;border:0.1em solid gold;border-radius:0.25em;box-shadow:0 0 0.5em #ffc700;display:inline-flex;overflow:scroll;scrollbar-width:none;}

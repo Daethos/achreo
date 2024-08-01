@@ -33,10 +33,10 @@ export const PLAYER = {
     STAMINA: {
         // Physical
         ATTACK: 35,
-        DODGE: 20, // 25
-        PARRY: 20,
+        DODGE: 15, // 25
+        PARRY: 15,
         POSTURE: 25,
-        ROLL: 20, // 25
+        ROLL: 15, // 25
         // Magical
         // Low Cost        
         INVOKE: -COST.LOW,
@@ -162,7 +162,6 @@ export const PLAYER = {
 };
 
 export const STAMINA = ['attack', 'posture', 'roll', 'dodge', 'parry'];
-
 export const staminaCheck = (stamina: number, cost: number): { success: boolean; cost: number } => {
     let success: boolean = stamina >= cost;
     return { success, cost };
@@ -244,6 +243,7 @@ export const NAMED_ENEMY = [
     "Evrio Lorian Peroumes", 
     "Fierous Ashfyre", 
     "Garris Ashenus", 
+    "Jadei Myelle", 
     "King Mathyus Caderyn", 
     "Kreceus", 
     "Laetrois Ath'Shaorah", 
@@ -251,11 +251,14 @@ export const NAMED_ENEMY = [
     "Lorian", 
     "Mavros Ilios", 
     "Mirio Lorian Kyr'na", 
+    "Na'shaer", 
     "Quir'ilynis",
+    "Quoreia Se'vyr",
     "Quor'estes", 
     "Relien Myelle", 
     "Sedeysus", 
-    "Sera Lorian", 
+    "Sable Lorian", 
+    "Seria Capulo", 
     "Se'teyo Nati",
     "Synaethi Spiras", 
     "Torreous Ashfyre", 

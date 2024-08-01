@@ -9,12 +9,12 @@ const DISPLAYS = {
     PERCENT: {KEY:'PERCENT', NEXT:'NONE'},
     NONE: {KEY:'NONE', NEXT:'FULL'},
 };
-interface Props {ascean: Accessor<Ascean>;game: Accessor<GameState>};
-export default function ExperienceBar({ ascean, game }: Props) {
+export default function ExperienceBar({ ascean, game }: {ascean: Accessor<Ascean>;game: Accessor<GameState>}) {
     const [experiencePercentage, setExperiencePercentage] = createSignal(0);
     const [experience, setExperience] = createSignal(0);
     const [display, setDisplay] = createSignal<any>(game().experienceDisplay);
     const [experienceDisplay, setExperienceDisplay] = createSignal<any>('');
+    createEffect(() => setDisplay(game().healthDisplay));
     createEffect(() => {
         let newPercentage = Math.round((ascean().experience/(ascean().level * 1000) * 100));
         setExperiencePercentage(newPercentage);
@@ -34,7 +34,8 @@ export default function ExperienceBar({ ascean, game }: Props) {
     const changeDisplay = () => {
         const nextView = DISPLAYS[display() as keyof typeof DISPLAYS].NEXT;
         setDisplay(nextView);
-        EventBus.emit('blend-game', { experienceDisplay: nextView });
+        EventBus.emit('blend-game', { healthDisplay: nextView });
+        EventBus.emit('insert-settings', { healthViews: nextView });
     };
     return <div class='healthbar' onClick={changeDisplay} style={{ height: '6.25%' }}>
         <p class='playerPortrait center' style={{ color: '#ffd700' }}>{experienceDisplay()}</p>

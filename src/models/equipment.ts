@@ -5,12 +5,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { addEquipment } from '../assets/db/db';
 
 const ATTRIBUTE_RANGE = {
-    Default: [0, 0, 0, 0, 0, 0],
-    Common: [0, 1, 1, 1, 2, 3],
-    Uncommon: [1, 1, 2, 2, 3, 5],
-    Rare: [2, 3, 4, 5, 6, 8],
-    Epic: [4, 5, 6, 7, 10, 12],
-    Legendary: [10, 14, 17, 20, 24, 30],
+    Default: [0, 0, 0, 0, 0, 0, 0], 
+    Common: [0, 1, 1, 1, 2, 2, 3], 
+    Uncommon: [1, 1, 2, 2, 3, 4, 5],
+    Rare: [2, 3, 4, 5, 6, 7, 8],
+    Epic: [4, 5, 6, 7, 8, 10, 12],
+    Legendary: [10, 14, 17, 20, 24, 27, 30],
 };
 const ATTRIBUTES = ['strength', 'constitution', 'agility', 'achre', 'caeren', 'kyosir'];
 const CHANCE = ['criticalChance', 'physicalPenetration', 'magicalPenetration', 'roll', 'dodge'];
@@ -100,17 +100,17 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
             for (const attribute of ATTRIBUTES) {   
                 if (item[attribute] > 0) {
                     if (attributeCount === 1) {
-                        item[attribute] = randomIntFromInterval(range[4], range[5]);
+                        item[attribute] = randomIntFromInterval(range[4], range[6]);
                     } else if (attributeCount === 2) {
-                        item[attribute] = randomIntFromInterval(range[2], range[4]);
+                        item[attribute] = randomIntFromInterval(range[3], range[5]);
                     } else if (attributeCount === 3) {
-                        item[attribute] = randomIntFromInterval(range[1], range[3]);
+                        item[attribute] = randomIntFromInterval(range[2], range[4]);
                     } else if (attributeCount === 4) {
-                        item[attribute] = randomIntFromInterval(range[0], range[2]);
+                        item[attribute] = randomIntFromInterval(range[1], range[3]);
                     } else if (attributeCount === 5) {
-                        item[attribute] = randomIntFromInterval(range[0], range[1]);
+                        item[attribute] = randomIntFromInterval(range[0], range[2]);
                     } else {
-                        item[attribute] = randomIntFromInterval(range[0], range[0]);
+                        item[attribute] = randomIntFromInterval(range[0], range[1]);
                     };
                 };
             };

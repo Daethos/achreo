@@ -673,6 +673,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
+            this.useGrace(15);
             this.player.isConfused = true;
         } else {
             enemy.isConfused = true;
@@ -683,6 +684,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
+            this.useGrace(15);
             this.player.isFeared = true;
         } else {
             enemy.isFeared = true;
@@ -728,6 +730,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
+            this.useGrace(15);
             this.player.isParalyzed = true;
         } else {
         console.log('Paralyzing Enemy');

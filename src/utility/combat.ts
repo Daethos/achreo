@@ -1,34 +1,9 @@
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { Combat } from "../stores/combat";
+import { ARMOR_WEIGHT, ARMORS, ATTACKS, DAMAGE, ENEMY_ATTACKS, STRONG_ATTACKS, STRONG_TYPES, THRESHOLD } from "./combatTypes";
 import StatusEffect from "./prayer";
-const ARMOR_WEIGHT: any = {helmet:2,chest:1.5,legs:1};
-const ATTACKS = {
-    achire: 'achire',
-    attack: 'attack',
-    posture: 'posture against',
-    roll: 'roll into',
-    parry: 'parry',
-    leap: 'leap onto',
-    rush: 'rush through',
-    writhe: 'writhe into',
-};
-const ENEMY_ATTACKS = {
-    attack: 'attacks',
-    posture: 'postures against',
-    roll: 'rolls into',
-    parry: 'parries',
-    leap: 'leaps onto',
-    rush: 'rushes through',
-    writhe: 'writhes into',
-};
-const STRONG_TYPES = {
-    "Leather-Cloth": ["Frost","Lightning","Righteous","Pierce"],
-    "Leather-Mail": ["Pierce","Slash","Wind","Sorcery","Wild"],
-    "Chain-Mail": ["Blunt","Slash","Sorcery","Wind","Wild"],
-    "Plate-Mail": ["Blunt","Earth","Fire","Spooky"],
-};
-const THRESHOLD = { ONE_HAND: 100, TWO_HAND: 150 };
+
 export type CombatAttributes = {
     rawConstitution: number;
     rawStrength: number;
@@ -97,236 +72,236 @@ function damageTypeCompiler(damageType: string, enemy: Ascean, weapon: Equipment
     if (damageType === 'Blunt' || damageType === 'Fire' || damageType === 'Earth' || damageType === 'Spooky') {
         if (weapon.attackType === 'Physical') {
             if (enemy.helmet.type === 'Plate-Mail') {
-                physicalDamage *= 1.15;
+                physicalDamage *= ARMORS.FIFTEEN;
             };
             if (enemy.helmet.type === 'Chain-Mail') {
-                physicalDamage *= 1.08;
+                physicalDamage *= ARMORS.EIGHT;
             };
             if (enemy.helmet.type === 'Leather-Mail') {
-                physicalDamage *= 0.92;
+                physicalDamage *= ARMORS.NINETY_TWO;
             };
             if (enemy.helmet.type === 'Leather-Cloth') {
-                physicalDamage *= 0.85;
+                physicalDamage *= ARMORS.EIGHTY_FIVE;
             };
             if (enemy.chest.type === 'Plate-Mail') {
-                physicalDamage *= 1.1;
+                physicalDamage *= ARMORS.TEN;
             };
             if (enemy.chest.type === 'Chain-Mail') {
-                physicalDamage *= 1.05;
+                physicalDamage *= ARMORS.FIVE;
             };
             if (enemy.chest.type === 'Leather-Mail') {
-                physicalDamage *= 0.95;
+                physicalDamage *= ARMORS.NINETY_FIVE;
             };
             if (enemy.chest.type === 'Leather-Cloth') {
-                physicalDamage *= 0.9;
+                physicalDamage *= ARMORS.NINETY;
             };
             if (enemy.legs.type === 'Plate-Mail') {
-                physicalDamage *= 1.05;
+                physicalDamage *= ARMORS.FIVE;
             };
             if (enemy.legs.type === 'Chain-Mail') {
-                physicalDamage *= 1.03;
+                physicalDamage *= ARMORS.THREE;
             };
             if (enemy.legs.type === 'Leather-Mail') {
-                physicalDamage *= 0.97;
+                physicalDamage *= ARMORS.NINETY_SEVEN;
             };
             if (enemy.legs.type === 'Leather-Cloth') {
-                physicalDamage *= 0.95;
+                physicalDamage *= ARMORS.NINETY_FIVE;
             };
         };
         if (weapon.attackType === 'Magic') {
             if (enemy.helmet.type === 'Plate-Mail') {
-                magicalDamage *= 1.15;
+                magicalDamage *= ARMORS.FIFTEEN;
             };
             if (enemy.helmet.type === 'Chain-Mail') {
-                magicalDamage *= 1.08;
+                magicalDamage *= ARMORS.EIGHT;
             };
             if (enemy.helmet.type === 'Leather-Mail') {
-                magicalDamage *= 0.92;
+                magicalDamage *= ARMORS.NINETY_TWO;
             };
             if (enemy.helmet.type === 'Leather-Cloth') {
-                magicalDamage *= 0.85;
+                magicalDamage *= ARMORS.EIGHTY_FIVE;
             };
             if (enemy.chest.type === 'Plate-Mail') {
-                magicalDamage *= 1.1;
+                magicalDamage *= ARMORS.TEN;
             };
             if (enemy.chest.type === 'Chain-Mail') {
-                magicalDamage *= 1.05;
+                magicalDamage *= ARMORS.FIVE;
             };
             if (enemy.chest.type === 'Leather-Mail') {
-                magicalDamage *= 0.95;
+                magicalDamage *= ARMORS.NINETY_FIVE;
             };
             if (enemy.chest.type === 'Leather-Cloth') {
-                magicalDamage *= 0.9;
+                magicalDamage *= ARMORS.NINETY;
             };
             if (enemy.legs.type === 'Plate-Mail') {
-                magicalDamage *= 1.05;
+                magicalDamage *= ARMORS.FIVE;
             };
             if (enemy.legs.type === 'Chain-Mail') {
-                magicalDamage *= 1.03;
+                magicalDamage *= ARMORS.THREE;
             };
             if (enemy.legs.type === 'Leather-Mail') {
-                magicalDamage *= 0.97;
+                magicalDamage *= ARMORS.NINETY_SEVEN;
             };
             if (enemy.legs.type === 'Leather-Cloth') {
-                magicalDamage *= 0.95;
+                magicalDamage *= ARMORS.NINETY_FIVE;
             };
         };
     };
     if (damageType === 'Pierce' || damageType === 'Lightning' || damageType === 'Frost' || damageType === 'Righteous') {
         if (weapon.attackType === 'Physical') {
             if (enemy.helmet.type === 'Plate-Mail') {
-                physicalDamage *= 0.85;
+                physicalDamage *= ARMORS.EIGHTY_FIVE;
             };
             if (enemy.helmet.type === 'Chain-Mail') {
-                physicalDamage *= 0.92;
+                physicalDamage *= ARMORS.NINETY_TWO;
             };
             if (enemy.helmet.type === 'Leather-Mail') {
-                physicalDamage *= 1.08;
+                physicalDamage *= ARMORS.EIGHT;
             };
             if (enemy.helmet.type === 'Leather-Cloth') {
-                physicalDamage *= 1.15;
+                physicalDamage *= ARMORS.FIFTEEN;
             };
             if (enemy.chest.type === 'Plate-Mail') {
-                physicalDamage *= 0.9;
+                physicalDamage *= ARMORS.NINETY;
             };
             if (enemy.chest.type === 'Chain-Mail') {
-                physicalDamage *= 0.95;
+                physicalDamage *= ARMORS.NINETY_FIVE;
             };
             if (enemy.chest.type === 'Leather-Mail') {
-                physicalDamage *= 1.05;
+                physicalDamage *= ARMORS.FIVE;
             };
             if (enemy.chest.type === 'Leather-Cloth') {
-                physicalDamage *= 1.1;
+                physicalDamage *= ARMORS.TEN;
             };
             if (enemy.legs.type === 'Plate-Mail') {
-                physicalDamage *= 0.95;
+                physicalDamage *= ARMORS.NINETY_FIVE;
             };
             if (enemy.legs.type === 'Chain-Mail') {
-                physicalDamage *= 0.97;
+                physicalDamage *= ARMORS.NINETY_SEVEN;
             };
             if (enemy.legs.type === 'Leather-Mail') {
-                physicalDamage *= 1.03;
+                physicalDamage *= ARMORS.THREE;
             };
             if (enemy.legs.type === 'Leather-Cloth') {
-                physicalDamage *= 1.05;
+                physicalDamage *= ARMORS.FIVE;
             };
         };
         if (weapon.attackType === 'Magic') {
             if (enemy.helmet.type === 'Plate-Mail') {
-                magicalDamage *= 0.85;
+                magicalDamage *= ARMORS.EIGHTY_FIVE;
             };
             if (enemy.helmet.type === 'Chain-Mail') {
-                magicalDamage *= 0.92;
+                magicalDamage *= ARMORS.NINETY_TWO;
             };
             if (enemy.helmet.type === 'Leather-Mail') {
-                magicalDamage *= 1.08;
+                magicalDamage *= ARMORS.EIGHT;
             };
             if (enemy.helmet.type === 'Leather-Cloth') {
-                magicalDamage *= 1.15;
+                magicalDamage *= ARMORS.FIFTEEN;
             };
             if (enemy.chest.type === 'Plate-Mail') {
-                magicalDamage *= 0.9;
+                magicalDamage *= ARMORS.NINETY;
             };
             if (enemy.chest.type === 'Chain-Mail') {
-                magicalDamage *= 0.95;
+                magicalDamage *= ARMORS.NINETY_FIVE;
             };
             if (enemy.chest.type === 'Leather-Mail') {
-                magicalDamage *= 1.05;
+                magicalDamage *= ARMORS.FIVE;
             };
             if (enemy.chest.type === 'Leather-Cloth') {
-                magicalDamage *= 1.1;
+                magicalDamage *= ARMORS.TEN;
             };
             if (enemy.legs.type === 'Plate-Mail') {
-                magicalDamage *= 0.95;
+                magicalDamage *= ARMORS.NINETY_FIVE;
             };
             if (enemy.legs.type === 'Chain-Mail') {
-                magicalDamage *= 0.97;
+                magicalDamage *= ARMORS.NINETY_SEVEN;
             };
             if (enemy.legs.type === 'Leather-Mail') {
-                magicalDamage *= 1.03;
+                magicalDamage *= ARMORS.THREE;
             };
             if (enemy.legs.type === 'Leather-Cloth') {
-                magicalDamage *= 1.05;
+                magicalDamage *= ARMORS.FIVE;
             };
         };
     };
     if (damageType === 'Slash' || damageType === 'Wind' || damageType === 'Sorcery' || damageType === 'Wild') {
         if (weapon.attackType === 'Physical') {
             if (enemy.helmet.type === 'Plate-Mail') {
-                physicalDamage *= 0.9 + Math.random() * 0.15;
+                physicalDamage *= ARMORS.NINETY + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.helmet.type === 'Chain-Mail') {
-                physicalDamage *= 0.925 + Math.random() * 0.15;
+                physicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.helmet.type === 'Leather-Mail') {
-                physicalDamage *= 0.95 + Math.random() * 0.15;
+                physicalDamage *= ARMORS.NINETY_FIVE + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.helmet.type === 'Leather-Cloth') {
-                physicalDamage *= 0.975 + Math.random() * 0.15;
+                physicalDamage *= ARMORS.NINETY_SEVEN + (Math.random() * ARMORS.RANDOM);
             };
     
             if (enemy.chest.type === 'Plate-Mail') {
-                physicalDamage *= 0.9 + Math.random() * 0.15;
+                physicalDamage *= ARMORS.NINETY + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.chest.type === 'Chain-Mail') {
-                physicalDamage *= 0.925 + Math.random() * 0.15;
+                physicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.chest.type === 'Leather-Mail') {
-                physicalDamage *= 0.95 + Math.random() * 0.15;
+                physicalDamage *= ARMORS.NINETY_FIVE + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.chest.type === 'Leather-Cloth') {
-                physicalDamage *= 0.975 + Math.random() * 0.15;
+                physicalDamage *= ARMORS.NINETY_SEVEN + (Math.random() * ARMORS.RANDOM);
             };
     
             if (enemy.legs.type === 'Plate-Mail') {
-                physicalDamage *= 0.9 + Math.random() * 0.15;
+                physicalDamage *= ARMORS.NINETY + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.legs.type === 'Chain-Mail') {
-                physicalDamage *= 0.925 + Math.random() * 0.15;
+                physicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.legs.type === 'Leather-Mail') {
-                physicalDamage *= 0.95 + Math.random() * 0.15;
+                physicalDamage *= ARMORS.NINETY_FIVE + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.legs.type === 'Leather-Cloth') {
-                physicalDamage *= 0.975 + Math.random() * 0.15;
+                physicalDamage *= ARMORS.NINETY_SEVEN + (Math.random() * ARMORS.RANDOM);
             };
         };
         if (weapon.attackType === 'Magic') {
             if (enemy.helmet.type === 'Plate-Mail') {
-                magicalDamage *= 0.925 + Math.random() * 0.15;
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.helmet.type === 'Chain-Mail') {
-                magicalDamage *= 0.925 + Math.random() * 0.15;
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.helmet.type === 'Leather-Mail') {
-                magicalDamage *= 0.925 + Math.random() * 0.15;
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.helmet.type === 'Leather-Cloth') {
-                magicalDamage *= 0.925 + Math.random() * 0.15;
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.chest.type === 'Plate-Mail') {
-                magicalDamage *= 0.925 + Math.random() * 0.15;
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.chest.type === 'Chain-Mail') {
-                magicalDamage *= 0.925 + Math.random() * 0.15;
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.chest.type === 'Leather-Mail') {
-                magicalDamage *= 0.925 + Math.random() * 0.15;
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.chest.type === 'Leather-Cloth') {
-                magicalDamage *= 0.925 + Math.random() * 0.15;
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.legs.type === 'Plate-Mail') {
-                magicalDamage *= 0.925 + Math.random() * 0.15;
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.legs.type === 'Chain-Mail') {
-                magicalDamage *= 0.925 + Math.random() * 0.15;
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.legs.type === 'Leather-Mail') {
-                magicalDamage *= 0.925 + Math.random() * 0.15;
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
             if (enemy.legs.type === 'Leather-Cloth') {
-                magicalDamage *= 0.925 + Math.random() * 0.15;
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
         };
     };
@@ -337,7 +312,6 @@ function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, c
     if (weather === 'Alluring Isles') critChance -= 10;
     if (weather === 'Astralands') critChance += 10;
     if (weather === 'Kingdom') critChance += 5;
-
     if (player === true) {
         if (critChance >= critClearance || isSeering === true) {
             physicalDamage *= weapon.criticalDamage;
@@ -347,20 +321,15 @@ function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, c
         } else {
             const skills = ascean.skills;
             let skill: number = 1;
-            
             if (weapon.type === 'Spell') {
                 skill = skills[weapon.damageType?.[0] as keyof typeof skills];
             } else {
                 skill = skills[weapon.type as keyof typeof skills];
             };
-            
             const modifier = skill / (ascean.level * 100);
             const glancing = critClearance / 100;
             if (glancing >= modifier) {
                 glancingBlow = true;
-                // This is the random 1-100 roll that is higher than the MODIFIER (player skill in that weapon type) 
-                // GLANCING being the multiplier for the damage. If GLANCING is .85 GLANCING BLOW for 85% weapon damage.
-                // 1 - the difference. If GLANCING is .85, MODIFIER is .25. Difference is .60. 1 - .60 = .40. GLANCING BLOW for 40% weapon damage.
                 physicalDamage *= (1 - glancing); 
                 magicalDamage *= (1 - glancing); 
             };
@@ -429,7 +398,7 @@ function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, c
 }; 
 
 function phaserActionConcerns(action: string): boolean {
-    return action === 'attack' || action === 'posture' || action === 'roll';
+    return STRONG_ATTACKS.includes(action);
 };
 
 function phaserSuccessConcerns(parrySuccess: boolean, rollSuccess: boolean, computerParrySuccess: boolean, computerRollSuccess: boolean): boolean {
@@ -442,75 +411,75 @@ function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, 
     switch (weather) {
         case 'Alluring Isles':
             if (weapon.type === 'Bow' || weapon.type === 'Greatbow') {
-                physicalDamage *= 1.1;
-                magicalDamage *= 1.1;
+                physicalDamage *= DAMAGE.LOW;
+                magicalDamage *= DAMAGE.LOW;
             };
             break;
         case 'Astralands':
-            magicalDamage *= 1.1;
-            physicalDamage *= 1.1;
+            magicalDamage *= DAMAGE.LOW;
+            physicalDamage *= DAMAGE.LOW;
             break;
         case 'Fangs': 
             if (weapon.attackType === 'Physical') {
                 if (weapon.type !== 'Bow' && weapon.type !== 'Greatbow') {
-                    physicalDamage *= 1.1; // +10% Physical Melee Damage
+                    physicalDamage *= DAMAGE.LOW; // +10% Physical Melee Damage
                 } else {
-                    physicalDamage *= 0.9; // -10% Physical Ranged Damage
+                    physicalDamage *= DAMAGE.NEG_HIGH; // -10% Physical Ranged Damage
                 };
             } else {
                 if (weapon?.damageType?.includes('Fire') || weapon?.damageType?.includes('Frost') || weapon?.damageType?.includes('Earth') || weapon?.damageType?.includes('Wind') || weapon?.damageType?.includes('Lightning') || weapon?.damageType?.includes('Wild')) {
-                    magicalDamage *= 1.1; // +10% Magical Damage
+                    magicalDamage *= DAMAGE.LOW; // +10% Magical Damage
                 };
             };
             if (weapon?.influences?.[0] !== 'Daethos') {
-                magicalDamage *= 1.1; // +10% Magical Damage
+                magicalDamage *= DAMAGE.LOW; // +10% Magical Damage
             };
             break;
         case 'Firelands':
-            physicalDamage *= 1.1;
-            magicalDamage *= 1.1;
+            physicalDamage *= DAMAGE.LOW;
+            magicalDamage *= DAMAGE.LOW;
             if (critical === true) {
-                magicalDamage *= 1.25;
-                physicalDamage *= 1.25;
+                magicalDamage *= DAMAGE.HIGH;
+                physicalDamage *= DAMAGE.HIGH;
             };
             break;
         case 'Kingdom':
-            physicalDamage *= 1.1;
+            physicalDamage *= DAMAGE.LOW;
             if (weapon?.influences?.[0] !== 'Daethos') {
-                magicalDamage *= 1.1;
-                physicalDamage *= 1.1;
+                magicalDamage *= DAMAGE.LOW;
+                physicalDamage *= DAMAGE.LOW;
             };
             break;
         case 'Licivitas':
             if (weapon?.influences?.[0] === 'Daethos') {
-                magicalDamage *= 1.15;
-                physicalDamage *= 1.15;
+                magicalDamage *= DAMAGE.MID;
+                physicalDamage *= DAMAGE.MID;
             };
             if (critical === true) {
-                magicalDamage *= 1.25;
-                physicalDamage *= 1.25;
+                magicalDamage *= DAMAGE.HIGH;
+                physicalDamage *= DAMAGE.HIGH;
             };
             break;
         case 'Sedyrus':
-            magicalDamage *= 1.1;
+            magicalDamage *= DAMAGE.LOW;
             if (weapon?.influences?.[0] !== 'Daethos') {
-                magicalDamage *= 1.1;
-                physicalDamage *= 1.1;
+                magicalDamage *= DAMAGE.LOW;
+                physicalDamage *= DAMAGE.LOW;
             };
             if (weapon.type === 'Bow' || weapon.type === 'Greatbow') {
-                physicalDamage *= 1.1;
-                magicalDamage *= 1.1;
+                physicalDamage *= DAMAGE.LOW;
+                magicalDamage *= DAMAGE.LOW;
             };
             if (critical === true) {
-                magicalDamage *= 1.1;
-                physicalDamage *= 1.1;
+                magicalDamage *= DAMAGE.LOW;
+                physicalDamage *= DAMAGE.LOW;
             };
             break;
         case 'Soverains':
-            magicalDamage *= 1.1;
+            magicalDamage *= DAMAGE.LOW;
             if (weapon.influences?.[0] !== 'Daethos') {
-                magicalDamage *= 1.1;
-                physicalDamage *= 1.1;
+                magicalDamage *= DAMAGE.LOW;
+                physicalDamage *= DAMAGE.LOW;
             };
             break;
         default:
@@ -521,7 +490,7 @@ function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, 
 
 function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Combat {
     if (player) {
-        const playerDamage = effect.effect.damage as number * 0.33 * (combat.isCaerenic === true ? 1.15 : 1);
+        const playerDamage = effect.effect.damage as number * DAMAGE.TICK_FULL * (combat.isCaerenic === true ? DAMAGE.CAERENEIC_POS : 1);
         combat.newComputerHealth -= playerDamage;
         if (combat.newComputerHealth < 0) {
             combat.newComputerHealth = 0;
@@ -530,7 +499,7 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
         };
         combat.playerSpecialDescription = `${combat.computer?.name} takes ${Math.round(playerDamage)} damage from your ${effect.name}.`;
     } else {
-        const computerDamage = effect.effect.damage as number * 0.33 * (combat.isCaerenic === true ? 1.25 : 1);
+        const computerDamage = effect.effect.damage as number * DAMAGE.TICK_FULL * (combat.isCaerenic === true ? DAMAGE.CAERENEIC_NEG : 1);
         combat.newPlayerHealth -= computerDamage;
         if (combat.newPlayerHealth < 0) {
             if (combat.playerEffects.find(effect => effect.prayer === 'Denial')) {
@@ -549,14 +518,12 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
 
 function healTick(combat: Combat, effect:StatusEffect, player: boolean): Combat {
     if (player) {
-        const playerHeal = effect.effect.healing as number * 0.33 * (combat.isCaerenic === true ? 1.15 : 1);
-        // combat.newPlayerHealth += playerHeal;
+        const playerHeal = effect.effect.healing as number * DAMAGE.TICK_FULL * (combat.isCaerenic === true ? DAMAGE.CAERENEIC_POS : 1);
         combat.newPlayerHealth = Math.min(playerHeal + combat.newPlayerHealth, combat.playerHealth);
         combat.playerSpecialDescription = `You heal for ${Math.round(playerHeal)} from your ${effect.name}.`;
         if (combat.newPlayerHealth > 0) combat.computerWin = false;
     } else {
-        const computerHeal = effect.effect.healing as number * 0.33 * (combat.isCaerenic === true ? 1.15 : 1);
-        // combat.newComputerHealth += computerHeal;
+        const computerHeal = effect.effect.healing as number * DAMAGE.TICK_FULL * (combat.isCaerenic === true ? DAMAGE.CAERENEIC_POS : 1);
         combat.newComputerHealth = Math.min(computerHeal + combat.newComputerHealth, combat.computerHealth);
         combat.computerSpecialDescription = `${combat.computer?.name} heals for ${Math.round(computerHeal)} from their ${effect.name}.`;
         if (combat.newComputerHealth > 0) combat.playerWin = false;
@@ -772,19 +739,17 @@ function faithModCompiler(player: Ascean, faithOne: number, weaponOne: Equipment
     if (player.faith === 'adherent' && weaponOne?.influences?.[0] !== 'Daethos') faithOne += 5;
     if (player.faith === 'devoted' && weaponTwo?.influences?.[0] === 'Daethos') faithTwo += 5;
     if (player.faith === 'adherent' && weaponTwo?.influences?.[0] !== 'Daethos') faithTwo += 5;
-    
+    const FAITH_RARITY = {
+        'Common': 1,
+        'Uncommon': 2,
+        'Rare': 3,
+        'Epic': 5,
+        'Legendary': 10
+    };
     const addRarity = (rarity: string, faith: number): number => {
-        const modifier = {
-            'Common': 1,
-            'Uncommon': 2,
-            'Rare': 3,
-            'Epic': 5,
-            'Legendary': 10
-        };
-        faith += modifier[rarity as keyof typeof modifier]; 
+        faith += FAITH_RARITY[rarity as keyof typeof FAITH_RARITY]; 
         return faith;
     };
-
     faithOne = addRarity(weaponOne.rarity as string, faithOne);
     faithTwo = addRarity(weaponTwo.rarity as string, faithTwo); 
     if (weaponOne?.influences?.[0] === amuletInfluence) {
@@ -846,7 +811,6 @@ function faithCompiler(combat: Combat): Combat { // The influence will add a cha
 };
 
 // ================================= COMPUTER COMPILER FUNCTIONS ================================== \\
-
 function computerActionCompiler(combat: Combat, playerAction: string): Combat {
     if (combat.sessionRound > 50) {
         combat.sessionRound = 0;
@@ -1008,34 +972,34 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
 
     if (combat.computerWeapons[0].grip === 'One Hand') {
         if (combat.computerWeapons[0].attackType === 'Physical') {
-            combat.realizedComputerDamage *= (agility / 100)
+            combat.realizedComputerDamage *= (agility / 100);
         } else {
-            combat.realizedComputerDamage *= (achre / 100)
+            combat.realizedComputerDamage *= (achre / 100);
         };
     };
 
     if (combat.computerWeapons[0].grip === 'Two Hand') {
         if (combat.computerWeapons[0].attackType === 'Physical') {
-            combat.realizedComputerDamage *= (strength / 150) 
+            combat.realizedComputerDamage *= (strength / 150); 
         } else {
-            combat.realizedComputerDamage *= (caeren / 150)
+            combat.realizedComputerDamage *= (caeren / 150);
         };
     };
 
     if (combat.action === 'attack') {
-        combat.realizedComputerDamage *= 1.1;
+        combat.realizedComputerDamage *= DAMAGE.LOW;
     };
     if (combat.action === 'posture') {
-        combat.realizedComputerDamage *= 0.95;
+        combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
     };
     if (combat.prayerData.includes('Avarice')) {
-        combat.realizedComputerDamage *= 1.1;
+        combat.realizedComputerDamage *= DAMAGE.LOW;
     };
     if (combat.isStalwart) {
-        combat.realizedComputerDamage *= 0.85;
+        combat.realizedComputerDamage *= DAMAGE.STALWART;
     };
     if (combat.isCaerenic) {
-        combat.realizedComputerDamage *= 1.25;
+        combat.realizedComputerDamage *= DAMAGE.CAERENEIC_NEG;
     };
     if (combat.berserk.active === true) {
         combat.berserk.charges += 1;
@@ -1082,16 +1046,16 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                             computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
                             return combat;
                         } else {
-                            computerPhysicalDamage *= 1.3;
-                            computerMagicalDamage *= 1.15;
+                            computerPhysicalDamage *= DAMAGE.HIGH;
+                            computerMagicalDamage *= DAMAGE.MID;
                         };
                     } else {
-                        computerPhysicalDamage *= 1.3;
-                        computerMagicalDamage *= 1.15;
+                        computerPhysicalDamage *= DAMAGE.HIGH;
+                        computerMagicalDamage *= DAMAGE.MID;
                     };
                 } else {
-                    computerPhysicalDamage *= 1.1;
-                    computerMagicalDamage *= 1.1;
+                    computerPhysicalDamage *= DAMAGE.LOW;
+                    computerMagicalDamage *= DAMAGE.LOW;
                 };
             };
             if (combat.computerWeapons[0].attackType === 'Magic') {
@@ -1102,16 +1066,16 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                             computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
                             return combat;
                         } else {
-                            computerPhysicalDamage *= 1.15;
-                            computerMagicalDamage *= 1.3;
+                            computerPhysicalDamage *= DAMAGE.MID;
+                            computerMagicalDamage *= DAMAGE.HIGH;
                         };
                     } else {
-                        computerPhysicalDamage *= 1.15;
-                        computerMagicalDamage *= 1.3;
+                        computerPhysicalDamage *= DAMAGE.MID;
+                        computerMagicalDamage *= DAMAGE.HIGH;
                     };
                 } else {
-                    computerPhysicalDamage *= 1.1;
-                    computerMagicalDamage *= 1.1;
+                    computerPhysicalDamage *= DAMAGE.LOW;
+                    computerMagicalDamage *= DAMAGE.LOW;
                 };
             };
         };
@@ -1124,16 +1088,16 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                             computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
                             return combat;
                         } else { // Less than 50 Strength 
-                            computerPhysicalDamage *= 1.3;
-                            computerMagicalDamage *= 1.15;
+                            computerPhysicalDamage *= DAMAGE.HIGH;
+                            computerMagicalDamage *= DAMAGE.MID;
                         };
                     } else { // Less than 50 Strength 
-                        computerPhysicalDamage *= 1.3;
-                        computerMagicalDamage *= 1.15;
+                        computerPhysicalDamage *= DAMAGE.HIGH;
+                        computerMagicalDamage *= DAMAGE.MID;
                     };
                 } else {
-                    computerPhysicalDamage *= 1.1;
-                    computerMagicalDamage *= 1.1;
+                    computerPhysicalDamage *= DAMAGE.LOW;
+                    computerMagicalDamage *= DAMAGE.LOW;
                 };
             };
             if (combat.computerWeapons[0].attackType === 'Magic') {
@@ -1144,47 +1108,32 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                             computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
                             return combat;
                         } else {
-                            computerPhysicalDamage *= 1.15;
-                            computerMagicalDamage *= 1.3;
+                            computerPhysicalDamage *= DAMAGE.MID;
+                            computerMagicalDamage *= DAMAGE.HIGH;
                         };
                     } else {
-                        computerPhysicalDamage *= 1.15;
-                        computerMagicalDamage *= 1.3;
+                        computerPhysicalDamage *= DAMAGE.MID;
+                        computerMagicalDamage *= DAMAGE.HIGH;
                     };
                 } else {
-                    computerPhysicalDamage *= 1.1;
-                    computerMagicalDamage *= 1.1;
+                    computerPhysicalDamage *= DAMAGE.LOW;
+                    computerMagicalDamage *= DAMAGE.LOW;
                 };
             };
             if (combat.computerWeapons[0].type === 'Bow' || combat.computerWeapons[0].type === 'Greatbow') {
-                computerPhysicalDamage *= 1.3;
-                computerMagicalDamage *= 1.3; 
+                computerPhysicalDamage *= DAMAGE.HIGH;
+                computerMagicalDamage *= DAMAGE.HIGH; 
             };
         };
-    };
-
-    if (computerAction === 'parry') {
-        if (combat.computerParrySuccess === true) {
-            computerPhysicalDamage *= 3;
-            computerMagicalDamage *= 3;    
-        } else {
-            computerPhysicalDamage *= 0.9;
-            computerMagicalDamage *= 0.9;
-        };
-    };
-
-    if (computerAction === 'dodge') {
-        computerPhysicalDamage *= 0.9;
-        computerMagicalDamage *= 0.9;
     };
 
     if (computerAction === 'roll' ) {
         if (combat.computerRollSuccess === true) {
-            computerPhysicalDamage *= 1.15;
-            computerMagicalDamage *= 1.15;
+            computerPhysicalDamage *= DAMAGE.MID;
+            computerMagicalDamage *= DAMAGE.MID;
         } else {
-            computerPhysicalDamage *= 0.9;
-            computerMagicalDamage *= 0.9;
+            computerPhysicalDamage *= DAMAGE.NEG_HIGH;
+            computerMagicalDamage *= DAMAGE.NEG_HIGH;
         };
     };
 
@@ -1215,21 +1164,21 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     };
     combat.realizedComputerDamage = computerTotalDamage;
     if (combat.action === 'attack') {
-        combat.realizedComputerDamage *= 1.1;
+        combat.realizedComputerDamage *= DAMAGE.LOW;
     };
     if (combat.action === 'posture') {
-        combat.realizedComputerDamage *= 0.95;
+        combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
     };
 
     if (combat.prayerData.includes('Avarice')) {
-        combat.realizedComputerDamage *= 1.1;
+        combat.realizedComputerDamage *= DAMAGE.LOW;
     };
 
     if (combat.isStalwart) {
-        combat.realizedComputerDamage *= 0.85;
+        combat.realizedComputerDamage *= DAMAGE.STALWART;
     };
     if (combat.isCaerenic) {
-        combat.realizedComputerDamage *= 1.25;
+        combat.realizedComputerDamage *= DAMAGE.CAERENEIC_NEG;
     };
     if (combat.berserk.active === true) {
         combat.berserk.charges += 1;
@@ -1283,7 +1232,6 @@ function computerRollCompiler(combat: Combat, playerAction: string, computerActi
 };
 
 // ================================== PLAYER COMPILER FUNCTIONS ====================================== \\
-
 function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer for 2h, 1h + Agi/Achre Mastery and 2nd weapon is 1h
     const computer = combat.computer;
     const weapons = combat.weapons;
@@ -1376,29 +1324,29 @@ function dualWieldCompiler(combat: Combat): Combat { // Triggers if 40+ Str/Caer
     };
 
     if (combat.computerAction === 'attack') {
-        combat.realizedPlayerDamage *= 1.1;
+        combat.realizedPlayerDamage *= DAMAGE.LOW;
     };
     if (combat.computerAction === 'posture') {
-        combat.realizedPlayerDamage *= 0.95;
+        combat.realizedPlayerDamage *= DAMAGE.NEG_HIGH;
     };
     if (combat.action === 'leap') {
-        combat.realizedPlayerDamage *= 1.25;
+        combat.realizedPlayerDamage *= DAMAGE.HIGH;
     };
     if (combat.action === 'rush') {
-        combat.realizedPlayerDamage *= 1.25;
+        combat.realizedPlayerDamage *= DAMAGE.HIGH;
     };
     if (combat.isCaerenic === true) {
-        combat.realizedPlayerDamage *= 1.15;
+        combat.realizedPlayerDamage *= DAMAGE.MID;
     };
     if (combat.astrication.active === true) {
         combat.astrication.charges += 1;
     };
     if (combat.conviction.active === true) {
-        combat.realizedPlayerDamage *= (1 + combat.conviction.charges * 0.03);
+        combat.realizedPlayerDamage *= (1 + combat.conviction.charges * DAMAGE.CUMULATIVE);
 
     };
     if (combat.berserk.active === true) {
-        combat.realizedPlayerDamage *= (1 + combat.berserk.charges * 0.03);
+        combat.realizedPlayerDamage *= (1 + combat.berserk.charges * DAMAGE.CUMULATIVE);
     };
     if (combat.conviction.active === true) {
         combat.conviction.charges += 1;
@@ -1431,7 +1379,6 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     let playerPhysicalDamage = combat.weapons[0]?.physicalDamage as number;
     let playerMagicalDamage = combat.weapons[0]?.magicalDamage as number;
     let playerTotalDamage;
-
     let computerPhysicalDefenseMultiplier = 1 - (combat.computerDefense?.physicalDefenseModifier as number / 100);
     let computerMagicalDefenseMultiplier = 1 - (combat.computerDefense?.magicalDefenseModifier as number / 100);
     
@@ -1440,7 +1387,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
         computerMagicalDefenseMultiplier = 1 - (combat.computerDefense?.magicalPosture as number / 100);
     };
     // This is for the focused attack Action i.e. you chose to attack over adding a defensive component
-    if (playerAction === 'achire' || playerAction === 'attack' || playerAction === 'arc' || 'leap' || 'rush' || playerAction === 'special' || playerAction === 'storm' || playerAction === 'writhe') {
+    if (STRONG_ATTACKS.includes(playerAction)) {
         if (combat.weapons[0]?.grip === 'One Hand') {
             if (combat.weapons[0]?.attackType === 'Physical') {
                 if (combat.player?.mastery === 'agility' || combat.player?.mastery === 'constitution') {
@@ -1450,16 +1397,16 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                             dualWieldCompiler(combat);
                             return combat;
                         } else {
-                            playerPhysicalDamage *= 1.3; // DAMAGE_**_HIGH
-                            playerMagicalDamage *= 1.15; // DAMAGE_**_MID
+                            playerPhysicalDamage *= DAMAGE.HIGH; // DAMAGE_**_HIGH
+                            playerMagicalDamage *= DAMAGE.MID; // DAMAGE_**_MID
                         };
                     } else {
-                        playerPhysicalDamage *= 1.3; // DAMAGE_**_HIGH
-                        playerMagicalDamage *= 1.15; // DAMAGE_**_MID
+                        playerPhysicalDamage *= DAMAGE.HIGH; // DAMAGE_**_HIGH
+                        playerMagicalDamage *= DAMAGE.MID; // DAMAGE_**_MID
                     };
                 } else {
-                    playerPhysicalDamage *= 1.1; // DAMAGE_**_LOW
-                    playerMagicalDamage *= 1.1; // DAMAGE_**_LOW
+                    playerPhysicalDamage *= DAMAGE.LOW; // DAMAGE_**_LOW
+                    playerMagicalDamage *= DAMAGE.LOW; // DAMAGE_**_LOW
                 };
             };
             if (combat.weapons[0]?.attackType === 'Magic') {
@@ -1470,16 +1417,16 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                             dualWieldCompiler(combat);
                             return combat;
                         } else {
-                            playerPhysicalDamage *= 1.15;
-                            playerMagicalDamage *= 1.3;
+                            playerPhysicalDamage *= DAMAGE.MID;
+                            playerMagicalDamage *= DAMAGE.HIGH;
                         };
                     } else {
-                        playerPhysicalDamage *= 1.15;
-                        playerMagicalDamage *= 1.3;
+                        playerPhysicalDamage *= DAMAGE.MID;
+                        playerMagicalDamage *= DAMAGE.HIGH;
                     };
                 } else {
-                    playerPhysicalDamage *= 1.1;
-                    playerMagicalDamage *= 1.1;
+                    playerPhysicalDamage *= DAMAGE.LOW;
+                    playerMagicalDamage *= DAMAGE.LOW;
                 };
             };
         };
@@ -1492,16 +1439,16 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                             dualWieldCompiler(combat);
                             return combat;
                         } else { // Less than 40 Strength 
-                            playerPhysicalDamage *= 1.3;
-                            playerMagicalDamage *= 1.15;
+                            playerPhysicalDamage *= DAMAGE.HIGH;
+                            playerMagicalDamage *= DAMAGE.MID;
                         };
                     } else { // Less than 40 Strength 
-                        playerPhysicalDamage *= 1.3;
-                        playerMagicalDamage *= 1.15;
+                        playerPhysicalDamage *= DAMAGE.HIGH;
+                        playerMagicalDamage *= DAMAGE.MID;
                     };
                 } else {
-                    playerPhysicalDamage *= 1.1;
-                    playerMagicalDamage *= 1.1;
+                    playerPhysicalDamage *= DAMAGE.LOW;
+                    playerMagicalDamage *= DAMAGE.LOW;
                 };
             };
             if (combat.weapons[0].attackType === 'Magic') {
@@ -1512,63 +1459,53 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                             dualWieldCompiler(combat);
                             return combat;
                         } else {
-                            playerPhysicalDamage *= 1.15;
-                            playerMagicalDamage *= 1.3;
+                            playerPhysicalDamage *= DAMAGE.MID;
+                            playerMagicalDamage *= DAMAGE.HIGH;
                         }
                     } else {
-                        playerPhysicalDamage *= 1.15;
-                        playerMagicalDamage *= 1.3;
+                        playerPhysicalDamage *= DAMAGE.MID;
+                        playerMagicalDamage *= DAMAGE.HIGH;
                     };
                 } else {
-                    playerPhysicalDamage *= 1.1;
-                    playerMagicalDamage *= 1.1;
+                    playerPhysicalDamage *= DAMAGE.LOW;
+                    playerMagicalDamage *= DAMAGE.LOW;
                 };
             };
             if (combat.weapons[0]?.type === 'Bow' || combat.weapons[0]?.type !== 'Greatbow') {
-                playerPhysicalDamage *= 1.3;
-                playerMagicalDamage *= 1.3;
+                playerPhysicalDamage *= DAMAGE.HIGH;
+                playerMagicalDamage *= DAMAGE.HIGH;
             };
         }; 
     };
 
     // Checking For Player Actions
     if (playerAction === 'achire') {
-        playerPhysicalDamage *= 1.5;
-        playerMagicalDamage *= 1.5;
+        playerPhysicalDamage *= DAMAGE.HIGH * DAMAGE.MID;
+        playerMagicalDamage *= DAMAGE.HIGH * DAMAGE.MID;
     };
     if (playerAction === 'arc') {
-        playerPhysicalDamage *= 4;
-        playerMagicalDamage *= 4;
+        playerPhysicalDamage *= DAMAGE.SUPER;
+        playerMagicalDamage *= DAMAGE.SUPER;
     };
     if (playerAction === 'leap') {
-        playerPhysicalDamage *= 1.25;
-        playerMagicalDamage *= 1.25;
+        playerPhysicalDamage *= DAMAGE.MID;
+        playerMagicalDamage *= DAMAGE.MID;
     };
     if (playerAction === 'rush') {
-        playerPhysicalDamage *= 1.25;
-        playerMagicalDamage *= 1.25;
+        playerPhysicalDamage *= DAMAGE.MID;
+        playerMagicalDamage *= DAMAGE.MID;
     };
     if (playerAction === 'storm') {
-        playerPhysicalDamage *= 0.75;
-        playerMagicalDamage *= 0.75;
+        playerPhysicalDamage *= DAMAGE.NEG_LOW;
+        playerMagicalDamage *= DAMAGE.NEG_LOW;
     };
-    if (playerAction === 'parry') {
-        if (combat.parrySuccess) {
-            playerPhysicalDamage *= 3;
-            playerMagicalDamage *= 3;
-        } else {
-            playerPhysicalDamage *= 0.9;
-            playerMagicalDamage *= 0.9;
-        };
-    };
-
     if (playerAction === 'roll' ) {
         if (combat.rollSuccess) {
-            playerPhysicalDamage *= 1.15;
-            playerMagicalDamage *= 1.15;
+            playerPhysicalDamage *= DAMAGE.MID;
+            playerMagicalDamage *= DAMAGE.MID;
         } else {
-            playerPhysicalDamage *= 0.9;
-            playerMagicalDamage *= 0.9;
+            playerPhysicalDamage *= DAMAGE.NEG_HIGH;
+            playerMagicalDamage *= DAMAGE.NEG_HIGH;
         };
     };
     const criticalClearance = Math.floor(Math.random() * 10100) / 100;
@@ -1600,19 +1537,19 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     combat.realizedPlayerDamage = playerTotalDamage;
 
     if (combat.computerAction === 'attack') {
-        combat.realizedPlayerDamage *= 1.1;
+        combat.realizedPlayerDamage *= DAMAGE.LOW;
     };
     if (combat.isCaerenic) {
-        combat.realizedPlayerDamage *= 1.15;
+        combat.realizedPlayerDamage *= DAMAGE.MID;
     };
     if (combat.astrication.active === true) {
         combat.astrication.charges += 1;
     };
     if (combat.conviction.active === true) {
-        combat.realizedPlayerDamage *= (1 + combat.conviction.charges * 0.03);
+        combat.realizedPlayerDamage *= (1 + combat.conviction.charges * DAMAGE.CUMULATIVE);
     };
     if (combat.berserk.active === true) {
-        combat.realizedPlayerDamage *= (1 + combat.berserk.charges * 0.03);
+        combat.realizedPlayerDamage *= (1 + combat.berserk.charges * DAMAGE.CUMULATIVE);
     };
     if (combat.conviction.active === true) {
         combat.conviction.charges += 1;
@@ -1661,7 +1598,6 @@ function playerRollCompiler(combat: Combat, playerAction: string, computerAction
 };
 
 // ================================== COMBAT COMPILER FUNCTIONS ====================================== \\
-
 function doubleRollCompiler(combat: Combat, playerInitiative: number, computerInitiative: number, playerAction: string, computerAction: string): Combat {
     let playerRoll: number = combat.weapons[0]?.roll as number;
     let computerRoll: number = combat.computerWeapons[0].roll;
@@ -1724,14 +1660,12 @@ function computerWeaponMaker(combat: Combat): Combat {
     let prayers = ['Buff', 'Damage', 'Debuff', 'Heal'];
     let newPrayer = Math.floor(Math.random() * prayers.length);
     combat.computerBlessing = prayers[newPrayer];
-
     const change = Math.floor(Math.random() * 101);
     if (change < 50) {
         combat.computerWeapons = [combat.computerWeapons[1], combat.computerWeapons[2], combat.computerWeapons[0]];
         combat.computerDamageType = combat.computerWeapons[0]?.damageType?.[0] as string;
         return combat;
     };
-
     let defenseTypes: any = {"Leather-Cloth": 0,"Leather-Mail": 0,"Chain-Mail": 0,"Plate-Mail": 0};
     defenseTypes[combat.player?.helmet.type as keyof typeof defenseTypes] += ARMOR_WEIGHT.helmet;
     defenseTypes[combat.player?.chest.type as keyof typeof defenseTypes] += ARMOR_WEIGHT.chest;
@@ -1754,7 +1688,6 @@ function computerWeaponMaker(combat: Combat): Combat {
             };
         });      
     });
-
     for (let rank = 1; rank <= 4; rank++) {
         if (computerTypes[0].length && computerTypes[0].find((type: { rank: number; }) => type.rank === rank)) {
             if (rank === 1) {
@@ -1773,7 +1706,6 @@ function computerWeaponMaker(combat: Combat): Combat {
             break;
         };
     };
-
     return combat;
 };
 
@@ -2132,7 +2064,7 @@ function prayerSplitter(combat: Combat, prayer: string): Combat {
     return combat;
 };
 function instantDamageSplitter(combat: Combat, mastery: string): Combat {
-    let damage = combat.player?.[mastery] * (0.5 + (combat.player?.level as number / 10)) * (combat.isCaerenic === true ? 1.15 : 1);
+    let damage = combat.player?.[mastery] * (0.5 + (combat.player?.level as number / 10)) * (combat.isCaerenic === true ? DAMAGE.CAERENEIC_POS : 1);
     combat.realizedPlayerDamage = damage;
     combat.newComputerHealth -= combat.realizedPlayerDamage;
     combat.computerDamaged = true;
@@ -2221,12 +2153,12 @@ function consumePrayerSplitter(combat: Combat): any {
 
         switch (combat.prayerSacrifice) {
             case 'Heal':
-                combat.newPlayerHealth += effect.effect?.healing as number * 0.165;
+                combat.newPlayerHealth += effect.effect?.healing as number * DAMAGE.TICK_HALF;
                 if (combat.newPlayerHealth > 0) combat.computerWin = false;
                 break;
             case 'Buff':
-                combat.newComputerHealth -= (combat.realizedPlayerDamage * 0.5);
-                combat.playerActionDescription = `${combat.weapons[0]?.influences?.[0]}'s Tendrils serenade ${combat.computer?.name}, echoing ${Math.round(combat.realizedPlayerDamage * 0.5)} more damage.`    
+                combat.newComputerHealth -= (combat.realizedPlayerDamage * DAMAGE.HALF);
+                combat.playerActionDescription = `${combat.weapons[0]?.influences?.[0]}'s Tendrils serenade ${combat.computer?.name}, echoing ${Math.round(combat.realizedPlayerDamage * DAMAGE.HALF)} more damage.`    
                 if (combat.newComputerHealth <= 0) {
                     combat.newComputerHealth = 0;
                     combat.playerWin = true;
@@ -2236,15 +2168,15 @@ function consumePrayerSplitter(combat: Combat): any {
                 combat.playerDefense = deBuff.defense;
                 break;
             case 'Damage':
-                combat.newComputerHealth -= effect.effect?.damage as number * 0.165;
+                combat.newComputerHealth -= effect.effect?.damage as number * DAMAGE.TICK_HALF;
                 if (combat.newComputerHealth <= 0) {
                     combat.newComputerHealth = 0;
                     combat.playerWin = true;
                 }; 
                 break;
             case 'Debuff':
-                combat.newComputerHealth -= (combat.realizedComputerDamage * 0.5);
-                combat.playerActionDescription = `The Hush of ${combat.weapons[0]?.influences?.[0]} wracks ${combat.computer?.name}, wearing for ${Math.round(combat.realizedComputerDamage * 0.5)} more damage.`;   
+                combat.newComputerHealth -= (combat.realizedComputerDamage * DAMAGE.HALF);
+                combat.playerActionDescription = `The Hush of ${combat.weapons[0]?.influences?.[0]} wracks ${combat.computer?.name}, wearing for ${Math.round(combat.realizedComputerDamage * DAMAGE.HALF)} more damage.`;   
             
                 if (combat.newComputerHealth <= 0) {
                     combat.newComputerHealth = 0;
@@ -2420,7 +2352,7 @@ function computerCombatSplitter(data: { computerOne: Combat, computerTwo: Combat
 // ================================= VALIDATOR - SPLITTERS ===================================== \\
 
 function validate(combat: Combat): boolean {
-    return (combat.player != undefined && combat.computer != undefined && combat.player != null && combat.computer != null && combat.player !== undefined && combat.computer !== null && combat.player !== undefined && combat.computer !== null);
+    return (combat.player !== undefined && combat.computer !== null && combat.player !== undefined && combat.computer !== null);
 };
 
 // ================================= CONTROLLER - SERVICE ===================================== \\

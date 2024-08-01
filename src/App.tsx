@@ -160,6 +160,15 @@ export default function App() {
             console.warn('Error saving Ascean:', err);
         };
     };
+    async function insertSettings(insert: any) {
+        try {
+            const set = { ...settings(), ...insert };
+            await updateSettings(set);
+            setSettings(set);
+        } catch (err: any) {
+            console.warn('Error saving Settings:', err);
+        };
+    };
     async function saveSettings(set: Settings): Promise<void> {
         try {
             await updateSettings(set);
@@ -242,6 +251,7 @@ export default function App() {
     usePhaserEvent('update-reputation', updateRep);
     usePhaserEvent('request-settings', () => EventBus.emit('settings', settings()));
     usePhaserEvent('save-settings', saveSettings);
+    usePhaserEvent('insert-settings', insertSettings);
     usePhaserEvent('update-settings', updateRep);
     usePhaserEvent('player-ascean', () => EventBus.emit('player-ascean-ready', ascean()));
     usePhaserEvent('save-intro', async () => {
@@ -309,6 +319,11 @@ export default function App() {
                     }
                     {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.COMPLETE.KEY) && 
                         <button class='highlight cornerBR animate' onClick={() => createCharacter(newAscean())}>
+                            <div>Create {newAscean()?.name?.split(' ')[0]}</div>
+                        </button>
+                    }
+                    {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.PREMADE.KEY) && 
+                        <button class='highlight cornerBL animate' onClick={() => createCharacter(newAscean())}>
                             <div>Create {newAscean()?.name?.split(' ')[0]}</div>
                         </button>
                     }

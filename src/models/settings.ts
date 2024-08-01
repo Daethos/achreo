@@ -17,6 +17,7 @@ export default class Settings {
     public settingViews: string;
     public characterViews: string;
     public faithViews: string;
+    public healthViews: string;
     public control: string;
     public creationLeft: string;
     public creationRight: string;
@@ -138,6 +139,7 @@ export default class Settings {
         this.settingViews = 'Control';
         this.characterViews = 'Statistics';
         this.faithViews = 'Deities';
+        this.healthViews = 'FULL';
         this.control = 'Buttons';
         this.desktop = false;
         this.difficulty = {

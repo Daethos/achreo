@@ -124,30 +124,32 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     computerWin = res.computerWin;
                     break;
                 case 'Consume': // Consuming a prayer
-                    const consume = { 
+                    let consume = { 
                         ...combat(), 
                         prayerSacrificeId: data.prayerSacrificeId, 
                     };
-                    res = consumePrayer(consume) as Combat;
+                    consume = consumePrayer(consume) as Combat;
+                    res = { ...combat(), ...consume };
                     console.log(res, '-- Consume Action --');
+                    playerWin = res.playerWin;
                     EventBus.emit('blend-combat', { 
                         newComputerHealth: res.newComputerHealth,
                         newPlayerHealth: res.newPlayerHealth, 
                         playerEffects: res.playerEffects,
-                        playerWin: res.playerWin,
+                        playerWin,
                     });
-                    playerWin = res.playerWin;
                     break;
                 case 'Prayer': // Consuming a prayer
-                    const pray = { ...combat(), playerEffects: data };
-                    res = consumePrayer(pray) as Combat;
+                    let prayer = { ...combat(), playerEffects: data };
+                    prayer = consumePrayer(prayer) as Combat;
+                    res = { ...combat(), ...prayer };
+                    playerWin = res.playerWin;
                     EventBus.emit('blend-combat', { 
                         newComputerHealth: res.newComputerHealth, 
                         newPlayerHealth: res.newPlayerHealth, 
                         playerEffects: res.playerEffects,
-                        playerWin: res.playerWin,
+                        playerWin,
                     });
-                    playerWin = res.playerWin;
                     break;
                 case 'Instant': // Invoking a Prayer
                     let insta = { ...combat(), playerBlessing: data };
@@ -230,8 +232,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     const chiomic = Math.round(combat().playerHealth * (data / 100)) * caerenic * ((combat().player?.level as number + 9) / 10);
                     const newComputerHealth = combat().newComputerHealth - chiomic < 0 ? 0 : combat().newComputerHealth - chiomic;
                     playerWin = newComputerHealth === 0;
-                    const chiomicDescription = 
-                        `Your hush flays ${chiomic} health from ${combat().computer?.name}.`;
+                    const chiomicDescription = `Your hush flays ${chiomic} health from ${combat().computer?.name}.`;
                     res = { 
                         ...combat(), 
                         newComputerHealth, 
@@ -248,8 +249,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     const enemyChiomic = Math.round(combat().computerHealth * (data / 100)) * (caerenic ? 1.25 : 1) * stalwart  * ((combat().computer?.level as number + 9) / 10);
                     const newChiomicPlayerHealth = combat().newPlayerHealth - enemyChiomic < 0 ? 0 : combat().newPlayerHealth - enemyChiomic;
                     computerWin = newChiomicPlayerHealth === 0;
-                    const enemyChiomicDescription = 
-                        `${combat().computer?.name} flays ${enemyChiomic} health from you with their hush.`;
+                    const enemyChiomicDescription = `${combat().computer?.name} flays ${enemyChiomic} health from you with their hush.`;
                     res = {
                         ...combat(),
                         newPlayerHealth: newChiomicPlayerHealth,
@@ -266,8 +266,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     const newPlayerHealth = combat().newPlayerHealth + drained > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + drained;
                     const newHealth = combat().newComputerHealth - drained < 0 ? 0 : combat().newComputerHealth - drained;
                     playerWin = newHealth === 0;
-                    const tshaeralDescription =
-                        `You tshaer and devour ${drained} health from ${combat().computer?.name}.`;
+                    const tshaeralDescription = `You tshaer and devour ${drained} health from ${combat().computer?.name}.`;
                     res = { 
                         ...combat(), 
                         newPlayerHealth, 
@@ -283,8 +282,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     let drainedComputerHealth = combat().newComputerHealth + enemyDrain > combat().computerHealth ? combat().computerHealth : combat().newComputerHealth + enemyDrain;
                     
                     computerWin = drainedPlayerHealth === 0;
-                    const enemyTshaeralDescription =
-                        `${combat().computer?.name} tshaers and devours ${enemyDrain} health from you.`;
+                    const enemyTshaeralDescription = `${combat().computer?.name} tshaers and devours ${enemyDrain} health from you.`;
                     res = {
                         ...combat(),
                         newPlayerHealth: drainedPlayerHealth,
@@ -350,8 +348,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     let playerSacrifice = combat().newPlayerHealth - (sacrifice / 2 * stalwart) < 0 ? 0 : combat().newPlayerHealth - (sacrifice / 2 * stalwart);
                     let enemySacrifice = combat().newComputerHealth - sacrifice < 0 ? 0 : combat().newComputerHealth - sacrifice;
 
-                    const sacrificeDescription =
-                        `You sacrifice ${sacrifice / 2 * stalwart} health to rip ${sacrifice} from ${combat().computer?.name}.`;
+                    const sacrificeDescription = `You sacrifice ${sacrifice / 2 * stalwart} health to rip ${sacrifice} from ${combat().computer?.name}.`;
                     res = { ...combat(),
                         newPlayerHealth: playerSacrifice,
                         newComputerHealth: enemySacrifice,

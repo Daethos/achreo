@@ -1,4 +1,4 @@
-import { Accessor, Setter, createEffect, createSignal } from 'solid-js'
+import { Accessor, Setter, createSignal } from 'solid-js'
 import ItemModal from '../components/ItemModal';
 import { border, borderColor, itemStyle, masteryColor } from '../utility/styling';
 import PrayerEffects from './PrayerEffects';
@@ -12,23 +12,16 @@ import GraceBubble from './GraceBubble';
 import StaminaBubble from './StaminaBubble';
 import StaminaModal from '../components/StaminaModal';
 import GraceModal from '../components/GraceModal';
+import { createHealthDisplay } from '../utility/health';
 // import { CombatAttributes } from '../utility/combat';
 // import Equipment from '../models/equipment';
 // import Ascean, { initAscean } from '../models/ascean';
-const DISPLAYS = {
-    FULL: {KEY:'FULL', NEXT:'NUMBER'},
-    NUMBER: {KEY:'NUMBER', NEXT:'BARE'},
-    BARE: {KEY:'BARE', NEXT:'PERCENT'},
-    PERCENT: {KEY:'PERCENT', NEXT:'NONE'},
-    NONE: {KEY:'NONE', NEXT:'FULL'},
-};
 interface Props {
     state: Accessor<Combat>;
     game: Accessor<GameState>;
     stamina: Accessor<number>;
     grace: Accessor<number>;
 };
-
 export default function CombatUI({ state, game, stamina, grace }: Props) {
     const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal(false);
@@ -36,23 +29,7 @@ export default function CombatUI({ state, game, stamina, grace }: Props) {
     const [shieldShow, setShieldShow] = createSignal(false);
     const [staminaShow, setStaminaShow] = createSignal(false);
     const [graceShow, setGraceShow] = createSignal(false);
-    const [playerHealthPercentage, setPlayerHealthPercentage] = createSignal(0); 
-    const [display, setDisplay] = createSignal<any>(game().healthDisplay);
-    const [healthDisplay, setHealthDisplay] = createSignal<any>('');
-    createEffect(() => setPlayerHealthPercentage(Math.round((state().newPlayerHealth/state().playerHealth) * 100)));  
-    createEffect(() => {
-        if (display() === 'FULL') {
-            setHealthDisplay(`${Math.round(state().newPlayerHealth)} / ${state().playerHealth} [${playerHealthPercentage()}%]`);
-        } else if (display() === 'NONE') {
-            setHealthDisplay(`          `);
-        } else if (display() === 'NUMBER') {
-            setHealthDisplay(`${Math.round(state().newPlayerHealth)} / ${state().playerHealth}`);
-        } else if (display() === 'BARE') {
-            setHealthDisplay(`${Math.round(state().newPlayerHealth)}`);
-        } else if (display() === 'PERCENT') {
-            setHealthDisplay(`${playerHealthPercentage()}%`);
-        };
-    });
+    const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, false);
     const disengage = () => EventBus.emit('disengage');
     const showPlayer = () => {
         EventBus.emit('show-player');
@@ -64,11 +41,6 @@ export default function CombatUI({ state, game, stamina, grace }: Props) {
             'background-color': caerenic ? masteryColor(state()?.player?.mastery as string) : 'black',
             'border': border(borderColor(state()?.playerBlessing), 0.15),
         };
-    };
-    const changeDisplay = () => {
-        const nextView = DISPLAYS[display() as keyof typeof DISPLAYS].NEXT;
-        setDisplay(nextView);
-        EventBus.emit('blend-game', { healthDisplay: nextView });
     };
     // function createPrayer() {
     //     const computer = initAscean;
@@ -87,7 +59,7 @@ export default function CombatUI({ state, game, stamina, grace }: Props) {
         <div class='center playerHealthBar' style={{ 'z-index': 0 }}>
             <div class='playerPortrait' style={{ 'font-size': '1.075em', 'font-weight': 700, color: state().isStealth ? '#fdf6d8' : '#000', 'text-shadow': `0.075em 0.075em 0.075em ${state().isStealth ? '#000' : '#fdf6d8'}`, 'z-index': 1 }}>{healthDisplay()}</div>
             <div class='healthbarPosition' style={{ width: `100%`, 'background-color': 'red' }}></div>
-            <div class='healthbarPosition' style={{ width: `${playerHealthPercentage()}%`, 'background': state()?.isStealth ? 'linear-gradient(#000, #444)' : 'linear-gradient(gold, #fdf6d8)' }}></div>
+            <div class='healthbarPosition' style={{ width: `${healthPercentage()}%`, 'background': state()?.isStealth ? 'linear-gradient(#000, #444)' : 'linear-gradient(gold, #fdf6d8)' }}></div>
         </div>
         <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar" onClick={changeDisplay}/>
         <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} />

@@ -392,7 +392,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     hitBoxCheck = (enemy) => {
-        if (enemy.isDefeated === true) return;
+        if (!enemy || enemy.isDefeated === true) return;
         const xOffset = this.flipX ? 16 : -16;
         // let pointer = this.scene.add.graphics()
         //     .lineStyle(1, 0xFF0000, 1)

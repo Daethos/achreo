@@ -1,16 +1,14 @@
-import Phaser from 'phaser'; 
 import { v4 as uuidv4 } from 'uuid';
-
 export const PARTICLES = ['arrow', 'earth',  'fire',  'frost',  'lightning', 'righteous', 'sorcery', 'spooky', 'wild', 'wind'];
+const TIME = { achire: 1500, attack: 1250, parry: 1000, posture: 1500, roll: 1250, special: 1500 };
+const VELOCITY = { achire: 5, attack: 4.25, parry: 6, posture: 3.5, roll: 3.5, special: 5 }; // 7.5 || 9 || 6 || 6
 
-function angleTarget(target) {
-    let angle = 0;
-    if (target.x > 0) {
-        if (target.y > 0) { angle = 90; } else { angle = 0; };
+function angleTarget(x, y) {
+    if (x > 0) {
+        if (y > 0) { return 90; } else { return 0; };
     } else {
-        if (target.y > 0) { angle = 180; } else { angle = 270 };
+        if (y > 0) { return 180; } else { return 270 };
     };
-    return angle;
 };
 
 class Particle {
@@ -23,6 +21,7 @@ class Particle {
         this.effect = this.spriteMaker(this.scene, player, particle === true ? key + '_effect' : key, particle, special); 
         this.isParticle = particle === true;
         this.key = particle === true ? key + '_effect' : key;
+        this.player = player;
         this.sensorSize = special === false ? 6 : 12;
         this.special = special;
         this.success = false;
@@ -35,6 +34,8 @@ class Particle {
         this.effect.setExistingBody(effectSensor); 
         scene.add.existing(this.effect);
         this.sensorListener(player, effectSensor);
+        this.effect.setVisible(true);
+        this.effect.flipX = !player.flipX && !this.effect.flipX;
     };
 
     sensorListener = (player, sensor) => {
@@ -120,20 +121,18 @@ class Particle {
     };
 
     setTimer(action, id) {
-        const time = { achire: 1500, attack: 1500, counter: 1000, posture: 1750, roll: 1250 };
         this.scene.time.addEvent({
-            delay: time[action],
+            delay: TIME[action],
             callback: () => {
                 this.scene.particleManager.removeEffect(id);
             },
             callbackScope: this.scene,
             loop: false,
-        })
+        });
     };
 
     setVelocity(action) {
-        const velocity = { achire: 5, attack: 4, counter: 6, posture: 3, roll: 3, special: 5 }; // 7.5 || 9 || 6 || 6
-        return velocity[action];
+        return VELOCITY[action];
     };
 
     spriteMaker(scene, player, key, particle, special) {
@@ -190,35 +189,20 @@ export default class ParticleManager extends Phaser.Scene {
         };
     };
 
-    startEffect(player, id) {
-        let particle = this.particles.find(particle => particle.id === id);
-        if (particle) {
-            const direction = player.flipX ? -1 : 1;
-            particle.effect.play(particle.key, true);
-            particle.setVelocity(7 * direction, 0);
-        };
-    };
-
     stopEffect(id) {
         let particle = this.particles.find(particle => particle.id === id);
-        if (particle) {
-            particle.effect.setVisible(false);
-            particle.effect.stop();
-        };
+        if (!particle) return;
+        particle.effect.setVisible(false);
+        particle.effect.stop();
     };
 
-    update(player) { 
-        if (!player.particleEffect) return;
-        if (!player.particleEffect.effect.visible) player.particleEffect.effect.setVisible(true); 
-        if (!player.flipX && !player.particleEffect.effect.flipX && player.particleEffect.isParticle === true) player.particleEffect.effect.flipX = true;
-        if (player.particleEffect && player.particleEffect.effect && this.particles.find((particle) => particle.id === player.particleEffect.id)) {
-            if (player.particleEffect.isParticle === true) {
-                player.particleEffect.effect.play(player.particleEffect.key, true);
-            } else {
-                player.particleEffect.effect.setAngle(angleTarget(player.particleEffect.target));
-            };
-            const target = player.particleEffect.target;
-            player.particleEffect.effect.setVelocity(player.particleEffect.velocity * target.x, target.y * player.particleEffect.velocity);
+    update(effect) { 
+        if (effect == undefined || effect.effect == undefined || !this.particles.find((particle) => particle.id === effect.id)) return;
+        if (effect.isParticle === true) {
+            effect.effect.play(effect.key, true);
+        } else {
+            effect.effect.setAngle(angleTarget(effect.target.x, effect.target.y));
         };
+        effect.effect.setVelocity(effect.velocity * effect.target.x, effect.target.y * effect.velocity);
     };
 };

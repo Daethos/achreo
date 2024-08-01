@@ -550,7 +550,7 @@ export default function PhaserGame (props: IProps) {
         });
         setStamina(stats.attributes.stamina as number);
         setGrace(stats.attributes.grace as number);
-        setGame({ ...game(), inventory: stats.ascean.inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary });
+        setGame({ ...game(), inventory: stats.ascean.inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary, healthDisplay: props.settings().healthViews });
         EventBus.emit('update-total-stamina', stats.attributes.stamina as number);    
         EventBus.emit('update-total-grace', stats.attributes.grace as number);    
     };
@@ -621,7 +621,7 @@ export default function PhaserGame (props: IProps) {
         setGrace(res?.attributes?.grace as number);
         const inventory = await getInventory(id);
         const traits = getAsceanTraits(props.ascean());
-        setGame({ ...game(), inventory: inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary });
+        setGame({ ...game(), inventory: inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary, healthDisplay: props.settings().healthViews });
         EventBus.emit('update-total-stamina', res?.attributes.stamina as number);    
     };
 

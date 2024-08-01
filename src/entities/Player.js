@@ -3557,7 +3557,7 @@ export default class Player extends Entity {
                 this.particleEffect.triggered = true;
                 this.playerActionSuccess();
             } else {
-                this.scene.particleManager.update(this, this.particleEffect);
+                this.scene.particleManager.update(this.particleEffect);
             };
         };
 
@@ -3632,16 +3632,16 @@ export default class Player extends Entity {
 
         // =================== DECELERATION ================== \\
         if (!this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.strafe.E.isDown && !this.inputKeys.strafe.Q.isDown && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && !this.scene.joystickKeys.left.isDown && !this.scene.joystickKeys.right.isDown) {
-            this.playerVelocity.x = this.zeroOutVelocity(this.playerVelocity.x, this.deceleration);
+            this.playerVelocity.x = 0; // this.zeroOutVelocity(this.playerVelocity.x, this.deceleration);
         };
         if (!this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.strafe.E.isDown && !this.inputKeys.strafe.Q.isDown && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && !this.scene.joystickKeys.right.isDown && !this.scene.joystickKeys.left.isDown) {
-            this.playerVelocity.x = this.zeroOutVelocity(this.playerVelocity.x, this.deceleration);
+            this.playerVelocity.x = 0; // this.zeroOutVelocity(this.playerVelocity.x, this.deceleration);
         };
         if (!this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && !this.scene.joystickKeys.down.isDown && !this.scene.joystickKeys.up.isDown) {
-            this.playerVelocity.y = this.zeroOutVelocity(this.playerVelocity.y, this.deceleration);
+            this.playerVelocity.y = 0; // this.zeroOutVelocity(this.playerVelocity.y, this.deceleration);
         };
         if (!this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && !this.scene.joystickKeys.up.isDown && !this.scene.joystickKeys.down.isDown) {
-            this.playerVelocity.y = this.zeroOutVelocity(this.playerVelocity.y, this.deceleration);
+            this.playerVelocity.y = 0; // this.zeroOutVelocity(this.playerVelocity.y, this.deceleration);
         };
 
         // =================== VARIABLES IN MOTION ================== \\

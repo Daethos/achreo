@@ -1,9 +1,8 @@
-import { Accessor, For, Setter, Show, createEffect, createSignal } from 'solid-js'
+import { Accessor, For, Setter, Show, Suspense, createEffect, createSignal, lazy } from 'solid-js'
 import ItemModal from '../components/ItemModal';
 import AttributeModal, { AttributeCompiler } from '../components/Attributes';
 import AsceanImageCard from '../components/AsceanImageCard';
 import { itemStyle } from '../utility/styling';
-import HealthBar from './HealthBar';
 import { EventBus } from '../game/EventBus';
 import PrayerEffects from './PrayerEffects';
 import { useResizeListener } from '../utility/dimensions';
@@ -15,6 +14,9 @@ import StatusEffect from '../utility/prayer';
 import { PrayerModal } from '../utility/buttons';
 import { GameState } from '../stores/game';
 import { EnemySheet } from '../utility/enemy';
+import { Puff } from 'solid-spinner';
+import { createHealthDisplay } from '../utility/health';
+const HealthBar = lazy(async () => await import('./HealthBar'));
 
 function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, show: Accessor<boolean>, setShow: Setter<boolean>; game: Accessor<GameState> }) {
     const [enemy, setEnemy] = createSignal(state().computer);
@@ -38,11 +40,9 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
         EventBus.emit('disengage');
         setShow(!show());
     };
-
-    return (
-        <div class='modal'>
-        <div class='border center' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%', 'width': dimensions().ORIENTATION === 'landscape' ? '50%' : '70%',
-            top: '' }}>
+    // transform: 'scale(0.875)'
+    return <div class='modal'>
+        <div class='border center' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%', 'width': dimensions().ORIENTATION === 'landscape' ? '50%' : '70%' }}>
             <button class='highlight cornerBL' style={{ 'z-index': 1 }} onClick={clearEnemy}>
                 <p style={{ color: '#fdf6d8' }}>Clear UI</p>
             </button>
@@ -59,9 +59,11 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
                 <h2 style={{ margin: '2%' }}>
                     {state().computer?.description}
                 </h2>
-                <div style={{ transform: 'scale(0.875)', 'margin-top': '3%' }}>
+                <Suspense fallback={<Puff color="gold"/>}>
+                <div style={{ position: 'absolute', left: '25vw', display: 'inline', height: '75vh', width: '50vw', 'z-index': 99 }}>
                     <HealthBar combat={state} enemy={true} game={game} />
                 </div>
+                </Suspense>
                 <div style={{ color: '#fdf6d8', 'margin-top': '9.5%', 'font-size': '0.875em' }}>
                     Level <span class='gold'>{state().computer?.level}</span> | Mastery <span class='gold'>{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
                 </div>
@@ -83,24 +85,19 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
                 </Show>
             </div>
         </div>
-        </div>
-    );
+    </div>;
 };
 
 export default function EnemyUI({ state, game, enemies }: { state: Accessor<Combat>, game: Accessor<GameState>, enemies: Accessor<EnemySheet[]> }) {
-    const [playerEnemyPercentage, setEnemyHealthPercentage] = createSignal(0); 
     const [showModal, setShowModal] = createSignal(false);
     const [itemShow, setItemShow] = createSignal(false);
     const [prayerShow, setPrayerShow] = createSignal(false);
     const [effect, setEffect] = createSignal<StatusEffect>();
-
-    createEffect(() => setEnemyHealthPercentage(Math.round((state().newComputerHealth/state().computerHealth) * 100))); 
-
+    const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, true);
     function fetchEnemy(enemy: EnemySheet) {
         EventBus.emit('setup-enemy', enemy);
         EventBus.emit('tab-target', enemy);    
     };
-
     const size = (len: number) => {
         switch (true) {
             case len < 20:
@@ -124,23 +121,20 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
     //         console.log(exists, 'exists');
     //     EventBus.emit('create-enemy-prayer', exists);
     // };
-
     return (
         <div class='enemyCombatUi'>
             <div class='enemyName' style={{ 'z-index': 1, 'font-size': size(state().computer?.name.length as number) }} onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
-            <div class='center enemyHealthBar'>
-                <div class='enemyPortrait' style={{ 'font-size': '1em', color: '#fdf6d8' }}>{`${Math.round(state().newComputerHealth)} / ${state().computerHealth} [${playerEnemyPercentage()}%]`}</div>
+            <div class='center enemyHealthBar' onClick={changeDisplay}>
+                <div class='enemyPortrait' style={{ 'font-size': '1em', color: '#fdf6d8' }}>{healthDisplay()}</div>
                 <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `100%`, 'background-color': '#FF0000' }}></div>
-                <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `${playerEnemyPercentage()}%`, 'background': 'linear-gradient(#00AA00, green)' }}></div>
+                <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `${healthPercentage()}%`, 'background': 'linear-gradient(#00AA00, green)' }}></div>
             </div>
             <img id='enemyHealthbarBorder' src={'../assets/gui/enemy-healthbar.png'} alt="Health Bar" style={{ 'z-index': -1 }} />
             <div class='enemyUiWeapon' onClick={() => setItemShow(!itemShow())} style={itemStyle(state()?.computerWeapons?.[0]?.rarity as string)}>
                 <img src={state().computerWeapons?.[0]?.imgUrl} alt={state().computerWeapons?.[0]?.name} />
             </div>
-            {/* <button class='highlight center' onClick={() => createPrayer()} style={{ }}>
-                <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>
-                    Create Prayer
-                </div>
+            {/* <button class='highlight center' onClick={() => createPrayer()}>
+                <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>Create Prayer</div>
             </button> */}
             <Show when={state().computerEffects?.length > 0}>
                 <div class='combatEffects' style={{ position: 'fixed', right: '7vw', top: '14vh', 'height': '13vh', width: 'auto', transform: 'scale(0.5)' }}>

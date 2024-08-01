@@ -97,14 +97,14 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
         {/* <<---------- LANDSCAPE ---------->> */}
             <Switch>
                 <Match when={menu().screen === SCREENS.PREMADE.KEY}>
-                    <div class='drop-25 left' style={{ height: '82.5%', width: '48%', display: 'inline-block', 'margin-top': '2.5%', overflow: 'scroll', 'scrollbar-width': 'none' }}>
+                    <div class='drop-25 left' style={{ height: '60%', width: '48%', display: 'inline-block', 'margin-top': '4%', overflow: 'scroll', 'scrollbar-width': 'none' }}>
                         <Suspense fallback={<Puff color="gold" />}>
                         <For each={STARTING_CHARACTERS}>
                             {(ascean, _index) => (
                                 <div class='border row' onClick={() => setNewAscean(ascean)} style={{ width: '70%', margin: '0.5em auto', 'border-color': masteryColor(ascean.mastery) }}>
-                                    <h5 class='highlight gold' style={{ 'font-family': 'Cinzel-Regular' }}>{ascean.name.split(' ')[0]}</h5>
+                                    <h4 class='highlight gold' style={{ 'font-family': 'Cinzel-Regular' }}>{ascean.name.split(' ')[0]}</h4>
                                     <img style={{...photo, 'border-color': masteryColor(ascean.mastery)}} src={`../assets/images/${ascean.origin}-${ascean.sex}.jpg`} /><br />
-                                    <h5 class='highlight gold' style={{ 'font-family': 'Cinzel-Regular' }}>{ascean.mastery.charAt(0).toUpperCase() + ascean.mastery.slice(1)}</h5>
+                                    <h4 class='highlight gold' style={{ 'font-family': 'Cinzel-Regular' }}>{ascean.mastery.charAt(0).toUpperCase() + ascean.mastery.slice(1)}</h4>
                                 </div>
                             )}
                         </For>

@@ -692,6 +692,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
+            this.useGrace(15);
             this.player.isFrozen = true;
         } else {
             enemy.isFrozen = true;
@@ -785,6 +786,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) {
+            this.useGrace(15);
             this.player.isFeared = true;
         } else {
             enemy.isFeared = true;
@@ -863,6 +865,7 @@ export class Game extends Scene {
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) {
             if (id === this.player.playerID) {
+                this.useGrace(15);
                 this.combatMachine.action({ data: 20, type: 'Enemy Chiomic' });
             };
         } else {
@@ -873,7 +876,7 @@ export class Game extends Scene {
             } else { // Blind Player Attack
                 console.log('Blind Writhe');
                 this.combatMachine.action({ type: 'Player', data: { 
-                    playerAction: { action: 'writhe', parry: this.state.parryGuess }, 
+                    playerAction: { action: special ? special : 'writhe', parry: this.state.parryGuess }, 
                     enemyID: enemy.enemyID, 
                     ascean: enemy.ascean, 
                     damageType: enemy.currentDamageType, 

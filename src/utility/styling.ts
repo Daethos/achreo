@@ -110,7 +110,7 @@ const masteryNumber = (mastery: string): number => {
         case 'kyosir':
             return 0xffd700;
         default:
-            return 0xfdf6d9;
+            return 0xfdf6d8;
     };
 };
 

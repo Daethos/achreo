@@ -664,6 +664,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
+            this.useGrace(10);
             this.player.isConfused = true;
         } else {
             enemy.isConfused = true;
@@ -707,6 +708,7 @@ export class Game extends Scene {
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.5) * (this.player.isCaerenic ? 1.15 : 1) * ((this.state.player?.level as number + 9) / 10);
             const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
+            enemy.slowDuration = 950;
             enemy.isSlowed = true;
         };
     };
@@ -720,9 +722,10 @@ export class Game extends Scene {
         if (!enemy) {
             this.player.isRooted = true;
         } else {
+            this.root(id);
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player]) * (this.player.isCaerenic ? 1.15 : 1) * ((this.state.player?.level as number + 9) / 10);
             const health = enemy.health - damage;
-            enemy.isRooted = true;
+            // enemy.isRooted = true;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
         };
     };
@@ -733,7 +736,6 @@ export class Game extends Scene {
             this.useGrace(15);
             this.player.isParalyzed = true;
         } else {
-        console.log('Paralyzing Enemy');
             enemy.isParalyzed = true;
         };
     };
@@ -795,13 +797,15 @@ export class Game extends Scene {
             enemy.isFeared = true;
         };
     };
-    slow = (id: string): void => {
+    slow = (id: string, time: number = 3000): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) {
             this.player.isSlowed = true;
+            this.player.slowDuration = time;
         } else {
             enemy.isSlowed = true;
+            enemy.slowDuration = time;
         };
     };
     snare = (id: string): void => {

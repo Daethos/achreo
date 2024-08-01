@@ -6,8 +6,9 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     private duration: number;
     private timer: Phaser.Time.TimerEvent;
     private timerTime: number;
+    private constant: boolean;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, text: string, duration: number, context: string, critical?: boolean) {
+    constructor(scene: Phaser.Scene, x: number, y: number, text: string, duration: number, context: string, critical: boolean = false, constant: boolean = false) {
         super(scene, x, y);
         this.color = this.setColor(context);
         this.text = new Phaser.GameObjects.Text(scene, 0, 0, text, { 
@@ -17,11 +18,12 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
             stroke: 'black',
             strokeThickness: 2 
         });
-        this.visible = false;
+        this.visible = true;
         this.add(this.text);
         this.setDepth(100);
         scene.add.existing(this);
         this.duration = duration;
+        this.constant = constant;
         this.timerTime = 0;
         this.timer = scene.time.addEvent({
             delay: this.duration,
@@ -52,10 +54,14 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
                 return 'red';
         };
     };
-
+    // if (!this.visible) 
     public update(player: any) {
-        if (!this.visible) this.setVisible(true);
+        // this.setVisible(true);
         this.timerTime += 1;
-        this.setPosition(player.x, player.y - 25 - this.timerTime);
+        if (this.constant === true) { 
+            this.setPosition(player.x, player.y - 25);
+         } else { 
+            this.setPosition(player.x, player.y - 25 - this.timerTime);
+        }; 
     };
 };

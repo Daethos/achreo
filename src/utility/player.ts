@@ -49,7 +49,7 @@ export const PLAYER = {
         POLYMORPH: COST.LOW,
         ROOT: COST.LOW,
         SHIMMER: COST.LOW,
-        SNARE: COST.LOW,
+        SLOW: COST.LOW,
         SPRINT: COST.LOW,
         // Moderate Cost
         ACHIRE: COST.MID,
@@ -60,7 +60,7 @@ export const PLAYER = {
         PURSUIT: COST.MID,
         RUSH: COST.MID,
         SACRIFICE: COST.MID,
-        SLOW: COST.MID,
+        SNARE: COST.MID,
         STORM: COST.MID,
         SUTURE: COST.MID,
         // High Cost

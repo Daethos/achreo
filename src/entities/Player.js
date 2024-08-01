@@ -456,6 +456,7 @@ export default class Player extends Entity {
         this.isCounterSpelling = false;
         this.isCaerenic = false;
         this.devourTimer = undefined; 
+        this.slowDuration = DURATION.SLOWED;
         this.highlight = this.scene.add.graphics()
             .lineStyle(4, 0xFF0000) // 3
             .setScale(0.25) // 35
@@ -1736,7 +1737,7 @@ export default class Player extends Entity {
         this.castbar.setTime(PLAYER.DURATIONS.KYRNAICISM);
         this.currentTarget.isConsumed = true;
         this.beam.createEmitter(this.currentTarget, PLAYER.DURATIONS.KYRNAICISM);
-        this.scene.slow(this.spellTarget);
+        this.scene.slow(this.spellTarget, 1000);
         this.chiomicTimer = this.scene.time.addEvent({
             delay: 1000,
             callback: () => this.kyrnaicism(),
@@ -1776,6 +1777,7 @@ export default class Player extends Entity {
             this.chiomicTimer = undefined;
             return;
         };
+        this.scene.slow(this.spellTarget, 975);
         if (this.spellTarget === this.getEnemyId()) {
             this.scene.combatMachine.action({ type: 'Chiomic', data: 10 }); // this.spellTarget  
         } else {
@@ -1997,7 +1999,7 @@ export default class Player extends Entity {
         this.isSlowing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slow', 750, 'cast');
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
-        this.scene.slow(this.spellTarget);
+        this.scene.slow(this.spellTarget, 3000);
         this.scene.useGrace(PLAYER.STAMINA.SLOW);
         this.setTimeEvent('slowCooldown', PLAYER.COOLDOWNS.SHORT); 
         this.flickerCarenic(500); 
@@ -2815,7 +2817,7 @@ export default class Player extends Entity {
             this.scene.rightJoystick.joystick.setVisible(false);
             this.scene.actionBar.setVisible(false);
         };
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '?c .on-f-u`SeD~', DURATION.TEXT, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '?c .on-f-u`SeD~', DURATION.TEXT, 'effect', false, true);
         this.spriteWeapon.setVisible(false);
         this.spriteShield.setVisible(false);
         this.confuseDirection = 'down';
@@ -2891,7 +2893,7 @@ export default class Player extends Entity {
             this.scene.rightJoystick.joystick.setVisible(false);
             this.scene.actionBar.setVisible(false);
         };
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'F̶e̷a̴r̷e̵d̴', DURATION.TEXT, 'damage');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'F̶e̷a̴r̷e̵d̴', DURATION.TEXT, 'damage', false, true);
         this.spriteWeapon.setVisible(false);
         this.spriteShield.setVisible(false);
         this.fearVelocity = { x: 0, y: 0 };
@@ -2924,7 +2926,7 @@ export default class Player extends Entity {
                     this.isFeared = false;
                 } else {   
                     randomDirection();
-                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, fears[Math.floor(Math.random() * 5)], 1000, 'effect');
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, fears[Math.floor(Math.random() * 5)], 1000, 'damage');
                 };
             },
             callbackScope: this,
@@ -2956,7 +2958,7 @@ export default class Player extends Entity {
     };
 
     onFrozenEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Frozen', DURATION.TEXT, 'cast');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Frozen', DURATION.TEXT, 'cast', false, true);
         if (!this.isPolymorphed) this.clearAnimations();
         this.anims.play('player_idle', true);
         this.setStatic(true);
@@ -2977,7 +2979,7 @@ export default class Player extends Entity {
         this.scene.rightJoystick.joystick.setVisible(false);
         this.scene.actionBar.setVisible(false);
         this.isPolymorphed = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphed', DURATION.TEXT, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphed', DURATION.TEXT, 'effect', false, true);
         this.clearAnimations();
         this.clearTint();
         this.anims.pause();
@@ -3050,8 +3052,8 @@ export default class Player extends Entity {
     };
 
     onSlowedEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slowed', DURATION.TEXT, 'damage');
-        this.slowDuration = DURATION.SLOWED;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slowed', DURATION.TEXT, 'effect', false, true);
+        // this.slowDuration = DURATION.SLOWED;
         this.setTint(0xFFC700); // 0x888888
         this.adjustSpeed(-(PLAYER.SPEED.SLOW - 0.25));
         this.scene.time.delayedCall(this.slowDuration, () =>{
@@ -3067,7 +3069,7 @@ export default class Player extends Entity {
     };
 
     onSnaredEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snared', DURATION.TEXT, 'damage');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snared', DURATION.TEXT, 'effect', false, true);
         this.snareDuration = DURATION.SNARED;
         this.setTint(0x0000FF); // 0x888888
         this.adjustSpeed(-(PLAYER.SPEED.SNARE - 0.25));
@@ -3089,7 +3091,7 @@ export default class Player extends Entity {
             this.scene.actionBar.setVisible(false);
         };
         this.isStunned = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', PLAYER.DURATIONS.STUNNED, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', PLAYER.DURATIONS.STUNNED, 'effect', false, true);
         this.scene.input.keyboard.enabled = false;
         this.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.setTint(0xFF0000);

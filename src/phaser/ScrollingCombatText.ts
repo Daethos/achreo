@@ -1,5 +1,3 @@
-import Phaser from 'phaser';
-
 export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     private color: string;
     private text: Phaser.GameObjects.Text;
@@ -7,7 +5,6 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     private timer: Phaser.Time.TimerEvent;
     private timerTime: number;
     private constant: boolean;
-
     constructor(scene: Phaser.Scene, x: number, y: number, text: string, duration: number, context: string, critical: boolean = false, constant: boolean = false) {
         super(scene, x, y);
         this.color = this.setColor(context);
@@ -33,7 +30,6 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
             loop: false,
         });
     };
-
     private setColor = (context: string) => {
         switch (context) {
             case 'bone':
@@ -54,9 +50,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
                 return 'red';
         };
     };
-    // if (!this.visible) 
     public update(player: any) {
-        // this.setVisible(true);
         this.timerTime += 1;
         if (this.constant === true) { 
             this.setPosition(player.x, player.y - 25);

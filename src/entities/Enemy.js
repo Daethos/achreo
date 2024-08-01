@@ -883,13 +883,12 @@ export default class Enemy extends Entity {
                 const special = ENEMY_SPECIAL[mastery][Math.floor(Math.random() * ENEMY_SPECIAL[mastery].length)].toLowerCase();
                 this.specialAction = special;
                 this.currentAction = 'special';
-                const snares = ['slow', 'kyrnaicism'];
-                const snare = Math.round(Math.random()) === 1 ? snares[1] : snares[0];
-                console.log('Snare!', snare);
-                if (this.stateMachine.isState(snare)) {
-                    this.stateMachine.setState(snare);
-                } else if (this.metaMachine.isState(snare)) {
-                    this.metaMachine.setState(snare);
+                // const specific = ['confuse', 'fear', 'polymorph'];
+                // const test = specific[Math.floor(Math.random() * specific.length)];
+                if (this.stateMachine.isState(special)) {
+                    this.stateMachine.setState(special);
+                } else if (this.metaMachine.isState(special)) {
+                    this.metaMachine.setState(special);
                 };
                 this.setSpecialCombat(true);
             }, undefined, this);
@@ -1724,7 +1723,7 @@ export default class Enemy extends Entity {
     };
 
     onTshaeralEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tshaering', PLAYER.DURATIONS.TSHAERAL / 2, 'damage');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Devouring', PLAYER.DURATIONS.TSHAERAL / 2, 'damage');
         if (this.checkPlayerResist() === false) return;    
         this.isPerformingSpecial = true;
         this.isTshaering = true;
@@ -1733,11 +1732,12 @@ export default class Enemy extends Entity {
         if (this.isGlowing === false) this.checkCaerenic(true);
         this.castbar.setTotal(PLAYER.DURATIONS.TSHAERAL);
         this.castbar.setTime(PLAYER.DURATIONS.TSHAERAL);
+        this.scene.useGrace(15);
         this.tshaeringTimer = this.scene.time.addEvent({
-            delay: 250,
+            delay: 500,
             callback: () => {
                 if (this.wasCounterSpelled === true) {
-                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Countered Tshaeral', 750, 'red');
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Countered Devour', 750, 'red');
                 };
                 if (!this.isTshaering || this.scene.state.computerWin || this.scene.state.newPlayerHealth <= 0 || this.wasCounterSpelled === true) {
                     this.wasCounterSpelled = false;
@@ -1746,24 +1746,21 @@ export default class Enemy extends Entity {
                     this.tshaeringTimer = undefined;
                     return;
                 };
-                this.scene.useGrace(2);
                 if (this.isCurrentTarget === true) {
-                    this.scene.combatMachine.action({ type: 'Enemy Tshaeral', data: 3 });
+                    this.scene.combatMachine.action({ type: 'Enemy Tshaeral', data: 6 });
                 } else {
                     const caerenic = this.scene.state.isCaerenic ? 1.25 : 1;
                     const stalwart = this.scene.state.isStalwart ? 0.85 : 1;
-                    const devour = Math.round(this.combatStats.attributes.healthTotal * 0.03 * caerenic * stalwart * (this.ascean.level + 9) / 10);
-                    // const ratio = devour / this.scene.state.playerHealth;
-                    // let newPlayerHealth = this.scene.state.newPlayerHealth - devour < 0 ? 0 : this.scene.state.newPlayerHealth - devour;
+                    const devour = Math.round(this.combatStats.attributes.healthTotal * 0.06 * caerenic * stalwart * (this.ascean.level + 9) / 10);
                     let newComputerHealth = this.health + devour > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + devour;
                     const computerActionDescription = `${this.ascean?.name} tshaers and devours ${devour} health from you.`;
                     EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
-                    this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: -3, id: this.scene.player.playerID } });
+                    this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: -6, id: this.scene.player.playerID } });
                     this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
                 };
             },
             callbackScope: this,
-            repeat: 8,
+            repeat: 4,
         });
         this.scene.time.addEvent({
             delay: 2000,

@@ -25,6 +25,7 @@ import NPC from '../../entities/NPC';
 import ParticleManager from '../../phaser/ParticleManager';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
+import { screenShake } from '../../phaser/ScreenShake';
 const dimensions = useResizeListener();
 
 export class Game extends Scene {
@@ -455,6 +456,7 @@ export class Game extends Scene {
         //     console.log(pointer, 'Pointer Over!');
         //     this.mousePointer = pointer;
         // });
+        EventBus.on('screenshake', () => screenShake(this, 150));
     };
 
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
@@ -705,7 +707,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.5) * (this.player.isCaerenic ? 1.15 : 1) * ((this.state.player?.level as number + 9) / 10);
+            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.35) * (this.player.isCaerenic ? 1.15 : 1) * ((this.state.player?.level as number + 9) / 10);
             const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
             enemy.slowDuration = 950;
@@ -852,6 +854,7 @@ export class Game extends Scene {
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) {
             this.player.isStunned = true;
+            this.useStamina(15);
         } else {
             enemy.isStunned = true;
         };

@@ -1,6 +1,6 @@
 import { BlendModes, GameObjects, Input, Math as pMath, Physics } from "phaser";
 import Entity, { FRAME_COUNT } from "./Entity";  
-import { sprint, walk } from "../phaser/ScreenShake";
+import { screenShake, sprint, walk } from "../phaser/ScreenShake";
 import StateMachine, { States } from "../phaser/StateMachine";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import HealthBar from "../phaser/HealthBar";
@@ -536,10 +536,6 @@ export default class Player extends Entity {
     };
 
     tabUpdate = (enemy) => {
-        // if (this.currentTarget) {
-            // this.currentTarget.clearTint();
-            // this.currentTarget.setTint(0x00FF00);
-        // };
         const newTarget = this.targets.find(obj => obj.enemyID === enemy.id);
         this.targetIndex = this.targets.findIndex(obj => obj.enemyID === enemy.id);
         if (!newTarget) return;
@@ -1328,6 +1324,7 @@ export default class Player extends Entity {
             this.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
             this.scene.useGrace(PLAYER.STAMINA.ACHIRE);    
+            screenShake(this.scene);
         };
         this.castbar.reset();
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); // !this.isCaerenic && 
@@ -1375,6 +1372,7 @@ export default class Player extends Entity {
         this.castbar.setTime(PLAYER.DURATIONS.ARCING, 0xFF0000);
         this.setStatic(true);
         this.castbar.setVisible(true); 
+        screenShake(this.scene);
         this.flickerCarenic(3000); 
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You begin arcing with your ${this.scene.state.weapons[0].name}.`
@@ -1429,6 +1427,7 @@ export default class Player extends Entity {
         };
         if (this.moving()) {
             this.scene.useGrace(PLAYER.STAMINA.BLINK);
+            screenShake(this.scene);
         };
         const blinkCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
         this.setTimeEvent('blinkCooldown', blinkCooldown);
@@ -1468,6 +1467,7 @@ export default class Player extends Entity {
             this.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
             this.scene.useGrace(PLAYER.STAMINA.CONFUSE);    
+            screenShake(this.scene);
         };
         this.spellTarget = '';
         this.castbar.reset();
@@ -1603,6 +1603,7 @@ export default class Player extends Entity {
             this.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
             this.scene.useGrace(PLAYER.STAMINA.FEAR);    
+            screenShake(this.scene);
         };
         this.spellTarget = '';
         this.castbar.reset();
@@ -1820,6 +1821,7 @@ export default class Player extends Entity {
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You launch yourself through the air!`
         });
+        screenShake(this.scene);
     };
     onLeapUpdate = (_dt) => this.combatChecker(this.isLeaping);
     onLeapExit = () => {
@@ -1856,6 +1858,7 @@ export default class Player extends Entity {
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You paralyze ${this.scene.state.computer?.name} for several seconds!`
             });
+            screenShake(this.scene);
         };
         this.spellTarget = '';
         this.castbar.reset();
@@ -1892,6 +1895,7 @@ export default class Player extends Entity {
             this.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });        
             this.spellTarget = '';
+            screenShake(this.scene);
         };
         this.castbar.reset();
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false);
@@ -1972,6 +1976,7 @@ export default class Player extends Entity {
             duration: 600,
             ease: 'Circ.easeOut',
             onStart: () => {
+                screenShake(this.scene);
                 this.flickerCarenic(600);  
             },
             onComplete: () => {
@@ -2007,6 +2012,7 @@ export default class Player extends Entity {
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, slowing them!`
         });
+        screenShake(this.scene);
     };
     onSlowUpdate = (_dt) => this.combatChecker(this.isSlowing);
     onSlowExit = () => this.spellTarget = '';
@@ -2057,6 +2063,7 @@ export default class Player extends Entity {
             this.scene.snare(this.spellTarget);
             this.castingSuccess = false;
             this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
+            screenShake(this.scene);
         };
         this.spellTarget = '';
         this.castbar.reset();
@@ -2092,6 +2099,7 @@ export default class Player extends Entity {
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You begin storming with your ${this.scene.state.weapons[0].name}.`
         });
+        screenShake(this.scene);
     };
     onStormUpdate = (_dt) => this.combatChecker(this.isStorming);
     onStormExit = () => this.setTimeEvent('stormCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);
@@ -2834,42 +2842,38 @@ export default class Player extends Entity {
             const dir = Math.floor(Math.random() * 4);
             const directions = ['up', 'down', 'left', 'right'];
             const direction = directions[dir];
-            if (move > 25) {
+            if (move >= 20) {
                 this.confuseVelocity = MOVEMENT[direction];
             } else {
                 this.confuseVelocity = { x: 0, y: 0 };
             };
+            this.flipX = this.confuseVelocity.x < 0;
             this.playerVelocity.x = this.confuseVelocity.x;
             this.playerVelocity.y = this.confuseVelocity.y;
             this.confuseDirection = direction;
         };
         const confusions = ['~?  ? ?!', 'Hhwat?', 'Wh-wor; -e ma i?', 'Woh `re ewe?', '...'];
-
         this.confuseTimer = this.scene.time.addEvent({
-            delay: 1500,
+            delay: 1250,
             callback: () => {
                 iteration++;
-                if (iteration === 5) {
+                if (iteration === 6) {
                     iteration = 0;
                     this.isConfused = false;
                 } else {   
                     this.specialCombatText.destroy();
                     randomDirection();
-                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, confusions[Math.floor(Math.random() * 5)], 1000, 'effect');
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, confusions[Math.floor(Math.random() * 5)], 750, 'effect');
                 };
             },
             callbackScope: this,
-            repeat: 4,
+            repeat: 6,
         }); 
-
     };
     onConfusedUpdate = (_dt) => {
         if (!this.isConfused) this.combatChecker(this.isConfused);
-        if (this.moving()) {
-            this.anims.play(`player_running`, true);
-        } else {
-            this.anims.play(`player_idle`, true);
-        };
+        this.playerVelocity.x = this.confuseVelocity.x;
+        this.playerVelocity.y = this.confuseVelocity.y;    
     };
     onConfusedExit = () => { 
         if (this.isConfused) this.isConfused = false;
@@ -2909,37 +2913,35 @@ export default class Player extends Entity {
             const move = Math.random() * 101;
             const directions = ['up', 'down', 'left', 'right'];
             const direction = directions[Math.floor(Math.random() * 4)];
-            if (move > 25) {
+            if (move >= 20) {
                 this.fearVelocity = MOVEMENT[direction];
             } else {
                 this.fearVelocity = { x: 0, y: 0 };
             };
+            this.flipX = this.fearVelocity.x < 0;
             this.playerVelocity.x = this.fearVelocity.x;
             this.playerVelocity.y = this.fearVelocity.y;
         };
         this.fearTimer = this.scene.time.addEvent({
-            delay: 1500,
+            delay: 1250,
             callback: () => {
                 iteration++;
-                if (iteration === 3) {
+                if (iteration === 4) {
                     iteration = 0;
                     this.isFeared = false;
                 } else {   
                     randomDirection();
-                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, fears[Math.floor(Math.random() * 5)], 1000, 'damage');
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, fears[Math.floor(Math.random() * 5)], 750, 'damage');
                 };
             },
             callbackScope: this,
-            repeat: 2,
+            repeat: 4,
         }); 
     };
     onFearedUpdate = (_dt) => {
         if (!this.isFeared) this.combatChecker(this.isFeared);
-        if (this.moving()) {
-            this.anims.play(`player_running`, true);
-        } else {
-            this.anims.play(`player_idle`, true);
-        };
+        this.playerVelocity.x = this.fearVelocity.x;
+        this.playerVelocity.y = this.fearVelocity.y;
     };
     onFearedExit = () => { 
         if (this.scene.settings.desktop === false) {
@@ -2990,51 +2992,50 @@ export default class Player extends Entity {
         this.polymorphDirection = 'down';
         this.polymorphMovement = 'idle';
         this.polymorphVelocity = { x: 0, y: 0 };
-
         this.isAttacking = false;
         this.isParrying = false;
         this.isPosturing = false;
         this.isRolling = false;
         this.currentAction = ''; 
-
         let iteration = 0;
         const randomDirection = () => {  
             const move = Math.random() * 101;
             const directions = ['up', 'down', 'left', 'right'];
             const dir = Math.floor(Math.random() * directions.length);
             const direction = directions[dir];
-            if (move > 25) {
+            if (move >= 20) {
                 this.polymorphMovement = 'move';
                 this.polymorphVelocity = MOVEMENT[direction]; 
             } else {
                 this.polymorphMovement = 'idle';                
                 this.polymorphVelocity = { x: 0, y: 0 };
             };
+            this.flipX = this.polymorphVelocity.x < 0;
             this.polymorphDirection = direction;
             this.playerVelocity.x = this.polymorphVelocity.x;
             this.playerVelocity.y = this.polymorphVelocity.y;
         };
-
         this.polymorphTimer = this.scene.time.addEvent({
-            delay: 2000,
+            delay: 1250,
             callback: () => {
                 iteration++;
-                if (iteration === 5) {
+                if (iteration === 8) {
                     iteration = 0;
                     this.isPolymorphed = false;
                 } else {   
                     randomDirection();
-                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '...thump', 1000, 'effect');
-                    this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: 15, id: this.playerID } });
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '...thump', 750, 'effect');
+                    this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: 7.5, id: this.playerID } });
                 };
             },
             callbackScope: this,
-            repeat: 5,
+            repeat: 8,
         }); 
     };
     onPolymorphedUpdate = (_dt) => {
         if (!this.isPolymorphed) this.combatChecker(this.isPolymorphed);
-        this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
+        this.playerVelocity.x = this.polymorphVelocity.x;
+        this.playerVelocity.y = this.polymorphVelocity.y;
     };
     onPolymorphedExit = () => { 
         this.scene.joystick.joystick.setVisible(true);
@@ -3053,7 +3054,6 @@ export default class Player extends Entity {
 
     onSlowedEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slowed', DURATION.TEXT, 'effect', false, true);
-        // this.slowDuration = DURATION.SLOWED;
         this.setTint(0xFFC700); // 0x888888
         this.adjustSpeed(-(PLAYER.SPEED.SLOW - 0.25));
         this.scene.time.delayedCall(this.slowDuration, () =>{
@@ -3100,6 +3100,7 @@ export default class Player extends Entity {
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You've been stunned.`
         });
+        screenShake(this.scene);
     };
     onStunnedUpdate = (dt) => {
         this.setVelocity(0);
@@ -3485,12 +3486,16 @@ export default class Player extends Entity {
     };
 
     handleAnimations = () => {
-        if (this.isStunned) {
-            this.setVelocity(0);
-        } else if (this.isHurt) {
+        if (this.isHurt) {
             this.anims.play('player_hurt', true).on('animationcomplete', () => this.isHurt = false);  
         } else if (this.isPolymorphed) {
             this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
+        } else if (this.isConfused || this.isFeared) {
+            if (this.moving()) {
+                this.anims.play('player_running', true);
+            } else {
+                this.anims.play('player_idle', true);
+            };
         } else if (this.isParrying) {
             this.anims.play('player_attack_2', true).on('animationcomplete', () => this.isParrying = false);
         } else if (this.isDodging) { 
@@ -3594,10 +3599,9 @@ export default class Player extends Entity {
 
     handleMovement = () => {
         let speed = this.speed;
-        // =================== MOVEMENT ================== \\
         if (this.inputKeys.right.D.isDown || this.inputKeys.right.RIGHT.isDown || this.scene.joystickKeys.right.isDown) {
             this.playerVelocity.x += this.acceleration;
-            if (this.flipX) this.flipX = false;
+            this.flipX = false;
         };
 
         if (this.inputKeys.left.A.isDown || this.inputKeys.left.LEFT.isDown || this.scene.joystickKeys.left.isDown) {
@@ -3613,34 +3617,28 @@ export default class Player extends Entity {
             this.playerVelocity.y += this.acceleration;
         };
 
-        // =================== STRAFING ================== \\
         if (this.inputKeys.strafe.E.isDown || this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0) {
             speed += 0.1;
-            if (!this.flipX) this.flipX = true;
+            this.flipX = true;
         };
         if (this.inputKeys.strafe.Q.isDown || this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x < 0) {
             speed -= 0.1;    
-            if (this.flipX) this.flipX = false;
+            this.flipX = false;
         };
 
-        // =================== DECELERATION ================== \\
-        if (!this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.strafe.E.isDown && !this.inputKeys.strafe.Q.isDown && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && !this.scene.joystickKeys.left.isDown && !this.scene.joystickKeys.right.isDown) {
+        if (!this.isConfused && !this.isFeared && !this.isPolymorphed && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.strafe.E.isDown && !this.inputKeys.strafe.Q.isDown && !this.inputKeys.left.A.isDown && !this.scene.joystickKeys.left.isDown && !this.scene.joystickKeys.right.isDown) {
             this.playerVelocity.x = 0; // this.zeroOutVelocity(this.playerVelocity.x, this.deceleration);
         };
-        if (!this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.strafe.E.isDown && !this.inputKeys.strafe.Q.isDown && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && !this.scene.joystickKeys.right.isDown && !this.scene.joystickKeys.left.isDown) {
+        if (!this.isConfused && !this.isFeared && !this.isPolymorphed && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.strafe.E.isDown && !this.inputKeys.strafe.Q.isDown && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && !this.scene.joystickKeys.right.isDown && !this.scene.joystickKeys.left.isDown) {
             this.playerVelocity.x = 0; // this.zeroOutVelocity(this.playerVelocity.x, this.deceleration);
         };
-        if (!this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && !this.scene.joystickKeys.down.isDown && !this.scene.joystickKeys.up.isDown) {
+        if (!this.isConfused && !this.isFeared && !this.isPolymorphed && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && !this.scene.joystickKeys.down.isDown && !this.scene.joystickKeys.up.isDown) {
             this.playerVelocity.y = 0; // this.zeroOutVelocity(this.playerVelocity.y, this.deceleration);
         };
-        if (!this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && !this.scene.joystickKeys.up.isDown && !this.scene.joystickKeys.down.isDown) {
+        if (!this.isConfused && !this.isFeared && !this.isPolymorphed && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && !this.scene.joystickKeys.up.isDown && !this.scene.joystickKeys.down.isDown) {
             this.playerVelocity.y = 0; // this.zeroOutVelocity(this.playerVelocity.y, this.deceleration);
         };
-
-        // =================== VARIABLES IN MOTION ================== \\
         if (this.isAttacking || this.isParrying || this.isPosturing) speed += 1;
-        
-        // ==================== SETTING VELOCITY ==================== \\
         this.playerVelocity.limit(speed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
     }; 

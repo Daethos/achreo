@@ -387,6 +387,27 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         EventBus.on('opacity-buttons', this.opacityButton);
         EventBus.on('reborder-buttons', this.reborderButton);
         EventBus.on('recolor-buttons', this.recolorButton);
+        EventBus.on('stalwart-buttons', this.stalwartButtons);
+    };
+
+    private stalwartButtons = (stalwart: boolean) => {
+        if (stalwart === true) {
+            this.actionButtons = this.actionButtons.map((button: ActionButton) => {
+                if (button.name === 'DODGE' || button.name === 'ROLL') {
+                    button.graphic.clear();
+                    button.border.clear();
+                    button.graphic.disableInteractive();
+                };
+                return button;
+            });
+        } else {
+            this.actionButtons = this.actionButtons.map((button: ActionButton) => {
+                if (button.name === 'DODGE' || button.name === 'ROLL') {
+                    this.animateButton(button);
+                };
+                return button;
+            });
+        };
     };
 
     private redisplayButton = (data: { type: string, display: string }) => {
@@ -620,6 +641,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 const centerActionX = width * x; // / 1.25
                 const centerActionY = height * y; // / 1.35
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
+                    if ((button.name === 'DODGE' || button.name === 'ROLL') && this.scene.player.isStalwart === true) return button;
                     button.graphic.clear();
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(this.scene.settings.positions.actionButtons.display, this.scene.settings.positions.actionButtons.spacing, index, centerActionX, centerActionY, height);
@@ -682,12 +704,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     public pressButton = (button: ActionButton, scene: any): void => {
         if (this.scene.scene.isActive('Game') === false) return;
         const input = button.name.toLowerCase();
-        // const check = staminaCheck(this.scene.player.stamina, PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA]);
-        // if (check.success === true && scene.player.stateMachine.isState(input)) {
-        //     scene.player.stateMachine.setState(`${input}`);
-        // } else if (check.success === true && scene.player.metaMachine.isState(input)) {
-        //     scene.player.metaMachine.setState(`${input}`);
-        // };
         const type = STAMINA.includes(input);
         let check: {success: boolean; cost: number;} = {success: false, cost: 0};
         if (type === true) {
@@ -698,13 +714,13 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         if (check.success === true && scene.player.stateMachine.isState(input)) {
             scene.player.stateMachine.setState(`${input}`);
         } else if (check.success === true && scene.player.metaMachine.isState(input)) {
-            // const check = graceCheck(this.scene.player.grace, PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA]);
             scene.player.metaMachine.setState(`${input}`);
         };
     };
 
     public setCurrent = (current: number, limit: number, name: string) => {
         this.actionButtons = this.actionButtons.map((button) => {
+            if ((button.name === 'DODGE' || button.name === 'ROLL') && this.scene.player.isStalwart === true) return button;
             if (button.name === name.toUpperCase()) {
                 const progressPercentage = current / limit;
                 if (current / limit >= 1) {
@@ -788,6 +804,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 
     private scaleButton = (button: ActionButton, scale: number, opacity: number, border: number): ActionButton => {
+        if ((button.name === 'DODGE' || button.name === 'ROLL') && this.scene.player.isStalwart === true) return button;
         if (button.current / button.total >= 1) {
             button.graphic.clear();
             button.graphic.fillStyle(button.color, opacity);

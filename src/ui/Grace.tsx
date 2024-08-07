@@ -1,6 +1,6 @@
 import { Accessor, createSignal, onCleanup, onMount } from "solid-js";
 import { EventBus } from "../game/EventBus";
-const GRACE = { TICK: 200, UPDATE: 1000 };
+const GRACE = { TICK: 100, UPDATE: 1000 };
 export default function createGrace(grc: Accessor<number>) {
     const [grace, setGrace] = createSignal(grc());
     const [gracePercentage, setGracePercentage] = createSignal(0);
@@ -8,25 +8,25 @@ export default function createGrace(grc: Accessor<number>) {
     var interval: any | undefined = undefined;
     var remaining = 0;
     const recover = () => {
-        if (remaining > 0) {remaining -= GRACE.TICK - grace(); return;};
+        if (remaining > 0) {remaining -= GRACE.TICK; return;}; // - grace()
         if (remaining < 0) remaining = 0;
         setUsedGrace(0);
-        const newStamina = Math.min(100, gracePercentage() + 1);
-        setGracePercentage(newStamina);
-        EventBus.emit('updated-grace', newStamina);
-        if (newStamina >= 100) {clearInterval(interval); interval = undefined;};
+        const newGrace = Math.min(100, gracePercentage() + (grace() / 100)); // 1
+        setGracePercentage(newGrace);
+        EventBus.emit('updated-grace', newGrace);
+        if (newGrace >= 100) {clearInterval(interval); interval = undefined;};
     };
     const startRecovery = () => {
         setUsedGrace(0);
-        interval = setInterval(recover, GRACE.TICK - grace());
+        interval = setInterval(recover, GRACE.TICK); // - grace()
     };
     const updateStamina = (e: number = 0) => {
         if (e > 0) remaining += GRACE.UPDATE;
         if (interval === undefined) {startRecovery();};
-        const oldStamina = grace() * gracePercentage() / 100;
-        const newStamina = Math.max(0, oldStamina - e);
-        const newStaminaPercentage = Math.max(0, Math.min(100, Math.round(newStamina / grace() * 100)));
-        setGracePercentage(newStaminaPercentage);
+        const oldGrace = grace() * gracePercentage() / 100;
+        const newGrace = Math.max(0, oldGrace - e);
+        const newPercentage = Math.max(0, Math.min(100, newGrace / grace() * 100));
+        setGracePercentage(newPercentage);
         setUsedGrace((prev) => prev + e);
     };
     onMount(() => {

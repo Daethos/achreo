@@ -284,6 +284,11 @@ export default class Player extends Entity {
                 onEnter: this.onCleanEnter,
                 onExit: this.onCleanExit,
             })
+            .addState(States.ABSORB, {
+                onEnter: this.onAbsorbEnter,
+                onUpdate: this.onAbsorbUpdate,
+                onExit: this.onAbsorbExit,
+            })
             .addState(States.CHIOMIC, {
                 onEnter: this.onChiomicEnter,
                 onUpdate: this.onChiomicUpdate,
@@ -521,6 +526,7 @@ export default class Player extends Entity {
     stalwartUpdate = () => {
         this.isStalwart = this.isStalwart ? false : true;
         this.scene.sound.play('stalwart', { volume: this.scene.settings.volume });
+        EventBus.emit('stalwart-buttons', this.isStalwart);
     };
 
     enemyUpdate = (e) => {
@@ -713,8 +719,7 @@ export default class Player extends Entity {
     outOfRange = (range) => {
         const distance = pMath.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
         if (distance > range) {
-            console.log('Out of Range???')
-            this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - range, 1000, 'damage')} Distance`, 1000, 'damage');
+            this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - range, 1000, 'damage')} Away`, 1000, 'damage');
             return true;    
         };
         return false;
@@ -762,6 +767,10 @@ export default class Player extends Entity {
                     this.statusCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect');
                 };
             };
+            if (this.isAbsorbing) this.absorbHit();
+            if (this.isMalicing) this.maliceHit();
+            if (this.isMending) this.mendHit();
+            if (this.isRecovering) this.recoverHit();
         };
         if (this.health < e.newPlayerHealth) {
             let heal = Math.round(e.newPlayerHealth - this.health);
@@ -2128,6 +2137,40 @@ export default class Player extends Entity {
     onCleanEnter = () => {};
     onCleanExit = () => {};
 
+    onAbsorbEnter = () => {
+        this.isAbsorbing = true;
+        this.scene.useGrace(PLAYER.STAMINA.ABSORB);    
+        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Absorbing', 750, 'effect');
+        this.absorbBubble = new Bubble(this.scene, this.x, this.y, 'aqua', PLAYER.DURATIONS.ABSORB);
+        this.setTimeEvent('absorbCooldown', PLAYER.COOLDOWNS.MODERATE);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.ABSORB, () => {
+            this.isAbsorbing = false;    
+        }, undefined, this);
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You warp oncoming damage into grace.`
+        });
+    };
+    onAbsorbUpdate = (_dt) => {
+        if (this.isAbsorbing) {
+            this.absorbBubble.update(this.x, this.y);
+        } else {
+            this.metaMachine.setState(States.CLEAN);
+        };
+    };
+    onAbsorbExit = () => {
+        if (this.absorbBubble) {
+            this.absorbBubble.destroy();
+            this.absorbBubble = undefined;
+        };
+    };
+
+    absorbHit = () => {
+        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Abosrbed', 500, 'effect');
+        this.scene.useGrace(-25);
+    };
+
     onChiomicEnter = () => {
         this.scene.useGrace(PLAYER.STAMINA.CHIOMIC);    
         this.aoe = new AoE(this.scene, 'chiomic', 1);    
@@ -3356,8 +3399,8 @@ export default class Player extends Entity {
                     if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit();
                     return;    
                 };
-                if (this?.attackedTarget?.isMalicing) this?.attackedTarget?.maliceHit();
-                if (this?.attackedTarget?.isMending) this?.attackedTarget?.mendHit();
+                // if (this?.attackedTarget?.isMalicing) this?.attackedTarget?.maliceHit();
+                // if (this?.attackedTarget?.isMending) this?.attackedTarget?.mendHit();
             };
             if (this.enemyIdMatch()) { // Target
                 this.scene.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: action } });

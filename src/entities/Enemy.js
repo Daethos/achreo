@@ -535,6 +535,8 @@ export default class Enemy extends Entity {
             let damage = Math.round(this.health - e.health);
             damage = e?.glancing === true ? `${damage} (Glancing)` : damage;
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e?.critical);
+            if (this.isMalicing) this.maliceHit();
+            if (this.isMending) this.mendHit();
         } else if (this.health < e.health) {
             let heal = Math.round(e.health - this.health);
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, 1500, 'heal');
@@ -867,7 +869,7 @@ export default class Enemy extends Entity {
         };
     };
 
-    setSpecialCombat = (bool, mult = 1) => {
+    setSpecialCombat = (bool, mult = 0.8) => {
         if (this.isSpecial === false) return;
         const mastery = this.ascean.mastery;
         if (bool === true) {
@@ -2485,7 +2487,6 @@ export default class Enemy extends Entity {
         this.polymorphDirection = 'down';
         this.polymorphMovement = 'idle';
         this.polymorphVelocity = { x: 0, y: 0 };
-
         this.isAttacking = false;
         this.isParrying = false;
         this.isPosturing = false;
@@ -2514,33 +2515,31 @@ export default class Enemy extends Entity {
             };
             this.polymorphDirection = direction;
         };
-
         this.polymorphTimer = this.scene.time.addEvent({
-            delay: 2000,
+            delay: 1000,
             callback: () => {
                 iteration++;
-                if (iteration === 5) {
+                if (iteration === 10) {
                     iteration = 0;
                     this.isPolymorphed = false;
                 } else {   
                     randomDirection();
                     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '...thump', 1000, 'effect');
                     if (this.isCurrentTarget && this.health < this.ascean.health.max) {
-                        this.health = (this.health + (this.ascean.health.max * 0.3)) > this.ascean.health.max ? this.ascean.health.max : (this.health + (this.ascean.health.max * 0.3));
+                        this.health = (this.health + (this.ascean.health.max * 0.15)) > this.ascean.health.max ? this.ascean.health.max : (this.health + (this.ascean.health.max * 0.15));
                         if (this.scene.state.enemyID === this.enemyID) {
                             this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: this.health, id: this.enemyID } });
                         };
                     } else if (this.health < this.ascean.health.max) {
-                        this.health = this.health + (this.ascean.health.max * 0.3);
+                        this.health = this.health + (this.ascean.health.max * 0.15);
                         this.healthbar.setValue(this.health);
                         this.updateHealthBar(this.health);
                     };
                 };
             },
             callbackScope: this,
-            repeat: 5,
+            repeat: 10,
         }); 
-
     };
     onPolymorphUpdate = (_dt) => {
         if (!this.isPolymorphed) this.evaluateCombatDistance();
@@ -2563,7 +2562,6 @@ export default class Enemy extends Entity {
     onStunEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', 2500, 'effect', false, true);
         this.stunDuration = DURATION.STUNNED;
-        // this.anims.play('player_idle', true);
         this.isAttacking = false;
         this.isParrying = false;
         this.isPosturing = false;
@@ -2626,7 +2624,6 @@ export default class Enemy extends Entity {
 
     onSlowEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slowed', DURATION.TEXT, 'effect', false, true);
-        // this.slowDuration = DURATION.SLOWED;
         this.setTint(0xFFC700); // 0x888888
         this.adjustSpeed(-PLAYER.SPEED.SLOW);
         this.scene.time.delayedCall(this.slowDuration, () =>{
@@ -2634,7 +2631,6 @@ export default class Enemy extends Entity {
             this.negMetaMachine.setState(States.CLEAN);
         }, undefined, this);
     };
-
     onSlowExit = () => {
         this.clearTint();
         this.setTint(0xFF0000);
@@ -2651,7 +2647,6 @@ export default class Enemy extends Entity {
             this.negMetaMachine.setState(States.CLEAN);
         }, undefined, this);
     };
-    // onSnareUpdate = (dt) => {};
     onSnareExit = () => { 
         this.clearTint();
         this.setTint(0xFF0000);
@@ -2681,9 +2676,9 @@ export default class Enemy extends Entity {
             };
             return;
         };
-        if (this.scene.player.isMalicing) this.scene.player.maliceHit();
-        if (this.scene.player.isMending) this.scene.player.mendHit();
-        if (this.scene.player.isRecovering) this.scene.player.recoverHit();
+        // if (this.scene.player.isMalicing) this.scene.player.maliceHit();
+        // if (this.scene.player.isMending) this.scene.player.mendHit();
+        // if (this.scene.player.isRecovering) this.scene.player.recoverHit();
         if (this.particleEffect) {
             if (this.isCurrentTarget) {
                 this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: this.particleEffect.action, id: this.enemyID } });
@@ -2694,7 +2689,6 @@ export default class Enemy extends Entity {
             this.particleEffect.effect.destroy();
             this.particleEffect = undefined;
         } else {
-            this.scene.useStamina(5);
             if (this.isCurrentTarget) {
                 if (this.scene.state.computerAction === '') return;
                 this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: this.scene.state.computerAction, id: this.enemyID } });
@@ -2702,6 +2696,7 @@ export default class Enemy extends Entity {
                 this.scene.combatMachine.action({ type: 'Enemy', data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.currentAction, parry: this.parryAction, id: this.enemyID }}});
             };
         }; 
+        this.scene.useStamina(5);
     };
 
     enemyDodge = () => {

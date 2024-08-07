@@ -449,7 +449,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if (this.isDodging || this.isRolling) this.spriteShield.setVisible(false);
         if (this.isDodging || this.isRolling) this.spriteWeapon.setVisible(false);
         if (this.isStalwart && !this.isRolling && !this.isDodging) this.spriteShield.setVisible(true);
-        if (this.isPraying || this.isHealing) {
+        if (this.isPraying || this.isCasting) {
             if (this.spriteWeapon.depth < 3) this.spriteWeapon.setDepth(3);
             if (this.flipX) {
                 if (this.frameCount === 0) {
@@ -491,7 +491,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
             
             if (entity === 'enemy' && this.frameCount === 0) {
-                this.setTint(0xFF0000);
+                this.setTint(0x00FF00);
             };
             if (this.frameCount === FRAME_COUNT.PARRY_SUCCESS) {
                 if (this.isRanged === false) this.checkActionSuccess(entity, target);
@@ -507,7 +507,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('roll', this, 'arrow');
                 };
                 if (entity === 'enemy' && this.frameCount === 0) {
-                    this.setTint(0xFF0000);
+                    this.setTint(0x00FF00);
                 };
             };
             if (this.frameCount === (FRAME_COUNT.ROLL_SUCCESS - 2) && entity === 'enemy') {
@@ -669,7 +669,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.frameCount === 0) { 
                         this.spriteWeapon.setOrigin(-0.25, 1.2);
                         this.spriteWeapon.setAngle(-250);
-                        if (entity === 'enemy') this.setTint(0xFF0000);
+                        if (entity === 'enemy') this.setTint(0x00FF00);
                     };
                     if (this.frameCount === 4) {
                         this.spriteWeapon.setAngle(-267.5);
@@ -732,7 +732,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.frameCount === 0) { 
                         this.spriteWeapon.setOrigin(-0.15, 1.25);
                         this.spriteWeapon.setAngle(-185);
-                        if (entity === 'enemy') this.setTint(0xFF0000);
+                        if (entity === 'enemy') this.setTint(0x00FF00);
                     };
                     if (this.frameCount === 4) {
                         this.spriteWeapon.setAngle(-182.5);
@@ -842,7 +842,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.spriteWeapon.setOrigin(0.25, 1.1);
                         this.spriteWeapon.setAngle(55);
                         this.spriteShield.setOrigin(1, 0.15);
-                        if (entity === 'enemy') this.setTint(0xFF0000);
+                        if (entity === 'enemy') this.setTint(0x00FF00);
                     };
                     if (this.frameCount === 5) { // 3
                         this.spriteWeapon.setOrigin(0.5, 0.75);
@@ -874,7 +874,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.spriteWeapon.setOrigin(0, 0.5);
                         this.spriteWeapon.setAngle(-165);
                         this.spriteShield.setOrigin(0, 0.25);
-                        if (entity === 'enemy') this.setTint(0xFF0000);
+                        if (entity === 'enemy') this.setTint(0x00FF00);
                     };
                     if (this.frameCount === 5) { // 3
                         this.spriteWeapon.setOrigin(0, 1);

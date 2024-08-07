@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 export const PARTICLES = ['arrow', 'earth',  'fire',  'frost',  'lightning', 'righteous', 'sorcery', 'spooky', 'wild', 'wind'];
 const TIME = { achire: 1500, attack: 1250, parry: 1000, posture: 1500, roll: 1250, special: 1500 };
-const VELOCITY = { achire: 5, attack: 4.25, parry: 6, posture: 3.5, roll: 3.5, special: 5 }; // 7.5 || 9 || 6 || 6
+const VELOCITY = { achire: 5.5, attack: 4.5, parry: 6.5, posture: 3.5, roll: 3.5, special: 5 }; // 7.5 || 9 || 6 || 6
 
 function angleTarget(x, y) {
     if (x > 0) {
@@ -61,12 +61,12 @@ class Particle {
                         player.particleEffect.success = true;
                         return;
                     };
-                    if (other.gameObjectB?.isMalicing && !player.isAstrifying) {
-                        other.gameObjectB?.maliceHit();
-                    };
-                    if (other.gameObjectB?.isMending && !player.isAstrifying) {
-                        other.gameObjectB?.mendHit();
-                    };
+                    // if (other.gameObjectB?.isMalicing && !player.isAstrifying) {
+                    //     other.gameObjectB?.maliceHit();
+                    // };
+                    // if (other.gameObjectB?.isMending && !player.isAstrifying) {
+                    //     other.gameObjectB?.mendHit();
+                    // };
                     const match = this.scene.state?.enemyID === other.gameObjectB.enemyID;
                     player.attackedTarget = other.gameObjectB;
                     if (match === true) {

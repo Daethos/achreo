@@ -59,7 +59,8 @@ export const States = {
     TSHAERAL: "tshaeral",
     TSHAER: "tshaer",
     TSHAERING: "tshaering",
-
+    
+    // Traits
     ASTRICATION: "astrication",
     BERSERK: "berserk",
     BLIND: "blind",
@@ -73,6 +74,7 @@ export const States = {
 
     // Meta Machine
     CLEAN: "clean",
+    ABSORB: "absorb",
     CHIOMIC: "chiomic",
     DISEASE: "disease",
     ENVELOP: "envelop",

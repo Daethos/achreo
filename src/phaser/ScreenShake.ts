@@ -1,5 +1,5 @@
 var totalTrauma = 0;
-export function screenShake(scene: Phaser.Scene, duration = 96, intensity = 0.0035) {
+export function screenShake(scene: Phaser.Scene, duration = 96, intensity = 0.00375) {
     totalTrauma += 1.04;
     intensity *= Math.pow(totalTrauma, 2);
     if ("vibrate" in navigator) navigator.vibrate(duration);

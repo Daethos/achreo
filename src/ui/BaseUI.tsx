@@ -439,7 +439,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         try {
             adjustTime(0, 0, true);
             if (res.playerWin === true) {
-                let experience = Math.round((res.computer?.level as number) * 100 
+                let experience: number = Math.round((res.computer?.level as number) * 100 
                     * (res.computer?.level as number / res?.player?.level!) 
                     + (res?.playerAttributes?.rawKyosir as number));
                 experience = balanceExperience(experience, res?.player?.level as number);
@@ -453,10 +453,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     opponent: res.computer?.level,
                     opponentExp: Math.min(experience, res?.player?.level! * 1000),
                 };
-                EventBus.emit('record-win', {
-                    record: res,
-                    experience: newState
-                });
+                EventBus.emit('record-win', { record: res, experience: newState });
                 const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
                 EventBus.emit('enemy-loot', loot);
                 setAsceanState({ ...asceanState(), avarice: false });

@@ -1,4 +1,5 @@
 const COLORS = {
+    'aqua': 0x00FFFF,
     'bone': 0xFDF6D8,
     'black': 0x000000,
     'blue': 0x0000FF,

@@ -1,5 +1,6 @@
 export const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
 export const SPECIALS = [
+    'Absorb',
     'Achire',
     'Astrave',
     'Arc',
@@ -42,7 +43,7 @@ export const SPECIALS = [
     'Writhe',
 ]; // 'Charm', 'Shroud'
 export const SPECIAL = {
-    'constitution': [ // 13
+    'constitution': [ // 14
         'Astrave',
         'Consume', 
         'Desperation', 
@@ -52,12 +53,13 @@ export const SPECIAL = {
         'Kyrnaicism', 
         'Mend', 
         'Paralyze',
+        'Recover', 
         'Renewal', 
         'Sacrifice', 
         'Shield', 
         'Ward'
-    ], // 13
-    'strength': [ // 12
+    ], // 14
+    'strength': [ // 13
         'Achire',
         'Arc', 
         'Consume', 
@@ -65,18 +67,20 @@ export const SPECIAL = {
         'Invoke', 
         'Leap', 
         'Recover', 
+        'Rush', 
         'Scream', 
         'Storm', 
         'Suture', 
         'Ward', 
         'Writhe'
-    ], // 12
-    'agility': [ // 13
+    ], // 13
+    'agility': [ // 14
         'Consume', 
         'Desperation', 
         'Envelop', 
         'Invoke', 
         'Kynisos',
+        'Leap', 
         'Pursuit', 
         'Recover', 
         'Rush', 
@@ -85,8 +89,9 @@ export const SPECIAL = {
         'Sprint', 
         'Storm', 
         'Writhe'
-    ], // 13
-    'achre': [ // 14
+    ], // 14
+    'achre': [ // 15
+        'Absorb',
         'Achire',
         'Astrave',
         'Blink', 
@@ -101,8 +106,9 @@ export const SPECIAL = {
         'Sacrifice', 
         'Shimmer', 
         'Slow'
-    ], // 14
-    'caeren': [ // 12
+    ], // 15
+    'caeren': [ // 13
+        'Absorb',
         'Astrave',
         'Consume', 
         'Desperation', 
@@ -115,8 +121,9 @@ export const SPECIAL = {
         'Sacrifice', 
         'Shield', 
         'Suture'
-    ], // 12
-    'kyosir': [ // 12
+    ], // 13
+    'kyosir': [ // 13
+        'Absorb',
         'Astrave',
         'Chiomic',
         'Confuse', 
@@ -129,7 +136,7 @@ export const SPECIAL = {
         'Protect', 
         'Scream', 
         'Suture', 
-    ], // 12
+    ], // 13
 };
 export const startingSpecials = {
     'constitution': ['Healing', 'Kyrnaicism', 'Mend', 'Shield', 'Ward'],

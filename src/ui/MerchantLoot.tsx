@@ -11,16 +11,12 @@ interface Props {
     setHighlight: Setter<Equipment | undefined>;
 };
 
-const MerchantLoot = ({ item, ascean, setShow, setHighlight }: Props) => {
+export default function MerchantLoot({ item, ascean, setShow, setHighlight }: Props) {
     const [purchaseSetting, setPurchaseSetting] = createSignal({
         item: item,
         cost: { silver: 0, gold: 0 }
     });
-    
-    createEffect(() => {
-        determineCost(item?.rarity as string, item?.type);
-    });
-
+    createEffect(() => determineCost(item?.rarity as string, item?.type));
     const determineCost = async (rarity: string, type: string) => {
         try {
             let cost = { silver: 0, gold: 0 };
@@ -87,7 +83,6 @@ const MerchantLoot = ({ item, ascean, setShow, setHighlight }: Props) => {
             console.log(err.message, 'Error Determining Cost!');
         };
     };
-
     const purchaseItem = async (): Promise<void> => {
         let asceanTotal = 0;
         let costTotal = 0;
@@ -104,29 +99,22 @@ const MerchantLoot = ({ item, ascean, setShow, setHighlight }: Props) => {
             console.log(err.message, 'Error Purchasing Item!');
         };
     };
-
     const select = () => {
         setHighlight(item);
         setShow(true)
     };
-
     const getItemStyle = {
         background: 'black',
         border: `0.15em solid ${getRarityColor(item?.rarity as string)}`
     };
-    
-    return (
-        <div style={{ margin: '3%' }}>
-            <button onClick={select} class="my-3 mx-2 p-2" style={getItemStyle}><img src={item?.imgUrl} alt={item?.name} /></button>
-            <div style={{ 'font-size': "0.75em", 'margin-top': '4%', 'margin-bottom': '0' }}>
-                {purchaseSetting()?.cost?.gold ? `${purchaseSetting().cost.gold}g${' '}` : ''}
-                {purchaseSetting()?.cost?.silver ? `${purchaseSetting().cost.silver}s${' '}` : ''}
-            </div>
-            <button class='highlight super' onClick={purchaseItem} style={{ 'font-size': '', 'font-weight': 700, color: 'green', padding: '0.75em', 'z-index': 999 }}>
-                Purchase {item?.name}
-            </button>
+    return <div style={{ margin: '3%' }}>
+        <button onClick={select} class="my-3 mx-2 p-2" style={getItemStyle}><img src={item?.imgUrl} alt={item?.name} /></button>
+        <div style={{ 'font-size': "0.75em", 'margin-top': '4%', 'margin-bottom': '0' }}>
+            {purchaseSetting()?.cost?.gold ? `${purchaseSetting().cost.gold}g${' '}` : ''}
+            {purchaseSetting()?.cost?.silver ? `${purchaseSetting().cost.silver}s${' '}` : ''}
         </div>
-    );
+        <button class='highlight super' onClick={purchaseItem} style={{ 'font-size': '', 'font-weight': 700, color: 'green', padding: '0.75em', 'z-index': 999 }}>
+            Purchase {item?.name}
+        </button>
+    </div>;
 };
-
-export default MerchantLoot;

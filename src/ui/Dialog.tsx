@@ -238,18 +238,15 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         checkInfluence(ascean);
     });
 
-    createEffect(() => {
-        setMerchantTable(game().merchantEquipment);
-    });
+    createEffect(() => setMerchantTable(game().merchantEquipment));
     
     onMount(() => {
-        if (game()?.inventory?.length > 2) {
-            const matchedItem = canUpgrade(game()?.inventory);
-            if (matchedItem) {
-                setUpgradeItems(matchedItem);
-            } else {
-                setUpgradeItems(null);
-            };
+        if (game().inventory.inventory.length < 3) return;
+        const matchedItem = canUpgrade(game()?.inventory.inventory);
+        if (matchedItem) {
+            setUpgradeItems(matchedItem);
+        } else {
+            setUpgradeItems(null);
         };
     });
 
@@ -266,19 +263,13 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     }; 
 
     const checkEnemy = (enemy: Ascean) => {
-        if (enemy) {
-            checkQuests(enemy);
-            setNamedEnemy(namedNameCheck(enemy.name));
-            setEnemyArticle(() => {
-                return ['a', 'e', 'i', 'o', 'u'].includes(enemy.name.charAt(0).toLowerCase()) ? 'an' : 'a';
-            });
-        };
+        if (!enemy) return;
+        checkQuests(enemy);
+        setNamedEnemy(namedNameCheck(enemy.name));
+        setEnemyArticle(() => ['a', 'e', 'i', 'o', 'u'].includes(enemy.name.charAt(0).toLowerCase()) ? 'an' : 'a');
     };
 
-    const checkInfluence = (a: Accessor<Ascean>) => {
-        setInfluence(a()?.weaponOne?.influences?.[0]);
-    };
-
+    const checkInfluence = (a: Accessor<Ascean>) => setInfluence(a()?.weaponOne?.influences?.[0]);
     const checkQuests = (enemy: Ascean) => {
         const enemyQuests = getQuests(enemy.name);
         const prospectiveQuests = [];
@@ -856,7 +847,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 <Currency ascean={ascean} />
                 </div>
                 <div class='playerInventoryBag center' style={{ width: '65%', 'margin-bottom': '5%' }}> 
-                    <For each={game()?.inventory}>{(item, _index) => {
+                    <For each={game()?.inventory.inventory}>{(item, _index) => {
                         if (item === undefined || item === null) return;
                         return (
                             <div class='center' onClick={() => setItem(item)} style={{ 

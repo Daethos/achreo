@@ -6,54 +6,41 @@ import { For, Show } from 'solid-js';
 import ItemModal from '../components/ItemModal';
 import Ascean from '../models/ascean';
 import TutorialOverlay from '../utility/tutorial';
-
-interface Props {
-    ascean: Accessor<Ascean>;
-    game: Accessor<GameState>;
-};
-
-export default function LootDropUI({ ascean, game }: Props) {
+export default function LootDropUI({ ascean, game }: { ascean: Accessor<Ascean>; game: Accessor<GameState>; }) {
     const [visibleLoot, setVisibleLoot] = createSignal<any[]>([]);
     const [show, setShow] = createSignal<boolean>(false);
     const [lootDrop, setLootDrop] = createSignal<Equipment | undefined>(undefined);
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [tutorial, setTutorial] = createSignal<string>('');
-
     createEffect(() => {
         const visible: any = game()?.lootDrops?.filter((drop: Equipment) => game()?.showLootIds?.includes(drop._id));
         setVisibleLoot(visible);
     });
-
     onMount(() => {
         if (!ascean().tutorial.loot) {
             setShowTutorial(true);
             setTutorial('loot');
         };
     });
-
-    return (
-        <div class='center'>
-            <div class='gold lootDropWindow'>
-                <Show when={visibleLoot()}>
-                <For each={visibleLoot()}>
-                    {((lootDrop: Equipment) => {
-                        return (
-                            <LootDrop ascean={ascean} lootDrop={lootDrop} show={show} setShow={setShow} setLootDrop={setLootDrop} />
-                        ) 
-                    })}
-                </For>
-                </Show>
-            </div>
-            <Show when={show()}>
-                <div class='modal' onClick={() => setShow(!show())} style={{ 'z-index': 3 }}>
-                    <ItemModal item={lootDrop()} stalwart={false} caerenic={false} />
-                </div>
-            </Show> 
-            <Show when={showTutorial()}>
-                <div class='modal'>
-                    <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
-                </div>
-            </Show> 
+    return <div class='center'>
+        <div class='gold lootDropWindow'>
+            <Show when={visibleLoot()}>
+            <For each={visibleLoot()}>
+                {((lootDrop: Equipment) => {
+                    return <LootDrop lootDrop={lootDrop} setShow={setShow} setLootDrop={setLootDrop} />
+                })}
+            </For>
+            </Show>
         </div>
-    );
+        <Show when={show()}>
+            <div class='modal' onClick={() => setShow(!show())} style={{ 'z-index': 3 }}>
+                <ItemModal item={lootDrop()} stalwart={false} caerenic={false} />
+            </div>
+        </Show> 
+        <Show when={showTutorial()}>
+            <div class='modal'>
+                <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
+            </div>
+        </Show> 
+    </div>;
 };

@@ -91,7 +91,7 @@ interface Props {
 
 const Character = ({ reputation, settings, setSettings, ascean, asceanState, game, combatState }: Props) => {
     const [playerTraitWrapper, setPlayerTraitWrapper] = createSignal<any>({});
-    const [dragAndDropInventory, setDragAndDropInventory] = createSignal(game()?.inventory);
+    const [dragAndDropInventory, setDragAndDropInventory] = createSignal(game()?.inventory.inventory);
     const [canUpgrade, setCanUpgrade] = createSignal<boolean>(false);
     const [forgeModalShow, setForgeModalShow] = createSignal(false); 
     const [attribute, setAttribute] = createSignal(Attributes[0]);
@@ -147,7 +147,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
     });
 
     createEffect(() => {
-        setDragAndDropInventory(game().inventory);
+        setDragAndDropInventory(game().inventory.inventory);
         checkHighlight();
     }); 
 
@@ -189,7 +189,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
 
     const checkHighlight = () => {
         if (highlighted()?.item) {
-            const item = game().inventory.find((item) => item?._id === highlighted()?.item?._id);
+            const item = game().inventory.inventory.find((item) => item?._id === highlighted()?.item?._id);
             if (!item) setHighlighted({ item: undefined, comparing: false, type: '' });
         };
     }; 
@@ -492,7 +492,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
 
     async function removeItem(id: string): Promise<void> {
         await deleteEquipment(id);
-        const newInventory = game().inventory.filter((item) => item._id !== id);
+        const newInventory = game().inventory.inventory.filter((item) => item._id !== id);
         EventBus.emit('refresh-inventory', newInventory);
         setRemoveModalShow(false);
     }; 

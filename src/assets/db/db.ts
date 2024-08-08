@@ -7,13 +7,13 @@ import Settings from '../../models/settings';
 import Ascean from '../../models/ascean';
 import { Asceans } from './ascean';
 import Equipment, { getOneRandom } from '../../models/equipment';
-import { Reputation } from '../../utility/player';
-let db = new PseudoBase('db');
-
+import { Inventory, Reputation } from '../../utility/player';
+var db = new PseudoBase('db');
 const EQUIPMENT = 'Equipment';
 const ASCEANS = 'Asceans';
 const SETTINGS = 'Settings';
 const REPUTATION = 'Reputation';
+const INVENTORY = 'Inventory';
 
 export const getAsceans = async () => await db.collection(ASCEANS).get();
 export const getAscean = async (id: string) => await db.collection(ASCEANS).doc({ _id: id }).get();
@@ -88,6 +88,7 @@ export const blessAsceanRandom = async (id: string) => {
             ascean.firewater = { ...ascean.firewater, charges: 5 };
             break;
         case 3:
+            // This needs to change when it becomes live into the Inventory class, not ascean.inventory
             const random = await getOneRandom(ascean().level);
             ascean.inventory.push(random?.[0]._id as string);
             break;
@@ -124,6 +125,7 @@ export const curseAsceanRandom = async (id: string) => {
             ascean.firewater = { ...ascean.firewater, charges: 0 };
             break;
         case 3:
+            // This needs to change when it becomes live into the Inventory class, not ascean.inventory
             const random = ascean.inventory[Math.floor(Math.random() * ascean.inventory.length)];
             ascean.inventory = ascean.inventory.filter((item: string) => item !== random);
             await db.collection(EQUIPMENT).doc({ _id: random }).delete();
@@ -162,41 +164,71 @@ export const saveTutorial = async (id: string, type: string) => {
 };
 
 export const scrub = async (ascean: Ascean) => {
-    let inventory = Array.from(new Set(ascean.inventory));
-    inventory = inventory.filter((item: Equipment) => {
-        const real = (item !== undefined && item !== null && item != undefined && item != null)
-        return real;
-    }); 
-    inventory = inventory.map((item: Equipment) => item._id);
+    // let inventory = Array.from(new Set(inventory));
+    // let inventory = Array.from(new Set(ascean.inventory));
+    // inventory = inventory.filter((item: Equipment) => {
+    //     const real = (item !== undefined && item !== null && item != undefined && item != null)
+    //     return real;
+    // }); 
+    // inventory = inventory.map((item: Equipment) => item._id);
+    // inventory: inventory
     const scrubbed = { ...ascean, 
         weaponOne: ascean.weaponOne._id, weaponTwo: ascean.weaponTwo._id, weaponThree: ascean.weaponThree._id, shield: ascean.shield._id, 
         helmet: ascean.helmet._id, chest: ascean.chest._id, legs: ascean.legs._id, 
-        ringOne: ascean.ringOne._id, ringTwo: ascean.ringTwo._id, amulet: ascean.amulet._id, trinket: ascean.trinket._id, 
-        inventory: inventory };
+        ringOne: ascean.ringOne._id, ringTwo: ascean.ringTwo._id, amulet: ascean.amulet._id, trinket: ascean.trinket._id };
     await updateAscean(scrubbed);
     return scrubbed;
 };
 
+
+// export const getInventory = async (id: string) => {
+//     const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+//     const inventory = ascean.inventory;
+//     if (!inventory) return [];
+//     const populated = Promise.all(inventory.map(async (item: Equipment) => {
+//         const equipment = await db.collection(EQUIPMENT).doc({ _id: item }).get();
+//         return equipment;
+//     }));
+//     return populated;
+// };
+
+// export const getInventoryIds = async (id: string) => {
+//     const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+//     return ascean.inventory;
+// };
+
+// export const updateInventory = async (id: string, inventory: string[]) => {
+//     let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+//     ascean.inventory = inventory;
+//     await db.collection(ASCEANS).doc({ _id: id }).update(ascean);
+// };
+
 export const getInventory = async (id: string) => {
-    const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
-    const inventory = ascean.inventory;
-    if (!inventory) return [];
-    const populated = Promise.all(inventory.map(async (item: Equipment) => {
+    let inventory: Inventory = await db.collection(INVENTORY).doc({ _id: id }).get();
+    if (!inventory) {
+       const newInventory = new Inventory(id);
+       await db.collection(INVENTORY).add(newInventory);
+       return newInventory 
+    };
+    const populated = Promise.all(inventory.inventory.map(async (item: Equipment) => {
         const equipment = await db.collection(EQUIPMENT).doc({ _id: item }).get();
         return equipment;
     }));
-    return populated;
+    inventory.inventory = await populated as unknown as Equipment[];
+    return inventory;
+    // return populated;
 };
 
 export const getInventoryIds = async (id: string) => {
-    const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
-    return ascean.inventory;
+    const inventory = await db.collection(INVENTORY).doc({ _id: id }).get();
+    return inventory.inventory;
 };
 
-export const updateInventory = async (id: string, inventory: string[]) => {
-    let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
-    ascean.inventory = inventory;
-    await db.collection(ASCEANS).doc({ _id: id }).update(ascean);
+export const updateInventory = async (inventory: Inventory) => {
+    const inv = inventory.inventory.map((item: Equipment) => item._id);
+    const clean = { ...inventory, inventory: inv };
+    const res = await db.collection(INVENTORY).doc({ _id: inventory._id }).update(clean);
+    return res;
 };
 
 export const getReputation = async (id: string) => {
@@ -243,7 +275,6 @@ export const populate = async (ascean: any) => {
     const ringTwo = await db.collection(EQUIPMENT).doc({ _id: ascean.ringTwo }).get();
     const amulet = await db.collection(EQUIPMENT).doc({ _id: ascean.amulet }).get();
     const trinket = await db.collection(EQUIPMENT).doc({ _id: ascean.trinket }).get();
-
     const populated = Promise.all([weaponOne, weaponTwo, weaponThree, shield, helmet, chest, legs, ringOne, ringTwo, amulet, trinket]).then((values) => {
         return {
             ...ascean,
@@ -288,7 +319,6 @@ export function populateEnemy(enemy: Ascean): Ascean {
     const ringTwo: Equipment = Rings.find(ring => ring.name === enemy.ringTwo.name && ring.rarity === enemy.ringTwo.rarity) as Equipment;
     const amulet: Equipment = Amulets.find(amulet => amulet.name === enemy.amulet.name && amulet.rarity === enemy.amulet.rarity) as Equipment;
     const trinket: Equipment = Trinkets.find(trinket => trinket.name === enemy.trinket.name && trinket.rarity === enemy.trinket.rarity) as Equipment;
-
     return {
         ...enemy,
         weaponOne: weaponOne,
@@ -321,6 +351,7 @@ export const getEquipmentByRarity = async (rarity: string) => await db.collectio
 export const equipmentSwap = async (inventoryId: string, editState: any, id: string) => {
     try {
         let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+        let inventory = await db.collection(INVENTORY).doc({ _id: id }).get();
         const keyToUpdate = Object.keys(editState).find(key => {
             return editState[key as keyof typeof editState] !== '' && key === editState.inventoryType;
         });
@@ -332,30 +363,48 @@ export const equipmentSwap = async (inventoryId: string, editState: any, id: str
         if (equipment.rarity === 'Default') {
             await db.collection(EQUIPMENT).doc({ _id: currentItem }).delete();
         } else { // Default rarities are deleted from the database
-            ascean.inventory.push(currentItem);
+            inventory.inventory.push(currentItem);
         };
 
-        const oldItemIndex = ascean.inventory.indexOf(inventoryId);
-        ascean.inventory.splice(oldItemIndex, 1);
+        const oldItemIndex = inventory.inventory.indexOf(inventoryId);
+        inventory.inventory.splice(oldItemIndex, 1);
         await db.collection(ASCEANS).doc({ _id: id }).update(ascean);
-        return ascean;
+        await db.collection(INVENTORY).doc({ _id: id }).update(inventory);
+        return {ascean, inventory};
     } catch (error) {
         console.error(error);
     };
 };
 
+// export const equipmentRemove = async (data: any) => {
+//     try {
+//         let ascean = await db.collection(ASCEANS).doc({ _id: data.id }).get();
+//         let inventory = ascean.inventory;
+//         const itemId = data.inventory._id;
+//         const itemIndex = ascean.inventory.indexOf(itemId);
+//         inventory.splice(itemIndex, 1);
+//         ascean.inventory = inventory;
+        
+//         await db.collection(ASCEANS).doc({ _id: data.id }).update(ascean);
+//         await db.collection(EQUIPMENT).doc({ _id: itemId }).delete();
+//         return ascean.inventory;
+//     } catch (error) {
+//         console.error(error);
+//     };
+// };
+
 export const equipmentRemove = async (data: any) => {
     try {
-        let ascean = await db.collection(ASCEANS).doc({ _id: data.id }).get();
-        let inventory = ascean.inventory;
+        let inv = await db.collection(INVENTORY).doc({ _id: data.id }).get();
+        let inventory = inv.inventory;
         const itemId = data.inventory._id;
-        const itemIndex = ascean.inventory.indexOf(itemId);
+        const itemIndex = inv.inventory.indexOf(itemId);
         inventory.splice(itemIndex, 1);
-        ascean.inventory = inventory;
+        inv.inventory = inventory;
         
-        await db.collection(ASCEANS).doc({ _id: data.id }).update(ascean);
+        await db.collection(INVENTORY).doc({ _id: data.id }).update(inv);
         await db.collection(EQUIPMENT).doc({ _id: itemId }).delete();
-        return ascean.inventory;
+        return inv.inventory;
     } catch (error) {
         console.error(error);
     };

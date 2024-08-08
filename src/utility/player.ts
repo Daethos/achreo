@@ -1,3 +1,5 @@
+import Equipment from "../models/equipment";
+
 const COST = {LOW: 30, MID: 50,HIGH: 70};
 const DURATION = {BOTTOM: 750, STANDARD: 1500, LOW: 1000, LESSER: 3000, MODERATE: 6000, HIGH: 8000, TOP: 10000};
 export const PLAYER = {
@@ -250,6 +252,7 @@ export const NAMED_ENEMY = [
     "King Mathyus Caderyn", 
     "Kreceus", 
     "Laetrois Ath'Shaorah", 
+    "Laecheo of the Seyr", // Daethic Inquisitor. Mute
     "Leaf", 
     "Lorian", 
     "Mavros Ilios", 
@@ -727,10 +730,21 @@ const initFactions: faction[] = [
 export class Reputation {
     public _id: string;
     public factions: faction[];
-    public constructor(id: string,) {
+    public constructor(id: string) {
         this._id = id;
         this.factions = initFactions;
     };
 };
 
 export const initReputation: Reputation = new Reputation('reputation');
+
+export class Inventory {
+    public _id: string;
+    public inventory: Equipment[] | [];
+    public constructor(id: string) {
+        this._id = id;
+        this.inventory = [];
+    };
+};
+
+export const initInventory: Inventory = new Inventory('inventory');

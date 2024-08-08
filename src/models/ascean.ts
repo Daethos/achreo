@@ -17,7 +17,6 @@ export default class Ascean {
     level: number = 1;
     experience: number = 0;
     faith: string = 'Adherent';
-    inventory: any[] = [];
     currency: { silver: number; gold: number; } = { silver: 0, gold: 0 };
     firewater: { current: number; max: number; } = { current: 5, max: 5 };
     health: { current: number; max: number; } = { current: 0, max: 0 };
@@ -66,7 +65,6 @@ export default class Ascean {
         this._id = ascean._id;
         this.experience = ascean.experience;
         this.faith = ascean.faith;
-        this.inventory = ascean.inventory;
         this.level = ascean.level;
         this.mastery = ascean.mastery;
         this.sex = ascean.sex;
@@ -75,7 +73,6 @@ export default class Ascean {
         this.firewater = { current: ascean?.firewater?.current || 5, max: ascean?.firewater?.max || 5 };
         this.health = { current: ascean?.health?.current || 0, max: ascean?.health?.max || 0 };
         this.level = ascean.level || 1;
-        this.inventory = ascean.inventory || [];
         this.name = ascean.name;
         this.description = ascean.description;
         this.constitution = ascean.constitution;

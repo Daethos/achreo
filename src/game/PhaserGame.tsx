@@ -18,7 +18,7 @@ import { fetchNpc } from '../utility/npc';
 import { checkDeificConcerns } from '../utility/deities';
 import { Statistics } from '../utility/statistics';
 import { startingSpecials } from '../utility/abilities';
-import { Reputation, faction } from '../utility/player';
+import { Inventory, Reputation, faction } from '../utility/player';
 import { Puff } from 'solid-spinner';
 const BaseUI = lazy(async () => await import('../ui/BaseUI'));
 
@@ -40,6 +40,8 @@ interface IProps {
     menu: any;
     setMenu: (menu: Menu) => void;
     ascean: Accessor<Ascean>;
+    inventory: Accessor<Inventory>;
+    setInventory: Setter<Inventory>;
     reputation: Accessor<Reputation>;
     setReputation: Setter<Reputation>;
     settings: Accessor<Settings>;
@@ -100,7 +102,6 @@ export default function PhaserGame (props: IProps) {
                 kyosir: Math.round((state().ascean.kyosir + kyosir) * masteryCheck('kyosir', newMastery)),
                 mastery: newMastery, 
                 faith: state().faith,
-                inventory: game().inventory,
                 statistics: {
                     ...state().ascean.statistics,
                     mastery: {
@@ -117,7 +118,6 @@ export default function PhaserGame (props: IProps) {
                     current: hyd?.ascean.health.max as number,
                     max: hyd?.ascean.health.max as number
                 },
-                inventory: game().inventory
             } as Ascean;
             if (props.ascean().mastery !== newMastery) {
                 const settings = { ...props.settings(), specials: startingSpecials[newMastery as keyof typeof startingSpecials] };
@@ -152,18 +152,20 @@ export default function PhaserGame (props: IProps) {
 
     function purchaseItem(purchase: { item: Equipment; cost: { silver: number; gold: number; }; }) {
         try {
-            let inventory = Array.from(game().inventory);
+            let inventory = Array.from(game().inventory.inventory);
             inventory.push(purchase.item);
+            const clean = { ...game().inventory, inventory };
             let cost = {
                 silver: props.ascean().currency.silver - purchase.cost.silver,
                 gold: props.ascean().currency.gold - purchase.cost.gold
             };
             cost = rebalanceCurrency(cost);
-            const update = { ...props.ascean(), currency: cost, inventory: inventory };
+            const update = { ...props.ascean(), currency: cost };
             let merchantEquipment = [ ...game().merchantEquipment ];
             merchantEquipment = merchantEquipment.filter((eqp) => eqp._id !== purchase.item._id);
-            setGame({ ...game(), merchantEquipment });
+            setGame({ ...game(), inventory: clean, merchantEquipment });
             EventBus.emit('update-ascean', update);
+            EventBus.emit('update-inventory', clean);
             EventBus.emit('purchase-sound');
         } catch (err: any) {
             console.warn('Error Purchasing Item', err.message);
@@ -172,8 +174,9 @@ export default function PhaserGame (props: IProps) {
 
     function sellItem(item: Equipment) {
         try {
-            let inventory = Array.from(game().inventory);
+            let inventory = Array.from(game().inventory.inventory);
             inventory = inventory.filter((eqp) => eqp._id !== item._id);
+            const clean = { ...game().inventory, inventory };
             let gold: number = 0, silver: number = 0;
             switch (item.rarity) {
                 case 'Common': silver = 10; break;
@@ -191,13 +194,14 @@ export default function PhaserGame (props: IProps) {
             const update = {
                 ...props.ascean(),
                 currency: currency,
-                inventory: inventory
             };
             setGame({
                 ...game(),
+                inventory: clean,
                 merchantEquipment: [ ...game().merchantEquipment, item ]
             });
             EventBus.emit('update-ascean', update);
+            EventBus.emit('update-inventory', clean);
             EventBus.emit('purchase-sound');
         } catch(err: any) {
             console.warn(err, 'Error Selling Item');
@@ -333,7 +337,6 @@ export default function PhaserGame (props: IProps) {
             skills: newSkills,
             statistics: newStats, 
             health: { ...props.ascean().health, current: data.newPlayerHealth },
-            inventory: game().inventory
         };
         if (!update.tutorial.death) {
             setTutorial('death');
@@ -427,7 +430,6 @@ export default function PhaserGame (props: IProps) {
             experience: exp,
             currency: currency,
             firewater: firewater,
-            inventory: game().inventory, 
         };
         if (!update.tutorial.deity) {
             if (update.experience >= 750 && update.level >= 1) { // 1000
@@ -489,7 +491,6 @@ export default function PhaserGame (props: IProps) {
                 health: { ...props.ascean().health, current: health },
                 currency: currency,
                 firewater: firewater,
-                inventory: game().inventory
             };
             EventBus.emit('update-ascean', newAscean);
         } catch (err: any) {
@@ -504,7 +505,6 @@ export default function PhaserGame (props: IProps) {
                 ...props.ascean().health,
                 current: health
             },
-            inventory: game().inventory
         };
         EventBus.emit('silent-save', update);
     };
@@ -518,14 +518,15 @@ export default function PhaserGame (props: IProps) {
         const oldEquipment = props.ascean()[type as keyof Ascean] as Equipment;
         const newEquipment = item;
         let newAscean = {...props.ascean(), [type]: newEquipment};
-        let inventory = [...game().inventory];
+        let inventory = [...game().inventory.inventory];
         inventory = inventory.filter((inv) => inv._id !== newEquipment._id);
         if (!oldEquipment.name.includes('Empty') && !oldEquipment.name.includes('Starter')) {
             inventory.push(oldEquipment);
         } else {
             await deleteEquipment(oldEquipment?._id as string);
         };
-        newAscean = {...newAscean, inventory:inventory};
+        const clean = { ...game().inventory, inventory };
+        EventBus.emit('update-inventory', clean);
         EventBus.emit('equip-sound');
         EventBus.emit('speed', newAscean);
         EventBus.emit('update-ascean', newAscean);
@@ -535,7 +536,7 @@ export default function PhaserGame (props: IProps) {
         const traits = getAsceanTraits(stats.ascean);
         setCombat({
             ...combat(),
-            player: { ...stats.ascean, inventory: [] },
+            player: stats.ascean,
             playerHealth: stats.ascean.health.max as number,
             newPlayerHealth: stats.ascean.health.current as number,
             weapons: [stats.combatWeaponOne, stats.combatWeaponTwo, stats.combatWeaponThree],
@@ -550,7 +551,7 @@ export default function PhaserGame (props: IProps) {
         });
         setStamina(stats.attributes.stamina as number);
         setGrace(stats.attributes.grace as number);
-        setGame({ ...game(), inventory: stats.ascean.inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary, healthDisplay: props.settings().healthViews });
+        setGame({ ...game(), inventory: props.inventory(), traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary, healthDisplay: props.settings().healthViews });
         EventBus.emit('update-total-stamina', stats.attributes.stamina as number);    
         EventBus.emit('update-total-grace', stats.attributes.grace as number);    
     };
@@ -563,7 +564,7 @@ export default function PhaserGame (props: IProps) {
                 itemsToRemove = itemsToRemove.slice(0, 3);
             };
             const itemsIdsToRemove = itemsToRemove.map((itr: Equipment) => itr._id);
-            let inventory: Equipment[] = game().inventory?.length > 0 ? [ ...game().inventory ] : [];
+            let inventory: Equipment[] = game().inventory.inventory.length > 0 ? [ ...game().inventory.inventory ] : [];
             inventory.push(item[0]);
             itemsIdsToRemove.forEach(async (itemID: string) => {
                 const itemIndex = inventory.findIndex((item: Equipment) => item._id === itemID);
@@ -580,13 +581,15 @@ export default function PhaserGame (props: IProps) {
             } else if (item?.[0].rarity === 'Legendary') {
                 gold = 60;
             };
-            const update = { ...props.ascean(), inventory: inventory, currency: { ...props.ascean().currency, gold: props.ascean().currency.gold - gold } };
-            setGame({ ...game(), inventory: inventory });
+            const update = { ...props.ascean(), currency: { ...props.ascean().currency, gold: props.ascean().currency.gold - gold } };
+            const clean = { ...game().inventory, inventory };
+            setGame({ ...game(), inventory: clean });
             setCombat({
                 ...combat(),
-                player: { ...combat().player as Ascean, ...update, inventory: [] }
+                player: { ...combat().player as Ascean, ...update }
             });
             EventBus.emit('update-ascean', update);
+            EventBus.emit('update-inventory', clean);
         } catch (err: any) {
             console.warn(err, 'Error Upgrading Item');
         };
@@ -602,7 +605,7 @@ export default function PhaserGame (props: IProps) {
         const res = asceanCompiler(pop);
         const cleanCombat: Combat = { 
             ...combat(), 
-            player: { ...res?.ascean, inventory: [] } as Ascean, 
+            player: res?.ascean as Ascean, 
             weapons: [res?.combatWeaponOne, res?.combatWeaponTwo, res?.combatWeaponThree],
             playerAttributes: res?.attributes,
             playerDefense: res?.defense,
@@ -656,14 +659,11 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('preload-ascean', createUi)
         EventBus.on('set-player', setPlayer);
         EventBus.on('add-item', (e: Equipment[]) => {
-            const cleanInventory = [...game().inventory];
-            const newInventory = cleanInventory.length > 0 ? [...cleanInventory, ...e] : e;
-            setGame({ 
-                ...game(), 
-                inventory: newInventory 
-            });
-            const update = { ...props.ascean(), inventory: newInventory };
-            EventBus.emit('update-ascean', update);
+            const clean = [...game().inventory.inventory];
+            const newInv = clean.length > 0 ? [...clean, ...e] : e;
+            const inventory = { ...game().inventory, inventory: newInv };
+            setGame({ ...game(), inventory });
+            EventBus.emit('update-inventory', inventory);
         });
         EventBus.on('upgrade-item', (data: any) => upgradeItem(data));
         EventBus.on('clear-enemy', () => {
@@ -790,7 +790,7 @@ export default function PhaserGame (props: IProps) {
         });
         EventBus.on('changeWeapon', (e: [Equipment, Equipment, Equipment]) => {
             setCombat({ ...combat(), weapons: e, weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2], playerDamageType: e[0].damageType?.[0] as string});
-            const update = { ...props.ascean(), weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2], inventory: game().inventory };
+            const update = { ...props.ascean(), weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2] };
             EventBus.emit('update-ascean', update);
         });
         EventBus.on('combat-engaged', (e: boolean) => setCombat({ ...combat(), combatEngaged: e }));
@@ -798,14 +798,16 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('drink-firewater', () => {
             const newCharges = props.ascean().firewater.current > 0 ? props.ascean().firewater.current - 1 : 0;
             setCombat({...combat(), newPlayerHealth: props.ascean().health.max, player: {...combat().player as Ascean, health: {...props.ascean().health, current: props.ascean().health.max}}});
-            const newAscean = {...props.ascean(), firewater: {...props.ascean().firewater, current: newCharges}, health: {...props.ascean().health, current: props.ascean().health.max}, inventory: game().inventory};
+            const newAscean = {...props.ascean(), firewater: {...props.ascean().firewater, current: newCharges}, health: {...props.ascean().health, current: props.ascean().health.max}};
             EventBus.emit('update-ascean', newAscean);
         });
         EventBus.on('gain-experience', (e: { state: any; }) => saveChanges(e));
         EventBus.on('level-up', (e: any) => levelUp(e));
         EventBus.on('add-loot', (e: Equipment[]) => {
-            const newInventory = game().inventory.length > 0 ? [...game().inventory, ...e] : e;
-            setGame({ ...game(), inventory: newInventory });
+            const newInventory = game().inventory.inventory.length > 0 ? [...game().inventory.inventory, ...e] : e;
+            const newClean = { ...game().inventory, inventory: newInventory };
+            setGame({ ...game(), inventory: newClean });
+            EventBus.emit('update-inventory', newClean);
         });
         EventBus.on('clear-loot', () => setGame({ ...game(), lootDrops: [], showLoot: false, showLootIds: [] }));
         EventBus.on('enemy-loot', (e: { enemyID: string; level: number }) => lootDrop(e));
@@ -824,9 +826,9 @@ export default function PhaserGame (props: IProps) {
         });
         EventBus.on('initiate-input', (e: { key: string; value: string; }) =>  setCombat({ ...combat(), [e.key]: e.value }));
         EventBus.on('refresh-inventory', async (e: Equipment[]) => {
-            setGame({ ...game(), inventory: e });
-            const update = { ...props.ascean(), inventory: e };
-            EventBus.emit('update-ascean', update);
+            const clean = {...game().inventory, inventory: e};
+            setGame({ ...game(), inventory: clean });
+            EventBus.emit('update-inventory', clean);
         });
         EventBus.on('selectPrayer', (e: any) => setGame({ ...game(), selectedPrayerIndex: e.index, selectedHighlight: e.highlight }));
         EventBus.on('selectDamageType', (e: any) => setGame({ ...game(), selectedDamageTypeIndex: e.index, selectedHighlight: e.highlight }));
@@ -869,7 +871,7 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('update-combat-player', (e: any) => {
             setCombat({ 
                 ...combat(), 
-                player: { ...e.ascean, inventory: [] }, 
+                player: { ...e.ascean }, 
                 playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, 
                 playerAttributes: e.attributes, 
                 playerDefense: e.defense, 
@@ -888,25 +890,24 @@ export default function PhaserGame (props: IProps) {
             const update = {
                 ...props.ascean(),
                 health: { ...props.ascean().health, current: e },
-                inventory: game().inventory
             };
             EventBus.emit('update-ascean', update);
         });
         EventBus.on('add-lootdrop', (e: Equipment[]) => {
             const newLootDrops = game().lootDrops.length > 0 ? [...game().lootDrops, ...e] : e;
             const newLootIds = game().showLootIds.length > 0 ? [...game().showLootIds, ...e.map((loot) => loot._id)] : e.map((loot) => loot._id);
-            const cleanInventory = [...game().inventory];
-            const newInventory = cleanInventory.length > 0 ? [...cleanInventory, ...e] : e;
+            const inv = [...game().inventory.inventory];
+            const newInv = inv.length > 0 ? [...inv, ...e] : e;
+            const newClean = { ...game().inventory, inventory: newInv };
             setGame({ 
                 ...game(), 
-                inventory: newInventory,
+                inventory: newClean,
                 lootDrops: newLootDrops, 
                 showLoot: newLootIds.length > 0,
                 lootTag: newLootIds.length > 0,
                 showLootIds: newLootIds
             });
-            const update = { ...props.ascean(), inventory: newInventory };
-            EventBus.emit('update-ascean', update);
+            EventBus.emit('update-inventory', newClean);
         });
         EventBus.on('remove-lootdrop', (e: string) => {
             let updatedLootIds = [...game().showLootIds];

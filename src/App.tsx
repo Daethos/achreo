@@ -9,9 +9,9 @@ import Ascean, { createAscean } from './models/ascean';
 import { CharacterSheet, Compiler, asceanCompiler, initCharacterSheet } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
 import { EventBus } from './game/EventBus';
-import { deleteAscean, getAscean, getAsceans, getInventory, getReputation, getSettings, populate, saveTutorial, scrub, updateReputation, updateSettings } from './assets/db/db'; 
+import { deleteAscean, getAscean, getAsceans, getInventory, getReputation, getSettings, populate, saveTutorial, scrub, updateInventory, updateReputation, updateSettings } from './assets/db/db'; 
 import { TIPS } from './utility/tips';
-import { Reputation, initReputation } from './utility/player';
+import { Inventory, Reputation, initInventory, initReputation } from './utility/player';
 import { Puff } from 'solid-spinner';
 import type { IRefPhaserGame } from './game/PhaserGame';
 const AsceanBuilder = lazy(async () => await import('./components/AsceanBuilder'));
@@ -26,6 +26,7 @@ export default function App() {
     const [ascean, setAscean] = createSignal<Ascean>(undefined as unknown as Ascean);
     const [menu, setMenu] = createSignal<Menu>(initMenu);
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>(initCharacterSheet);
+    const [inventory, setInventory] = createSignal<Inventory>(initInventory);
     const [reputation, setReputation] = createSignal<Reputation>(initReputation);
     const [scene, setScene] = createSignal<string>('');
     const [settings, setSettings] = createSignal<Settings>(initSettings);
@@ -84,8 +85,9 @@ export default function App() {
             const inv = await getInventory(asc?._id as string);
             const pop = await populate(asc);
             const comp = asceanCompiler(pop);
-            const full = { ...comp?.ascean, inventory: inv };
+            const full = { ...comp?.ascean }; // , inventory: inv
             setAscean(full as Ascean);
+            setInventory(inv);
         } catch (err: any) {
             console.warn('Error fetching Ascean:', err);
         };
@@ -97,8 +99,9 @@ export default function App() {
             setAlert({ header: 'Loading Game', body: `Preparing ${asc.name}. Good luck.`, delay: 3000, key: '' });
             setShow(true);
             const inv = await getInventory(asc?._id as string);
-            const full = { ...asc, inventory: inv };
+            const full = { ...asc }; // , inventory: inv
             setAscean(full);
+            setInventory(inv);
             setMenu({ ...menu(), choosingCharacter: false, gameRunning: true, playModal: false });
             const rep = await getReputation(id);
             const set = await getSettings(id);
@@ -119,10 +122,10 @@ export default function App() {
         if (on === true) {
             const interval: number = 1000 * 60 * 3; // 3 minutes
             tips = setInterval(() => {
-                    const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
-                    setAlert({ header: 'Gameplay Tidbit', body: tip, delay: 12000, key: 'Close' }); // 10000
-                    setShow(true);    
-                }, interval); 
+                const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
+                setAlert({ header: 'Gameplay Tidbit', body: tip, delay: 12000, key: 'Close' }); // 10000
+                setShow(true);    
+            }, interval); 
         } else {
             clearInterval(tips);
         };
@@ -145,9 +148,10 @@ export default function App() {
             const pop = await populate(save);
             let hydrate = asceanCompiler(pop);
             const inv = await getInventory(hydrate?.ascean?._id as string);
-            const full = { ...hydrate?.ascean, inventory: inv };
+            const full = { ...hydrate?.ascean }; // , inventory: inv
             hydrate = { ...hydrate, ascean: full as Ascean } as Compiler;
             setAscean(full as Ascean);
+            setInventory(inv);
             EventBus.emit('set-player', hydrate);
         } catch (err: any) {
             console.warn('Error saving Ascean:', err);
@@ -160,6 +164,17 @@ export default function App() {
             console.warn('Error saving Ascean:', err);
         };
     };
+
+    async function saveInventory(save: Inventory) {
+        try {
+            setInventory(save);
+            const res = await updateInventory(save);
+            console.log(res, 'Result of Saving Inventory');
+        } catch (err) { 
+            console.warn(err, 'Error Saving Inventory'); 
+        };
+    };
+
     async function insertSettings(insert: any) {
         try {
             const set = { ...settings(), ...insert };
@@ -182,10 +197,7 @@ export default function App() {
             const save = await scrub(vaEsai);
             const pop = await populate(save);
             let hydrate = asceanCompiler(pop);
-            const inv = await getInventory(hydrate?.ascean?._id as string);
-            const full = { ...hydrate?.ascean, inventory: inv };
-            hydrate = { ...hydrate, ascean: full as Ascean } as Compiler;
-            setAscean(full as Ascean);
+            setAscean(hydrate?.ascean as Ascean);
             EventBus.emit('set-player', hydrate);
         } catch (err: any) {
             console.warn('Error updating Ascean:', err);
@@ -209,8 +221,10 @@ export default function App() {
         const asc = menu()?.asceans?.find((asc: Ascean) => asc._id === id);
         setAscean(asc as Ascean);
         setMenu({ ...menu(), choosingCharacter: false });
+        const inv = await getInventory(id);
         const rep = await getReputation(id);
         const set = await getSettings(id);
+        setInventory(inv);
         setReputation(rep);
         setSettings(set);
     };
@@ -246,6 +260,7 @@ export default function App() {
     usePhaserEvent('save-ascean', saveAscean);
     usePhaserEvent('silent-save', silentSave);
     usePhaserEvent('update-ascean', updateAscean);
+    usePhaserEvent('update-inventory', saveInventory);
     usePhaserEvent('update-pause', togglePause);
     usePhaserEvent('request-reputation', () => EventBus.emit('reputation', reputation()));
     usePhaserEvent('update-reputation', updateRep);
@@ -376,7 +391,7 @@ export default function App() {
             </Suspense>
         )}
         </>}>
-            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} scene={scene} />
+            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} inventory={inventory} setInventory={setInventory} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} scene={scene} />
         </Show>
         <Show when={show()}>
         <Suspense fallback={<Puff color="gold"/>}>

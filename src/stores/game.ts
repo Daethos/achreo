@@ -1,4 +1,5 @@
 import { DialogNode, DialogNodeOption } from "../utility/DialogNode";
+import { Inventory } from "../utility/player";
 
 export interface GameState {
     player: any;
@@ -34,7 +35,7 @@ export interface GameState {
     showPlayer: boolean;
 
     currentIntent: string;
-    inventory: any[];
+    inventory: Inventory;
     lootDrops: any[];
     merchantEquipment: any[];
     repurchase: any[];
@@ -92,7 +93,7 @@ export const initGame: GameState = {
     showLoot: false,
     showPlayer: false,
 
-    inventory: [],
+    inventory: {_id:'', inventory:[]},
     lootDrops: [],
     merchantEquipment: [],
     repurchase: [],

@@ -129,7 +129,7 @@ export default function Deity({ ascean, combat, game }: DeityProps) {
         return highestFaith[0];
     };
     return <div class='modal' style={{ background: 'rgba(0, 0, 0, 1)' }} >
-        <img style={deityBorder(ascean().mastery as string)} class={showDeity() === true ? 'superfade-in' : 'superfade-out'} src={ascean()?.faith === 'Adherent' ? '../assets/images/achreo-rising.jpg' : ascean()?.faith === 'Devoted' ? '../assets/images/daethos-forming.jpg' : '../assets/images/' + ascean().origin + '-' + ascean().sex + '.jpg'} alt={ascean().faith} id={'godBorder-'+ascean().mastery} />
+        <img style={deityBorder(ascean().mastery as string)} class={showDeity() === true ? 'superfade-in' : 'fade-out'} src={ascean()?.faith === 'Adherent' ? '../assets/images/achreo-rising.jpg' : ascean()?.faith === 'Devoted' ? '../assets/images/daethos-forming.jpg' : '../assets/images/' + ascean().origin + '-' + ascean().sex + '.jpg'} alt={ascean().faith} id={'godBorder-'+ascean().mastery} />
         <div class='deity-box'>
             <div class='wrap' style={{ width: '100%' }}>
             <br />

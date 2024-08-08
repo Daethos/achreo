@@ -694,7 +694,7 @@ export default class Enemy extends Entity {
                             other.gameObjectB.targets.push(this);
                             other.gameObjectB.checkTargets();
                         };
-                        if (this.scene.state.enemyID !== this.enemyID) this.scene.setupEnemy(this);
+                        if (this.scene.state.enemyID !== this.enemyID && this.scene.player.inCombat === false) this.scene.setupEnemy(this);
                         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
                         if (this.stateMachine.isCurrentState(States.DEFEATED)) {
                             this.scene.showDialog(true);
@@ -833,15 +833,15 @@ export default class Enemy extends Entity {
         if (newEnemy) {
             this.scene.player.targets.push(this);
             this.scene.player.checkTargets();
-            this.scene.player.setAttacking(this);
-            this.scene.player.setCurrentTarget(this);
+            // this.scene.player.setAttacking(this);
+            // this.scene.player.setCurrentTarget(this);
+            // this.scene.player.highlightTarget(this);
             this.scene.player.actionTarget = collision;
             this.scene.player.targetID = this.enemyID;
-            this.scene.player.highlightTarget(this);
             this.scene.player.inCombat = true;
 
             this.attacking = collision.gameObjectB;
-            this.scene.setupEnemy(this);
+            // this.scene.setupEnemy(this);
             this.inCombat = true;
             this.setSpecialCombat(true);
 
@@ -860,11 +860,11 @@ export default class Enemy extends Entity {
             this.actionTarget = collision;
             this.stateMachine.setState(States.CHASE); 
             
-            if (this.scene.state.enemyID !== this.enemyID) this.scene.setupEnemy(this);
-            collision.gameObjectB.attacking = this;
-            collision.gameObjectB.currentTarget = this;
+            // if (this.scene.state.enemyID !== this.enemyID) this.scene.setupEnemy(this);
             collision.gameObjectB.inCombat = true;
-            collision.gameObjectB.highlightTarget(this);
+            // collision.gameObjectB.attacking = this;
+            // collision.gameObjectB.currentTarget = this;
+            // collision.gameObjectB.highlightTarget(this);
             this.scene.combatEngaged(true);
         };
     };

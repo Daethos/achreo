@@ -552,7 +552,7 @@ export default class Player extends Entity {
         };
         this.currentTarget = newTarget;
         this.targetID = newTarget.enemyID;
-        this.highlightTarget(newTarget);
+        // this.highlightTarget(newTarget);
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
             if (this.inCombat && !this.scene.state.computer) {
@@ -765,6 +765,7 @@ export default class Player extends Entity {
                 const chance = Math.random() > 0.5;
                 if (chance === true) {
                     this.statusCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect');
+                    this.isFeared = false;    
                 };
             };
             if (this.isAbsorbing) this.absorbHit();
@@ -937,6 +938,7 @@ export default class Player extends Entity {
             this.targetID = newTarget.enemyID;
             this.highlightTarget(newTarget);
         };
+        this.checkTargets(); // Was outside of if statement
     };
 
     isPlayerInCombat = () => {
@@ -1008,7 +1010,6 @@ export default class Player extends Entity {
         if (this.isRushing) {
             const newEnemy =  this.rushedEnemies.every(obj => obj.enemyID !== enemy.enemyID);
             if (newEnemy) {
-                console.log(`%c New Rushed Enemy: ${newEnemy}`, 'color: #00f');
                 this.rushedEnemies.push(enemy);
             };
         };
@@ -1034,7 +1035,7 @@ export default class Player extends Entity {
                     if (!isNewNeutral) return;
                     this.targets.push(other.gameObjectB);
                     this.checkTargets();
-                    this.scene.setupEnemy(other.gameObjectB);
+                    if (this.inCombat === false) this.scene.setupEnemy(other.gameObjectB);
                 };
             },
             context: this.scene,
@@ -1061,12 +1062,11 @@ export default class Player extends Entity {
                 if (this.isValidEnemyCollision(other) && !this.touching.length) {
                     this.actionAvailable = false;
                     this.triggeredActionAvailable = undefined;
-                    this.checkTargets(); // Was outside of if statement
                 } else if (this.isValidNeutralCollision(other) && !this.touching.length) {
                     this.actionAvailable = false;
                     this.triggeredActionAvailable = undefined;
-                    this.checkTargets();
                 };
+                this.checkTargets(); // Was outside of if statement
             },
             context: this.scene,
         });
@@ -2262,10 +2262,10 @@ export default class Player extends Entity {
         };
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Enveloped', 500, 'effect');
-        this.scene.useGrace(40);
         if (this.grace - 40 <= 0) {
             this.isEnveloping = false;
         };
+        this.scene.useGrace(40);
     };
 
     onFreezeEnter = () => {
@@ -3268,10 +3268,6 @@ export default class Player extends Entity {
     };
 
     tabEnemy = (enemyID) => {
-        // if (this.currentTarget) {
-            // this.currentTarget.clearTint();
-            // this.currentTarget.setTint(0x00FF00);
-        // };
         if (!this.inCombat) {
             this.setCurrentTarget(undefined);
             if (this.highlight.visible) {
@@ -3290,7 +3286,6 @@ export default class Player extends Entity {
         };
         this.currentTarget = newTarget;
         this.targetID = newTarget.enemyID;
-        this.highlightTarget(newTarget);
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
             if (this.inCombat && !this.scene.state.computer) {
@@ -3399,8 +3394,6 @@ export default class Player extends Entity {
                     if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit();
                     return;    
                 };
-                // if (this?.attackedTarget?.isMalicing) this?.attackedTarget?.maliceHit();
-                // if (this?.attackedTarget?.isMending) this?.attackedTarget?.mendHit();
             };
             if (this.enemyIdMatch()) { // Target
                 this.scene.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: action } });
@@ -3481,9 +3474,9 @@ export default class Player extends Entity {
     handleActions = () => {
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
-            if (this.inCombat && !this.scene.state.computer) {
+            if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
                 this.scene.setupEnemy(this.currentTarget);
-            }; 
+            };
         } else if (this.highlight.visible) {
             this.removeHighlight();
         };

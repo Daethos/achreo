@@ -44,7 +44,7 @@ export default class Beam {
             moveToY: this.target.y - this.randomize(165),
             quantity: 25,
             radial: true,
-            scale: 0.1, // {start: 0.0001, end: 0, ease: 'Quad.easeOut'},
+            scale: this.glow(), // {start: 0.0001, end: 0, ease: 'Quad.easeOut'},
             speedX: {min: 25, max: 50},
             speedY: {min: 25, max: 50},
             visible: true,
@@ -67,7 +67,7 @@ export default class Beam {
             moveToY: target.y - this.randomize(165),
             quantity: 25,
             radial: true,
-            scale: 0.1, // {start: 0.0001, end: 0, ease: 'Quad.easeOut'},
+            scale: 0.01, // {start: 0.0001, end: 0, ease: 'Quad.easeOut'},
             speedX: {min: 25, max: 50},
             speedY: {min: 25, max: 50},
             visible: true,
@@ -78,6 +78,10 @@ export default class Beam {
             callbackScope: this,
             repeat: 19
         });
+    };
+    glow = (): number => {
+        const strength = Math.random() / 10;
+        return strength;    
     };
     randomize = (val: number) => {
         const coin = Math.random() >= 0.5 ? 1 : -1

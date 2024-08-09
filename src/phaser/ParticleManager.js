@@ -71,15 +71,15 @@ class Particle {
                                 action: this.action, 
                                 parry: this.scene.state.parryGuess 
                             },  
-                            enemyID: other.gameObjectB.enemyID, 
-                            ascean: other.gameObjectB.ascean, 
-                            damageType: other.gameObjectB.currentDamageType, 
-                            combatStats: other.gameObjectB.combatStats, 
-                            weapons: other.gameObjectB.weapons, 
-                            health: other.gameObjectB.health, 
+                            enemyID: player.attackedTarget.enemyID, 
+                            ascean: player.attackedTarget.ascean, 
+                            damageType: player.attackedTarget.currentDamageType, 
+                            combatStats: player.attackedTarget.combatStats, 
+                            weapons: player.attackedTarget.weapons, 
+                            health: player.attackedTarget.health, 
                             actionData: { 
-                                action: other.gameObjectB.currentAction, 
-                                parry: other.gameObjectB.parryAction 
+                                action: player.attackedTarget.currentAction, 
+                                parry: player.attackedTarget.parryAction 
                             },
                         }});
                     };

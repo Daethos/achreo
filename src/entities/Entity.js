@@ -378,7 +378,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     checkPlayerResist = () => {
         const chance = Math.random() * 101;
-        const resist = this.scene.state.playerDefense.magicalDefenseModifier;
+        const resist = this.scene.state.playerDefense.magicalDefenseModifier / 10 + 5; // 10% of Magic Defense + 5% Flat
         if (chance > resist) {
             return true;
         } else {

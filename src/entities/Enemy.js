@@ -275,6 +275,7 @@ export default class Enemy extends Entity {
             })
             .addState(States.SACRIFICE, {
                 onEnter: this.onSacrificeEnter,
+                onUpdate: this.onSacrificeUpdate,
                 onExit: this.onSacrificeExit,
             })
             .addState(States.SLOWING, {
@@ -289,6 +290,7 @@ export default class Enemy extends Entity {
             })
             .addState(States.SUTURE, {
                 onEnter: this.onSutureEnter,
+                onUpdate: this.onSutureUpdate,
                 onExit: this.onSutureExit,
             })
             .addState(States.TSHAERAL, {
@@ -886,7 +888,7 @@ export default class Enemy extends Entity {
                 const special = ENEMY_SPECIAL[mastery][Math.floor(Math.random() * ENEMY_SPECIAL[mastery].length)].toLowerCase();
                 this.specialAction = special;
                 this.currentAction = 'special';
-                // const specific = ['confuse', 'fear', 'polymorph'];
+                // const specific = ['sacrifice', 'suture'];
                 // const test = specific[Math.floor(Math.random() * specific.length)];
                 if (this.stateMachine.isState(special)) {
                     this.stateMachine.setState(special);
@@ -1597,7 +1599,7 @@ export default class Enemy extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Sacrifice', 750, 'effect');
         if (this.checkPlayerResist() === false) return;
         this.scene.useGrace(10);
-        this.isPerformingSpecial = true;
+        // this.isPerformingSpecial = true;
         this.isSacrificing = true;
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume }); 
         if (this.isCurrentTarget === true) {
@@ -1625,8 +1627,9 @@ export default class Enemy extends Entity {
             };
         }, undefined, this);
     };
+    onSacrificeUpdate = (_dt) => this.evaluateCombatDistance();
     onSacrificeExit = () => {
-        this.isPerformingSpecial = false;
+        // this.isPerformingSpecial = false;
         this.evaluateCombatDistance();
     };
         
@@ -1690,7 +1693,7 @@ export default class Enemy extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Suture', 750, 'effect');
         if (this.checkPlayerResist() === false) return;    
         this.scene.useGrace(10);
-        this.isPerformingSpecial = true;
+        // this.isPerformingSpecial = true;
         this.isSuturing = true;
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume }); 
         if (this.isCurrentTarget === true) {
@@ -1720,8 +1723,9 @@ export default class Enemy extends Entity {
         }, undefined, this);
         
     };
+    onSutureUpdate = (_dt) => this.evaluateCombatDistance();
     onSutureExit = () => {
-        this.isPerformingSpecial = false;
+        // this.isPerformingSpecial = false;
         this.evaluateCombatDistance();
     };
 
@@ -1750,11 +1754,11 @@ export default class Enemy extends Entity {
                     return;
                 };
                 if (this.isCurrentTarget === true) {
-                    this.scene.combatMachine.action({ type: 'Enemy Tshaeral', data: 6 });
+                    this.scene.combatMachine.action({ type: 'Enemy Tshaeral', data: 5 });
                 } else {
                     const caerenic = this.scene.state.isCaerenic ? 1.25 : 1;
                     const stalwart = this.scene.state.isStalwart ? 0.85 : 1;
-                    const devour = Math.round(this.combatStats.attributes.healthTotal * 0.06 * caerenic * stalwart * (this.ascean.level + 9) / 10);
+                    const devour = Math.round(this.combatStats.attributes.healthTotal * 0.05 * caerenic * stalwart * (this.ascean.level + 9) / 10);
                     let newComputerHealth = this.health + devour > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + devour;
                     const computerActionDescription = `${this.ascean?.name} tshaers and devours ${devour} health from you.`;
                     EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
@@ -2654,6 +2658,12 @@ export default class Enemy extends Entity {
         this.adjustSpeed(PLAYER.SPEED.SNARE);
     };
 
+    killParticle = () => {
+        this.scene.particleManager.removeEffect(this.particleEffect.id);
+        this.particleEffect.effect.destroy();
+        this.particleEffect = undefined;
+    };
+
     enemyActionSuccess = () => {
         if (this.isRanged) this.scene.checkPlayerSuccess();
         const shimmer = Math.random() * 101;
@@ -2671,24 +2681,17 @@ export default class Enemy extends Entity {
                 this.scene.player.wardHit(this.enemyID);
             };
             if (this.particleEffect) {
-                this.scene.particleManager.removeEffect(this.particleEffect.id);
-                this.particleEffect.effect.destroy();
-                this.particleEffect = undefined;
+                this.killParticle();
             };
             return;
         };
-        // if (this.scene.player.isMalicing) this.scene.player.maliceHit();
-        // if (this.scene.player.isMending) this.scene.player.mendHit();
-        // if (this.scene.player.isRecovering) this.scene.player.recoverHit();
         if (this.particleEffect) {
             if (this.isCurrentTarget) {
                 this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: this.particleEffect.action, id: this.enemyID } });
             } else {
                 this.scene.combatMachine.action({ type: 'Enemy', data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.particleEffect.action, parry: this.parryAction, id: this.enemyID }}});
             };
-            this.scene.particleManager.removeEffect(this.particleEffect.id);
-            this.particleEffect.effect.destroy();
-            this.particleEffect = undefined;
+            this.killParticle();
         } else {
             if (this.isCurrentTarget) {
                 if (this.scene.state.computerAction === '') return;

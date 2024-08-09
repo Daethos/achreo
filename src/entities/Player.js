@@ -738,7 +738,7 @@ export default class Player extends Entity {
     outOfRange = (range) => {
         const distance = pMath.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
         if (distance > range) {
-            this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: ${Math.round(distance - range, 1000, 'damage')} Away`, 1000, 'damage');
+            this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: -${Math.round(distance - range, 1000, 'damage')}`, 1000, 'damage');
             return true;    
         };
         return false;
@@ -837,7 +837,7 @@ export default class Player extends Entity {
             this.anims.play('player_pray', true).on('animationcomplete', () => {
                 this.anims.play('player_idle', true);
             });
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Defeat', PLAYER.DURATIONS.TEXT * 2, 'damage');
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Defeat', DURATION.TEXT, 'damage');
         };
         if (e.newPlayerHealth <= 0) {
             this.disengage();    
@@ -849,7 +849,6 @@ export default class Player extends Entity {
         if (e.playerAttributes.grace > this.maxGrace) this.maxGrace = e.playerAttributes.grace;
         if (this.inCombat === false) {
             if (this.scene.combat === true) {
-                console.log(`Aligning Scene's combat to the Player's`);
                 this.scene.combatEngaged(false);
             };
         };
@@ -1219,7 +1218,7 @@ export default class Player extends Entity {
         if (this.isRanged === true && this.inCombat === true) {
             const correct = this.getEnemyDirection(this.currentTarget);
             if (!correct) {
-                this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Skill Issue: Look at the Enemy!', 1500, 'damage');
+                this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Skill Issue: Look at the Enemy!', 1000, 'damage', false, true);
                 return;
             };
         };
@@ -1260,12 +1259,12 @@ export default class Player extends Entity {
         if (this.isAttacking || this.isParrying) return;
         if (this.isRanged === true) {
             if (this.isMoving === true) { // The || needs to be a check that the player is 'looking at' the enemy
-                this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Posture Issue: You are Moving', 1500, 'damage');
+                this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Posture Issue: You are Moving', 1000, 'damage', false, true);
                 return;
             };
             const correct = this.getEnemyDirection(this.currentTarget);
             if (!correct && this.inCombat === true) {
-                this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Skill Issue: Look at the Enemy!', 1500, 'damage');
+                this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Skill Issue: Look at the Enemy!', 1000, 'damage', false, true);
                 return;
             };
         };
@@ -1616,10 +1615,10 @@ export default class Player extends Entity {
             return;
         };
         if (this.spellTarget === this.getEnemyId()) {
-            this.scene.combatMachine.action({ type: 'Tshaeral', data: 3 });
+            this.scene.combatMachine.action({ type: 'Tshaeral', data: 2.5 });
         } else {
             const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
-            const drained = Math.round(this.scene.state.playerHealth * 0.03 * (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10));
+            const drained = Math.round(this.scene.state.playerHealth * 0.025 * (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10));
             const newPlayerHealth = drained / this.scene.state.playerHealth * 100;
             const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
             const tshaeralDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
@@ -1772,7 +1771,7 @@ export default class Player extends Entity {
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You unearth the netting of the golden hunt.`
             });
-            this.setTimeEvent('kynisosCooldown', 2000); // PLAYER.COOLDOWNS.SHORT
+            this.setTimeEvent('kynisosCooldown', 4000); // PLAYER.COOLDOWNS.SHORT
             this.kynisosSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
             this.scene.useGrace(PLAYER.STAMINA.KYNISOS);    
@@ -1836,10 +1835,10 @@ export default class Player extends Entity {
         };
         this.scene.slow(this.spellTarget, 975);
         if (this.spellTarget === this.getEnemyId()) {
-            this.scene.combatMachine.action({ type: 'Chiomic', data: 10 }); // this.spellTarget  
+            this.scene.combatMachine.action({ type: 'Chiomic', data: 7.5 }); // this.spellTarget  
         } else {
             const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
-            const chiomic = Math.round(this.scene.state.playerHealth * 0.1 * (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10));
+            const chiomic = Math.round(this.scene.state.playerHealth * 0.075 * (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10));
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const chiomicDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription: chiomicDescription });

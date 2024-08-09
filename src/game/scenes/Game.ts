@@ -817,10 +817,8 @@ export class Game extends Scene {
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         const match = this.player.enemyIdMatch();
         if (match) { // Target Player Attack
-            console.log('Matched Storm')
             this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: 'storm' } });
         } else { // Blind Player Attack
-            console.log('Blind Storm')
             this.combatMachine.action({ type: 'Player', data: { 
                 playerAction: { action: 'storm', parry: this.state.parryGuess }, 
                 enemyID: enemy.enemyID, 
@@ -838,6 +836,7 @@ export class Game extends Scene {
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) {
             this.player.isStunned = true;
+            this.useStamina(15);
         } else {
             enemy.isBlindsided = true;
         };
@@ -967,7 +966,9 @@ export class Game extends Scene {
             if (this.player.isEnemyInTargets(enemy.enemyID) === false) {
                 this.player.targets.push(enemy);
             };
-            if (this.player.currentTarget === undefined || this.player.currentTarget?.enemyID !== enemy.enemyID) this.player.targetEngagement(enemy.enemyID);
+            if (this.player.currentTarget === undefined || this.player.currentTarget?.enemyID !== enemy.enemyID) {
+                this.player.targetEngagement(enemy.enemyID);
+            };
             count++;
             if (count === val) return;
         };
@@ -1011,14 +1012,14 @@ export class Game extends Scene {
     };
     setCameraOffset = () => {
         if (this.player.flipX === true) {
-            this.offsetX = Math.min(125, this.offsetX + 3);
+            this.offsetX = Math.min(115, this.offsetX + 3);
         } else {
-            this.offsetX = Math.max(this.offsetX - 3, -125);
+            this.offsetX = Math.max(this.offsetX - 3, -115);
         };
         if (this.player.velocity.y > 0) {
-            this.offsetY = Math.max(this.offsetY - 2, -90);
+            this.offsetY = Math.max(this.offsetY - 2.5, -90);
         } else if (this.player.velocity.y < 0) {
-            this.offsetY = Math.min(90, this.offsetY + 2);
+            this.offsetY = Math.min(90, this.offsetY + 2.5);
         };
     };
     sortEnemies = (enemies: Enemy[]): Enemy[] => {

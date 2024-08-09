@@ -494,7 +494,6 @@ const attributeCompiler = (ascean: Ascean,
     newAttributes.rawCaeren =  Math.round(((ascean?.caeren + (ascean?.origin === RACE.NOTHOS || ascean?.origin === RACE.SEDYREAL ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 2 : 0)) + (ascean?.sex === 'Woman' ? 2 : 0)) * (ascean?.mastery === 'Caeren' ? 1.15 : 1));
     newAttributes.rawKyosir =  Math.round(((ascean?.kyosir + (ascean?.origin === "Fyers" || ascean?.origin === RACE.QUOREITE ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 1 : 0)) + (ascean?.sex === 'Woman' ? 2 : 0)) * (ascean.mastery === 'Kyosir' ? 1.15 : 1));
 
-    // // Total CombatAttributes
     newAttributes.totalConstitution = newAttributes.rawConstitution + itemRarity.weaponCon + (newAttributes.rawConstitution > 50 ? itemRarity.weaponTwoCon : 0) + itemRarity.shieldCon + itemRarity.helmCon + itemRarity.chestCon + itemRarity.legsCon + itemRarity.ringOneCon + itemRarity.ringTwoCon + itemRarity.amuletCon + itemRarity.trinketCon;
     newAttributes.totalStrength = newAttributes.rawStrength + itemRarity.weaponStr + (newAttributes.rawStrength > 50 ? itemRarity.weaponTwoStr : 0) + itemRarity.shieldStr + itemRarity.helmStr + itemRarity.chestStr + itemRarity.legsStr + itemRarity.ringOneStr + itemRarity.ringTwoStr + itemRarity.amuletStr + itemRarity.trinketStr;
     newAttributes.totalAgility = newAttributes.rawAgility + itemRarity.weaponAgi + (newAttributes.rawAgility > 50 ? itemRarity.weaponTwoAgi : 0) + itemRarity.shieldAgi + itemRarity.helmAgi + itemRarity.chestAgi + itemRarity.legsAgi + itemRarity.ringOneAgi + itemRarity.ringTwoAgi + itemRarity.amuletAgi + itemRarity.trinketAgi;
@@ -509,7 +508,6 @@ const attributeCompiler = (ascean: Ascean,
     newAttributes.totalCaeren = Math.round(newAttributes.totalCaeren);
     newAttributes.totalKyosir = Math.round(newAttributes.totalKyosir);
 
-    // Attribute Modifier
     newAttributes.strengthMod =  Math.floor((newAttributes.totalStrength - WEIGHTS.ATTRIBUTE_START) / WEIGHTS.MODIFIER);
     newAttributes.agilityMod =  Math.floor((newAttributes.totalAgility - WEIGHTS.ATTRIBUTE_START) / WEIGHTS.MODIFIER);
     newAttributes.constitutionMod =  Math.floor((newAttributes.totalConstitution - WEIGHTS.ATTRIBUTE_START) / WEIGHTS.MODIFIER);
@@ -517,7 +515,6 @@ const attributeCompiler = (ascean: Ascean,
     newAttributes.caerenMod =  Math.floor((newAttributes.totalCaeren - WEIGHTS.ATTRIBUTE_START) / WEIGHTS.MODIFIER);
     newAttributes.kyosirMod =  Math.floor((newAttributes.totalKyosir - WEIGHTS.ATTRIBUTE_START) / WEIGHTS.MODIFIER);
     
-    // Equipment CombatAttributes
     newAttributes.equipStrength = newAttributes.totalStrength - newAttributes.rawStrength;
     newAttributes.equipConstitution = newAttributes.totalConstitution - newAttributes.rawConstitution;
     newAttributes.equipAgility = newAttributes.totalAgility - newAttributes.rawAgility;

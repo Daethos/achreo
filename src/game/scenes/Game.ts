@@ -25,7 +25,6 @@ import NPC from '../../entities/NPC';
 import ParticleManager from '../../phaser/ParticleManager';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
-import { screenShake } from '../../phaser/ScreenShake';
 const dimensions = useResizeListener();
 
 export class Game extends Scene {
@@ -45,6 +44,7 @@ export class Game extends Scene {
     enemies: any = [];
     focus: any;
     target: any;
+    targetTarget: any;
     playerLight: any;
     npcs: any = [];
     lootDrops: LootDrop[] = [];
@@ -605,17 +605,6 @@ export class Game extends Scene {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };
     getWorldPointer = () => {
-        // if (this.settings.desktop === true) {
-        //     console.log('Desktop Enabled, Fetching Mouse Pointer');
-        //     const mouse = { x: this.input.activePointer.worldX, y: this.input.activePointer.worldY };
-        //     // const pointer = this.rightJoystick.pointer;
-        //     const pointer = this.input.activePointer;  // Ensure activePointer is correct
-        //     const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
-        //     console.log(worldPoint, 'Mouse?', pointer, 'Pointer?');
-        //     const point = this.cameras.main.getWorldPoint(this.mousePointer.x, this.mousePointer.y);
-        //     return point;
-        // } else {
-        // };
         const pointer = this.rightJoystick.pointer;
         const point = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
         return point;
@@ -636,7 +625,6 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            console.log('BLIND!');
             enemy.isFeared = true;
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 1);
             const health = enemy.health - damage;
@@ -647,7 +635,6 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            console.log('CAERENESIS!');
             enemy.isParalyzed = true;
             if (this.player.currentTarget && this.player.currentTarget.enemyID === this.player.getEnemyId()) {
                 this.combatMachine.action({ type: 'Tshaeral', data: 10 });
@@ -717,6 +704,12 @@ export class Game extends Scene {
     howl = (id: string): void => {
         if (id === '') return;
         this.stunned(id);
+        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
+        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
+            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.75);
+            const health = enemy.health - damage;
+            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
+        };
     };
     kynisos = (id: string): void => {
         if (id === '') return;
@@ -727,7 +720,6 @@ export class Game extends Scene {
             this.root(id);
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player]) * (this.player.isCaerenic ? 1.15 : 1) * ((this.state.player?.level as number + 9) / 10);
             const health = enemy.health - damage;
-            // enemy.isRooted = true;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
         };
     };
@@ -764,6 +756,7 @@ export class Game extends Scene {
     root = (id: string): void => {
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) return;
+        this.targetTarget = enemy;
         let x = enemy.x; // this.rightJoystick.pointer.x;
         let x2 = window.innerWidth / 2;
         let y = enemy.y; // this.rightJoystick.pointer.y;

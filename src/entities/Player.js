@@ -605,7 +605,7 @@ export default class Player extends Entity {
         };
         this.highlight.setPosition(sprite.x, sprite.y);
         this.highlight.setVisible(true);
-        this.scene.target.setPosition(sprite.x, sprite.y)
+        if (this.scene.target.visible === true) this.scene.target.setPosition(this.scene.targetTarget.x, this.scene.targetTarget.y);
     };
 
     removeHighlight() {
@@ -681,6 +681,11 @@ export default class Player extends Entity {
 
     findEnemy = () => {
         console.log('%c ----- Attempting To Find Enemy -----', 'color: gold');
+        if (this.scene.state.newPlayerHealth <= 0) {
+            console.log('%c ----- Player Has 0 Health, Disengaging -----', 'color:red');
+            this.disengage();
+            return;
+        };
         const first = this.scene.state.enemyID;
         if (first === '') {
             console.log('%c ----- State Does Not Contain Enemy ID ----', 'color: red');
@@ -1091,10 +1096,9 @@ export default class Player extends Entity {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [playerSensor],
             callback: (other) => {
-                // console.log(other, 'World');
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === 'tent') {
                     const chance = Math.random();
-                    if (chance >= 0.66) {
+                    if (chance >= 0.6) {
                         EventBus.emit('alert', { 
                             header: "Challenger's Tent", 
                             body: `You have the option of beckoning a duelist against you! \n Would you like the challenge?`, 
@@ -1102,10 +1106,10 @@ export default class Player extends Entity {
                             key: "Duel",
                             arg: 1
                         });
-                    } else if (chance >= 0.33) {
+                    } else if (chance >= 0.3) {
                         EventBus.emit('alert', { 
                             header: "Champion's Tent", 
-                            body: `You have the chance at dueling two fighters! \n Would you like the challenge?`, 
+                            body: `You have the option of beckoning two fighters in a duel against you! \n Would you like the challenge?`, 
                             delay: 3000, 
                             key: "Duel",
                             arg: 2
@@ -1113,10 +1117,10 @@ export default class Player extends Entity {
                     } else {
                         EventBus.emit('alert', { 
                             header: "Ascean Tent", 
-                            body: `You have the chance at dueling multiple fighters! \n Would you like the challenge?`, 
+                            body: `You have the option of beckoning three fighters in a duel against you! \n Would you like the challenge?`, 
                             delay: 3000, 
                             key: "Duel",
-                            arg: Math.round(Math.random() * 2 + 2)
+                            arg: 3
                         });
                     };
                 };

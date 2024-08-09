@@ -492,6 +492,7 @@ export default class Enemy extends Entity {
                 };
                 this.scene.player.setAttacking(this);
                 this.scene.player.setCurrentTarget(this);
+                this.scene.player.animateTarget();
             })
             .on('pointerout', () => {
                 this.clearTint();
@@ -604,6 +605,8 @@ export default class Enemy extends Entity {
                 this.isDefeated = true;
                 this.stateMachine.setState(States.DEFEATED);
             };
+            if (this.isMalicing) this.maliceHit();
+            if (this.isMending) this.mendHit();
         } else if (this.health < e.newComputerHealth) { 
             let heal = Math.round(e.newComputerHealth - this.health);
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, 1500, 'heal');
@@ -671,12 +674,9 @@ export default class Enemy extends Entity {
     };
 
     isValidRushEnemy = (enemy) => {
-        if (this.isRushing) {
-            const newEnemy = this.rushedEnemies.every(obj => obj.playerID !== enemy.playerID);
-            if (newEnemy) {
-                this.rushedEnemies.push(enemy);
-            };
-        };
+        if (this.isRushing === false) return;
+        const newEnemy = this.rushedEnemies.every(obj => obj.playerID !== enemy.playerID);
+        if (newEnemy) this.rushedEnemies.push(enemy);
     };
     
     enemyCollision = (enemySensor) => {
@@ -694,7 +694,8 @@ export default class Enemy extends Entity {
                             other.gameObjectB.targets.push(this);
                             other.gameObjectB.checkTargets();
                         };
-                        if (this.scene.state.enemyID !== this.enemyID && this.scene.player.inCombat === false) this.scene.setupEnemy(this);
+                        if (this.isReasonable()) this.scene.setupEnemy(this);
+                        // if (this.scene.state.enemyID !== this.enemyID && this.scene.player.inCombat === false) this.scene.setupEnemy(this);
                         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
                         if (this.stateMachine.isCurrentState(States.DEFEATED)) {
                             this.scene.showDialog(true);
@@ -725,7 +726,7 @@ export default class Enemy extends Entity {
                         } else {
                             this.stateMachine.setState(States.IDLE);
                         };
-                        this.scene.clearNonAggressiveEnemy();
+                        if (this.isCurrentTarget === true) this.scene.clearNonAggressiveEnemy();
                     };
                 // } else if (other.gameObjectB && other.gameObjectB.name === 'enemy') {
                 //     this.touching = this.touching.filter((target) => target === other.gameObjectB);
@@ -734,6 +735,12 @@ export default class Enemy extends Entity {
             context: this.scene,
         });
     }; 
+
+    isReasonable = () => {
+        return this.scene.state.enemyID !== this.enemyID
+            && this.scene.player.inCombat === false
+            && this.scene.player.currentTarget === undefined;
+    };
 
     isNewEnemy = (player) => {
         const newEnemy = player.targets.every(obj => obj.enemyID !== this.enemyID);

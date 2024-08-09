@@ -23,8 +23,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-dagger.png'
-    },
-    {
+    },{
         _id: '',
         name: "Moontear",
         type: 'Dagger',
@@ -48,8 +47,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-dagger.png'
-    },
-    {
+    },{
         _id: '',
         name: "Moontear",
         type: 'Dagger',
@@ -73,8 +71,7 @@ export let Weapons = [
         kyosir: 4,
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-dagger.png'
-    },
-    {
+    },{
         _id: '',
         name: "Moontear",
         type: 'Dagger',
@@ -98,8 +95,7 @@ export let Weapons = [
         kyosir: 8,
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-dagger.png'
-    },
-    {
+    },{
         _id: '',
         name: "Moontear",
         type: 'Dagger',
@@ -123,10 +119,9 @@ export let Weapons = [
         kyosir: 12,
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-dagger.png'
-    },
-    {
+    },{
         _id: '',
-        name: "Senarian Spear",
+        name: "Se'narian Spear",
         type: 'Polearm',
         rarity: 'Common',
         grip: 'One Hand',
@@ -146,12 +141,11 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 1,
-        influences: ["Senari"],
+        influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-spear.png'
-    },
-    {
+    },{
         _id: '',
-        name: "Senarian Spear",
+        name: "Se'narian Spear",
         type: 'Polearm',
         rarity: 'Uncommon',
         grip: 'One Hand',
@@ -171,12 +165,11 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 1,
-        influences: ["Senari"],
+        influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-spear.png'
-    },
-    {
+    },{
         _id: '',
-        name: "Senarian Spear",
+        name: "Se'narian Spear",
         type: 'Polearm',
         rarity: 'Rare',
         grip: 'One Hand',
@@ -196,12 +189,11 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 3,
-        influences: ["Senari"],
+        influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-spear.png'
-    },
-    {
+    },{
         _id: '',
-        name: "Senarian Spear",
+        name: "Se'narian Spear",
         type: 'Polearm',
         rarity: 'Epic',
         grip: 'One Hand',
@@ -221,12 +213,11 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 6,
-        influences: ["Senari"],
+        influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-spear.png'
-    },
-    {
+    },{
         _id: '',
-        name: "Senarian Spear",
+        name: "Se'narian Spear",
         type: 'Polearm',
         rarity: 'Legendary',
         grip: 'One Hand',
@@ -246,10 +237,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 12,
-        influences: ["Senari"],
+        influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-spear.png'
-    },
-    {
+    },{
         _id: '',
         name: "Kynshear",
         type: 'Axe',
@@ -271,10 +261,9 @@ export let Weapons = [
         achre: 1,
         caeren: 0,
         kyosir: 0,
-        influences: ["Kyn'gi"],
+        influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/kyngi-axe.png'
-    },
-    {
+    },{
         _id: '',
         name: "Kynshear",
         type: 'Axe',
@@ -296,10 +285,9 @@ export let Weapons = [
         achre: 1,
         caeren: 0,
         kyosir: 0,
-        influences: ["Kyn'gi"],
+        influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/kyngi-axe.png'
-    },
-    {
+    },{
         _id: '',
         name: "Kynshear",
         type: 'Axe',
@@ -321,10 +309,9 @@ export let Weapons = [
         achre: 3,
         caeren: 0,
         kyosir: 0,
-        influences: ["Kyn'gi"],
+        influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/kyngi-axe.png'
-    },
-    {
+    },{
         _id: '',
         name: "Kynshear",
         type: 'Axe',
@@ -346,10 +333,9 @@ export let Weapons = [
         achre: 6,
         caeren: 0,
         kyosir: 0,
-        influences: ["Kyn'gi"],
+        influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/kyngi-axe.png'
-    },
-    {
+    },{
         _id: '',
         name: "Kynshear",
         type: 'Axe',
@@ -371,10 +357,9 @@ export let Weapons = [
         achre: 12,
         caeren: 0,
         kyosir: 0,
-        influences: ["Kyn'gi"],
+        influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/kyngi-axe.png'
-    },
-    {
+    },{
         _id: '',
         name: "Tshael",
         type: 'Greatmace',
@@ -398,8 +383,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Tshaer"],
         imgUrl: '../assets/images/tshaer-hammer.png'
-    },
-    {
+    },{
         _id: '',
         name: "Tshael",
         type: 'Greatmace',
@@ -423,8 +407,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Tshaer"],
         imgUrl: '../assets/images/tshaer-hammer.png'
-    },
-    {
+    },{
         _id: '',
         name: "Tshael",
         type: 'Greatmace',
@@ -448,8 +431,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Tshaer"],
         imgUrl: '../assets/images/tshaer-hammer.png'
-    },
-    {
+    },{
         _id: '',
         name: "Tshael",
         type: 'Greatmace',
@@ -473,8 +455,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Tshaer"],
         imgUrl: '../assets/images/tshaer-hammer.png'
-    },
-    {
+    },{
         _id: '',
         name: "Tshael",
         type: 'Greatmace',
@@ -498,8 +479,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Tshaer"],
         imgUrl: '../assets/images/tshaer-hammer.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ashyro",
         type: 'Short Sword',
@@ -521,10 +501,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 1,
-        influences: ["Se'dyro"],
+        influences: ["Se'dyro", "Se'vas"],
         imgUrl: '../assets/images/kopis.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ashyro",
         type: 'Short Sword',
@@ -546,10 +525,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 1,
-        influences: ["Se'dyro"],
+        influences: ["Se'dyro", "Se'vas"],
         imgUrl: '../assets/images/kopis.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ashyro",
         type: 'Short Sword',
@@ -571,10 +549,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 3,
-        influences: ["Se'dyro"],
+        influences: ["Se'dyro", "Se'vas"],
         imgUrl: '../assets/images/kopis.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ashyro",
         type: 'Short Sword',
@@ -596,10 +573,9 @@ export let Weapons = [
         achre: 0,
         caeren: 6,
         kyosir: 0,
-        influences: ["Se'dyro"],
+        influences: ["Se'dyro", "Se'vas"],
         imgUrl: '../assets/images/kopis.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ashyro",
         type: 'Short Sword',
@@ -621,10 +597,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 12,
-        influences: ["Se'dyro"],
+        influences: ["Se'dyro", "Se'vas"],
         imgUrl: '../assets/images/kopis.png'
-    },
-    {
+    },{
         _id: '',
         name: "Falchion",
         type: 'Long Sword',
@@ -646,10 +621,9 @@ export let Weapons = [
         achre: 1,
         caeren: 0,
         kyosir: 0,
-        influences: ["Ilios"],
+        influences: ["Ilios", "Shrygei"],
         imgUrl: '../assets/images/falchion.png'
-    },
-    {
+    },{
         _id: '',
         name: "Falchion",
         type: 'Long Sword',
@@ -671,10 +645,9 @@ export let Weapons = [
         achre: 1,
         caeren: 0,
         kyosir: 0,
-        influences: ["Ilios"],
+        influences: ["Ilios", "Shrygei"],
         imgUrl: '../assets/images/falchion.png'
-    },
-    {
+    },{
         _id: '',
         name: "Falchion",
         type: 'Long Sword',
@@ -696,10 +669,9 @@ export let Weapons = [
         achre: 3,
         caeren: 0,
         kyosir: 0,
-        influences: ["Ilios"],
+        influences: ["Ilios", "Shrygei"],
         imgUrl: '../assets/images/falchion.png'
-    },
-    {
+    },{
         _id: '',
         name: "Falchion",
         type: 'Long Sword',
@@ -721,10 +693,9 @@ export let Weapons = [
         achre: 8,
         caeren: 0,
         kyosir: 0,
-        influences: ["Ilios"],
+        influences: ["Ilios", "Shrygei"],
         imgUrl: '../assets/images/falchion.png'
-    },
-    {
+    },{
         _id: '',
         name: "Falchion",
         type: 'Long Sword',
@@ -746,10 +717,9 @@ export let Weapons = [
         achre: 20,
         caeren: 0,
         kyosir: 0,
-        influences: ["Ilios"],
+        influences: ["Ilios", "Shrygei"],
         imgUrl: '../assets/images/falchion.png'
-    },
-    {
+    },{
         _id: '',
         name: "Se'vasi Greatbow",
         type: 'Greatbow',
@@ -773,8 +743,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/bow-great-strength.png'
-    },
-    {
+    },{
         _id: '',
         name: "Se'vasi Greatbow",
         type: 'Greatbow',
@@ -798,8 +767,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/bow-great-strength.png'
-    },
-    {
+    },{
         _id: '',
         name: "Se'vasi Greatbow",
         type: 'Greatbow',
@@ -823,8 +791,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/bow-great-strength.png'
-    },
-    {
+    },{
         _id: '',
         name: "Se'vasi Greatbow",
         type: 'Greatbow',
@@ -848,8 +815,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/bow-great-strength.png'
-    },
-    {
+    },{
         _id: '',
         name: "Se'vasi Greatbow",
         type: 'Greatbow',
@@ -873,8 +839,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/bow-great-strength.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ahn've's Wing",
         type: 'Greatbow',
@@ -898,8 +863,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ahn've"],
         imgUrl: '../assets/images/bow-great-caeren.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ahn've's Wing",
         type: 'Greatbow',
@@ -923,8 +887,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ahn've"],
         imgUrl: '../assets/images/bow-great-caeren.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ahn've's Wing",
         type: 'Greatbow',
@@ -948,8 +911,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ahn've"],
         imgUrl: '../assets/images/bow-great-caeren.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ahn've's Wing",
         type: 'Greatbow',
@@ -973,8 +935,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ahn've"],
         imgUrl: '../assets/images/bow-great-caeren.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ahn've's Wing",
         type: 'Greatbow',
@@ -998,15 +959,14 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ahn've"],
         imgUrl: '../assets/images/bow-great-caeren.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Recurve',
         type: 'Bow',
         rarity: 'Common',
         grip: 'Two Hand',
         attackType: 'Physical',
-        damageType: ['Pierce'],
+        damageType: ['Pierce', 'Wild'],
         physicalDamage: 1,
         magicalDamage: 3,
         physicalPenetration: 0,
@@ -1023,15 +983,14 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Achreo"],
         imgUrl: '../assets/images/bow-achreon.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Recurve',
         type: 'Bow',
         rarity: 'Uncommon',
         grip: 'Two Hand',
         attackType: 'Physical',
-        damageType: ['Pierce'],
+        damageType: ['Pierce', 'Wild'],
         physicalDamage: 3,
         magicalDamage: 5,
         physicalPenetration: 0,
@@ -1048,8 +1007,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Achreo"],
         imgUrl: '../assets/images/bow-achreon.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Recurve',
         type: 'Bow',
@@ -1073,8 +1031,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Achreo"],
         imgUrl: '../assets/images/bow-achreon.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Recurve',
         type: 'Bow',
@@ -1098,8 +1055,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Achreo"],
         imgUrl: '../assets/images/bow-achreon.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Recurve',
         type: 'Bow',
@@ -1123,8 +1079,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Achreo"],
         imgUrl: '../assets/images/bow-achreon.png'
-    },
-    {
+    },{
         _id: '',
         name: "Chiomic Spear",
         type: 'Polearm',
@@ -1148,8 +1103,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Chiomyr"],
         imgUrl: '../assets/images/chiomyr-spear.png'
-    },
-    {
+    },{
         _id: '',
         name: "Chiomic Spear",
         type: 'Polearm',
@@ -1173,8 +1127,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Chiomyr"],
         imgUrl: '../assets/images/chiomyr-spear.png'
-    },
-    {
+    },{
         _id: '',
         name: "Chiomic Spear",
         type: 'Polearm',
@@ -1198,8 +1151,7 @@ export let Weapons = [
         kyosir: 2,
         influences: ["Chiomyr"],
         imgUrl: '../assets/images/chiomyr-spear.png'
-    },
-    {
+    },{
         _id: '',
         name: "Chiomic Spear",
         type: 'Polearm',
@@ -1223,8 +1175,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Chiomyr"],
         imgUrl: '../assets/images/chiomyr-spear.png'
-    },
-    {
+    },{
         _id: '',
         name: "Chiomic Spear",
         type: 'Polearm',
@@ -1248,8 +1199,7 @@ export let Weapons = [
         kyosir: 8,
         influences: ["Chiomyr"],
         imgUrl: '../assets/images/chiomyr-spear.png'
-    },
-    {
+    },{
         _id: '',
         name: "War Scythe",
         type: 'Polearm',
@@ -1273,8 +1223,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Kyrisos"],
         imgUrl: '../assets/images/kyrisos-scythe.png'
-    },
-    {
+    },{
         _id: '',
         name: "War Scythe",
         type: 'Polearm',
@@ -1298,8 +1247,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Kyrisos"],
         imgUrl: '../assets/images/kyrisos-scythe.png'
-    },
-    {
+    },{
         _id: '',
         name: "War Scythe",
         type: 'Polearm',
@@ -1323,8 +1271,7 @@ export let Weapons = [
         kyosir: 2,
         influences: ["Kyrisos"],
         imgUrl: '../assets/images/kyrisos-scythe.png'
-    },
-    {
+    },{
         _id: '',
         name: "War Scythe",
         type: 'Polearm',
@@ -1348,8 +1295,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Kyrisos"],
         imgUrl: '../assets/images/kyrisos-scythe.png'
-    },
-    {
+    },{
         _id: '',
         name: "War Scythe",
         type: 'Polearm',
@@ -1373,8 +1319,7 @@ export let Weapons = [
         kyosir: 8,
         influences: ["Kyrisos"],
         imgUrl: '../assets/images/kyrisos-scythe.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sedyrus Shortbow",
         type: 'Bow',
@@ -1398,8 +1343,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'dyro"],
         imgUrl: '../assets/images/bow-short.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sedyrus Shortbow",
         type: 'Bow',
@@ -1423,8 +1367,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'dyro"],
         imgUrl: '../assets/images/bow-short.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sedyrus Shortbow",
         type: 'Bow',
@@ -1448,8 +1391,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'dyro"],
         imgUrl: '../assets/images/bow-short.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sedyrus Shortbow",
         type: 'Bow',
@@ -1473,8 +1415,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Se'dyro"],
         imgUrl: '../assets/images/bow-short.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sedyrus Shortbow",
         type: 'Bow',
@@ -1498,8 +1439,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'dyro"],
         imgUrl: '../assets/images/bow-short.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sunshear",
         type: 'Greatsword',
@@ -1523,8 +1463,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-greatsword.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sunshear",
         type: 'Greatsword',
@@ -1548,8 +1487,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-greatsword.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sunshear",
         type: 'Greatsword',
@@ -1573,8 +1511,7 @@ export let Weapons = [
         kyosir: 4,
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-greatsword.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sunshear",
         type: 'Greatsword',
@@ -1598,8 +1535,7 @@ export let Weapons = [
         kyosir: 4,
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-greatsword.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sunshear",
         type: 'Greatsword',
@@ -1623,15 +1559,14 @@ export let Weapons = [
         kyosir: 12,
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-greatsword.png'
-    },
-    {
+    },{
         _id: '',
         name: "Slivermoon",
         type: 'Mace',
         rarity: 'Common',
         grip: 'One Hand',
         attackType: 'Physical',
-        damageType: ['Blunt', 'Slash'],
+        damageType: ['Blunt', 'Spooky'],
         physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 0,
@@ -1648,15 +1583,14 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-mace.png'
-    },
-    {
+    },{
         _id: '',
         name: "Slivermoon",
         type: 'Mace',
         rarity: 'Uncommon',
         grip: 'One Hand',
         attackType: 'Physical',
-        damageType: ['Blunt', 'Slash'],
+        damageType: ['Blunt', 'Spooky'],
         physicalDamage: 2,
         magicalDamage: 2,
         physicalPenetration: 1,
@@ -1673,15 +1607,14 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-mace.png'
-    },
-    {
+    },{
         _id: '',
         name: "Slivermoon",
         type: 'Mace',
         rarity: 'Rare',
         grip: 'One Hand',
         attackType: 'Physical',
-        damageType: ['Blunt', 'Slash'],
+        damageType: ['Blunt', 'Spooky'],
         physicalDamage: 4,
         magicalDamage: 4,
         physicalPenetration: 3,
@@ -1698,15 +1631,14 @@ export let Weapons = [
         kyosir: 2,
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-mace.png'
-    },
-    {
+    },{
         _id: '',
         name: "Slivermoon",
         type: 'Mace',
         rarity: 'Epic',
         grip: 'One Hand',
         attackType: 'Physical',
-        damageType: ['Blunt', 'Slash'],
+        damageType: ['Blunt', 'Spooky'],
         physicalDamage: 6,
         magicalDamage: 6,
         physicalPenetration: 5,
@@ -1723,15 +1655,14 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-mace.png'
-    },
-    {
+    },{
         _id: '',
         name: "Slivermoon",
         type: 'Mace',
         rarity: 'Legendary',
         grip: 'One Hand',
         attackType: 'Physical',
-        damageType: ['Blunt', 'Slash'],
+        damageType: ['Blunt', 'Spooky'],
         physicalDamage: 8,
         magicalDamage: 8,
         physicalPenetration: 8,
@@ -1748,8 +1679,7 @@ export let Weapons = [
         kyosir: 8,
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-mace.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sevashyr",
         type: 'Mace',
@@ -1773,8 +1703,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/sevas-mace.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sevashyr",
         type: 'Mace',
@@ -1798,8 +1727,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/sevas-mace.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sevashyr",
         type: 'Mace',
@@ -1823,8 +1751,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/sevas-mace.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sevashyr",
         type: 'Mace',
@@ -1848,8 +1775,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/sevas-mace.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sevashyr",
         type: 'Mace',
@@ -1873,8 +1799,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/sevas-mace.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sevaxe",
         type: 'Axe',
@@ -1898,8 +1823,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/sevas-axe.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sevaxe",
         type: 'Axe',
@@ -1923,8 +1847,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/sevas-axe.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sevaxe",
         type: 'Axe',
@@ -1948,8 +1871,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/sevas-axe.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sevaxe",
         type: 'Axe',
@@ -1973,8 +1895,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/sevas-axe.png'
-    },
-    {
+    },{
         _id: '',
         name: "Sevaxe",
         type: 'Axe',
@@ -1998,8 +1919,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/sevas-axe.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Blessed Dagger',
         type: 'Dagger',
@@ -2021,10 +1941,9 @@ export let Weapons = [
         achre: 1,
         caeren: 0,
         kyosir: 1,
-        influences: ["Lilos"],
+        influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/blessed-dagger.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Blessed Dagger',
         type: 'Dagger',
@@ -2040,16 +1959,15 @@ export let Weapons = [
         criticalDamage: 1.5,
         dodge: 0,
         roll: 7,
-        constitution: 0,
+        constitution: 1,
         strength: 0,
         agility: 0,
         achre: 2,
         caeren: 0,
         kyosir: 2,
-        influences: ["Lilos"],
+        influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/blessed-dagger.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Blessed Dagger',
         type: 'Dagger',
@@ -2065,16 +1983,15 @@ export let Weapons = [
         criticalDamage: 1.5,
         dodge: 0,
         roll: 7,
-        constitution: 0,
+        constitution: 2,
         strength: 0,
         agility: 0,
         achre: 3,
         caeren: 0,
         kyosir: 3,
-        influences: ["Lilos"],
+        influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/blessed-dagger.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Blessed Dagger',
         type: 'Dagger',
@@ -2090,16 +2007,15 @@ export let Weapons = [
         criticalDamage: 1.5,
         dodge: 0,
         roll: 7,
-        constitution: 0,
+        constitution: 3,
         strength: 0,
         agility: 0,
         achre: 5,
         caeren: 0,
         kyosir: 5,
-        influences: ["Lilos"],
+        influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/blessed-dagger.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Blessed Dagger',
         type: 'Dagger',
@@ -2115,16 +2031,15 @@ export let Weapons = [
         criticalDamage: 1.75,
         dodge: 0,
         roll: 7,
-        constitution: 0,
+        constitution: 5,
         strength: 0,
         agility: 0,
         achre: 8,
         caeren: 0,
         kyosir: 8,
-        influences: ["Lilos"],
+        influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/blessed-dagger.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sunshatter',
         type: 'Axe',
@@ -2148,8 +2063,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunshatter.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sunshatter',
         type: 'Axe',
@@ -2173,8 +2087,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunshatter.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sunshatter',
         type: 'Axe',
@@ -2198,8 +2111,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunshatter.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sunshatter',
         type: 'Axe',
@@ -2223,8 +2135,7 @@ export let Weapons = [
         kyosir: 2,
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunshatter.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sunshatter',
         type: 'Axe',
@@ -2248,8 +2159,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunshatter.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sunspear',
         type: 'Polearm',
@@ -2273,8 +2183,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunspear.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sunspear',
         type: 'Polearm',
@@ -2298,8 +2207,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunspear.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sunspear',
         type: 'Polearm',
@@ -2323,8 +2231,7 @@ export let Weapons = [
         kyosir: 2,
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunspear.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sunspear',
         type: 'Polearm',
@@ -2348,8 +2255,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunspear.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sunspear',
         type: 'Polearm',
@@ -2373,8 +2279,7 @@ export let Weapons = [
         kyosir: 5,
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunspear.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caerenic Halberd',
         type: 'Polearm',
@@ -2398,8 +2303,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/halberdo.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caerenic Halberd',
         type: 'Polearm',
@@ -2423,8 +2327,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/halberdo.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caerenic Halberd',
         type: 'Polearm',
@@ -2448,8 +2351,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/halberdo.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caerenic Halberd',
         type: 'Polearm',
@@ -2473,8 +2375,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/halberdo.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caerenic Halberd',
         type: 'Polearm',
@@ -2498,8 +2399,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/halberdo.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Nightmare',
         type: 'Spell',
@@ -2523,8 +2423,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre-one.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Nightmare',
         type: 'Spell',
@@ -2548,8 +2447,7 @@ export let Weapons = [
         kyosir: 2,
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre-one.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Nightmare',
         type: 'Spell',
@@ -2573,8 +2471,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre-one.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Nightmare',
         type: 'Spell',
@@ -2598,8 +2495,7 @@ export let Weapons = [
         kyosir: 4,
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre-one.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Nightmare',
         type: 'Spell',
@@ -2623,8 +2519,7 @@ export let Weapons = [
         kyosir: 4,
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre-one.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Rahvric Dreams',
         type: 'Spell',
@@ -2648,8 +2543,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Rahvric Dreams',
         type: 'Spell',
@@ -2673,8 +2567,7 @@ export let Weapons = [
         kyosir: 2,
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Rahvric Dreams',
         type: 'Spell',
@@ -2698,8 +2591,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Rahvric Dreams',
         type: 'Spell',
@@ -2723,8 +2615,7 @@ export let Weapons = [
         kyosir: 5,
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Rahvric Dreams',
         type: 'Spell',
@@ -2748,8 +2639,7 @@ export let Weapons = [
         kyosir: 8,
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Halberd',
         type: 'Polearm',
@@ -2773,8 +2663,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-halberd.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Halberd',
         type: 'Polearm',
@@ -2798,8 +2687,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-halberd.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Halberd',
         type: 'Polearm',
@@ -2815,7 +2703,7 @@ export let Weapons = [
         criticalDamage: 1.75,
         dodge: 5,
         roll: 3,
-        constitution: 0,
+        constitution: 2,
         strength: 4,
         agility: 0,
         achre: 0,
@@ -2823,8 +2711,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-halberd.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Halberd',
         type: 'Polearm',
@@ -2840,7 +2727,7 @@ export let Weapons = [
         criticalDamage: 1.75,
         dodge: 5,
         roll: 5,
-        constitution: 0,
+        constitution: 3,
         strength: 6,
         agility: 0,
         achre: 0,
@@ -2848,8 +2735,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-halberd.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Halberd',
         type: 'Polearm',
@@ -2865,16 +2751,15 @@ export let Weapons = [
         criticalDamage: 1.75,
         dodge: 5,
         roll: 5,
-        constitution: 0,
-        strength: 6,
+        constitution: 5,
+        strength: 10,
         agility: 0,
         achre: 0,
-        caeren: 4,
+        caeren: 7,
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-halberd.png'
-    },
-    {
+    },{
         _id: 'ews_001',
         name: 'Empty Weapon Slot',
         type: '',
@@ -2898,8 +2783,7 @@ export let Weapons = [
         kyosir: 0,
         influences: [""],
         imgUrl: '../assets/images/GUI_Weapon_2.png'
-    },
-    {
+    },{
         _id: 'ews_002',
         name: 'Empty Weapon Slot',
         type: '',
@@ -2923,658 +2807,7 @@ export let Weapons = [
         kyosir: 0,
         influences: [""],
         imgUrl: '../assets/images/GUI_Weapon_3.png'
-    },
-    {
-        _id: '',
-        name: 'Gladius',
-        type: 'Short Sword',
-        rarity: 'Rare',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 6,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 3,
-        criticalDamage: 1.75,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 1,
-        agility: 2,
-        achre: 1,
-        caeren: 1,
-        kyosir: 1,
-        influences: ["Daethos"],
-        imgUrl: '../assets/images/gladius.png'
-    },
-    {
-        _id: '',
-        name: 'Gladius',
-        type: 'Short Sword',
-        rarity: 'Uncommon',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 4,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 2,
-        criticalDamage: 1.5,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 2,
-        achre: 1,
-        caeren: 1,
-        kyosir: 0,
-        influences: ["Daethos"],
-        imgUrl: '../assets/images/gladius.png'
-    },
-    {
-        _id: '',
-        name: 'Gladius',
-        type: 'Short Sword',
-        rarity: 'Common',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 2,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 1,
-        criticalDamage: 1.25,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 1,
-        achre: 0,
-        caeren: 1,
-        kyosir: 0,
-        influences: ["Daethos"],
-        imgUrl: '../assets/images/gladius.png'
-    },
-    {
-        _id: '',
-        name: 'Longsword',
-        type: 'Long Sword',
-        rarity: 'Rare',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Slash', 'Pierce'],
-        physicalDamage: 6,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 3,
-        criticalDamage: 1.25,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 3,
-        agility: 3,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Ilios"],
-        imgUrl: '../assets/images/longsword.png'
-    },
-    {
-        _id: '',
-        name: 'Longsword',
-        type: 'Long Sword',
-        rarity: 'Uncommon',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Slash', 'Pierce'],
-        physicalDamage: 4,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 2,
-        criticalDamage: 1.25,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 2,
-        agility: 2,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Ilios"],
-        imgUrl: '../assets/images/longsword.png'
-    },
-    {
-        _id: '',
-        name: 'Longsword',
-        type: 'Long Sword',
-        rarity: 'Common',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Slash', 'Pierce'],
-        physicalDamage: 2,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 1,
-        criticalDamage: 1.25,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 1,
-        agility: 1,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Ilios"],
-        imgUrl: '../assets/images/longsword.png'
-    },
-    {
-        _id: '',
-        name: 'Pugio',
-        type: 'Dagger',
-        rarity: 'Rare',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 4,
-        magicalDamage: 0,
-        physicalPenetration: 3,
-        magicalPenetration: 0,
-        criticalChance: 5,
-        criticalDamage: 1.75,
-        dodge: 0,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 7,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Daethos"],
-        imgUrl: '../assets/images/pugio.png'
-    },
-    {
-        _id: '',
-        name: 'Pugio',
-        type: 'Dagger',
-        rarity: 'Uncommon',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 3,
-        magicalDamage: 0,
-        physicalPenetration: 2,
-        magicalPenetration: 0,
-        criticalChance: 3,
-        criticalDamage: 1.5,
-        dodge: 0,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 5,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Daethos"],
-        imgUrl: '../assets/images/pugio.png'
-    },
-    {
-        _id: '',
-        name: 'Pugio',
-        type: 'Dagger',
-        rarity: 'Common',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 2,
-        magicalDamage: 0,
-        physicalPenetration: 1,
-        magicalPenetration: 0,
-        criticalChance: 2,
-        criticalDamage: 1.25,
-        dodge: 0,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 3,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Daethos"],
-        imgUrl: '../assets/images/pugio.png'
-    },
-    {
-        _id: '',
-        name: 'Pernach',
-        type: 'Mace',
-        rarity: 'Rare',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Blunt'],
-        physicalDamage: 7,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 3,
-        criticalDamage: 1.75,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 5,
-        agility: 1,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Kyrisos"],
-        imgUrl: '../assets/images/mace.png'
-    },
-    {
-        _id: '',
-        name: 'Pernach',
-        type: 'Mace',
-        rarity: 'Uncommon',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Blunt'],
-        physicalDamage: 4,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 2,
-        criticalDamage: 1.5,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 3,
-        achre: 1,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Kyrisos"],
-        imgUrl: '../assets/images/mace.png'
-    },
-    {
-        _id: '',
-        name: 'Pernach',
-        type: 'Mace',
-        rarity: 'Common',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Blunt'],
-        physicalDamage: 2,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 1,
-        criticalDamage: 1.25,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 2,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Kyrisos"],
-        imgUrl: '../assets/images/mace.png'
-    },
-    {
-        _id: '',
-        name: 'Hand Axe',
-        type: 'Axe',
-        rarity: 'Rare',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Slash', 'Blunt'],
-        physicalDamage: 6,
-        magicalDamage: 0,
-        physicalPenetration: 2,
-        magicalPenetration: 0,
-        criticalChance: 3,
-        criticalDamage: 1.5,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 4,
-        agility: 2,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Tshaer"],
-        imgUrl: '../assets/images/handaxe.png'
-    },
-    {
-        _id: '',
-        name: 'Hand Axe',
-        type: 'Axe',
-        rarity: 'Uncommon',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Slash', 'Blunt'],
-        physicalDamage: 4,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 2,
-        criticalDamage: 1.25,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 3,
-        agility: 1,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Tshaer"],
-        imgUrl: '../assets/images/handaxe.png'
-    },
-    {
-        _id: '',
-        name: 'Hand Axe',
-        type: 'Axe',
-        rarity: 'Common',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Slash', 'Blunt'],
-        physicalDamage: 2,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 1,
-        criticalDamage: 1.25,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 2,
-        agility: 0,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Tshaer"],
-        imgUrl: '../assets/images/handaxe.png'
-    },
-    {
-        _id: '',
-        name: 'Scimitar',
-        type: 'Curved Sword',
-        rarity: 'Rare',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Slash', 'Pierce'],
-        physicalDamage: 6,
-        magicalDamage: 0,
-        physicalPenetration: 2,
-        magicalPenetration: 2,
-        criticalChance: 3,
-        criticalDamage: 1.5,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 4,
-        achre: 2,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Senari"],
-        imgUrl: '../assets/images/scimitar.png'
-    },
-    {
-        _id: '',
-        name: 'Scimitar',
-        type: 'Curved Sword',
-        rarity: 'Uncommon',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Slash', 'Pierce'],
-        physicalDamage: 4,
-        magicalDamage: 0,
-        physicalPenetration: 1,
-        magicalPenetration: 1,
-        criticalChance: 2,
-        criticalDamage: 1.25,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 3,
-        achre: 1,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Senari"],
-        imgUrl: '../assets/images/scimitar.png'
-    },
-    {
-        _id: '',
-        name: 'Scimitar',
-        type: 'Curved Sword',
-        rarity: 'Common',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Slash', 'Pierce'],
-        physicalDamage: 2,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 1,
-        criticalDamage: 1.25,
-        dodge: 3,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 2,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Senari"],
-        imgUrl: '../assets/images/scimitar.png'
-    },
-    {
-        _id: '',
-        name: 'Cursed Dagger',
-        type: 'Dagger',
-        rarity: 'Rare',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 0,
-        magicalDamage: 4,
-        physicalPenetration: 0,
-        magicalPenetration: 3,
-        criticalChance: 3,
-        criticalDamage: 2,
-        dodge: 0,
-        roll: 7,
-        constitution: 0,
-        strength: 0,
-        agility: 0,
-        achre: 6,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Kyr'na"],
-        imgUrl: '../assets/images/cursed-dagger.png'
-    },
-    {
-        _id: '',
-        name: 'Cursed Dagger',
-        type: 'Dagger',
-        rarity: 'Uncommon',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 0,
-        magicalDamage: 2,
-        physicalPenetration: 0,
-        magicalPenetration: 2,
-        criticalChance: 2,
-        criticalDamage: 1.75,
-        dodge: 0,
-        roll: 7,
-        constitution: 0,
-        strength: 0,
-        agility: 0,
-        achre: 4,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Kyr'na"],
-        imgUrl: '../assets/images/cursed-dagger.png'
-    },
-    {
-        _id: '',
-        name: 'Cursed Dagger',
-        type: 'Dagger',
-        rarity: 'Common',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 0,
-        magicalDamage: 1,
-        physicalPenetration: 0,
-        magicalPenetration: 1,
-        criticalChance: 1,
-        criticalDamage: 1.5,
-        dodge: 0,
-        roll: 7,
-        constitution: 0,
-        strength: 0,
-        agility: 0,
-        achre: 2,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Kyr'na"],
-        imgUrl: '../assets/images/cursed-dagger.png'
-    },
-    {
-        _id: '',
-        name: 'Shotel',
-        type: 'Scythe',
-        rarity: 'Rare',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 4,
-        magicalDamage: 0,
-        physicalPenetration: 1,
-        magicalPenetration: 1,
-        criticalChance: 5,
-        criticalDamage: 1.75,
-        dodge: 0,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 2,
-        achre: 2,
-        caeren: 2,
-        kyosir: 0,
-        influences: ["Ma'anre"],
-        imgUrl: '../assets/images/scythe.png'
-    },
-    {
-        _id: '',
-        name: 'Shotel',
-        type: 'Scythe',
-        rarity: 'Uncommon',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 3,
-        magicalDamage: 0,
-        physicalPenetration: 1,
-        magicalPenetration: 0,
-        criticalChance: 3,
-        criticalDamage: 1.5,
-        dodge: 0,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 2,
-        achre: 1,
-        caeren: 1,
-        kyosir: 0,
-        influences: ["Ma'anre"],
-        imgUrl: '../assets/images/scythe.png'
-    },
-    {
-        _id: '',
-        name: 'Shotel',
-        type: 'Scythe',
-        rarity: 'Common',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 2,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 2,
-        criticalDamage: 1.5,
-        dodge: 0,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 1,
-        achre: 1,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Ma'anre"],
-        imgUrl: '../assets/images/scythe.png'
-    },
-    {
-        _id: '',
-        name: 'Spear',
-        type: 'Polearm',
-        rarity: 'Uncommon',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Blunt'],
-        physicalDamage: 6,
-        magicalDamage: 0,
-        physicalPenetration: 1,
-        magicalPenetration: 0,
-        criticalChance: 3,
-        criticalDamage: 1.5,
-        dodge: 3,
-        roll: 5,
-        constitution: 0,
-        strength: 1,
-        agility: 2,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Kyn'gi"],
-        imgUrl: '../assets/images/spear.png'
-    },
-    {
-        _id: '',
-        name: 'Spear',
-        type: 'Polearm',
-        rarity: 'Common',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Blunt'],
-        physicalDamage: 3,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 2,
-        criticalDamage: 1.25,
-        dodge: 3,
-        roll: 5,
-        constitution: 0,
-        strength: 0,
-        agility: 2,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Kyn'gi"],
-        imgUrl: '../assets/images/spear.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Halberd',
         type: 'Polearm',
@@ -3598,8 +2831,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/halberd.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Halberd',
         type: 'Polearm',
@@ -3623,8 +2855,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/halberd.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Halberd',
         type: 'Polearm',
@@ -3648,8 +2879,55 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/halberd.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'Claymore',
+        type: 'Greatsword',
+        rarity: 'Legendary',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Slash'],
+        physicalDamage: 24,
+        magicalDamage: 0,
+        physicalPenetration: 6,
+        magicalPenetration: 6,
+        criticalChance: 9,
+        criticalDamage: 2,
+        dodge: 5,
+        roll: 5,
+        constitution: 0,
+        strength: 12,
+        agility: 12,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Se'vas", "Daethos"],
+        imgUrl: '../assets/images/claymore.png'
+    },{
+        _id: '',
+        name: 'Claymore',
+        type: 'Greatsword',
+        rarity: 'Epic',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Slash'],
+        physicalDamage: 16,
+        magicalDamage: 0,
+        physicalPenetration: 3,
+        magicalPenetration: 3,
+        criticalChance: 6,
+        criticalDamage: 2,
+        dodge: 5,
+        roll: 4,
+        constitution: 0,
+        strength: 9,
+        agility: 9,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Se'vas", "Daethos"],
+        imgUrl: '../assets/images/claymore.png'
+    },{
         _id: '',
         name: 'Claymore',
         type: 'Greatsword',
@@ -3666,15 +2944,14 @@ export let Weapons = [
         dodge: 5,
         roll: 3,
         constitution: 0,
-        strength: 3,
-        agility: 3,
+        strength: 6,
+        agility: 6,
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/claymore.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Claymore',
         type: 'Greatsword',
@@ -3689,17 +2966,16 @@ export let Weapons = [
         criticalChance: 2,
         criticalDamage: 1.5,
         dodge: 5,
-        roll: 3,
+        roll: 2,
         constitution: 0,
-        strength: 2,
-        agility: 2,
+        strength: 4,
+        agility: 4,
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/claymore.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Claymore',
         type: 'Greatsword',
@@ -3714,17 +2990,64 @@ export let Weapons = [
         criticalChance: 1,
         criticalDamage: 1.5,
         dodge: 5,
-        roll: 3,
+        roll: 1,
         constitution: 0,
-        strength: 1,
-        agility: 1,
+        strength: 2,
+        agility: 2,
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/claymore.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'Battle Axe',
+        type: 'Greataxe',
+        rarity: 'Legendary',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt', 'Slash'],
+        physicalDamage: 24,
+        magicalDamage: 0,
+        physicalPenetration: 9,
+        magicalPenetration: 0,
+        criticalChance: 7,
+        criticalDamage: 2,
+        dodge: 5,
+        roll: 3,
+        constitution: 0,
+        strength: 10,
+        agility: 5,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Se'vas", "Tshaer"],
+        imgUrl: '../assets/images/battleaxe.png'
+    },{
+        _id: '',
+        name: 'Battle Axe',
+        type: 'Greataxe',
+        rarity: 'Epic',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt', 'Slash'],
+        physicalDamage: 16,
+        magicalDamage: 0,
+        physicalPenetration: 6,
+        magicalPenetration: 0,
+        criticalChance: 5,
+        criticalDamage: 2,
+        dodge: 5,
+        roll: 3,
+        constitution: 0,
+        strength: 6,
+        agility: 3,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Se'vas", "Tshaer"],
+        imgUrl: '../assets/images/battleaxe.png'
+    },{
         _id: '',
         name: 'Battle Axe',
         type: 'Greataxe',
@@ -3746,10 +3069,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Tshaer"],
+        influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/battleaxe.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Battle Axe',
         type: 'Greataxe',
@@ -3771,10 +3093,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Tshaer"],
+        influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/battleaxe.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Battle Axe',
         type: 'Greataxe',
@@ -3796,10 +3117,57 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Tshaer"],
+        influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/battleaxe.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'War Hammer',
+        type: 'Greatmace',
+        rarity: 'Legendary',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt', 'Pierce'],
+        physicalDamage: 24,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 5,
+        criticalDamage: 3,
+        dodge: 5,
+        roll: 3,
+        constitution: 0,
+        strength: 15,
+        agility: 0,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Se'vas", "Tshaer"],
+        imgUrl: '../assets/images/warhammer.png'
+    },{
+        _id: '',
+        name: 'War Hammer',
+        type: 'Greatmace',
+        rarity: 'Epic',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt', 'Pierce'],
+        physicalDamage: 16,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 4,
+        criticalDamage: 2.5,
+        dodge: 5,
+        roll: 3,
+        constitution: 0,
+        strength: 9,
+        agility: 0,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Se'vas", "Tshaer"],
+        imgUrl: '../assets/images/warhammer.png'
+    },{
         _id: '',
         name: 'War Hammer',
         type: 'Greatmace',
@@ -3821,10 +3189,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/warhammer.png'
-    },
-    {
+    },{
         _id: '',
         name: 'War Hammer',
         type: 'Greatmace',
@@ -3839,217 +3206,40 @@ export let Weapons = [
         criticalChance: 2,
         criticalDamage: 1.75,
         dodge: 5,
-        roll: 3,
+        roll: 2,
         constitution: 0,
         strength: 4,
         agility: 0,
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/warhammer.png'
-    },
-    {
+    },{
         _id: '',
         name: 'War Hammer',
         type: 'Greatmace',
         rarity: 'Common',
         grip: 'Two Hand',
         attackType: 'Physical',
-        damageType: ['Blunt'],
+        damageType: ['Blunt', 'Pierce'],
         physicalDamage: 3,
         magicalDamage: 0,
-        physicalPenetration: 3,
+        physicalPenetration: 1,
         magicalPenetration: 0,
         criticalChance: 1,
         criticalDamage: 1.5,
         dodge: 5,
-        roll: 3,
+        roll: 1,
         constitution: 0,
         strength: 2,
         agility: 0,
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/warhammer.png'
-    },
-    {
-        _id: '',
-        name: 'Morningstar',
-        type: 'Mace',
-        rarity: 'Rare',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Blunt', 'Pierce'],
-        physicalDamage: 4,
-        magicalDamage: 0,
-        physicalPenetration: 2,
-        magicalPenetration: 0,
-        criticalChance: 3,
-        criticalDamage: 1.5,
-        dodge: 3,
-        roll: 5,
-        constitution: 0,
-        strength: 4,
-        agility: 2,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Chiomyr"],
-        imgUrl: '../assets/images/morningstar.png'
-    },
-    {
-        _id: '',
-        name: 'Morningstar',
-        type: 'Mace',
-        rarity: 'Uncommon',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Blunt', 'Pierce'],
-        physicalDamage: 3,
-        magicalDamage: 0,
-        physicalPenetration: 1,
-        magicalPenetration: 0,
-        criticalChance: 2,
-        criticalDamage: 1.5,
-        dodge: 3,
-        roll: 5,
-        constitution: 0,
-        strength: 3,
-        agility: 1,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Chiomyr"],
-        imgUrl: '../assets/images/morningstar.png'
-    },
-    {
-        _id: '',
-        name: 'Morningstar',
-        type: 'Mace',
-        rarity: 'Common',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Blunt', 'Pierce'],
-        physicalDamage: 2,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 1,
-        criticalDamage: 1.5,
-        dodge: 3,
-        roll: 5,
-        constitution: 0,
-        strength: 2,
-        agility: 0,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Chiomyr"],
-        imgUrl: '../assets/images/morningstar.png'
-    },
-    {
-        _id: '',
-        name: "Hand of Se'dyro",
-        type: 'Mace',
-        rarity: 'Rare',
-        grip: 'One Hand',
-        attackType: 'Physical',
-        damageType: ['Blunt'],
-        physicalDamage: 4,
-        magicalDamage: 0,
-        physicalPenetration: 1,
-        magicalPenetration: 1,
-        criticalChance: 3,
-        criticalDamage: 1.5,
-        dodge: 3,
-        roll: 7,
-        constitution: 0,
-        strength: 0,
-        agility: 4,
-        achre: 2,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Se'dyro"],
-        imgUrl: '../assets/images/godHand.png'
-    },
-    {
-        _id: '',
-        name: 'Whirlwind',
-        type: 'Scythe',
-        rarity: 'Rare',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 5,
-        magicalDamage: 5,
-        physicalPenetration: 2,
-        magicalPenetration: 2,
-        criticalChance: 4,
-        criticalDamage: 1.75,
-        dodge: 5,
-        roll: 7,
-        constitution: 0,
-        strength: 3,
-        agility: 1,
-        achre: 0,
-        caeren: 2,
-        kyosir: 1,
-        influences: ["Ma'anre"],
-        imgUrl: '../assets/images/whirlwind.png'
-    },
-    {
-        _id: '',
-        name: 'Whirlwind',
-        type: 'Scythe',
-        rarity: 'Uncommon',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 4,
-        magicalDamage: 3,
-        physicalPenetration: 1,
-        magicalPenetration: 1,
-        criticalChance: 3,
-        criticalDamage: 1.75,
-        dodge: 5,
-        roll: 7,
-        constitution: 0,
-        strength: 2,
-        agility: 1,
-        achre: 0,
-        caeren: 1,
-        kyosir: 1,
-        influences: ["Ma'anre"],
-        imgUrl: '../assets/images/whirlwind.png'
-    },
-    {
-        _id: '',
-        name: 'Whirlwind',
-        type: 'Scythe',
-        rarity: 'Common',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce', 'Slash'],
-        physicalDamage: 3,
-        magicalDamage: 2,
-        physicalPenetration: 1,
-        magicalPenetration: 0,
-        criticalChance: 2,
-        criticalDamage: 1.5,
-        dodge: 5,
-        roll: 7,
-        constitution: 0,
-        strength: 1,
-        agility: 0,
-        achre: 0,
-        caeren: 1,
-        kyosir: 0,
-        influences: ["Ma'anre"],
-        imgUrl: '../assets/images/whirlwind.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caeren Barrage',
         type: 'Spell',
@@ -4073,8 +3263,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/sorcery.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caeren Barrage',
         type: 'Spell',
@@ -4098,8 +3287,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/sorcery.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caeren Barrage',
         type: 'Spell',
@@ -4123,8 +3311,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/sorcery.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Hush',
         type: 'Spell',
@@ -4140,7 +3327,7 @@ export let Weapons = [
         criticalDamage: 1.35,
         dodge: 3,
         roll: 1,
-        constitution: 0,
+        constitution: 2,
         strength: 0,
         agility: 0,
         achre: 2,
@@ -4148,8 +3335,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Hush',
         type: 'Spell',
@@ -4165,7 +3351,7 @@ export let Weapons = [
         criticalDamage: 1.25,
         dodge: 3,
         roll: 1,
-        constitution: 0,
+        constitution: 1,
         strength: 0,
         agility: 0,
         achre: 1,
@@ -4173,8 +3359,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Hush',
         type: 'Spell',
@@ -4198,8 +3383,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Lava Spit',
         type: 'Spell',
@@ -4223,8 +3407,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Fyer"],
         imgUrl: '../assets/images/fire.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Lava Spit',
         type: 'Spell',
@@ -4248,8 +3431,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Fyer"],
         imgUrl: '../assets/images/fire.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Lava Spit',
         type: 'Spell',
@@ -4273,8 +3455,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Fyer"],
         imgUrl: '../assets/images/fire.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Spear',
         type: 'Spell',
@@ -4298,8 +3479,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-spear.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Spear',
         type: 'Spell',
@@ -4323,8 +3503,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-spear.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Spear',
         type: 'Spell',
@@ -4348,8 +3527,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-spear.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Nyrolean Bolt',
         type: 'Spell',
@@ -4373,8 +3551,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/frost.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Nyrolean Bolt',
         type: 'Spell',
@@ -4398,8 +3575,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/frost.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Nyrolean Bolt',
         type: 'Spell',
@@ -4423,8 +3599,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/frost.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Crush",
         type: 'Spell',
@@ -4448,8 +3623,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Crush",
         type: 'Spell',
@@ -4473,8 +3647,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Crush",
         type: 'Spell',
@@ -4498,8 +3671,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth.png'
-    },
-    {
+    },{
         _id: '',
         name: "Wildstrike",
         type: 'Spell',
@@ -4523,8 +3695,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Achreo"],
         imgUrl: '../assets/images/wild.png'
-    },
-    {
+    },{
         _id: '',
         name: "Wildstrike",
         type: 'Spell',
@@ -4548,8 +3719,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Achreo"],
         imgUrl: '../assets/images/wild.png'
-    },
-    {
+    },{
         _id: '',
         name: "Wildstrike",
         type: 'Spell',
@@ -4573,8 +3743,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Achreo"],
         imgUrl: '../assets/images/wild.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Tendril',
         type: 'Spell',
@@ -4595,11 +3764,10 @@ export let Weapons = [
         agility: 0,
         achre: 4,
         caeren: 2,
-        kyosir: 0,
+        kyosir: 2,
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendrils.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Tendril',
         type: 'Spell',
@@ -4620,11 +3788,10 @@ export let Weapons = [
         agility: 0,
         achre: 3,
         caeren: 1,
-        kyosir: 0,
+        kyosir: 1,
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendrils.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Tendril',
         type: 'Spell',
@@ -4648,8 +3815,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendrils.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Windshear',
         type: 'Spell',
@@ -4673,8 +3839,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ahn've"],
         imgUrl: '../assets/images/windfury.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Windshear',
         type: 'Spell',
@@ -4698,8 +3863,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ahn've"],
         imgUrl: '../assets/images/windfury.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Windshear',
         type: 'Spell',
@@ -4723,8 +3887,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ahn've"],
         imgUrl: '../assets/images/windfury.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Longbow',
         type: 'Bow',
@@ -4746,10 +3909,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Kyn'gi"],
+        influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/bow-long.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Longbow',
         type: 'Bow',
@@ -4771,10 +3933,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Kyn'gi"],
+        influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/bow-long.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Longbow',
         type: 'Bow',
@@ -4796,160 +3957,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Kyn'gi"],
+        influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/bow-long.png'
-    },
-    {
-        _id: '',
-        name: 'Daethic Bow',
-        type: 'Bow',
-        rarity: 'Rare',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce'],
-        physicalDamage: 4,
-        magicalDamage: 4,
-        physicalPenetration: 0,
-        magicalPenetration: 3,
-        criticalChance: 3,
-        criticalDamage: 1.5,
-        dodge: 7,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 4,
-        achre: 0,
-        caeren: 3,
-        kyosir: 0,
-        influences: ["Daethos"],
-        imgUrl: '../assets/images/bow-reflex.png'
-    },
-    {
-        _id: '',
-        name: 'Daethic Bow',
-        type: 'Bow',
-        rarity: 'Uncommon',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce'],
-        physicalDamage: 2,
-        magicalDamage: 2,
-        physicalPenetration: 0,
-        magicalPenetration: 2,
-        criticalChance: 2,
-        criticalDamage: 1.5,
-        dodge: 7,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 3,
-        achre: 0,
-        caeren: 1,
-        kyosir: 0,
-        influences: ["Daethos"],
-        imgUrl: '../assets/images/bow-reflex.png'
-    },
-    {
-        _id: '',
-        name: 'Daethic Bow',
-        type: 'Bow',
-        rarity: 'Common',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce'],
-        physicalDamage: 1,
-        magicalDamage: 1,
-        physicalPenetration: 0,
-        magicalPenetration: 1,
-        criticalChance: 1,
-        criticalDamage: 1.5,
-        dodge: 7,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 2,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Daethos"],
-        imgUrl: '../assets/images/bow-reflex.png'
-    },
-    {
-        _id: '',
-        name: 'Shrygeian Recurve',
-        type: 'Bow',
-        rarity: 'Rare',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce'],
-        physicalDamage: 7,
-        magicalDamage: 4,
-        physicalPenetration: 2,
-        magicalPenetration: 1,
-        criticalChance: 5,
-        criticalDamage: 1.5,
-        dodge: 7,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 4,
-        achre: 0,
-        caeren: 0,
-        kyosir: 3,
-        influences: ["Shrygei"],
-        imgUrl: '../assets/images/bow-recurve.png'
-    },
-    {
-        _id: '',
-        name: 'Shrygeian Recurve',
-        type: 'Bow',
-        rarity: 'Uncommon',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce'],
-        physicalDamage: 5,
-        magicalDamage: 2,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 3,
-        criticalDamage: 1.25,
-        dodge: 7,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 3,
-        achre: 0,
-        caeren: 0,
-        kyosir: 2,
-        influences: ["Shrygei"],
-        imgUrl: '../assets/images/bow-recurve.png'
-    },
-    {
-        _id: '',
-        name: 'Shrygeian Recurve',
-        type: 'Bow',
-        rarity: 'Common',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Pierce'],
-        physicalDamage: 3,
-        magicalDamage: 1,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 1,
-        criticalDamage: 1.25,
-        dodge: 7,
-        roll: 3,
-        constitution: 0,
-        strength: 0,
-        agility: 2,
-        achre: 0,
-        caeren: 0,
-        kyosir: 1,
-        influences: ["Shrygei"],
-        imgUrl: '../assets/images/bow-recurve.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashfyre',
         type: 'Spell',
@@ -4973,8 +3983,7 @@ export let Weapons = [
         kyosir: 2,
         influences: ["Fyer"],
         imgUrl: '../assets/images/ashfyre.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashfyre',
         type: 'Spell',
@@ -4998,8 +4007,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Fyer"],
         imgUrl: '../assets/images/ashfyre.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashfyre',
         type: 'Spell',
@@ -5023,8 +4031,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Fyer"],
         imgUrl: '../assets/images/ashfyre.png'
-    },
-    {
+    },{
         _id: '',
         name: "Astra's Lightning",
         type: 'Spell',
@@ -5048,8 +4055,7 @@ export let Weapons = [
         kyosir: 2,
         influences: ["Astra"],
         imgUrl: '../assets/images/astra-lightning.png'
-    },
-    {
+    },{
         _id: '',
         name: "Astra's Lightning",
         type: 'Spell',
@@ -5073,8 +4079,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Astra"],
         imgUrl: '../assets/images/astra-lightning.png'
-    },
-    {
+    },{
         _id: '',
         name: "Astra's Lightning",
         type: 'Spell',
@@ -5098,8 +4103,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Astra"],
         imgUrl: '../assets/images/astra-lightning.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caerenic Shatter',
         type: 'Spell',
@@ -5123,8 +4127,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/caerenic-shatter.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caerenic Shatter',
         type: 'Spell',
@@ -5148,8 +4151,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/caerenic-shatter.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caerenic Shatter',
         type: 'Spell',
@@ -5173,8 +4175,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/caerenic-shatter.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Nyrolean Wave',
         type: 'Spell',
@@ -5198,8 +4199,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/nyrolean.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Nyrolean Wave',
         type: 'Spell',
@@ -5223,8 +4223,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/nyrolean.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Nyrolean Wave',
         type: 'Spell',
@@ -5248,8 +4247,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/nyrolean.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'ei's Upheaval",
         type: 'Spell',
@@ -5273,8 +4271,7 @@ export let Weapons = [
         kyosir: 1,
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/quoreite.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'ei's Upheaval",
         type: 'Spell',
@@ -5298,8 +4295,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/quoreite.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'ei's Upheaval",
         type: 'Spell',
@@ -5323,8 +4319,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/quoreite.png'
-    },
-    {
+    },{
         _id: '',
         name: "Achreon Rein",
         type: 'Spell',
@@ -5348,8 +4343,7 @@ export let Weapons = [
         kyosir: 2,
         influences: ["Achreo"],
         imgUrl: '../assets/images/achreon-rein.png'
-    },
-    {
+    },{
         _id: '',
         name: "Achreon Rein",
         type: 'Spell',
@@ -5373,8 +4367,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Achreo"],
         imgUrl: '../assets/images/achreon-rein.png'
-    },
-    {
+    },{
         _id: '',
         name: "Achreon Rein",
         type: 'Spell',
@@ -5398,8 +4391,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Achreo"],
         imgUrl: '../assets/images/achreon-rein.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Hush of Daethos',
         type: 'Spell',
@@ -5415,7 +4407,7 @@ export let Weapons = [
         criticalDamage: 1.75,
         dodge: 5,
         roll: 3,
-        constitution: 0,
+        constitution: 2,
         strength: 0,
         agility: 0,
         achre: 3,
@@ -5423,8 +4415,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Hush of Daethos',
         type: 'Spell',
@@ -5440,7 +4431,7 @@ export let Weapons = [
         criticalDamage: 1.5,
         dodge: 5,
         roll: 3,
-        constitution: 0,
+        constitution: 1,
         strength: 0,
         agility: 0,
         achre: 2,
@@ -5448,8 +4439,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Hush of Daethos',
         type: 'Spell',
@@ -5473,8 +4463,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Tendril of Daethos',
         type: 'Spell',
@@ -5495,11 +4484,10 @@ export let Weapons = [
         agility: 0,
         achre: 5,
         caeren: 3,
-        kyosir: 0,
+        kyosir: 2,
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendril-of-daethos.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Tendril of Daethos',
         type: 'Spell',
@@ -5520,11 +4508,10 @@ export let Weapons = [
         agility: 0,
         achre: 3,
         caeren: 1,
-        kyosir: 0,
+        kyosir: 1,
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendril-of-daethos.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Tendril of Daethos',
         type: 'Spell',
@@ -5548,8 +4535,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendril-of-daethos.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ahn've's Fury",
         type: 'Spell',
@@ -5573,8 +4559,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ahn've's Fury",
         type: 'Spell',
@@ -5598,8 +4583,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ahn've's Fury",
         type: 'Spell',
@@ -5623,8 +4607,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Gladius',
         type: 'Short Sword',
@@ -5640,16 +4623,15 @@ export let Weapons = [
         criticalDamage: 2.25,
         dodge: 3,
         roll: 3,
-        constitution: 0,
-        strength: 2,
-        agility: 4,
-        achre: 2,
-        caeren: 4,
-        kyosir: 2,
+        constitution: 4,
+        strength: 0,
+        agility: 6,
+        achre: 0,
+        caeren: 6,
+        kyosir: 4,
         influences: ["Daethos"],
         imgUrl: '../assets/images/gladius.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Gladius',
         type: 'Short Sword',
@@ -5665,16 +4647,87 @@ export let Weapons = [
         criticalDamage: 2,
         dodge: 3,
         roll: 3,
-        constitution: 0,
-        strength: 1,
+        constitution: 2,
+        strength: 0,
         agility: 3,
-        achre: 2,
+        achre: 0,
         caeren: 3,
+        kyosir: 2,
+        influences: ["Daethos"],
+        imgUrl: '../assets/images/gladius.png'
+    },{
+        _id: '',
+        name: 'Gladius',
+        type: 'Short Sword',
+        rarity: 'Rare',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 6,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 3,
+        criticalDamage: 1.75,
+        dodge: 3,
+        roll: 3,
+        constitution: 1,
+        strength: 0,
+        agility: 2,
+        achre: 0,
+        caeren: 2,
         kyosir: 1,
         influences: ["Daethos"],
         imgUrl: '../assets/images/gladius.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'Gladius',
+        type: 'Short Sword',
+        rarity: 'Uncommon',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 4,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 2,
+        criticalDamage: 1.5,
+        dodge: 3,
+        roll: 3,
+        constitution: 1,
+        strength: 0,
+        agility: 2,
+        achre: 0,
+        caeren: 1,
+        kyosir: 0,
+        influences: ["Daethos"],
+        imgUrl: '../assets/images/gladius.png'
+    },{
+        _id: '',
+        name: 'Gladius',
+        type: 'Short Sword',
+        rarity: 'Common',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 2,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 1,
+        criticalDamage: 1.25,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 1,
+        achre: 0,
+        caeren: 1,
+        kyosir: 0,
+        influences: ["Daethos"],
+        imgUrl: '../assets/images/gladius.png'
+    },{
         _id: '',
         name: 'Longsword',
         type: 'Long Sword',
@@ -5696,10 +4749,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Daethos"],
+        influences: ["Daethos", "Ilios", "Se'dyro"],
         imgUrl: '../assets/images/longsword.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Longsword',
         type: 'Long Sword',
@@ -5721,10 +4773,81 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Daethos"],
+        influences: ["Daethos", "Ilios", "Se'dyro"],
         imgUrl: '../assets/images/longsword.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'Longsword',
+        type: 'Long Sword',
+        rarity: 'Rare',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Slash', 'Pierce'],
+        physicalDamage: 6,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 3,
+        criticalDamage: 1.25,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 3,
+        agility: 3,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Daethos", "Ilios", "Se'dyro"],
+        imgUrl: '../assets/images/longsword.png'
+    },{
+        _id: '',
+        name: 'Longsword',
+        type: 'Long Sword',
+        rarity: 'Uncommon',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Slash', 'Pierce'],
+        physicalDamage: 4,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 2,
+        criticalDamage: 1.25,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 2,
+        agility: 2,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Daethos", "Ilios", "Se'dyro"],
+        imgUrl: '../assets/images/longsword.png'
+    },{
+        _id: '',
+        name: 'Longsword',
+        type: 'Long Sword',
+        rarity: 'Common',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Slash', 'Pierce'],
+        physicalDamage: 2,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 1,
+        criticalDamage: 1.25,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 1,
+        agility: 1,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Daethos", "Ilios", "Se'dyro"],
+        imgUrl: '../assets/images/longsword.png'
+    },{
         _id: '',
         name: 'Hand Axe',
         type: 'Axe',
@@ -5746,10 +4869,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Tshaer"],
+        influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/handaxe.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Hand Axe',
         type: 'Axe',
@@ -5771,17 +4893,88 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Tshaer"],
+        influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/handaxe.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'Hand Axe',
+        type: 'Axe',
+        rarity: 'Rare',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Slash', 'Blunt'],
+        physicalDamage: 6,
+        magicalDamage: 0,
+        physicalPenetration: 2,
+        magicalPenetration: 0,
+        criticalChance: 3,
+        criticalDamage: 1.5,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 4,
+        agility: 2,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Kyn'gi", "Tshaer"],
+        imgUrl: '../assets/images/handaxe.png'
+    },{
+        _id: '',
+        name: 'Hand Axe',
+        type: 'Axe',
+        rarity: 'Uncommon',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Slash', 'Blunt'],
+        physicalDamage: 4,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 2,
+        criticalDamage: 1.25,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 3,
+        agility: 1,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Kyn'gi", "Tshaer"],
+        imgUrl: '../assets/images/handaxe.png'
+    },{
+        _id: '',
+        name: 'Hand Axe',
+        type: 'Axe',
+        rarity: 'Common',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Slash', 'Blunt'],
+        physicalDamage: 2,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 1,
+        criticalDamage: 1.25,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 2,
+        agility: 0,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Kyn'gi", "Tshaer"],
+        imgUrl: '../assets/images/handaxe.png'
+    },{
         _id: '',
         name: 'Scimitar',
         type: 'Curved Sword',
         rarity: 'Legendary',
         grip: 'One Hand',
         attackType: 'Physical',
-        damageType: ['Blunt', 'Slash'],
+        damageType: ['Slash', 'Pierce'],
         physicalDamage: 15,
         magicalDamage: 0,
         physicalPenetration: 5,
@@ -5796,17 +4989,16 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Senari"],
+        influences: ["Senari", "Shrygei"],
         imgUrl: '../assets/images/scimitar.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Scimitar',
         type: 'Curved Sword',
         rarity: 'Epic',
         grip: 'One Hand',
         attackType: 'Physical',
-        damageType: ['Blunt', 'Slash'],
+        damageType: ['Slash', 'Pierce'],
         physicalDamage: 11,
         magicalDamage: 0,
         physicalPenetration: 3,
@@ -5821,10 +5013,81 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Senari"],
+        influences: ["Senari", "Shrygei"],
         imgUrl: '../assets/images/scimitar.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'Scimitar',
+        type: 'Curved Sword',
+        rarity: 'Rare',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Slash', 'Pierce'],
+        physicalDamage: 6,
+        magicalDamage: 0,
+        physicalPenetration: 2,
+        magicalPenetration: 2,
+        criticalChance: 3,
+        criticalDamage: 1.5,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 4,
+        achre: 2,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Senari", "Shrygei"],
+        imgUrl: '../assets/images/scimitar.png'
+    },{
+        _id: '',
+        name: 'Scimitar',
+        type: 'Curved Sword',
+        rarity: 'Uncommon',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Slash', 'Pierce'],
+        physicalDamage: 4,
+        magicalDamage: 0,
+        physicalPenetration: 1,
+        magicalPenetration: 1,
+        criticalChance: 2,
+        criticalDamage: 1.25,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 3,
+        achre: 1,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Senari", "Shrygei"],
+        imgUrl: '../assets/images/scimitar.png'
+    },{
+        _id: '',
+        name: 'Scimitar',
+        type: 'Curved Sword',
+        rarity: 'Common',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Slash', 'Pierce'],
+        physicalDamage: 2,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 1,
+        criticalDamage: 1.25,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 2,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Senari", "Shrygei"],
+        imgUrl: '../assets/images/scimitar.png'
+    },{
         _id: '',
         name: 'Pugio',
         type: 'Dagger',
@@ -5846,10 +5109,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Daethos"],
+        influences: ["Daethos", "Kyr'na", "Lilos"],
         imgUrl: '../assets/images/pugio.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Pugio',
         type: 'Dagger',
@@ -5871,10 +5133,81 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Daethos"],
+        influences: ["Daethos", "Kyr'na", "Lilos"],
         imgUrl: '../assets/images/pugio.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'Pugio',
+        type: 'Dagger',
+        rarity: 'Rare',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 4,
+        magicalDamage: 0,
+        physicalPenetration: 3,
+        magicalPenetration: 0,
+        criticalChance: 5,
+        criticalDamage: 1.75,
+        dodge: 0,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 7,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Daethos", "Kyr'na", "Lilos"],
+        imgUrl: '../assets/images/pugio.png'
+    },{
+        _id: '',
+        name: 'Pugio',
+        type: 'Dagger',
+        rarity: 'Uncommon',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 3,
+        magicalDamage: 0,
+        physicalPenetration: 2,
+        magicalPenetration: 0,
+        criticalChance: 3,
+        criticalDamage: 1.5,
+        dodge: 0,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 5,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Daethos", "Kyr'na", "Lilos"],
+        imgUrl: '../assets/images/pugio.png'
+    },{
+        _id: '',
+        name: 'Pugio',
+        type: 'Dagger',
+        rarity: 'Common',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 2,
+        magicalDamage: 0,
+        physicalPenetration: 1,
+        magicalPenetration: 0,
+        criticalChance: 2,
+        criticalDamage: 1.25,
+        dodge: 0,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 3,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Daethos", "Kyr'na", "Lilos"],
+        imgUrl: '../assets/images/pugio.png'
+    },{
         _id: '',
         name: 'Cursed Dagger',
         type: 'Dagger',
@@ -5895,11 +5228,10 @@ export let Weapons = [
         agility: 0,
         achre: 15,
         caeren: 0,
-        kyosir: 0,
-        influences: ["Kyr'na"],
+        kyosir: 9,
+        influences: ["Daethos", "Kyr'na", "Lilos"],
         imgUrl: '../assets/images/cursed-dagger.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cursed Dagger',
         type: 'Dagger',
@@ -5920,11 +5252,82 @@ export let Weapons = [
         agility: 0,
         achre: 9,
         caeren: 0,
-        kyosir: 0,
-        influences: ["Kyr'na"],
+        kyosir: 6,
+        influences: ["Daethos", "Kyr'na", "Lilos"],
         imgUrl: '../assets/images/cursed-dagger.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'Cursed Dagger',
+        type: 'Dagger',
+        rarity: 'Rare',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 0,
+        magicalDamage: 4,
+        physicalPenetration: 0,
+        magicalPenetration: 3,
+        criticalChance: 3,
+        criticalDamage: 2,
+        dodge: 0,
+        roll: 7,
+        constitution: 0,
+        strength: 0,
+        agility: 0,
+        achre: 6,
+        caeren: 0,
+        kyosir: 3,
+        influences: ["Daethos", "Kyr'na", "Lilos"],
+        imgUrl: '../assets/images/cursed-dagger.png'
+    },{
+        _id: '',
+        name: 'Cursed Dagger',
+        type: 'Dagger',
+        rarity: 'Uncommon',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 0,
+        magicalDamage: 2,
+        physicalPenetration: 0,
+        magicalPenetration: 2,
+        criticalChance: 2,
+        criticalDamage: 1.75,
+        dodge: 0,
+        roll: 7,
+        constitution: 0,
+        strength: 0,
+        agility: 0,
+        achre: 4,
+        caeren: 0,
+        kyosir: 2,
+        influences: ["Daethos", "Kyr'na", "Lilos"],
+        imgUrl: '../assets/images/cursed-dagger.png'
+    },{
+        _id: '',
+        name: 'Cursed Dagger',
+        type: 'Dagger',
+        rarity: 'Common',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 0,
+        magicalDamage: 1,
+        physicalPenetration: 0,
+        magicalPenetration: 1,
+        criticalChance: 1,
+        criticalDamage: 1.5,
+        dodge: 0,
+        roll: 7,
+        constitution: 0,
+        strength: 0,
+        agility: 0,
+        achre: 2,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Daethos", "Kyr'na", "Lilos"],
+        imgUrl: '../assets/images/cursed-dagger.png'
+    },{
         _id: '',
         name: 'Shotel',
         type: 'Scythe',
@@ -5948,8 +5351,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/scythe.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Shotel',
         type: 'Scythe',
@@ -5973,8 +5375,127 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/scythe.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'Shotel',
+        type: 'Scythe',
+        rarity: 'Rare',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 4,
+        magicalDamage: 0,
+        physicalPenetration: 1,
+        magicalPenetration: 1,
+        criticalChance: 5,
+        criticalDamage: 1.75,
+        dodge: 0,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 2,
+        achre: 2,
+        caeren: 2,
+        kyosir: 0,
+        influences: ["Ma'anre"],
+        imgUrl: '../assets/images/scythe.png'
+    },{
+        _id: '',
+        name: 'Shotel',
+        type: 'Scythe',
+        rarity: 'Uncommon',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 3,
+        magicalDamage: 0,
+        physicalPenetration: 1,
+        magicalPenetration: 0,
+        criticalChance: 3,
+        criticalDamage: 1.5,
+        dodge: 0,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 2,
+        achre: 1,
+        caeren: 1,
+        kyosir: 0,
+        influences: ["Ma'anre"],
+        imgUrl: '../assets/images/scythe.png'
+    },{
+        _id: '',
+        name: 'Shotel',
+        type: 'Scythe',
+        rarity: 'Common',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 2,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 2,
+        criticalDamage: 1.5,
+        dodge: 0,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 1,
+        achre: 1,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Ma'anre"],
+        imgUrl: '../assets/images/scythe.png'
+    },{
+        _id: '',
+        name: 'Spear',
+        type: 'Polearm',
+        rarity: 'Common',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Blunt'],
+        physicalDamage: 3,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 2,
+        criticalDamage: 1.25,
+        dodge: 3,
+        roll: 5,
+        constitution: 0,
+        strength: 0,
+        agility: 2,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Kyn'gi"],
+        imgUrl: '../assets/images/spear.png'
+    },{
+        _id: '',
+        name: 'Spear',
+        type: 'Polearm',
+        rarity: 'Uncommon',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Blunt'],
+        physicalDamage: 6,
+        magicalDamage: 0,
+        physicalPenetration: 1,
+        magicalPenetration: 0,
+        criticalChance: 3,
+        criticalDamage: 1.5,
+        dodge: 3,
+        roll: 5,
+        constitution: 0,
+        strength: 1,
+        agility: 2,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Kyn'gi"],
+        imgUrl: '../assets/images/spear.png'
+    },{
         _id: '',
         name: 'Spear',
         type: 'Polearm',
@@ -5998,8 +5519,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Kyn'gi"],
         imgUrl: '../assets/images/spear.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Spear',
         type: 'Polearm',
@@ -6023,8 +5543,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Kyn'gi"],
         imgUrl: '../assets/images/spear.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Spear',
         type: 'Polearm',
@@ -6048,8 +5567,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Kyn'gi"],
         imgUrl: '../assets/images/spear.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Halberd',
         type: 'Polearm',
@@ -6073,8 +5591,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/halberd.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Halberd',
         type: 'Polearm',
@@ -6098,158 +5615,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Se'vas"],
         imgUrl: '../assets/images/halberd.png'
-    },
-    {
-        _id: '',
-        name: 'Claymore',
-        type: 'Greatsword',
-        rarity: 'Legendary',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Slash'],
-        physicalDamage: 24,
-        magicalDamage: 0,
-        physicalPenetration: 6,
-        magicalPenetration: 6,
-        criticalChance: 9,
-        criticalDamage: 2,
-        dodge: 5,
-        roll: 3,
-        constitution: 0,
-        strength: 8,
-        agility: 8,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Se'vas"],
-        imgUrl: '../assets/images/claymore.png'
-    },
-    {
-        _id: '',
-        name: 'Claymore',
-        type: 'Greatsword',
-        rarity: 'Epic',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Slash'],
-        physicalDamage: 16,
-        magicalDamage: 0,
-        physicalPenetration: 3,
-        magicalPenetration: 3,
-        criticalChance: 6,
-        criticalDamage: 2,
-        dodge: 5,
-        roll: 3,
-        constitution: 0,
-        strength: 5,
-        agility: 5,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Se'vas"],
-        imgUrl: '../assets/images/claymore.png'
-    },
-    {
-        _id: '',
-        name: 'Battle Axe',
-        type: 'Greataxe',
-        rarity: 'Legendary',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Blunt', 'Slash'],
-        physicalDamage: 24,
-        magicalDamage: 0,
-        physicalPenetration: 9,
-        magicalPenetration: 0,
-        criticalChance: 7,
-        criticalDamage: 2,
-        dodge: 5,
-        roll: 3,
-        constitution: 0,
-        strength: 10,
-        agility: 5,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Tshaer"],
-        imgUrl: '../assets/images/battleaxe.png'
-    },
-    {
-        _id: '',
-        name: 'Battle Axe',
-        type: 'Greataxe',
-        rarity: 'Epic',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Blunt', 'Slash'],
-        physicalDamage: 16,
-        magicalDamage: 0,
-        physicalPenetration: 6,
-        magicalPenetration: 0,
-        criticalChance: 5,
-        criticalDamage: 2,
-        dodge: 5,
-        roll: 3,
-        constitution: 0,
-        strength: 6,
-        agility: 3,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Tshaer"],
-        imgUrl: '../assets/images/battleaxe.png'
-    },
-    {
-        _id: '',
-        name: 'War Hammer',
-        type: 'Greatmace',
-        rarity: 'Legendary',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Blunt'],
-        physicalDamage: 24,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 5,
-        criticalDamage: 3,
-        dodge: 5,
-        roll: 3,
-        constitution: 0,
-        strength: 15,
-        agility: 0,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Se'vas"],
-        imgUrl: '../assets/images/warhammer.png'
-    },
-    {
-        _id: '',
-        name: 'War Hammer',
-        type: 'Greatmace',
-        rarity: 'Epic',
-        grip: 'Two Hand',
-        attackType: 'Physical',
-        damageType: ['Blunt'],
-        physicalDamage: 16,
-        magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
-        criticalChance: 4,
-        criticalDamage: 2.5,
-        dodge: 5,
-        roll: 3,
-        constitution: 0,
-        strength: 9,
-        agility: 0,
-        achre: 0,
-        caeren: 0,
-        kyosir: 0,
-        influences: ["Se'vas"],
-        imgUrl: '../assets/images/warhammer.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Morningstar',
         type: 'Mace',
@@ -6271,10 +5637,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/morningstar.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Morningstar',
         type: 'Mace',
@@ -6296,14 +5661,85 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/morningstar.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'Morningstar',
+        type: 'Mace',
+        rarity: 'Rare',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt', 'Pierce'],
+        physicalDamage: 4,
+        magicalDamage: 0,
+        physicalPenetration: 2,
+        magicalPenetration: 0,
+        criticalChance: 3,
+        criticalDamage: 1.5,
+        dodge: 3,
+        roll: 5,
+        constitution: 0,
+        strength: 4,
+        agility: 2,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Chiomyr", "Kyrisos"],
+        imgUrl: '../assets/images/morningstar.png'
+    },{
+        _id: '',
+        name: 'Morningstar',
+        type: 'Mace',
+        rarity: 'Uncommon',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt', 'Pierce'],
+        physicalDamage: 3,
+        magicalDamage: 0,
+        physicalPenetration: 1,
+        magicalPenetration: 0,
+        criticalChance: 2,
+        criticalDamage: 1.5,
+        dodge: 3,
+        roll: 5,
+        constitution: 0,
+        strength: 3,
+        agility: 1,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Chiomyr", "Kyrisos"],
+        imgUrl: '../assets/images/morningstar.png'
+    },{
+        _id: '',
+        name: 'Morningstar',
+        type: 'Mace',
+        rarity: 'Common',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt', 'Pierce'],
+        physicalDamage: 2,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 1,
+        criticalDamage: 1.5,
+        dodge: 3,
+        roll: 5,
+        constitution: 0,
+        strength: 2,
+        agility: 0,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Chiomyr", "Kyrisos"],
+        imgUrl: '../assets/images/morningstar.png'
+    },{
         _id: '',
         name: 'Pernach',
         type: 'Mace',
-        rarity: 'Epic',
+        rarity: 'Legendary',
         grip: 'One Hand',
         attackType: 'Physical',
         damageType: ['Blunt'],
@@ -6321,10 +5757,9 @@ export let Weapons = [
         achre: 5,
         caeren: 0,
         kyosir: 0,
-        influences: ["Kyrisos"],
+        influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/mace.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Pernach',
         type: 'Mace',
@@ -6346,35 +5781,201 @@ export let Weapons = [
         achre: 3,
         caeren: 0,
         kyosir: 0,
-        influences: ["Kyrisos"],
+        influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/mace.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'Pernach',
+        type: 'Mace',
+        rarity: 'Rare',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt'],
+        physicalDamage: 7,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 3,
+        criticalDamage: 1.75,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 5,
+        agility: 1,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Chiomyr", "Kyrisos"],
+        imgUrl: '../assets/images/mace.png'
+    },{
+        _id: '',
+        name: 'Pernach',
+        type: 'Mace',
+        rarity: 'Uncommon',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt'],
+        physicalDamage: 4,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 2,
+        criticalDamage: 1.5,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 3,
+        achre: 1,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Chiomyr", "Kyrisos"],
+        imgUrl: '../assets/images/mace.png'
+    },{
+        _id: '',
+        name: 'Pernach',
+        type: 'Mace',
+        rarity: 'Common',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt'],
+        physicalDamage: 2,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 1,
+        criticalDamage: 1.25,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 2,
+        achre: 0,
+        caeren: 0,
+        kyosir: 0,
+        influences: ["Chiomyr", "Kyrisos"],
+        imgUrl: '../assets/images/mace.png'
+    },{
+        _id: '',
+        name: "Hand of Se'dyro",
+        type: 'Mace',
+        rarity: 'Legendary',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt', 'Pierce', 'Slash'],
+        physicalDamage: 15,
+        magicalDamage: 0,
+        physicalPenetration: 7,
+        magicalPenetration: 7,
+        criticalChance: 11,
+        criticalDamage: 2.5,
+        dodge: 3,
+        roll: 7,
+        constitution: 0,
+        strength: 0,
+        agility: 10,
+        achre: 7,
+        caeren: 0,
+        kyosir: 7,
+        influences: ["Se'dyro"],
+        imgUrl: '../assets/images/godHand.png'
+    },{
         _id: '',
         name: "Hand of Se'dyro",
         type: 'Mace',
         rarity: 'Epic',
         grip: 'One Hand',
         attackType: 'Physical',
-        damageType: ['Blunt'],
-        physicalDamage: 8,
+        damageType: ['Blunt', 'Pierce', 'Slash'],
+        physicalDamage: 9,
         magicalDamage: 0,
-        physicalPenetration: 0,
-        magicalPenetration: 0,
+        physicalPenetration: 5,
+        magicalPenetration: 5,
         criticalChance: 7,
         criticalDamage: 2,
         dodge: 3,
-        roll: 7,
-        constitution: 1,
-        strength: 1,
+        roll: 5,
+        constitution: 0,
+        strength: 0,
+        agility: 6,
+        achre: 3,
+        caeren: 0,
+        kyosir: 3,
+        influences: ["Se'dyro"],
+        imgUrl: '../assets/images/godHand.png'
+    },{
+        _id: '',
+        name: "Hand of Se'dyro",
+        type: 'Mace',
+        rarity: 'Rare',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt', 'Pierce', 'Slash'],
+        physicalDamage: 6,
+        magicalDamage: 0,
+        physicalPenetration: 3,
+        magicalPenetration: 3,
+        criticalChance: 3,
+        criticalDamage: 1.75,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 4,
+        achre: 2,
+        caeren: 0,
+        kyosir: 2,
+        influences: ["Se'dyro"],
+        imgUrl: '../assets/images/godHand.png'
+    },{
+        _id: '',
+        name: "Hand of Se'dyro",
+        type: 'Mace',
+        rarity: 'Uncommon',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt', 'Slash'],
+        physicalDamage: 4,
+        magicalDamage: 0,
+        physicalPenetration: 1,
+        magicalPenetration: 1,
+        criticalChance: 2,
+        criticalDamage: 1.5,
+        dodge: 3,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 2,
+        achre: 1,
+        caeren: 0,
+        kyosir: 1,
+        influences: ["Se'dyro"],
+        imgUrl: '../assets/images/godHand.png'
+    },{
+        _id: '',
+        name: "Hand of Se'dyro",
+        type: 'Mace',
+        rarity: 'Common',
+        grip: 'One Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt'],
+        physicalDamage: 2,
+        magicalDamage: 0,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 1,
+        criticalDamage: 1.25,
+        dodge: 3,
+        roll: 2,
+        constitution: 0,
+        strength: 0,
         agility: 2,
         achre: 0,
         caeren: 0,
         kyosir: 0,
         influences: ["Se'dyro"],
         imgUrl: '../assets/images/godHand.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Whirlwind',
         type: 'Scythe',
@@ -6398,8 +5999,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Ilios"],
         imgUrl: '../assets/images/whirlwind.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Whirlwind',
         type: 'Scythe',
@@ -6423,8 +6023,79 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Ilios"],
         imgUrl: '../assets/images/whirlwind.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'Whirlwind',
+        type: 'Scythe',
+        rarity: 'Rare',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 5,
+        magicalDamage: 5,
+        physicalPenetration: 2,
+        magicalPenetration: 2,
+        criticalChance: 4,
+        criticalDamage: 1.75,
+        dodge: 5,
+        roll: 7,
+        constitution: 0,
+        strength: 3,
+        agility: 1,
+        achre: 0,
+        caeren: 2,
+        kyosir: 1,
+        influences: ["Ma'anre"],
+        imgUrl: '../assets/images/whirlwind.png'
+    },{
+        _id: '',
+        name: 'Whirlwind',
+        type: 'Scythe',
+        rarity: 'Uncommon',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 4,
+        magicalDamage: 3,
+        physicalPenetration: 1,
+        magicalPenetration: 1,
+        criticalChance: 3,
+        criticalDamage: 1.75,
+        dodge: 5,
+        roll: 7,
+        constitution: 0,
+        strength: 2,
+        agility: 1,
+        achre: 0,
+        caeren: 1,
+        kyosir: 1,
+        influences: ["Ma'anre"],
+        imgUrl: '../assets/images/whirlwind.png'
+    },{
+        _id: '',
+        name: 'Whirlwind',
+        type: 'Scythe',
+        rarity: 'Common',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce', 'Slash'],
+        physicalDamage: 3,
+        magicalDamage: 2,
+        physicalPenetration: 1,
+        magicalPenetration: 0,
+        criticalChance: 2,
+        criticalDamage: 1.5,
+        dodge: 5,
+        roll: 7,
+        constitution: 0,
+        strength: 1,
+        agility: 0,
+        achre: 0,
+        caeren: 1,
+        kyosir: 0,
+        influences: ["Ma'anre"],
+        imgUrl: '../assets/images/whirlwind.png'
+    },{
         _id: '',
         name: 'Lava Spit',
         type: 'Spell',
@@ -6448,8 +6119,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Fyer"],
         imgUrl: '../assets/images/fire.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Lava Spit',
         type: 'Spell',
@@ -6473,8 +6143,7 @@ export let Weapons = [
         kyosir: 2,
         influences: ["Fyer"],
         imgUrl: '../assets/images/fire.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Spear',
         type: 'Spell',
@@ -6498,8 +6167,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-spear.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Spear',
         type: 'Spell',
@@ -6523,8 +6191,7 @@ export let Weapons = [
         kyosir: 2,
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-spear.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caeren Barrage',
         type: 'Spell',
@@ -6548,8 +6215,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/sorcery.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caeren Barrage',
         type: 'Spell',
@@ -6573,8 +6239,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/sorcery.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Arctic Bolt',
         type: 'Spell',
@@ -6598,8 +6263,7 @@ export let Weapons = [
         kyosir: 6,
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/frost.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Arctic Bolt',
         type: 'Spell',
@@ -6623,8 +6287,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/frost.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Crush",
         type: 'Spell',
@@ -6648,8 +6311,7 @@ export let Weapons = [
         kyosir: 5,
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Crush",
         type: 'Spell',
@@ -6673,8 +6335,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth.png'
-    },
-    {
+    },{
         _id: '',
         name: "Wild",
         type: 'Spell',
@@ -6698,8 +6359,7 @@ export let Weapons = [
         kyosir: 6,
         influences: ["Achreo"],
         imgUrl: '../assets/images/wild.png'
-    },
-    {
+    },{
         _id: '',
         name: "Wild",
         type: 'Spell',
@@ -6723,8 +6383,7 @@ export let Weapons = [
         kyosir: 4,
         influences: ["Achreo"],
         imgUrl: '../assets/images/wild.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Hush',
         type: 'Spell',
@@ -6740,7 +6399,7 @@ export let Weapons = [
         criticalDamage: 1.75,
         dodge: 3,
         roll: 7,
-        constitution: 0,
+        constitution: 4,
         strength: 0,
         agility: 0,
         achre: 4,
@@ -6748,8 +6407,7 @@ export let Weapons = [
         kyosir: 4,
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Hush',
         type: 'Spell',
@@ -6765,7 +6423,7 @@ export let Weapons = [
         criticalDamage: 1.5,
         dodge: 3,
         roll: 7,
-        constitution: 0,
+        constitution: 3,
         strength: 0,
         agility: 0,
         achre: 3,
@@ -6773,8 +6431,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Tendril',
         type: 'Spell',
@@ -6798,8 +6455,7 @@ export let Weapons = [
         kyosir: 4,
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendrils.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Tendril',
         type: 'Spell',
@@ -6823,8 +6479,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendrils.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Windfury',
         type: 'Spell',
@@ -6848,8 +6503,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ahn've"],
         imgUrl: '../assets/images/windfury.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Windfury',
         type: 'Spell',
@@ -6873,8 +6527,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ahn've"],
         imgUrl: '../assets/images/windfury.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Longbow',
         type: 'Bow',
@@ -6896,10 +6549,9 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Kyn'gi"],
+        influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/bow-long.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Longbow',
         type: 'Bow',
@@ -6921,17 +6573,16 @@ export let Weapons = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Kyn'gi"],
+        influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/bow-long.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Bow',
         type: 'Bow',
         rarity: 'Legendary',
         grip: 'Two Hand',
         attackType: 'Physical',
-        damageType: ['Pierce'],
+        damageType: ['Blunt', 'Pierce'],
         physicalDamage: 12,
         magicalDamage: 12,
         physicalPenetration: 5,
@@ -6940,7 +6591,7 @@ export let Weapons = [
         criticalDamage: 2.5,
         dodge: 7,
         roll: 3,
-        constitution: 0,
+        constitution: 8,
         strength: 0,
         agility: 8,
         achre: 0,
@@ -6948,15 +6599,14 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/bow-reflex.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Bow',
         type: 'Bow',
         rarity: 'Epic',
         grip: 'Two Hand',
         attackType: 'Physical',
-        damageType: ['Pierce'],
+        damageType: ['Blunt', 'Pierce'],
         physicalDamage: 8,
         magicalDamage: 8,
         physicalPenetration: 3,
@@ -6965,7 +6615,7 @@ export let Weapons = [
         criticalDamage: 2,
         dodge: 7,
         roll: 3,
-        constitution: 0,
+        constitution: 5,
         strength: 0,
         agility: 5,
         achre: 0,
@@ -6973,8 +6623,79 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/bow-reflex.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'Daethic Bow',
+        type: 'Bow',
+        rarity: 'Rare',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt', 'Pierce'],
+        physicalDamage: 4,
+        magicalDamage: 4,
+        physicalPenetration: 0,
+        magicalPenetration: 3,
+        criticalChance: 3,
+        criticalDamage: 1.5,
+        dodge: 7,
+        roll: 3,
+        constitution: 4,
+        strength: 0,
+        agility: 4,
+        achre: 0,
+        caeren: 4,
+        kyosir: 0,
+        influences: ["Daethos"],
+        imgUrl: '../assets/images/bow-reflex.png'
+    },{
+        _id: '',
+        name: 'Daethic Bow',
+        type: 'Bow',
+        rarity: 'Uncommon',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt', 'Pierce'],
+        physicalDamage: 2,
+        magicalDamage: 2,
+        physicalPenetration: 0,
+        magicalPenetration: 2,
+        criticalChance: 2,
+        criticalDamage: 1.5,
+        dodge: 7,
+        roll: 3,
+        constitution: 2,
+        strength: 0,
+        agility: 2,
+        achre: 0,
+        caeren: 2,
+        kyosir: 0,
+        influences: ["Daethos"],
+        imgUrl: '../assets/images/bow-reflex.png'
+    },{
+        _id: '',
+        name: 'Daethic Bow',
+        type: 'Bow',
+        rarity: 'Common',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Blunt', 'Pierce'],
+        physicalDamage: 1,
+        magicalDamage: 1,
+        physicalPenetration: 0,
+        magicalPenetration: 1,
+        criticalChance: 1,
+        criticalDamage: 1.5,
+        dodge: 7,
+        roll: 3,
+        constitution: 1,
+        strength: 0,
+        agility: 1,
+        achre: 0,
+        caeren: 1,
+        kyosir: 0,
+        influences: ["Daethos"],
+        imgUrl: '../assets/images/bow-reflex.png'
+    },{
         _id: '',
         name: 'Shrygeian Recurve',
         type: 'Bow',
@@ -6990,7 +6711,7 @@ export let Weapons = [
         criticalDamage: 2,
         dodge: 5,
         roll: 5,
-        constitution: 0,
+        constitution: 6,
         strength: 0,
         agility: 9,
         achre: 0,
@@ -6998,8 +6719,7 @@ export let Weapons = [
         kyosir: 6,
         influences: ["Shrygei"],
         imgUrl: '../assets/images/bow-recurve.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Shrygeian Recurve',
         type: 'Bow',
@@ -7015,7 +6735,7 @@ export let Weapons = [
         criticalDamage: 1.75,
         dodge: 5,
         roll: 5,
-        constitution: 0,
+        constitution: 4,
         strength: 0,
         agility: 6,
         achre: 0,
@@ -7023,8 +6743,79 @@ export let Weapons = [
         kyosir: 4,
         influences: ["Shrygei"],
         imgUrl: '../assets/images/bow-recurve.png'
-    },
-    {
+    },{
+        _id: '',
+        name: 'Shrygeian Recurve',
+        type: 'Bow',
+        rarity: 'Rare',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce'],
+        physicalDamage: 7,
+        magicalDamage: 4,
+        physicalPenetration: 2,
+        magicalPenetration: 1,
+        criticalChance: 5,
+        criticalDamage: 1.5,
+        dodge: 7,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 4,
+        achre: 0,
+        caeren: 0,
+        kyosir: 3,
+        influences: ["Shrygei"],
+        imgUrl: '../assets/images/bow-recurve.png'
+    },{
+        _id: '',
+        name: 'Shrygeian Recurve',
+        type: 'Bow',
+        rarity: 'Uncommon',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce'],
+        physicalDamage: 5,
+        magicalDamage: 2,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 3,
+        criticalDamage: 1.25,
+        dodge: 7,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 3,
+        achre: 0,
+        caeren: 0,
+        kyosir: 2,
+        influences: ["Shrygei"],
+        imgUrl: '../assets/images/bow-recurve.png'
+    },{
+        _id: '',
+        name: 'Shrygeian Recurve',
+        type: 'Bow',
+        rarity: 'Common',
+        grip: 'Two Hand',
+        attackType: 'Physical',
+        damageType: ['Pierce'],
+        physicalDamage: 3,
+        magicalDamage: 1,
+        physicalPenetration: 0,
+        magicalPenetration: 0,
+        criticalChance: 1,
+        criticalDamage: 1.25,
+        dodge: 7,
+        roll: 3,
+        constitution: 0,
+        strength: 0,
+        agility: 2,
+        achre: 0,
+        caeren: 0,
+        kyosir: 1,
+        influences: ["Shrygei"],
+        imgUrl: '../assets/images/bow-recurve.png'
+    },{
         _id: '',
         name: 'Ashfyre',
         type: 'Spell',
@@ -7048,8 +6839,7 @@ export let Weapons = [
         kyosir: 5,
         influences: ["Fyer"],
         imgUrl: '../assets/images/ashfyre.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashfyre',
         type: 'Spell',
@@ -7073,8 +6863,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Fyer"],
         imgUrl: '../assets/images/ashfyre.png'
-    },
-    {
+    },{
         _id: '',
         name: "Astra's Lightning",
         type: 'Spell',
@@ -7098,8 +6887,7 @@ export let Weapons = [
         kyosir: 5,
         influences: ["Astra"],
         imgUrl: '../assets/images/astra-lightning.png'
-    },
-    {
+    },{
         _id: '',
         name: "Astra's Lightning",
         type: 'Spell',
@@ -7123,8 +6911,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Astra"],
         imgUrl: '../assets/images/astra-lightning.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caerenic Shatter',
         type: 'Spell',
@@ -7148,8 +6935,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/caerenic-shatter.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Caerenic Shatter',
         type: 'Spell',
@@ -7173,8 +6959,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Cambire"],
         imgUrl: '../assets/images/caerenic-shatter.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Nyrolean Wave',
         type: 'Spell',
@@ -7198,8 +6983,7 @@ export let Weapons = [
         kyosir: 5,
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/nyrolean.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Nyrolean Wave',
         type: 'Spell',
@@ -7223,8 +7007,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/nyrolean.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'ei's Upheaval",
         type: 'Spell',
@@ -7248,8 +7031,7 @@ export let Weapons = [
         kyosir: 5,
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/quoreite.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'ei's Upheaval",
         type: 'Spell',
@@ -7273,8 +7055,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/quoreite.png'
-    },
-    {
+    },{
         _id: '',
         name: "Achreon Rein",
         type: 'Spell',
@@ -7298,8 +7079,7 @@ export let Weapons = [
         kyosir: 7,
         influences: ["Achreo"],
         imgUrl: '../assets/images/achreon-rein.png'
-    },
-    {
+    },{
         _id: '',
         name: "Achreon Rein",
         type: 'Spell',
@@ -7323,8 +7103,7 @@ export let Weapons = [
         kyosir: 3,
         influences: ["Achreo"],
         imgUrl: '../assets/images/achreon-rein.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Hush of Daethos',
         type: 'Spell',
@@ -7340,16 +7119,15 @@ export let Weapons = [
         criticalDamage: 2,
         dodge: 5,
         roll: 3,
-        constitution: 1,
+        constitution: 6,
         strength: 0,
         agility: 0,
         achre: 6,
-        caeren: 9,
+        caeren: 10,
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Hush of Daethos',
         type: 'Spell',
@@ -7365,7 +7143,7 @@ export let Weapons = [
         criticalDamage: 1.75,
         dodge: 5,
         roll: 3,
-        constitution: 1,
+        constitution: 3,
         strength: 0,
         agility: 0,
         achre: 3,
@@ -7373,8 +7151,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Tendril of Daethos',
         type: 'Spell',
@@ -7395,11 +7172,10 @@ export let Weapons = [
         agility: 0,
         achre: 9,
         caeren: 6,
-        kyosir: 0,
+        kyosir: 6,
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendril-of-daethos.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Tendril of Daethos',
         type: 'Spell',
@@ -7420,11 +7196,10 @@ export let Weapons = [
         agility: 0,
         achre: 5,
         caeren: 3,
-        kyosir: 0,
+        kyosir: 3,
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendril-of-daethos.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ahn've's Fury",
         type: 'Spell',
@@ -7448,8 +7223,7 @@ export let Weapons = [
         kyosir: 0,
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve.png'
-    },
-    {
+    },{
         _id: '',
         name: "Ahn've's Fury",
         type: 'Spell',

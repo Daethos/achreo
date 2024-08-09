@@ -17,7 +17,7 @@ import { getNodesForNPC, npcIds } from '../utility/DialogNode';
 import { fetchNpc } from '../utility/npc';
 import { checkDeificConcerns } from '../utility/deities';
 import { Statistics } from '../utility/statistics';
-import { startingSpecials } from '../utility/abilities';
+import { STARTING_SPECIALS } from '../utility/abilities';
 import { Inventory, Reputation, faction } from '../utility/player';
 import { Puff } from 'solid-spinner';
 const BaseUI = lazy(async () => await import('../ui/BaseUI'));
@@ -120,7 +120,7 @@ export default function PhaserGame (props: IProps) {
                 },
             } as Ascean;
             if (props.ascean().mastery !== newMastery) {
-                const settings = { ...props.settings(), specials: startingSpecials[newMastery as keyof typeof startingSpecials] };
+                const settings = { ...props.settings(), specials: STARTING_SPECIALS[newMastery as keyof typeof STARTING_SPECIALS] };
                 props.setSettings(settings);
                 await updateSettings(settings);
                 EventBus.emit('fetch-button-reorder');

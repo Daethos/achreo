@@ -17,6 +17,12 @@ const CHANCE = ['criticalChance', 'physicalPenetration', 'magicalPenetration', '
 const DAMAGE = ['physicalDamage', 'magicalDamage'];
 const CRITICAL = ['criticalDamage'];
 
+function influence(influences: string[] | undefined): string[] | undefined {
+    if (!influences) return undefined;
+    const deity = influences[Math.floor(Math.random() * influences.length)];
+    return [deity];
+};
+
 export default class Equipment {
     public _id: string | number[] = uuidv4();
     public name: string;
@@ -68,7 +74,7 @@ export default class Equipment {
         this.achre = equipment.achre;
         this.caeren = equipment.caeren;
         this.kyosir = equipment.kyosir;
-        this.influences = equipment?.influences;
+        this.influences = influence(equipment?.influences);
         this.imgUrl = equipment.imgUrl;
     };
     [key: string]: any;
@@ -156,6 +162,9 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
                 } else if (item[damage] === 1.01) { // 1.00 +/- 0.01/0 (0.01 Range)
                     item[damage] = randomFloatFromInterval(item[damage], item[damage] + 0.01);
                 };
+            };
+            if (item.influences) {
+                item.influences = influence(item.influences);
             };
             await addEquipment(item);
         };

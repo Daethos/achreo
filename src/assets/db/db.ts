@@ -164,14 +164,6 @@ export const saveTutorial = async (id: string, type: string) => {
 };
 
 export const scrub = async (ascean: Ascean) => {
-    // let inventory = Array.from(new Set(inventory));
-    // let inventory = Array.from(new Set(ascean.inventory));
-    // inventory = inventory.filter((item: Equipment) => {
-    //     const real = (item !== undefined && item !== null && item != undefined && item != null)
-    //     return real;
-    // }); 
-    // inventory = inventory.map((item: Equipment) => item._id);
-    // inventory: inventory
     const scrubbed = { ...ascean, 
         weaponOne: ascean.weaponOne._id, weaponTwo: ascean.weaponTwo._id, weaponThree: ascean.weaponThree._id, shield: ascean.shield._id, 
         helmet: ascean.helmet._id, chest: ascean.chest._id, legs: ascean.legs._id, 
@@ -179,29 +171,6 @@ export const scrub = async (ascean: Ascean) => {
     await updateAscean(scrubbed);
     return scrubbed;
 };
-
-
-// export const getInventory = async (id: string) => {
-//     const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
-//     const inventory = ascean.inventory;
-//     if (!inventory) return [];
-//     const populated = Promise.all(inventory.map(async (item: Equipment) => {
-//         const equipment = await db.collection(EQUIPMENT).doc({ _id: item }).get();
-//         return equipment;
-//     }));
-//     return populated;
-// };
-
-// export const getInventoryIds = async (id: string) => {
-//     const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
-//     return ascean.inventory;
-// };
-
-// export const updateInventory = async (id: string, inventory: string[]) => {
-//     let ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
-//     ascean.inventory = inventory;
-//     await db.collection(ASCEANS).doc({ _id: id }).update(ascean);
-// };
 
 export const getInventory = async (id: string) => {
     let inventory: Inventory = await db.collection(INVENTORY).doc({ _id: id }).get();
@@ -216,7 +185,6 @@ export const getInventory = async (id: string) => {
     }));
     inventory.inventory = await populated as unknown as Equipment[];
     return inventory;
-    // return populated;
 };
 
 export const getInventoryIds = async (id: string) => {

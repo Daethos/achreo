@@ -9,6 +9,18 @@ export const ATTACKS = {
     rush: 'rush through',
     writhe: 'writhe into',
 };
+export const ACTION_TYPES = {
+    ACHIRE: "achire",
+    ARC: "arc",
+    ATTACK: "attack",
+    LEAP: "leap",
+    POSTURE: "posture",
+    ROLL: "roll",
+    PARRY: "parry",
+    RUSH: "rush",
+    WRITHE: "writhe",
+};
+export const ATTACK_TYPES = { MAGIC: "Magic", PHYSICAL: "Physical" };
 export const DAMAGE = {
     CUMULATIVE: 0.03,
     CAERENEIC_NEG: 1.25,
@@ -39,6 +51,26 @@ export const ARMORS = {
 
     RANDOM: 0.15,
 };
+export const DAMAGE_TYPES = {
+    BLUNT: "Blunt",
+    PIERCE: "Pierce",
+    SLASH: "Slash",
+    EARTH: "Earth",
+    FIRE: "Fire",
+    FROST: "Frost",
+    LIGHTNING: "Lightning",
+    RIGHTEOUS: "Righteous",
+    SPOOKY: "Spooky",
+    SORCERY: "Sorcery",
+    WIND: "Wind",
+    WILD: "Wild",
+};
+export const DEFENSE_TYPES = {
+    LEATHER_CLOTH: "Leather-Cloth",
+    LEATHER_MAIL: "Leather-Mail",
+    CHAIN_MAIL: "Chain-Mail",
+    PLATE_MAIL: "Plate-Mail"
+};
 export const ENEMY_ATTACKS = {
     attack: 'attacks',
     posture: 'postures against',
@@ -48,6 +80,14 @@ export const ENEMY_ATTACKS = {
     rush: 'rushes through',
     writhe: 'writhes into',
 };
+export const MASTERY = {
+    CONSTITUTION: 'constitution',
+    STRENGTH: 'strength',
+    AGILITY: 'agility',
+    ACHRE: 'achre',
+    CAEREN: 'caeren',
+    KYOSIR: 'kyosir'
+};
 export const STRONG_ATTACKS = ['achire', 'attack', 'arc', 'leap', 'rush', 'special', 'storm', 'writhe'];
 export const STRONG_TYPES = {
     "Leather-Cloth": ["Frost","Lightning","Righteous","Pierce"],
@@ -55,4 +95,17 @@ export const STRONG_TYPES = {
     "Chain-Mail": ["Blunt","Slash","Sorcery","Wind","Wild"],
     "Plate-Mail": ["Blunt","Earth","Fire","Spooky"],
 };
+export const HOLD_TYPES = { ONE_HAND: "One Hand", TWO_HAND: "Two Hand" };
 export const THRESHOLD = {ONE_HAND: 100, TWO_HAND: 150};
+export const WEAPON_TYPES = {
+    BOW: "Bow",
+    GREATBOW: "Greatbow"
+};
+export const DEITIES = {DAETHOS: "Daethos"};
+export const FAITH_RARITY = {
+    'Common': 1,
+    'Uncommon': 2,
+    'Rare': 3,
+    'Epic': 5,
+    'Legendary': 10
+};

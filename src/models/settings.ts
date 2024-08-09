@@ -1,4 +1,4 @@
-import { startingSpecials } from "../utility/abilities";
+import { STARTING_MASTERY_UI, STARTING_SPECIALS } from "../utility/abilities";
 
 export default class Settings {
     public _id: string;
@@ -119,7 +119,7 @@ export default class Settings {
         this.joystick = 0.5;
         this.vibration = 100;
         this.actions = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
-        this.specials = startingSpecials[mastery as keyof typeof startingSpecials];
+        this.specials = STARTING_SPECIALS[mastery as keyof typeof STARTING_SPECIALS];
         this.prayer = 'Buff';
         this.shake = { duration: 100, intensity: 0.05 };
         this.selected = {
@@ -180,36 +180,36 @@ export default class Settings {
                 barY: 0,
             },
             leftJoystick: { 
-                base: 0x000000,
-                thumb: 0xfdf6d8,
-                opacity: 0.2,
+                base: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].leftJoystick.base,
+                thumb: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].leftJoystick.thumb,
+                opacity: 0.75,
                 x: 0.05, 
                 y: 0.8,
                 width: 1, 
             },
             rightJoystick: { 
-                base: 0x000000,
-                thumb: 0xfdf6d8,
-                opacity: 0.2,
+                base: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].rightJoystick.base,
+                thumb: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].rightJoystick.thumb,
+                opacity: 0.75,
                 x: 0.95, 
                 y: 0.8,
                 width: 1, 
             },
             actionButtons: {
-                border: 0xfdf6d8,
-                color: 0x800080,
+                border: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].actionButtons.border,
+                color: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].actionButtons.color,
                 display: 'arc',
-                opacity: 0.2,
+                opacity: 0.75,
                 spacing: 3.57,
                 x: 0.825,
                 y: 0.75,
                 width: 1,
             },
             specialButtons: {
-                border: 0xfdf6d8,
-                color: 0x000000,
+                border: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].specialButtons.border,
+                color: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].specialButtons.color,
                 display: 'arc',
-                opacity: 0.2,
+                opacity: 0.75,
                 spacing: 3.57,
                 x: 0.7675,
                 y: 0.6125,
@@ -222,7 +222,7 @@ export default class Settings {
             leftHud: {
                 offset: 43.75,
                 scale: 0.095,
-                x: 0.1,
+                x: 0.15,
                 y: 1.025,
             },
             smallHud: { 

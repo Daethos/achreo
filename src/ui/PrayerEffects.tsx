@@ -7,7 +7,7 @@ import { GameState } from '../stores/game';
 import { EventBus } from '../game/EventBus';
 
 
-export default function PrayerEffects({ combat, effect, enemy, game, setEffect, show, setShow }: { combat: Accessor<Combat>; effect: StatusEffect; enemy: boolean; game: Accessor<GameState>, setEffect: Setter<StatusEffect>; show: Accessor<boolean>; setShow: Setter<boolean>; }) {
+export default function PrayerEffects({ combat, effect, enemy, game, strip, setEffect, show, setShow }: { combat: Accessor<Combat>; effect: StatusEffect; enemy: boolean; game: Accessor<GameState>, strip: (id: string) => void, setEffect: Setter<StatusEffect>; show: Accessor<boolean>; setShow: Setter<boolean>; }) {
     const [effectTimer, setEffectTimer] = createSignal(effect.endTime - effect.startTime);
     var timeout: any = undefined;
     
@@ -16,6 +16,7 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
             console.log('%c Prayer Effect Removed', 'color: red');
             EventBus.emit('initiate-combat', { data: effect, type: 'Remove Tick' });
             clearInterval(timeout);
+            // strip(effect.id);
             return;
         };
         if (game().pauseState === true) {
@@ -45,7 +46,12 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
     });
 
     function canTick(prayer: StatusEffect, prayerTimer: Accessor<number>, combatTimer: number): boolean {
-        return prayerTimer() % 3 === 0 && combat().combatEngaged === true && prayer.startTime !== combatTimer && (prayer.prayer === 'Heal' || prayer.prayer === 'Damage');
+        console.log(combat() ,'Combat');
+        return prayerTimer() % 3 === 0 
+            && combat().combatEngaged === true 
+            && prayer.startTime !== combatTimer 
+            && combat().newComputerHealth !== 0
+            && (prayer.prayer === 'Heal' || prayer.prayer === 'Damage');
     }; 
 
     function showEffect(): void {

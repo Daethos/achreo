@@ -1,6 +1,7 @@
 var totalTrauma = 0;
-export function screenShake(scene: Phaser.Scene, duration = 96, intensity = 0.00375) {
+export function screenShake(scene: Phaser.Scene, duration = 96, intensity = 0.004) {
     totalTrauma += 1.04;
+    console.log(`%c Current Screen Trauma: ${totalTrauma}`, 'color: #0f0');
     intensity *= Math.pow(totalTrauma, 2);
     if ("vibrate" in navigator) navigator.vibrate(duration);
     scene.cameras.main.shake(duration, intensity);

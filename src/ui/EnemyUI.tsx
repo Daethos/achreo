@@ -42,7 +42,7 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
     };
     // transform: 'scale(0.875)'
     return <div class='modal'>
-        <div class='border center' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%', 'width': dimensions().ORIENTATION === 'landscape' ? '50%' : '70%' }}>
+        <div class='border center' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%', 'width': dimensions().ORIENTATION === 'landscape' ? '50%' : '70%', 'margin-top': '2%' }}>
             <button class='highlight cornerBL' style={{ 'z-index': 1 }} onClick={clearEnemy}>
                 <p style={{ color: '#fdf6d8' }}>Clear UI</p>
             </button>
@@ -108,6 +108,11 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
                 return '0.6em';
         };
     };
+    function strip(id: string) {
+        let computerEffects = [ ...state().computerEffects ];
+        computerEffects = computerEffects.filter((prayer) => prayer.id !== id);
+        EventBus.emit('blend-combat', { computerEffects });
+    };
     // function createPrayer() {
     //     console.log('Creating prayer...');
     //     const exists = new StatusEffect(
@@ -136,10 +141,10 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
             {/* <button class='highlight center' onClick={() => createPrayer()}>
                 <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>Create Prayer</div>
             </button> */}
-            <Show when={state().computerEffects?.length > 0}>
+            <Show when={state().computerEffects?.length > 0 && state().combatEngaged === true}>
                 <div class='combatEffects' style={{ position: 'fixed', right: '7vw', top: '14vh', 'height': '13vh', width: 'auto', transform: 'scale(0.5)' }}>
                     <For each={state().computerEffects}>{((effect) => ( 
-                        <PrayerEffects combat={state} effect={effect} enemy={true} game={game} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
+                        <PrayerEffects combat={state} effect={effect} enemy={true} game={game} strip={strip} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
                     ))}</For>
                 </div>
             </Show> 

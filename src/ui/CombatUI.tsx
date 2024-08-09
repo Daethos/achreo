@@ -42,6 +42,11 @@ export default function CombatUI({ state, game, stamina, grace }: Props) {
             'border': border(borderColor(state()?.playerBlessing), 0.15),
         };
     };
+    function strip(id: string) {
+        let playerEffects = [ ...state().playerEffects ];
+        playerEffects = playerEffects.filter((prayer) => prayer.id !== id);
+        EventBus.emit('blend-combat', { playerEffects });
+    };
     // function createPrayer() {
     //     const computer = initAscean;
     //     const exists = new StatusEffect(
@@ -82,10 +87,10 @@ export default function CombatUI({ state, game, stamina, grace }: Props) {
             <ItemModal item={state()?.player?.shield} stalwart={state().isStalwart} caerenic={false} />
         </div>
         </Show>  
-        <Show when={state().playerEffects.length > 0}>
+        <Show when={state().playerEffects.length > 0 && state().combatEngaged === true}>
         <div class='combatEffects' style={{ left: '-3vw', top: '15vh', 'height': '14vh', width: 'auto', transform: 'scale(0.75)' }}>
             <For each={state().playerEffects}>{(effect) => ( 
-                <PrayerEffects combat={state} effect={effect} enemy={false} game={game} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
+                <PrayerEffects combat={state} effect={effect} enemy={false} game={game} strip={strip} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
             )}</For>
         </div>
         </Show> 

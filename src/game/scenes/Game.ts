@@ -906,7 +906,7 @@ export class Game extends Scene {
                 targets: tween,
                 angle: count * 360,
                 duration: count * 925,
-                ease: 'Circ.easeInO',
+                ease: 'Circ.easeInOut',
                 yoyo: false,
             });
         } else {

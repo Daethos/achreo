@@ -138,7 +138,7 @@ export const SPECIAL = {
         'Suture', 
     ], // 13
 };
-export const startingSpecials = {
+export const STARTING_SPECIALS = {
     'constitution': ['Healing', 'Kyrnaicism', 'Mend', 'Shield', 'Ward'],
     'strength': ['Arc', 'Howl', 'Leap', 'Storm', 'Writhe'],
     'agility': ['Pursuit', 'Recover', 'Rush', 'Shimmer', 'Sprint'],
@@ -146,6 +146,116 @@ export const startingSpecials = {
     'caeren': ['Desperation', 'Fear', 'Protect', 'Sacrifice', 'Suture'],
     'kyosir': ['Chiomic', 'Confuse', 'Malice', 'Paralyze', 'Scream'],
 };
+export const STARTING_MASTERY_UI = {
+    'constitution': {
+        'leftJoystick': {
+            'base': 0x000000,
+            'thumb': 0xfdf6d8
+        },
+        'rightJoystick': {
+            'base': 0x000000,
+            'thumb': 0xfdf6d8
+        },
+        'actionButtons': {
+            'border': 0xfdf6d8,
+            'color': 0x000000
+        },
+        'specialButtons': {
+            'border': 0x000000,
+            'color': 0xfdf6d8
+        }
+    },
+    'strength': {
+        'leftJoystick': {
+            'base': 0x000000,
+            'thumb': 0xff0000
+        },
+        'rightJoystick': {
+            'base': 0x000000,
+            'thumb': 0xff0000
+        },
+        'actionButtons': {
+            'border': 0xff0000,
+            'color': 0x000000
+        },
+        'specialButtons': {
+            'border': 0x000000,
+            'color': 0xff0000
+        }
+    },
+    'agility': {
+        'leftJoystick': {
+            'base': 0x000000,
+            'thumb': 0x00ff00
+        },
+        'rightJoystick': {
+            'base': 0x000000,
+            'thumb': 0x00ff00
+        },
+        'actionButtons': {
+            'border': 0x00ff00,
+            'color': 0x000000
+        },
+        'specialButtons': {
+            'border': 0x000000,
+            'color': 0x00ff00
+        }
+    },
+    'achre': {
+        'leftJoystick': {
+            'base': 0x000000,
+            'thumb': 0x0000ff
+        },
+        'rightJoystick': {
+            'base': 0x000000,
+            'thumb': 0x0000ff
+        },
+        'actionButtons': {
+            'border': 0x0000ff,
+            'color': 0x000000
+        },
+        'specialButtons': {
+            'border': 0x000000,
+            'color': 0x0000ff
+        }
+    },
+    'caeren': {
+        'leftJoystick': {
+            'base': 0x000000,
+            'thumb': 0x800080
+        },
+        'rightJoystick': {
+            'base': 0x000000,
+            'thumb': 0x800080
+        },
+        'actionButtons': {
+            'border': 0x800080,
+            'color': 0x000000
+        },
+        'specialButtons': {
+            'border': 0x000000,
+            'color': 0x800080
+        }
+    },
+    'kyosir': {
+        'leftJoystick': {
+            'base': 0x000000,
+            'thumb': 0xFFD700
+        },
+        'rightJoystick': {
+            'base': 0x000000,
+            'thumb': 0xFFD700
+        },
+        'actionButtons': {
+            'border': 0xFFD700,
+            'color': 0x000000
+        },
+        'specialButtons': {
+            'border': 0x000000,
+            'color': 0xFFD700
+        }
+    },
+}
 export const TRAIT_SPECIALS = {
     "Astral": 'Astrication',
     "Cambiren": 'Caerenesis',

@@ -438,10 +438,8 @@ export default class Player extends Entity {
             .addState(States.SNARED, {
                 onEnter: this.onSnaredEnter,
                 onExit: this.onSnaredExit,
-            })
-
+            });
         this.metaMachine.setState(States.CLEAN);
-        
         this.setScale(PLAYER.SCALE.SELF);   
         const { Body, Bodies } = Physics.Matter.Matter;
         let playerCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { isSensor: false, label: 'playerCollider' }); // Y + 10 For Platformer
@@ -463,14 +461,15 @@ export default class Player extends Entity {
         this.devourTimer = undefined; 
         this.slowDuration = DURATION.SLOWED;
         this.highlight = this.scene.add.graphics()
-            .lineStyle(4, 0xFF0000) // 3
-            .setScale(0.25) // 35
+            .lineStyle(4, 0xFFc700) // 3
+            .setScale(0.2) // 35
             .strokeCircle(0, 0, 12) // 10 
             .setDepth(1000);
         this.scene.plugins.get('rexGlowFilterPipeline').add(this.highlight, {
             intensity: 0.005, // 005
         });
         this.highlight.setVisible(false);
+        this.highlightAnimation = false;
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health, 'player');
         this.castbar = new CastingBar(this.scene, this.x, this.y, 0, this);
         this.rushedEnemies = [];
@@ -552,9 +551,9 @@ export default class Player extends Entity {
         };
         this.currentTarget = newTarget;
         this.targetID = newTarget.enemyID;
-        // this.highlightTarget(newTarget);
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
+            this.animateTarget();
             if (this.inCombat && !this.scene.state.computer) {
                 this.scene.setupEnemy(this.currentTarget);
             }; 
@@ -589,7 +588,20 @@ export default class Player extends Entity {
         EventBus.off('updated-stamina', this.updateStamina);
     };
 
+    animateTarget = () => {
+        this.scene.tweens.add({
+            targets: this.highlight,
+            scale: 0.425,
+            duration: 250,
+            yoyo: true
+        });
+    };
+
     highlightTarget = (sprite) => {
+        if (this.highlightAnimation === false) {
+            this.highlightAnimation = true;
+            this.animateTarget();
+        };
         this.highlight.setPosition(sprite.x, sprite.y);
         this.highlight.setVisible(true);
         this.scene.target.setPosition(sprite.x, sprite.y)
@@ -597,6 +609,7 @@ export default class Player extends Entity {
 
     removeHighlight() {
         this.highlight.setVisible(false);
+        this.highlightAnimation = false;
     };
 
     assetSprite(asset) {
@@ -754,6 +767,14 @@ export default class Player extends Entity {
         this.checkGear(e.player.shield, e.weapons[0], e.playerDamageType.toLowerCase());
     };
 
+    // if (this.isFeared === true) {
+    //     const chance = Math.random() > 0.5;
+    //     if (chance === true) {
+    //         this.statusCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect');
+    //         this.isFeared = false;    
+    //     };
+    // };
+    
     eventUpdate = (e) => {
         if (this.health > e.newPlayerHealth) {
             let damage = Math.round(this.health - e.newPlayerHealth);
@@ -761,13 +782,6 @@ export default class Player extends Entity {
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);
             if (this.isConfused === true) this.isConfused = false;
             if (this.isPolymorphed === true) this.isPolymorphed = false;
-            if (this.isFeared === true) {
-                const chance = Math.random() > 0.5;
-                if (chance === true) {
-                    this.statusCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect');
-                    this.isFeared = false;    
-                };
-            };
             if (this.isAbsorbing) this.absorbHit();
             if (this.isMalicing) this.maliceHit();
             if (this.isMending) this.mendHit();

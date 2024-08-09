@@ -22,7 +22,7 @@ export type CharacterSheet = {
 // uk'aj chuuk waj || Yucatec Maya for Coffee
 export const STARTING_CHARACTERS: CharacterSheet[] = [
     {
-        name: "Ah'gani",
+        name: "Ah'gani Duscaer",
         description: 'Soldier of the Astral Wastes. Exile',
         sex: 'Man',
         origin: 'Ashtre',
@@ -64,20 +64,34 @@ export const STARTING_CHARACTERS: CharacterSheet[] = [
     //     faith: 'Devoted',
     //     preference: 'Plate-Mail',
     // },{
-        name: "Garris Ashenus",
-        description: 'Merchant-Knight of the Firelands',
-        sex: 'Man',
+        name: "Fyera Ashfyre",
+        description: 'Lady of the Firelands',
+        sex: 'Woman',
         origin: "Fyers",
         constitution: 12,
         strength: 10,
-        agility: 14,
-        achre: 13,
+        agility: 10,
+        achre: 16,
         caeren: 12,
-        kyosir: 12,
-        mastery: 'agility',
+        kyosir: 13,
+        mastery: 'achre',
         faith: 'Adherent',
-        preference: 'Plate-Mail',
+        preference: 'Leather-Cloth',
     },{
+    //     name: "Garris Ashenus",
+    //     description: 'Merchant-Knight of the Firelands',
+    //     sex: 'Man',
+    //     origin: "Fyers",
+    //     constitution: 12,
+    //     strength: 10,
+    //     agility: 14,
+    //     achre: 13,
+    //     caeren: 12,
+    //     kyosir: 12,
+    //     mastery: 'agility',
+    //     faith: 'Adherent',
+    //     preference: 'Plate-Mail',
+    // },{
         name: 'Jadei Myelle',
         description: 'Soverain-Princess of the Daethic Kingdom',
         sex: 'Woman',
@@ -106,20 +120,6 @@ export const STARTING_CHARACTERS: CharacterSheet[] = [
     //     faith: 'Adherent',
     //     preference: 'Leather-Cloth',
     // },{
-        name: "Lacheo of the Seyr",
-        description: 'Daethic Inquisitor. Mute',
-        sex: 'Man',
-        origin: "Nothos",
-        constitution: 12,
-        strength: 10,
-        agility: 13,
-        achre: 14,
-        caeren: 12,
-        kyosir: 12,
-        mastery: 'achre',
-        faith: 'Devoted',
-        preference: 'Leather-Cloth',
-    },{
     // name: "Mirio Lorian Kyr'na",
     //     description: 'Merchant Trader of Licivitas',
     //     sex: 'Man',
@@ -134,10 +134,24 @@ export const STARTING_CHARACTERS: CharacterSheet[] = [
     //     faith: 'Devoted',
     //     preference: 'Leather-Cloth',
     // },{
-        name: "Na'shaeri",
-        description: "Shaman of the Tshaer",
+        name: "Myrelle Raiq",
+        description: 'Daughter of the Eclipse.',
         sex: 'Woman',
-        origin: 'Sedyreal',
+        origin: "Notheo",
+        constitution: 12,
+        strength: 10,
+        agility: 14,
+        achre: 13,
+        caeren: 12,
+        kyosir: 12,
+        mastery: 'agility',
+        faith: 'Devoted',
+        preference: 'Leather-Mail',
+    },{
+        name: "Na'shaeri",
+        description: "Shamanic Sabi of the Tshaer", // wise woman = Yucatec Maya "Ko'olelo' sabia"
+        sex: 'Woman',
+        origin: "Sedyreal",
         constitution: 14,
         strength: 10,
         agility: 12,
@@ -162,22 +176,8 @@ export const STARTING_CHARACTERS: CharacterSheet[] = [
     //     faith: 'Adherent',
     //     preference: 'Plate-Mail',
     // },{ 
-        name: "Quoreia Se'vyr",
-        description: 'Southron Stalker of the Jungle',
-        sex: 'Woman',
-        origin: "Quor'eite",
-        constitution: 12,
-        strength: 10,
-        agility: 16,
-        achre: 12,
-        caeren: 10,
-        kyosir: 13,
-        mastery: 'agility',
-        faith: 'Adherent',
-        preference: 'Leather-Mail',
-    },{
-        name: "Quor'estes",
-        description: 'Traveling Bard of the Southron Provinces',
+        name: "Quorestes the Ba'sura",
+        description: 'Bardic Fiend of the Southron Provinces',
         sex: 'Man',
         origin: "Quor'eite",
         constitution: 12,
@@ -191,7 +191,7 @@ export const STARTING_CHARACTERS: CharacterSheet[] = [
         preference: 'Leather-Cloth',
     },{
         name: 'Rangiltan Caderyn',
-        description: 'Youngest Prince of the Daethic Kingdom',
+        description: 'The Younger Prince of the Daethic Kingdom',
         sex: 'Man',
         origin: 'Notheo',
         constitution: 12,
@@ -204,24 +204,38 @@ export const STARTING_CHARACTERS: CharacterSheet[] = [
         faith: 'Devoted',
         preference: 'Plate-Mail',
     },{ 
-        name: 'Sera Lorian',
-        description: 'Daestra in the Outskirts of Lor',
-        sex: 'Woman',
-        origin: 'Notheo',
+        name: "Sacheo of the Seyr",
+        description: 'Daethic Inquisitor on Mission. Mute',
+        sex: 'Man',
+        origin: "Nothos",
         constitution: 12,
         strength: 10,
-        agility: 10,
-        achre: 16,
-        caeren: 13,
+        agility: 13,
+        achre: 14,
+        caeren: 12,
         kyosir: 12,
         mastery: 'achre',
         faith: 'Devoted',
         preference: 'Leather-Cloth',
     },{
+    //     name: 'Sera Lorian',
+    //     description: 'Daestra in the Outskirts of Lor',
+    //     sex: 'Woman',
+    //     origin: 'Notheo',
+    //     constitution: 12,
+    //     strength: 10,
+    //     agility: 10,
+    //     achre: 16,
+    //     caeren: 13,
+    //     kyosir: 12,
+    //     mastery: 'achre',
+    //     faith: 'Devoted',
+    //     preference: 'Leather-Cloth',
+    // },{
         name: "Se'teyo Nati",
-        description: 'Sevashyr Shrieker',
+        description: 'Sevashyr Shrieker of the Sedyrus Mountains',
         sex: 'Man',
-        origin: 'Sedyreal',
+        origin: "Sedyreal",
         constitution: 12,
         strength: 13,
         agility: 12,
@@ -243,6 +257,20 @@ export const STARTING_CHARACTERS: CharacterSheet[] = [
         caeren: 10,
         kyosir: 16,
         mastery: 'kyosir',
+        faith: 'Adherent',
+        preference: 'Leather-Mail',
+    }, {
+        name: "Yureia Se'vyr",
+        description: "Southron Stalker of the Quor'eite Jungle",
+        sex: 'Woman',
+        origin: "Quor'eite",
+        constitution: 12,
+        strength: 10,
+        agility: 16,
+        achre: 12,
+        caeren: 10,
+        kyosir: 13,
+        mastery: 'agility',
         faith: 'Adherent',
         preference: 'Leather-Mail',
     },
@@ -382,8 +410,19 @@ export const initSkills: Skills = {
     'Wind': 1,
 };
 
+const RACE = {
+    ASHTRE: "Ashtre",
+    FYERS: "Fyers",
+    LIIVI: "Li'ivi",
+    NOTHEO: "Notheo",
+    NOTHOS: "Nothos",
+    QUOREITE: "Quor'eite",
+    SEDYREAL: "Sedyreal",
+};
+
 // ================================== HELPER FUNCTIONS =================================== \\
-const attributeCompiler = (ascean: Ascean, rarities: { helmet: number; chest: number; legs: number; ringOne: number; ringTwo: number; amulet: number; shield: number; trinket: number }): CombatAttributes => {
+const attributeCompiler = (ascean: Ascean, 
+    rarities: { helmet: number; chest: number; legs: number; ringOne: number; ringTwo: number; amulet: number; shield: number; trinket: number; weaponOne: number; weaponTwo: number; }): CombatAttributes => {
     let newAttributes: CombatAttributes | any = {};
     let itemRarity = {
         helmCon: ascean.helmet.constitution * rarities.helmet,
@@ -434,22 +473,34 @@ const attributeCompiler = (ascean: Ascean, rarities: { helmet: number; chest: nu
         trinketAch: ascean.trinket.achre * rarities.trinket,
         trinketCae: ascean.trinket.caeren * rarities.trinket,
         trinketKyo: ascean.trinket.kyosir * rarities.trinket,
+        weaponCon: ascean.weaponOne.constitution * rarities.weaponOne,
+        weaponStr: ascean.weaponOne.strength * rarities.weaponOne,
+        weaponAgi: ascean.weaponOne.agility * rarities.weaponOne,
+        weaponAch: ascean.weaponOne.achre * rarities.weaponOne,
+        weaponCae: ascean.weaponOne.caeren * rarities.weaponOne,
+        weaponKyo: ascean.weaponOne.kyosir * rarities.weaponOne,
+        weaponTwoCon: ascean.weaponTwo.constitution * rarities.weaponTwo,
+        weaponTwoStr: ascean.weaponTwo.strength * rarities.weaponTwo,
+        weaponTwoAgi: ascean.weaponTwo.agility * rarities.weaponTwo,
+        weaponTwoAch: ascean.weaponTwo.achre * rarities.weaponTwo,
+        weaponTwoCae: ascean.weaponTwo.caeren * rarities.weaponTwo,
+        weaponTwoKyo: ascean.weaponTwo.kyosir * rarities.weaponTwo,    
     };
         
-    newAttributes.rawConstitution =  Math.round((ascean.constitution + (ascean?.origin === "Notheo" || ascean?.origin === 'Nothos' || ascean?.origin === 'Sedyreal' ? 2 : 0)) * (ascean?.mastery === 'Constitution' ? 1.1 : 1));
-    newAttributes.rawStrength =  Math.round(((ascean?.strength + (ascean?.origin === 'Sedyreal' || ascean?.origin === 'Ashtre' ? 2 : 0) + (ascean?.origin === "Li'ivi" ? 1 : 0)) + (ascean?.sex === 'Man' ? 2 : 0)) * (ascean?.mastery === 'Strength' ? 1.15 : 1));
-    newAttributes.rawAgility =  Math.round(((ascean?.agility + (ascean?.origin === "Quor'eite" || ascean?.origin === 'Ashtre' ? 2 : 0) + (ascean?.origin === "Li'ivi" ? 2 : 0))) * (ascean?.mastery === 'Agility' ? 1.15 : 1));
-    newAttributes.rawAchre =  Math.round(((ascean?.achre + (ascean?.origin === 'Notheo' || ascean?.origin === 'Fyers' || ascean?.origin === "Quor'eite" ? 2 : 0) + (ascean?.origin === "Li'ivi" ? 1 : 0)) + (ascean?.sex === 'Man' ? 2 : 0)) * (ascean?.mastery === 'Achre' ? 1.15 : 1));
-    newAttributes.rawCaeren =  Math.round(((ascean?.caeren + (ascean?.origin === 'Nothos' || ascean?.origin === 'Sedyreal' ? 2 : 0) + (ascean?.origin === "Li'ivi" ? 2 : 0)) + (ascean?.sex === 'Woman' ? 2 : 0)) * (ascean?.mastery === 'Caeren' ? 1.15 : 1));
-    newAttributes.rawKyosir =  Math.round(((ascean?.kyosir + (ascean?.origin === "Fyers" || ascean?.origin === "Quor'eite" ? 2 : 0) + (ascean?.origin === "Li'ivi" ? 1 : 0)) + (ascean?.sex === 'Woman' ? 2 : 0)) * (ascean.mastery === 'Kyosir' ? 1.15 : 1));
+    newAttributes.rawConstitution =  Math.round((ascean.constitution + (ascean?.origin === RACE.NOTHEO || ascean?.origin === RACE.NOTHOS || ascean?.origin === RACE.SEDYREAL ? 2 : 0)) * (ascean?.mastery === 'Constitution' ? 1.1 : 1));
+    newAttributes.rawStrength =  Math.round(((ascean?.strength + (ascean?.origin === RACE.SEDYREAL || ascean?.origin === RACE.ASHTRE ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 1 : 0)) + (ascean?.sex === 'Man' ? 2 : 0)) * (ascean?.mastery === 'Strength' ? 1.15 : 1));
+    newAttributes.rawAgility =  Math.round(((ascean?.agility + (ascean?.origin === RACE.QUOREITE || ascean?.origin === RACE.ASHTRE ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 2 : 0))) * (ascean?.mastery === 'Agility' ? 1.15 : 1));
+    newAttributes.rawAchre =  Math.round(((ascean?.achre + (ascean?.origin === RACE.NOTHEO || ascean?.origin === RACE.FYERS || ascean?.origin === RACE.QUOREITE ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 1 : 0)) + (ascean?.sex === 'Man' ? 2 : 0)) * (ascean?.mastery === 'Achre' ? 1.15 : 1));
+    newAttributes.rawCaeren =  Math.round(((ascean?.caeren + (ascean?.origin === RACE.NOTHOS || ascean?.origin === RACE.SEDYREAL ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 2 : 0)) + (ascean?.sex === 'Woman' ? 2 : 0)) * (ascean?.mastery === 'Caeren' ? 1.15 : 1));
+    newAttributes.rawKyosir =  Math.round(((ascean?.kyosir + (ascean?.origin === "Fyers" || ascean?.origin === RACE.QUOREITE ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 1 : 0)) + (ascean?.sex === 'Woman' ? 2 : 0)) * (ascean.mastery === 'Kyosir' ? 1.15 : 1));
 
     // // Total CombatAttributes
-    newAttributes.totalStrength = newAttributes.rawStrength + itemRarity.shieldStr + itemRarity.helmStr + itemRarity.chestStr + itemRarity.legsStr + itemRarity.ringOneStr + itemRarity.ringTwoStr + itemRarity.amuletStr + itemRarity.trinketStr;
-    newAttributes.totalAgility = newAttributes.rawAgility + itemRarity.shieldAgi + itemRarity.helmAgi + itemRarity.chestAgi + itemRarity.legsAgi + itemRarity.ringOneAgi + itemRarity.ringTwoAgi + itemRarity.amuletAgi + itemRarity.trinketAgi;
-    newAttributes.totalConstitution = newAttributes.rawConstitution + itemRarity.shieldCon + itemRarity.helmCon + itemRarity.chestCon + itemRarity.legsCon + itemRarity.ringOneCon + itemRarity.ringTwoCon + itemRarity.amuletCon + itemRarity.trinketCon;
-    newAttributes.totalAchre = newAttributes.rawAchre + itemRarity.shieldAch + itemRarity.helmAch + itemRarity.chestAch + itemRarity.legsAch + itemRarity.ringOneAch + itemRarity.ringTwoAch + itemRarity.amuletAch + itemRarity.trinketAch;
-    newAttributes.totalCaeren = newAttributes.rawCaeren + itemRarity.shieldCae + itemRarity.helmCae + itemRarity.chestCae + itemRarity.legsCae + itemRarity.ringOneCae + itemRarity.ringTwoCae + itemRarity.amuletCae + itemRarity.trinketCae;
-    newAttributes.totalKyosir = newAttributes.rawKyosir + itemRarity.shieldKyo + itemRarity.helmKyo + itemRarity.chestKyo + itemRarity.legsKyo + itemRarity.ringOneKyo + itemRarity.ringTwoKyo + itemRarity.amuletKyo + itemRarity.trinketKyo;
+    newAttributes.totalConstitution = newAttributes.rawConstitution + itemRarity.weaponCon + (newAttributes.rawConstitution > 50 ? itemRarity.weaponTwoCon : 0) + itemRarity.shieldCon + itemRarity.helmCon + itemRarity.chestCon + itemRarity.legsCon + itemRarity.ringOneCon + itemRarity.ringTwoCon + itemRarity.amuletCon + itemRarity.trinketCon;
+    newAttributes.totalStrength = newAttributes.rawStrength + itemRarity.weaponStr + (newAttributes.rawStrength > 50 ? itemRarity.weaponTwoStr : 0) + itemRarity.shieldStr + itemRarity.helmStr + itemRarity.chestStr + itemRarity.legsStr + itemRarity.ringOneStr + itemRarity.ringTwoStr + itemRarity.amuletStr + itemRarity.trinketStr;
+    newAttributes.totalAgility = newAttributes.rawAgility + itemRarity.weaponAgi + (newAttributes.rawAgility > 50 ? itemRarity.weaponTwoAgi : 0) + itemRarity.shieldAgi + itemRarity.helmAgi + itemRarity.chestAgi + itemRarity.legsAgi + itemRarity.ringOneAgi + itemRarity.ringTwoAgi + itemRarity.amuletAgi + itemRarity.trinketAgi;
+    newAttributes.totalAchre = newAttributes.rawAchre + itemRarity.weaponAch + (newAttributes.rawAchre > 50 ? itemRarity.weaponTwoAch : 0) + itemRarity.shieldAch + itemRarity.helmAch + itemRarity.chestAch + itemRarity.legsAch + itemRarity.ringOneAch + itemRarity.ringTwoAch + itemRarity.amuletAch + itemRarity.trinketAch;
+    newAttributes.totalCaeren = newAttributes.rawCaeren + itemRarity.weaponCae + (newAttributes.rawCaeren > 50 ? itemRarity.weaponTwoCae : 0) + itemRarity.shieldCae + itemRarity.helmCae + itemRarity.chestCae + itemRarity.legsCae + itemRarity.ringOneCae + itemRarity.ringTwoCae + itemRarity.amuletCae + itemRarity.trinketCae;
+    newAttributes.totalKyosir = newAttributes.rawKyosir + itemRarity.weaponKyo + (newAttributes.rawKyosir > 50 ? itemRarity.weaponTwoKyo : 0) + itemRarity.shieldKyo + itemRarity.helmKyo + itemRarity.chestKyo + itemRarity.legsKyo + itemRarity.ringOneKyo + itemRarity.ringTwoKyo + itemRarity.amuletKyo + itemRarity.trinketKyo;
     
     newAttributes.totalStrength = Math.round(newAttributes.totalStrength);
     newAttributes.totalAgility = Math.round(newAttributes.totalAgility);
@@ -477,25 +528,25 @@ const attributeCompiler = (ascean: Ascean, rarities: { helmet: number; chest: nu
     newAttributes.healthTotal = 40 + ((newAttributes.totalConstitution * ascean.level) + ((newAttributes.constitutionMod + Math.round((newAttributes.caerenMod + newAttributes.strengthMod) / 2)) * ascean.level));
     newAttributes.initiative = 10 + (newAttributes.agilityMod + newAttributes.achreMod);
     newAttributes.stamina = 100 + (newAttributes.constitutionMod + newAttributes.strengthMod + newAttributes.agilityMod);
-    newAttributes.grace = (100 + (newAttributes.achreMod + newAttributes.caerenMod + newAttributes.kyosirMod)); // Future Idea Maybe
-    newAttributes.stamina *= (ascean.origin === "Quor'eite" ? 1.1 : (ascean.origin === "Li'ivi" || ascean.origin === "Notheo") ? 1.05 : 1);
-    newAttributes.grace *= (ascean.origin === "Fyers" ? 1.1 : (ascean.origin === "Li'ivi" || ascean.origin === "Nothos") ? 1.05 : 1);
+    newAttributes.grace = 100 + (newAttributes.achreMod + newAttributes.caerenMod + newAttributes.kyosirMod); // Future Idea Maybe
+    newAttributes.stamina *= (ascean.origin === RACE.QUOREITE ? 1.1 : (ascean.origin === RACE.LIIVI || ascean.origin === RACE.NOTHEO) ? 1.05 : 1);
+    newAttributes.grace *= (ascean.origin === RACE.FYERS ? 1.1 : (ascean.origin === RACE.LIIVI || ascean.origin === RACE.NOTHOS) ? 1.05 : 1);
     return newAttributes;
 };
 
 function originCompiler(weapon: any, ascean: Ascean): Equipment {
     switch (ascean.origin) {
-        case "Ashtre":
+        case RACE.ASHTRE:
             weapon.criticalChance += 5;
             weapon.physicalDamage *= 1.05;
             weapon.criticalDamage *= 1.05;
             break;
-        case "Fyers":
+        case RACE.FYERS:
             weapon.magicalPenetration += 5;
             weapon.physicalPenetration += 5;
             weapon.roll += 5;
             break;
-        case "Li'ivi":
+        case RACE.LIIVI:
             weapon.magicalPenetration += 2;
             weapon.physicalPenetration += 2;
             weapon.magicalDamage *= 1.02;
@@ -505,20 +556,20 @@ function originCompiler(weapon: any, ascean: Ascean): Equipment {
             weapon.dodge -= 2;
             weapon.roll += 2;
             break;
-        case "Notheo":
+        case RACE.NOTHEO:
             weapon.physicalDamage *= 1.05;
             weapon.physicalPenetration += 5;
             break;
-        case "Nothos":
+        case RACE.NOTHOS:
             weapon.magicalPenetration += 5;
             weapon.magicalDamage *= 1.05;
             break;
-        case "Quor'eite":
+        case RACE.QUOREITE:
             weapon.dodge -= 5;
             weapon.roll += 5;
             weapon.criticalChance += 5;
             break;
-        case "Sedyreal":
+        case RACE.SEDYREAL:
             weapon.criticalDamage *= 1.05;
             break;
     };
@@ -791,12 +842,12 @@ const asceanCompiler = (ascean: any): Compiler | undefined => {
         const rollModifier = Math.round((ascean.shield.roll * rarities.shield) + (ascean.helmet.roll * rarities.helmet) + (ascean.chest.roll * rarities.chest) + (ascean.legs.roll * rarities.legs) + 
             (ascean.ringOne.roll * rarities.ringOne) + (ascean.ringTwo.roll * rarities.ringTwo) + (ascean.amulet.roll * rarities.amulet) + (ascean.trinket.roll * rarities.trinket) + 
             Math.round(((attributes.agilityMod + attributes.achreMod) / 4))); // Was 3
-        const originPhysPenMod = (ascean.origin === 'Fyers' || ascean.origin === 'Notheo' ? 5 : 0)
-        const originMagPenMod = (ascean.origin === 'Fyers' || ascean.origin === 'Nothos' ? 5 : 0)
+        const originPhysPenMod = (ascean.origin === RACE.FYERS || ascean.origin === RACE.NOTHEO ? 5 : 0)
+        const originMagPenMod = (ascean.origin === RACE.FYERS || ascean.origin === RACE.NOTHOS ? 5 : 0)
         const physicalPenetration = (ascean.ringOne.physicalPenetration * rarities.ringOne) + (ascean.ringTwo.physicalPenetration * rarities.ringTwo) + (ascean.amulet.physicalPenetration * rarities.amulet) + (ascean.trinket.physicalPenetration * rarities.trinket) + originPhysPenMod;
         const magicalPenetration = (ascean.ringOne.magicalPenetration * rarities.ringOne) + (ascean.ringTwo.magicalPenetration * rarities.ringTwo) + (ascean.amulet.magicalPenetration * rarities.amulet) + (ascean.trinket.magicalPenetration * rarities.trinket) + originMagPenMod;
-        const originPhysDefMod = (ascean.origin === 'Sedyreal' || ascean.origin === 'Nothos' ? 5 : 0);
-        const originMagDefMod = (ascean.origin === 'Sedyreal' || ascean.origin === 'Notheo' ? 5 : 0);
+        const originPhysDefMod = (ascean.origin === RACE.SEDYREAL || ascean.origin === RACE.NOTHOS ? 5 : 0);
+        const originMagDefMod = (ascean.origin === RACE.SEDYREAL || ascean.origin === RACE.NOTHEO ? 5 : 0);
         const physicalDefenseModifier = Math.round((ascean.helmet.physicalResistance * rarities.helmet) + (ascean.chest.physicalResistance * rarities.chest) + (ascean.legs.physicalResistance * rarities.legs) + 
             (ascean.ringOne.physicalResistance * rarities.ringOne) + (ascean.ringTwo.physicalResistance * rarities.ringTwo) + (ascean.amulet.physicalResistance * rarities.amulet) + (ascean.trinket.physicalResistance * rarities.trinket) + 
             Math.round(((attributes.constitutionMod + attributes.strengthMod + attributes.kyosirMod) / 8)) + originPhysDefMod);

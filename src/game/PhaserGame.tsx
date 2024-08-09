@@ -36,7 +36,7 @@ export interface IRefPhaserGame {
 
 interface IProps {
     currentActiveScene?: (sceneInstance: Phaser.Scene) => void;
-    ref?: (instance: IRefPhaserGame) => void; // Optional ref callback prop
+    ref?: (instance: IRefPhaserGame) => void;
     menu: any;
     setMenu: (menu: Menu) => void;
     ascean: Accessor<Ascean>;
@@ -659,11 +659,11 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('preload-ascean', createUi)
         EventBus.on('set-player', setPlayer);
         EventBus.on('add-item', (e: Equipment[]) => {
-            const clean = [...game().inventory.inventory];
-            const newInv = clean.length > 0 ? [...clean, ...e] : e;
-            const inventory = { ...game().inventory, inventory: newInv };
-            setGame({ ...game(), inventory });
-            EventBus.emit('update-inventory', inventory);
+            const inv = [...game().inventory.inventory];
+            const inventory = inv.length > 0 ? [...inv, ...e] : e;
+            const clean = { ...game().inventory, inventory };
+            setGame({ ...game(), inventory: clean });
+            EventBus.emit('update-inventory', clean);
         });
         EventBus.on('upgrade-item', (data: any) => upgradeItem(data));
         EventBus.on('clear-enemy', () => {

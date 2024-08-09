@@ -22,14 +22,16 @@ export const updateAscean = async (ascean: any) => await db.collection(ASCEANS).
 export const deleteAscean = async (id: string) => {
     const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
     const equipment = [ascean.weaponOne, ascean.weaponTwo, ascean.weaponThree, ascean.shield, ascean.helmet, ascean.chest, ascean.legs, ascean.ringOne, ascean.ringTwo, ascean.amulet, ascean.trinket];
-    const inventory = await getInventoryIds(id);
+    const items = await getInventoryIds(id);
     equipment.forEach(async (item: string) => await db.collection(EQUIPMENT).doc({ _id: item }).delete());
-    inventory.forEach(async (item: string) => await db.collection(EQUIPMENT).doc({ _id: item }).delete());
+    items.forEach(async (item: string) => await db.collection(EQUIPMENT).doc({ _id: item }).delete());
     await db.collection(ASCEANS).doc({ _id: id }).delete();
     const reputation = await db.collection(REPUTATION).doc({ _id: id }).get();
     if (reputation) await db.collection(REPUTATION).doc({ _id: id }).delete();
     const settings = await db.collection(SETTINGS).doc({ _id: id }).get();
     if (settings) await db.collection(SETTINGS).doc({ _id: id }).delete();
+    const inventory = await db.collection(INVENTORY).doc({ _id: id }).get();
+    if (inventory) await db.collection(INVENTORY).doc({ _id: id }).delete();
 };
 
 export const blessAscean = async (id: string, entry: any): Promise<any> => {
@@ -193,8 +195,8 @@ export const getInventoryIds = async (id: string) => {
 };
 
 export const updateInventory = async (inventory: Inventory) => {
-    const inv = inventory.inventory.map((item: Equipment) => item._id);
-    const clean = { ...inventory, inventory: inv };
+    const cleanInventory = inventory.inventory.filter((item: Equipment | undefined) => item && item._id !== '').map((item: Equipment) => item._id);
+    const clean = { ...inventory, inventory: cleanInventory };
     const res = await db.collection(INVENTORY).doc({ _id: inventory._id }).update(clean);
     return res;
 };

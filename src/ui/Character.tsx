@@ -756,7 +756,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                     </div>
                 ) : settings().asceanViews === VIEWS.INVENTORY ? ( 
                     <Suspense fallback={<Puff color="gold"/>}>
-                        <InventoryPouch ascean={ascean} setRingCompared={setRingCompared} highlighted={highlighted} setHighlighted={setHighlighted} setInventoryType={setInventoryType} inventoryType={inventoryType} setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} scaleImage={scaleImage} setScaleImage={setScaleImage} />
+                        <InventoryPouch ascean={ascean} setRingCompared={setRingCompared} highlighted={highlighted} setHighlighted={setHighlighted} setInventoryType={setInventoryType} setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} />
                     </Suspense>
                 ) : settings().asceanViews === VIEWS.SETTINGS ? (
                     <div style={{ 'scrollbar-width': "none", overflow: 'scroll' }}> 

@@ -19,8 +19,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 1,
         imgUrl: '../assets/images/kyrna-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: "Li'kyr Hood",
         type: 'Leather-Cloth',
@@ -40,8 +39,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 1,
         imgUrl: '../assets/images/kyrna-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: "Li'kyr Hood",
         type: 'Leather-Cloth',
@@ -61,8 +59,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 2,
         imgUrl: '../assets/images/kyrna-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: "Li'kyr Hood",
         type: 'Leather-Cloth',
@@ -82,8 +79,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 3,
         imgUrl: '../assets/images/kyrna-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: "Li'kyr Hood",
         type: 'Leather-Cloth',
@@ -103,8 +99,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 7,
         imgUrl: '../assets/images/kyrna-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Helm',
         type: 'Leather-Mail',
@@ -124,8 +119,7 @@ export const Helmets = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Helm',
         type: 'Leather-Mail',
@@ -145,8 +139,7 @@ export const Helmets = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Helm',
         type: 'Leather-Mail',
@@ -166,8 +159,7 @@ export const Helmets = [
         caeren: 3,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Helm',
         type: 'Leather-Mail',
@@ -187,8 +179,7 @@ export const Helmets = [
         caeren: 5,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Helm',
         type: 'Leather-Mail',
@@ -208,8 +199,7 @@ export const Helmets = [
         caeren: 9,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Helm',
         type: 'Plate-Mail',
@@ -229,8 +219,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/sedyrus-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Helm',
         type: 'Plate-Mail',
@@ -250,8 +239,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/sedyrus-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Helm',
         type: 'Plate-Mail',
@@ -271,8 +259,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 2,
         imgUrl: '../assets/images/sedyrus-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Helm',
         type: 'Plate-Mail',
@@ -292,8 +279,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 2,
         imgUrl: '../assets/images/sedyrus-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Helm',
         type: 'Plate-Mail',
@@ -313,8 +299,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 4,
         imgUrl: '../assets/images/sedyrus-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Helm",
         type: 'Plate-Mail',
@@ -334,8 +319,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Helm',
         type: 'Plate-Mail',
@@ -355,8 +339,7 @@ export const Helmets = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/daethic-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Helm',
         type: 'Leather-Mail',
@@ -376,8 +359,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Helm',
         type: 'Leather-Mail',
@@ -397,8 +379,7 @@ export const Helmets = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/legion-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Helm',
         type: 'Plate-Mail',
@@ -418,8 +399,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Helm',
         type: 'Chain-Mail',
@@ -439,8 +419,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Helm',
         type: 'Chain-Mail',
@@ -460,8 +439,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fang-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Helm',
         type: 'Plate-Mail',
@@ -481,8 +459,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Helm",
         type: 'Leather-Mail',
@@ -502,8 +479,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Helm',
         type: 'Plate-Mail',
@@ -523,8 +499,7 @@ export const Helmets = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Helm',
         type: 'Leather-Mail',
@@ -565,8 +540,7 @@ export const Helmets = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Hood',
         type: 'Leather-Cloth',
@@ -586,8 +560,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/astral-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Hood',
         type: 'Leather-Cloth',
@@ -607,8 +580,7 @@ export const Helmets = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/dae-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Hood',
         type: 'Leather-Cloth',
@@ -628,8 +600,7 @@ export const Helmets = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/sage-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Hood",
         type: 'Leather-Cloth',
@@ -649,8 +620,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/earth-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Helm",
         type: 'Plate-Mail',
@@ -670,8 +640,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Helm',
         type: 'Plate-Mail',
@@ -691,8 +660,7 @@ export const Helmets = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/daethic-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Helm',
         type: 'Leather-Mail',
@@ -712,8 +680,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Helm',
         type: 'Leather-Mail',
@@ -733,8 +700,7 @@ export const Helmets = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/legion-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Helm',
         type: 'Plate-Mail',
@@ -754,8 +720,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Helm',
         type: 'Chain-Mail',
@@ -775,8 +740,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Helm',
         type: 'Chain-Mail',
@@ -796,8 +760,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fang-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Helm',
         type: 'Plate-Mail',
@@ -817,8 +780,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Helm",
         type: 'Leather-Mail',
@@ -838,8 +800,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Helm',
         type: 'Plate-Mail',
@@ -859,8 +820,7 @@ export const Helmets = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Helm',
         type: 'Leather-Mail',
@@ -901,8 +861,7 @@ export const Helmets = [
         caeren: 3,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Hood',
         type: 'Leather-Cloth',
@@ -922,8 +881,7 @@ export const Helmets = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/astral-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Hood',
         type: 'Leather-Cloth',
@@ -943,8 +901,7 @@ export const Helmets = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/dae-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Hood',
         type: 'Leather-Cloth',
@@ -964,8 +921,7 @@ export const Helmets = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/sage-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Hood",
         type: 'Leather-Cloth',
@@ -985,8 +941,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/earth-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Helm",
         type: 'Plate-Mail',
@@ -1006,8 +961,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Helm',
         type: 'Plate-Mail',
@@ -1027,8 +981,7 @@ export const Helmets = [
         caeren: 3,
         kyosir: 0,
         imgUrl: '../assets/images/daethic-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Helm',
         type: 'Leather-Mail',
@@ -1048,8 +1001,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Helm',
         type: 'Leather-Mail',
@@ -1069,8 +1021,7 @@ export const Helmets = [
         caeren: 2,
         kyosir: 2,
         imgUrl: '../assets/images/legion-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Helm',
         type: 'Plate-Mail',
@@ -1090,8 +1041,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Helm',
         type: 'Chain-Mail',
@@ -1111,8 +1061,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Helm',
         type: 'Chain-Mail',
@@ -1132,8 +1081,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fang-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Helm',
         type: 'Plate-Mail',
@@ -1153,8 +1101,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Helm",
         type: 'Leather-Mail',
@@ -1174,8 +1121,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Helm',
         type: 'Plate-Mail',
@@ -1195,8 +1141,7 @@ export const Helmets = [
         caeren: 3,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Helm',
         type: 'Leather-Mail',
@@ -1237,8 +1182,7 @@ export const Helmets = [
         caeren: 4,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Hood',
         type: 'Leather-Cloth',
@@ -1258,8 +1202,7 @@ export const Helmets = [
         caeren: 2,
         kyosir: 2,
         imgUrl: '../assets/images/astral-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Hood',
         type: 'Leather-Cloth',
@@ -1279,8 +1222,7 @@ export const Helmets = [
         caeren: 2,
         kyosir: 2,
         imgUrl: '../assets/images/dae-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Hood',
         type: 'Leather-Cloth',
@@ -1300,8 +1242,7 @@ export const Helmets = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/sage-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Hood",
         type: 'Leather-Cloth',
@@ -1321,8 +1262,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/earth-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Helm",
         type: 'Plate-Mail',
@@ -1342,8 +1282,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Helm',
         type: 'Plate-Mail',
@@ -1363,8 +1302,7 @@ export const Helmets = [
         caeren: 5,
         kyosir: 4,
         imgUrl: '../assets/images/daethic-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Helm',
         type: 'Leather-Mail',
@@ -1384,8 +1322,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Helm',
         type: 'Leather-Mail',
@@ -1405,8 +1342,7 @@ export const Helmets = [
         caeren: 5,
         kyosir: 4,
         imgUrl: '../assets/images/legion-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Helm',
         type: 'Plate-Mail',
@@ -1426,8 +1362,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Helm',
         type: 'Chain-Mail',
@@ -1447,8 +1382,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Helm',
         type: 'Chain-Mail',
@@ -1468,8 +1402,7 @@ export const Helmets = [
         caeren: 4,
         kyosir: 0,
         imgUrl: '../assets/images/fang-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Helm',
         type: 'Plate-Mail',
@@ -1489,8 +1422,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Helm",
         type: 'Leather-Mail',
@@ -1510,8 +1442,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Helm',
         type: 'Plate-Mail',
@@ -1531,8 +1462,7 @@ export const Helmets = [
         caeren: 6,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Helm',
         type: 'Leather-Mail',
@@ -1573,8 +1503,7 @@ export const Helmets = [
         caeren: 8,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Hood',
         type: 'Leather-Cloth',
@@ -1594,8 +1523,7 @@ export const Helmets = [
         caeren: 4,
         kyosir: 4,
         imgUrl: '../assets/images/astral-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Hood',
         type: 'Leather-Cloth',
@@ -1615,8 +1543,7 @@ export const Helmets = [
         caeren: 4,
         kyosir: 4,
         imgUrl: '../assets/images/dae-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Hood',
         type: 'Leather-Cloth',
@@ -1636,8 +1563,7 @@ export const Helmets = [
         caeren: 6,
         kyosir: 0,
         imgUrl: '../assets/images/sage-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Hood",
         type: 'Leather-Cloth',
@@ -1657,8 +1583,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/earth-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Helm",
         type: 'Plate-Mail',
@@ -1678,8 +1603,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Helm',
         type: 'Plate-Mail',
@@ -1699,8 +1623,7 @@ export const Helmets = [
         caeren: 16,
         kyosir: 16,
         imgUrl: '../assets/images/daethic-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Helm',
         type: 'Leather-Mail',
@@ -1720,8 +1643,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Helm',
         type: 'Leather-Mail',
@@ -1741,8 +1663,7 @@ export const Helmets = [
         caeren: 16,
         kyosir: 16,
         imgUrl: '../assets/images/legion-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Helm',
         type: 'Plate-Mail',
@@ -1762,8 +1683,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Helm',
         type: 'Chain-Mail',
@@ -1783,8 +1703,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Helm',
         type: 'Chain-Mail',
@@ -1804,8 +1723,7 @@ export const Helmets = [
         caeren: 16,
         kyosir: 0,
         imgUrl: '../assets/images/fang-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Helm',
         type: 'Plate-Mail',
@@ -1825,8 +1743,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Helm",
         type: 'Leather-Mail',
@@ -1846,8 +1763,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Helm',
         type: 'Plate-Mail',
@@ -1867,8 +1783,7 @@ export const Helmets = [
         caeren: 20,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Helm',
         type: 'Leather-Mail',
@@ -1909,8 +1824,7 @@ export const Helmets = [
         caeren: 28,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Hood',
         type: 'Leather-Cloth',
@@ -1930,8 +1844,7 @@ export const Helmets = [
         caeren: 16,
         kyosir: 16,
         imgUrl: '../assets/images/astral-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Hood',
         type: 'Leather-Cloth',
@@ -1951,8 +1864,7 @@ export const Helmets = [
         caeren: 16,
         kyosir: 16,
         imgUrl: '../assets/images/dae-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Hood',
         type: 'Leather-Cloth',
@@ -1972,8 +1884,7 @@ export const Helmets = [
         caeren: 20,
         kyosir: 0,
         imgUrl: '../assets/images/sage-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Hood",
         type: 'Leather-Cloth',
@@ -1993,8 +1904,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/earth-hood.png'
-    },
-    {
+    },{
         _id: '',
         name: "Plate Helm (Starter)",
         type: 'Plate-Mail',
@@ -2014,8 +1924,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/default-plate-mail-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: "Chain Helm (Starter)",
         type: 'Chain-Mail',
@@ -2035,8 +1944,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/default-chain-mail-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: "Leather Helm (Starter)",
         type: 'Leather-Mail',
@@ -2056,8 +1964,7 @@ export const Helmets = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/default-leather-mail-helm.png'
-    },
-    {
+    },{
         _id: '',
         name: "Cloth Helm (Starter)",
         type: 'Leather-Cloth',
@@ -2078,111 +1985,6 @@ export const Helmets = [
         kyosir: 0,
         imgUrl: '../assets/images/default-leather-cloth-helm.png'
     },
-    // {
-    //     _id: '',
-    //     name: 'Occult Mask',
-    //     type: 'Leather-Mail',
-    //     rarity: 'Common',
-    //     physicalDamage: 1,
-    //     magicalDamage: 1,
-    //     physicalResistance: 5,
-    //     magicalResistance: 7.5,
-    //     criticalChance: 0,
-    //     criticalDamage: 1,
-    //     dodge: 3,
-    //     roll: 3,
-    //     constitution: 0,
-    //     strength: 0,
-    //     agility: 0,
-    //     achre: 1,
-    //     caeren: 1,
-    //     kyosir: 0,
-    //     imgUrl: '../assets/images/occult-helm.png'
-    // }, 
-    // {
-    //     _id: '',
-    //     name: 'Occult Mask',
-    //     type: 'Leather-Mail',
-    //     rarity: 'Uncommon',
-    //     physicalDamage: 1,
-    //     magicalDamage: 1,
-    //     physicalResistance: 7.5,
-    //     magicalResistance: 10,
-    //     criticalChance: 1,
-    //     criticalDamage: 1.02,
-    //     dodge: 3,
-    //     roll: 3,
-    //     constitution: 0,
-    //     strength: 0,
-    //     agility: 0,
-    //     achre: 3,
-    //     caeren: 3,
-    //     kyosir: 0,
-    //     imgUrl: '../assets/images/occult-helm.png'
-    // }, 
-    // {
-    //     _id: '',
-    //     name: 'Occult Mask',
-    //     type: 'Leather-Mail',
-    //     rarity: 'Rare',
-    //     physicalDamage: 1,
-    //     magicalDamage: 1,
-    //     physicalResistance: 10,
-    //     magicalResistance: 12.5,
-    //     criticalChance: 2,
-    //     criticalDamage: 1.04,
-    //     dodge: 3,
-    //     roll: 3,
-    //     constitution: 3,
-    //     strength: 0,
-    //     agility: 0,
-    //     achre: 5,
-    //     caeren: 5,
-    //     kyosir: 0,
-    //     imgUrl: '../assets/images/occult-helm.png'
-    // }, 
-    // {
-    //     _id: '',
-    //     name: 'Occult Mask',
-    //     type: 'Leather-Mail',
-    //     rarity: 'Epic',
-    //     physicalDamage: 1,
-    //     magicalDamage: 1,
-    //     physicalResistance: 12.5,
-    //     magicalResistance: 15,
-    //     criticalChance: 4,
-    //     criticalDamage: 1.07,
-    //     dodge: 3,
-    //     roll: 3,
-    //     constitution: 4,
-    //     strength: 0,
-    //     agility: 4,
-    //     achre: 6,
-    //     caeren: 6,
-    //     kyosir: 0,
-    //     imgUrl: '../assets/images/occult-helm.png'
-    // }, 
-    // {
-    //     _id: '',
-    //     name: 'Occult Mask',
-    //     type: 'Leather-Mail',
-    //     rarity: 'Legendary',
-    //     physicalDamage: 1,
-    //     magicalDamage: 1,
-    //     physicalResistance: 17.5,
-    //     magicalResistance: 20,
-    //     criticalChance: 8,
-    //     criticalDamage: 1.1,
-    //     dodge: 3,
-    //     roll: 3,
-    //     constitution: 6,
-    //     strength: 0,
-    //     agility: 6,
-    //     achre: 10,
-    //     caeren: 10,
-    //     kyosir: 0,
-    //     imgUrl: '../assets/images/occult-helm.png'
-    // }, 
 ];
 
 export const Chests = [
@@ -2206,8 +2008,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 1,
         imgUrl: '../assets/images/kyrna-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: "Li'kyr Robes",
         type: 'Leather-Cloth',
@@ -2227,8 +2028,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 1,
         imgUrl: '../assets/images/kyrna-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: "Li'kyr Robes",
         type: 'Leather-Cloth',
@@ -2248,8 +2048,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 2,
         imgUrl: '../assets/images/kyrna-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: "Li'kyr Robes",
         type: 'Leather-Cloth',
@@ -2269,8 +2068,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 6,
         imgUrl: '../assets/images/kyrna-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: "Li'kyr Robes",
         type: 'Leather-Cloth',
@@ -2290,8 +2088,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 20,
         imgUrl: '../assets/images/kyrna-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Armor',
         type: 'Leather-Mail',
@@ -2311,8 +2108,7 @@ export const Chests = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Armor',
         type: 'Leather-Mail',
@@ -2332,8 +2128,7 @@ export const Chests = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Armor',
         type: 'Leather-Mail',
@@ -2353,8 +2148,7 @@ export const Chests = [
         caeren: 3,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Armor',
         type: 'Leather-Mail',
@@ -2374,8 +2168,7 @@ export const Chests = [
         caeren: 6,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Armor',
         type: 'Leather-Mail',
@@ -2395,8 +2188,7 @@ export const Chests = [
         caeren: 20,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Armor',
         type: 'Plate-Mail',
@@ -2416,8 +2208,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/sedyrus-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Armor',
         type: 'Plate-Mail',
@@ -2437,8 +2228,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/sedyrus-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Armor',
         type: 'Plate-Mail',
@@ -2458,8 +2248,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 2,
         imgUrl: '../assets/images/sedyrus-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Armor',
         type: 'Plate-Mail',
@@ -2479,8 +2268,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 2,
         imgUrl: '../assets/images/sedyrus-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Armor',
         type: 'Plate-Mail',
@@ -2500,8 +2288,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 16,
         imgUrl: '../assets/images/sedyrus-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: "Plate Cuirass (Starter)",
         type: 'Plate-Mail',
@@ -2521,8 +2308,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/default-plate-mail-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: "Chain Armor (Starter)",
         type: 'Chain-Mail',
@@ -2542,8 +2328,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/default-chain-mail-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: "Leather Brigandine (Starter)",
         type: 'Leather-Mail',
@@ -2563,8 +2348,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/default-leather-mail-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: "Cloth Robes (Starter)",
         type: 'Leather-Cloth',
@@ -2584,8 +2368,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/default-leather-cloth-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Cuirass",
         type: 'Plate-Mail',
@@ -2605,8 +2388,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Cuirass',
         type: 'Plate-Mail',
@@ -2626,8 +2408,7 @@ export const Chests = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/daethic-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Armor',
         type: 'Leather-Mail',
@@ -2647,8 +2428,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Cuirass',
         type: 'Leather-Mail',
@@ -2668,8 +2448,7 @@ export const Chests = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/legion-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Armor',
         type: 'Plate-Mail',
@@ -2689,8 +2468,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Cuirass',
         type: 'Chain-Mail',
@@ -2710,8 +2488,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Armor',
         type: 'Chain-Mail',
@@ -2731,8 +2508,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fang-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Cuirass',
         type: 'Plate-Mail',
@@ -2752,8 +2528,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Armor",
         type: 'Leather-Mail',
@@ -2773,8 +2548,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Cuirass',
         type: 'Plate-Mail',
@@ -2794,8 +2568,7 @@ export const Chests = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Armor',
         type: 'Leather-Mail',
@@ -2836,8 +2609,7 @@ export const Chests = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Robes',
         type: 'Leather-Cloth',
@@ -2857,8 +2629,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/astral-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Robes',
         type: 'Leather-Cloth',
@@ -2878,8 +2649,7 @@ export const Chests = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/dae-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Robes',
         type: 'Leather-Cloth',
@@ -2899,8 +2669,7 @@ export const Chests = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/sage-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Robes",
         type: 'Leather-Cloth',
@@ -2920,8 +2689,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/earth-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Cuirass",
         type: 'Plate-Mail',
@@ -2941,8 +2709,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Cuirass',
         type: 'Plate-Mail',
@@ -2962,8 +2729,7 @@ export const Chests = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/daethic-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Armor',
         type: 'Leather-Mail',
@@ -2983,8 +2749,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Cuirass',
         type: 'Leather-Mail',
@@ -3004,8 +2769,7 @@ export const Chests = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/legion-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Armor',
         type: 'Plate-Mail',
@@ -3025,8 +2789,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Cuirass',
         type: 'Chain-Mail',
@@ -3046,8 +2809,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Armor',
         type: 'Chain-Mail',
@@ -3067,8 +2829,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fang-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Cuirass',
         type: 'Plate-Mail',
@@ -3088,8 +2849,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Armor",
         type: 'Leather-Mail',
@@ -3109,8 +2869,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Cuirass',
         type: 'Plate-Mail',
@@ -3130,8 +2889,7 @@ export const Chests = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Armor',
         type: 'Leather-Mail',
@@ -3172,8 +2930,7 @@ export const Chests = [
         caeren: 3,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Robes',
         type: 'Leather-Cloth',
@@ -3193,8 +2950,7 @@ export const Chests = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/astral-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Robes',
         type: 'Leather-Cloth',
@@ -3214,8 +2970,7 @@ export const Chests = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/dae-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Robes',
         type: 'Leather-Cloth',
@@ -3235,8 +2990,7 @@ export const Chests = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/sage-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Robes",
         type: 'Leather-Cloth',
@@ -3256,8 +3010,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/earth-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Cuirass",
         type: 'Plate-Mail',
@@ -3277,8 +3030,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Cuirass',
         type: 'Plate-Mail',
@@ -3298,8 +3050,7 @@ export const Chests = [
         caeren: 3,
         kyosir: 0,
         imgUrl: '../assets/images/daethic-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Armor',
         type: 'Leather-Mail',
@@ -3319,8 +3070,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Cuirass',
         type: 'Leather-Mail',
@@ -3340,8 +3090,7 @@ export const Chests = [
         caeren: 2,
         kyosir: 2,
         imgUrl: '../assets/images/legion-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Armor',
         type: 'Plate-Mail',
@@ -3361,8 +3110,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Cuirass',
         type: 'Chain-Mail',
@@ -3382,8 +3130,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Armor',
         type: 'Chain-Mail',
@@ -3403,8 +3150,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fang-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Cuirass',
         type: 'Plate-Mail',
@@ -3424,8 +3170,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Armor",
         type: 'Leather-Mail',
@@ -3445,8 +3190,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Cuirass',
         type: 'Plate-Mail',
@@ -3466,8 +3210,7 @@ export const Chests = [
         caeren: 3,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Armor',
         type: 'Leather-Mail',
@@ -3508,8 +3251,7 @@ export const Chests = [
         caeren: 4,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Robes',
         type: 'Leather-Cloth',
@@ -3529,8 +3271,7 @@ export const Chests = [
         caeren: 2,
         kyosir: 2,
         imgUrl: '../assets/images/astral-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Robes',
         type: 'Leather-Cloth',
@@ -3550,8 +3291,7 @@ export const Chests = [
         caeren: 2,
         kyosir: 2,
         imgUrl: '../assets/images/dae-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Robes',
         type: 'Leather-Cloth',
@@ -3571,8 +3311,7 @@ export const Chests = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/sage-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Robes",
         type: 'Leather-Cloth',
@@ -3592,8 +3331,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/earth-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Cuirass",
         type: 'Plate-Mail',
@@ -3613,8 +3351,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Cuirass',
         type: 'Plate-Mail',
@@ -3634,8 +3371,7 @@ export const Chests = [
         caeren: 5,
         kyosir: 4,
         imgUrl: '../assets/images/daethic-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Armor',
         type: 'Leather-Mail',
@@ -3655,8 +3391,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Cuirass',
         type: 'Leather-Mail',
@@ -3676,8 +3411,7 @@ export const Chests = [
         caeren: 5,
         kyosir: 4,
         imgUrl: '../assets/images/legion-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Armor',
         type: 'Plate-Mail',
@@ -3697,8 +3431,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Cuirass',
         type: 'Chain-Mail',
@@ -3718,8 +3451,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Armor',
         type: 'Chain-Mail',
@@ -3739,8 +3471,7 @@ export const Chests = [
         caeren: 4,
         kyosir: 0,
         imgUrl: '../assets/images/fang-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Cuirass',
         type: 'Plate-Mail',
@@ -3760,8 +3491,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Armor",
         type: 'Leather-Mail',
@@ -3781,8 +3511,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Cuirass',
         type: 'Plate-Mail',
@@ -3802,8 +3531,7 @@ export const Chests = [
         caeren: 6,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Armor',
         type: 'Leather-Mail',
@@ -3844,8 +3572,7 @@ export const Chests = [
         caeren: 8,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Robes',
         type: 'Leather-Cloth',
@@ -3865,8 +3592,7 @@ export const Chests = [
         caeren: 4,
         kyosir: 4,
         imgUrl: '../assets/images/astral-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Robes',
         type: 'Leather-Cloth',
@@ -3886,8 +3612,7 @@ export const Chests = [
         caeren: 4,
         kyosir: 4,
         imgUrl: '../assets/images/dae-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Robes',
         type: 'Leather-Cloth',
@@ -3907,8 +3632,7 @@ export const Chests = [
         caeren: 6,
         kyosir: 0,
         imgUrl: '../assets/images/sage-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Robes",
         type: 'Leather-Cloth',
@@ -3928,8 +3652,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/earth-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Cuirass",
         type: 'Plate-Mail',
@@ -3949,8 +3672,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Cuirass',
         type: 'Plate-Mail',
@@ -3970,8 +3692,7 @@ export const Chests = [
         caeren: 16,
         kyosir: 16,
         imgUrl: '../assets/images/daethic-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Armor',
         type: 'Leather-Mail',
@@ -3991,8 +3712,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Cuirass',
         type: 'Leather-Mail',
@@ -4012,8 +3732,7 @@ export const Chests = [
         caeren: 16,
         kyosir: 16,
         imgUrl: '../assets/images/legion-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Armor',
         type: 'Plate-Mail',
@@ -4033,8 +3752,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Cuirass',
         type: 'Chain-Mail',
@@ -4054,8 +3772,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Armor',
         type: 'Chain-Mail',
@@ -4075,8 +3792,7 @@ export const Chests = [
         caeren: 16,
         kyosir: 0,
         imgUrl: '../assets/images/fang-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Cuirass',
         type: 'Plate-Mail',
@@ -4096,8 +3812,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Armor",
         type: 'Leather-Mail',
@@ -4117,8 +3832,7 @@ export const Chests = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Cuirass',
         type: 'Plate-Mail',
@@ -4138,8 +3852,7 @@ export const Chests = [
         caeren: 20,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-armor.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Armor',
         type: 'Leather-Mail',
@@ -4180,8 +3893,7 @@ export const Chests = [
         caeren: 28,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Robes',
         type: 'Leather-Cloth',
@@ -4201,8 +3913,7 @@ export const Chests = [
         caeren: 16,
         kyosir: 16,
         imgUrl: '../assets/images/astral-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Robes',
         type: 'Leather-Cloth',
@@ -4222,8 +3933,7 @@ export const Chests = [
         caeren: 16,
         kyosir: 16,
         imgUrl: '../assets/images/dae-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Robes',
         type: 'Leather-Cloth',
@@ -4243,8 +3953,7 @@ export const Chests = [
         caeren: 20,
         kyosir: 0,
         imgUrl: '../assets/images/sage-robes.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Robes",
         type: 'Leather-Cloth',
@@ -4288,8 +3997,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 1,
         imgUrl: '../assets/images/kyrna-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Li'kyr Pants",
         type: 'Leather-Cloth',
@@ -4309,8 +4017,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 1,
         imgUrl: '../assets/images/kyrna-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Li'kyr Pants",
         type: 'Leather-Cloth',
@@ -4330,8 +4037,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 2,
         imgUrl: '../assets/images/kyrna-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Li'kyr Pants",
         type: 'Leather-Cloth',
@@ -4351,8 +4057,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 6,
         imgUrl: '../assets/images/kyrna-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Li'kyr Pants",
         type: 'Leather-Cloth',
@@ -4372,8 +4077,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 20,
         imgUrl: '../assets/images/kyrna-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Greaves',
         type: 'Leather-Mail',
@@ -4393,8 +4097,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Greaves',
         type: 'Leather-Mail',
@@ -4414,8 +4117,7 @@ export const Legs = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Greaves',
         type: 'Leather-Mail',
@@ -4435,8 +4137,7 @@ export const Legs = [
         caeren: 3,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Greaves',
         type: 'Leather-Mail',
@@ -4456,8 +4157,7 @@ export const Legs = [
         caeren: 6,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Cambiren Greaves',
         type: 'Leather-Mail',
@@ -4477,8 +4177,7 @@ export const Legs = [
         caeren: 20,
         kyosir: 0,
         imgUrl: '../assets/images/cambiren-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Greaves',
         type: 'Plate-Mail',
@@ -4498,8 +4197,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/sedyrus-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Greaves',
         type: 'Plate-Mail',
@@ -4519,8 +4217,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/sedyrus-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Greaves',
         type: 'Plate-Mail',
@@ -4540,8 +4237,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 2,
         imgUrl: '../assets/images/sedyrus-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Greaves',
         type: 'Plate-Mail',
@@ -4561,8 +4257,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 2,
         imgUrl: '../assets/images/sedyrus-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sedyrus Greaves',
         type: 'Plate-Mail',
@@ -4582,8 +4277,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 5,
         imgUrl: '../assets/images/sedyrus-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Plate Greaves (Starter)",
         type: 'Plate-Mail',
@@ -4603,8 +4297,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/default-plate-mail-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Chain Greaves (Starter)",
         type: 'Chain-Mail',
@@ -4624,8 +4317,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/default-chain-mail-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Leather Sandals (Starter)",
         type: 'Leather-Mail',
@@ -4645,8 +4337,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/default-leather-mail-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Cloth Skirt (Starter)",
         type: 'Leather-Cloth',
@@ -4666,8 +4357,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/default-leather-cloth-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Greaves",
         type: 'Plate-Mail',
@@ -4687,8 +4377,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Greaves',
         type: 'Plate-Mail',
@@ -4708,8 +4397,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/daethic-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Greaves',
         type: 'Leather-Mail',
@@ -4729,8 +4417,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Greaves',
         type: 'Leather-Mail',
@@ -4750,8 +4437,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/legion-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Greaves',
         type: 'Plate-Mail',
@@ -4771,8 +4457,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Greaves',
         type: 'Chain-Mail',
@@ -4792,8 +4477,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Greaves',
         type: 'Chain-Mail',
@@ -4813,8 +4497,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fang-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Greaves',
         type: 'Plate-Mail',
@@ -4834,8 +4517,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Greaves",
         type: 'Leather-Mail',
@@ -4855,8 +4537,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Greaves',
         type: 'Plate-Mail',
@@ -4876,8 +4557,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Greaves',
         type: 'Leather-Mail',
@@ -4918,8 +4598,7 @@ export const Legs = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Pants',
         type: 'Leather-Cloth',
@@ -4939,8 +4618,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/astral-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Pants',
         type: 'Leather-Cloth',
@@ -4960,8 +4638,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/dae-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Pants',
         type: 'Leather-Cloth',
@@ -4981,8 +4658,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/sage-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Pants",
         type: 'Leather-Cloth',
@@ -5002,8 +4678,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/earth-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Greaves",
         type: 'Plate-Mail',
@@ -5023,8 +4698,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Greaves',
         type: 'Plate-Mail',
@@ -5044,8 +4718,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/daethic-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Greaves',
         type: 'Leather-Mail',
@@ -5065,8 +4738,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Greaves',
         type: 'Leather-Mail',
@@ -5086,8 +4758,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/legion-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Greaves',
         type: 'Plate-Mail',
@@ -5107,8 +4778,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Greaves',
         type: 'Chain-Mail',
@@ -5128,8 +4798,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Greaves',
         type: 'Chain-Mail',
@@ -5149,8 +4818,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fang-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Greaves',
         type: 'Plate-Mail',
@@ -5170,8 +4838,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Greaves",
         type: 'Leather-Mail',
@@ -5191,8 +4858,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Greaves',
         type: 'Plate-Mail',
@@ -5212,8 +4878,7 @@ export const Legs = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Greaves',
         type: 'Leather-Mail',
@@ -5254,8 +4919,7 @@ export const Legs = [
         caeren: 3,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Pants',
         type: 'Leather-Cloth',
@@ -5275,8 +4939,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/astral-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Pants',
         type: 'Leather-Cloth',
@@ -5296,8 +4959,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/dae-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Pants',
         type: 'Leather-Cloth',
@@ -5317,8 +4979,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/sage-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Pants",
         type: 'Leather-Cloth',
@@ -5338,8 +4999,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/earth-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Greaves",
         type: 'Plate-Mail',
@@ -5359,8 +5019,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Greaves',
         type: 'Plate-Mail',
@@ -5380,8 +5039,7 @@ export const Legs = [
         caeren: 3,
         kyosir: 0,
         imgUrl: '../assets/images/daethic-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Greaves',
         type: 'Leather-Mail',
@@ -5401,8 +5059,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Greaves',
         type: 'Leather-Mail',
@@ -5422,8 +5079,7 @@ export const Legs = [
         caeren: 2,
         kyosir: 2,
         imgUrl: '../assets/images/legion-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Greaves',
         type: 'Plate-Mail',
@@ -5443,8 +5099,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Greaves',
         type: 'Chain-Mail',
@@ -5464,8 +5119,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Greaves',
         type: 'Chain-Mail',
@@ -5485,8 +5139,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fang-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Greaves',
         type: 'Plate-Mail',
@@ -5506,8 +5159,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Greaves",
         type: 'Leather-Mail',
@@ -5527,8 +5179,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Greaves',
         type: 'Plate-Mail',
@@ -5548,8 +5199,7 @@ export const Legs = [
         caeren: 3,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Greaves',
         type: 'Leather-Mail',
@@ -5590,8 +5240,7 @@ export const Legs = [
         caeren: 4,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Pants',
         type: 'Leather-Cloth',
@@ -5611,8 +5260,7 @@ export const Legs = [
         caeren: 2,
         kyosir: 2,
         imgUrl: '../assets/images/astral-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Pants',
         type: 'Leather-Cloth',
@@ -5632,8 +5280,7 @@ export const Legs = [
         caeren: 2,
         kyosir: 2,
         imgUrl: '../assets/images/dae-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Pants',
         type: 'Leather-Cloth',
@@ -5653,8 +5300,7 @@ export const Legs = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/sage-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Pants",
         type: 'Leather-Cloth',
@@ -5674,8 +5320,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/earth-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Greaves",
         type: 'Plate-Mail',
@@ -5695,8 +5340,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Greaves',
         type: 'Plate-Mail',
@@ -5716,8 +5360,7 @@ export const Legs = [
         caeren: 5,
         kyosir: 4,
         imgUrl: '../assets/images/daethic-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Greaves',
         type: 'Leather-Mail',
@@ -5737,8 +5380,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Greaves',
         type: 'Leather-Mail',
@@ -5758,8 +5400,7 @@ export const Legs = [
         caeren: 5,
         kyosir: 4,
         imgUrl: '../assets/images/legion-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Greaves',
         type: 'Plate-Mail',
@@ -5779,8 +5420,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Greaves',
         type: 'Chain-Mail',
@@ -5800,8 +5440,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Greaves',
         type: 'Chain-Mail',
@@ -5821,8 +5460,7 @@ export const Legs = [
         caeren: 4,
         kyosir: 0,
         imgUrl: '../assets/images/fang-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Greaves',
         type: 'Plate-Mail',
@@ -5842,8 +5480,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Greaves",
         type: 'Leather-Mail',
@@ -5863,8 +5500,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Greaves',
         type: 'Plate-Mail',
@@ -5884,8 +5520,7 @@ export const Legs = [
         caeren: 6,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Greaves',
         type: 'Leather-Mail',
@@ -5926,8 +5561,7 @@ export const Legs = [
         caeren: 8,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Pants',
         type: 'Leather-Cloth',
@@ -5947,8 +5581,7 @@ export const Legs = [
         caeren: 4,
         kyosir: 4,
         imgUrl: '../assets/images/astral-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Pants',
         type: 'Leather-Cloth',
@@ -5968,8 +5601,7 @@ export const Legs = [
         caeren: 4,
         kyosir: 4,
         imgUrl: '../assets/images/dae-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Pants',
         type: 'Leather-Cloth',
@@ -5989,8 +5621,7 @@ export const Legs = [
         caeren: 6,
         kyosir: 0,
         imgUrl: '../assets/images/sage-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Pants",
         type: 'Leather-Cloth',
@@ -6010,8 +5641,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/earth-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Greaves",
         type: 'Plate-Mail',
@@ -6031,8 +5661,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Greaves',
         type: 'Plate-Mail',
@@ -6052,8 +5681,7 @@ export const Legs = [
         caeren: 16,
         kyosir: 16,
         imgUrl: '../assets/images/daethic-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Greaves',
         type: 'Leather-Mail',
@@ -6073,8 +5701,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Greaves',
         type: 'Leather-Mail',
@@ -6094,8 +5721,7 @@ export const Legs = [
         caeren: 16,
         kyosir: 16,
         imgUrl: '../assets/images/legion-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Greaves',
         type: 'Plate-Mail',
@@ -6115,8 +5741,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Greaves',
         type: 'Chain-Mail',
@@ -6136,8 +5761,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Greaves',
         type: 'Chain-Mail',
@@ -6157,8 +5781,7 @@ export const Legs = [
         caeren: 16,
         kyosir: 0,
         imgUrl: '../assets/images/fang-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Greaves',
         type: 'Plate-Mail',
@@ -6178,8 +5801,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Greaves",
         type: 'Leather-Mail',
@@ -6199,8 +5821,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Greaves',
         type: 'Plate-Mail',
@@ -6220,8 +5841,7 @@ export const Legs = [
         caeren: 20,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Greaves',
         type: 'Leather-Mail',
@@ -6262,8 +5882,7 @@ export const Legs = [
         caeren: 28,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Pants',
         type: 'Leather-Cloth',
@@ -6283,8 +5902,7 @@ export const Legs = [
         caeren: 16,
         kyosir: 16,
         imgUrl: '../assets/images/astral-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Pants',
         type: 'Leather-Cloth',
@@ -6304,8 +5922,7 @@ export const Legs = [
         caeren: 16,
         kyosir: 16,
         imgUrl: '../assets/images/dae-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Pants',
         type: 'Leather-Cloth',
@@ -6325,8 +5942,7 @@ export const Legs = [
         caeren: 20,
         kyosir: 0,
         imgUrl: '../assets/images/sage-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Pants",
         type: 'Leather-Cloth',
@@ -6346,8 +5962,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/earth-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Knight's Greaves",
         type: 'Plate-Mail',
@@ -6367,8 +5982,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/knight-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Daethic Greaves',
         type: 'Plate-Mail',
@@ -6388,8 +6002,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/daethic-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Achreon Greaves',
         type: 'Leather-Mail',
@@ -6409,8 +6022,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/achreon-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Licivitan Greaves',
         type: 'Leather-Mail',
@@ -6430,8 +6042,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/legion-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Ashtre Greaves',
         type: 'Plate-Mail',
@@ -6451,8 +6062,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Chain-Knight Greaves',
         type: 'Chain-Mail',
@@ -6472,8 +6082,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/chain-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fang Greaves',
         type: 'Chain-Mail',
@@ -6493,8 +6102,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fang-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Fireland Greaves',
         type: 'Plate-Mail',
@@ -6514,8 +6122,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/fireland-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Marauder's Greaves",
         type: 'Leather-Mail',
@@ -6535,8 +6142,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/marauder-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Soverain Greaves',
         type: 'Plate-Mail',
@@ -6556,8 +6162,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/soverain-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Occult Greaves',
         type: 'Leather-Mail',
@@ -6598,8 +6203,7 @@ export const Legs = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/fyers-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Astral Pants',
         type: 'Leather-Cloth',
@@ -6619,8 +6223,7 @@ export const Legs = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/astral-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Dae Pants',
         type: 'Leather-Cloth',
@@ -6640,8 +6243,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/dae-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Sage Pants',
         type: 'Leather-Cloth',
@@ -6661,8 +6263,7 @@ export const Legs = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/sage-legs.png'
-    },
-    {
+    },{
         _id: '',
         name: "Quor'eite Pants",
         type: 'Leather-Cloth',
@@ -6706,8 +6307,7 @@ export const Shields = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/GUI_Shield.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Shaorahi',
         type: 'Medium Shield',
@@ -6719,7 +6319,7 @@ export const Shields = [
         criticalChance: 2,
         criticalDamage: 1.02,
         dodge: 5,
-        roll: 2,
+        roll: 1,
         constitution: 0,
         strength: 0,
         agility: 0,
@@ -6727,8 +6327,7 @@ export const Shields = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/golden-shield.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Shaorahi',
         type: 'Medium Shield',
@@ -6740,7 +6339,7 @@ export const Shields = [
         criticalChance: 8,
         criticalDamage: 1.08,
         dodge: 5,
-        roll: 3,
+        roll: 2,
         constitution: 0,
         strength: 1,
         agility: 0,
@@ -6748,8 +6347,7 @@ export const Shields = [
         caeren: 0,
         kyosir: 1,
         imgUrl: '../assets/images/golden-shield.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Shaorahi',
         type: 'Medium Shield',
@@ -6761,7 +6359,7 @@ export const Shields = [
         criticalChance: 3,
         criticalDamage: 1.03,
         dodge: 4,
-        roll: 4,
+        roll: 3,
         constitution: 3,
         strength: 3,
         agility: 0,
@@ -6769,8 +6367,7 @@ export const Shields = [
         caeren: 0,
         kyosir: 3,
         imgUrl: '../assets/images/golden-shield.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Shaorahi',
         type: 'Medium Shield',
@@ -6782,7 +6379,7 @@ export const Shields = [
         criticalChance: 5,
         criticalDamage: 1.05,
         dodge: 3,
-        roll: 5,
+        roll: 4,
         constitution: 4,
         strength: 5,
         agility: 0,
@@ -6790,8 +6387,7 @@ export const Shields = [
         caeren: 0,
         kyosir: 4,
         imgUrl: '../assets/images/golden-shield.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Shaorahi',
         type: 'Medium Shield',
@@ -6803,7 +6399,7 @@ export const Shields = [
         criticalChance: 8,
         criticalDamage: 1.08,
         dodge: 1,
-        roll: 7,
+        roll: 5,
         constitution: 8,
         strength: 8,
         agility: 0,
@@ -6811,8 +6407,7 @@ export const Shields = [
         caeren: 8,
         kyosir: 8,
         imgUrl: '../assets/images/golden-shield.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Parma',
         type: 'Small Shield',
@@ -6832,8 +6427,7 @@ export const Shields = [
         caeren: 0,
         kyosir: 10,
         imgUrl: '../assets/images/buckler.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Parma',
         type: 'Small Shield',
@@ -6853,8 +6447,7 @@ export const Shields = [
         caeren: 0,
         kyosir: 6,
         imgUrl: '../assets/images/buckler.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Heater',
         type: 'Medium Shield',
@@ -6866,7 +6459,7 @@ export const Shields = [
         criticalChance: 8,
         criticalDamage: 1.08,
         dodge: 1,
-        roll: 7,
+        roll: 5,
         constitution: 10,
         strength: 10,
         agility: 0,
@@ -6874,8 +6467,7 @@ export const Shields = [
         caeren: 10,
         kyosir: 0,
         imgUrl: '../assets/images/heater-shield.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Heater',
         type: 'Medium Shield',
@@ -6887,7 +6479,7 @@ export const Shields = [
         criticalChance: 5,
         criticalDamage: 1.05,
         dodge: 1,
-        roll: 5,
+        roll: 4,
         constitution: 6,
         strength: 6,
         agility: 0,
@@ -6895,8 +6487,7 @@ export const Shields = [
         caeren: 6,
         kyosir: 0,
         imgUrl: '../assets/images/heater-shield.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Scutum',
         type: 'Large Shield',
@@ -6908,7 +6499,7 @@ export const Shields = [
         criticalChance: 7,
         criticalDamage: 1.07,
         dodge: 3,
-        roll: 5,
+        roll: 4,
         constitution: 10,
         strength: 0,
         agility: 10,
@@ -6916,8 +6507,7 @@ export const Shields = [
         caeren: 10,
         kyosir: 0,
         imgUrl: '../assets/images/scutum.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Scutum',
         type: 'Large Shield',
@@ -6929,7 +6519,7 @@ export const Shields = [
         criticalChance: 5,
         criticalDamage: 1.05,
         dodge: 3,
-        roll: 4,
+        roll: 3,
         constitution: 5,
         strength: 0,
         agility: 5,
@@ -6937,8 +6527,7 @@ export const Shields = [
         caeren: 5,
         kyosir: 0,
         imgUrl: '../assets/images/scutum.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Pavise',
         type: 'Great Shield',
@@ -6958,8 +6547,7 @@ export const Shields = [
         caeren: 5,
         kyosir: 5,
         imgUrl: '../assets/images/pavise.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Pavise',
         type: 'Great Shield',
@@ -6979,8 +6567,7 @@ export const Shields = [
         caeren: 2,
         kyosir: 2,
         imgUrl: '../assets/images/pavise.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Parma',
         type: 'Small Shield',
@@ -7000,8 +6587,7 @@ export const Shields = [
         caeren: 0,
         kyosir: 2,
         imgUrl: '../assets/images/buckler.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Heater',
         type: 'Medium Shield',
@@ -7013,7 +6599,7 @@ export const Shields = [
         criticalChance: 4,
         criticalDamage: 1.04,
         dodge: 3,
-        roll: 4,
+        roll: 3,
         constitution: 2,
         strength: 2,
         agility: 0,
@@ -7021,8 +6607,7 @@ export const Shields = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/heater-shield.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Scutum',
         type: 'Large Shield',
@@ -7034,7 +6619,7 @@ export const Shields = [
         criticalChance: 3,
         criticalDamage: 1.03,
         dodge: 7,
-        roll: 3,
+        roll: 2,
         constitution: 2,
         strength: 0,
         agility: 2,
@@ -7042,8 +6627,7 @@ export const Shields = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/scutum.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Pavise',
         type: 'Great Shield',
@@ -7063,8 +6647,7 @@ export const Shields = [
         caeren: 1,
         kyosir: 1,
         imgUrl: '../assets/images/pavise.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Parma',
         type: 'Small Shield',
@@ -7084,8 +6667,7 @@ export const Shields = [
         caeren: 0,
         kyosir: 1,
         imgUrl: '../assets/images/buckler.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Heater',
         type: 'Medium Shield',
@@ -7097,7 +6679,7 @@ export const Shields = [
         criticalChance: 2,
         criticalDamage: 1.02,
         dodge: 3,
-        roll: 3,
+        roll: 2,
         constitution: 1,
         strength: 1,
         agility: 0,
@@ -7105,8 +6687,7 @@ export const Shields = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/heater-shield.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Scutum',
         type: 'Large Shield',
@@ -7118,7 +6699,7 @@ export const Shields = [
         criticalChance: 2,
         criticalDamage: 1.02,
         dodge: 7,
-        roll: 2,
+        roll: 1,
         constitution: 1,
         strength: 0,
         agility: 1,
@@ -7126,8 +6707,7 @@ export const Shields = [
         caeren: 1,
         kyosir: 0,
         imgUrl: '../assets/images/scutum.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Pavise',
         type: 'Great Shield',
@@ -7147,8 +6727,7 @@ export const Shields = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/pavise.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Parma',
         type: 'Small Shield',
@@ -7168,8 +6747,7 @@ export const Shields = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/buckler.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Heater',
         type: 'Medium Shield',
@@ -7181,7 +6759,7 @@ export const Shields = [
         criticalChance: 2,
         criticalDamage: 1.02,
         dodge: 3,
-        roll: 2,
+        roll: 1,
         constitution: 0,
         strength: 0,
         agility: 0,
@@ -7189,8 +6767,7 @@ export const Shields = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/heater-shield.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Scutum',
         type: 'Large Shield',
@@ -7202,7 +6779,7 @@ export const Shields = [
         criticalChance: 1,
         criticalDamage: 1.01,
         dodge: 7,
-        roll: 1,
+        roll: 0,
         constitution: 0,
         strength: 0,
         agility: 0,
@@ -7210,8 +6787,7 @@ export const Shields = [
         caeren: 0,
         kyosir: 0,
         imgUrl: '../assets/images/scutum.png'
-    },
-    {
+    },{
         _id: '',
         name: 'Pavise',
         type: 'Great Shield',

@@ -22,7 +22,7 @@ const GameToast = lazy(async () => await import('./ui/GameToast'));
 var click = new Audio("../assets/sounds/TV_Button_Press.wav");
 
 export default function App() {
-    const [alert, setAlert] = createSignal({ header: '', body: '', delay: 0, key: '' });
+    const [alert, setAlert] = createSignal({ header: '', body: '', delay: 0, key: '', arg: undefined });
     const [ascean, setAscean] = createSignal<Ascean>(undefined as unknown as Ascean);
     const [menu, setMenu] = createSignal<Menu>(initMenu);
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>(initCharacterSheet);
@@ -96,7 +96,7 @@ export default function App() {
         try {
             setStartGame(true);
             const asc: Ascean = menu()?.asceans?.find((asc: Ascean) => asc._id === id) as Ascean;
-            setAlert({ header: 'Loading Game', body: `Preparing ${asc.name}. Good luck.`, delay: 3000, key: '' });
+            setAlert({ header: 'Loading Game', body: `Preparing ${asc.name}. Good luck.`, delay: 3000, key: '', arg: undefined });
             setShow(true);
             const inv = await getInventory(asc?._id as string);
             const full = { ...asc }; // , inventory: inv
@@ -114,8 +114,8 @@ export default function App() {
         };
     };
     const loadingAscean = () => EventBus.emit('enter-game');
-    const makeToast = (header: string, body: string, delay = 3000, key = ''): void => {
-        setAlert({ header, body, delay, key });
+    const makeToast = (header: string, body: string, delay = 3000, key = '', arg: any): void => {
+        setAlert({ header, body, delay, key, arg });
         setShow(true);    
     };
     const setTips = (on: boolean): void => {
@@ -123,7 +123,7 @@ export default function App() {
             const interval: number = 1000 * 60 * 3; // 3 minutes
             tips = setInterval(() => {
                 const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
-                setAlert({ header: 'Gameplay Tidbit', body: tip, delay: 12000, key: 'Close' }); // 10000
+                setAlert({ header: 'Gameplay Tidbit', body: tip, delay: 12000, key: 'Close', arg: undefined }); // 10000
                 setShow(true);    
             }, interval); 
         } else {
@@ -164,7 +164,6 @@ export default function App() {
             console.warn('Error saving Ascean:', err);
         };
     };
-
     async function saveInventory(save: Inventory) {
         try {
             setInventory(save);
@@ -174,7 +173,6 @@ export default function App() {
             console.warn(err, 'Error Saving Inventory'); 
         };
     };
-
     async function insertSettings(insert: any) {
         try {
             const set = { ...settings(), ...insert };
@@ -205,8 +203,9 @@ export default function App() {
     };
     const updateRep = async (rep: Reputation): Promise<void> => {
         try {
-            const success = await updateReputation(rep);
-            console.log('Reputation Updated:', success);
+            // const success = 
+            await updateReputation(rep);
+            // console.log('Reputation Updated:', success);
             setReputation(rep);
         } catch (err: any) {
             console.warn('Error updating Reputation:', err);
@@ -240,18 +239,23 @@ export default function App() {
         const scene = phaserRef.scene as Scene;
         EventBus.emit('switch-scene', { current: scene.scene.key, next });
     };
+    function summonEnemy(val: number = 1) {
+        EventBus.emit('summon-enemy', val);
+        setShow(false);
+    };
 
     function setScreen(screen: string) {
         setMenu({ ...menu(), screen });
     };
     const actions = {
+        "Duel": (val: number) => summonEnemy(val),
         'Enter Tent': () => switchScene('Tent'),
         'Close': () => setShow(false),
         'Exit World': () => switchScene('Game'),
         'Pause': () => togglePause(true),
         'Resume': () => togglePause(false),
     };
-    usePhaserEvent('alert', (payload: { header: string, body: string, delay?: number, key?: string }) => makeToast(payload.header, payload.body, payload.delay, payload.key));
+    usePhaserEvent('alert', (payload: { header: string, body: string, delay?: number, key?: string, arg: any }) => makeToast(payload.header, payload.body, payload.delay, payload.key, payload.arg));
     usePhaserEvent('set-tips', setTips);
     usePhaserEvent('enter-menu', enterMenu);
     usePhaserEvent('fetch-ascean', fetchAscean);
@@ -395,7 +399,7 @@ export default function App() {
         </Show>
         <Show when={show()}>
         <Suspense fallback={<Puff color="gold"/>}>
-            <GameToast actions={actions} show={show} setShow={setShow} alert={alert} setAlert={setAlert as Setter<{ header: string; body: string; delay: number; key?: string; }>} />
+            <GameToast actions={actions} show={show} setShow={setShow} alert={alert} setAlert={setAlert as Setter<{ header: string; body: string; delay: number; key?: string; arg: any }>} />
         </Suspense>
         </Show>
     </div>;

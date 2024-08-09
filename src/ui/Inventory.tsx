@@ -5,25 +5,19 @@ import Ascean from '../models/ascean';
 
 interface Props {
     ascean: Accessor<Ascean>;
-    index: number;
     inventory: Equipment;
-    pouch: Accessor<Equipment[]>;
     blacksmith?: boolean;
     compare?: boolean;
     setRingCompared: Setter<string>;
     setHighlighted: Setter<{ item: Equipment | undefined; comparing: boolean; type: string }>;
     highlighted: Accessor<{ item: Equipment | undefined; comparing: boolean; type: string }>;
-    scaleImage: Accessor<{ id: string; scale: number }>;
-    setScaleImage: Setter<{ id: string; scale: number }>;
     setWeaponCompared: Setter<string>;
-    inventoryType: Accessor<string>;
     setInventoryType: Setter<string>;
     inventorySwap: Accessor<any>;
 };
 
-const Inventory = ({ ascean, index, inventory, pouch, blacksmith = false, compare = false, inventoryType, setInventoryType, setRingCompared, setHighlighted, highlighted, scaleImage, setScaleImage, setWeaponCompared, inventorySwap }: Props) => {
+export default function Inventory({ ascean, inventory, blacksmith = false, setInventoryType, setRingCompared, setHighlighted, highlighted, setWeaponCompared, inventorySwap }: Props) {
     const [trueType, setTrueType] = createSignal('');
-    
     const [editState, setEditState] = createSignal<any>({
         weaponOne: ascean().weaponOne,
         weaponTwo: ascean().weaponTwo,
@@ -74,7 +68,6 @@ const Inventory = ({ ascean, index, inventory, pouch, blacksmith = false, compar
         setHighlighted({ item: inventory, comparing: true, type: trueType() });
         checkInventory();
     };
-
     
     function checkInventory() {
         try {
@@ -131,17 +124,12 @@ const Inventory = ({ ascean, index, inventory, pouch, blacksmith = false, compar
 
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
-            border: `0.15em solid ${getRarityColor(rarity)}`,
+            'border': `0.15em solid ${getRarityColor(rarity)}`,
             'background-color': getBackgroundStyle(),
         };
     };
 
-
-    return (
-        <div class='playerInventory' onClick={checkHighlight} style={getItemStyle(inventory?.rarity as string)}>
-            <img src={inventory?.imgUrl} alt={inventory?.name} />
-        </div>
-    );
+    return <div class='playerInventory' onClick={checkHighlight} style={getItemStyle(inventory?.rarity as string)}>
+        <img src={inventory?.imgUrl} alt={inventory?.name} />
+    </div>;
 };
-
-export default Inventory;

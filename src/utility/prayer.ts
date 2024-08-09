@@ -49,8 +49,17 @@ const EFFECT = {
 };
 
 const FAITHS = {
-    ADHERENT: 'adherent',
-    DEVOTED: 'devoted',
+    ADHERENT: 'Adherent',
+    DEVOTED: 'Devoted',
+};
+
+export const PRAYERS = {
+    AVARICE: "Avarice",
+    BUFF: "Buff",
+    DAMAGE: "Damage",
+    DEBUFF: "Debuff",
+    DENIAL: "Denial",
+    HEAL: "Heal",
 };
 
 export default class StatusEffect {

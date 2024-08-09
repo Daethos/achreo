@@ -2,7 +2,7 @@ import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { Combat } from "../stores/combat";
 import { ARMOR_WEIGHT, ARMORS, ACTION_TYPES, ATTACKS, DAMAGE, ENEMY_ATTACKS, HOLD_TYPES, STRONG_ATTACKS, STRONG_TYPES, THRESHOLD, ATTACK_TYPES, DEFENSE_TYPES, DAMAGE_TYPES, MASTERY, WEAPON_TYPES, DEITIES, FAITH_RARITY } from "./combatTypes";
-import StatusEffect from "./prayer";
+import StatusEffect, { PRAYERS } from "./prayer";
 
 export type CombatAttributes = {
     rawConstitution: number;
@@ -502,9 +502,9 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
         const computerDamage = effect.effect.damage as number * DAMAGE.TICK_FULL * (combat.isCaerenic === true ? DAMAGE.CAERENEIC_NEG : 1);
         combat.newPlayerHealth -= computerDamage;
         if (combat.newPlayerHealth < 0) {
-            if (combat.playerEffects.find(effect => effect.prayer === 'Denial')) {
+            if (combat.playerEffects.find(effect => effect.prayer === PRAYERS.DENIAL)) {
                 combat.newPlayerHealth = 1;
-                combat.playerEffects = combat.playerEffects = combat.playerEffects.filter(effect => effect.prayer !== 'Denial');
+                combat.playerEffects = combat.playerEffects = combat.playerEffects.filter(effect => effect.prayer !== PRAYERS.DENIAL);
             } else {
                 combat.newPlayerHealth = 0;
                 combat.computerWin = true;
@@ -538,12 +538,12 @@ function statusEffectCheck(combat: Combat): Combat {
         const matchingDebuffTarget = combat.weapons.find(weapon => weapon?.name === effect.debuffTarget);
         const matchingDebuffTargetIndex = combat.weapons.indexOf(matchingDebuffTarget);
         if ((effect.endTime <= combat.combatTimer || combat.playerWin === true || combat.computerWin === true)) { // The Effect Expires, Now checking for Nmae too || && effect.enemyName === combat.computer.name
-            if (effect.prayer === 'Buff') { // Reverses the Buff Effect to the magnitude of the stack to the proper weapon
+            if (effect.prayer === PRAYERS.BUFF) { // Reverses the Buff Effect to the magnitude of the stack to the proper weapon
                 const deBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingWeaponIndex] as Equipment, false);
                 combat.weapons[matchingWeaponIndex] = deBuff.weapon;
                 combat.playerDefense = deBuff.defense;
             };
-            if (effect.prayer === 'Debuff') { // Revereses the Debuff Effect to the proper weapon
+            if (effect.prayer === PRAYERS.DEBUFF) { // Revereses the Debuff Effect to the proper weapon
                 const reBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingDebuffTargetIndex] as Equipment, true);
                 combat.weapons[matchingDebuffTargetIndex] = reBuff.weapon;
                 combat.playerDefense = reBuff.defense;
@@ -559,12 +559,12 @@ function statusEffectCheck(combat: Combat): Combat {
         const matchingDebuffTargetIndex = combat.computerWeapons.indexOf(matchingDebuffTarget as Equipment);
 
         if (effect.endTime <= combat.combatTimer || combat.playerWin === true || combat.computerWin === true) { // The Effect Expires
-            if (effect.prayer === 'Buff') { // Reverses the Buff Effect to the magnitude of the stack to the proper weapon
+            if (effect.prayer === PRAYERS.BUFF) { // Reverses the Buff Effect to the magnitude of the stack to the proper weapon
                 const deBuff = stripEffect(effect, combat.computerDefense as Defense, combat.computerWeapons[matchingWeaponIndex], false);
                 combat.computerWeapons[matchingWeaponIndex] = deBuff.weapon;
                 combat.computerDefense = deBuff.defense;
             };
-            if (effect.prayer === 'Debuff') { // Revereses the Debuff Effect to the proper weapon
+            if (effect.prayer === PRAYERS.DEBUFF) { // Revereses the Debuff Effect to the proper weapon
                 const reBuff = stripEffect(effect, combat.computerDefense as Defense, combat.computerWeapons[matchingDebuffTargetIndex], true);
                 combat.computerWeapons[matchingDebuffTargetIndex] = reBuff.weapon;
                 combat.computerDefense = reBuff.defense;
@@ -623,7 +623,7 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
         combat.prayerData.push(blessing);
         combat.deityData.push(weapon.influences?.[0] as string);
         combat.religiousSuccess = true;
-        const negativeEffect = blessing === 'Damage' || blessing === 'Debuff';
+        const negativeEffect = blessing === PRAYERS.DAMAGE || blessing === PRAYERS.DEBUFF;
         let exists: StatusEffect | undefined;
         if (negativeEffect === true) {
             exists = combat.computerEffects.find(effect => effect.name === `Gift of ${weapon.influences?.[0]}` && effect.prayer === blessing);
@@ -638,47 +638,47 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
             } else {
                 combat.playerEffects.push(exists);
             };
-            if (exists.prayer === 'Buff') {
+            if (exists.prayer === PRAYERS.BUFF) {
                 const buff = applyEffect(exists, combat.playerDefense as Defense, weapon, true);
                 combat.playerDefense = buff.defense;
                 weapon = buff.weapon;
             };
-            if (exists.prayer === 'Damage') damageTick(combat, exists, true);
+            if (exists.prayer === PRAYERS.DAMAGE) damageTick(combat, exists, true);
             if (exists.prayer === 'Dispel') {
                 if (combat.computerEffects.length > 0) computerDispel(combat); 
                 combat.playerEffects.pop();
             };
-            if (exists.prayer === 'Debuff') {
+            if (exists.prayer === PRAYERS.DEBUFF) {
                 const debuff = applyEffect(exists, combat.computerDefense as Defense, combat.computerWeapons[0], false);
                 combat.computerDefense = debuff.defense;
                 weapon = debuff.weapon;
             };
-            if (exists.prayer === 'Heal') healTick(combat, exists, true);
+            if (exists.prayer === PRAYERS.HEAL) healTick(combat, exists, true);
             combat[`playerInfluenceDescription${desc}`] = exists.description;
         } else {
             if (exists.stacks) {
                 exists = StatusEffect.updateEffectStack(exists, combat, combat.player as Ascean, weapon);
                 combat[`playerInfluenceDescription${desc}`] = `${exists.description} Stacked ${exists.activeStacks} times.`; 
-                if (exists.prayer === 'Buff') {
+                if (exists.prayer === PRAYERS.BUFF) {
                     const buff = applyEffect(exists, combat.computerDefense as Defense, weapon, true);
                     combat.playerDefense = buff.defense;
                     weapon = buff.weapon;
                 };
-                if (exists.prayer === 'Damage') damageTick(combat, exists, true);
+                if (exists.prayer === PRAYERS.DAMAGE) damageTick(combat, exists, true);
             }; 
             if (exists.refreshes) {
                 exists.duration = Math.floor(combat?.player?.level as number / 3 + 1) > 6 ? 6 : Math.floor(combat?.player?.level as number / 3 + 1);
                 exists.tick.end += exists.duration;
                 exists.endTime += 6;
                 exists.activeRefreshes += 1;
-                if (exists.prayer === 'Heal') healTick(combat, exists, true);
+                if (exists.prayer === PRAYERS.HEAL) healTick(combat, exists, true);
                 combat[`playerInfluenceDescription${desc}`] = `${exists.description} Refreshed ${exists.activeRefreshes} time(s).`;
             };
         };
     } else { // Computer Effect
         const blessing = combat.computerBlessing;
         combat.computerReligiousSuccess = true;
-        const negativeEffect = blessing === 'Damage' || blessing === 'Debuff';
+        const negativeEffect = blessing === PRAYERS.DAMAGE || blessing === PRAYERS.DEBUFF;
         let exists: StatusEffect | undefined;
 
         if (negativeEffect) {
@@ -694,25 +694,25 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
             } else {
                 combat.computerEffects.push(exists);
             };
-            if (exists.prayer === 'Buff') {
+            if (exists.prayer === PRAYERS.BUFF) {
                 const buff = applyEffect(exists, combat.computerDefense as Defense, weapon, true);
                 combat.computerDefense = buff.defense;
                 weapon = buff.weapon;
             };
-            if (exists.prayer === 'Damage') damageTick(combat, exists, false);
-            if (exists.prayer === 'Debuff') {
+            if (exists.prayer === PRAYERS.DAMAGE) damageTick(combat, exists, false);
+            if (exists.prayer === PRAYERS.DEBUFF) {
                 const debuff = applyEffect(exists, combat.playerDefense as Defense, combat.weapons?.[0] as Equipment, false);
                 combat.computerDefense = debuff.defense;
                 weapon = debuff.weapon;
             };
-            if (exists.prayer === 'Heal') healTick(combat, exists, false);
+            if (exists.prayer === PRAYERS.HEAL) healTick(combat, exists, false);
             
             combat[`computerInfluenceDescription${desc}`] = exists.description;
         } else {
             if (exists.stacks) {
                 exists = StatusEffect.updateEffectStack(exists, combat, combat.computer as Ascean, weapon);
                 combat[`computerInfluenceDescription${desc}`] = `${exists.description} Stacked ${exists.activeStacks} times.`;
-                if (exists.prayer === 'Buff') {
+                if (exists.prayer === PRAYERS.BUFF) {
                     const buff = applyEffect(exists, combat.computerDefense as Defense, weapon, true);
                     combat.computerDefense = buff.defense;
                     weapon = buff.weapon;
@@ -731,10 +731,10 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
 };
 
 function faithModCompiler(player: Ascean, faithOne: number, weaponOne: Equipment, faithTwo: number, weaponTwo: Equipment, amuletInfluence: string, trinketInfluence: string): { faithOne: number, faithTwo: number }{
-    if (player.faith === 'devoted' && weaponOne?.influences?.[0] === DEITIES.DAETHOS) faithOne += 5;
-    if (player.faith === 'adherent' && weaponOne?.influences?.[0] !== DEITIES.DAETHOS) faithOne += 5;
-    if (player.faith === 'devoted' && weaponTwo?.influences?.[0] === DEITIES.DAETHOS) faithTwo += 5;
-    if (player.faith === 'adherent' && weaponTwo?.influences?.[0] !== DEITIES.DAETHOS) faithTwo += 5;
+    if (player.faith === 'Devoted' && weaponOne?.influences?.[0] === DEITIES.DAETHOS) faithOne += 5;
+    if (player.faith === 'Adherent' && weaponOne?.influences?.[0] !== DEITIES.DAETHOS) faithOne += 5;
+    if (player.faith === 'Devoted' && weaponTwo?.influences?.[0] === DEITIES.DAETHOS) faithTwo += 5;
+    if (player.faith === 'Adherent' && weaponTwo?.influences?.[0] !== DEITIES.DAETHOS) faithTwo += 5;
 
     const addRarity = (rarity: string, faith: number): number => {
         faith += FAITH_RARITY[rarity as keyof typeof FAITH_RARITY]; 
@@ -982,7 +982,7 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
     if (combat.action === ACTION_TYPES.POSTURE) {
         combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
     };
-    if (combat.prayerData.includes('Avarice')) {
+    if (combat.prayerData.includes(PRAYERS.AVARICE)) {
         combat.realizedComputerDamage *= DAMAGE.LOW;
     };
     if (combat.isStalwart) {
@@ -997,9 +997,9 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
     combat.newPlayerHealth -= combat.realizedComputerDamage;
 
     if (combat.newPlayerHealth < 0) {
-        if (combat.playerEffects.find(effect => effect.prayer === 'Denial')) {
+        if (combat.playerEffects.find(effect => effect.prayer === PRAYERS.DENIAL)) {
             combat.newPlayerHealth = 1;
-            combat.playerEffects = combat.playerEffects.filter(effect => effect.prayer !== 'Denial');
+            combat.playerEffects = combat.playerEffects.filter(effect => effect.prayer !== PRAYERS.DENIAL);
         } else {
             combat.newPlayerHealth = 0;
             combat.computerWin = true;
@@ -1160,7 +1160,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
         combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
     };
 
-    if (combat.prayerData.includes('Avarice')) {
+    if (combat.prayerData.includes(PRAYERS.AVARICE)) {
         combat.realizedComputerDamage *= DAMAGE.LOW;
     };
 
@@ -1179,9 +1179,9 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
         `${combat.computer?.name} ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? 'damage (Critical)' : combat.computerGlancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
 
     if (combat.newPlayerHealth <= 0) {
-        if (combat.playerEffects.find(effect => effect.prayer === 'Denial')) {
+        if (combat.playerEffects.find(effect => effect.prayer === PRAYERS.DENIAL)) {
             combat.newPlayerHealth = 1;
-            combat.playerEffects = combat.playerEffects.filter(effect => effect.prayer !== 'Denial');
+            combat.playerEffects = combat.playerEffects.filter(effect => effect.prayer !== PRAYERS.DENIAL);
         } else {
             combat.newPlayerHealth = 0;
             combat.computerWin = true;
@@ -1644,7 +1644,7 @@ function doubleRollCompiler(combat: Combat, playerInitiative: number, computerIn
 };
 
 function computerWeaponMaker(combat: Combat): Combat {
-    let prayers = ['Buff', 'Damage', 'Debuff', 'Heal'];
+    let prayers = [PRAYERS.BUFF, PRAYERS.DAMAGE, PRAYERS.DEBUFF, PRAYERS.HEAL];
     let newPrayer = Math.floor(Math.random() * prayers.length);
     combat.computerBlessing = prayers[newPrayer];
     const change = Math.floor(Math.random() * 101);
@@ -2019,10 +2019,10 @@ function newDataCompiler(combat: Combat): any {
 };
 
 function computerDispel(combat: Combat): Combat {
-    const effect: StatusEffect = combat.computerEffects.find(effect => (effect.prayer !== 'Debuff' && effect.prayer !== 'Damage')) as StatusEffect;
+    const effect: StatusEffect = combat.computerEffects.find(effect => (effect.prayer !== PRAYERS.DEBUFF && effect.prayer !== PRAYERS.DAMAGE)) as StatusEffect;
     const matchingWeapon: Equipment = combat.computerWeapons.find(weapon => weapon._id === effect.weapon.id) as Equipment;
     const matchingWeaponIndex: number = combat.computerWeapons.indexOf(matchingWeapon);
-    if (effect.prayer === 'Buff') {
+    if (effect.prayer === PRAYERS.BUFF) {
         const deBuff = stripEffect(effect, combat.computerDefense as Defense, combat.computerWeapons[matchingWeaponIndex], false);
         combat.computerDefense = deBuff.defense;
         combat.computerWeapons[matchingWeaponIndex] = deBuff.weapon; 
@@ -2053,8 +2053,8 @@ function instantDamageSplitter(combat: Combat, mastery: string): Combat {
 function instantActionSplitter(combat: Combat): any {
     switch (combat.player?.mastery) {
         case MASTERY.CONSTITUTION:
-            prayerSplitter(combat, 'Heal');
-            prayerSplitter(combat, 'Buff');
+            prayerSplitter(combat, PRAYERS.HEAL);
+            prayerSplitter(combat, PRAYERS.BUFF);
             break;
         case MASTERY.STRENGTH:
             prayerSplitter(combat, combat.playerBlessing);
@@ -2073,8 +2073,8 @@ function instantActionSplitter(combat: Combat): any {
             instantDamageSplitter(combat, MASTERY.CAEREN);
             break;
         case MASTERY.KYOSIR:
-            prayerSplitter(combat, 'Damage');
-            prayerSplitter(combat, 'Debuff');
+            prayerSplitter(combat, PRAYERS.DAMAGE);
+            prayerSplitter(combat, PRAYERS.DEBUFF);
             break;
         default:
             break;
@@ -2129,11 +2129,11 @@ function consumePrayerSplitter(combat: Combat): any {
         const matchingDebuffTargetIndex = combat.weapons.indexOf(matchingDebuffTarget);
 
         switch (combat.prayerSacrifice) {
-            case 'Heal':
+            case PRAYERS.HEAL:
                 combat.newPlayerHealth += effect.effect?.healing as number * DAMAGE.TICK_HALF;
                 if (combat.newPlayerHealth > 0) combat.computerWin = false;
                 break;
-            case 'Buff':
+            case PRAYERS.BUFF:
                 combat.newComputerHealth -= (combat.realizedPlayerDamage * DAMAGE.HALF);
                 combat.playerActionDescription = `${combat.weapons[0]?.influences?.[0]}'s Tendrils serenade ${combat.computer?.name}, echoing ${Math.round(combat.realizedPlayerDamage * DAMAGE.HALF)} more damage.`    
                 if (combat.newComputerHealth <= 0) {
@@ -2144,14 +2144,14 @@ function consumePrayerSplitter(combat: Combat): any {
                 combat.weapons[matchingWeaponIndex] = deBuff.weapon;
                 combat.playerDefense = deBuff.defense;
                 break;
-            case 'Damage':
+            case PRAYERS.DAMAGE:
                 combat.newComputerHealth -= effect.effect?.damage as number * DAMAGE.TICK_HALF;
                 if (combat.newComputerHealth <= 0) {
                     combat.newComputerHealth = 0;
                     combat.playerWin = true;
                 }; 
                 break;
-            case 'Debuff':
+            case PRAYERS.DEBUFF:
                 combat.newComputerHealth -= (combat.realizedComputerDamage * DAMAGE.HALF);
                 combat.playerActionDescription = `The Hush of ${combat.weapons[0]?.influences?.[0]} wracks ${combat.computer?.name}, wearing for ${Math.round(combat.realizedComputerDamage * DAMAGE.HALF)} more damage.`;   
             
@@ -2174,7 +2174,7 @@ function consumePrayerSplitter(combat: Combat): any {
     combat.prayerSacrificeName = '';
     combat.action = '';
 
-    if (combat.prayerSacrifice !== 'Heal' && combat.realizedPlayerDamage > 0) combat.computerDamaged = true;
+    if (combat.prayerSacrifice !== PRAYERS.HEAL && combat.realizedPlayerDamage > 0) combat.computerDamaged = true;
     if (combat.playerWin === true) statusEffectCheck(combat);
 
     const changes = {
@@ -2209,25 +2209,23 @@ function consumePrayerSplitter(combat: Combat): any {
 function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, effectTimer: number }): any { 
     let { combat, effect, effectTimer } = data;
     if (effect.playerName === combat.player?.name) { 
-        if (effect.prayer === 'Damage') { 
+        if (effect.prayer === PRAYERS.DAMAGE) { 
             damageTick(combat, effect, true);
         };
-        if (effect.prayer === 'Heal') { 
+        if (effect.prayer === PRAYERS.HEAL) { 
             healTick(combat, effect, true);
         };  
     } else if (effect.playerName === combat.computer?.name) {
-        if (effect.prayer === 'Damage') {
+        if (effect.prayer === PRAYERS.DAMAGE) {
             damageTick(combat, effect, false);
         };
-        if (effect.prayer === 'Heal') { 
+        if (effect.prayer === PRAYERS.HEAL) { 
             healTick(combat, effect, false);
         };
     };
-
     if (combat.combatTimer >= effect.endTime || effectTimer <= 0) {
         combat = prayerRemoveTickSplitter(combat, effect);
     };
-
     if (combat.playerWin === true || combat.computerWin === true) {
         combat = statusEffectCheck(combat);
     };
@@ -2249,26 +2247,25 @@ function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, 
         'playerWin': combat.playerWin,
         'computerWin': combat.computerWin,
     };
-
     return changes;
 };
 
 function prayerRemoveTickSplitter(combat: Combat, statusEffect: StatusEffect): Combat {
-    const target = (statusEffect.prayer === 'Damage' || statusEffect.prayer === 'Debuff') ? statusEffect.enemyName : statusEffect.playerName;
+    const target = (statusEffect.prayer === PRAYERS.DAMAGE || statusEffect.prayer === PRAYERS.DEBUFF) ? statusEffect.enemyName : statusEffect.playerName;
     if (target === combat.player?.name) { 
         combat.playerEffects = combat.playerEffects.filter(effect => {
             if (effect.id !== statusEffect.id) return true; 
-            if (effect.prayer === 'Damage' || effect.prayer === 'Heal') return false;
+            if (effect.prayer === PRAYERS.DAMAGE || effect.prayer === PRAYERS.HEAL) return false;
             const matchingWeapon: Equipment = combat.weapons.find(weapon => weapon?._id === effect.weapon.id) as Equipment;
             const matchingWeaponIndex: number = combat.weapons.indexOf(matchingWeapon);
             const matchingDebuffTarget: Equipment = combat.weapons.find(weapon => weapon?.name === effect.debuffTarget) as Equipment;
             const matchingDebuffTargetIndex: number = combat.weapons.indexOf(matchingDebuffTarget);
-            if (effect.prayer === 'Buff') { 
+            if (effect.prayer === PRAYERS.BUFF) { 
                 const deBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingWeaponIndex] as Equipment, false);
                 combat.playerDefense = deBuff.defense;
                 combat.weapons[matchingWeaponIndex] = deBuff.weapon;
             };
-            if (effect.prayer === 'Debuff') { 
+            if (effect.prayer === PRAYERS.DEBUFF) { 
                 const reBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingDebuffTargetIndex] as Equipment, true);
                 combat.playerDefense = reBuff.defense;
                 combat.weapons[matchingDebuffTargetIndex] = reBuff.weapon;
@@ -2278,17 +2275,17 @@ function prayerRemoveTickSplitter(combat: Combat, statusEffect: StatusEffect): C
     } else if (target === combat.computer?.name) {
         combat.computerEffects = combat.computerEffects.filter(effect => {
             if (effect.id !== statusEffect.id) return true;
-            if (effect.prayer === 'Damage' || effect.prayer === 'Heal') return false;
+            if (effect.prayer === PRAYERS.DAMAGE || effect.prayer === PRAYERS.HEAL) return false;
             const matchingWeapon: Equipment = combat.computerWeapons.find(weapon => weapon._id === effect.weapon.id) as Equipment;
             const matchingWeaponIndex: number = combat.computerWeapons.indexOf(matchingWeapon);
             const matchingDebuffTarget: Equipment = combat.computerWeapons.find(weapon => weapon.name === effect.debuffTarget) as Equipment;
             const matchingDebuffTargetIndex: number = combat.computerWeapons.indexOf(matchingDebuffTarget);
-            if (effect.prayer === 'Buff') { 
+            if (effect.prayer === PRAYERS.BUFF) { 
                 const deBuff = stripEffect(effect, combat.computerDefense as Defense, combat.computerWeapons[matchingWeaponIndex], false);
                 combat.computerDefense = deBuff.defense;
                 combat.computerWeapons[matchingWeaponIndex] = deBuff.weapon;
             };
-            if (effect.prayer === 'Debuff') { 
+            if (effect.prayer === PRAYERS.DEBUFF) { 
                 const reBuff = stripEffect(effect, combat.computerDefense as Defense, combat.computerWeapons[matchingDebuffTargetIndex], true);
                 combat.computerDefense = reBuff.defense;
                 combat.computerWeapons[matchingDebuffTargetIndex] = reBuff.weapon;

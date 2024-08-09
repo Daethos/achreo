@@ -59,6 +59,22 @@ export default class NPC extends Entity {
         this.npcCollision(npcSensor); 
         this.setStatic(true);
         this.setTint(0x0000FF);
+        this.flipX = Math.random() >= 0.5;
+        this.setInteractive(new Phaser.Geom.Rectangle(
+            48, 0,
+            32, this.height
+        ), Phaser.Geom.Rectangle.Contains)
+            .on('pointerdown', () => {
+                this.clearTint();
+                this.setTint(0x00FF00); 
+                this.scene.setupNPC(this);
+                this.scene.player.setCurrentTarget(this);
+                this.scene.player.animateTarget();
+            })
+            .on('pointerout', () => {
+                this.clearTint();
+                this.setTint(0x0000FF);
+            });
     };
 
     cleanUp() {

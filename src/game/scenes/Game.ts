@@ -456,7 +456,7 @@ export class Game extends Scene {
         //     console.log(pointer, 'Pointer Over!');
         //     this.mousePointer = pointer;
         // });
-        EventBus.on('screenshake', () => screenShake(this, 150));
+        EventBus.on('summon-enemy', this.summonEnemy);
     };
 
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
@@ -964,6 +964,21 @@ export class Game extends Scene {
         EventBus.emit('setup-npc', data);    
     };
     showDialog = (dialog: boolean): boolean => EventBus.emit('blend-game', { dialogTag: dialog }); // smallHud: dialog
+    summonEnemy = (val: number) => {
+        let count = 0;
+        for (let i = 0; i < this.enemies.length; i++) {
+            const enemy = this.enemies[i];
+            if (enemy.isDefeated === true) continue;
+            enemy.setPosition(this.player.x + Phaser.Math.Between(-500, 500), this.player.y + Phaser.Math.Between(-500, 500));
+            enemy.checkEnemyCombatEnter();
+            if (this.player.isEnemyInTargets(enemy.enemyID) === false) {
+                this.player.targets.push(enemy);
+            };
+            if (this.player.currentTarget === undefined || this.player.currentTarget?.enemyID !== enemy.enemyID) this.player.targetEngagement(enemy.enemyID);
+            count++;
+            if (count === val) return;
+        };
+    };
     // ============================ Player ============================ \\
     caerenic = (): boolean => EventBus.emit('update-caerenic');
     stalwart = (): boolean => EventBus.emit('update-stalwart');

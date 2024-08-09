@@ -2,14 +2,12 @@ import { Accessor, Setter } from 'solid-js';
 import Ascean from '../models/ascean';
 import Equipment from '../models/equipment';
 import { getRarityColor } from '../utility/styling';
-
 interface Props {
     ascean: Accessor<Ascean>;
     setEquipment: Setter<Equipment | undefined>;
     show: Accessor<boolean>;
     setShow: Setter<boolean>;
 };
-
 export default function AsceanImageCard({ ascean, setEquipment, show, setShow }: Props) { 
     function item(rarity: string) {
         return { border: '0.2em solid ' + getRarityColor(rarity), transform: 'scale(1.1)', 'background-color': 'black', 'margin-top': '0.25em', 'margin-bottom': '0.25em', 'padding-bottom': '-0.25em'};
@@ -21,6 +19,7 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow }:
     };
     const image = { width: '100%', height: '100%' };
     function info(item: Equipment) {
+        console.log('requesting info on ', item)
         setEquipment(item);
         setShow(!show());
     }; 

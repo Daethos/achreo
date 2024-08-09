@@ -25,32 +25,27 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
     const [attributeShow, setAttributeShow] = createSignal<boolean>(false);
     const [itemShow, setItemShow] = createSignal<boolean>(false);
     const dimensions = useResizeListener(); 
-
-    createEffect(() => {
-        setEnemy(state().computer);
-    });
-
+    createEffect(() => setEnemy(state().computer));
     const removeEnemy = (id: string) => {
         EventBus.emit('disengage');
         EventBus.emit('remove-enemy', id);
         setShow(!show());
     };
-
     const clearEnemy = () => {
         EventBus.emit('disengage');
         setShow(!show());
     };
-    // transform: 'scale(0.875)'
+    
     return <div class='modal'>
         <div class='border center' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%', 'width': dimensions().ORIENTATION === 'landscape' ? '50%' : '70%', 'margin-top': '2%' }}>
-            <button class='highlight cornerBL' style={{ 'z-index': 1 }} onClick={clearEnemy}>
-                <p style={{ color: '#fdf6d8' }}>Clear UI</p>
+            <button class='highlight cornerBL' onClick={clearEnemy}>
+                <p>Clear UI</p>
             </button>
-            <button class='highlight cornerTL' style={{ 'z-index': 1 }} onClick={() => removeEnemy(state().enemyID)}>
-                <p style={{ color: '#fdf6d8' }}>Remove {enemy()?.name.split(' ')[0]}</p>
+            <button class='highlight cornerTL' onClick={() => removeEnemy(state().enemyID)}>
+                <p>Remove {enemy()?.name.split(' ')[0]}</p>
             </button>
-            <button class='highlight cornerTR' style={{ 'z-index': 1 }} onClick={() => setShow(!show)}>
-                <p style={{ color: '#fdf6d8' }}>X</p>
+            <button class='highlight cornerTR' onClick={() => setShow(!show)}>
+                <p>X</p>
             </button>
             <div class='creature-heading center' style={{ height: '100%', width: '100%' }}>
                 <h1 style={{ 'text-align': 'center', color: "gold", 'padding-top': '0' }}>
@@ -60,17 +55,17 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
                     {state().computer?.description}
                 </h2>
                 <Suspense fallback={<Puff color="gold"/>}>
-                <div style={{ position: 'absolute', left: '25vw', display: 'inline', height: '75vh', width: '50vw', 'z-index': 99 }}>
+                <div style={{ position: 'absolute', left: '25vw', display: 'inline', height: '75%', width: '50vw' }}>
                     <HealthBar combat={state} enemy={true} game={game} />
                 </div>
                 </Suspense>
                 <div style={{ color: '#fdf6d8', 'margin-top': '9.5%', 'font-size': '0.875em' }}>
                     Level <span class='gold'>{state().computer?.level}</span> | Mastery <span class='gold'>{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
                 </div>
-                <div style={{ transform: 'scale(0.875)', 'margin-top': '0%' }}>
+                <div style={{ transform: 'scale(0.875)', 'margin-top': '0%', 'z-index': 1 }}>
                     <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} />
                 </div>
-                <div style={{ 'margin-left': '0', 'margin-top': '-7.5%', transform: 'scale(0.8)' }}>
+                <div style={{ 'margin-left': '0', 'margin-top': '-7.5%', transform: 'scale(0.8)', 'z-index': 1 }}>
                     <AsceanImageCard ascean={enemy as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
                 </div>
                 <Show when={itemShow()}>
@@ -108,11 +103,6 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
                 return '0.6em';
         };
     };
-    function strip(id: string) {
-        let computerEffects = [ ...state().computerEffects ];
-        computerEffects = computerEffects.filter((prayer) => prayer.id !== id);
-        EventBus.emit('blend-combat', { computerEffects });
-    };
     // function createPrayer() {
     //     console.log('Creating prayer...');
     //     const exists = new StatusEffect(
@@ -144,7 +134,7 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
             <Show when={state().computerEffects?.length > 0 && state().combatEngaged === true}>
                 <div class='combatEffects' style={{ position: 'fixed', right: '7vw', top: '14vh', 'height': '13vh', width: 'auto', transform: 'scale(0.5)' }}>
                     <For each={state().computerEffects}>{((effect) => ( 
-                        <PrayerEffects combat={state} effect={effect} enemy={true} game={game} strip={strip} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
+                        <PrayerEffects combat={state} effect={effect} enemy={true} game={game} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
                     ))}</For>
                 </div>
             </Show> 

@@ -4,17 +4,18 @@ interface Props {
     actions: any;
     show: Accessor<boolean>;
     setShow: Setter<boolean>;
-    alert: Accessor<{ header: string; body: string, delay: number, key?: string } | undefined>;
-    setAlert: Setter<{ header: string; body: string, delay: number, key?: string }>;
+    alert: Accessor<{ header: string; body: string, delay: number, key?: string, arg: any } | undefined>;
+    setAlert: Setter<{ header: string; body: string, delay: number, key?: string, arg: any }>;
 };
 export default function GameToast({ actions, show, setShow, alert, setAlert }: Props) {
     function performAction(actionName: string) {
         const actionFunction = actions[actionName as keyof typeof actions];
-        if (actionFunction) actionFunction();
+        console.log(alert(), 'Alert', actionFunction);
+        if (actionFunction) actionFunction(alert()?.arg);
     };
     function close(): void {
         setShow(!show());
-        setAlert(undefined as unknown as { header: string; body: string, delay: number })
+        setAlert(undefined as unknown as { header: string; body: string, delay: number, arg: any });
     };
     const toast: any = {'position': alert()?.key !== '' ? 'absolute' : '', 'bottom': alert()?.key !== '' ? '45vh' : '0'};
     return <div class='cornerBL realize' style={{ width: '30%', 'z-index': 1 }}>

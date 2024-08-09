@@ -748,6 +748,10 @@ export default class Enemy extends Entity {
     };
 
     jumpIntoCombat = () => {
+        const newEnemy = this.isNewEnemy(this.scene.player);
+        if (newEnemy) {
+            this.scene.player.targets.push(this);
+        };
         this.attacking = this.scene.player;
         this.inCombat = true;
         this.setSpecialCombat(true);
@@ -840,15 +844,10 @@ export default class Enemy extends Entity {
         if (newEnemy) {
             this.scene.player.targets.push(this);
             this.scene.player.checkTargets();
-            // this.scene.player.setAttacking(this);
-            // this.scene.player.setCurrentTarget(this);
-            // this.scene.player.highlightTarget(this);
             this.scene.player.actionTarget = collision;
             this.scene.player.targetID = this.enemyID;
             this.scene.player.inCombat = true;
-
             this.attacking = collision.gameObjectB;
-            // this.scene.setupEnemy(this);
             this.inCombat = true;
             this.setSpecialCombat(true);
 
@@ -866,12 +865,7 @@ export default class Enemy extends Entity {
             this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
             this.actionTarget = collision;
             this.stateMachine.setState(States.CHASE); 
-            
-            // if (this.scene.state.enemyID !== this.enemyID) this.scene.setupEnemy(this);
             collision.gameObjectB.inCombat = true;
-            // collision.gameObjectB.attacking = this;
-            // collision.gameObjectB.currentTarget = this;
-            // collision.gameObjectB.highlightTarget(this);
             this.scene.combatEngaged(true);
         };
     };
@@ -950,7 +944,7 @@ export default class Enemy extends Entity {
         this.attacking = undefined;
         this.isAggressive = false;
         this.healthbar.setVisible(false);
-        this.scene.time.delayedCall(300000, () => {
+        this.scene.time.delayedCall(180000, () => {
             this.isDefeated = false;
             this.health = this.ascean.health.max;
             this.isAggressive = this.startedAggressive;
@@ -1952,8 +1946,8 @@ export default class Enemy extends Entity {
         };
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril');
-        const mend = Math.round(this.ascean.health.max * 0.15);
-        const heal = Math.min(this.ascean.health.max, this.ascean.health.current + mend);
+        const mend = Math.round(this.healthbar.getTotal() * 0.2);
+        const heal = Math.min(this.healthbar.getTotal(), this.health + mend);
         this.scene.combatMachine.action({ data: { key: 'enemy', value: heal, id: this.enemyID }, type: 'Health' });
         this.mendBubble.setCharges(this.mendBubble.charges - 1);
         if (this.mendBubble.charges <= 0) {

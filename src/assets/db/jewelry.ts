@@ -1187,8 +1187,7 @@ export const Rings = [
         caeren: 15,
         kyosir: 0,
         imgUrl: '../assets/images/occult-ring.png'
-    },  
-    {
+    },{
         _id: '',
         name: 'Fyers Ring',
         type: 'Magic',
@@ -1386,8 +1385,7 @@ export const Rings = [
         caeren: 10,
         kyosir: 0,
         imgUrl: '../assets/images/dae-ring.png'
-    }, // Uncommon Rings
-    {
+    },{
         _id: '',
         name: "Knight's Ring",
         type: 'Magic',
@@ -1651,8 +1649,7 @@ export const Rings = [
         caeren: 2,
         kyosir: 0,
         imgUrl: '../assets/images/occult-ring.png'
-    },  
-    {
+    },{
         _id: '',
         name: 'Fyers Ring',
         type: 'Magic',
@@ -2778,7 +2775,7 @@ export const Amulets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Astra", "Se'dyro", "Se'vas"],
+        influences: ["Astra", "Se'dyro", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-amulet.png'
     },{
         _id: '',
@@ -2801,7 +2798,7 @@ export const Amulets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Astra", "Se'dyro", "Se'vas"],
+        influences: ["Astra", "Se'dyro", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-amulet.png'
     },{
         _id: '',
@@ -2824,7 +2821,7 @@ export const Amulets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Astra", "Se'dyro", "Se'vas"],
+        influences: ["Astra", "Se'dyro", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-amulet.png'
     },{
         _id: '',
@@ -2847,7 +2844,7 @@ export const Amulets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Astra", "Se'dyro", "Se'vas"],
+        influences: ["Astra", "Se'dyro", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-amulet.png'
     },{
         _id: '',
@@ -3175,7 +3172,7 @@ export const Amulets = [
         _id: '',
         name: 'Cambiren Amulet',
         type: 'Magic',
-        rarity: 'Rare',
+        rarity: 'Epic',
         physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 0,
@@ -3422,7 +3419,7 @@ export const Amulets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas", "Tshaer"],
+        influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-amulet.png'
     },{
         _id: '',
@@ -3445,7 +3442,7 @@ export const Amulets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas", "Tshaer"],
+        influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-amulet.png'
     },{
         _id: '',
@@ -3468,7 +3465,7 @@ export const Amulets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas", "Tshaer"],
+        influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-amulet.png'
     },{
         _id: '',
@@ -3491,7 +3488,7 @@ export const Amulets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas", "Tshaer"],
+        influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-amulet.png'
     },{
         _id: '',
@@ -3698,7 +3695,7 @@ export const Amulets = [
         achre: 1,
         caeren: 1,
         kyosir: 1,
-        influences: ["Ma'anre", "Rahvre"],
+        influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-amulet.png'
     },{
         _id: '',
@@ -3721,7 +3718,7 @@ export const Amulets = [
         achre: 2,
         caeren: 2,
         kyosir: 1,
-        influences: ["Ma'anre", "Rahvre"],
+        influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-amulet.png'
     },{
         _id: '',
@@ -3744,7 +3741,7 @@ export const Amulets = [
         achre: 3,
         caeren: 3,
         kyosir: 2,
-        influences: ["Ma'anre", "Rahvre"],
+        influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-amulet.png'
     },{
         _id: '',
@@ -3767,7 +3764,7 @@ export const Amulets = [
         achre: 5,
         caeren: 5,
         kyosir: 3,
-        influences: ["Ma'anre", "Rahvre"],
+        influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-amulet.png'
     },{
         _id: '',
@@ -3819,7 +3816,7 @@ export const Amulets = [
         _id: '',
         name: 'Fyers Amulet',
         type: 'Magic',
-        rarity: 'Rare',
+        rarity: 'Epic',
         physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 0,
@@ -3842,7 +3839,7 @@ export const Amulets = [
         _id: '',
         name: 'Fyers Amulet',
         type: 'Magic',
-        rarity: 'Rare',
+        rarity: 'Legendary',
         physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 0,
@@ -4162,7 +4159,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-trinket.png'
     },{
         _id: '',
@@ -4185,7 +4182,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-trinket.png'
     },{
         _id: '',
@@ -4208,7 +4205,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-trinket.png'
     },{
         _id: '',
@@ -4231,7 +4228,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-trinket.png'
     },{
         _id: '',
@@ -4254,7 +4251,7 @@ export const Trinkets = [
         achre: 1,
         caeren: 1,
         kyosir: 0,
-        influences: ["Senari"],
+        influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-trinket.png'
     },{
         _id: '',
@@ -4277,7 +4274,7 @@ export const Trinkets = [
         achre: 2,
         caeren: 2,
         kyosir: 0,
-        influences: ["Senari"],
+        influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-trinket.png'
     },{
         _id: '',
@@ -4300,7 +4297,7 @@ export const Trinkets = [
         achre: 3,
         caeren: 3,
         kyosir: 0,
-        influences: ["Senari"],
+        influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-trinket.png'
     },{
         _id: '',
@@ -4323,7 +4320,7 @@ export const Trinkets = [
         achre: 5,
         caeren: 5,
         kyosir: 0,
-        influences: ["Senari"],
+        influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-trinket.png'
     },{
         _id: '',
@@ -4346,7 +4343,7 @@ export const Trinkets = [
         achre: 1,
         caeren: 0,
         kyosir: 2,
-        influences: ["Chiomyr"],
+        influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/chiomyr-trinket.png'
     },{
         _id: '',
@@ -4369,7 +4366,7 @@ export const Trinkets = [
         achre: 2,
         caeren: 0,
         kyosir: 3,
-        influences: ["Chiomyr"],
+        influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/chiomyr-trinket.png'
     },{
         _id: '',
@@ -4392,7 +4389,7 @@ export const Trinkets = [
         achre: 3,
         caeren: 0,
         kyosir: 4,
-        influences: ["Chiomyr"],
+        influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/chiomyr-trinket.png'
     },{
         _id: '',
@@ -4415,7 +4412,7 @@ export const Trinkets = [
         achre: 5,
         caeren: 0,
         kyosir: 7,
-        influences: ["Chiomyr"],
+        influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/chiomyr-trinket.png'
     },{
         _id: '',
@@ -4438,7 +4435,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 2,
-        influences: ["Kyrisos"],
+        influences: ["Kyrisos", "Chiomyr"],
         imgUrl: '../assets/images/kyrisos-trinket.png'
     },{
         _id: '',
@@ -4461,7 +4458,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 1,
         kyosir: 3,
-        influences: ["Kyrisos"],
+        influences: ["Kyrisos", "Chiomyr"],
         imgUrl: '../assets/images/kyrisos-trinket.png'
     },{
         _id: '',
@@ -4484,7 +4481,7 @@ export const Trinkets = [
         achre: 2,
         caeren: 0,
         kyosir: 4,
-        influences: ["Kyrisos"],
+        influences: ["Kyrisos", "Chiomyr"],
         imgUrl: '../assets/images/kyrisos-trinket.png'
     },{
         _id: '',
@@ -4507,7 +4504,7 @@ export const Trinkets = [
         achre: 3,
         caeren: 0,
         kyosir: 7,
-        influences: ["Kyrisos"],
+        influences: ["Kyrisos", "Chiomyr"],
         imgUrl: '../assets/images/kyrisos-trinket.png'
     },{
         _id: '',
@@ -4622,7 +4619,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 1,
-        influences: ["Lilos"],
+        influences: ["Lilos", "Kyr'na"],
         imgUrl: '../assets/images/lilos-trinket.png'
     },{
         _id: '',
@@ -4645,7 +4642,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 1,
         kyosir: 2,
-        influences: ["Lilos"],
+        influences: ["Lilos", "Kyr'na"],
         imgUrl: '../assets/images/lilos-trinket.png'
     },{
         _id: '',
@@ -4668,7 +4665,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 2,
         kyosir: 3,
-        influences: ["Lilos"],
+        influences: ["Lilos", "Kyr'na"],
         imgUrl: '../assets/images/lilos-trinket.png'
     },{
         _id: '',
@@ -4691,7 +4688,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 4,
         kyosir: 5,
-        influences: ["Lilos"],
+        influences: ["Lilos", "Kyr'na"],
         imgUrl: '../assets/images/lilos-trinket.png'
     },{
         _id: '',
@@ -4806,7 +4803,7 @@ export const Trinkets = [
         achre: 1,
         caeren: 0,
         kyosir: 0,
-        influences: ["Kyr'na"],
+        influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/kyrna-trinket.png'
     },{
         _id: '',
@@ -4829,7 +4826,7 @@ export const Trinkets = [
         achre: 2,
         caeren: 0,
         kyosir: 1,
-        influences: ["Kyr'na"],
+        influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/kyrna-trinket.png'
     },{
         _id: '',
@@ -4852,7 +4849,7 @@ export const Trinkets = [
         achre: 3,
         caeren: 0,
         kyosir: 1,
-        influences: ["Kyr'na"],
+        influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/kyrna-trinket.png'
     },{
         _id: '',
@@ -4875,7 +4872,7 @@ export const Trinkets = [
         achre: 5,
         caeren: 0,
         kyosir: 2,
-        influences: ["Kyr'na"],
+        influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/kyrna-trinket.png'
     },{
         _id: '',
@@ -5013,7 +5010,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/knight-trinket.png'
     },{
         _id: '',
@@ -5036,7 +5033,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/knight-trinket.png'
     },{
         _id: '',
@@ -5059,7 +5056,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/knight-trinket.png'
     },{
         _id: '',
@@ -5082,14 +5079,14 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/knight-trinket.png'
     },{
         _id: '',
         rarity: 'Uncommon',
         name: "Ashtre Trinket",
         type: 'Magic',
-        physicalDamage: 1.01,
+        physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 2,
         magicalPenetration: 0,
@@ -5105,14 +5102,14 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'dyro"],
+        influences: ["Se'dyro", "Astra", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-trinket.png'
     },{
         _id: '',
         rarity: 'Rare',
         name: "Ashtre Trinket",
         type: 'Magic',
-        physicalDamage: 1.02,
+        physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 4,
         magicalPenetration: 0,
@@ -5128,14 +5125,14 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'dyro"],
+        influences: ["Se'dyro", "Astra", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-trinket.png'
     },{
         _id: '',
         rarity: 'Epic',
         name: "Ashtre Trinket",
         type: 'Magic',
-        physicalDamage: 1.03,
+        physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 6,
         magicalPenetration: 0,
@@ -5151,14 +5148,14 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'dyro"],
+        influences: ["Se'dyro", "Astra", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-trinket.png'
     },{
         _id: '',
         rarity: 'Legendary',
         name: "Ashtre Trinket",
         type: 'Magic',
-        physicalDamage: 1.05,
+        physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 8,
         magicalPenetration: 0,
@@ -5174,7 +5171,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'dyro"],
+        influences: ["Se'dyro", "Astra", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-trinket.png'
     },{
         _id: '',
@@ -5197,7 +5194,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        influences: ["Ilios"],
+        influences: ["Ilios", "Cambire"],
         imgUrl: '../assets/images/soverain-trinket.png'
     },{
         _id: '',
@@ -5220,15 +5217,15 @@ export const Trinkets = [
         achre: 0,
         caeren: 4,
         kyosir: 0,
-        influences: ["Ilios"],
+        influences: ["Ilios", "Cambire"],
         imgUrl: '../assets/images/soverain-trinket.png'
     },{
         _id: '',
-        rarity: 'Rare',
+        rarity: 'Epic',
         name: 'Soverain Trinket',
         type: 'Magic',
         physicalDamage: 1,
-        magicalDamage: 1.01,
+        magicalDamage: 1,
         physicalPenetration: 6,
         magicalPenetration: 0,
         physicalResistance: 0,
@@ -5243,15 +5240,15 @@ export const Trinkets = [
         achre: 0,
         caeren: 6,
         kyosir: 0,
-        influences: ["Ilios"],
+        influences: ["Ilios", "Cambire"],
         imgUrl: '../assets/images/soverain-trinket.png'
     },{
         _id: '',
-        rarity: 'Rare',
+        rarity: 'Legendary',
         name: 'Soverain Trinket',
         type: 'Magic',
         physicalDamage: 1,
-        magicalDamage: 1.03,
+        magicalDamage: 1,
         physicalPenetration: 9,
         magicalPenetration: 0,
         physicalResistance: 0,
@@ -5266,14 +5263,14 @@ export const Trinkets = [
         achre: 0,
         caeren: 9,
         kyosir: 0,
-        influences: ["Ilios"],
+        influences: ["Ilios", "Cambire"],
         imgUrl: '../assets/images/soverain-trinket.png'
     },{
         _id: '',
         rarity: 'Uncommon',
         name: 'Daethic Trinket',
         type: 'Magic',
-        physicalDamage: 1.01,
+        physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 1,
         magicalPenetration: 0,
@@ -5296,7 +5293,7 @@ export const Trinkets = [
         rarity: 'Rare',
         name: 'Daethic Trinket',
         type: 'Magic',
-        physicalDamage: 1.02,
+        physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 1,
         magicalPenetration: 1,
@@ -5319,7 +5316,7 @@ export const Trinkets = [
         rarity: 'Epic',
         name: 'Daethic Trinket',
         type: 'Magic',
-        physicalDamage: 1.03,
+        physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 2,
         magicalPenetration: 1,
@@ -5342,7 +5339,7 @@ export const Trinkets = [
         rarity: 'Legendary',
         name: 'Daethic Trinket',
         type: 'Magic',
-        physicalDamage: 1.05,
+        physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 2,
         magicalPenetration: 2,
@@ -5366,7 +5363,7 @@ export const Trinkets = [
         name: 'Achreon Trinket',
         type: 'Magic',
         physicalDamage: 1,
-        magicalDamage: 1.01,
+        magicalDamage: 1,
         physicalPenetration: 1,
         magicalPenetration: 1,
         physicalResistance: 0,
@@ -5389,7 +5386,7 @@ export const Trinkets = [
         name: 'Achreon Trinket',
         type: 'Magic',
         physicalDamage: 1,
-        magicalDamage: 1.02,
+        magicalDamage: 1,
         physicalPenetration: 2,
         magicalPenetration: 2,
         physicalResistance: 0,
@@ -5412,7 +5409,7 @@ export const Trinkets = [
         name: 'Achreon Trinket',
         type: 'Magic',
         physicalDamage: 1,
-        magicalDamage: 1.03,
+        magicalDamage: 1,
         physicalPenetration: 3,
         magicalPenetration: 3,
         physicalResistance: 0,
@@ -5431,11 +5428,11 @@ export const Trinkets = [
         imgUrl: '../assets/images/achre-trinket.png'
     },{
         _id: '',
-        rarity: 'Rare',
+        rarity: 'Legendary',
         name: 'Achreon Trinket',
         type: 'Magic',
         physicalDamage: 1,
-        magicalDamage: 1.05,
+        magicalDamage: 1,
         physicalPenetration: 5,
         magicalPenetration: 5,
         physicalResistance: 0,
@@ -5565,7 +5562,7 @@ export const Trinkets = [
         achre: 1,
         caeren: 1,
         kyosir: 0,
-        influences: ["Senari"],
+        influences: ["Senari", "Nyrolus"],
         imgUrl: '../assets/images/sage-trinket.png'
     },{
         _id: '',
@@ -5588,7 +5585,7 @@ export const Trinkets = [
         achre: 2,
         caeren: 2,
         kyosir: 0,
-        influences: ["Senari"],
+        influences: ["Senari", "Nyrolus"],
         imgUrl: '../assets/images/sage-trinket.png'
     },{
         _id: '',
@@ -5611,11 +5608,11 @@ export const Trinkets = [
         achre: 3,
         caeren: 3,
         kyosir: 0,
-        influences: ["Senari"],
+        influences: ["Senari", "Nyrolus"],
         imgUrl: '../assets/images/sage-trinket.png'
     },{
         _id: '',
-        rarity: 'Rare',
+        rarity: 'Legendary',
         name: 'Sage Trinket',
         type: 'Magic',
         physicalDamage: 1,
@@ -5634,7 +5631,7 @@ export const Trinkets = [
         achre: 5,
         caeren: 5,
         kyosir: 0,
-        influences: ["Senari"],
+        influences: ["Senari", "Nyrolus"],
         imgUrl: '../assets/images/sage-trinket.png'
     },{
         _id: '',
@@ -5664,8 +5661,8 @@ export const Trinkets = [
         rarity: 'Rare',
         name: "Quor'eite Trinket",
         type: 'Magic',
-        physicalDamage: 1.01,
-        magicalDamage: 1.01,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 2,
         magicalPenetration: 2,
         physicalResistance: 0,
@@ -5687,8 +5684,8 @@ export const Trinkets = [
         rarity: 'Epic',
         name: "Quor'eite Trinket",
         type: 'Magic',
-        physicalDamage: 1.02,
-        magicalDamage: 1.02,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 2,
         magicalPenetration: 2,
         physicalResistance: 1,
@@ -5707,11 +5704,11 @@ export const Trinkets = [
         imgUrl: '../assets/images/earth-trinket.png'
     },{
         _id: '',
-        rarity: 'Rare',
+        rarity: 'Legendary',
         name: "Quor'eite Trinket",
         type: 'Magic',
-        physicalDamage: 1.03,
-        magicalDamage: 1.03,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 3,
         magicalPenetration: 3,
         physicalResistance: 1,
@@ -5733,7 +5730,7 @@ export const Trinkets = [
         rarity: 'Uncommon',
         name: 'Fang Trinket',
         type: 'Physical',
-        physicalDamage: 1.01,
+        physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 2,
         magicalPenetration: 0,
@@ -5749,14 +5746,14 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-trinket.png'
     },{
         _id: '',
         rarity: 'Rare',
         name: 'Fang Trinket',
         type: 'Physical',
-        physicalDamage: 1.02,
+        physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 3,
         magicalPenetration: 0,
@@ -5772,14 +5769,14 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-trinket.png'
     },{
         _id: '',
-        rarity: 'Rare',
+        rarity: 'Epic',
         name: 'Fang Trinket',
         type: 'Physical',
-        physicalDamage: 1.03,
+        physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 4,
         magicalPenetration: 0,
@@ -5795,14 +5792,14 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-trinket.png'
     },{
         _id: '',
-        rarity: 'Rare',
+        rarity: 'Legendary',
         name: 'Fang Trinket',
         type: 'Physical',
-        physicalDamage: 1.05,
+        physicalDamage: 1,
         magicalDamage: 1,
         physicalPenetration: 6,
         magicalPenetration: 0,
@@ -5818,15 +5815,15 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'vas"],
+        influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-trinket.png'
     },{
         _id: '',
         rarity: 'Uncommon',
         name: 'Fireland Trinket',
         type: 'Physical',
-        physicalDamage: 1.01,
-        magicalDamage: 1.01,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 1,
         magicalPenetration: 1,
         physicalResistance: 0,
@@ -5841,15 +5838,15 @@ export const Trinkets = [
         achre: 1,
         caeren: 0,
         kyosir: 1,
-        influences: ["Fyer"],
+        influences: ["Fyer", "Ilios", "Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/fireland-trinket.png'
     },{
         _id: '',
         rarity: 'Rare',
         name: 'Fireland Trinket',
         type: 'Physical',
-        physicalDamage: 1.02,
-        magicalDamage: 1.01,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 1,
         magicalPenetration: 1,
         physicalResistance: 1,
@@ -5864,15 +5861,15 @@ export const Trinkets = [
         achre: 2,
         caeren: 0,
         kyosir: 2,
-        influences: ["Fyer"],
+        influences: ["Fyer", "Ilios", "Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/fireland-trinket.png'
     },{
         _id: '',
-        rarity: 'Rare',
+        rarity: 'Epic',
         name: 'Fireland Trinket',
         type: 'Physical',
-        physicalDamage: 1.02,
-        magicalDamage: 1.02,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 2,
         magicalPenetration: 2,
         physicalResistance: 1,
@@ -5887,15 +5884,15 @@ export const Trinkets = [
         achre: 3,
         caeren: 0,
         kyosir: 3,
-        influences: ["Fyer"],
+        influences: ["Fyer", "Ilios", "Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/fireland-trinket.png'
     },{
         _id: '',
-        rarity: 'Rare',
+        rarity: 'Legendary',
         name: 'Fireland Trinket',
         type: 'Physical',
-        physicalDamage: 1.03,
-        magicalDamage: 1.03,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 2,
         magicalPenetration: 2,
         physicalResistance: 2,
@@ -5910,7 +5907,7 @@ export const Trinkets = [
         achre: 5,
         caeren: 0,
         kyosir: 5,
-        influences: ["Fyer"],
+        influences: ["Fyer", "Ilios", "Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/fireland-trinket.png'
     },{
         _id: '',
@@ -5933,7 +5930,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 1,
         kyosir: 0,
-        influences: ["Se'dyro"],
+        influences: ["Se'dyro", "Kyn'gi", "Ma'anre"],
         imgUrl: '../assets/images/marauder-trinket.png'
     },{
         _id: '',
@@ -5956,7 +5953,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'dyro"],
+        influences: ["Se'dyro", "Kyn'gi", "Ma'anre"],
         imgUrl: '../assets/images/marauder-trinket.png'
     },{
         _id: '',
@@ -5979,7 +5976,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'dyro"],
+        influences: ["Se'dyro", "Kyn'gi", "Ma'anre"],
         imgUrl: '../assets/images/marauder-trinket.png'
     },{
         _id: '',
@@ -6002,7 +5999,7 @@ export const Trinkets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        influences: ["Se'dyro"],
+        influences: ["Se'dyro", "Kyn'gi", "Ma'anre"],
         imgUrl: '../assets/images/marauder-trinket.png'
     },{
         _id: '',
@@ -6025,7 +6022,7 @@ export const Trinkets = [
         achre: 1,
         caeren: 1,
         kyosir: 1,
-        influences: ["Ma'anre"],
+        influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-trinket.png'
     },{
         _id: '',
@@ -6048,7 +6045,7 @@ export const Trinkets = [
         achre: 2,
         caeren: 2,
         kyosir: 1,
-        influences: ["Ma'anre"],
+        influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-trinket.png'
     },{
         _id: '',
@@ -6071,7 +6068,7 @@ export const Trinkets = [
         achre: 3,
         caeren: 3,
         kyosir: 2,
-        influences: ["Ma'anre"],
+        influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-trinket.png'
     },{
         _id: '',
@@ -6094,15 +6091,15 @@ export const Trinkets = [
         achre: 5,
         caeren: 5,
         kyosir: 3,
-        influences: ["Ma'anre"],
+        influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-trinket.png'
     },{
         _id: '',
         rarity: 'Uncommon',
         name: 'Fyers Trinket',
         type: 'Magic',
-        physicalDamage: 0.925,
-        magicalDamage: 1.02,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 0,
         magicalPenetration: 2,
         physicalResistance: 0,
@@ -6124,8 +6121,8 @@ export const Trinkets = [
         rarity: 'Rare',
         name: 'Fyers Trinket',
         type: 'Magic',
-        physicalDamage: 0.9375,
-        magicalDamage: 1.03,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 0,
         magicalPenetration: 4,
         physicalResistance: 0,
@@ -6147,8 +6144,8 @@ export const Trinkets = [
         rarity: 'Epic',
         name: 'Fyers Trinket',
         type: 'Magic',
-        physicalDamage: 0.95,
-        magicalDamage: 1.05,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 0,
         magicalPenetration: 6,
         physicalResistance: 0,
@@ -6167,11 +6164,11 @@ export const Trinkets = [
         imgUrl: '../assets/images/fyers-trinket.png'
     },{
         _id: '',
-        rarity: 'Rare',
+        rarity: 'Legendary',
         name: 'Fyers Trinket',
         type: 'Magic',
-        physicalDamage: 0.975,
-        magicalDamage: 1.08,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 0,
         magicalPenetration: 9,
         physicalResistance: 0,
@@ -6193,8 +6190,8 @@ export const Trinkets = [
         rarity: 'Uncommon',
         name: 'Astral Trinket',
         type: 'Magic',
-        physicalDamage: 0.925,
-        magicalDamage: 1.02,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 0,
         magicalPenetration: 3,
         physicalResistance: 0,
@@ -6216,8 +6213,8 @@ export const Trinkets = [
         rarity: 'Rare',
         name: 'Astral Trinket',
         type: 'Magic',
-        physicalDamage: 0.9375,
-        magicalDamage: 1.03,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 0,
         magicalPenetration: 5,
         physicalResistance: 0,
@@ -6236,11 +6233,11 @@ export const Trinkets = [
         imgUrl: '../assets/images/astral-trinket.png'
     },{
         _id: '',
-        rarity: 'Rare',
+        rarity: 'Epic',
         name: 'Astral Trinket',
         type: 'Magic',
-        physicalDamage: 0.95,
-        magicalDamage: 1.05,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 0,
         magicalPenetration: 7,
         physicalResistance: 0,
@@ -6259,11 +6256,11 @@ export const Trinkets = [
         imgUrl: '../assets/images/astral-trinket.png'
     },{
         _id: '',
-        rarity: 'Rare',
+        rarity: 'Legendary',
         name: 'Astral Trinket',
         type: 'Magic',
-        physicalDamage: 0.975,
-        magicalDamage: 1.08,
+        physicalDamage: 1,
+        magicalDamage: 1,
         physicalPenetration: 0,
         magicalPenetration: 10,
         physicalResistance: 0,

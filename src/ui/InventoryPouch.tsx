@@ -13,20 +13,13 @@ interface Props {
     setWeaponCompared: Setter<string>;
     dragAndDropInventory: Accessor<Equipment[]>;
     setDragAndDropInventory: Setter<Equipment[]>;
-    inventoryType: Accessor<string>;
     setInventoryType: Setter<string>;
-    scaleImage: Accessor<{ id: string; scale: number }>;
-    setScaleImage: Setter<{ id: string; scale: number }>;
 };
-export default function InventoryPouch({ ascean, inventoryType, setInventoryType, setHighlighted, highlighted, setRingCompared, setWeaponCompared, dragAndDropInventory, setDragAndDropInventory, scaleImage, setScaleImage }: Props) {
+export default function InventoryPouch({ ascean, setInventoryType, setHighlighted, highlighted, setRingCompared, setWeaponCompared, dragAndDropInventory, setDragAndDropInventory }: Props) {
     const [inventorySwap, setInventorySwap] = createSignal<any>({ start: { id: null, index: -1 }, end: { id: null, index: -1 } });
     const [prospectiveId, setProspectiveId] = createSignal<string | null>(null);
     const dimensions = useResizeListener();
     const [doubleTapCount, setDoubleTapCount] = createSignal(0);
-
-    createEffect(() => {
-        if (dragAndDropInventory()?.length === 0) return;
-    });
 
     createEffect(() => {
         if (inventorySwap().start.id === null || inventorySwap().end.id === null) return;
@@ -77,22 +70,15 @@ export default function InventoryPouch({ ascean, inventoryType, setInventoryType
         EventBus.emit('equip-sound');
     }; 
 
-    return (
-        <div class='playerInventoryBag'> 
-            <For each={dragAndDropInventory()}>{(item, index) => {
-                if (item === undefined || item === null) return;
-                return (
-                    <div onClick={() => doubleTap(item, index)} class='sortable' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5.5%' } : { margin: '2.5%' }}>
-                        <Inventory ascean={ascean} index={index()} 
-                            setRingCompared={setRingCompared} setWeaponCompared={setWeaponCompared} 
-                            highlighted={highlighted} setHighlighted={setHighlighted} 
-                            pouch={dragAndDropInventory} inventory={item} scaleImage={scaleImage} setScaleImage={setScaleImage} 
-                            setInventoryType={setInventoryType} inventoryType={inventoryType} 
-                            inventorySwap={inventorySwap}
-                        />
-                    </div>
-                );
-            }}</For>
-        </div>
-    );
+    return <div class='playerInventoryBag'> 
+        <For each={dragAndDropInventory()}>{(item, index) => {
+            if (item === undefined || item === null) return;
+            return <div onClick={() => doubleTap(item, index)} class='sortable' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5.5%' } : { margin: '2.5%' }}>
+                <Inventory ascean={ascean} setRingCompared={setRingCompared} setWeaponCompared={setWeaponCompared} 
+                    highlighted={highlighted} setHighlighted={setHighlighted} 
+                    inventory={item} setInventoryType={setInventoryType} inventorySwap={inventorySwap}
+                />
+            </div>;
+        }}</For>
+    </div>;
 };

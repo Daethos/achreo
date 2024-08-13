@@ -287,12 +287,12 @@ export default class Player extends Entity {
             .addState(States.ABSORB, {
                 onEnter: this.onAbsorbEnter,
                 onUpdate: this.onAbsorbUpdate,
-                onExit: this.onAbsorbExit,
+                // onExit: this.onAbsorbExit,
             })
             .addState(States.CHIOMIC, {
                 onEnter: this.onChiomicEnter,
                 onUpdate: this.onChiomicUpdate,
-                onExit: this.onChiomicExit,
+                // onExit: this.onChiomicExit,
             })
             .addState(States.DISEASE, {
                 onEnter: this.onDiseaseEnter,
@@ -302,7 +302,7 @@ export default class Player extends Entity {
             .addState(States.ENVELOP, {
                 onEnter: this.onEnvelopEnter,
                 onUpdate: this.onEnvelopUpdate,
-                onExit: this.onEnvelopExit,
+                // onExit: this.onEnvelopExit,
             })
             .addState(States.FREEZE, {
                 onEnter: this.onFreezeEnter,
@@ -317,12 +317,12 @@ export default class Player extends Entity {
             .addState(States.MALICE, {
                 onEnter: this.onMaliceEnter,
                 onUpdate: this.onMaliceUpdate,
-                onExit: this.onMaliceExit,
+                // onExit: this.onMaliceExit,
             })
             .addState(States.MEND, {
                 onEnter: this.onMendEnter,
                 onUpdate: this.onMendUpdate,
-                onExit: this.onMendExit,
+                // onExit: this.onMendExit,
             })
             .addState(States.STEALTH, {
                 onEnter: this.onStealthEnter,
@@ -332,17 +332,17 @@ export default class Player extends Entity {
             .addState(States.PROTECT, {
                 onEnter: this.onProtectEnter,
                 onUpdate: this.onProtectUpdate,
-                onExit: this.onProtectExit,
+                // onExit: this.onProtectExit,
             })
             .addState(States.RECOVER, {
                 onEnter: this.onRecoverEnter,
                 onUpdate: this.onRecoverUpdate,
-                onExit: this.onRecoverExit,
+                // onExit: this.onRecoverExit,
             })
             .addState(States.RENEWAL, {
                 onEnter: this.onRenewalEnter,
                 onUpdate: this.onRenewalUpdate,
-                onExit: this.onRenewalExit,
+                // onExit: this.onRenewalExit,
             })
             .addState(States.SCREAM, {
                 onEnter: this.onScreamEnter,
@@ -352,22 +352,22 @@ export default class Player extends Entity {
             .addState(States.SHIELD, {
                 onEnter: this.onShieldEnter,
                 onUpdate: this.onShieldUpdate,
-                onExit: this.onShieldExit,
+                // onExit: this.onShieldExit,
             })
             .addState(States.SHIMMER, {
                 onEnter: this.onShimmerEnter,
                 onUpdate: this.onShimmerUpdate,
-                onExit: this.onShimmerExit,
+                // onExit: this.onShimmerExit,
             })
             .addState(States.SPRINTING, {
                 onEnter: this.onSprintEnter,
                 onUpdate: this.onSprintUpdate,
-                onExit: this.onSprintExit,
+                // onExit: this.onSprintExit,
             })
             .addState(States.WARD, {
                 onEnter: this.onWardEnter,
                 onUpdate: this.onWardUpdate,
-                onExit: this.onWardExit,
+                // onExit: this.onWardExit,
             })
             .addState(States.WRITHE, {
                 onEnter: this.onWritheEnter,
@@ -377,12 +377,12 @@ export default class Player extends Entity {
             .addState(States.ASTRICATION, {
                 onEnter: this.onAstricationEnter,
                 onUpdate: this.onAstricationUpdate,
-                onExit: this.onAstricationExit,
+                // onExit: this.onAstricationExit,
             })
             .addState(States.BERSERK, {
                 onEnter: this.onBerserkEnter,
                 onUpdate: this.onBerserkUpdate,
-                onExit: this.onBerserkExit,
+                // onExit: this.onBerserkExit,
             })
             .addState(States.BLIND, {
                 onEnter: this.onBlindEnter,
@@ -392,12 +392,12 @@ export default class Player extends Entity {
             .addState(States.CAERENESIS, {
                 onEnter: this.onCaerenesisEnter,
                 onUpdate: this.onCaerenesisUpdate,
-                onExit: this.onCaerenesisExit,
+                // onExit: this.onCaerenesisExit,
             })
             .addState(States.CONVICTION, {
                 onEnter: this.onConvictionEnter,
                 onUpdate: this.onConvictionUpdate,
-                onExit: this.onConvictionExit,
+                // onExit: this.onConvictionExit,
             })
             .addState(States.ENDURANCE, {
                 onEnter: this.onEnduranceEnter,
@@ -407,17 +407,17 @@ export default class Player extends Entity {
             .addState(States.IMPERMANENCE, {
                 onEnter: this.onImpermanenceEnter,
                 onUpdate: this.onImpermanenceUpdate,
-                onExit: this.onImpermanenceExit,
+                // onExit: this.onImpermanenceExit,
             })
             .addState(States.SEER, {
                 onEnter: this.onSeerEnter,
                 onUpdate: this.onSeerUpdate,
-                onExit: this.onSeerExit,
+                // onExit: this.onSeerExit,
             })
             .addState(States.STIMULATE, {
                 onEnter: this.onStimulateEnter,
                 onUpdate: this.onStimulateUpdate,
-                onExit: this.onStimulateExit,
+                // onExit: this.onStimulateExit,
             })
             
         // ==================== NEGATIVE META STATES ==================== //
@@ -1490,8 +1490,7 @@ export default class Player extends Entity {
     onBlinkExit = () => {};
 
     onConfuseEnter = () => {
-        if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return; 
+        if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.spellTarget = this.currentTarget.enemyID;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Confusing', PLAYER.DURATIONS.CONFUSE / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.CONFUSE);
@@ -1557,8 +1556,7 @@ export default class Player extends Entity {
     };
 
     onDevourEnter = () => {
-        if (this.currentTarget === undefined) return; 
-        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return;
+        if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.MODERATE)) return; 
         this.spellTarget = this.currentTarget.enemyID;
         this.isCasting = true;
         this.currentTarget.isConsumed = true;
@@ -1570,10 +1568,10 @@ export default class Player extends Entity {
         this.castbar.setTime(PLAYER.DURATIONS.DEVOUR);
         this.beam.createEmitter(this.currentTarget, PLAYER.DURATIONS.DEVOUR);
         this.devourTimer = this.scene.time.addEvent({
-            delay: 250,
+            delay: 400,
             callback: () => this.devour(),
             callbackScope: this,
-            repeat: 8,
+            repeat: 5,
         });
         this.setTimeEvent('devourCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.addEvent({
@@ -1611,10 +1609,10 @@ export default class Player extends Entity {
             return;
         };
         if (this.spellTarget === this.getEnemyId()) {
-            this.scene.combatMachine.action({ type: 'Tshaeral', data: 2.5 });
+            this.scene.combatMachine.action({ type: 'Tshaeral', data: 4 });
         } else {
             const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
-            const drained = Math.round(this.scene.state.playerHealth * 0.025 * (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10));
+            const drained = Math.round(this.scene.state.playerHealth * 0.04 * (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10));
             const newPlayerHealth = drained / this.scene.state.playerHealth * 100;
             const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
             const tshaeralDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
@@ -1626,8 +1624,7 @@ export default class Player extends Entity {
     };
 
     onFearingEnter = () => {
-        if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return;
+        if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.spellTarget = this.currentTarget.enemyID;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Fearing', PLAYER.DURATIONS.FEAR / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.FEAR);
@@ -1724,7 +1721,7 @@ export default class Player extends Entity {
     };
 
     onInvokeEnter = () => {
-        if (!this.currentTarget) return;
+        if (this.currentTarget === undefined) return;
         this.isPraying = true;
         this.setStatic(true);
         this.flickerCarenic(1000); 
@@ -1777,8 +1774,7 @@ export default class Player extends Entity {
     };
 
     onKyrnaicismEnter = () => {
-        if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return; 
+        if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.spellTarget = this.currentTarget.enemyID;
         this.isCasting = true;
         this.scene.useGrace(PLAYER.STAMINA.KYRNAICISM);
@@ -1840,6 +1836,7 @@ export default class Player extends Entity {
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription: chiomicDescription });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.spellTarget } });
         };
+        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
     };
 
     onLeapEnter = () => {
@@ -1881,8 +1878,7 @@ export default class Player extends Entity {
     };
 
     onParalyzeEnter = () => { 
-        if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.LONG)) return; 
+        if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.LONG)) return;
         this.spellTarget = this.currentTarget.enemyID;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Paralyzing', PLAYER.DURATIONS.PARALYZE / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.PARALYZE);
@@ -1917,8 +1913,7 @@ export default class Player extends Entity {
     };
 
     onPolymorphingEnter = () => {
-        if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return; 
+        if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.spellTarget = this.currentTarget.enemyID;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphing', PLAYER.DURATIONS.POLYMORPH / 2, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.POLYMORPH);
@@ -1977,8 +1972,7 @@ export default class Player extends Entity {
     };
 
     onRootingEnter = () => {
-        if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.LONG)) return; 
+        if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.LONG)) return;
         this.spellTarget = this.currentTarget.enemyID;
         this.isCasting = true;
         this.castbar.setTotal(PLAYER.DURATIONS.ROOTING);
@@ -2049,8 +2043,7 @@ export default class Player extends Entity {
     };
 
     onSlowEnter = () => {
-        if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.LONG)) return; 
+        if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.LONG)) return;
         this.spellTarget = this.currentTarget.enemyID;
         this.isSlowing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slow', 750, 'cast');
@@ -2069,8 +2062,7 @@ export default class Player extends Entity {
     onSlowExit = () => this.spellTarget = '';
 
     onSacrificeEnter = () => {
-        if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return; 
+        if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.spellTarget = this.currentTarget.enemyID;
         this.isSacrificing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Sacrifice', 750, 'effect');
@@ -2085,8 +2077,7 @@ export default class Player extends Entity {
     onSacrificeExit = () => this.spellTarget = '';
 
     onSnaringEnter = () => {
-        if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.LONG)) return; 
+        if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.LONG)) return;
         this.spellTarget = this.currentTarget.enemyID;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snaring', PLAYER.DURATIONS.SNARE, 'cast');
         this.castbar.setTotal(PLAYER.DURATIONS.SNARE);
@@ -2156,8 +2147,7 @@ export default class Player extends Entity {
     onStormExit = () => this.setTimeEvent('stormCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);
 
     onSutureEnter = () => {
-        if (this.currentTarget === undefined) return;
-        if (this.outOfRange(PLAYER.RANGE.MODERATE)) return;  
+        if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.isSuturing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Suture', 750, 'effect');
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
@@ -2172,7 +2162,7 @@ export default class Player extends Entity {
         
     };
     onSutureUpdate = (_dt) => this.combatChecker(this.isSuturing);
-    onSutureExit = () => {};
+    onSutureExit = () => this.spellTarget = '';
 
     // ================= META MACHINE STATES ================= \\
 
@@ -2188,24 +2178,17 @@ export default class Player extends Entity {
         this.setTimeEvent('absorbCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.ABSORB, () => {
             this.isAbsorbing = false;    
+            if (this.absorbBubble) {
+                this.absorbBubble.destroy();
+                this.absorbBubble = undefined;
+            };    
         }, undefined, this);
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You warp oncoming damage into grace.`
         });
     };
-    onAbsorbUpdate = (_dt) => {
-        if (this.isAbsorbing) {
-            this.absorbBubble.update(this.x, this.y);
-        } else {
-            this.positiveMachine.setState(States.CLEAN);
-        };
-    };
-    onAbsorbExit = () => {
-        if (this.absorbBubble) {
-            this.absorbBubble.destroy();
-            this.absorbBubble = undefined;
-        };
-    };
+    onAbsorbUpdate = (_dt) => {if (!this.isAbsorbing) this.positiveMachine.setState(States.CLEAN);};
+    // onAbsorbExit = () => {};
 
     absorbHit = () => {
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
@@ -2228,7 +2211,7 @@ export default class Player extends Entity {
         });
     };
     onChiomicUpdate = (_dt) => {if (this.isChiomic === false) this.positiveMachine.setState(States.CLEAN);};
-    onChiomicExit = () => {};
+    // onChiomicExit = () => {};
 
     onDiseaseEnter = () => {
         this.isDiseasing = true;
@@ -2273,25 +2256,17 @@ export default class Player extends Entity {
         this.setTimeEvent('envelopCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.ENVELOP, () => {
             this.isEnveloping = false;    
+            if (this.envelopBubble !== undefined) {
+                this.envelopBubble.destroy();
+                this.envelopBubble = undefined;
+            };    
         }, undefined, this);
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You envelop yourself, shirking oncoming attacks.`
         });
     };
-    onEnvelopUpdate = (_dt) => {
-        this.combatChecker(this.isEnveloping);
-        if (this.isEnveloping) {
-            this.envelopBubble.update(this.x, this.y);
-        } else {
-            this.positiveMachine.setState(States.CLEAN);
-        };
-    };
-    onEnvelopExit = () => {
-        if (this.envelopBubble !== undefined) {
-            this.envelopBubble.destroy();
-            this.envelopBubble = undefined;
-        };
-    };
+    onEnvelopUpdate = (_dt) => {if (!this.isEnveloping) this.positiveMachine.setState(States.CLEAN);};
+    // onEnvelopExit = () => {};
 
     envelopHit = () => {
         if (this.envelopBubble === undefined || this.isEnveloping === false) {
@@ -2335,24 +2310,17 @@ export default class Player extends Entity {
         this.setTimeEvent('maliceCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MALICE, () => {
             this.isMalicing = false;    
+            if (this.maliceBubble) {
+                this.maliceBubble.destroy();
+                this.maliceBubble = undefined;
+            };
         }, undefined, this);
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You wrack malicious foes with the hush of their own attack.`
         });
     };
-    onMaliceUpdate = (_dt) => {
-        if (this.isMalicing) {
-            this.maliceBubble.update(this.x, this.y);
-        } else {
-            this.positiveMachine.setState(States.CLEAN);
-        };
-    };
-    onMaliceExit = () => {
-        if (this.maliceBubble) {
-            this.maliceBubble.destroy();
-            this.maliceBubble = undefined;
-        };
-    };
+    onMaliceUpdate = (_dt) => {if (!this.isMalicing) this.positiveMachine.setState(States.CLEAN);};
+    // onMaliceExit = () => {};
 
     maliceHit = () => {
         if (this.maliceBubble === undefined || this.isMalicing === false) {
@@ -2381,24 +2349,17 @@ export default class Player extends Entity {
         this.setTimeEvent('mendCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MEND, () => {
             this.isMending = false;    
+            if (this.mendBubble) {
+                this.mendBubble.destroy();
+                this.mendBubble = undefined;
+            };
         }, undefined, this);
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You seek to mend oncoming attacks.`
         });
     };
-    onMendUpdate = (_dt) => { 
-        if (this.isMending) {
-            this.mendBubble.update(this.x, this.y);
-        } else {
-            this.positiveMachine.setState(States.CLEAN);
-        };
-    };
-    onMendExit = () => {
-        if (this.mendBubble) {
-            this.mendBubble.destroy();
-            this.mendBubble = undefined;
-        };
-    };
+    onMendUpdate = (_dt) => {if (!this.isMending) this.positiveMachine.setState(States.CLEAN);};
+    // onMendExit = () => {};
 
     mendHit = () => {
         if (this.mendBubble === undefined || this.isMending === false) {
@@ -2427,24 +2388,17 @@ export default class Player extends Entity {
         this.setTimeEvent('protectCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.PROTECT, () => {
             this.isProtecting = false;    
+            if (this.protectBubble) {
+                this.protectBubble.destroy();
+                this.protectBubble = undefined;
+            };
         }, undefined, this);
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You protect yourself from oncoming attacks.`
         });
     };
-    onProtectUpdate = (_dt) => {
-        if (this.isProtecting) {
-            this.protectBubble.update(this.x, this.y);
-        } else {
-            this.positiveMachine.setState(States.CLEAN);
-        };
-    };
-    onProtectExit = () => {
-        if (this.protectBubble) {
-            this.protectBubble.destroy();
-            this.protectBubble = undefined;
-        };
-    };
+    onProtectUpdate = (_dt) => {if (!this.isProtecting) this.positiveMachine.setState(States.CLEAN);};
+    // onProtectExit = () => {};
 
     onRecoverEnter = () => {
         this.isRecovering = true;
@@ -2455,24 +2409,17 @@ export default class Player extends Entity {
         this.setTimeEvent('recoverCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.RECOVER, () => {
             this.isRecovering = false;    
+            if (this.recoverBubble) {
+                this.recoverBubble.destroy();
+                this.recoverBubble = undefined;
+            };
         }, undefined, this);
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You warp oncoming damage into stamina.`
         });
     };
-    onRecoverUpdate = (_dt) => {
-        if (this.isRecovering) {
-            this.recoverBubble.update(this.x, this.y);
-        } else {
-            this.positiveMachine.setState(States.CLEAN);
-        };
-    };
-    onRecoverExit = () => {
-        if (this.recoverBubble) {
-            this.recoverBubble.destroy();
-            this.recoverBubble = undefined;
-        };
-    };
+    onRecoverUpdate = (_dt) => {if (!this.isRecovering) this.positiveMachine.setState(States.CLEAN);};
+    // onRecoverExit = () => {};
 
     recoverHit = () => {
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
@@ -2494,8 +2441,8 @@ export default class Player extends Entity {
             playerSpecialDescription: `Tears of a Hush proliferate and heal old wounds.`
         });
     };
-    onRenewalUpdate = (_dt) => {if (this.isRenewing) this.positiveMachine.setState(States.CLEAN);};
-    onRenewalExit = () => {};
+    onRenewalUpdate = (_dt) => {if (!this.isRenewing) this.positiveMachine.setState(States.CLEAN);};
+    // onRenewalExit = () => {};
 
     onScreamEnter = () => {
         this.scene.useGrace(PLAYER.STAMINA.SCREAM);    
@@ -2522,24 +2469,17 @@ export default class Player extends Entity {
         this.setTimeEvent('shieldCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIELD, () => {
             this.isShielding = false;    
+            if (this.shieldBubble) {
+                this.shieldBubble.destroy();
+                this.shieldBubble = undefined;
+            };
         }, undefined, this);
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You shield yourself from oncoming attacks.`
         });
     };
-    onShieldUpdate = (_dt) => { 
-        if (this.isShielding) {
-            this.shieldBubble.update(this.x, this.y);
-        } else {
-            this.positiveMachine.setState(States.CLEAN);
-        };
-    };
-    onShieldExit = () => {
-        if (this.shieldBubble) {
-            this.shieldBubble.destroy();
-            this.shieldBubble = undefined;
-        };
-    };
+    onShieldUpdate = (_dt) => {if (!this.isShielding) this.positiveMachine.setState(States.CLEAN);};
+    // onShieldExit = () => {};
 
     shieldHit = () => {
         if (this.shieldBubble === undefined || this.isShielding === false) {
@@ -2568,16 +2508,15 @@ export default class Player extends Entity {
         if (!this.isStealthing) this.stealthEffect(true);    
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIMMER, () => {
             this.isShimmering = false;
+            this.stealthEffect(false);
+            this.adjustSpeed(-PLAYER.SPEED.STEALTH);
         }, undefined, this);
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You shimmer, fading in and out of this world.`
         });
     };
     onShimmerUpdate = (_dt) => {if (!this.isShimmering) this.positiveMachine.setState(States.CLEAN);};
-    onShimmerExit = () => {
-        this.stealthEffect(false)
-        this.adjustSpeed(-PLAYER.SPEED.STEALTH);
-    };
+    // onShimmerExit = () => {};
 
     shimmerHit = () => {
         const shimmers = ['It fades through you', "You simply weren't there", "Perhaps you never were", "They don't seem certain of you at all"];
@@ -2594,13 +2533,14 @@ export default class Player extends Entity {
         this.flickerCarenic(PLAYER.DURATIONS.SPRINT);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT, () => {
             this.isSprinting = false;
+            this.adjustSpeed(-PLAYER.SPEED.SPRINT);    
         }, undefined, this);
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You tap into your caeren, bursting into an otherworldly sprint.`
         });
     };
     onSprintUpdate = (_dt) => {if (!this.isSprinting) this.positiveMachine.setState(States.CLEAN);};
-    onSprintExit = () => this.adjustSpeed(-PLAYER.SPEED.SPRINT);
+    // onSprintExit = () => {};
 
     onStealthEnter = () => {
         if (!this.isShimmering) this.isStealthing = true; 
@@ -2657,24 +2597,17 @@ export default class Player extends Entity {
         this.setTimeEvent('wardCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.WARD, () => {
             this.isWarding = false;    
+            if (this.wardBubble) {
+                this.wardBubble.destroy();
+                this.wardBubble = undefined;
+            };
         }, undefined, this);
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You ward yourself from oncoming attacks.`
         });
     };
-    onWardUpdate = (_dt) => { 
-        if (this.isWarding) {
-            this.wardBubble.update(this.x, this.y);
-        } else {
-            this.positiveMachine.setState(States.CLEAN);
-        };
-    };
-    onWardExit = () => {
-        if (this.wardBubble) {
-            this.wardBubble.destroy();
-            this.wardBubble = undefined;
-        };
-    };
+    onWardUpdate = (_dt) => {if (!this.isWarding) this.positiveMachine.setState(States.CLEAN);};
+    // onWardExit = () => {};
 
     wardHit = (id) => {
         if (this.wardBubble === undefined || this.isWarding === false) {
@@ -2709,12 +2642,7 @@ export default class Player extends Entity {
             playerSpecialDescription: `Your caeren grips your body and contorts, writhing around you.`
         });
     };
-    onWritheUpdate = (_dt) => {
-        this.combatChecker(this.isWrithing);
-        if (!this.isWrithing) {
-            this.positiveMachine.setState(States.CLEAN);
-        };
-    };
+    onWritheUpdate = (_dt) => {if (!this.isWrithing) this.positiveMachine.setState(States.CLEAN);};
     onWritheExit = () => {
         this.aoe.cleanAnimation(this.scene)
         this.setTimeEvent('writheCooldown', PLAYER.COOLDOWNS.SHORT);  
@@ -2740,7 +2668,7 @@ export default class Player extends Entity {
         });
     };
     onAstricationUpdate = (_dt) => {if (!this.isAstrifying) this.positiveMachine.setState(States.CLEAN);};
-    onAstricationExit = () => {};
+    // onAstricationExit = () => {};
 
     onBerserkEnter = () => {
         if (this.isBerserking === true) return;
@@ -2760,7 +2688,7 @@ export default class Player extends Entity {
         });
     };
     onBerserkUpdate = (_dt) => {if (!this.isBerserking) this.positiveMachine.setState(States.CLEAN);};
-    onBerserkExit = () => {};
+    // onBerserkExit = () => {};
 
     onBlindEnter = () => {
         this.scene.useGrace(PLAYER.STAMINA.BLIND);    
@@ -2795,7 +2723,7 @@ export default class Player extends Entity {
         });
     };
     onCaerenesisUpdate = (_dt) => {if (!this.isCaerenesis) this.positiveMachine.setState(States.CLEAN);};
-    onCaerenesisExit = () => {};
+    // onCaerenesisExit = () => {};
 
     onConvictionEnter = () => {
         if (this.isConvicted === true) return;
@@ -2815,7 +2743,7 @@ export default class Player extends Entity {
         });
     };
     onConvictionUpdate = (_dt) => {if (!this.isConvicted) this.positiveMachine.setState(States.CLEAN)};
-    onConvictionExit = () => {};
+    // onConvictionExit = () => {};
 
     onEnduranceEnter = () => {
         if (this.isEnduring === true) return;
@@ -2856,7 +2784,7 @@ export default class Player extends Entity {
         });
     };
     onImpermanenceUpdate = (_dt) => {if (!this.isImpermanent) this.positiveMachine.setState(States.CLEAN);};
-    onImpermanenceExit = () => {};
+    // onImpermanenceExit = () => {};
 
     onSeerEnter = () => {
         if (this.isSeering === true) return;
@@ -2878,7 +2806,7 @@ export default class Player extends Entity {
         });
     };
     onSeerUpdate = (_dt) => {if (!this.isSeering) this.positiveMachine.setState(States.CLEAN);};
-    onSeerExit = () => {};
+    // onSeerExit = () => {};
 
     onStimulateEnter = () => {
         this.scene.useGrace(PLAYER.STAMINA.STIMULATE);    
@@ -2901,7 +2829,7 @@ export default class Player extends Entity {
         };
     };
     onStimulateUpdate = (_dt) => {if (!this.isStimulating) this.positiveMachine.setState(States.CLEAN);};
-    onStimulateExit = () => {};  
+    // onStimulateExit = () => {};  
 
     // ================= NEGATIVE MACHINE STATES ================= \\
     onConfusedEnter = () => { 
@@ -3678,6 +3606,14 @@ export default class Player extends Entity {
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this); 
         if (this.resistCombatText) this.resistCombatText.update(this);
+        if (this.absorbBubble) this.absorbBubble.update(this.x, this.y);
+        if (this.envelopBubble) this.envelopBubble.update(this.x, this.y);
+        if (this.maliceBubble) this.maliceBubble.update(this.x, this.y);
+        if (this.mendBubble) this.mendBubble.update(this.x, this.y);
+        if (this.protectBubble) this.protectBubble.update(this.x, this.y);
+        if (this.recoverBubble) this.recoverBubble.update(this.x, this.y);
+        if (this.shieldBubble) this.shieldBubble.update(this.x, this.y);
+        if (this.wardBubble) this.wardBubble.update(this.x, this.y);
         this.weaponRotation('player', this.currentTarget);
     };
 

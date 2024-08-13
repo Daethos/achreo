@@ -6,7 +6,7 @@ export default function GraceModal({ setShow, settings }: { setShow: Setter<bool
     return <div class="border superCenter" style={{ width: '50%', 'border-color': 'blue' }} onClick={() => setShow(false)}> 
         <div class='creature-heading wrap' style={{ height: '100%' }}>
                 <h1 style={{ 'text-align': 'center', width: '100%' }}>Grace</h1>
-                <button class='cornerTR highlight' onClick={() => EventBus.emit('save-this-setting', { grace: SETTINGS[settings().grace as keyof typeof SETTINGS] })}>Text - {settings().grace.charAt(0) + settings().grace.slice(1).toLowerCase()}</button>
+                <button class='cornerTR highlight' onClick={() => EventBus.emit('save-this-setting', { grace: SETTINGS[settings().grace as keyof typeof SETTINGS] })}>{settings().grace.charAt(0) + settings().grace.slice(1).toLowerCase()}</button>
             <svg height="5" width="100%" class="tapered-rule" style={{ 'margin-bottom': '3%', 'margin-top': '2%', 'stroke': 'blue' }}>
                 <polyline points="0,0 400,2.5 0,5"></polyline>
             </svg>

@@ -5,7 +5,7 @@ const SETTINGS = { NUMBER: 'PERCENTAGE', PERCENTAGE: 'OFF', OFF: 'NUMBER' };
 export default function StaminaModal({ setShow, settings }: { setShow: Setter<boolean>; settings: Accessor<Settings>; }) {
     return <div class="border superCenter" style={{ width: '50%', 'border-color': 'green' }} onClick={() => setShow(false)}> 
         <div class='creature-heading wrap' style={{ height: '100%' }}>
-                <button class='cornerTR highlight' onClick={() => EventBus.emit('save-this-setting', { stamina: SETTINGS[settings().stamina as keyof typeof SETTINGS] })}>Text - {settings().stamina.charAt(0) + settings().stamina.slice(1).toLowerCase()}</button>
+                <button class='cornerTR highlight' onClick={() => EventBus.emit('save-this-setting', { stamina: SETTINGS[settings().stamina as keyof typeof SETTINGS] })}>{settings().stamina.charAt(0) + settings().stamina.slice(1).toLowerCase()}</button>
                 <h1 style={{ 'text-align': 'center', width: '100%' }}>Stamina</h1>
             <svg height="5" width="100%" class="tapered-rule" style={{ 'margin-bottom': '3%', 'margin-top': '2%', 'stroke': 'green' }}>
                 <polyline points="0,0 400,2.5 0,5"></polyline>

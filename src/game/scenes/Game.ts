@@ -619,6 +619,7 @@ export class Game extends Scene {
             const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
             enemy.isStunned = true;
+            enemy.count.stunned += 1;    
         };
     };
     blind = (id: string): void => {
@@ -626,6 +627,7 @@ export class Game extends Scene {
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
             enemy.isFeared = true;
+            enemy.count.feared += 1;
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 1);
             const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
@@ -653,10 +655,11 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
-            this.useGrace(10);
+            this.useGrace(15);
             this.player.isConfused = true;
         } else {
             enemy.isConfused = true;
+            enemy.count.confused += 1;
         };
     };
     confuse = (id: string): void => {
@@ -667,6 +670,7 @@ export class Game extends Scene {
             this.player.isConfused = true;
         } else {
             enemy.isConfused = true;
+            enemy.count.confused += 1;
         };
     };
 
@@ -688,6 +692,7 @@ export class Game extends Scene {
             this.player.isFrozen = true;
         } else {
             enemy.isFrozen = true;
+            enemy.count.frozen += 1;
         };
     };
     fyerus = (id: string): void => {
@@ -699,6 +704,7 @@ export class Game extends Scene {
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
             enemy.slowDuration = 950;
             enemy.isSlowed = true;
+            enemy.count.slow += 1;
         };
     };
     howl = (id: string): void => {
@@ -731,6 +737,7 @@ export class Game extends Scene {
             this.player.isParalyzed = true;
         } else {
             enemy.isParalyzed = true;
+            enemy.count.paralyzed += 1;
         };
     };
     polymorph = (id: string): void => {
@@ -740,6 +747,7 @@ export class Game extends Scene {
             this.player.isPolymorphed = true;
         } else {
             enemy.isPolymorphed = true;
+            enemy.count.polymorphed += 1;
         };
     };
     renewal = () => {
@@ -751,7 +759,7 @@ export class Game extends Scene {
         if (!enemy) return;
         const heal = enemy.ascean.health.max * 0.1;
         const health = Math.min(enemy.health + heal, enemy.ascean.health.max);
-            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
+        this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
     };
     root = (id: string): void => {
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
@@ -773,6 +781,7 @@ export class Game extends Scene {
             onStart: () => {
                 this.target.setVisible(true);
                 enemy.isRooted = true;
+                enemy.count.rooted += 1;
             },    
             onComplete: () => {
                 this.time.delayedCall(3000 - duration, () => {
@@ -790,6 +799,7 @@ export class Game extends Scene {
             this.player.isFeared = true;
         } else {
             enemy.isFeared = true;
+            enemy.count.feared += 1;
         };
     };
     slow = (id: string, time: number = 3000): void => {
@@ -801,6 +811,7 @@ export class Game extends Scene {
         } else {
             enemy.isSlowed = true;
             enemy.slowDuration = time;
+            enemy.count.slowed += 1;
         };
     };
     snare = (id: string): void => {
@@ -810,6 +821,7 @@ export class Game extends Scene {
             this.player.isSnared = true;
         } else {
             enemy.isSnared = true;
+            enemy.count.snared += 1;
         };
     };
     storm = (id: string): void => {
@@ -838,7 +850,8 @@ export class Game extends Scene {
             this.player.isStunned = true;
             this.useStamina(15);
         } else {
-            enemy.isBlindsided = true;
+            enemy.isStunned = true;
+            enemy.count.stunned += 1;
         };
     };
     stunned = (id: string): void => {
@@ -849,6 +862,7 @@ export class Game extends Scene {
             this.useStamina(15);
         } else {
             enemy.isStunned = true;
+            enemy.count.stunned += 1;
         };
     };
     tendril = (id: string, _enemyID: string): void => {
@@ -868,17 +882,17 @@ export class Game extends Scene {
         if (!enemy) {
             if (id === this.player.playerID) {
                 this.useGrace(15);
-                this.combatMachine.action({ data: 20, type: 'Enemy Chiomic' });
+                this.combatMachine.action({ data: 15, type: 'Enemy Chiomic' });
             };
         } else {
             const match = this.player.enemyIdMatch();
             if (match) { // Target Player Attack
                 console.log('Matched Writhe');
-                this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: special ? special : 'writhe' } });
+                this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: special || 'writhe' } });
             } else { // Blind Player Attack
                 console.log('Blind Writhe');
                 this.combatMachine.action({ type: 'Player', data: { 
-                    playerAction: { action: special ? special : 'writhe', parry: this.state.parryGuess }, 
+                    playerAction: { action: special || 'writhe', parry: this.state.parryGuess }, 
                     enemyID: enemy.enemyID, 
                     ascean: enemy.ascean, 
                     damageType: enemy.currentDamageType, 

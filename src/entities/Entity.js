@@ -936,7 +936,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.spriteWeapon.setAngle(-195);
             };
             if (this.frameCount > 0) this.frameCount = 0;
-            if (entity === 'enemy') this.setTint(0xFF0000);
         };
     };
 };

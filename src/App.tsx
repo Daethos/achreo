@@ -394,7 +394,7 @@ export default function App() {
         ) : ( 
             <Suspense fallback={<Puff color="gold"/>}>
             <div class="cornerTL super">The Ascean v0.0.1</div>
-            <Show when={menu().loading === false} fallback={<Puff color="gold"/>}>
+            <Show when={menu().loading === false} fallback={<div class='superCenter'><Puff color="gold"/></div>}>
             <div class='superCenter cinzel' style={{ width: '100%' }}>
                 <div class='center'>
                     <div class='title'>The Ascean</div>

@@ -18,6 +18,8 @@ export default class Settings {
     public characterViews: string;
     public faithViews: string;
     public healthViews: string;
+    public grace: string;
+    public stamina: string;
     public control: string;
     public creationLeft: string;
     public creationRight: string;
@@ -140,6 +142,8 @@ export default class Settings {
         this.characterViews = 'Statistics';
         this.faithViews = 'Deities';
         this.healthViews = 'FULL';
+        this.grace = 'NUMBER';
+        this.stamina = 'NUMBER';
         this.control = 'Buttons';
         this.desktop = false;
         this.difficulty = {
@@ -182,7 +186,7 @@ export default class Settings {
             leftJoystick: { 
                 base: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].leftJoystick.base,
                 thumb: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].leftJoystick.thumb,
-                opacity: 0.75,
+                opacity: 0.1,
                 x: 0.05, 
                 y: 0.8,
                 width: 1, 
@@ -190,7 +194,7 @@ export default class Settings {
             rightJoystick: { 
                 base: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].rightJoystick.base,
                 thumb: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].rightJoystick.thumb,
-                opacity: 0.75,
+                opacity: 0.1,
                 x: 0.95, 
                 y: 0.8,
                 width: 1, 

@@ -117,6 +117,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.interacting = [];
         this.targets = [];
         this.touching = [];
+        this.rushedEnemies = [];
         this.knockbackActive = false;
         this.knocedBack = false; 
         this.knockbackForce = 0.1; // 0.1 is for Platformer, trying to lower it for Top Down
@@ -155,7 +156,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.glowHelm = undefined;
         this.glowChest = undefined;
         this.glowLegs = undefined;
-        this.glowTimer = undefined;
+        this.glowSelf = undefined;
         this.speed = 0;
     };
 
@@ -177,16 +178,16 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const addModifier = (item) => {
             switch (item) {
                 case 'Leather-Cloth':
-                    modifier -= 0.02; // += 0.05;
+                    // modifier -= 0.02; // += 0.05;
                     break;
                 case 'Leather-Mail':
-                    modifier -= 0.03; // += 0.025;
+                    modifier -= 0.0125; // += 0.025;
                     break;
                 case 'Chain-Mail':
-                    modifier -= 0.04 // += 0.0;
+                    modifier -= 0.025 // += 0.0;
                     break;
                 case 'Plate-Mail':
-                    modifier -= 0.05 // -= 0.025;
+                    modifier -= 0.035 // -= 0.025;
                     break;
                 default:
                     break;
@@ -218,10 +219,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     };
                     break;
                 default:
-                    if (this.glowTimer !== undefined) {
-                        this.glowTimer.remove(false);
-                        this.glowTimer.destroy();
-                        this.glowTimer = undefined;
+                    if (this.glowSelf !== undefined) {
+                        this.glowSelf.remove(false);
+                        this.glowSelf.destroy();
+                        this.glowSelf = undefined;
                     };
                     break;        
             };
@@ -248,7 +249,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 });
                 break;
             default:
-                this.glowTimer = this.scene.time.addEvent({
+                this.glowSelf = this.scene.time.addEvent({
                     delay: 200, // 125 Adjust the delay as needed
                     callback: () => this.updateGlow(object),
                     loop: true,

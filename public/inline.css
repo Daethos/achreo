@@ -19,13 +19,13 @@
 .verticalCenter {position: absolute; top: 50%; transform: translateY(-50%); font-size: 0.8em;}
 .verticalTop {position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 0.8em;}
 .right {position: absolute; left: 51%;}
-.fade-in {opacity: 1; transition: opacity 3s ease-in;}
-.fade-out {opacity: 0; transition: opacity 3s ease-in;}
+.fade-in {opacity: 1; transition: opacity 1.5s ease-in;}
+.fade-out {opacity: 0; transition: opacity 1.5s ease-in;}
 .header {display: flex; justify-content: space-between; padding: 5; margin-bottom: 5; color: #fdf6d8; font-family: 'Cinzel-Regular'; font-size: 1.25em; border-bottom-color: #fdf6d8; border-bottom-width: 2;}
 @keyframes visible {0% {opacity: 0;}100% {opacity: 1;}}
 @keyframes invisible {0% {opacity: 1;}100% {opacity: 0;}}
-.superfade-in {animation: 3s 1 visible;}
-.superfade-out {animation: 3s 1 invisible;}
+.superfade-in {animation: 1.5s 1 visible;}
+.superfade-out {animation: 1.5s 1 invisible;}
 .flash {animation: 3s 1 invert;}
 @keyframes invert {50% {filter: invert(100%);transform: scale(1.1);}100% {filter: invert(0%);transform: scale(1);}}
 .shadow {text-shadow: 0 0 0.5em rgba(0, 0, 0, 1);}
@@ -64,8 +64,8 @@
 .playerSaveInventoryOuter {position: fixed;background-color: #000;top: -0.5vh;right: 0.5vw;border-radius: 5%;}
 .stamina { text-align: center;color: #fdf6d8;font-family: 'Cinzel Regular';font-size: 1em;z-index: 3; }
 .grace { text-align: center;color: #fdf6d8;font-family: 'Cinzel Regular';font-size: 1em;z-index: 3; }
-.staminaBubble {position: absolute;top: 2vh;left: 24.5vw; width: 5vw; max-height: 10vh; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2em solid purple;box-shadow: 0 0 0.5em rgba(183, 0, 255, 0.5);}
-.graceBubble {position: absolute;top: 2vh;left: 30.5vw; width: 5vw; max-height: 10vh; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2em solid purple;box-shadow: 0 0 0.5em rgba(183, 0, 255, 0.5);}
+.staminaBubble {position: absolute;top: 2vh;left: 24.5vw; width: 5vw; height: 10vh; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2em solid purple;box-shadow: 0 0 0.5em rgba(183, 0, 255, 0.5);}
+.graceBubble {position: absolute;top: 2vh;left: 30.5vw; width: 5vw; height: 10vh; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2em solid purple;box-shadow: 0 0 0.5em rgba(183, 0, 255, 0.5);}
 #staminaPortrait {position: absolute;top: 2vh;left: 35vw;z-index: 1;border-radius: 50%;overflow: hidden;height: auto;width: auto;}
 .enemyCombatUi {position: fixed;top: 0;right: 0;width: 50vw;}
 .enemyUiWeapon {position: absolute;top: 2.5vh;right: 25vw;align-items: center;justify-content: center;border-radius: 50%;transform: scale(1.05);}

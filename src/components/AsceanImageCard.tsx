@@ -19,7 +19,6 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow }:
     };
     const image = { width: '100%', height: '100%' };
     function info(item: Equipment) {
-        console.log('requesting info on ', item)
         setEquipment(item);
         setShow(!show());
     }; 

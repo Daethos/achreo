@@ -190,6 +190,15 @@ export default function App() {
             console.warn('Error saving Settings:', err);
         };
     };
+    async function saveThisSetting(data: any) {
+        try {
+            console.log(data, 'Data to Update Settings!');
+            const update = { ...settings(), ...data };
+            await saveSettings(update);
+        } catch (err) {
+            console.warn('Error Saving This Setting', err);
+        };
+    };
     const updateAscean = async (vaEsai: Ascean): Promise<void> => {
         try {
             const save = await scrub(vaEsai);
@@ -270,6 +279,7 @@ export default function App() {
     usePhaserEvent('update-reputation', updateRep);
     usePhaserEvent('request-settings', () => EventBus.emit('settings', settings()));
     usePhaserEvent('save-settings', saveSettings);
+    usePhaserEvent('save-this-setting', saveThisSetting);
     usePhaserEvent('insert-settings', insertSettings);
     usePhaserEvent('update-settings', updateRep);
     usePhaserEvent('player-ascean', () => EventBus.emit('player-ascean-ready', ascean()));

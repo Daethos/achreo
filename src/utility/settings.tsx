@@ -241,14 +241,14 @@ const SpecialSettings = () => {
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('INVOKE')} Invoke
             </p>
-            Your mastery and <i>adherence</i> or <i>devotion</i> dictate what you can pray for in an instant, calling it from your weapon's influence regardless of given favor. Instant. Long Cooldown. Gain Stamina.
+            Your mastery and <i>adherence</i> or <i>devotion</i> dictate what you can pray for in an instant, calling it from your weapon's influence regardless of given favor. Instant. Long Cooldown. Gain Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CONSUME')} Consume
             </p>
-            Consume a prayer during combat to get receive steps into the land of hush and tendril tendril of its essence. Instant. Short Cooldown. Low Stamina
+            Consume a prayer during combat to get receive steps into the land of hush and tendril tendril of its essence. Instant. Short Cooldown. Low Grace
             </div>
             <br />
 
@@ -256,98 +256,98 @@ const SpecialSettings = () => {
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CAST')} Achire
             </p>
-            Entwine your achre and caer through your weapon to release a powerful projectile. Cast. Short Cooldown. Moderate Stamina.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('AOE')} Astrave
-            </p>
-            Uproot tendrils, damaging all caught in its grasp. AoE. Short Cooldown. Moderate Stamina. Manual Aim.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Astrication
-            </p>
-            Attacks cannot be evaded, i.e. protect, shield, shimmer, roll, parry. Instant. Long Cooldown. Low Stamina.
+            Entwine your achre and caer through your weapon to release a powerful projectile. Cast. Short Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('WEAPONS')} Arc
             </p>
-            Power up into an attack, hitting with four times the potential. Channel. Short Cooldown. Moderate Stamina.
+            Power up into an attack, hitting with four times the potential. Channel. Short Cooldown. Moderate Grace.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('AOE')} Astrave
+            </p>
+            Uproot tendrils, damaging all caught in its grasp. AoE. Short Cooldown. Moderate Grace. Manual Aim.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('CAST')} Astrication
+            </p>
+            Attacks cannot be evaded, i.e. protect, shield, shimmer, roll, parry. Instant. Long Cooldown. Low Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CONSUME')} Berserk
             </p>
-            Attacks grow stronger the more you are attacked. Instant. Long Cooldown. Low Stamina. Trait.
+            Attacks grow stronger the more you are attacked. Instant. Long Cooldown. Low Grace. Trait.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CAST')} Blind
             </p>
-            Your brilliance blinds all who are impure. Instant. Long Cooldown. Moderate Stamina. Trait.
+            Your brilliance blinds all who are impure. Instant. Long Cooldown. Moderate Grace. Trait.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('INVOKE')} Blink
             </p>
-            Use your caeren to teleport a short distance forward, if you are moving.  Instant. Short Cooldown. Low Stamina.
+            Use your caeren to teleport a short distance forward, if you are moving.  Instant. Short Cooldown. Low Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('AOE')} Caerenesis
             </p>
-            You can fear and evoke your enemy's caer into yours. AoE. Short Cooldown. High Stamina. Trait.
+            You can fear and evoke your enemy's caer into yours. AoE. Short Cooldown. High Grace. Trait.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CONSUME')} Chiomic
             </p>
-            A hush steps into the land of hush and tendril proliferates, confusing enemies caught in its mocking blast for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush steps into the land of hush and tendril proliferates, confusing enemies caught in its mocking blast for several seconds. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CAST')} Confuse
             </p>
-            Inspire confusion in your opponent, causing them to contemplate reality for several seconds, though damage may break them from their fugue. Cast. Short Cooldown. Low Stamina
+            Inspire confusion in your opponent, causing them to contemplate reality for several seconds, though damage may break them from their fugue. Cast. Short Cooldown. Low Grace
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CAST')} Conviction
             </p>
-            Your attacks grow stronger the more you realize them. Instant. Long Cooldown. Low Stamina. Trait.
+            Your attacks grow stronger the more you realize them. Instant. Long Cooldown. Low Grace. Trait.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('INVOKE')} Desperation
             </p>
-            Heals you for a dramatic amount. Instant. Long cooldown. High Stamina.
+            Heals you for a dramatic amount. Instant. Long cooldown. High Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('VOICE')} Devour
             </p>
-            Lifedrain your opponent of their caer, restoring your own. Channel. Long Cooldown. High Stamina. Trait.
+            Lifedrain your opponent of their caer, restoring your own. Channel. Long Cooldown. High Grace. Trait.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('AOE')} Disease
             </p>
-            A hush that proliferates, damaging enemies caught in its malice every second. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, damaging enemies caught in its malice every second. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
@@ -361,231 +361,231 @@ const SpecialSettings = () => {
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('SHIELD')} Envelop
             </p>
-            A warped tendril wrapped round you that protects the player from melee and ranged attacks at the cost of stamina. Instant. Moderate Cooldown. Low Stamina.
+            A warped tendril wrapped round you that protects the player from melee and ranged attacks at the cost of stamina. Instant. Moderate Cooldown. Low Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CAST')} Fear
             </p>
-            Inspire fear in your opponent, causing them to run in terror for several seconds, their hysteria causing them to experience pain without notice. Cast. Short Cooldown. Low Stamina
+            Inspire fear in your opponent, causing them to run in terror for several seconds, their hysteria causing them to experience pain without notice. Cast. Short Cooldown. Low Grace
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('AOE')} Freeze
             </p>
-            A hush that proliferates, freezing enemies caught in its grasp for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, freezing enemies caught in its grasp for several seconds. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('BEAM')} Fyerus
             </p>
-            Uprooted tendrils, damaging enemies and snaring enemies caught in their grasp. Channeled. Moderate Cooldown. Moderate Stamina. Manual Aim.
+            Uprooted tendrils, damaging enemies and snaring enemies caught in their grasp. Channeled. Moderate Cooldown. Moderate Grace. Manual Aim.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CAST')} Healing
             </p>
-            Heals for a moderate amount. Cast. Short Cooldown. Moderate Stamina.
+            Heals for a moderate amount. Cast. Short Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('VOICE')} Howl
             </p>
-            A hush that proliferates, stunning enemies caught in its piercing blast for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, stunning enemies caught in its piercing blast for several seconds. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('BEAM')} Impermanence
             </p>
-            Your evasion becomes ethereal. Instant. Long Cooldown. Low Stamina. Trait.
+            Your evasion becomes ethereal. Instant. Long Cooldown. Low Grace. Trait.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('AOE')} Kynisos
             </p>
-            Uprooted tendrils, rooting enemies caught in their grasp for several seconds. Cast. Moderate Cooldown. Moderate Stamina. Manual Aim
+            Uprooted tendrils, rooting enemies caught in their grasp for several seconds. Cast. Moderate Cooldown. Moderate Grace. Manual Aim
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('BEAM')} Kyrnaicism
             </p>
-            Belittle and mock your opponent of their caer, damaging and slowing them. Channel. Short Cooldown. Moderate Stamina.
+            Belittle and mock your opponent of their caer, damaging and slowing them. Channel. Short Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('ATTACK')} Leap
             </p>
-            Use your strength to leap a short distance toward your cursor, if you are moving, damaging on landing.  Instant. Moderate Cooldown. Moderate Stamina.
+            Use your strength to leap a short distance toward your cursor, if you are moving, damaging on landing.  Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('SHIELD')} Malice
             </p>
-            A warped tendril wrapped round you that damages the enemy through 6 successful attacks from them. Instant. Moderate Cooldown. Moderate Stamina.
+            A warped tendril wrapped round you that damages the enemy through 6 successful attacks from them. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('SHIELD')} Mend
             </p>
-            A warped tendril wrapped round you that heal through 6 successful attacks from the enemy. Instant. Moderate Cooldown. Moderate Stamina.
+            A warped tendril wrapped round you that heal through 6 successful attacks from the enemy. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CAST')} Paralyze
             </p>
-            Paralyze your opponent for several seconds, causing them to be disabled for the duration. Cast. Moderate Cooldown. Low Stamina.
+            Paralyze your opponent for several seconds, causing them to be disabled for the duration. Cast. Moderate Cooldown. Low Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CAST')} Polymorph
             </p>
-            Turn your opponent into a fluffy bunny for several seconds, causing them to be disabled for the duration. Cast. Short Cooldown. Low Stamina.
+            Turn your opponent into a fluffy bunny for several seconds, causing them to be disabled for the duration. Cast. Short Cooldown. Low Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('SHIELD')} Protect
             </p>
-            A warped tendril wrapped round you that protects the player from melee and ranged attacks for several seconds. Instant. Long Cooldown. High Stamina.
+            A warped tendril wrapped round you that protects the player from melee and ranged attacks for several seconds. Instant. Long Cooldown. High Grace.
             </div>
             <br />
             <div> 
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('INVOKE')} Pursuit
             </p>
-            Step into the land of hush and tendril, reentering this world at the foot of your foe. Instant. Moderate Cooldown. Moderate Stamina.
+            Step into the land of hush and tendril, reentering this world at the foot of your foe. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('SHIELD')} Recover
             </p>
-            A warped tendril wrapped round you that recovers stamina from melee and ranged attacks. Instant. Moderate Cooldown. Low Stamina.
+            A warped tendril wrapped round you that recovers stamina from melee and ranged attacks. Instant. Moderate Cooldown. Low Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('AOE')} Renewal
             </p>
-            A hush that proliferates, healing you with grace every second. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, healing you with grace every second. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('AOE')} Root
             </p>
-            Ensorcel your opponent in a magic root, preventing them from moving for several seconds. Cast. Short Cooldown. Low Stamina.
+            Ensorcel your opponent in a magic root, preventing them from moving for several seconds. Cast. Short Cooldown. Low Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('ATTACK')} Rush
             </p>
-            Use your agility to rush a short distance toward your cursor, if you are moving, damaging enemies in the path.  Instant. Moderate Cooldown. Moderate Stamina.
+            Use your agility to rush a short distance toward your cursor, if you are moving, damaging enemies in the path.  Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div> 
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('SACRIFICE')} Sacrifice
             </p>
-            Rip the caeren from yourself and blend it into your enemy, damaging them for twice the portion of damage done to you. Instant. Moderate Cooldown. Moderate Stamina.
+            Rip the caeren from yourself and blend it into your enemy, damaging them for twice the portion of damage done to you. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('VOICE')} Scream
             </p>
-            A hush that proliferates, fearing enemies caught in its piercing howl for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, fearing enemies caught in its piercing howl for several seconds. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('INVOKE')} Seer
             </p>
-            Your next strike is augured to be fyers. Instant. Long Cooldown Cooldown. Low Stamina. Trait.
+            Your next strike is augured to be fyers. Instant. Long Cooldown Cooldown. Low Grace. Trait.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('SHIELD')} Shield
             </p>
-            A warped tendril wrapped round you that absorbs 6 successful attacks from the enemy. Instant. Moderate Cooldown. Moderate Stamina.
+            A warped tendril wrapped round you that absorbs 6 successful attacks from the enemy. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('SHIELD')} Shimmer
             </p>
-            You step into the land of hush and tendril, attemping to evade the enemy attacks. Instant. Moderate Cooldown. Low Stamina.
+            You step into the land of hush and tendril, attemping to evade the enemy attacks. Instant. Moderate Cooldown. Low Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('INVOKE')} Slow
             </p>
-            Weigh down your opponent's caer, slowing their movement speed moderately for several seconds. Instant. Short Cooldown. Low Stamina.
+            Weigh down your opponent's caer, slowing their movement speed moderately for several seconds. Instant. Short Cooldown. Low Grace.
             </div>
             <br />
             <div> 
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CAST')} Snare
             </p>
-            Weigh down your opponent's caer, slowing their movement speed dramatically for several seconds. Cast. Short Cooldown. Low Stamina.
+            Weigh down your opponent's caer, slowing their movement speed dramatically for several seconds. Cast. Short Cooldown. Low Grace.
             </div>
             <br />
             <div> 
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('INVOKE')} Sprint
             </p>
-            Step into the land of hush and tendril, dramatically increasing your movement for several seconds. Instant. Moderate Cooldown. Low Stamina.
+            Step into the land of hush and tendril, dramatically increasing your movement for several seconds. Instant. Moderate Cooldown. Low Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('INVOKE')} Stimulate
             </p>
-            Your caeren taps into your physical form, refreshing its ability to host its othernature. Instant. Long Cooldown Cooldown. Low Stamina. Trait.
+            Your caeren taps into your physical form, refreshing its ability to host its othernature. Instant. Long Cooldown Cooldown. Low Grace. Trait.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('WEAPONS')} Storm
             </p>
-            A hush that proliferates, damaging enemies caught in your contortions with your weapon / 2 every second for several seconds. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, damaging enemies caught in your contortions with your weapon / 2 every second for several seconds. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div> 
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('SACRIFICE')} Suture
             </p>
-            Rip the caeren from the enemy and blend it into you, healing for a portion of damage done. Instant. Moderate Cooldown. Moderate Stamina.
+            Rip the caeren from the enemy and blend it into you, healing for a portion of damage done. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('SHIELD')} Ward
             </p>
-            A warped tendril wrapped round you that protects the player from melee and ranged attacks, stunning the enemy. Instant. Long Cooldown. Moderate Stamina.
+            A warped tendril wrapped round you that protects the player from melee and ranged attacks, stunning the enemy. Instant. Long Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('WEAPONS')} Writhe
             </p>
-            A hush that proliferates, damaging enemies caught in your contortions with your weapon. Instant. Moderate Cooldown. Moderate Stamina.
+            A hush that proliferates, damaging enemies caught in your contortions with your weapon. Instant. Moderate Cooldown. Moderate Grace.
             </div>
         </div>
     );

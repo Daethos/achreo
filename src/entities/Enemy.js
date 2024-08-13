@@ -8,7 +8,6 @@ import { PLAYER } from "../utility/player";
 import CastingBar from "../phaser/CastingBar";
 import AoE from "../phaser/AoE";
 import Bubble from "../phaser/Bubble";
-import Beam from "../matter/Beam";
 
 export const ENEMY_SPECIAL = {
     'constitution': [ // 9
@@ -407,23 +406,7 @@ export default class Enemy extends Entity {
         
         this.setScale(0.8);
         this.setDepth(1);
-        this.isAttacking = false;
-        this.isParrying = false;
-        this.isDodging = false;
-        this.isPosturing = false;
-        this.isRolling = false;
-        this.inCombat = false;
-        this.isConsuming = false;
-        this.isCrouching = false;
-        this.isJumping = false;
-        this.isHanging = false;
-        this.isHealing = false;
-        this.isPraying = false;
-        this.isRushing = false;
-        this.rushedEnemies = [];
-        this.touching = [];
-        this.rollCooldown = 0;
-        this.dodgeCooldown = 0;
+
         this.enemySensor = undefined;
         this.waiting = 30;
         this.idleWait = 3000;
@@ -2893,14 +2876,7 @@ export default class Enemy extends Entity {
         };
     };
 
-    getDirection = () => {
-        const direction = this.attacking.position.subtract(this.position);
-        if (direction.x < 0 && !this.flipX) {
-            this.setFlipX(true);
-        } else if (direction.x > 0 && this.flipX) {
-            this.setFlipX(false);
-        };
-    }; 
+    getDirection = () => this.velocity.x < 0 ? this.flipX = true : this.flipX = false; 
     
     evaluateEnemyState = () => {
         this.currentWeaponCheck();
@@ -2971,8 +2947,6 @@ export default class Enemy extends Entity {
         };
 
         switch (this.currentAction) {
-            case 'special':
-                break;
             case 'attack':
                 this.stateMachine.setState(States.ATTACK);
                 break;
@@ -2988,14 +2962,7 @@ export default class Enemy extends Entity {
             case 'posture':
                 this.stateMachine.setState(States.POSTURE);
                 break; 
-            case 'pray':
-                this.isPraying = true;
-                break;
-            case 'consume':
-                this.isConsuming = true;
-                break;
-            default:
-                break;                        
+            default: break;                        
         }; 
     };
  

@@ -778,10 +778,10 @@ export default class Player extends Entity {
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);
             if (this.isConfused === true) this.isConfused = false;
             if (this.isPolymorphed === true) this.isPolymorphed = false;
-            if (this.isAbsorbing) this.absorbHit();
-            if (this.isMalicing) this.maliceHit();
-            if (this.isMending) this.mendHit();
-            if (this.isRecovering) this.recoverHit();
+            if (this.isAbsorbing === true) this.absorbHit();
+            if (this.isMalicing === true) this.maliceHit();
+            if (this.isMending === true) this.mendHit();
+            if (this.isRecovering === true) this.recoverHit();
             if (this.isFeared === true) {
                 const chance = Math.random() < 0.1 + this.fearCount;
                 if (chance === true) {
@@ -795,9 +795,13 @@ export default class Player extends Entity {
         if (this.health < e.newPlayerHealth) {
             let heal = Math.round(e.newPlayerHealth - this.health);
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, PLAYER.DURATIONS.TEXT, 'heal');
-        }; 
-        if (this.targets.length > 0) this.checkTargets(); // Was inside playerWin
-        if (this.currentRound !== e.combatRound && this.scene.combat) {
+        };
+        this.health = e.newPlayerHealth;
+        this.healthbar.setValue(this.health);
+        if (this.healthbar.getTotal() < e.playerHealth) this.healthbar.setTotal(e.playerHealth);
+
+        if (this.targets.length > 0) this.checkTargets();
+        if (this.currentRound !== e.combatRound && this.scene.combat === true) {
             this.currentRound = e.combatRound;
             if (e.computerDamaged || e.playerDamaged || e.rollSuccess || e.parrySuccess || e.computerRollSuccess || e.computerParrySuccess) {
                 this.soundEffects(e);
@@ -826,11 +830,6 @@ export default class Player extends Entity {
             this.resistCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);
         };
         if (e.newComputerHealth <= 0 && e.playerWin === true) {
-            if (this.isTshaering === true) this.isTshaering = false;
-            if (this.devourTimer !== undefined) {
-                this.devourTimer.remove(false);
-                this.devourTimer = undefined;
-            };
             this.defeatedEnemyCheck(e.enemyID);
         };
         if (e.computerWin === true) {
@@ -842,9 +841,6 @@ export default class Player extends Entity {
         if (e.newPlayerHealth <= 0) {
             this.disengage();    
         };
-        this.health = e.newPlayerHealth;
-        this.healthbar.setValue(this.health);
-        if (this.healthbar.getTotal() < e.playerHealth) this.healthbar.setTotal(e.playerHealth);
         if (e.playerAttributes.stamina > this.maxStamina) this.maxStamina = e.playerAttributes.stamina;
         if (e.playerAttributes.grace > this.maxGrace) this.maxGrace = e.playerAttributes.grace;
         if (this.inCombat === false) {

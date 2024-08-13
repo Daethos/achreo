@@ -713,8 +713,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         };
         if (check.success === true && scene.player.stateMachine.isState(input)) {
             scene.player.stateMachine.setState(`${input}`);
-        } else if (check.success === true && scene.player.metaMachine.isState(input)) {
-            scene.player.metaMachine.setState(`${input}`);
+        } else if (check.success === true && scene.player.positiveMachine.isState(input)) {
+            scene.player.positiveMachine.setState(`${input}`);
         };
     };
 

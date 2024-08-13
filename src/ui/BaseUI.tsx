@@ -431,7 +431,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             } else if (affectsHealth === true) {
                 adjustTime(1000, res.newPlayerHealth);
             };
-            // EventBus.emit('screenshake');
             screenShake(instance.game.scene.scenes[3], 128); // [250, 150, 250]
         } catch (err: any) {
             console.warn(err, 'Error Initiating Combat');
@@ -440,11 +439,10 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     function resolveCombat(res: Combat) {
         try {
             adjustTime(0, 0, true);
-            res = statusEffectCheck(res);
             if (res.playerWin === true) {
                 let experience: number = Math.round((res.computer?.level as number) * 100 
-                    * (res.computer?.level as number / res?.player?.level!) 
-                    + (res?.playerAttributes?.rawKyosir as number));
+                * (res.computer?.level as number / res?.player?.level!) 
+                + (res?.playerAttributes?.rawKyosir as number));
                 experience = balanceExperience(experience, res?.player?.level as number);
                 experience += ascean().experience;
                 const newState = { 
@@ -463,8 +461,9 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             } else {
                 EventBus.emit('record-loss', res);
             };
+            res = statusEffectCheck(res);
         } catch (err: any) {
-            console.log(err, 'Error Resolving Combat');
+            console.warn(err, 'Error Resolving Combat');
         };
     };    
     function startCountdown(health: number) {
@@ -525,7 +524,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     return <div id='base-ui'>
         <Show when={game().showPlayer} fallback={<div style={{ position: "absolute", 'z-index': 1 }}>
             <Suspense fallback={<Puff color="gold" />}>
-                <CombatUI state={combat} game={game} stamina={stamina} grace={grace} />
+                <CombatUI state={combat} game={game} settings={settings} stamina={stamina} grace={grace} />
             </Suspense>
             <Show when={combat().computer} fallback={<EnemyPreview enemies={enemies} fetchEnemy={fetchEnemy} />}>
             <Suspense fallback={<Puff color="gold" />}>

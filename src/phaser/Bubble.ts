@@ -51,7 +51,6 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
                 };
                 this.updateGlow(scene.time.now);
             },
-            loop: true,
             repeat: reps,
             callbackScope: this
         });

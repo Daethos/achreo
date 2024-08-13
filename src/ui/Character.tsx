@@ -16,7 +16,7 @@ import { useResizeListener } from '../utility/dimensions';
 import { Attributes } from '../utility/attributes';
 import { Reputation, faction } from '../utility/player';
 import { playerTraits } from '../utility/ascean';
-import { SPECIALS, TRAITS } from '../utility/abilities';
+import { SPECIAL, TRAIT_SPECIALS } from '../utility/abilities'; // SPECIALS, TRAITS
 import { DEITIES } from '../utility/deities';
 import { Puff } from 'solid-spinner';
 import PhaserSettings from './PhaserSettings';
@@ -152,29 +152,29 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
     }); 
 
     function checkSpecials() {
-        // const potential = [playerTraitWrapper().primary.name, playerTraitWrapper().secondary.name, playerTraitWrapper().tertiary.name];
-        const extra = [];
-        for (let i = 0; i < TRAITS.length; i++) {
-            extra.push(TRAITS[i]);
-        };
-        // for (let i = 0; i < 3; i++) {
-        //     const trait = TRAIT_SPECIALS[potential[i] as keyof typeof TRAIT_SPECIALS];
-        //     if (trait) {
-        //         extra.push(trait);
-        //     };
+        const potential = [playerTraitWrapper().primary.name, playerTraitWrapper().secondary.name, playerTraitWrapper().tertiary.name];
+        const mastery = SPECIAL[ascean().mastery as keyof typeof SPECIAL];
+        let extra = [];
+        // for (let i = 0; i < TRAITS.length; i++) {
+        //     extra.push(TRAITS[i]);
         // };
+        for (let i = 0; i < 3; i++) {
+            const trait = TRAIT_SPECIALS[potential[i] as keyof typeof TRAIT_SPECIALS];
+            if (trait) {
+                extra.push(trait);
+            };
+        };
         if (extra.length > 0) {
-            let start = [...SPECIALS, ...extra];
+            let start = [...mastery, ...extra];
             start.sort();
             setSpecials(start);
         } else {
-            setSpecials([...SPECIALS]);
+            setSpecials([...mastery]);
         };
     };
 
     const getBackgroundStyle = () => {
-        if (scaleImage().scale > 48 && scaleImage().id === highlighted()?.item?._id) {
-            console.log('ScaleImage is greater than 48');
+        if (scaleImage().id === highlighted()?.item?._id) {
             return 'gold';
         } else if (highlighted()?.item && (highlighted()?.item?._id === highlighted()?.item?._id)) {
             return '#820303';

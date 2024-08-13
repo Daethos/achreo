@@ -157,12 +157,12 @@ export const STARTING_MASTERY_UI = {
             'thumb': 0xfdf6d8
         },
         'actionButtons': {
-            'border': 0xfdf6d8,
+            'border': 0xb8a30b,
             'color': 0x000000
         },
         'specialButtons': {
-            'border': 0x000000,
-            'color': 0xfdf6d8
+            'border': 0xfdf6d8,
+            'color': 0x000000
         }
     },
     'strength': {
@@ -175,12 +175,12 @@ export const STARTING_MASTERY_UI = {
             'thumb': 0xff0000
         },
         'actionButtons': {
-            'border': 0xff0000,
+            'border': 0x301934,
             'color': 0x000000
         },
         'specialButtons': {
-            'border': 0x000000,
-            'color': 0xff0000
+            'border': 0xff0000,
+            'color': 0x000000
         }
     },
     'agility': {
@@ -193,12 +193,12 @@ export const STARTING_MASTERY_UI = {
             'thumb': 0x00ff00
         },
         'actionButtons': {
-            'border': 0x00ff00,
+            'border': 0x191970,
             'color': 0x000000
         },
         'specialButtons': {
-            'border': 0x000000,
-            'color': 0x00ff00
+            'border': 0x00ff00,
+            'color': 0x000000
         }
     },
     'achre': {
@@ -211,12 +211,12 @@ export const STARTING_MASTERY_UI = {
             'thumb': 0x0000ff
         },
         'actionButtons': {
-            'border': 0x0000ff,
+            'border': 0x355E3B,
             'color': 0x000000
         },
         'specialButtons': {
-            'border': 0x000000,
-            'color': 0x0000ff
+            'border': 0x0000ff,
+            'color': 0x000000
         }
     },
     'caeren': {
@@ -229,12 +229,12 @@ export const STARTING_MASTERY_UI = {
             'thumb': 0x800080
         },
         'actionButtons': {
-            'border': 0x800080,
+            'border': 0x8B0000,
             'color': 0x000000
         },
         'specialButtons': {
-            'border': 0x000000,
-            'color': 0x800080
+            'border': 0x800080,
+            'color': 0x000000
         }
     },
     'kyosir': {
@@ -247,15 +247,15 @@ export const STARTING_MASTERY_UI = {
             'thumb': 0xFFD700
         },
         'actionButtons': {
-            'border': 0xFFD700,
+            'border': 0xd9d9d9,
             'color': 0x000000
         },
         'specialButtons': {
-            'border': 0x000000,
-            'color': 0xFFD700
+            'border': 0xFFD700,
+            'color': 0x000000
         }
     },
-}
+};
 export const TRAIT_SPECIALS = {
     "Astral": 'Astrication',
     "Cambiren": 'Caerenesis',

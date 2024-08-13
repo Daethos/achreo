@@ -13,16 +13,18 @@ import StaminaBubble from './StaminaBubble';
 import StaminaModal from '../components/StaminaModal';
 import GraceModal from '../components/GraceModal';
 import { createHealthDisplay } from '../utility/health';
+import Settings from '../models/settings';
 // import { CombatAttributes } from '../utility/combat';
 // import Equipment from '../models/equipment';
 // import Ascean, { initAscean } from '../models/ascean';
 interface Props {
     state: Accessor<Combat>;
     game: Accessor<GameState>;
+    settings: Accessor<Settings>;
     stamina: Accessor<number>;
     grace: Accessor<number>;
 };
-export default function CombatUI({ state, game, stamina, grace }: Props) {
+export default function CombatUI({ state, game, settings, stamina, grace }: Props) {
     const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal(false);
     const [prayerShow, setPrayerShow] = createSignal(false);
@@ -62,8 +64,8 @@ export default function CombatUI({ state, game, stamina, grace }: Props) {
             <div class='healthbarPosition' style={{ width: `${healthPercentage()}%`, 'background': state()?.isStealth ? 'linear-gradient(#000, #444)' : 'linear-gradient(gold, #fdf6d8)' }}></div>
         </div>
         <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar" onClick={changeDisplay}/>
-        <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} />
-        <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} />
+        <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} settings={settings} />
+        <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} settings={settings} />
         <div class='combatUiWeapon' onClick={() => setShow(show => !show)} style={caerenic(state().isCaerenic) as any}>
             <img src={state()?.weapons?.[0]?.imgUrl} alt={state()?.weapons?.[0]?.name} />
         </div>
@@ -99,12 +101,12 @@ export default function CombatUI({ state, game, stamina, grace }: Props) {
         </Show>
         <Show when={staminaShow()}>
         <div class='modal' onClick={() => setStaminaShow(!staminaShow())}>
-            <StaminaModal />
+            <StaminaModal setShow={setStaminaShow} settings={settings} />
         </div> 
         </Show>
         <Show when={graceShow()}>
         <div class='modal' onClick={() => setGraceShow(!graceShow())}>
-            <GraceModal />
+            <GraceModal setShow={setGraceShow} settings={settings} />
         </div> 
         </Show>
         {/* <button class='highlight center' onClick={() => createPrayer()} style={{ }}>

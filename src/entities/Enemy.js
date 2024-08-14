@@ -1024,7 +1024,8 @@ export default class Enemy extends Entity {
         this.scene.time.delayedCall(PLAYER.DURATIONS.DESPERATION, () => {
             const heal = Math.round(this.ascean.health.max * 0.5);
             const total = Math.min(this.health + heal, this.ascean.health.max);
-            this.scene.combatMachine.action({ data: { key: 'enemy', value: total, id: this.enemyID }, type: 'Health' });
+            // this.scene.combatMachine.action({ data: { key: 'enemy', value: total, id: this.enemyID }, type: 'Health' });
+            this.healthUpdate({ glancing: false, id: this.enemyID, health: total });
             this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
             this.checkCaerenic(false);
             this.count.stunned += 1;
@@ -1087,7 +1088,8 @@ export default class Enemy extends Entity {
             } else {
                 const heal = Math.round(this.ascean.health.max * 0.25);
                 const total = Math.min(this.health + heal, this.ascean.health.max);
-                this.scene.combatMachine.action({ data: { key: 'enemy', value: total, id: this.enemyID }, type: 'Health' });
+                this.healthUpdate({ glancing: false, id: this.enemyID, health: total });
+                // this.scene.combatMachine.action({ data: { key: 'enemy', value: total, id: this.enemyID }, type: 'Health' });
                 this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
             };        
             this.checkCaerenic(false);
@@ -1328,7 +1330,8 @@ export default class Enemy extends Entity {
             const computerActionDescription = `${this.ascean?.name} sacrifices ${sacrifice / 2} health to rip ${sacrifice} from you.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: -ratio, id: this.scene.player.playerID } });
-            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
+            // this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
+            this.healthUpdate({ glancing: false, id: this.enemyID, health: newComputerHealth });
         };
         if (this.isGlowing === false) this.checkCaerenic(true);
         this.scene.time.delayedCall(500, () => {
@@ -1419,7 +1422,8 @@ export default class Enemy extends Entity {
             
             EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: -ratio, id: this.scene.player.playerID } });
-            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
+            // this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
+            this.healthUpdate({ glancing: false, id: this.enemyID, health: newComputerHealth });
         };
         
         if (this.isGlowing === false) this.checkCaerenic(true);
@@ -1512,7 +1516,8 @@ export default class Enemy extends Entity {
             const computerActionDescription = `${this.ascean?.name} tshaers and devours ${dev} health from you.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: -6, id: this.scene.player.playerID } });
-            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
+            // this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
+            this.healthUpdate({ glancing: false, id: this.enemyID, health: newComputerHealth });
         };
     };
 
@@ -1646,7 +1651,8 @@ export default class Enemy extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril');
         const mend = Math.round(this.healthbar.getTotal() * 0.2);
         const heal = Math.min(this.healthbar.getTotal(), this.health + mend);
-        this.scene.combatMachine.action({ data: { key: 'enemy', value: heal, id: this.enemyID }, type: 'Health' });
+        // this.scene.combatMachine.action({ data: { key: 'enemy', value: heal, id: this.enemyID }, type: 'Health' });
+        this.healthUpdate({ glancing: false, id: this.enemyID, health: heal });
         this.mendBubble.setCharges(this.mendBubble.charges - 1);
         if (this.mendBubble.charges <= 0) {
             this.isMending = false;

@@ -20,7 +20,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.name = type;
         this.setAngle(0);
         this.setVisible(false);
-        this.setScale(0.375); // 375
+        this.setScale(0.375);
         this.setOrigin(0.5, 0.5);
         scene.add.existing(this);
         this.glowFilter = this.scene.plugins.get('rexGlowFilterPipeline');

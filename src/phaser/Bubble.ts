@@ -40,7 +40,7 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
         this.warp = this.scene.time.addEvent({
             delay: 250, // 125 Adjust the delay as needed
             callback: () => {
-                if (!this || this.calling === true || !this.warp || !this.glowFilter) return;
+                if (!this || !this.warp || !this.glowFilter) return;
                 this.calling = true;
                 if (this.charges <= 0) {
                     this.glowFilter.remove(this);
@@ -51,7 +51,7 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
                 };
                 this.updateGlow(scene.time.now);
             },
-            repeat: reps,
+            repeat: reps - 1,
             callbackScope: this
         });
     };
@@ -71,11 +71,11 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
     };
 
     updateGlow = (time: number) => {
-        if (!this || this.calling === true || !this.glowFilter || !this.warp || !time) return;
+        if (!this || this.calling === false || !this.glowFilter || !this.warp || !time) return;
         this.glowFilter.remove(this);
         
-        const outerStrength = (this.charges) + Math.sin(time * 0.005) * (this.charges); // Adjust the frequency and amplitude as needed
-        const innerStrength = (this.charges) + Math.cos(time * 0.005) * (this.charges);
+        const outerStrength = (this.charges / 2) + Math.sin(time * 0.0005); // * (this.charges / 2); // Adjust the frequency and amplitude as needed
+        const innerStrength = (this.charges / 2) + Math.cos(time * 0.0005); // * (this.charges / 2);
         const intensity = 0.25;
         const glowColor = this.color;
             

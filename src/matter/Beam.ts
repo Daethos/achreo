@@ -5,6 +5,7 @@ export default class Beam {
     color: number;
     scene: Game;
     emitter: Phaser.GameObjects.Particles.ParticleEmitter;
+    enemyEmitters: any;
     target: any;
     settings: any;
     constructor(player: any) {
@@ -23,15 +24,33 @@ export default class Beam {
             quantity: 25,
             speedX: {min:35, max:55},
             speedY: {min:35, max:55},
-            reserve: 100,
+            reserve: 25,
             follow: this.player,
             followOffset: { x: -265, y: -165 },
-            visible: false
+            visible: true
         };
         this.emitter = this.scene.add.particles(player.x, player.y, 'beam', this.settings);
         this.emitter.stop();
+        this.emitter.setVisible(false);
+        this.enemyEmitters = {};
     };
-    createEmitter = (target: any, time: number) => { // Mastery for Enemy using Player Beam ??
+    enemyEmitter = (enemy: any, time: number, mastery: string) => { // Mastery for Enemy using Player Beam ??
+        const color = masteryNumber(mastery);
+        if (!this.enemyEmitters[enemy.enemyID]) {
+            this.enemyEmitters[enemy.enemyID] = this.scene.add.particles(enemy.x, enemy.y, 'beam', {
+                ...this.settings, color: [color], follow: enemy,
+            });
+        };
+        this.enemyEmitters[enemy.enemyID].start();
+        this.updateEnemyEmitter(enemy, color);
+        this.scene.time.addEvent({
+            delay: time / 20,
+            callback: () => {if (enemy) this.updateEnemyEmitter(enemy, color);},
+            callbackScope: this,
+            repeat: 19
+        });
+    };
+    startEmitter = (target: any, time: number) => {
         this.emitter.start();
         this.target = target;
         this.updateEmitter(target);
@@ -42,19 +61,31 @@ export default class Beam {
             repeat: 19
         });
     };
-    updateEmitter(target: any) {
+    updateEmitter = (target: any) => {
         const dynamicConfig = {
             moveToX: target.x - 265,
             moveToY: target.y - 165,
             scale: this.glow(),
-            visible: true,
         };
         this.emitter.setConfig({...this.settings, ...dynamicConfig});
+    };
+    updateEnemyEmitter = (enemy: any, color: number) => {
+        const dynamicConfig = {
+            color: [color],
+            moveToX: this.player.x - 795,
+            moveToY: this.player.y - 330,
+            scale: this.glow(),
+        };
+        this.enemyEmitters[enemy.enemyID].setConfig({ ...this.settings, ...dynamicConfig });
     };
     glow = (): number => Math.random() / 10; 
     reset = () => {
         this.emitter.stop(); // Added
         this.emitter.setVisible(false);
         this.target = undefined;
+    };
+    resetEnemy = (enemy: any) => {
+        this.enemyEmitters[enemy.enemyID].stop(); // Added
+        this.enemyEmitters[enemy.enemyID].setVisible(false);
     };
 };

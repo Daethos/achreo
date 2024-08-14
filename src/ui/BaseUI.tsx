@@ -18,7 +18,12 @@ const EnemyPreview = lazy(async () => await import('./EnemyPreview'));
 const EnemyUI = lazy(async () => await import('./EnemyUI'));
 const SmallHud = lazy(async () => await import('./SmallHud'));
 const TutorialOverlay = lazy(async () => await import('../utility/tutorial'));
-
+function validateHealth(val: number): number {
+    if (Number.isNaN(val)) {
+        return 1;
+    };
+    return val;
+};
 interface Props {
     instance: any;
     ascean: Accessor<Ascean>;
@@ -34,7 +39,7 @@ interface Props {
     setShowTutorial: Setter<boolean>;
     showDeity: Accessor<boolean>;
 };
-
+var remaining: number = 0, timer: any = undefined;
 export default function BaseUI({ instance, ascean, combat, game, reputation, settings, setSettings, stamina, grace, tutorial, showDeity, showTutorial, setShowTutorial }: Props) {
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [asceanState, setAsceanState] = createSignal<LevelSheet>({
@@ -56,8 +61,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         caeren: 0,
         kyosir: 0,
     });
-    var remaining: number = 0, timer: any = undefined;
-
     createEffect(() => EventBus.emit('combat', combat()));  
     createEffect(() => EventBus.emit('reputation', reputation()));
     createEffect(() => EventBus.emit('settings', settings()));
@@ -114,7 +117,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     };
     function initiateCombat(data: any, type: string) {
         try {    
-            let playerWin: boolean = false, computerWin: boolean = false, res: any = undefined, affectsHealth: boolean = true, caerenic: number = combat().isCaerenic ? 1.15 : 1, stalwart: number = combat().isStalwart ? 0.85 : 1;
+            let playerWin: boolean = false, computerWin: boolean = false, res: any = undefined, playerActionDescription: string = '', computerActionDescription: string = '', affectsHealth: boolean = true, caerenic: number = combat().isCaerenic ? 1.15 : 1, stalwart: number = combat().isStalwart ? 0.85 : 1;
             switch (type) {
                 case 'Weapon': // Targeted Weapon Action by Enemy or Player
                     const weapon = { ...combat(), [data.key]: data.value };
@@ -123,7 +126,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     playerWin = res.playerWin;
                     computerWin = res.computerWin;
                     break;
-                case 'Consume': // Consuming a Prayer
+                case 'Consume': // Consuming Prayer
                     let consume = { 
                         ...combat(), 
                         prayerSacrificeId: data.prayerSacrificeId, 
@@ -139,7 +142,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                         playerWin,
                     });
                     break;
-                case 'Prayer': // Consuming a Prayer
+                case 'Prayer': // Consuming Prayer
                     let prayer = { ...combat(), playerEffects: data };
                     prayer = consumePrayer(prayer) as Combat;
                     res = { ...combat(), ...prayer };
@@ -151,15 +154,15 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                         playerWin,
                     });
                     break;
-                case 'Instant': // Invoking a Prayer
+                case 'Instant': // Invoking Prayer
                     let insta = { ...combat(), playerBlessing: data };
                     insta = instantActionCompiler(insta) as Combat;
                     playerWin = insta.playerWin;
                     res = { ...combat(), ...insta };
                     EventBus.emit('blend-combat', insta);
                     break;
-                case 'Tick': // Prayer Effect Tick
-                    if (combat().newComputerHealth <= 0) break;
+                case 'Tick': // Prayer Tick
+                    if (validateHealth(combat().newComputerHealth) <= 0) break;
                     const { effect, effectTimer } = data;
                     const tick = prayerEffectTick({ combat: combat(), effect, effectTimer });
                     res = { ...combat(), ...tick };
@@ -167,13 +170,13 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     computerWin = res.computerWin;
                     EventBus.emit('blend-combat', tick);
                     break;
-                case 'Remove Tick': // Removing a Prayer
+                case 'Remove Tick': // Removing Prayer
                     const remove = prayerRemoveTick(combat(), data);
                     res = { ...combat(), ...remove };
                     EventBus.emit('blend-combat', remove);                    
                     affectsHealth = false;
                     break;
-                case 'Player': // 'Player Blind Attack' i.e. hitting a non targeted enemy
+                case 'Player': // Blind Player Attack i.e. hitting a non targeted enemy
                     const { playerAction, enemyID, ascean, damageType, combatStats, weapons, health, actionData } = data;
                     let playerData = {
                         action: playerAction.action,
@@ -230,16 +233,16 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     computerWin = res.computerWin;
                     playerWin = res.playerWin;
                     break;
-                case 'Chiomic': // Mindflay (Straight Damage)
+                case 'Chiomic': // Mindflay
                     const chiomic = Math.round(combat().playerHealth * (data / 100) * caerenic * ((combat().player?.level as number + 9) / 10));
-                    const newComputerHealth = combat().newComputerHealth - chiomic < 0 ? 0 : combat().newComputerHealth - chiomic;
+                    const newComputerHealth = validateHealth(combat().newComputerHealth) - chiomic < 0 ? 0 : validateHealth(combat().newComputerHealth) - chiomic;
                     playerWin = newComputerHealth === 0;
-                    const chiomicDescription = `Your hush flays ${chiomic} health from ${combat().computer?.name}.`;
+                    playerActionDescription = `Your hush flays ${chiomic} health from ${combat().computer?.name}.`;
                     res = { 
                         ...combat(), 
                         newComputerHealth, 
                         playerWin,
-                        playerActionDescription: chiomicDescription,    
+                        playerActionDescription,    
                     };
                     EventBus.emit('blend-combat', { 
                         newComputerHealth, 
@@ -247,16 +250,16 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     });
                     affectsHealth = false;
                     break;
-                case 'Enemy Chiomic': // Mindflay (Straight Damage)
-                    const enemyChiomic = Math.round(combat().computerHealth * (data / 100) * (caerenic ? 1.25 : 1) * stalwart  * ((combat().computer?.level as number + 9) / 10));
-                    const newChiomicPlayerHealth = combat().newPlayerHealth - enemyChiomic < 0 ? 0 : combat().newPlayerHealth - enemyChiomic;
+                case 'Enemy Chiomic': // Mindflay
+                    const enemyChiomic = Math.round(validateHealth(combat().computerHealth) * (data / 100) * (caerenic ? 1.25 : 1) * stalwart  * ((validateHealth(combat().computer?.level as number) + 9) / 10));
+                    const newChiomicPlayerHealth = validateHealth(combat().newPlayerHealth) - enemyChiomic < 0 ? 0 : validateHealth(combat().newPlayerHealth) - enemyChiomic;
                     computerWin = newChiomicPlayerHealth === 0;
-                    const enemyChiomicDescription = `${combat().computer?.name} flays ${enemyChiomic} health from you with their hush.`;
+                    computerActionDescription = `${combat().computer?.name} flays ${enemyChiomic} health from you with their hush.`;
                     res = {
                         ...combat(),
                         newPlayerHealth: newChiomicPlayerHealth,
                         computerWin,
-                        computerActionDescription: enemyChiomicDescription,
+                        computerActionDescription,
                     };
                     EventBus.emit('blend-combat', {
                         newPlayerHealth: newChiomicPlayerHealth,
@@ -265,32 +268,31 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     break;
                 case 'Tshaeral': // Lifedrain (Tick, 100%)
                     const drained = Math.round(combat().playerHealth * (data / 100) * caerenic * ((combat().player?.level as number + 9) / 10));
-                    const newPlayerHealth = combat().newPlayerHealth + drained > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + drained;
-                    const newHealth = combat().newComputerHealth - drained < 0 ? 0 : combat().newComputerHealth - drained;
+                    const newPlayerHealth = validateHealth(combat().newPlayerHealth) + drained > combat().playerHealth ? combat().playerHealth : validateHealth(combat().newPlayerHealth) + drained;
+                    const newHealth = validateHealth(combat().newComputerHealth) - drained < 0 ? 0 : validateHealth(combat().newComputerHealth) - drained;
                     playerWin = newHealth === 0;
-                    const tshaeralDescription = `You tshaer and devour ${drained} health from ${combat().computer?.name}.`;
+                    playerActionDescription = `You tshaer and devour ${drained} health from ${combat().computer?.name}.`;
                     res = { 
                         ...combat(), 
                         newPlayerHealth, 
                         newComputerHealth: newHealth, 
                         playerWin,
-                        playerActionDescription: tshaeralDescription,
+                        playerActionDescription,
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth: newHealth, playerWin });
                     break;
                 case 'Enemy Tshaeral': // Lifedrain (Tick, 100%)
-                    const enemyDrain = Math.round(combat().computerHealth * (data / 100) * (caerenic ? 1.25 : 1) * stalwart * ((combat().computer?.level as number + 9) / 10));
-                    let drainedPlayerHealth = combat().newPlayerHealth - enemyDrain < 0 ? 0 : combat().newPlayerHealth - enemyDrain;
-                    let drainedComputerHealth = combat().newComputerHealth + enemyDrain > combat().computerHealth ? combat().computerHealth : combat().newComputerHealth + enemyDrain;
-                    
+                    const enemyDrain = Math.round(validateHealth(combat().computerHealth) * (data / 100) * (caerenic ? 1.25 : 1) * stalwart * ((validateHealth(combat().computer?.level as number) + 9) / 10));
+                    let drainedPlayerHealth = validateHealth(combat().newPlayerHealth) - enemyDrain < 0 ? 0 : validateHealth(combat().newPlayerHealth) - enemyDrain;
+                    let drainedComputerHealth = validateHealth(combat().newComputerHealth) + enemyDrain > validateHealth(combat().computerHealth) ? validateHealth(combat().computerHealth) : validateHealth(combat().newComputerHealth) + enemyDrain;
                     computerWin = drainedPlayerHealth === 0;
-                    const enemyTshaeralDescription = `${combat().computer?.name} tshaers and devours ${enemyDrain} health from you.`;
+                    computerActionDescription = `${combat().computer?.name} tshaers and devours ${enemyDrain} health from you.`;
                     res = {
                         ...combat(),
                         newPlayerHealth: drainedPlayerHealth,
                         newComputerHealth: drainedComputerHealth,
                         computerWin,
-                        computerActionDescription: enemyTshaeralDescription,
+                        computerActionDescription,
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: drainedPlayerHealth, newComputerHealth: drainedComputerHealth, computerWin });
                     break;
@@ -299,18 +301,18 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     switch (key) {
                         case 'player':
                             const healed = Math.floor(combat().playerHealth * (value / 100));
-                            const newPlayerHealth = combat().newPlayerHealth + healed > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + healed;
+                            const newPlayerHealth = validateHealth(combat().newPlayerHealth) + healed > combat().playerHealth ? combat().playerHealth : validateHealth(combat().newPlayerHealth) + healed;
                             computerWin = newPlayerHealth <= 0;
-                            const healthDescription =  healed > 0 ? `You heal for ${healed}, back to ${Math.round(newPlayerHealth)}.` : `You are damaged for ${healed}, down to ${Math.round(newPlayerHealth)}`;
-                            res = { ...combat(), newPlayerHealth, playerActionDescription: healthDescription };
+                            playerActionDescription =  healed > 0 ? `You heal for ${healed}, back to ${Math.round(newPlayerHealth)}.` : `You are damaged for ${healed}, down to ${Math.round(newPlayerHealth)}`;
+                            res = { ...combat(), newPlayerHealth, playerActionDescription };
                             EventBus.emit('blend-combat', { newPlayerHealth, computerWin });
                             break;
                         case 'enemy':
                             const enemyHealth = value > 0 ? value : 0;
                             playerWin = enemyHealth === 0;
                             if (combat().enemyID === id) {
-                                const enemyDescription = `${combat().computer?.name} health shifts to ${Math.round(enemyHealth)}.`;
-                                res = { ...combat(), newComputerHealth: enemyHealth, playerWin, computerActionDescription: enemyDescription };
+                                computerActionDescription = `${combat().computer?.name} health shifts to ${Math.round(enemyHealth)}.`;
+                                res = { ...combat(), newComputerHealth: enemyHealth, playerWin, computerActionDescription };
                                 EventBus.emit('blend-combat', { newComputerHealth: enemyHealth, playerWin });
                             } else {
                                 res = { ...combat(), playerWin };
@@ -322,7 +324,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                             break;
                     };
                     break;
-                case 'Enemy': // 'Enemy Blind Attack' i.e. an enemy not targeted hitting the player
+                case 'Enemy': // Blind Enemy Attack i.e. an enemy not targeted hitting the player
                     let enemyData = {
                         computer: data.ascean,
                         computerAttributes: data.combatStats.attributes,
@@ -347,15 +349,15 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     break;
                 case 'Sacrifice': // Shadow Word: Death
                     const sacrifice = Math.round(combat()?.player?.[combat().player?.mastery as string] * caerenic * ((combat().player?.level as number + 9) / 10));
-                    let playerSacrifice = combat().newPlayerHealth - (sacrifice / 2 * stalwart) < 0 ? 0 : combat().newPlayerHealth - (sacrifice / 2 * stalwart);
-                    let enemySacrifice = combat().newComputerHealth - sacrifice < 0 ? 0 : combat().newComputerHealth - sacrifice;
+                    let playerSacrifice = validateHealth(combat().newPlayerHealth) - (sacrifice / 2 * stalwart) < 0 ? 0 : validateHealth(combat().newPlayerHealth) - (sacrifice / 2 * stalwart);
+                    let enemySacrifice = validateHealth(combat().newComputerHealth) - sacrifice < 0 ? 0 : validateHealth(combat().newComputerHealth) - sacrifice;
 
-                    const sacrificeDescription = `You sacrifice ${sacrifice / 2 * stalwart} health to rip ${sacrifice} from ${combat().computer?.name}.`;
+                    playerActionDescription = `You sacrifice ${sacrifice / 2 * stalwart} health to rip ${sacrifice} from ${combat().computer?.name}.`;
                     res = { ...combat(),
                         newPlayerHealth: playerSacrifice,
                         newComputerHealth: enemySacrifice,
                         playerWin: enemySacrifice === 0,
-                        playerActionDescription: sacrificeDescription,
+                        playerActionDescription,
                         computerWin: playerSacrifice === 0,
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerSacrifice, newComputerHealth: enemySacrifice, playerWin: enemySacrifice === 0 });
@@ -364,34 +366,30 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     break;
                 case 'Suture': // Lifedrain (Instant, 50%)
                     const suture = Math.round(combat()?.player?.[combat().player?.mastery as string] / 2 * caerenic * ((combat().player?.level as number + 9) / 10));
-                    let playerSuture = combat().newPlayerHealth + suture > combat().playerHealth ? combat().playerHealth : combat().newPlayerHealth + suture;
-                    let enemySuture = combat().newComputerHealth - suture < 0 ? 0 : combat().newComputerHealth - suture;
-                    
-                    const sutureDescription = 
-                        `Your tendrils suture ${combat().computer?.name}'s caeren into you, absorbing ${suture}.`;    
+                    let playerSuture = validateHealth(combat().newPlayerHealth) + suture > combat().playerHealth ? combat().playerHealth : validateHealth(combat().newPlayerHealth) + suture;
+                    let enemySuture = validateHealth(combat().newComputerHealth) - suture < 0 ? 0 : validateHealth(combat().newComputerHealth) - suture;
+                    playerActionDescription = `Your tendrils suture ${combat().computer?.name}'s caeren into you, absorbing ${suture}.`;    
                     res = {
                         ...combat(),
                         newPlayerHealth: playerSuture,
                         newComputerHealth: enemySuture,
                         playerWin: enemySuture === 0,
-                        playerActionDescription: sutureDescription,    
+                        playerActionDescription,    
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerSuture, newComputerHealth: enemySuture, playerWin: enemySuture === 0 });
                     playerWin = res.playerWin;
                     break;
                 case 'Enemy Sacrifice': // Shadow Word: Death
-                    const enemySac = Math.round(combat().computer?.[combat().computer?.mastery as string] * ((combat().computer?.level as number + 9) / 10) * stalwart);
-                    let playerEnemySacrifice = combat().newPlayerHealth - (enemySac * (caerenic ? 1.25 : 1)) < 0 ? 0 : combat().newPlayerHealth - (enemySac * (caerenic ? 1.25 : 1));
-                    let enemyEnemySacrifice = combat().newComputerHealth - (enemySac / 2) < 0 ? 0 : combat().newComputerHealth - (enemySac / 2);
-    
-                    const enemySacrificeDescription = 
-                        `${combat().computer?.name} sacrifices ${enemySac / 2} health to rip ${enemySac * (caerenic ? 1.25 : 1)} from you.`;
+                    const enemySac = Math.round(combat().computer?.[combat().computer?.mastery as string] * ((validateHealth(combat().computer?.level as number) + 9) / 10) * stalwart);
+                    let playerEnemySacrifice = validateHealth(combat().newPlayerHealth) - (enemySac * (caerenic ? 1.25 : 1)) < 0 ? 0 : validateHealth(combat().newPlayerHealth) - (enemySac * (caerenic ? 1.25 : 1));
+                    let enemyEnemySacrifice = validateHealth(combat().newComputerHealth) - (enemySac / 2) < 0 ? 0 : validateHealth(combat().newComputerHealth) - (enemySac / 2);
+                    computerActionDescription = `${combat().computer?.name} sacrifices ${enemySac / 2} health to rip ${enemySac * (caerenic ? 1.25 : 1)} from you.`;
                     res = {
                         ...combat(),
                         newPlayerHealth: playerEnemySacrifice,
                         newComputerHealth: enemyEnemySacrifice,
                         computerWin: playerEnemySacrifice === 0,
-                        computerActionDescription: enemySacrificeDescription,
+                        computerActionDescription,
                         playerWin: enemyEnemySacrifice === 0,
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerEnemySacrifice, newComputerHealth: enemyEnemySacrifice, computerWin: playerEnemySacrifice === 0 });
@@ -399,18 +397,16 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     playerWin = res.playerWin;
                     break;
                 case 'Enemy Suture': // Lifedrain (Instant, 50%)
-                    const enemySut = Math.round(combat().computer?.[combat().computer?.mastery as string] / 2 * (caerenic ? 1.25 : 1) * ((combat().computer?.level as number + 9) / 10) * stalwart);
-                    let playerEnemySuture = combat().newPlayerHealth - (enemySut * 1.25) < 0 ? 0 : combat().newPlayerHealth - (enemySut * 1.25);
-                    let enemyEnemySuture = combat().newComputerHealth + enemySut > combat().computerHealth ? combat().computerHealth : combat().newComputerHealth + enemySut;
-
-                    const enemySutureDescription = 
-                        `${combat().computer?.name} sutured ${enemySut} health from you, absorbing ${enemySut}.`;
+                    const enemySut = Math.round(combat().computer?.[combat().computer?.mastery as string] / 2 * (caerenic ? 1.25 : 1) * ((validateHealth(combat().computer?.level as number) + 9) / 10) * stalwart);
+                    let playerEnemySuture = validateHealth(combat().newPlayerHealth) - (enemySut * 1.25) < 0 ? 0 : validateHealth(combat().newPlayerHealth) - (enemySut * 1.25);
+                    let enemyEnemySuture = validateHealth(combat().newComputerHealth) + enemySut > validateHealth(combat().computerHealth) ? validateHealth(combat().computerHealth) : validateHealth(combat().newComputerHealth) + enemySut;
+                    computerActionDescription = `${combat().computer?.name} sutured ${enemySut} health from you, absorbing ${enemySut}.`;
                     res = {
                         ...combat(),
                         newPlayerHealth: playerEnemySuture,
                         newComputerHealth: enemyEnemySuture,
                         computerWin: playerEnemySuture === 0,
-                        computerActionDescription: enemySutureDescription,
+                        computerActionDescription,
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerEnemySuture, newComputerHealth: enemyEnemySuture, computerWin: playerEnemySuture === 0 });
                     computerWin = res.computerWin;
@@ -418,12 +414,8 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 default:
                     break;
             };
-            if (playerWin === true) {
-                res.computerDeathDescription = `${res.computer.name} has been defeated.`;
-            };
-            if (computerWin === true) {
-                res.playerDeathDescription = `You have been defeated.`;
-            };
+            if (playerWin === true) res.computerDeathDescription = `${res.computer.name} has been defeated.`;
+            if (computerWin === true) res.playerDeathDescription = `You have been defeated.`;
             EventBus.emit('update-combat', res);
             EventBus.emit('add-combat-logs', res);
             if (playerWin === true || computerWin === true) {
@@ -431,7 +423,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             } else if (affectsHealth === true) {
                 adjustTime(1000, res.newPlayerHealth);
             };
-            screenShake(instance.game.scene.scenes[3], 128); // [250, 150, 250]
+            screenShake(instance.game.scene.scenes[3], 96); // [250, 150, 250]
         } catch (err: any) {
             console.warn(err, 'Error Initiating Combat');
         };
@@ -440,9 +432,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         try {
             adjustTime(0, 0, true);
             if (res.playerWin === true) {
-                let experience: number = Math.round((res.computer?.level as number) * 100 
-                * (res.computer?.level as number / res?.player?.level!) 
-                + (res?.playerAttributes?.rawKyosir as number));
+                let experience: number = Math.round((res.computer?.level as number) * 100 * (res.computer?.level as number / res?.player?.level!) + (res?.playerAttributes?.rawKyosir as number));
                 experience = balanceExperience(experience, res?.player?.level as number);
                 experience += ascean().experience;
                 const newState = { 
@@ -467,21 +457,19 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         };
     };    
     function startCountdown(health: number) {
-        if (!timer) {
-            if (combat().combatEngaged === false) {
-                EventBus.emit('save-health', health);
-                return;
-            };
-            timer = setInterval(() => {
-                remaining -= 1000;
-                if (remaining <= 0) {
-                    clearInterval(timer);
-                    remaining = 0;
-                    timer = undefined;
-                    EventBus.emit('save-health', health);
-                };
-            }, 1000);
+        if (combat().combatEngaged === false) {
+            EventBus.emit('save-health', health);
+            return;
         };
+        timer = setInterval(() => {
+            remaining -= 1000;
+            if (remaining <= 0) {
+                clearInterval(timer);
+                remaining = 0;
+                timer = undefined;
+                EventBus.emit('save-health', health);
+            };
+        }, 1000);
     };
     function adjustTime(amount: number, health: number, cancel?: boolean) {
         if (cancel === true) {
@@ -490,9 +478,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             return;
         };
         remaining += amount;
-        if (!timer) {
-            startCountdown(health);
-        };
+        if (!timer) startCountdown(health);
     };
     function balanceExperience(experience: number, level: number) {
         experience *= (110 - (level * 10)) / 100;
@@ -510,7 +496,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         });
         setEnemies(newEnemies);
     };
-
     usePhaserEvent('computer-combat', (payload: { data: any, type: string }) => computerCombat(payload.data, payload.type));
     usePhaserEvent('initiate-combat', (payload: { data: any, type: string }) => initiateCombat(payload.data, payload.type));
     usePhaserEvent('remove-enemy', filterEnemies);
@@ -520,7 +505,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     usePhaserEvent('enemy-combat-text', (e: { computerSpecialDescription: string }) => EventBus.emit('add-combat-logs', { ...combat(), computerActionDescription: e.computerSpecialDescription }));
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
-
     return <div id='base-ui'>
         <Show when={game().showPlayer} fallback={<div style={{ position: "absolute", 'z-index': 1 }}>
             <Suspense fallback={<Puff color="gold" />}>

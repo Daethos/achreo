@@ -452,10 +452,6 @@ export class Game extends Scene {
             let camera = this.cameras.main;
             camera.zoom = zoom;
         });
-        // this.input.on('pointermove', (pointer: PointerEvent) => {
-        //     console.log(pointer, 'Pointer Over!');
-        //     this.mousePointer = pointer;
-        // });
         EventBus.on('summon-enemy', this.summonEnemy);
     };
 
@@ -611,6 +607,26 @@ export class Game extends Scene {
     };
 
     // ============================ Combat Specials ============================ \\ 
+    melee = (id: string, type: string): void => {
+        if (id === '') return;
+        let enemy = this.enemies.find((e: any) => e.enemyID === id);
+        const match = this.player.enemyIdMatch();
+        if (match) { // Target Player Attack
+            this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: type } });
+        } else { // Blind Player Attack
+            if (enemy.isDefaeted) return;
+            this.combatMachine.action({ type: 'Player', data: { 
+                playerAction: { action: type, parry: this.state.parryGuess }, 
+                enemyID: enemy.enemyID, 
+                ascean: enemy.ascean, 
+                damageType: enemy.currentDamageType, 
+                combatStats: enemy.combatStats, 
+                weapons: enemy.weapons, 
+                health: enemy.health, 
+                actionData: { action: enemy.currentAction, parry: enemy.parryAction }
+            }});
+        };
+    };
     astrave = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
@@ -618,16 +634,16 @@ export class Game extends Scene {
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 1);
             const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
-            enemy.isStunned = true;
             enemy.count.stunned += 1;    
+            enemy.isStunned = true;
         };
     };
     blind = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            enemy.isFeared = true;
             enemy.count.feared += 1;
+            enemy.isFeared = true;
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 1);
             const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
@@ -658,8 +674,8 @@ export class Game extends Scene {
             this.useGrace(15);
             this.player.isConfused = true;
         } else {
-            enemy.isConfused = true;
             enemy.count.confused += 1;
+            enemy.isConfused = true;
         };
     };
     confuse = (id: string): void => {
@@ -669,11 +685,10 @@ export class Game extends Scene {
             this.useGrace(15);
             this.player.isConfused = true;
         } else {
-            enemy.isConfused = true;
             enemy.count.confused += 1;
+            enemy.isConfused = true;
         };
     };
-
     fear = (id: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
@@ -691,8 +706,8 @@ export class Game extends Scene {
             this.useGrace(15);
             this.player.isFrozen = true;
         } else {
-            enemy.isFrozen = true;
             enemy.count.frozen += 1;
+            enemy.isFrozen = true;
         };
     };
     fyerus = (id: string): void => {
@@ -703,8 +718,8 @@ export class Game extends Scene {
             const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
             enemy.slowDuration = 950;
+            enemy.count.slowed += 1;
             enemy.isSlowed = true;
-            enemy.count.slow += 1;
         };
     };
     howl = (id: string): void => {
@@ -736,8 +751,8 @@ export class Game extends Scene {
             this.useGrace(15);
             this.player.isParalyzed = true;
         } else {
-            enemy.isParalyzed = true;
             enemy.count.paralyzed += 1;
+            enemy.isParalyzed = true;
         };
     };
     polymorph = (id: string): void => {
@@ -746,8 +761,8 @@ export class Game extends Scene {
         if (!enemy) {
             this.player.isPolymorphed = true;
         } else {
-            enemy.isPolymorphed = true;
             enemy.count.polymorphed += 1;
+            enemy.isPolymorphed = true;
         };
     };
     renewal = () => {
@@ -809,9 +824,9 @@ export class Game extends Scene {
             this.player.isSlowed = true;
             this.player.slowDuration = time;
         } else {
+            enemy.count.slowed += 1;
             enemy.isSlowed = true;
             enemy.slowDuration = time;
-            enemy.count.slowed += 1;
         };
     };
     snare = (id: string): void => {
@@ -820,27 +835,8 @@ export class Game extends Scene {
         if (!enemy) {
             this.player.isSnared = true;
         } else {
-            enemy.isSnared = true;
             enemy.count.snared += 1;
-        };
-    };
-    storm = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        const match = this.player.enemyIdMatch();
-        if (match) { // Target Player Attack
-            this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: 'storm' } });
-        } else { // Blind Player Attack
-            this.combatMachine.action({ type: 'Player', data: { 
-                playerAction: { action: 'storm', parry: this.state.parryGuess }, 
-                enemyID: enemy.enemyID, 
-                ascean: enemy.ascean, 
-                damageType: enemy.currentDamageType, 
-                combatStats: enemy.combatStats, 
-                weapons: enemy.weapons, 
-                health: enemy.health, 
-                actionData: { action: enemy.currentAction, parry: enemy.parryAction }
-            }});
+            enemy.isSnared = true;
         };
     };
     stun = (id: string): void => {
@@ -850,8 +846,8 @@ export class Game extends Scene {
             this.player.isStunned = true;
             this.useStamina(15);
         } else {
-            enemy.isStunned = true;
             enemy.count.stunned += 1;
+            enemy.isStunned = true;
         };
     };
     stunned = (id: string): void => {
@@ -861,8 +857,8 @@ export class Game extends Scene {
             this.player.isStunned = true;
             this.useStamina(15);
         } else {
-            enemy.isStunned = true;
             enemy.count.stunned += 1;
+            enemy.isStunned = true;
         };
     };
     tendril = (id: string, _enemyID: string): void => {
@@ -887,10 +883,8 @@ export class Game extends Scene {
         } else {
             const match = this.player.enemyIdMatch();
             if (match) { // Target Player Attack
-                console.log('Matched Writhe');
                 this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: special || 'writhe' } });
             } else { // Blind Player Attack
-                console.log('Blind Writhe');
                 this.combatMachine.action({ type: 'Player', data: { 
                     playerAction: { action: special || 'writhe', parry: this.state.parryGuess }, 
                     enemyID: enemy.enemyID, 
@@ -931,7 +925,7 @@ export class Game extends Scene {
             this.musicBackground.pause();
             this.startCombatTimer();
         } else if (bool === false) {
-            this.musicCombat.pause();
+            this.musicCombat.stop();
             this.musicBackground.resume();
             this.stopCombatTimer();    
         };
@@ -1019,7 +1013,7 @@ export class Game extends Scene {
     };
     playerUpdate = (): void => {
         this.player.update(); 
-        this.combatMachine.processor();
+        this.combatMachine.process();
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);

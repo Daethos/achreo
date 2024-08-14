@@ -4,7 +4,13 @@ import HealthBar from "../phaser/HealthBar";
 import { v4 as uuidv4 } from 'uuid';
 import { EventBus } from "../game/EventBus";
 let idCount = 0;
-
+const { Body, Bodies } = Phaser.Physics.Matter.Matter;
+const colliderWidth = 20; 
+const colliderHeight = 36; 
+const paddingWidth = 10; 
+const paddingHeight = 10; 
+const x = colliderWidth + 2 * paddingWidth;
+const y = colliderHeight + 2 * paddingHeight;
 export default class NPC extends Entity { 
     constructor(data) {
         let { scene } = data;
@@ -15,9 +21,11 @@ export default class NPC extends Entity {
         this.scene.add.existing(this);
         this.enemyID = uuidv4();
         const types = ['Merchant-Alchemy', 'Merchant-Armor', 'Merchant-Smith', 'Merchant-Jewelry', 'Merchant-General', 'Merchant-Tailor', 'Merchant-Mystic', 'Merchant-Weapon'];
+        this.isEnemy = false;
         this.npcType = types[this.id];
         this.npcTarget = null;
         this.interacting = false;
+        this.isDefeated = true;
         this.createNPC();
         this.stateMachine = new StateMachine(this, 'npc');
         this.stateMachine
@@ -30,21 +38,12 @@ export default class NPC extends Entity {
                 onUpdate: this.onAwarenessUpdate,
                 onExit: this.onAwarenessExit,
             });
-
         this.stateMachine.setState(States.IDLE);
         this.setScale(0.8);
         this.originalPosition = new Phaser.Math.Vector2(this.x, this.y);
         this.originPoint = {}; 
-        const { Body, Bodies } = Phaser.Physics.Matter.Matter;
-        const colliderWidth = 20; 
-        const colliderHeight = 36; 
-        const paddingWidth = 10; 
-        const paddingHeight = 10; 
-
-        const paddedWidth = colliderWidth + 2 * paddingWidth;
-        const paddedHeight = colliderHeight + 2 * paddingHeight;
         let npcCollider = Bodies.rectangle(this.x, this.y + 10, colliderWidth, colliderHeight, { isSensor: false, label: 'npcCollider' });
-        npcCollider.boundsPadding = { x: paddedWidth, y: paddedHeight };
+        npcCollider.boundsPadding = { x, y };
         let npcSensor = Bodies.circle(this.x, this.y + 2, 48, { isSensor: true, label: 'npcSensor' });
         const compoundBody = Body.create({
             parts: [npcCollider, npcSensor],
@@ -52,7 +51,6 @@ export default class NPC extends Entity {
             restitution: 0.3,
             friction: 0.15,
         });
-        
         this.setExistingBody(compoundBody);                                    
         this.setFixedRotation();
         this.npcSensor = npcSensor;
@@ -75,6 +73,7 @@ export default class NPC extends Entity {
                 this.clearTint();
                 this.setTint(0x0000FF);
             });
+        scene.time.delayedCall(3000, () => this.setVisible(true));
     };
 
     cleanUp() {
@@ -98,16 +97,14 @@ export default class NPC extends Entity {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [npcSensor],
             callback: other => {
-                if (other.gameObjectB && other.gameObjectB.name === 'player' && !this.isDead && !other.gameObjectB.inCombat && !this.interacting) {
+                if (other.gameObjectB && other.gameObjectB.name === 'player' && !other.gameObjectB.inCombat && !this.interacting) {
                     if (this.healthbar) this.healthbar.setVisible(true);
                     this.interacting = true;
                     this.scene.setupNPC(this);
                     this.npcTarget = other.gameObjectB;
                     this.stateMachine.setState(States.AWARE);
-
                     other.gameObjectB.currentTarget = this;
                     other.gameObjectB.targetID = this.enemyID;
-
                     const isNewNPC = !other.gameObjectB.targets.some(obj => obj.enemyID === this.enemyID);
                     if (isNewNPC) {
                         other.gameObjectB.targets.push(this);

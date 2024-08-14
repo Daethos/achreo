@@ -557,10 +557,10 @@ export default class Enemy extends Entity {
                 const special = ENEMY_SPECIAL[mastery][Math.floor(Math.random() * ENEMY_SPECIAL[mastery].length)].toLowerCase();
                 this.specialAction = special;
                 this.currentAction = 'special';
-                const specific = ['tshaeral', 'kyrnaicism'];
-                const test = specific[Math.floor(Math.random() * specific.length)];
-                if (this.stateMachine.isState(test)) {
-                    this.stateMachine.setState(test);
+                // const specific = ['tshaeral', 'kyrnaicism'];
+                // const test = specific[Math.floor(Math.random() * specific.length)];
+                if (this.stateMachine.isState(special)) {
+                    this.stateMachine.setState(special);
                 } else if (this.positiveMachine.isState(special)) {
                     this.positiveMachine.setState(special);
                 };

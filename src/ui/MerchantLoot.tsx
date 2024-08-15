@@ -9,13 +9,7 @@ interface Props {
     setShow: Setter<boolean>;
     setHighlight: Setter<Equipment | undefined>;
     thievery: Accessor<boolean>;
-    steal(purchaseSetting: Accessor<{
-        item: Equipment;
-        cost: {
-            silver: number;
-            gold: number;
-        };
-    }>): Promise<void>;
+    steal(item: Equipment): void;
 };
 export default function MerchantLoot({ item, ascean, setShow, setHighlight, thievery, steal }: Props) {
     const [purchaseSetting, setPurchaseSetting] = createSignal({ item, cost: { silver: 0, gold: 0 }});
@@ -61,7 +55,7 @@ export default function MerchantLoot({ item, ascean, setShow, setHighlight, thie
         };
     };
     function sneed() {
-        steal(purchaseSetting);
+        steal(item);
         setThieveryModal(false);
     };
     const select = () => {

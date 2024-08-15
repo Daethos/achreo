@@ -172,6 +172,57 @@ export default function PhaserGame (props: IProps) {
         };
     };
 
+    async function stealItem(data: {success: boolean, item: Equipment, value: any}) {
+        const { success, item, value } = data;
+        console.log(success, item, value);
+        try {
+            if (success === true) {
+                let inventory = Array.from(game().inventory.inventory);
+                inventory.push(item);
+                const clean = { ...game().inventory, inventory };
+                const update = { 
+                    ...props.ascean(), 
+                    statistics: { 
+                        ...props.ascean().statistics, 
+                        thievery: { 
+                            ...props.ascean().statistics.thievery, 
+                            successes: props.ascean().statistics.thievery.successes + 1, 
+                            total: props.ascean().statistics.thievery.total + 1,
+                            totalValue: props.ascean().statistics.thievery.totalValue + value 
+                        } 
+                    } 
+                };
+                let merchantEquipment = [ ...game().merchantEquipment ];
+                merchantEquipment = merchantEquipment.filter((eqp) => eqp._id !== item._id);
+                setGame({ ...game(), inventory: clean, merchantEquipment });
+                EventBus.emit('update-ascean', update);
+                EventBus.emit('update-inventory', clean);
+                EventBus.emit('stealth-sound');
+            } else {
+                const update = { 
+                    ...props.ascean(), 
+                    statistics: { 
+                        ...props.ascean().statistics, 
+                        thievery: { 
+                            ...props.ascean().statistics.thievery, 
+                            failures: props.ascean().statistics.thievery.failures + 1, 
+                            total: props.ascean().statistics.thievery.total + 1,
+                            totalValue: props.ascean().statistics.thievery.totalValue + value 
+                        } 
+                    } 
+                };
+                await deleteEquipment(item._id as string);
+                let merchantEquipment = [ ...game().merchantEquipment ];
+                merchantEquipment = merchantEquipment.filter((eqp) => eqp._id !== item._id);
+                setGame({ ...game(), merchantEquipment });
+                EventBus.emit('update-ascean', update);
+                EventBus.emit('death-sound');
+            };
+        } catch (err) {
+            console.warn(err, 'Error Stealing Item');
+        };
+    };
+
     function sellItem(item: Equipment) {
         try {
             let inventory = Array.from(game().inventory.inventory);
@@ -945,6 +996,7 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('create-enemy-prayer', (e: any) => setCombat({ ...combat(), computerEffects: combat().computerEffects.length > 0 ? [...combat().computerEffects, e] : [e] }));
         EventBus.on('purchase-item', purchaseItem);
         EventBus.on('sell-item', sellItem);
+        EventBus.on('steal-item', stealItem);
         EventBus.on('luckout', (e: { luck: string, luckout: boolean }) => {
             const { luck, luckout } = e;
             EventBus.emit('enemy-luckout', { enemy: combat().enemyID, luckout, luck });
@@ -1006,6 +1058,7 @@ export default function PhaserGame (props: IProps) {
             
             EventBus.removeListener('save-health');
             EventBus.removeListener('sell-item');
+            EventBus.removeListener('steal-item');
             EventBus.removeListener('selectPrayer');
             EventBus.removeListener('selectDamageType');
             EventBus.removeListener('selectWeapon');

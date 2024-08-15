@@ -516,10 +516,10 @@ export default class Player extends Entity {
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);
             if (this.isConfused === true) this.isConfused = false;
             if (this.isPolymorphed === true) this.isPolymorphed = false;
-            if (this.isAbsorbing === true) this.absorbHit();
-            if (this.isMalicing === true) this.maliceHit();
-            if (this.isMending === true) this.mendHit();
-            if (this.isRecovering === true) this.recoverHit();
+            if (this.isAbsorbing === true) this.absorb();
+            if (this.isMalicing === true) this.malice();
+            if (this.isMending === true) this.mend();
+            if (this.isRecovering === true) this.recover();
             if (this.isFeared === true) {
                 const chance = Math.random() < 0.1 + this.fearCount;
                 if (chance === true) {
@@ -1917,7 +1917,7 @@ export default class Player extends Entity {
     };
     onAbsorbUpdate = (_dt) => {if (!this.isAbsorbing) this.positiveMachine.setState(States.CLEAN);};
 
-    absorbHit = () => {
+    absorb = () => {
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Abosrbed', 500, 'effect');
         this.scene.useGrace(-25);
@@ -2046,7 +2046,7 @@ export default class Player extends Entity {
     };
     onMaliceUpdate = (_dt) => {if (!this.isMalicing) this.positiveMachine.setState(States.CLEAN);};
 
-    maliceHit = () => {
+    malice = () => {
         if (this.maliceBubble === undefined || this.isMalicing === false) {
             if (this.maliceBubble) {
                 this.maliceBubble.destroy();
@@ -2084,7 +2084,7 @@ export default class Player extends Entity {
     };
     onMendUpdate = (_dt) => {if (!this.isMending) this.positiveMachine.setState(States.CLEAN);};
 
-    mendHit = () => {
+    mend = () => {
         if (this.mendBubble === undefined || this.isMending === false) {
             if (this.mendBubble) {
                 this.mendBubble.destroy();
@@ -2142,7 +2142,7 @@ export default class Player extends Entity {
     };
     onRecoverUpdate = (_dt) => {if (!this.isRecovering) this.positiveMachine.setState(States.CLEAN);};
 
-    recoverHit = () => {
+    recover = () => {
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Recovered', 500, 'effect');
         this.scene.useStamina(-25);
@@ -2200,7 +2200,7 @@ export default class Player extends Entity {
     };
     onShieldUpdate = (_dt) => {if (!this.isShielding) this.positiveMachine.setState(States.CLEAN);};
 
-    shieldHit = () => {
+    shield = () => {
         if (this.shieldBubble === undefined || this.isShielding === false) {
             if (this.shieldBubble) {
                 this.shieldBubble.destroy();
@@ -2236,7 +2236,7 @@ export default class Player extends Entity {
     };
     onShimmerUpdate = (_dt) => {if (!this.isShimmering) this.positiveMachine.setState(States.CLEAN);};
 
-    shimmerHit = () => {
+    shimmer = () => {
         const shimmers = ['It fades through you', "You simply weren't there", "Perhaps you never were", "They don't seem certain of you at all"];
         this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, Math.round(shimmers[Math.random() * 4]), 1000, 'effect');
@@ -2325,7 +2325,7 @@ export default class Player extends Entity {
     };
     onWardUpdate = (_dt) => {if (!this.isWarding) this.positiveMachine.setState(States.CLEAN);};
 
-    wardHit = (id) => {
+    ward = (id) => {
         if (this.wardBubble === undefined || this.isWarding === false) {
             if (this.wardBubble) {
                 this.wardBubble.destroy();
@@ -3069,13 +3069,13 @@ export default class Player extends Entity {
             if (!this.isAstrifying) {
                 if (this?.attackedTarget?.isShimmering) {
                     if (Math.random() * 101 > 50) {
-                        this?.attackedTarget?.shimmerHit();
+                        this?.attackedTarget?.shimmer();
                         return;
                     };
                 };
                 if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit();
-                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit();
+                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shield();
+                    if (this.attackedTarget?.isWarding) this.attackedTarget?.ward();
                     return;    
                 };
             };

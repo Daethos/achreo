@@ -176,7 +176,7 @@ export const STARTING_CHARACTERS: CharacterSheet[] = [
     //     faith: 'Adherent',
     //     preference: 'Plate-Mail',
     // },{ 
-        name: "Quor'estes of Ba'sura",
+        name: "Quor'estes the Ba'sura",
         description: 'Bardic Fiend of the Southron Provinces',
         sex: 'Man',
         origin: "Quor'eite",
@@ -935,7 +935,7 @@ const asceanCompiler = (ascean: any): Compiler | undefined => {
 function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
     const fetchTrait = (trait:  string): { name: string; traitOneName: string; traitOneDescription: string; traitTwoName: string; traitTwoDescription: string; } => {
         switch (trait) {
-            case "Arbituous":
+            case "Arbituous": // Con / Ach
                 return {
                     name: "Arbituous",
                     traitOneName: "Luckout",
@@ -943,15 +943,15 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     traitTwoName: "Persuasion",
                     traitTwoDescription: "Use knowledge of Ley Law to deter enemies from aggression."
                 };
-            case "Astral":
+            case "Astral": // Ach / Kyo
                 return {
                     name: "Astral",
                     traitOneName: "Astrication",
                     traitOneDescription: "Perform combat maneuvers that are impossible to follow, and thus impossible to counter.",
-                    traitTwoName: "Pursuit",
-                    traitTwoDescription: "Force encounters, even with enemies that would normally avoid you."
+                    traitTwoName: "Devour",
+                    traitTwoDescription: "Your achre is imbued with an avarice, a hunger to devour the world."
                 };
-            case "Cambiren":
+            case "Cambiren": // Agi / Caer
                 return {
                     name: "Cambiren",
                     traitOneName: "Caerenicism",
@@ -967,7 +967,7 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     traitTwoName: "Persuasion",
                     traitTwoDescription: "Cause bouts of confusion and disorientation in the enemy."
                 };
-            case "Fyeran":
+            case "Fyeran": // Ach / Caer
                 return {
                     name: "Fyeran",
                     traitOneName: "Persuasion",
@@ -975,7 +975,7 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     traitTwoName: "Seer",
                     traitTwoDescription: "Your next attack is Fyers."
                 };
-            case "Kyn'gian":
+            case "Kyn'gian": // Con / Agi
                 return {
                     name: "Kyn'gian",
                     traitOneName: "Avoidance",
@@ -983,7 +983,7 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     traitTwoName: "Endurance",
                     traitTwoDescription: "You are able to dramatically recover your stamina."
                 };
-            case "Kyr'naic":
+            case "Kyr'naic": // Con / Kyo
                 return {
                     name: "Kyr'naic",
                     traitOneName: "Luckout",
@@ -991,7 +991,7 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     traitTwoName: "Persuasion",
                     traitTwoDescription: "Cause the enemy to embrace the hush and tendril."
                 };
-            case "Ilian":
+            case "Ilian": // Con / Str
                 return {
                     name: "Ilian",
                     traitOneName: "Blind",
@@ -999,7 +999,7 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     traitTwoName: "Persuasion",
                     traitTwoDescription: "The weight of your words can sway the minds of others."
                 };
-            case "Lilosian":
+            case "Lilosian": // Con / Caer
                 return {
                     name: "Lilosian",
                     traitOneName: "Luckout",
@@ -1007,7 +1007,7 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     traitTwoName: "Persuasion",
                     traitTwoDescription: "Speak to your enemy's faith and stay their hand."
                 };
-            case "Ma'anreic":
+            case "Ma'anreic": // Agi / Ach
                 return {
                     name: "Ma'anreic",
                     traitOneName: "Stealth",
@@ -1015,7 +1015,7 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     traitTwoName: "Thievery",
                     traitTwoDescription: "You can steal items from anyone and anywhere."
                 };
-            case "Sedyrist":
+            case "Sedyrist": // Str / Ach
                 return {
                     name: "Sedyrist",
                     traitOneName: "Stimulate",
@@ -1023,15 +1023,15 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     traitTwoName: "Tinkerer",
                     traitTwoDescription: "You can deconstruct and reconstruct armor and weapons."
                 };
-            case "Se'van":
+            case "Se'van": // Str / Agi
                 return {
                     name: "Se'van",
                     traitOneName: "Berserk",
                     traitOneDescription: "Your attacks grow stronger for each successive form of damage received.",
-                    traitTwoName: "Grapple",
+                    traitTwoName: "Grapple", // TODO:FIXME:
                     traitTwoDescription: "Grip your enemy in a vice of your own design."
                 };
-            case "Shaorahi":
+            case "Shaorahi": // Str / Caer
                 return {
                     name: "Shaorahi",
                     traitOneName: "Conviction",
@@ -1039,15 +1039,15 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     traitTwoName: "Persuasion",
                     traitTwoDescription: "You can put the enemy in awe of your power, and have them cease their assault."
                 };
-            case "Shrygeian":
+            case "Shrygeian": // Agi / Kyo
                 return {
                     name: "Shrygeian",
-                    traitOneName: "Knavery",
+                    traitOneName: "Knavery", // TODO:FIXME:
                     traitOneDescription: "Your explorations are amusing.",
                     traitTwoName: "Impermanence",
                     traitTwoDescription: "You may avoid attacks."
                 };
-            case "Tshaeral":
+            case "Tshaeral": // Str / Kyo
                 return {
                     name: "Tshaeral",
                     traitOneName: "Devour",

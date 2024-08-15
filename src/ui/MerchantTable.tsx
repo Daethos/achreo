@@ -3,7 +3,7 @@ import MerchantLoot from './MerchantLoot';
 import { GameState } from '../stores/game';
 import Ascean from '../models/ascean';
 import Equipment from '../models/equipment';
-// import { EventBus } from '../game/EventBus';
+import { EventBus } from '../game/EventBus';
 import ItemModal from '../components/ItemModal';
 
 interface Props {
@@ -15,108 +15,88 @@ interface Props {
 const MerchantTable = ({ table, ascean, game }: Props) => {
     const [show, setShow] = createSignal<boolean>(false);
     const [highlight, setHighlight] = createSignal<Equipment | undefined>(undefined);
-    // const [thievery, setThievery] = createSignal<boolean>(false);
-    // const [thieveryTraits, setThieveryTraits] = createSignal<any>({}); 
-    createEffect(() => {
-        checkThievery();
-    });
+    const [thievery, setThievery] = createSignal<boolean>(false);
+    createEffect(() => checkThievery());
     const checkThievery = async (): Promise<void> => {
         const traits = {
             primary: game()?.traits?.primary,
             secondary: game()?.traits?.secondary,
             tertiary: game()?.traits?.tertiary,
         };
-        // console.log(traits, 'Traits');
         const thieveryTraits = ["Ma'anreic"];
         const matchingTraits = Object.values(traits).filter(trait => thieveryTraits.includes(trait.name));
-        // console.log(matchingTraits, 'Matching Traits');
-        if (matchingTraits.length === 0) {
-            // setThievery(false);
-            return;
-        };
-        // setThievery(true);
-        // setThieveryTraits(matchingTraits);
+        setThievery(matchingTraits.length === 0);
     };
-    // const checkStatisticalValue = (rarity: string): number => {
-    //     switch (rarity) {
-    //         case 'Common': return 10;
-    //         case 'Uncommon': return 100;
-    //         case 'Rare': return 400;
-    //         case 'Epic': return 1200;
-    //         case 'Legendary': return 12000;
-    //         default: return 0;
-    //     };
-    // };
-    // const getFine = (rarity: string): number | string => {
-    //     switch (rarity) {
-    //         case 'Common': return '5 silver';
-    //         case 'Uncommon': return '50 silver';
-    //         case 'Rare': return '2 gold';
-    //         case 'Epic': return '6 gold';
-    //         case 'Legendary': return '120 gold';
-    //         default: return 0;
-    //     };
-    // };
+    const checkStatisticalValue = (rarity: string): number => {
+        switch (rarity) {
+            case 'Common': return 5;
+            case 'Uncommon': return 25;
+            case 'Rare': return 100;
+            case 'Epic': return 300;
+            case 'Legendary': return 10000;
+            default: return 0;
+        };
+    };
+    const getFine = (rarity: string): number | string => {
+        switch (rarity) {
+            case 'Common': return '5 silver';
+            case 'Uncommon': return '25 silver';
+            case 'Rare': return '1 gold';
+            case 'Epic': return '3 gold';
+            case 'Legendary': return '100 gold';
+            default: return 0;
+        };
+    };
  
   
-    // const stealItem = async (purchaseSetting: { ascean: Ascean, item: Equipment, cost: { silver: number, gold: number } }): Promise<void> => {
-    //     try {
-    //         // const weight = {
-    //         //     Common: 0,
-    //         //     Uncommon: 5,
-    //         //     Rare: 10,
-    //         //     Epic: 25,
-    //         //     Legendary: 50,
-    //         // };
-    //         // const chance = Math.floor(Math.random() * 100) + 1 + weight[purchaseSetting.item.rarity as keyof typeof weight];
-    //         // const successChance = ascean.agility + ascean.achre;
-    //         // console.log(successChance, 'Success Chance', chance, 'Chance');
-    //         // if (chance > successChance) { // Failure
-    //         //     const statistic = {
-    //         //         asceanID: ascean._id, 
-    //         //         successes: 0,
-    //         //         failures: 1,
-    //         //         total: 1,
-    //         //         totalValue: 0,
-    //         //     };
-    //         //     const fineCost = getFine(purchaseSetting.item.rarity); 
-    //         //     gameDispatch({ 
-    //         //         type: GAME_ACTIONS.SET_STORY_CONTENT, 
-    //         //         payload: `You were caught stealing. The merchant protested your censure, and simply have been fined ${fineCost}. \n\n The item has been pulled from the table.` 
-    //         //     });
-    //         //     const response = await asceanAPI.recordThievery(statistic);
-    //         //     console.log(response, "Thievery Failure Response Recorded");
-    //         //     gameDispatch({
-    //         //         type: GAME_ACTIONS.SET_MERCHANT_EQUIPMENT,
-    //         //         payload: table.filter((i: any) => i._id !== purchaseSetting.item._id)
-    //         //     });
-    //         //     const fine = await asceanAPI.asceanTax({ tax: checkStatisticalValue(purchaseSetting.item.rarity), id: ascean._id });
-    //         //     setTimeout(() => {
-    //         //         gameDispatch({ type: GAME_ACTIONS.SET_STATISTICS, payload: response });
-    //         //         dispatch({ type: 'SET_CURRENCY', payload: fine });
-    //         //         gameDispatch({ type: GAME_ACTIONS.SET_PLAYER_CURRENCY, payload: fine });
-    //         //         setThievery(false);
-    //         //     }, 1500);
-    //         //     return;
-    //         // };
-    //         // getThieverySuccessFetch({ item: purchaseSetting, id: ascean._id });
-    //         // setMerchantEquipment(table().filter((i: any) => i._id !== purchaseSetting.item._id));
-    //         EventBus.emit('thievery', { item: purchaseSetting, id: ascean._id });
-    //         EventBus.emit('blend-game', { merchantEquipment: table().filter((i: any) => i._id !== purchaseSetting.item._id) });
+    async function steal(purchaseSetting: Accessor<{ item: Equipment, cost: { silver: number, gold: number } }>): Promise<void> {
+        try {
+            const weight = {
+                Common: 0,
+                Uncommon: 5,
+                Rare: 10,
+                Epic: 25,
+                Legendary: 50,
+            };
+            const chance = Math.floor(Math.random() * 101) + weight[purchaseSetting().item.rarity as keyof typeof weight];
+            const successChance = ascean().agility + ascean().achre;
+            console.log(successChance, 'Success Chance', chance, 'Chance');
+            if (chance > successChance) { // Failure
+                const statistic = {
+                    failures: 1,
+                    value: checkStatisticalValue(purchaseSetting().item.rarity as string),
+                };
+                console.log(statistic, 'LOSS!');
+                const fineCost = getFine(purchaseSetting().item.rarity as string); 
+                EventBus.emit('alert', {header: 'You Have Been Caught!', body: `You were caught stealing. The merchant protested your censure, and simply have been fined ${fineCost}. \n\n The item has been pulled from the table.`, delay: 3000, key: 'Close'});    
+                // EventBus.emit('remove-item', purchaseSetting().item._id);
+                // EventBus.emit('record-thievery', statistic);
+                console.log(statistic.value, 'Taxed!');
+                EventBus.emit('steal-item', { success: false, fine: statistic.value, statistic });
+                // setThievery(false);
+                return;
+            } else {
+                const statistic = {
+                    successes: 1,
+                    value: checkStatisticalValue(purchaseSetting().item.rarity as string),
+                };
+                console.log('Success!');
+                EventBus.emit('steal-item', { success: true, item: purchaseSetting().item, statistic });
+                // EventBus.emit('purchase-item', { item: purchaseSetting().item, cost: { silver: 0, gold: 0 } });
+                EventBus.emit('alert', { header: 'You Have Appropriated Goods!', body: `You have successfully lifted an item from the table. The merchant has no idea they no longer possess the ${purchaseSetting().item.name}. \n\n Good job!`, delay: 3000, key: 'Close'});    
+            }
+            // EventBus.emit('thievery', { item: purchaseSetting(), id: ascean._id });
             
-    //         // setTimeout (() => {
-    //         //     getOnlyInventoryFetch(ascean._id);
-    //         // }, 250);
-    //         setThievery(false);
-    //     } catch (err: any) {
-    //         console.warn(err.message, 'Error Stealing Item!'); 
-    //     };
-    // };
+            // setThievery(false);
+        } catch (err: any) {
+            console.warn(err.message, 'Error Stealing Item!'); 
+        };
+    };
     return (
         <div style={{ display: 'grid', width: '100%', 'grid-template-columns': 'repeat(3, 1fr)' }}>
         <For each={table()}>
             {(item: any, _index: Accessor<number>) => (
-                <MerchantLoot item={item} ascean={ascean} setShow={setShow} setHighlight={setHighlight} />
+                <MerchantLoot item={item} ascean={ascean} setShow={setShow} setHighlight={setHighlight} thievery={thievery} steal={steal} />
             )}
         </For>
         <Show when={show()}>

@@ -95,28 +95,6 @@ export type Statistics = {
         caeren: number, 
         kyosir: number 
     },
-    miniGames: {
-        cambiren: {
-            failures: number,
-            successes: number,
-            total: number,
-        },
-        sevan: {
-            failures: number,
-            successes: number,
-            total: number,
-        },
-        shrygeian: {
-            failures: number,
-            successes: number,
-            total: number,
-        },
-        tshaeral: {
-            failures: number,
-            successes: number,
-            total: number,
-        }
-    },
     persuasion: {
         arbituous: {
             failures: number,
@@ -153,12 +131,6 @@ export type Statistics = {
             successes: number,
             total: number,
         },
-    },
-    sedyrist: {
-        failures: number,
-        successes: number,
-        total: number,
-        totalValue: number,
     },
     thievery: {
         failures: number,
@@ -223,7 +195,6 @@ export const initStatistics: Statistics = {
             wild: 0,
             wind: 0,
         },
-        // deities: { type: Array, default: [] }, // Deities Invoked via Prayer
         deities: {
             Daethos: 0,
             Achreo: 0,
@@ -289,28 +260,6 @@ export const initStatistics: Statistics = {
         caeren: 0, 
         kyosir: 0 
     },
-    miniGames: {
-        cambiren: {
-            failures: 0,
-            successes: 0,
-            total: 0,
-        },
-        sevan: {
-            failures: 0,
-            successes: 0,
-            total: 0,
-        },
-        shrygeian: {
-            failures: 0,
-            successes: 0,
-            total: 0,
-        },
-        tshaeral: {
-            failures: 0,
-            successes: 0,
-            total: 0,
-        }
-    },
     persuasion: {
         arbituous: {
             failures: 0,
@@ -347,12 +296,6 @@ export const initStatistics: Statistics = {
             successes: 0,
             total: 0,
         },
-    },
-    sedyrist: {
-        failures: 0,
-        successes: 0,
-        total: 0,
-        totalValue: 0,
     },
     thievery: {
         failures: 0,

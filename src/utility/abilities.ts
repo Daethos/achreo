@@ -60,7 +60,7 @@ export const SPECIAL = {
         'Shield', 
         'Ward'
     ], // 15
-    'strength': [ // 14
+    'strength': [ // 15
         'Achire',
         'Arc', 
         'Chiomic',
@@ -71,13 +71,14 @@ export const SPECIAL = {
         'Leap', 
         'Recover', 
         'Rush', 
+        'Sacrifice', 
         'Scream', 
         'Sprint', 
         'Storm', 
         'Suture', 
         'Ward', 
         'Writhe'
-    ], // 14
+    ], // 15
     'agility': [ // 15
         'Achire',
         'Consume', 
@@ -93,7 +94,7 @@ export const SPECIAL = {
         'Snare', 
         'Sprint', 
         'Storm', 
-        'Writhe'
+        'Ward'
     ], // 15
     'achre': [ // 15
         'Absorb',
@@ -114,6 +115,7 @@ export const SPECIAL = {
     ], // 15
     'caeren': [ // 15
         'Absorb',
+        'Achire',
         'Astrave',
         'Blink', 
         'Consume', 
@@ -124,7 +126,7 @@ export const SPECIAL = {
         'Invoke', 
         'Kyrnaicism', 
         'Mend', 
-        'Protect', 
+        // 'Protect', 
         'Sacrifice', 
         'Shield', 
         'Suture'
@@ -133,6 +135,7 @@ export const SPECIAL = {
         'Absorb',
         'Achire',
         'Astrave',
+        'Blink', 
         'Chiomic',
         'Confuse', 
         'Consume', 
@@ -142,7 +145,7 @@ export const SPECIAL = {
         'Kyrnaicism', 
         'Malice', 
         'Paralyze',
-        'Protect', 
+        // 'Protect', 
         'Scream', 
         'Suture', 
     ], // 15

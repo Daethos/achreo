@@ -22,13 +22,13 @@ export default function Thievery({ ascean, game, setThievery, stealing, setSteal
             let dialog: JSX.Element | string = '';
             switch (thieveryAnimation().step) {
                 case 1:
-                    dialog = <div>Calculating the ability of <span class='gold'>{ascean().name}</span>. <br /><br /> Please Stand By</div>;
+                    dialog = <div><i>Calculating</i> the ability of <span class='gold'>{ascean().name}</span>. <br /><br /></div>;
                     break;
                 case 2: // <span class='gold'>{ascean().name}</span>, y 
-                    dialog = <div>You have a <span class='gold'>{thieveryAnimation().player}</span>% of succeeding. <br /><br /> Checking Merchant's Awareness</div>;
+                    dialog = <div>You have a <span class='gold'>{thieveryAnimation().player}</span>% of succeeding. <br /><br /> <i>Calculating</i> Merchant's Awareness</div>;
                     break;
                 case 3:
-                    dialog = <div>The results are in, drum roll!</div>;
+                    dialog = <div><i>Comparing</i> your <span class='gold'>guile</span> with the Merchant's</div>;
                     break;
                 case 4:
                     dialog = <div>Player: <span class='gold'>{thieveryAnimation().player}</span>% <br /> <br />
@@ -124,7 +124,7 @@ export default function Thievery({ ascean, game, setThievery, stealing, setSteal
                                 EventBus.emit('alert', { header: 'You Have Appropriated Goods!', body: `You have successfully lifted the item from the table. The merchant has no idea they no longer possess the ${item.name}. Good job, criminal scum!`, delay: 6000, key: 'Close'});    
                             } else {
                                 const fineCost = getFine(item.rarity as string); 
-                                EventBus.emit('alert', {header: 'You Have Been Caught!', body: `You were caught stealing. The merchant protested your censure, and have simply been fined ${fineCost} instead. The item has subsequently been pulled from the table, lest idle hands linger.`, delay: 6000, key: 'Close'});    
+                                EventBus.emit('alert', {header: 'You Have Been Caught!', body: `You were caught stealing. The merchant protested your censure, and have simply been fined ${fineCost} instead. The item has subsequently been pulled from the table.`, delay: 6000, key: 'Close'});    
                                 setThievery(false);
                             };
                             setThieveryAnimation({ ...thieveryAnimation(), on: false, step: 0 });
@@ -152,6 +152,7 @@ export default function Thievery({ ascean, game, setThievery, stealing, setSteal
                 <Show when={thieveryAnimation().step !== 4} fallback={<>
                     <br />
                 </>}>
+                <br /> Please Stand By <br />
                 <ThreeDots color='gold' width='30' />
                 <br />
                 <br />

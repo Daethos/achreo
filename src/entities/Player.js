@@ -73,6 +73,8 @@ export default class Player extends Entity {
         this.maxStamina = scene?.state?.playerAttributes?.stamina;
         this.grace = scene?.state.playerAttributes?.grace;
         this.maxGrace = scene?.state?.playerAttributes?.grace;
+        this.climbCount = 0;
+        this.isClimbing = false;
         this.isMoving = false;
         this.targetID = undefined;
         this.attackedTarget = undefined;
@@ -208,6 +210,7 @@ export default class Player extends Entity {
         this.setFixedRotation();   
         this.checkEnemyCollision(playerSensor);
         this.checkWorldCollision(playerSensor);
+        // this.checkWorldCollider(playerCollider);
         this.beam = new Beam(this);
         this.setInteractive(new Phaser.Geom.Rectangle(
             48, 0,
@@ -824,7 +827,46 @@ export default class Player extends Entity {
             context: this.scene,
         });
     };
-
+    // checkWorldCollider(playerCollider) {
+    //     this.scene.matterCollision.addOnCollideStart({
+    //         objectA: [playerCollider],
+    //         callback: (other) => {
+    //             console.log(other, 'Other in World Collider');
+    //             if (other.gameObjectB && other.gameObjectB?.properties?.climb === true) {
+    //                 this.climbCount++;
+    //                 console.log(`%c Climbing the tile! ${this.climbCount}`, 'color:green');
+    //                 this.isClimbing = true;
+    //                 EventBus.emit('alert', { 
+    //                     header: 'Exit', 
+    //                     body: `You are climbing. \n You have encountered a climbing tile!`, 
+    //                     delay: 3000, 
+    //                     key: 'Close'
+    //                 });
+    //             };
+    //         },
+    //         context: this.scene
+    //     });
+    //     this.scene.matterCollision.addOnCollideEnd({
+    //         objectA: [playerCollider],
+    //         callback: (other) => {
+    //             if (other.gameObjectB && other.gameObjectB?.properties?.climb === true) {
+    //                 this.climbCount--;
+    //                 console.log(`%c Not touching a tile! ${this.climbCount}`, 'color:red');
+    //                 if (this.climbCount <= 0) {
+    //                     this.climbCount = 0;
+    //                     this.isClimbing = false;
+    //                     EventBus.emit('alert', { 
+    //                         header: 'Exit', 
+    //                         body: `You are not climbing. \n You have finishing climbing it seems!`, 
+    //                         delay: 3000, 
+    //                         key: 'Close'
+    //                     });    
+    //                 };
+    //             };
+    //         },
+    //         context: this.scene
+    //     });
+    // };
     checkWorldCollision(playerSensor) {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [playerSensor],
@@ -864,6 +906,18 @@ export default class Player extends Entity {
                 //             delay: 3000, 
                 //             key: 'Enter Tent'
                 //         });
+                // };
+                // console.log(other, 'Properties!')
+                // if (other.gameObjectB && other.gameObjectB?.properties?.climb === true) {
+                //     this.climbCount++;
+                //     console.log(`Climbing! ${this.climbCount}`, 'color:green');
+                //     this.isClimbing = true;
+                //     EventBus.emit('alert', { 
+                //         header: 'Exit', 
+                //         body: `You are climbing. \n You have encountered a climbing tile!`, 
+                //         delay: 3000, 
+                //         key: 'Close'
+                //     });
                 // };
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === 'worldExit') {
                     // if (other.gameObjectB.isTent) {
@@ -3234,14 +3288,20 @@ export default class Player extends Entity {
             sprint(this.scene);
             this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isAttacking = false); 
         } else if (this.moving()) {
-            if (!this.isWalking) {
-                this.isWalking = this.scene.time.delayedCall(400, () => {
-                    walk(this.scene);
-                    this.isWalking = undefined;
-                }, undefined, this);
+            if (this.isClimbing) {
+                sprint(this.scene);
+                this.anims.play('player_climb', true);
+            } else {
+
+                if (!this.isWalking) {
+                    this.isWalking = this.scene.time.delayedCall(400, () => {
+                        walk(this.scene);
+                        this.isWalking = undefined;
+                    }, undefined, this);
+                };
+                this.anims.play('player_running', true);
             };
             if (!this.isMoving) this.isMoving = true;
-            this.anims.play('player_running', true);
         } else if (this.isConsuming) { 
             this.anims.play('player_health', true).on('animationcomplete', () => this.isConsuming = false);
         } else if (this.isCasting) { 
@@ -3257,7 +3317,12 @@ export default class Player extends Entity {
             };
         } else {
             if (this.isMoving) this.isMoving = false;
-            this.anims.play('player_idle', true);
+            if (this.isClimbing) {
+                this.anims.play('player_climb', true);
+                this.anims.pause();
+            } else {
+                this.anims.play('player_idle', true);
+            };
         };
         this.spriteWeapon.setPosition(this.x, this.y);
         this.spriteShield.setPosition(this.x, this.y);
@@ -3364,6 +3429,8 @@ export default class Player extends Entity {
             this.playerVelocity.y = 0;
         };
         if (this.isAttacking || this.isParrying || this.isPosturing) speed += 1;
+        if (this.isClimbing) speed *= 0.65;
+        if (this.inWater) speed *= 0.65;
         this.playerVelocity.limit(speed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
     }; 

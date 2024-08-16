@@ -50,6 +50,7 @@ export const image: {key: string, value:string}[] = [
     {key: 'beam', value: '../assets/gui/beam.png'},
     {key: 'cursor', value: '../assets/images/cursor.png'},
     {key: 'target', value: '../assets/gui/target_1.png'},
+    {key: 'castle_outside', value: '../assets/gui/castle_outside.png'},
     {key: 'AncientForestMain', value: '../assets/gui/AncientForestMainLev.png'},
     {key: 'AncientForestDecorative', value: '../assets/gui/AncientForestDecorative.png'},
     {key: 'Camp_Graves', value: '../assets/gui/Camp_Graves.png'},
@@ -96,7 +97,7 @@ export const INTRO_NODES = {
         key: 3,
         prev: 2,
         next: 4,
-        text: `Inside of the last century, warring has ceased into uncomfortable peace. Many fathers and sons died in its making; remembered well. And those alive, rapt with ennui, or perhaps placidity. For some, the Ascea is satiating; a decennial tournament full of jest and joust, where prestige and wealth is sought, and the 'va'Esai' crowned. To be 'Worthy of the Preservation of Being.'`,
+        text: `Inside of the last century, warring has ceased into an easing peace. Many fathers and sons died in its making; honored in the hearts of those still alive alive. Themselves now tranquil, or perhaps a form of placidity. For some, the Ascea is satiating; a decennial tournament full of jest and joust, where prestige and wealth is sought, and the 'va'Esai' crowned. To be 'Worthy of the Preservation of Being.'`,
     },
     4: {
         key: 4,

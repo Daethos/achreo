@@ -608,6 +608,28 @@ export default class Enemy extends Entity {
         this.healthbar.setValue(health);
     };
 
+    enemyAnimation = () => {
+        // this.scene.checkClimbing(this);
+        if (this.isClimbing) {
+            this.helpSpeed = 0;
+            this.heldSpeed = this.speed;
+            this.speed *= 0.65;
+            if (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y)) {
+                this.anims.play('player_climb', true);
+            } else {
+                this.anims.play('player_climb', true);
+                this.anims.pause();
+            };
+        } else {
+            this.speed = this.heldSpeed;
+            if (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y)) {
+                this.anims.play('player_running', true);
+            } else {
+                this.anims.play('player_idle', true);
+            };
+        };
+    };
+
     onDefeatedEnter = () => {
         this.anims.play('player_pray', true).on('animationcomplete', () => this.anims.play('player_idle', true));
         this.isDefeated = true;
@@ -650,12 +672,8 @@ export default class Enemy extends Entity {
     onPatrolEnter = () => {
         this.anims.play('player_running', true); 
         const patrolDirection = new Phaser.Math.Vector2(Math.random() - 0.5, Math.random() - 0.5).normalize();
-        if (patrolDirection.x < 0 && !this.flipX) {
-            this.setFlipX(true);
-        } else if (patrolDirection.x > 0 && this.flipX) {
-            this.setFlipX(false);
-        };
-        const patrolSpeed = 0.75;
+        this.setFlipX(patrolDirection.x < 0);
+        const patrolSpeed = this.speed * 0.5;
         this.patrolVelocity = { x: patrolDirection.x * patrolSpeed, y: patrolDirection.y * patrolSpeed };
         const delay = Phaser.Math.RND.between(2000, 4000); // 3500
 

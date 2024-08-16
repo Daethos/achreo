@@ -949,7 +949,7 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     traitOneName: "Astrication",
                     traitOneDescription: "Perform combat maneuvers that are impossible to follow, and thus impossible to counter.",
                     traitTwoName: "Devour",
-                    traitTwoDescription: "Your achre is imbued with an avarice, a hunger to devour the world."
+                    traitTwoDescription: "Your achre is imbued with an astral desire, an avarice to devour the world."
                 };
             case "Cambiren": // Agi / Caer
                 return {
@@ -1028,8 +1028,8 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
                     name: "Se'van",
                     traitOneName: "Berserk",
                     traitOneDescription: "Your attacks grow stronger for each successive form of damage received.",
-                    traitTwoName: "Grapple", // TODO:FIXME:
-                    traitTwoDescription: "Grip your enemy in a vice of your own design."
+                    traitTwoName: "Seer", 
+                    traitTwoDescription: "Pin-point your next strike."
                 };
             case "Shaorahi": // Str / Caer
                 return {
@@ -1042,8 +1042,8 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
             case "Shrygeian": // Agi / Kyo
                 return {
                     name: "Shrygeian",
-                    traitOneName: "Knavery", // TODO:FIXME:
-                    traitOneDescription: "Your explorations are amusing.",
+                    traitOneName: "Devour",
+                    traitOneDescription: "Your kyosir is imbued with curiosity, a fervor to devour this world.",
                     traitTwoName: "Impermanence",
                     traitTwoDescription: "You may avoid attacks."
                 };

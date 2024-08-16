@@ -60,6 +60,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         
         this.isAtEdge = false;
         this.isBlindsided = false;
+        this.isClimbing = false;
         this.inCombat = false;
         this.isConsuming = false;
         this.isCrouching = false;

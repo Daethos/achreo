@@ -25,6 +25,7 @@ import NPC from '../../entities/NPC';
 import ParticleManager from '../../phaser/ParticleManager';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
+import TutorialOverlay from '../../utility/tutorial';
 const dimensions = useResizeListener();
 
 export class Game extends Scene {
@@ -80,6 +81,7 @@ export class Game extends Scene {
     smallHud: SmallHud;
     beam: any;
     mousePointer: PointerEvent;
+    climbingLayer: any;
 
     constructor () {
         super('Game');
@@ -112,22 +114,38 @@ export class Game extends Scene {
         const tileSet = map.addTilesetImage('AncientForestMain', 'AncientForestMain', tileSize, tileSize, 0, 0);
         const campfire = map.addTilesetImage('CampFireB', 'CampFireB', tileSize, tileSize, 0, 0);
         const light = map.addTilesetImage('light1A', 'light1A', tileSize, tileSize, 0, 0);
+        // const castle_outside = map.addTilesetImage('castle_outside', 'castle_outside', tileSize, tileSize, 0, 0);
+        // console.log(castle_outside, 'Castle Outside?');
         let layer0 = map.createLayer('Tile Layer 0 - Base', tileSet as Tilemaps.Tileset, 0, 0);
         let layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Tilemaps.Tileset, 0, 0);
         let layerC = map.createLayer('Tile Layer - Construction', tileSet as Tilemaps.Tileset, 0, 0);
         let layer4 = map.createLayer('Tile Layer 4 - Primes', decorations as Tilemaps.Tileset, 0, 0);
         let layer5 = map.createLayer('Tile Layer 5 - Snags', decorations as Tilemaps.Tileset, 0, 0);
         let layer6 = map.createLayer('Tile Layer 6 - Camps', camps as Tilemaps.Tileset, 0, 0);
+        this.climbingLayer = layer1;
+        // let castle_bottom = map.createLayer('Castle Bottom', castle_outside as Tilemaps.Tileset, 0, 0);
+        // console.log(castle_bottom, 'Bottom');
+        // let castle_top = map.createLayer('Castle Top', castle_outside as Tilemaps.Tileset, 0, 0);
+        // console.log(castle_top, 'Top');
+        // let castle_decor = map.createLayer('Castle Decor', castle_outside as Tilemaps.Tileset, 0, 0);
+        // console.log(castle_decor, 'Decor');
         map.createLayer('Tile Layer 2 - Flowers', decorations as Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer 3 - Plants', decorations as Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer - Campfire', campfire as Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer - Lights', light as Tilemaps.Tileset, 0, 0);
-        [layer0, layer1, layerC, layer4, layer5, layer6].forEach((layer, index) => {
+        [layer0, layer1, layerC, layer4, layer5, layer6].forEach((layer, index) => { // castle_bottom, castle_top, 
             layer?.setCollisionByProperty({ collides: true });
+            // if (index === 1) {
+            //     layer?.forEachTile((tile) => {
+            //         if (tile.properties?.climb) {
+            //         };
+            //     });
+            // };
             this.matter.world.convertTilemapLayer(layer!);
             if (index < 3) return;
             layer?.setDepth(3);
         });
+        // castle_decor?.setDepth(3);
         // this.matter.world.createDebugGraphic(); 
         const objectLayer = map.getObjectLayer('navmesh');
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
@@ -997,6 +1015,17 @@ export class Game extends Scene {
         EventBus.emit('update-stamina', value);
         this.player.stamina -= value;
     };
+    checkEnvironment = (player: Player) => {
+        if (!this.climbingLayer) return;
+        const x = this.climbingLayer.worldToTileX(player.x);
+        const y = this.climbingLayer.worldToTileY(player.y);
+        const tile = this.climbingLayer.getTileAt(x as number, y as number);
+        if (tile && tile.properties && tile.properties.climb) {
+            player.isClimbing = true;
+        } else {
+            player.isClimbing = false;
+        };
+    };
     createTextBorder(text: NewText): GameObjects.Graphics {
         const border = this.add.graphics();
         border.lineStyle(4, 0x2A0134, 1);
@@ -1022,6 +1051,7 @@ export class Game extends Scene {
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
+        this.checkEnvironment(this.player);
     };
     setCameraOffset = () => {
         if (this.player.flipX === true) {

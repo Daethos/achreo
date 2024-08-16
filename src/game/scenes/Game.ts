@@ -81,6 +81,7 @@ export class Game extends Scene {
     smallHud: SmallHud;
     beam: any;
     mousePointer: PointerEvent;
+    baseLayer: any;
     climbingLayer: any;
 
     constructor () {
@@ -122,6 +123,7 @@ export class Game extends Scene {
         let layer4 = map.createLayer('Tile Layer 4 - Primes', decorations as Tilemaps.Tileset, 0, 0);
         let layer5 = map.createLayer('Tile Layer 5 - Snags', decorations as Tilemaps.Tileset, 0, 0);
         let layer6 = map.createLayer('Tile Layer 6 - Camps', camps as Tilemaps.Tileset, 0, 0);
+        this.baseLayer = layer0;
         this.climbingLayer = layer1;
         // let castle_bottom = map.createLayer('Castle Bottom', castle_outside as Tilemaps.Tileset, 0, 0);
         // console.log(castle_bottom, 'Bottom');
@@ -1016,15 +1018,22 @@ export class Game extends Scene {
         this.player.stamina -= value;
     };
     checkEnvironment = (player: Player) => {
+        const x = this.map.worldToTileX(player.x || 0);
+        const y = this.map.worldToTileY(player.y || 0);
         if (!this.climbingLayer) return;
-        const x = this.climbingLayer.worldToTileX(player.x);
-        const y = this.climbingLayer.worldToTileY(player.y);
-        const tile = this.climbingLayer.getTileAt(x as number, y as number);
-        if (tile && tile.properties && tile.properties.climb) {
+        const climb = this.climbingLayer.getTileAt(x as number, y as number);
+        if (climb && climb.properties && climb.properties.climb) {
             player.isClimbing = true;
         } else {
             player.isClimbing = false;
         };
+        if (!this.baseLayer) return;
+        const water = this.baseLayer.getTileAt(x as number, y as number);
+        if (water && water.properties && water.properties.water) {
+            player.inWater = true;
+        } else {
+            player.inWater = false;
+        };    
     };
     createTextBorder(text: NewText): GameObjects.Graphics {
         const border = this.add.graphics();
@@ -1106,6 +1115,7 @@ export class Game extends Scene {
         this.rightJoystick.update();
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update();
+            this.checkEnvironment(this.enemies[i]);
         };
         for (let i = 0; i < this.npcs.length; i++) {
             this.npcs[i].update();

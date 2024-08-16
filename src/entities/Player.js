@@ -3430,7 +3430,7 @@ export default class Player extends Entity {
         };
         if (this.isAttacking || this.isParrying || this.isPosturing) speed += 1;
         if (this.isClimbing) speed *= 0.65;
-        if (this.inWater) speed *= 0.65;
+        if (this.inWater) speed *= 0.75;
         this.playerVelocity.limit(speed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
     }; 

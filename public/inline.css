@@ -19,13 +19,14 @@
 .verticalCenter {position: absolute; top: 50%; transform: translateY(-50%); font-size: 0.8em;}
 .verticalTop {position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 0.8em;}
 .right {position: absolute; left: 51%;}
-.fade-in {opacity: 1; transition: opacity 1.5s ease-in;}
-.fade-out {opacity: 0; transition: opacity 1.5s ease-in;}
+.fade-in {opacity: 1; transition: opacity 2s ease-in;}
+.fade-out {opacity: 0; transition: opacity 2s ease-in;}
 .header {display: flex; justify-content: space-between; padding: 5; margin-bottom: 5; color: #fdf6d8; font-family: 'Cinzel-Regular'; font-size: 1.25em; border-bottom-color: #fdf6d8; border-bottom-width: 2;}
 @keyframes visible {0% {opacity: 0;}100% {opacity: 1;}}
+@keyframes glowing {0% {opacity: 0;}50% {opacity: 1;}100% {opacity: 0;}}
 @keyframes invisible {0% {opacity: 1;}100% {opacity: 0;}}
-.superfade-in {animation: 1.5s 1 visible;}
-.superfade-out {animation: 1.5s 1 invisible;}
+.superfade-in {animation: 5s glowing infinite;}
+.superfade-out {animation: 3s 1 invisible;}
 .flash {animation: 3s 1 invert;}
 @keyframes invert {50% {filter: invert(100%);transform: scale(1.1);}100% {filter: invert(0%);transform: scale(1);}}
 .shadow {text-shadow: 0 0 0.5em rgba(0, 0, 0, 1);}
@@ -126,7 +127,7 @@
 .skill-bar {align-items:center;border: 0.1em solid gold;border-radius:0.25em;justify-content:center;margin-bottom:3%;text-align:center;}
 .skill-bar-text {color:#fdf6d8;font-weight: 700;margin:0 auto;position:absolute;text-shadow:#000 0.1em 0 0.5em;width:90%;z-index:1;}
 .skill-bar-fill {background-color:blue;height:4vh;overflow:hidden}
-.combatText {position:absolute;left:25vw;height:30vh;width:50vw;top:60vh;margin:auto 0;text-align:center;align-items:center;justify-content: center;overflow:scroll;scrollbar-width:none;background-color:#000;border:0.15em solid #ffc700;border-radius:0.25em;box-shadow:0 0 0.25em #ffc700;white-space:pre;}
+.combatText {position:absolute;left:25vw;height:30vh;width:50vw;top:60vh;margin:auto 0;overflow:scroll;scrollbar-width:none;background-color:#000;border:0.15em solid #ffc700;border-radius:0.25em;box-shadow:0 0 0.25em #ffc700;white-space:pre;}
 .toast {background-color: #000; padding: 0.5em; margin: 0.5em; border: 0.1em solid #ffc700; border-radius: 0.5em; box-shadow: 0 0 1em #ffc700;}
 .toastBody {color:#fdf6d8; font-size:0.75em; font-weight:500; margin: 0.75em;}
 .toastButton {font-size: 0.75em; margin-left: 50%; transform: translateX(-50%)}

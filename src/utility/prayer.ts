@@ -41,8 +41,8 @@ const EFFECT = {
     HIGH: 1.5,
     CRITICAL: 2,
     FANTASTIC: 2.5,
-    TIPPITY: 10,
-    BIPPITY: 15,
+    TIPPITY: 5,
+    BIPPITY: 10,
     TOP: 100,
     DURATION_MODIFIER: 3,
     DURATION_MAX: 6
@@ -101,8 +101,8 @@ export default class StatusEffect {
         this.activeStacks = 1;
         this.activeRefreshes = 0;
         this.prayer = prayer;
-        this.effect = this.setEffect(combat, player, weapon, attributes, prayer);
-        this.description = this.setDescription(combat, player, enemy, weapon, attributes, prayer);
+        this.effect = this.setEffect(combat, player, weapon, prayer);
+        this.description = this.setDescription(combat, player, enemy, weapon, prayer);
         this.imgUrl = this.setImgURL(weapon);
         this.startTime = combat.combatTimer;
         this.endTime = this.startTime + (this.duration * EFFECT.DURATION_MODIFIER);
@@ -226,7 +226,7 @@ export default class StatusEffect {
             };
             case "Fyer": {
                 potentialModifiers.criticalChance = effectModifiers.criticalChance / EFFECT.CRITICAL;
-                potentialModifiers.criticalDamage = effectModifiers.criticalDamage * EFFECT.BASE;
+                potentialModifiers.criticalDamage = effectModifiers.criticalDamage * EFFECT.CRITICAL;
             
                 potentialModifiers.damage = effectModifiers.damage;
                 potentialModifiers.healing = effectModifiers.healing;
@@ -396,8 +396,8 @@ export default class StatusEffect {
             achre: playerIntensity,
             caeren: playerIntensity,
             kyosir: playerIntensity,
-            healing: playerIntensity * EFFECT.BIPPITY,
-            damage: playerIntensity * EFFECT.BIPPITY,
+            healing: playerIntensity * EFFECT.TOP,
+            damage: playerIntensity * EFFECT.TOP,
             buff: playerIntensity,
             debuff: playerIntensity,
         };
@@ -520,20 +520,14 @@ export default class StatusEffect {
         return this.stacks = prayer === 'Buff' || prayer === 'Damage' ? true : false;
     };
 
-    setEffect(combat: Combat, player: Ascean, weapon: Equipment, attributes: CombatAttributes, prayer: string) {
+    setEffect(combat: Combat, player: Ascean, weapon: Equipment, prayer: string) {
         if (this.setSpecial(prayer)) return;
-        let intensity = { value: 0, magnitude: 0 };
-        intensity = this.setIntensity(weapon, weapon?.influences?.[0] as string, attributes, player)
-        let playerIntensity = intensity.value * intensity.magnitude;
-
+        let playerIntensity = this.intensity.value * this.intensity.magnitude;
         let enemyFaith = combat.computer;
         let playerFaith = combat?.player?.name === player.name ? combat.player.faith.toLowerCase() : enemyFaith?.faith.toLowerCase();
-        if (weapon?.influences?.[0] as string === 'Daethos' && playerFaith === FAITHS.DEVOTED) {
-            playerIntensity *= EFFECT.LOW;
-        };
-        if (weapon?.influences?.[0] as string !== 'Daethos' && playerFaith === FAITHS.ADHERENT) {
-            playerIntensity *= EFFECT.LOW;
-        };
+        if (weapon?.influences?.[0] as string === 'Daethos' && playerFaith === FAITHS.DEVOTED) playerIntensity *= EFFECT.LOW;
+        if (weapon?.influences?.[0] as string !== 'Daethos' && playerFaith === FAITHS.ADHERENT) playerIntensity *= EFFECT.LOW;
+        
         let effectModifiers = {
             physicalDamage: playerIntensity,
             magicalDamage: playerIntensity,
@@ -553,8 +547,8 @@ export default class StatusEffect {
             achre: playerIntensity,
             caeren: playerIntensity,
             kyosir: playerIntensity,
-            healing: playerIntensity * 15,
-            damage: playerIntensity * 15,
+            healing: playerIntensity * 5,
+            damage: playerIntensity * 5,
             buff: playerIntensity,
             debuff: playerIntensity,
         };
@@ -582,14 +576,22 @@ export default class StatusEffect {
         };
         return this.effect = realizedModifiers;
     }; 
-    setDescription(combat: Combat, player: Ascean, enemy: Ascean, weapon: Equipment, attributes: CombatAttributes, prayer: string) {
+    setDescription(combat: Combat, player: Ascean, enemy: Ascean, weapon: Equipment, prayer: string) {
         let duration = this.setDuration(player);
-        let effect = this.setEffect(combat, player, weapon, attributes, prayer);
+        let playerDescription = combat?.player?.name === player.name ? true : false;
         const article = ['a','e','i','o','u'].includes(weapon.name[0].toLowerCase()) ? "an" : "a";
-        if (this.setSpecial(prayer)) {
-            return this.description = `${weapon?.influences?.[0]} has channeled an old, lost prayer through their sigil, ${article} ${weapon.name}.`
+        if (playerDescription) {
+            if (this.setSpecial(prayer)) {
+                return this.description = `You channel an old, lost prayer from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}.`;
+            };
+            let description = `You channel a gift from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}, ${prayer === 'Debuff' ? `cursing ${enemy.name}` : prayer === 'Heal' ? `renewing ${player.name} for ${Math.round(this.effect.healing as number * 0.33)} per round` : prayer === 'Damage' ? `damaging ${enemy.name} for ${Math.round(this.effect.damage as number * 0.33)} per tick` : `blessing ${player.name}`} for ${duration} combat rounds [Initial].`;
+            return this.description = description;    
+        } else {
+            if (this.setSpecial(prayer)) {
+                return this.description = `${player.name} channels an old, lost prayer from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}.`;
+            };
+            let description = `${player.name} channels a gift from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}, ${prayer === 'Debuff' ? `cursing ${enemy.name}` : prayer === 'Heal' ? `renewing ${player.name} for ${Math.round(this.effect.healing as number * 0.33)} per round` : prayer === 'Damage' ? `damaging ${enemy.name} for ${Math.round(this.effect.damage as number * 0.33)} per tick` : `blessing ${player.name}`} for ${duration} combat rounds [Initial].`;
+            return this.description = description;
         };
-        let description = `${weapon?.influences?.[0]} has channeled a gift through their sigil, ${article} ${weapon.name}, ${prayer === 'Debuff' ? `cursing ${enemy.name}` : prayer === 'Heal' ? `renewing ${player.name} for ${Math.round(effect.healing * 0.33)} per round` : prayer === 'Damage' ? `damaging ${enemy.name} for ${Math.round(effect.damage * 0.33)} per tick` : `blessing ${player.name}`} for ${duration} combat rounds [Initial].`;
-        return this.description = description;
     };
 };

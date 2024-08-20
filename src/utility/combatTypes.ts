@@ -103,9 +103,9 @@ export const WEAPON_TYPES = {
 };
 export const DEITIES = {DAETHOS: "Daethos"};
 export const FAITH_RARITY = {
-    'Common': 1,
-    'Uncommon': 2,
-    'Rare': 3,
-    'Epic': 5,
-    'Legendary': 10
+    'Common': 0,
+    'Uncommon': 0.5,
+    'Rare': 1,
+    'Epic': 2,
+    'Legendary': 3
 };

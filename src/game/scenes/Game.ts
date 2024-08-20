@@ -115,34 +115,20 @@ export class Game extends Scene {
         const tileSet = map.addTilesetImage('AncientForestMain', 'AncientForestMain', tileSize, tileSize, 0, 0);
         const campfire = map.addTilesetImage('CampFireB', 'CampFireB', tileSize, tileSize, 0, 0);
         const light = map.addTilesetImage('light1A', 'light1A', tileSize, tileSize, 0, 0);
-        // const castle_outside = map.addTilesetImage('castle_outside', 'castle_outside', tileSize, tileSize, 0, 0);
-        // console.log(castle_outside, 'Castle Outside?');
         let layer0 = map.createLayer('Tile Layer 0 - Base', tileSet as Tilemaps.Tileset, 0, 0);
-        let layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Tilemaps.Tileset, 0, 0);
         let layerC = map.createLayer('Tile Layer - Construction', tileSet as Tilemaps.Tileset, 0, 0);
+        let layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Tilemaps.Tileset, 0, 0);
         let layer4 = map.createLayer('Tile Layer 4 - Primes', decorations as Tilemaps.Tileset, 0, 0);
         let layer5 = map.createLayer('Tile Layer 5 - Snags', decorations as Tilemaps.Tileset, 0, 0);
         let layer6 = map.createLayer('Tile Layer 6 - Camps', camps as Tilemaps.Tileset, 0, 0);
         this.baseLayer = layer0;
         this.climbingLayer = layer1;
-        // let castle_bottom = map.createLayer('Castle Bottom', castle_outside as Tilemaps.Tileset, 0, 0);
-        // console.log(castle_bottom, 'Bottom');
-        // let castle_top = map.createLayer('Castle Top', castle_outside as Tilemaps.Tileset, 0, 0);
-        // console.log(castle_top, 'Top');
-        // let castle_decor = map.createLayer('Castle Decor', castle_outside as Tilemaps.Tileset, 0, 0);
-        // console.log(castle_decor, 'Decor');
-        map.createLayer('Tile Layer 2 - Flowers', decorations as Tilemaps.Tileset, 0, 0);
-        map.createLayer('Tile Layer 3 - Plants', decorations as Tilemaps.Tileset, 0, 0);
+        const layer2 =  map.createLayer('Tile Layer 2 - Flowers', decorations as Tilemaps.Tileset, 0, 0);
+        const layer3 =  map.createLayer('Tile Layer 3 - Plants', decorations as Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer - Campfire', campfire as Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer - Lights', light as Tilemaps.Tileset, 0, 0);
-        [layer0, layer1, layerC, layer4, layer5, layer6].forEach((layer, index) => { // castle_bottom, castle_top, 
+        [layer0, layer1, layerC, layer2, layer3, layer4, layer5, layer6].forEach((layer, index) => { // castle_bottom, castle_top, 
             layer?.setCollisionByProperty({ collides: true });
-            // if (index === 1) {
-            //     layer?.forEachTile((tile) => {
-            //         if (tile.properties?.climb) {
-            //         };
-            //     });
-            // };
             this.matter.world.convertTilemapLayer(layer!);
             if (index < 3) return;
             layer?.setDepth(3);

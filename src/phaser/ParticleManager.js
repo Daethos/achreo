@@ -130,7 +130,7 @@ class Particle {
     };
 
     spriteMaker(scene, player, key, particle, special) {
-        return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key).setScale(particle === true && special === false ? 0.3 : 1).setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
+        return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key).setScale(particle === true && special === false ? 0.4 : 1).setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
     };
 };
 

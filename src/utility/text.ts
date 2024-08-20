@@ -1,11 +1,12 @@
 import { Combat } from "../stores/combat";
-const ATTACKS = ['Attack', 'Posture', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'rolls', 'postures', 'parries', 'parried', 'rolled', 'attacked', 'defend', 'postured', 'tshaer', 'tshaers', 'tshaering', 'leap', 'leaps', 'rush', 'rushes', 'writhe', 'writhes'];
+const ATTACKS = ['Attack', 'Posture', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'rolls', 'postures', 'parries', 'parried', 'rolled', 'attacked', 'defend', 'postured', 
+    'tshaer', 'tshaers', 'tshaering', 'leap', 'leaps', 'rush', 'rushes', 'writhe', 'writhes', 'devour', 'devours', 'suture', 'sutures', 'sacrifice', 'sacrifices'];
 const CAST = ['confuse', 'confusing', 'fear', 'fearing', 'paralyze', 'polymorph', 'polymorphs', 'polymorphing', 'slow', 'slowing', 'snare', 'snaring'];
 const COLORS = { BONE: '#fdf6d8', GREEN: 'green', HEAL: '#0BDA51', GOLD: 'gold', PURPLE: 'purple', TEAL: 'teal', RED: 'red', BLUE: 'blue', LIGHT_BLUE: 'lightblue', FUCHSIA: 'fuchsia' };
 const DAMAGE = [ 'Blunt', 'Pierce',  'Slash',  'Earth',  'Fire',  'Frost',  'Lightning', 'Righteous', 'Sorcery', 'Spooky',  'Wild', 'Wind' ];
 const HUSH = ['Invocation', 'Hush', 'hush', 'sacrifice', 'shimmer', 'shimmers', 'protect', 'protects', 'astrave', 'fyerus'];
 const NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-const TENDRIL = ['Tendril', 'tendril', 'tshaer', 'suture', 'shield', 'shields', 'mend', 'achire', 'kynisos'];
+const TENDRIL = ['Tendril', 'tendril', 'tendrils', 'suture', 'shield', 'shields', 'mend', 'achire', 'kynisos'];
 
 export const text = (prev: string, data: Combat) => {
     let oldText: any = prev !== undefined ? prev  : "";
@@ -26,39 +27,64 @@ export const text = (prev: string, data: Combat) => {
     oldText += newText;
     return oldText;
 };
-
+function checkNumber(line: string[]) {
+    for (let i = 0; i < line.length; i++) {
+        if (line[i].includes('heal')) { 
+            return 'GREEN';
+        } else if (ATTACKS.includes(line[i])) { 
+            return 'RED';
+        };
+    };
+    return 'GOLD';
+};
+function checkAlignment(line: string[]) {
+    for (let i = 0; i < line.length; i++) {
+        if (line[i].includes('You')) { 
+            return 'right';
+        } else if (line[i].includes('defeated')) {
+            return 'center';
+        };
+    };
+    return 'left';
+};
 function styleText(text: string) {
+    var numberCheck: string[] = [];
     const style = (t: string) => { 
         const numCheck = t.split('').find((c: string) => NUMBERS.includes(parseInt(c)));
         const isNumber = numCheck !== undefined;
         const isAttack = ATTACKS.includes(t);
         const isCast = CAST.includes(t);
         const isDamage = DAMAGE.includes(t);
-        const isHeal = t.includes('heal');
+        const isHeal = t.includes('heal') && t !== 'health';
         const isHush = HUSH.includes(t);
         const isTendril = TENDRIL.includes(t);
         const isCritical = t.includes('Critical');
         const isPartial = t.includes('Partial');
         const isGlancing = t.includes('Glancing');
+        const lush = isAttack === true || isCast === true || isNumber === true || isHush === true || isTendril === true;
+        const fontWeight = isNumber ? '700' : 'normal';
+        const fontSize = lush ? '0.7em' : '0.6em';
+        const newLine = t === '\n' ? '<br>' : t;
+        const style = (isGlancing || isCritical || lush || isPartial) ? 'italic' : 'normal';
+        numberCheck.push(newLine);
+        const numType = checkNumber(numberCheck);
         const color = 
             isCast === true ? COLORS.BLUE :
             isDamage === true ? COLORS.TEAL :
-            isNumber === true ? COLORS.GOLD : 
+            isNumber === true ? COLORS[numType as keyof typeof COLORS] : 
             isHeal === true ? COLORS.HEAL :
             isGlancing ? COLORS.LIGHT_BLUE : 
             isTendril === true ? COLORS.FUCHSIA : 
             (isAttack === true || isCritical === true || isPartial === true) ? COLORS.RED : 
             isHush === true ? COLORS.FUCHSIA :
             COLORS.BONE;
-            
-        const lush = (isCast === true || isNumber === true || isHush === true || isTendril === true);
-        const fontWeight = lush ? 500 : 'normal';
-        const textShadow = lush ? `#fdf6d8 0 0 0` : 'none';
-        const fontSize = lush ? '0.75em' : '0.65em';
-        const newLine = t === '\n' ? '<br>' : t;
-        const style = (isGlancing || isCritical || isAttack || isNumber || isPartial) ? 'italic' : 'normal';
-        return `<span style="color: ${color}; font-style: ${style}; font-weight: ${fontWeight}; text-shadow: ${textShadow}; font-size: ${fontSize}; margin: 0;">${newLine}</span>`;
+        const line = `<span style="color: ${color}; font-style: ${style}; font-weight: ${fontWeight}; font-size: ${fontSize}; margin: 0;">${newLine}</span>`;
+        return line;
     };
-
-    return text.split(' ').map((t, _i) => style(t)).join(' ');
+    const lines = text.split('\n').map(line => {
+        const styledLine = line.split(' ').map(t => style(t)).join(' ');
+        const alignment = checkAlignment(line.split(' '));
+        return `<div style="text-align: ${alignment};">${styledLine}</div>`;
+    }).join('');
+    return lines;
 };

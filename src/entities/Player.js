@@ -3108,10 +3108,6 @@ export default class Player extends Entity {
         );
     };
 
-    moving = () => {
-        return this.body.velocity.x !== 0 || this.body.velocity.y !== 0;
-    };
-
     playerActionSuccess = () => {
         if (this.particleEffect) {
             this.scene.particleManager.removeEffect(this.particleEffect.id);
@@ -3288,11 +3284,10 @@ export default class Player extends Entity {
             sprint(this.scene);
             this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isAttacking = false); 
         } else if (this.moving()) {
-            if (this.isClimbing) {
+            if (this.isClimbing || this.inWater) {
                 sprint(this.scene);
                 this.anims.play('player_climb', true);
             } else {
-
                 if (!this.isWalking) {
                     this.isWalking = this.scene.time.delayedCall(400, () => {
                         walk(this.scene);
@@ -3312,6 +3307,8 @@ export default class Player extends Entity {
         } else if (this.isStealthing) {
             if (this.isMoving) {
                 this.anims.play('player_running', true);
+            } else if (this.inWater) {
+                this.anims.play('player_climb', true);
             } else {
                 this.anims.play('player_crouch_idle', true);
             };
@@ -3320,6 +3317,8 @@ export default class Player extends Entity {
             if (this.isClimbing) {
                 this.anims.play('player_climb', true);
                 this.anims.pause();
+            } else if (this.inWater) {
+                this.anims.play('player_climb', true);
             } else {
                 this.anims.play('player_idle', true);
             };

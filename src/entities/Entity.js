@@ -358,7 +358,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         requestAnimationFrame(knockbackLoop);
         if ("vibrate" in navigator) navigator.vibrate(100);
     };
-
+    moving = () => this.body.velocity.x !== 0 || this.body.velocity.y !== 0;
+    
     checkBow = (type) => type === 'Bow' || type === 'Greatbow';
     checkDamageType = (type, concern) => DAMAGE_TYPES[concern].includes(type);
     checkMeleeOrRanged = (weapon) => {

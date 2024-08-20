@@ -65,10 +65,14 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 </button>
                 <br />
             
-                A tendril swirls soothing about your senses,<br /> its sweetness teasing as hush soon possesses. <br /><br />
-                Writhing, it warps to wrap round you, seething,<br /> forms of shade shimmer to dance upon your being. <br /><br />
-                Shape becoming silhouette of perish and delight,<br /> Gripping nerve seizes your caer to flourish in shrill light. <br /><br />
-                Harsh and willow, ceasing, follows twitching fascination,<br /> It shears and sutures you; a sheath of torrid satiation. <br /><br />
+                A tendril swirls soothing about your senses,<br /> 
+                Its sweetness teasing as hush soon possesses. <br /><br />
+                Writhing, it warps to wrap round you, seething,<br /> 
+                Forms of shade simmer to dance upon your being. <br /><br />
+                Willowing with swirling swathes, it furrows and unleashes,<br /> 
+                It shears and sutures you; a sheath of torrid pain and pleases. <br /><br />
+                Silhouette of mirth, it seeks to perish and delight us,<br /> 
+                Its dripping nerve seizes your caer to flourish in detritus. <br /><br />
                 And yet perchance you seek to twist ${ascean()?.faith === 'Adherent' ? 'adherence' : 'devotion'} in its seams,<br /> To taste its ${ascean()?.mastery} burning at the resin of your dreams. <br /><br />
             
                 <p class='${ascean()?.faith === 'Adherent' ? 'adherentText' : ascean()?.faith === 'Devoted' ? 'devotedText' : 'otherText'}'>You become attuned to a halt and paltry whisper,<br /> it rings and stretches your soft edges,<br /> serenity begging you hither.</p>

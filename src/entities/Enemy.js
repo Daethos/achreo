@@ -213,6 +213,7 @@ export default class Enemy extends Entity {
         if (e.health <= 0) {
             this.isDefeated = true;
             this.stateMachine.setState(States.DEFEATED);
+            this.clearShields();
         };
         const isNewEnemy = this.isNewEnemy(this.scene.player);
         if (isNewEnemy === true || this.inCombat === false) {
@@ -226,6 +227,29 @@ export default class Enemy extends Entity {
         this.setGlow(this, caerenic);
         this.setGlow(this.spriteWeapon, caerenic, 'weapon');
         this.setGlow(this.spriteShield, caerenic, 'shield');
+    };
+
+    clearShields = () => {
+        if (this.maliceBubble) {
+            this.maliceBubble.destroy();
+            this.maliceBubble = undefined;
+        };
+        if (this.mendBubble) {
+            this.mendBubble.destroy();
+            this.mendBubble = undefined;
+        };
+        if (this.protectBubble) {
+            this.protectBubble.destroy();
+            this.protectBubble = undefined;
+        };
+        if (this.shieldBubble) {
+            this.shieldBubble.destroy();
+            this.shieldBubble = undefined;
+        };
+        if (this.wardBubble) {
+            this.wardBubble.destroy();
+            this.wardBubble = undefined;
+        };
     };
 
     currentNegativeState = (type) => {
@@ -302,7 +326,7 @@ export default class Enemy extends Entity {
         if (this.health > e.newComputerHealth) {
             let damage = Math.round(this.health - e.newComputerHealth);
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.criticalSuccess);
-            if (!this.isConsumed && !this.isHurt && !this.isFeared && !this.isSlowed) this.stateMachine.setState(States.HURT);
+            if (!this.isConsumed && !this.isHurt && this.isSuffering() === false) this.stateMachine.setState(States.HURT);
             if (this.currentRound !== e.combatRound || this.inCombat === false) {
                 if (this.isPolymorphed) this.isPolymorphed = false;
                 if (this.inCombat === false && this.isDefeated === false) {
@@ -610,28 +634,24 @@ export default class Enemy extends Entity {
     };
 
     enemyAnimation = () => {
-        if (this.isClimbing) {
-            if (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0) {
+        if (this.isPolymorphed) {
+            return;
+        } else if (this.isClimbing) {
+            if (this.moving()) {
                 this.anims.play('player_climb', true);
             } else {
                 this.anims.play('player_climb', true);
                 this.anims.pause();
             };
+        } else if (this.inWater) {
+            this.anims.play('player_climb', true);
         } else {
-            this.anims.play('player_running', true);
+            if (this.moving()) {
+                this.anims.play('player_running', true);
+            } else {
+                this.anims.play('player_idle', true);
+            };
         };
-        //     if (this.isPolymorphed) {
-        //     } else if (this.isClimbing) {
-        //         this.anims.play('player_climb', true);
-        //         this.anims.pause();
-        //     } else {
-        //         this.anims.play('player_idle', true);
-        //     };
-        // };
-        // if (this.isClimbing) {
-        //     this.heldSpeed = this.speed;
-        // } else {
-        //     this.speed = this.heldSpeed;
     };
 
     onDefeatedEnter = () => {
@@ -646,8 +666,8 @@ export default class Enemy extends Entity {
             this.isDefeated = false;
             this.health = this.ascean.health.max;
             this.isAggressive = this.startedAggressive;
-            this.stateMachine.setState(States.IDLE);
         }, undefined, this);
+        this.stateMachine.setState(States.IDLE);
     };
     onDeathEnter = () => {
         this.isDead = true;
@@ -661,7 +681,8 @@ export default class Enemy extends Entity {
     };
 
     onIdleEnter = () => {
-        this.anims.play('player_idle', true);
+        this.enemyAnimation();
+        // this.anims.play('player_idle', true);
         if (this.currentRound !== 0) this.currentRound = 0;
     };
     onIdleUpdate = (dt) => {
@@ -674,11 +695,10 @@ export default class Enemy extends Entity {
     onIdleExit = () => this.anims.stop('player_idle');
  
     onPatrolEnter = () => {
-        // this.enemyAnimation();
-        // this.anims.play('player_running', true); 
+        this.enemyAnimation();
         const patrolDirection = new Phaser.Math.Vector2(Math.random() - 0.5, Math.random() - 0.5).normalize();
         this.setFlipX(patrolDirection.x < 0);
-        const patrolSpeed = this.speed * 0.5 * (this.isClimbing ? 0.65 : 1);
+        const patrolSpeed = this.speed * 0.5;
         this.patrolVelocity = { x: patrolDirection.x * patrolSpeed, y: patrolDirection.y * patrolSpeed };
         const delay = Phaser.Math.RND.between(2000, 4000); // 3500
 
@@ -687,28 +707,27 @@ export default class Enemy extends Entity {
             if (this.stateMachine.isCurrentState(States.PATROL)) this.stateMachine.setState(States.IDLE);
         }, undefined, this);
     }; 
-    onPatrolUpdate = (_dt) => this.setVelocity(this.patrolVelocity.x, this.patrolVelocity.y);
+    onPatrolUpdate = (_dt) => {this.enemyAnimation(); this.setVelocity(this.patrolVelocity.x * (this.isClimbing ? 0.65 : 1), this.patrolVelocity.y * (this.isClimbing ? 0.65 : 1))};
     onPatrolExit = () => {};
 
     onAwarenessEnter = () => {
-        this.anims.play('player_idle', true);
+        this.enemyAnimation();
         this.setVelocity(0);
         this.scene.showDialog(true);
         this.setStatic(true);
     };
     onAwarenessUpdate = (_dt) => {
-        this.anims.play('player_idle', true);
+        this.enemyAnimation();
     };
     onAwarenessExit = () => {
-        this.anims.stop('player_idle');
+        this.enemyAnimation();
         this.setStatic(false);
         this.scene.showDialog(false);
     };
 
     onChaseEnter = () => {
         if (!this.attacking) return;
-        // this.enemyAnimation();
-        // this.anims.play('player_running', true);
+        this.anims.play('player_running', true);
         this.chaseTimer = this.scene.time.addEvent({
             delay: 500,
             callback: () => {
@@ -770,7 +789,7 @@ export default class Enemy extends Entity {
             this.stateMachine.setState(States.LEASH);
             return;
         };
-        // this.enemyAnimation();
+        this.enemyAnimation();
         // this.anims.play('player_running', true);
         this.scene.time.delayedCall(this.swingTimer, () => {
             this.combat(this.attacking);
@@ -899,7 +918,7 @@ export default class Enemy extends Entity {
     };
 
     onLeashEnter = () => {
-        // this.enemyAnimation();
+        this.enemyAnimation();
         // this.anims.play('player_running', true);
         this.inCombat = false;
         if (this.attacking !== undefined) {
@@ -1956,8 +1975,7 @@ export default class Enemy extends Entity {
     onConfusedExit = () => { 
         if (this.isConfused) this.isConfused = false;
         this.evaluateCombatDistance();
-        // this.enemyAnimation();
-        // this.anims.play('player_running', true);
+        this.enemyAnimation();
         this.spriteWeapon.setVisible(true);
         if (this.confuseTimer) {
             this.confuseTimer.destroy();
@@ -1970,7 +1988,7 @@ export default class Enemy extends Entity {
         this.consumedDuration = DURATION.CONSUMED;
         this.clearAnimations();
         this.consumedTimer = this.scene.time.addEvent({
-            delay: 250,
+            delay: 400,
             callback: () => {
                 if (this.attacking) {
                     const direction = this.attacking.position.subtract(this.position);
@@ -2081,7 +2099,7 @@ export default class Enemy extends Entity {
     };
     onFearExit = () => {  
         this.evaluateCombatDistance();
-        // this.enemyAnimation();
+        this.enemyAnimation();
         // this.anims.play('player_running', true);
         this.spriteWeapon.setVisible(true);
         if (this.fearTimer) {
@@ -2122,7 +2140,7 @@ export default class Enemy extends Entity {
         this.clearAnimations();
         this.clearTint();
         this.isHurt = true;
-        this.scene.time.delayedCall(250, () => {
+        this.scene.time.delayedCall(100, () => {
             this.isHurt = false;
         }, undefined, this);
     };
@@ -2247,7 +2265,7 @@ export default class Enemy extends Entity {
         if (this.isPolymorphed) this.isPolymorphed = false;
         this.evaluateCombatDistance();
         this.clearAnimations();
-        // this.enemyAnimation();
+        this.enemyAnimation();
         // this.anims.play('player_running', true);
         this.setTint(0xFF0000);
         this.spriteWeapon.setVisible(true);
@@ -2509,19 +2527,19 @@ export default class Enemy extends Entity {
         } else if (this.isRanged) { // Contiually Checking Distance for RANGED ENEMIES.
             if (!this.stateMachine.isCurrentState(States.COMBAT)) this.stateMachine.setState(States.COMBAT);
             if (distanceY > DISTANCE.RANGED_ALIGNMENT) {
-                // this.enemyAnimation();
+                this.enemyAnimation();
                 // this.anims.play('player_running', true);
                 direction.normalize();
                 this.setVelocityY(direction.y * this.speed * (this.isClimbing ? 0.65 : 1) + 0.5); // 2 || 4
             };
             if (this.attacking.position.subtract(this.position).length() > DISTANCE.THRESHOLD * multiplier) { // 225-525 
-                // this.enemyAnimation();
+                this.enemyAnimation();
                 // this.anims.play('player_running', true);
                 direction.normalize();
                 this.setVelocityX(direction.x * this.speed * (this.isClimbing ? 0.65 : 1)); // 2.25
                 this.setVelocityY(direction.y * this.speed * (this.isClimbing ? 0.65 : 1)); // 2.25          
             } else if (this.attacking.position.subtract(this.position).length() < DISTANCE.THRESHOLD && !this.attacking.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
-                // this.enemyAnimation();
+                this.enemyAnimation();
                 // this.anims.play('player_running', true);
                 direction.normalize();
                 this.setVelocityX(direction.x * -this.speed * (this.isClimbing ? 0.65 : 1)); // -2.25 | -2 | -1.75
@@ -2536,7 +2554,7 @@ export default class Enemy extends Entity {
         } else { // Melee || Contiually Maintaining Reach for MELEE ENEMIES.
             if (!this.stateMachine.isCurrentState(States.COMBAT)) this.stateMachine.setState(States.COMBAT);
             if (direction.length() > DISTANCE.ATTACK) { 
-                // this.enemyAnimation();
+                this.enemyAnimation();
                 // this.anims.play('player_running', true);
                 direction.normalize();
                 this.setVelocityX(direction.x * this.speed * (this.isClimbing ? 0.65 : 1)); // 2.5
@@ -2615,7 +2633,7 @@ export default class Enemy extends Entity {
     }; 
 
     evaluateEnemyAnimation = () => {
-        if (this.inCombat && !this.cleanCombatAnimation()) {
+        if (!this.cleanCombatAnimation()) {
             return;
         };
         if (this.isClimbing) {
@@ -2644,6 +2662,7 @@ export default class Enemy extends Entity {
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this); 
         if (this.inCombat === false) return;
+        this.evaluateEnemyAnimation();
         if (this.isConfused && !this.stateMachine.isCurrentState(States.CONFUSED)) {
             this.stateMachine.setState(States.CONFUSED);
             return;
@@ -2727,7 +2746,6 @@ export default class Enemy extends Entity {
  
     update() {
         this.evaluateEnemyState(); 
-        this.evaluateEnemyAnimation();
         this.positiveMachine.update(this.scene.sys.game.loop.delta);   
         this.stateMachine.update(this.scene.sys.game.loop.delta);
         this.negativeMachine.update(this.scene.sys.game.loop.delta);

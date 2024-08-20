@@ -251,6 +251,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     affectsHealth = false;
                     break;
                 case 'Enemy Chiomic': // Mindflay
+                    if (combat().computer === undefined) return;
                     const enemyChiomic = Math.round(validateHealth(combat().computerHealth) * (data / 100) * (caerenic ? 1.25 : 1) * stalwart  * ((validateHealth(combat().computer?.level as number) + 9) / 10));
                     const newChiomicPlayerHealth = validateHealth(combat().newPlayerHealth) - enemyChiomic < 0 ? 0 : validateHealth(combat().newPlayerHealth) - enemyChiomic;
                     computerWin = newChiomicPlayerHealth === 0;
@@ -282,6 +283,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth: newHealth, playerWin });
                     break;
                 case 'Enemy Tshaeral': // Lifedrain (Tick, 100%)
+                    if (!combat().computer) return;
                     const enemyDrain = Math.round(validateHealth(combat().computerHealth) * (data / 100) * (caerenic ? 1.25 : 1) * stalwart * ((validateHealth(combat().computer?.level as number) + 9) / 10));
                     let drainedPlayerHealth = validateHealth(combat().newPlayerHealth) - enemyDrain < 0 ? 0 : validateHealth(combat().newPlayerHealth) - enemyDrain;
                     let drainedComputerHealth = validateHealth(combat().newComputerHealth) + enemyDrain > validateHealth(combat().computerHealth) ? validateHealth(combat().computerHealth) : validateHealth(combat().newComputerHealth) + enemyDrain;
@@ -325,6 +327,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     };
                     break;
                 case 'Enemy': // Blind Enemy Attack i.e. an enemy not targeted hitting the player
+                    if (!data.ascean) return;
                     let enemyData = {
                         computer: data.ascean,
                         computerAttributes: data.combatStats.attributes,
@@ -380,6 +383,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     playerWin = res.playerWin;
                     break;
                 case 'Enemy Sacrifice': // Shadow Word: Death
+                    if (combat().computer === undefined) return;
                     const enemySac = Math.round(combat().computer?.[combat().computer?.mastery as string] * ((validateHealth(combat().computer?.level as number) + 9) / 10) * stalwart);
                     let playerEnemySacrifice = validateHealth(combat().newPlayerHealth) - (enemySac * (caerenic ? 1.25 : 1)) < 0 ? 0 : validateHealth(combat().newPlayerHealth) - (enemySac * (caerenic ? 1.25 : 1));
                     let enemyEnemySacrifice = validateHealth(combat().newComputerHealth) - (enemySac / 2) < 0 ? 0 : validateHealth(combat().newComputerHealth) - (enemySac / 2);
@@ -397,6 +401,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     playerWin = res.playerWin;
                     break;
                 case 'Enemy Suture': // Lifedrain (Instant, 50%)
+                    if (combat().computer === undefined) return;
                     const enemySut = Math.round(combat().computer?.[combat().computer?.mastery as string] / 2 * (caerenic ? 1.25 : 1) * ((validateHealth(combat().computer?.level as number) + 9) / 10) * stalwart);
                     let playerEnemySuture = validateHealth(combat().newPlayerHealth) - (enemySut * 1.25) < 0 ? 0 : validateHealth(combat().newPlayerHealth) - (enemySut * 1.25);
                     let enemyEnemySuture = validateHealth(combat().newComputerHealth) + enemySut > validateHealth(combat().computerHealth) ? validateHealth(combat().computerHealth) : validateHealth(combat().newComputerHealth) + enemySut;

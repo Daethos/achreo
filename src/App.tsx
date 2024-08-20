@@ -20,6 +20,9 @@ const MenuAscean = lazy(async () => await import('./components/MenuAscean'));
 const Preview = lazy(async () => await import('./components/Preview'));
 const GameToast = lazy(async () => await import('./ui/GameToast'));
 var click = new Audio("../assets/sounds/TV_Button_Press.wav");
+var load = new Audio("../assets/sounds/stealth.mp3");
+var deleting = new Audio("../assets/sounds/freeze.wav");
+var creating = new Audio("../assets/sounds/combat-round.mp3");
 
 export default function App() {
     const [alert, setAlert] = createSignal({ header: '', body: '', delay: 0, key: '', arg: undefined });
@@ -59,7 +62,7 @@ export default function App() {
         setMenu({ ...menu(), [option]: true });
     };
     async function createCharacter(character: CharacterSheet): Promise<void> {
-        click.play();
+        creating.play();
         const cre = await createAscean(character);
         const pop = await populate(cre);
         const comp = asceanCompiler(pop);
@@ -70,7 +73,7 @@ export default function App() {
     };
     async function deleteCharacter(id: string | undefined): Promise<void> {
         try {
-            click.play();
+            deleting.play();
             const newAsceans = menu()?.asceans?.filter((asc: Ascean) => asc._id !== id);
             setMenu({ ...menu(), asceans: newAsceans, choosingCharacter: newAsceans.length > 0 });
             setAscean(undefined as unknown as Ascean);
@@ -94,6 +97,7 @@ export default function App() {
     };
     async function loadAscean(id: string): Promise<void> {
         try {
+            load.play();
             setStartGame(true);
             const asc: Ascean = menu()?.asceans?.find((asc: Ascean) => asc._id === id) as Ascean;
             setAlert({ header: 'Loading Game', body: `Preparing ${asc.name}. Good luck.`, delay: 3000, key: '', arg: undefined });
@@ -221,6 +225,7 @@ export default function App() {
         };
     };
     async function viewAscean(id: string): Promise<void> {
+        click.play();
         if (ascean()?._id === id) {
             setMenu({ ...menu(), choosingCharacter: false });
             return;
@@ -318,12 +323,12 @@ export default function App() {
             </Suspense>
             <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
                 <>{(SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV !== SCREENS.COMPLETE.KEY) && 
-                    <button class='highlight cornerBL' onClick={() => setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV)}>
+                    <button class='highlight cornerBL' onClick={() => {click.play(); setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV);}}>
                         <div>Back ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV as keyof typeof SCREENS]?.TEXT})</div>
                     </button>
                 }
                 {(SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT !== SCREENS.CHARACTER.KEY) && 
-                    <button class='highlight cornerBR' onClick={() => setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT)}>
+                    <button class='highlight cornerBR' onClick={() => {click.play(); setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT);}}>
                         <div>Next ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT as keyof typeof SCREENS]?.TEXT})</div>
                     </button>
                 }
@@ -332,17 +337,17 @@ export default function App() {
                         <div>Create {newAscean()?.name?.split(' ')[0]}</div>
                     </button>
                 }
-                <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
+                <button class='highlight cornerTR' onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: false });}}>
                     <div>Back (Menu)</div>
                 </button></>
                 }>
                 <>{(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV !== LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                        <button class='highlight cornerBL' onClick={() => setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV)}>
+                        <button class='highlight cornerBL' onClick={() => {click.play(); setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV);}}>
                             <div>Back ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
                         </button>
                     }
                     {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT !== LANDSCAPE_SCREENS.PREMADE.KEY) && 
-                        <button class='highlight cornerBR' onClick={() => setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT)}>
+                        <button class='highlight cornerBR' onClick={() => {click.play(); setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT);}}>
                             <div>Next ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
                         </button>
                     }
@@ -356,7 +361,7 @@ export default function App() {
                             <div>Create {newAscean()?.name?.split(' ')[0]}</div>
                         </button>
                     }
-                    <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: false })}>
+                    <button class='highlight cornerTR' onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: false });}}>
                         <div>Back (Menu)</div>
                     </button>
                 </>
@@ -368,7 +373,7 @@ export default function App() {
                     <MenuAscean menu={menu} viewAscean={viewAscean} loadAscean={loadAscean} />
                 </Suspense>
                 <Show when={menu()?.asceans?.length < 3}>
-                    <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'black' }}>Create Character</button>
+                    <button class='highlight cornerTR' onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: true });}} style={{ 'background-color': 'black' }}>Create Character</button>
                 </Show>
             </div>
         ) : ascean() ? (
@@ -377,10 +382,10 @@ export default function App() {
                     <AsceanView ascean={ascean} />
                 </Suspense>
                 <Show when={menu()?.asceans?.length > 0}>
-                    <button class='highlight cornerTL' onClick={() => setMenu({ ...menu(), choosingCharacter: true })} style={{ 'background-color': 'black' }}>Main Menu</button> 
+                    <button class='highlight cornerTL' onClick={() => {click.play(); setMenu({ ...menu(), choosingCharacter: true });} } style={{ 'background-color': 'black' }}>Main Menu</button> 
                 </Show>
                 <Show when={menu()?.asceans?.length < 3}>
-                    <button class='highlight cornerTR' onClick={() => setMenu({ ...menu(), creatingCharacter: true })} style={{ 'background-color': 'black' }}>Create Character</button>
+                    <button class='highlight cornerTR' onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: true });}} style={{ 'background-color': 'black' }}>Create Character</button>
                 </Show>
                 <Show when={menu().deleteModal}>
                     <div class='modal' onClick={() => setMenu({ ...menu(), deleteModal: false })} style={{ background: 'rgba(0, 0, 0, 1)' }}>

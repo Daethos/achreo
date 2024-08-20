@@ -166,8 +166,8 @@ export default class Enemy extends Entity {
     };
 
     cleanUp() {
-        EventBus.off('combat', this.combatDataUpdate);
-        EventBus.off('update-combat', this.combatDataUpdate); 
+        EventBus.off('combat', this.combatUpdate);
+        EventBus.off('update-combat', this.combatUpdate); 
         EventBus.off('personal-update', this.personalUpdate);    
         EventBus.off('enemy-persuasion', this.persuasionUpdate);
         EventBus.off('enemy-luckout', this.luckoutUpdate);
@@ -175,8 +175,8 @@ export default class Enemy extends Entity {
     };
 
     enemyStateListener() {
-        EventBus.on('combat', this.combatDataUpdate);
-        EventBus.on('update-combat', this.combatDataUpdate); 
+        EventBus.on('combat', this.combatUpdate);
+        EventBus.on('update-combat', this.combatUpdate); 
         EventBus.on('personal-update', this.personalUpdate);
         EventBus.on('enemy-persuasion', this.persuasionUpdate);
         EventBus.on('enemy-luckout', this.luckoutUpdate);
@@ -213,7 +213,7 @@ export default class Enemy extends Entity {
         if (e.health <= 0) {
             this.isDefeated = true;
             this.stateMachine.setState(States.DEFEATED);
-            this.clearShields();
+            // this.clearShields();
         };
         const isNewEnemy = this.isNewEnemy(this.scene.player);
         if (isNewEnemy === true || this.inCombat === false) {
@@ -266,7 +266,7 @@ export default class Enemy extends Entity {
         };
     };
     
-    combatDataUpdate = (e) => {
+    combatUpdate = (e) => {
         if (this.enemyID !== e.enemyID) {
             if (this.inCombat === true) this.currentRound = e.combatRound;
             if (this.inCombat === true && this.attacking && e.newPlayerHealth <= 0 && e.computerWin === true) {
@@ -299,6 +299,7 @@ export default class Enemy extends Entity {
             };
             if (e.newComputerHealth <= 0) {
                 this.isDefeated = true;
+                // this.clearShields();
                 this.stateMachine.setState(States.DEFEATED);
             };
             if (this.isMalicing === true) this.maliceHit();
@@ -318,6 +319,7 @@ export default class Enemy extends Entity {
         this.currentRound = e.combatRound;
         if (e.newPlayerHealth <= 0 && e.computerWin === true) {
             this.clearCombatWin();
+            // this.clearShields();
         };
     };
 
@@ -2518,7 +2520,7 @@ export default class Enemy extends Entity {
         if (this.attacking === undefined || this.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
             this.stateMachine.setState(States.LEASH);
             return;
-        };  
+        };
         let direction = this.attacking.position.subtract(this.position);
         const distanceY = Math.abs(direction.y);
         const multiplier = this.rangedDistanceMultiplier(DISTANCE.RANGED_MULTIPLIER);
@@ -2559,9 +2561,11 @@ export default class Enemy extends Entity {
                 direction.normalize();
                 this.setVelocityX(direction.x * this.speed * (this.isClimbing ? 0.65 : 1)); // 2.5
                 this.setVelocityY(direction.y * this.speed * (this.isClimbing ? 0.65 : 1)); // 2.5
+                this.isPosted = false;
             } else { // Inside melee range
                 this.setVelocity(0);
                 this.anims.play('player_idle', true);
+                this.isPosted = true;
             };
         };
     };
@@ -2569,8 +2573,8 @@ export default class Enemy extends Entity {
     checkEvasion = (particle) => {
         const particleVector = new Phaser.Math.Vector2(particle.effect.x, particle.effect.y);
         const enemyVector = new Phaser.Math.Vector2(this.x, this.y);
-        const distance = particleVector.subtract(enemyVector);
-        if (distance.length() < (DISTANCE.THRESHOLD - 25)) { // 50 || 100
+        const particleDistance = particleVector.subtract(enemyVector);
+        if (particleDistance.length() < (DISTANCE.THRESHOLD - 25) && !this.isPosted) { // 50 || 100
             return true;
         };
         return false;
@@ -2661,6 +2665,11 @@ export default class Enemy extends Entity {
         if (this.healthbar) this.healthbar.update(this);
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this); 
+        if (this.maliceBubble) this.maliceBubble.update(this.x, this.y);
+        if (this.mendBubble) this.mendBubble.update(this.x, this.y);
+        if (this.protectBubble) this.protectBubble.update(this.x, this.y);
+        if (this.shieldBubble) this.shieldBubble.update(this.x, this.y);
+        if (this.wardBubble) this.wardBubble.update(this.x, this.y);
         if (this.inCombat === false) return;
         this.evaluateEnemyAnimation();
         if (this.isConfused && !this.stateMachine.isCurrentState(States.CONFUSED)) {
@@ -2714,11 +2723,7 @@ export default class Enemy extends Entity {
         if (this.particleEffect) this.currentParticleCheck();
         this.getDirection();
         this.currentTargetCheck();
-        if (this.maliceBubble) this.maliceBubble.update(this.x, this.y);
-        if (this.mendBubble) this.mendBubble.update(this.x, this.y);
-        if (this.protectBubble) this.protectBubble.update(this.x, this.y);
-        if (this.shieldBubble) this.shieldBubble.update(this.x, this.y);
-        if (this.wardBubble) this.wardBubble.update(this.x, this.y);
+
         if (this.isSuffering() === true || this.isPerformingSpecial === true) return;
         if (this.isUnderRangedAttack()) {
             this.stateMachine.setState(States.EVADE);

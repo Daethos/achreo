@@ -10,7 +10,7 @@ export default class NewText {
     public width: number;
     public height: number;
     
-    constructor(ctx: Phaser.Scene, x: number, y: number, string: string, style: string, origin: any, shadow: string = '') {
+    constructor(ctx: Phaser.Scene, x: number, y: number, string: string, style: string, origin: any, shadow: string | boolean) {
         this.ctx = ctx;
         this.x = x;
         this.y = y;
@@ -23,11 +23,29 @@ export default class NewText {
         this.height = this.obj.height;
     };
 
-    initStyle(key: string, shadow?: string) {
-        if (shadow === '') {
+    initStyle(key: string, shade: string | boolean) {
+        if (shade === '') {
             const masteries = ['#fdf6d8', 'red', 'green', 'blue', 'purple', 'gold'];
             const index = Math.round(Math.random() * masteries.length);
-            shadow = masteries[index];
+            shade = masteries[index];
+        };
+        let shadow = {
+            offsetX: 2,
+            offsetY: 2,
+            color: shade,
+            blur: 5,
+            stroke: true,
+            fill: true
+        };
+        if (shade === false) {
+            shadow = {
+                offsetX: 0,
+                offsetY: 0,
+                blur: 0,
+                color: '$fdf6d8',
+                stroke: false,
+                fill: false,
+            };
         };
         let style = {
             fontFamily: 'Cinzel',
@@ -36,14 +54,7 @@ export default class NewText {
             backgroundColor: '#000',
             stroke: '#FFFFFF',
             strokeThickness: 2,
-            shadow: {
-                offsetX: 2,
-                offsetY: 2,
-                color: shadow,
-                blur: 5,
-                stroke: true,
-                fill: true
-            },
+            shadow,
             align: 'center',
             padding: 5,
             wordWrap: {
@@ -71,6 +82,11 @@ export default class NewText {
                 style.strokeThickness = 1;
                 style.shadow.blur = 1;
                 style.wordWrap.width = 640;
+                break;
+            case 'super':
+                style.fontSize = 8;
+                style.strokeThickness = 1;
+                style.shadow.blur = 1;
                 break;
             case 'clear':
                 break;

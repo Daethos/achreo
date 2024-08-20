@@ -9,11 +9,12 @@ import { EventBus } from '../game/EventBus';
 export default function PrayerEffects({ combat, effect, enemy, game, setEffect, show, setShow }: { combat: Accessor<Combat>; effect: StatusEffect; enemy: boolean; game: Accessor<GameState>, setEffect: Setter<StatusEffect>; show: Accessor<boolean>; setShow: Setter<boolean>; }) {
     const [effectTimer, setEffectTimer] = createSignal(effect.endTime - effect.startTime);
     var timeout: any = undefined;
-    
+    console.log(effect, 'Effect');
     // console.log('%c Prayer Effect Removed', 'color: red');
     // console.log('%c Prayer Effect Ticking...', 'color: gold');
     function tick(): void {
         if (combat().combatEngaged === false || (enemy === true && combat().playerWin === true)) { 
+            console.log('%c Prayer Effect Removed', 'color: red');
             EventBus.emit('initiate-combat', { data: effect, type: 'Remove Tick' });
             clearInterval(timeout);
             return;
@@ -23,9 +24,11 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
             return;
         };
         if (canTick(effect, effectTimer, combat().combatTimer)) { 
+            console.log('%c Prayer Effect Ticking...', 'color: gold');
             EventBus.emit('initiate-combat', { data: { effect, effectTimer: effectTimer() }, type: 'Tick' });    
         };
         if (effectTimer() <= 0) {
+            console.log('%c Prayer Effect Removed', 'color: red');
             clearInterval(timeout);
             EventBus.emit('initiate-combat', { data: effect, type: 'Remove Tick' });
             return;

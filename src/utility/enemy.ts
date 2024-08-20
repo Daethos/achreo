@@ -213,7 +213,6 @@ export type EnemySheet = {
     isPersuaded: boolean;
     playerTrait: string;
 };
-
 const levelRanges = [
     { range: [1, 2], min: 1, max: 2 },
     { range: [3, 4], min: 2, max: 4 },
@@ -225,7 +224,6 @@ const levelRanges = [
     { range: [15, 18], min: 12, max: 18 },
     { range: [19, 20], min: 16, max: 20 }
 ];
-
 function getEnemyLevels(level: number): { min: number, max: number } {
     let min: number = 0, max: number = 0; 
     for (const { range, min: rangeMin, max: rangeMax } of levelRanges) {
@@ -238,7 +236,6 @@ function getEnemyLevels(level: number): { min: number, max: number } {
     };
     return { min, max };
 }; 
-
 export function fetchEnemy(e: { enemyID: string; level: number; }): void {
     try { 
         const { min, max } = getEnemyLevels(e.level); 

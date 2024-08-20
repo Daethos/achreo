@@ -126,7 +126,8 @@ export class Game extends Scene {
         const layer2 =  map.createLayer('Tile Layer 2 - Flowers', decorations as Tilemaps.Tileset, 0, 0);
         const layer3 =  map.createLayer('Tile Layer 3 - Plants', decorations as Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer - Campfire', campfire as Tilemaps.Tileset, 0, 0);
-        map.createLayer('Tile Layer - Lights', light as Tilemaps.Tileset, 0, 0);
+        let lights = map.createLayer('Tile Layer - Lights', light as Tilemaps.Tileset, 0, 0);
+        lights?.setDepth(5);
         [layer0, layer1, layerC, layer2, layer3, layer4, layer5, layer6].forEach((layer, index) => { // castle_bottom, castle_top, 
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
@@ -271,6 +272,7 @@ export class Game extends Scene {
         });
         this.minimap.ignore(this.minimapBorder);
         this.smallHud = new SmallHud(this);
+        this.input.mouse?.disableContextMenu();
         EventBus.emit('current-scene-ready', this);
     };
 

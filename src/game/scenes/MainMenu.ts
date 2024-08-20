@@ -9,6 +9,7 @@ export class MainMenu extends Scene {
     text: GameObjects.Text;
     centerX: number;
     centerY: number;
+    txt_version: NewText;
 
     constructor () {
         super('MainMenu');
@@ -51,6 +52,7 @@ export class MainMenu extends Scene {
         }).setOrigin(0.5).setDepth(100);
         this.text.setInteractive();
         this.text.on('pointerup', this.mainMenu, this);
+        this.txt_version = new NewText( this, 30, 15, 'The Ascean v0.0.1', 'super', { x: 0.5, y: 1 }, false);
         EventBus.emit('current-scene-ready', this);
         EventBus.on('enter-menu', this.changeScene, this);
     };
@@ -66,6 +68,7 @@ export class MainMenu extends Scene {
         this.title.obj.destroy();
         this.title.destroy();
         this.text.destroy();
+        this.txt_version.destroy();
         EventBus.emit('enter-menu');
     };
 };

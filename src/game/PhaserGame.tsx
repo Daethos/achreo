@@ -1072,6 +1072,7 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener('set-player');
             
             EventBus.removeListener('toggle-pause');
+            EventBus.removeListener('update-combat-player');
             EventBus.removeListener('update-combat-state');
             EventBus.removeListener('update-combat-timer');
             EventBus.removeListener('update-health');

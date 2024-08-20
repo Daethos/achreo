@@ -497,7 +497,7 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
             combat.computerWin = false;
             combat.playerWin = true;
         };
-        combat.playerSpecialDescription = `${combat.computer?.name} takes ${Math.round(playerDamage)} damage from your ${effect.name}.`;
+        combat.playerSpecialDescription = `${combat.computer?.name} is damaged for ${Math.round(playerDamage)} from your ${effect.name}.`;
     } else {
         const computerDamage = effect.effect.damage as number * DAMAGE.TICK_FULL * (combat.isCaerenic === true ? DAMAGE.CAERENEIC_NEG : 1);
         combat.newPlayerHealth -= computerDamage;
@@ -511,7 +511,7 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
                 combat.playerWin = false;
             };
         };
-        combat.computerSpecialDescription = `${combat.computer?.name}'s ${effect.name} deals ${Math.round(computerDamage)} damage to you.`;
+        combat.computerSpecialDescription = `${combat.computer?.name}'s ${effect.name} damages you for ${Math.round(computerDamage)}.`;
     };
     return combat;
 };
@@ -630,7 +630,6 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
         } else {
             exists = combat.playerEffects.find(effect => effect.name === `Gift of ${weapon.influences?.[0]}` && effect.prayer === blessing);   
         };
-
         if (!exists) {
             exists = new StatusEffect(combat, combat.player as Ascean, combat.computer as Ascean, weapon, combat.playerAttributes as CombatAttributes, blessing);
             if (negativeEffect) {
@@ -779,21 +778,20 @@ function faithCompiler(combat: Combat): Combat { // The influence will add a cha
     const computerFaith = faithModCompiler(combat.computer as Ascean, computerFaithNumber, combat.computerWeapons[0], computerFaithNumberTwo, combat.computerWeapons[1], combat.computer?.amulet?.influences?.[0] as string, combat.computer?.trinket?.influences?.[0] as string);
     // computerFaithNumber = computerFaith.faithOne;
     // computerFaithNumberTwo = computerFaith.faithTwo;
-    console.log(playerFaith, '<-- playerFaith', computerFaith, '<-- computerFaith');
-    if (playerFaith.faithOne > faithNumber) {
+    if (playerFaith.faithOne > 95) {
         combat.actionData.push('prayer');
         faithSuccess(combat, 'player', combat.weapons[0] as Equipment, 0);
     };
-    if (combat.dualWielding === true && playerFaith.faithTwo > faithNumberTwo) {
+    if (combat.dualWielding === true && playerFaith.faithTwo > 95) {
         combat.actionData.push('prayer');    
         faithSuccess(combat, 'player', combat.weapons[1] as Equipment, 1);
     };
 
     if (!combat.playerEffects.find(effect => effect.prayer === 'Silence')) {
-        if (computerFaith.faithOne > computerFaithNumber) {
+        if (computerFaith.faithOne > 95) {
             faithSuccess(combat, 'computer', combat.computerWeapons[0], 0);
         };
-        if (combat.computerDualWielding === true && computerFaith.faithTwo > computerFaithNumberTwo) {
+        if (combat.computerDualWielding === true && computerFaith.faithTwo > 95) {
             faithSuccess(combat, 'computer', combat.computerWeapons[1], 1);
         };
     };

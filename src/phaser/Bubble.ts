@@ -63,10 +63,10 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
     setDelay = (scene: Phaser.Scene, time: number) => {
         scene.time.delayedCall(time, () => {
             if (!this) return;
-            this.glowFilter?.remove(this);
-            this.warp?.remove(false);
-            this.warp?.destroy();
-            this.destroy();
+            this.glowFilter?.remove?.(this);
+            this.warp?.remove?.(false);
+            this.warp?.destroy?.();
+            this.destroy?.();
         });
     };
 

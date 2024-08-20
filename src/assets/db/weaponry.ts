@@ -6182,7 +6182,7 @@ export let Weapons = [
         magicalDamage: NUMBER.FOUR,
         physicalPenetration: 0,
         magicalPenetration: 3,
-        criticalChance: NUMBER.THREE,
+        criticalChance: NUMBER.FOUR,
         criticalDamage: FRACTION.TWO,
         dodge: 0,
         roll: 7,

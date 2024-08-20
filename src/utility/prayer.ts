@@ -36,14 +36,17 @@ export type Tick = {
 
 const EFFECT = {
     BASE: 1.1,
-    LOW: 1.15,
-    MEDIUM: 1.25,
-    HIGH: 1.5,
-    CRITICAL: 2,
-    FANTASTIC: 2.5,
-    TIPPITY: 5,
-    BIPPITY: 10,
-    TOP: 100,
+    ONE_FIFTEEN: 1.15,
+    ONE_TWENTY_FIVE: 1.25,
+    ONE_FIFTY: 1.5,
+    TWO: 2,
+    TWO_FIFTY: 2.5,
+    FIVE: 5,
+    TEN: 10,
+    FIFTEEN: 15,
+    TWENTY_FIVE: 25,
+    FIFTY: 50,
+    HUNDRED: 100,
     DURATION_MODIFIER: 3,
     DURATION_MAX: 6
 };
@@ -167,31 +170,31 @@ export default class StatusEffect {
         realizedModifiers.healing = potentialModifiers.healing;
         return realizedModifiers;
     };
-    static setModifiers = (weapon: Equipment, potentialModifiers: any, playerDamage: number, effectModifiers: any): any => {
+    static setModifiers = (weapon: Equipment, potentialModifiers: any, effectModifiers: any): any => {
         switch(weapon?.influences?.[0]) {
             case "Daethos": {
-                potentialModifiers.physicalDamage = playerDamage * EFFECT.MEDIUM / EFFECT.TIPPITY;
-                potentialModifiers.magicalDamage = playerDamage * EFFECT.MEDIUM / EFFECT.TIPPITY;
-                potentialModifiers.physicalPenetration = playerDamage / EFFECT.TIPPITY;
-                potentialModifiers.magicalPenetration = playerDamage / EFFECT.TIPPITY;
+                potentialModifiers.physicalDamage = effectModifiers.physicalDamage / EFFECT.FIVE;
+                potentialModifiers.magicalDamage = effectModifiers.magicalDamage / EFFECT.FIVE;
+                potentialModifiers.physicalPenetration = effectModifiers.physicalPenetration / EFFECT.FIVE;
+                potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration / EFFECT.FIVE;
 
-                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
-                potentialModifiers.healing = effectModifiers.healing * EFFECT.MEDIUM;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.ONE_TWENTY_FIVE;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_TWENTY_FIVE;
                 break;
             };
             case "Achreo": {
-                potentialModifiers.physicalDamage = effectModifiers.healing * EFFECT.MEDIUM / EFFECT.TIPPITY;
-                potentialModifiers.magicalDamage = effectModifiers.healing * EFFECT.MEDIUM / EFFECT.TIPPITY;
-                potentialModifiers.criticalChance = effectModifiers.damage / EFFECT.TIPPITY;
-                potentialModifiers.criticalDamage = effectModifiers.damage / EFFECT.TOP;
+                potentialModifiers.physicalDamage = effectModifiers.healing / EFFECT.FIVE;
+                potentialModifiers.magicalDamage = effectModifiers.healing / EFFECT.FIVE;
+                potentialModifiers.criticalChance = effectModifiers.damage / EFFECT.FIVE;
+                potentialModifiers.criticalDamage = effectModifiers.damage / EFFECT.HUNDRED;
 
                 potentialModifiers.damage = effectModifiers.damage;
-                potentialModifiers.healing = effectModifiers.healing * EFFECT.MEDIUM;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_TWENTY_FIVE;
                 break;
             };
             case "Ahn've": {
-                potentialModifiers.criticalDamage = effectModifiers.criticalDamage * EFFECT.LOW;
-                potentialModifiers.dodge = effectModifiers.dodge * EFFECT.LOW;
+                potentialModifiers.criticalDamage = effectModifiers.criticalDamage * EFFECT.ONE_FIFTEEN;
+                potentialModifiers.dodge = effectModifiers.dodge * EFFECT.ONE_FIFTEEN;
 
                 potentialModifiers.damage = effectModifiers.damage;
                 potentialModifiers.healing = effectModifiers.healing;
@@ -199,10 +202,10 @@ export default class StatusEffect {
             };
             case "Astra": {
                 potentialModifiers.criticalChance = effectModifiers.criticalChance;
-                potentialModifiers.criticalDamage = effectModifiers.criticalDamage / EFFECT.HIGH;
+                potentialModifiers.criticalDamage = effectModifiers.criticalDamage / EFFECT.ONE_FIFTY;
                 potentialModifiers.roll = effectModifiers.roll;
 
-                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
@@ -211,7 +214,7 @@ export default class StatusEffect {
                 potentialModifiers.roll = effectModifiers.roll;
                 potentialModifiers.magicalDamage = effectModifiers.magicalDamage;
 
-                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
@@ -220,35 +223,35 @@ export default class StatusEffect {
                 potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration;
                 potentialModifiers.criticalChance = effectModifiers.criticalChance;
 
-                potentialModifiers.damage = effectModifiers.damage * EFFECT.HIGH;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.ONE_FIFTY;
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
             case "Fyer": {
-                potentialModifiers.criticalChance = effectModifiers.criticalChance / EFFECT.CRITICAL;
-                potentialModifiers.criticalDamage = effectModifiers.criticalDamage * EFFECT.CRITICAL;
+                potentialModifiers.criticalChance = effectModifiers.criticalChance / EFFECT.TWO;
+                potentialModifiers.criticalDamage = effectModifiers.criticalDamage * EFFECT.TWO;
             
                 potentialModifiers.damage = effectModifiers.damage;
-                potentialModifiers.healing = effectModifiers.healing * EFFECT.MEDIUM;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_TWENTY_FIVE;
                 break;
             };
             case "Ilios": {
-                potentialModifiers.physicalPenetration = effectModifiers.physicalPenetration / EFFECT.HIGH;
-                potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration / EFFECT.HIGH;
-                potentialModifiers.physicalDefenseModifier = effectModifiers.physicalDefenseModifier / EFFECT.HIGH;
-                potentialModifiers.magicalDefenseModifier = effectModifiers.magicalDefenseModifier / EFFECT.HIGH;
-                potentialModifiers.physicalPosture = effectModifiers.physicalPosture / EFFECT.HIGH;
-                potentialModifiers.magicalPosture = effectModifiers.magicalPosture / EFFECT.HIGH;
+                potentialModifiers.physicalPenetration = effectModifiers.physicalPenetration / EFFECT.ONE_FIFTY;
+                potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration / EFFECT.ONE_FIFTY;
+                potentialModifiers.physicalDefenseModifier = effectModifiers.physicalDefenseModifier / EFFECT.ONE_FIFTY;
+                potentialModifiers.magicalDefenseModifier = effectModifiers.magicalDefenseModifier / EFFECT.ONE_FIFTY;
+                potentialModifiers.physicalPosture = effectModifiers.physicalPosture / EFFECT.ONE_FIFTY;
+                potentialModifiers.magicalPosture = effectModifiers.magicalPosture / EFFECT.ONE_FIFTY;
 
                 potentialModifiers.damage = effectModifiers.damage;
-                potentialModifiers.healing = effectModifiers.healing * EFFECT.MEDIUM;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_TWENTY_FIVE;
                 break;
             };
             case "Kyn'gi": {
-                potentialModifiers.criticalChance = effectModifiers.criticalChance * EFFECT.LOW;
-                potentialModifiers.roll = effectModifiers.roll * EFFECT.LOW;
+                potentialModifiers.criticalChance = effectModifiers.criticalChance * EFFECT.ONE_FIFTEEN;
+                potentialModifiers.roll = effectModifiers.roll * EFFECT.ONE_FIFTEEN;
 
-                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
@@ -258,71 +261,71 @@ export default class StatusEffect {
                 potentialModifiers.roll = effectModifiers.roll;
             
                 potentialModifiers.damage = effectModifiers.damage;
-                potentialModifiers.healing = effectModifiers.healing * EFFECT.HIGH;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_FIFTY;
                 break;
             };
             case "Kyr'na": {
                 potentialModifiers.magicalDamage = effectModifiers.magicalDamage;
                 potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration;
                 
-                potentialModifiers.damage = effectModifiers.damage * EFFECT.FANTASTIC;
-                potentialModifiers.healing = effectModifiers.healing * EFFECT.MEDIUM;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.TWO_FIFTY;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_TWENTY_FIVE;
                 break;
             };
             case "Lilos": {
                 potentialModifiers.physicalPenetration = effectModifiers.physicalPenetration;
                 potentialModifiers.physicalDamage = effectModifiers.physicalDamage;
 
-                potentialModifiers.healing = effectModifiers.healing * EFFECT.FANTASTIC;
-                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.TWO_FIFTY;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.ONE_TWENTY_FIVE;
                 break;
             };
             case "Ma'anre": {
-                potentialModifiers.roll = effectModifiers.roll / EFFECT.MEDIUM;
-                potentialModifiers.dodge = effectModifiers.dodge / EFFECT.MEDIUM;
-                potentialModifiers.criticalChance = effectModifiers.criticalChance / EFFECT.MEDIUM;
-                potentialModifiers.criticalDamage = effectModifiers.criticalDamage / EFFECT.MEDIUM;
+                potentialModifiers.roll = effectModifiers.roll / EFFECT.ONE_TWENTY_FIVE;
+                potentialModifiers.dodge = effectModifiers.dodge / EFFECT.ONE_TWENTY_FIVE;
+                potentialModifiers.criticalChance = effectModifiers.criticalChance / EFFECT.ONE_TWENTY_FIVE;
+                potentialModifiers.criticalDamage = effectModifiers.criticalDamage / EFFECT.ONE_TWENTY_FIVE;
 
-                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
             case "Nyrolus": {
-                potentialModifiers.physicalDefenseModifier = effectModifiers.physicalDefenseModifier / EFFECT.MEDIUM;
+                potentialModifiers.physicalDefenseModifier = effectModifiers.physicalDefenseModifier / EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.magicalDefenseModifier = effectModifiers.magicalDefenseModifier;
-                potentialModifiers.physicalPosture = effectModifiers.physicalPosture / EFFECT.MEDIUM;
+                potentialModifiers.physicalPosture = effectModifiers.physicalPosture / EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.magicalPosture = effectModifiers.magicalPosture;
 
                 potentialModifiers.damage = effectModifiers.damage;
-                potentialModifiers.healing = effectModifiers.healing * EFFECT.HIGH;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_FIFTY;
                 break;
             };
             case "Quor'ei": {
                 potentialModifiers.physicalDefenseModifier = effectModifiers.physicalDefenseModifier;
-                potentialModifiers.magicalDefenseModifier = effectModifiers.magicalDefenseModifier / EFFECT.MEDIUM;
+                potentialModifiers.magicalDefenseModifier = effectModifiers.magicalDefenseModifier / EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.physicalPosture = effectModifiers.physicalPosture;
-                potentialModifiers.magicalPosture = effectModifiers.magicalPosture / EFFECT.MEDIUM;
+                potentialModifiers.magicalPosture = effectModifiers.magicalPosture / EFFECT.ONE_TWENTY_FIVE;
 
                 potentialModifiers.damage = effectModifiers.damage;
-                potentialModifiers.healing = effectModifiers.healing * EFFECT.HIGH;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_FIFTY;
                 break;
             };
             case "Rahvre": {
                 potentialModifiers.magicalDamage = effectModifiers.magicalDamage;
                 potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration;
-                potentialModifiers.criticalDamage = effectModifiers.criticalDamage / EFFECT.HIGH;
+                potentialModifiers.criticalDamage = effectModifiers.criticalDamage / EFFECT.ONE_FIFTY;
 
-                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
             case "Senari": {
-                potentialModifiers.criticalChance = effectModifiers.criticalChance / EFFECT.CRITICAL;
+                potentialModifiers.criticalChance = effectModifiers.criticalChance / EFFECT.TWO;
                 potentialModifiers.roll = effectModifiers.roll;
                 potentialModifiers.dodge = effectModifiers.dodge;
 
                 potentialModifiers.damage = effectModifiers.damage;
-                potentialModifiers.healing = effectModifiers.healing * EFFECT.MEDIUM;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_TWENTY_FIVE;
                 break;
             };
             case "Se'dyro": {
@@ -351,11 +354,11 @@ export default class StatusEffect {
                 break;
             };
             case "Tshaer": {
-                potentialModifiers.physicalDamage = effectModifiers.physicalDamage * EFFECT.MEDIUM;
+                potentialModifiers.physicalDamage = effectModifiers.physicalDamage * EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.physicalPenetration = effectModifiers.physicalPenetration;
                 potentialModifiers.criticalChance = effectModifiers.criticalChance;
 
-                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
@@ -374,7 +377,7 @@ export default class StatusEffect {
         let isEnemy = combat.computer;
         let playerFaith = combat?.player?.name === player.name ? combat.player.faith.toLowerCase() : isEnemy?.faith.toLowerCase();
         if ((weapon?.influences?.[0] === 'Daethos' && playerFaith === FAITHS.DEVOTED) || (weapon?.influences?.[0] !== 'Daethos' && playerFaith === FAITHS.ADHERENT)) {
-            playerIntensity *= EFFECT.LOW;
+            playerIntensity *= EFFECT.ONE_FIFTEEN;
         };
         updatedEffect.intensity.value += playerIntensity;
         let effectModifiers = {
@@ -383,7 +386,7 @@ export default class StatusEffect {
             physicalPenetration: playerIntensity,
             magicalPenetration: playerIntensity,
             criticalChance: playerIntensity,
-            criticalDamage: playerIntensity / EFFECT.TIPPITY,
+            criticalDamage: playerIntensity / EFFECT.TEN,
             physicalDefenseModifier: playerIntensity,
             magicalDefenseModifier: playerIntensity,
             physicalPosture: playerIntensity,
@@ -396,18 +399,15 @@ export default class StatusEffect {
             achre: playerIntensity,
             caeren: playerIntensity,
             kyosir: playerIntensity,
-            healing: playerIntensity * EFFECT.TOP,
-            damage: playerIntensity * EFFECT.TOP,
+            healing: playerIntensity * EFFECT.TWENTY_FIVE,
+            damage: playerIntensity * EFFECT.TWENTY_FIVE,
             buff: playerIntensity,
             debuff: playerIntensity,
         };
         let potentialModifiers = {};
         let realizedModifiers: any = {};
-        let enemyDamage = combat.realizedComputerDamage;
-        let playerDamage = combat?.player?.name === player.name ? combat.realizedPlayerDamage : enemyDamage;
 
-        playerDamage = effectModifiers.damage; 
-        potentialModifiers = StatusEffect.setModifiers(weapon, potentialModifiers, playerDamage, effectModifiers); 
+        potentialModifiers = StatusEffect.setModifiers(weapon, potentialModifiers,  effectModifiers); 
 
         switch (updatedEffect.prayer) {
             case "Buff": {
@@ -452,55 +452,55 @@ export default class StatusEffect {
         if (deity === 'Achreo' || deity === 'Astra' || deity === "Quor'ei" || deity === "Senari") {
             if (weapon.grip === 'One Hand' || weapon.type === 'Bow') {
                 type = 'achre';
-                attribute = (attributes.totalAchre + weapon.achre) * (player.mastery === type ? EFFECT.HIGH : EFFECT.MEDIUM);
+                attribute = (attributes.totalAchre + weapon.achre) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
             } else {
                 type = 'caeren';
-                attribute = attributes.totalCaeren + weapon.caeren * (player.mastery === type ? EFFECT.MEDIUM : 1);
+                attribute = attributes.totalCaeren + weapon.caeren * (player.mastery === type ? EFFECT.ONE_TWENTY_FIVE : 1);
             };
         } else if (deity === "Ahn've" || deity === "Cambire" || deity === "Fyer" || deity === "Nyrolus") {
             if (weapon.grip === 'One Hand') {
                 type = 'achre';
-                attribute = attributes.totalAchre + weapon.achre * (player.mastery === type ? EFFECT.MEDIUM : 1);
+                attribute = attributes.totalAchre + weapon.achre * (player.mastery === type ? EFFECT.ONE_TWENTY_FIVE : 1);
             } else {
                 type = 'caeren';
-                attribute = (attributes.totalCaeren + weapon.caeren) * (player.mastery === type ? EFFECT.HIGH : EFFECT.MEDIUM);
+                attribute = (attributes.totalCaeren + weapon.caeren) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
             };
         } else if (deity === "Kyn'gi" || deity === "Se'dyro" || deity === "Ma'anre") {
             if (weapon.grip === 'One Hand' || weapon.type === 'Bow') {
                 type = 'agility';
-                attribute = (attributes.totalAgility + weapon.agility) * (player.mastery === type ? EFFECT.HIGH : EFFECT.MEDIUM);
+                attribute = (attributes.totalAgility + weapon.agility) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
             } else {
                 type = 'strength';
-                attribute = attributes.totalStrength + weapon.strength * (player.mastery === type ? EFFECT.MEDIUM : 1);
+                attribute = attributes.totalStrength + weapon.strength * (player.mastery === type ? EFFECT.ONE_TWENTY_FIVE : 1);
             };
         } else if (deity === "Ilios" || deity === "Se'vas" || deity === "Tshaer") {
             if (weapon.grip === 'One Hand') {
                 type = 'agility';
-                attribute = attributes.totalAgility + weapon.agility * (player.mastery === type ? EFFECT.MEDIUM : 1);
+                attribute = attributes.totalAgility + weapon.agility * (player.mastery === type ? EFFECT.ONE_TWENTY_FIVE : 1);
             } else {
                 type = 'strength';
-                attribute = (attributes.totalStrength + weapon.strength) * (player.mastery === type ? EFFECT.HIGH : EFFECT.MEDIUM);
+                attribute = (attributes.totalStrength + weapon.strength) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
             };
         } else if (deity === "Chiomyr" || deity === "Kyrisos" || deity === "Shrygei") {
             type = 'kyosir';
-            attribute = (attributes.totalKyosir + weapon.kyosir) * (player.mastery === type ? EFFECT.HIGH : EFFECT.MEDIUM);
+            attribute = (attributes.totalKyosir + weapon.kyosir) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
         } else if (deity === "Lilos" || deity === "Kyr'na" || deity === "Rahvre") {
             type = 'constitution';
-            attribute = (attributes.totalConstitution) * (player.mastery === type ? EFFECT.CRITICAL : EFFECT.HIGH);
+            attribute = (attributes.totalConstitution) * (player.mastery === type ? EFFECT.TWO : EFFECT.ONE_FIFTY);
         } else if (deity === "Daethos") {
             if (weapon.grip === 'One Hand' || weapon.type === 'Bow') {
                 type = 'daethic';
-                attribute = (attributes.totalAchre + weapon.achre + attributes.totalAgility + weapon.agility) / (player.mastery === 'achre' || player.mastery === 'agility' ? 1 : EFFECT.HIGH);
+                attribute = (attributes.totalAchre + weapon.achre + attributes.totalAgility + weapon.agility) / (player.mastery === 'achre' || player.mastery === 'agility' ? 1 : EFFECT.ONE_FIFTY);
             } else {
                 type = 'daethic';
-                attribute = (attributes.totalStrength + weapon.strength + attributes.totalCaeren + weapon.caeren) / (player.mastery === 'caeren' || player.mastery === 'strength' ? 1 : EFFECT.HIGH);
+                attribute = (attributes.totalStrength + weapon.strength + attributes.totalCaeren + weapon.caeren) / (player.mastery === 'caeren' || player.mastery === 'strength' ? 1 : EFFECT.ONE_FIFTY);
             };
         };
         attribute = Math.round(attribute * 100) / 100;
         return this.intensity = {
             initial: attribute,
             value: attribute,
-            magnitude: player.level / 120,
+            magnitude: player.level / EFFECT.FIFTY,
             governance: type,
         };
     };
@@ -525,16 +525,15 @@ export default class StatusEffect {
         let playerIntensity = this.intensity.value * this.intensity.magnitude;
         let enemyFaith = combat.computer;
         let playerFaith = combat?.player?.name === player.name ? combat.player.faith.toLowerCase() : enemyFaith?.faith.toLowerCase();
-        if (weapon?.influences?.[0] as string === 'Daethos' && playerFaith === FAITHS.DEVOTED) playerIntensity *= EFFECT.LOW;
-        if (weapon?.influences?.[0] as string !== 'Daethos' && playerFaith === FAITHS.ADHERENT) playerIntensity *= EFFECT.LOW;
-        
+        if (weapon?.influences?.[0] as string === 'Daethos' && playerFaith === FAITHS.DEVOTED) playerIntensity *= EFFECT.ONE_FIFTEEN;
+        if (weapon?.influences?.[0] as string !== 'Daethos' && playerFaith === FAITHS.ADHERENT) playerIntensity *= EFFECT.ONE_FIFTEEN;
         let effectModifiers = {
             physicalDamage: playerIntensity,
             magicalDamage: playerIntensity,
             physicalPenetration: playerIntensity,
             magicalPenetration: playerIntensity,
             criticalChance: playerIntensity,
-            criticalDamage: playerIntensity / 10,
+            criticalDamage: playerIntensity / EFFECT.TEN,
             physicalDefenseModifier: playerIntensity,
             magicalDefenseModifier: playerIntensity,
             physicalPosture: playerIntensity,
@@ -547,18 +546,14 @@ export default class StatusEffect {
             achre: playerIntensity,
             caeren: playerIntensity,
             kyosir: playerIntensity,
-            healing: playerIntensity,
-            damage: playerIntensity,
+            healing: playerIntensity * EFFECT.TEN,
+            damage: playerIntensity * EFFECT.TEN,
             buff: playerIntensity,
             debuff: playerIntensity,
         };
         let potentialModifiers = {};
         let realizedModifiers = {};
-
-        let enemyDamage: number = combat.realizedComputerDamage;
-        let playerDamage: number = combat?.player?.name === player.name ? combat.realizedPlayerDamage : enemyDamage;
-        playerDamage = effectModifiers.damage; 
-        potentialModifiers = StatusEffect.setModifiers(weapon, potentialModifiers, playerDamage, effectModifiers);
+        potentialModifiers = StatusEffect.setModifiers(weapon, potentialModifiers, effectModifiers);
 
         switch (prayer) {
             case "Buff": {

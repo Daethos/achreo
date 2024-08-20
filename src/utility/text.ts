@@ -1,6 +1,7 @@
 import { Combat } from "../stores/combat";
 const ATTACKS = ['Attack', 'Posture', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'rolls', 'postures', 'parries', 'parried', 'rolled', 'attacked', 'defend', 'postured', 
-    'tshaer', 'tshaers', 'tshaering', 'leap', 'leaps', 'rush', 'rushes', 'writhe', 'writhes', 'devour', 'devours', 'suture', 'sutures', 'sacrifice', 'sacrifices'];
+    'tshaer', 'tshaers', 'tshaering', 'leap', 'leaps', 'rush', 'rushes', 'writhe', 'writhes', 'devour', 'devours', 'suture', 'sutures', 'sacrifice', 'sacrifices',
+    'flay', 'flays'];
 const CAST = ['confuse', 'confusing', 'fear', 'fearing', 'paralyze', 'polymorph', 'polymorphs', 'polymorphing', 'slow', 'slowing', 'snare', 'snaring'];
 const COLORS = { BONE: '#fdf6d8', GREEN: 'green', HEAL: '#0BDA51', GOLD: 'gold', PURPLE: 'purple', TEAL: 'teal', RED: 'red', BLUE: 'blue', LIGHT_BLUE: 'lightblue', FUCHSIA: 'fuchsia' };
 const DAMAGE = [ 'Blunt', 'Pierce',  'Slash',  'Earth',  'Fire',  'Frost',  'Lightning', 'Righteous', 'Sorcery', 'Spooky',  'Wild', 'Wind' ];
@@ -9,7 +10,7 @@ const NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 const TENDRIL = ['Tendril', 'tendril', 'tendrils', 'suture', 'shield', 'shields', 'mend', 'achire', 'kynisos'];
 
 export const text = (prev: string, data: Combat) => {
-    let oldText: any = prev !== undefined ? prev  : "";
+    let oldText: any = prev !== undefined ? prev : undefined;
     let newText: any = '';
     if (data.playerStartDescription !== '') newText += data.playerStartDescription + '\n';
     if (data.computerStartDescription !== '') newText += data.computerStartDescription + '\n';
@@ -23,8 +24,10 @@ export const text = (prev: string, data: Combat) => {
     if (data.computerInfluenceDescriptionTwo !== '') newText += data.computerInfluenceDescriptionTwo + '\n';
     if (data.playerDeathDescription !== '') newText += data.playerDeathDescription + '\n';
     if (data.computerDeathDescription !== '') newText += data.computerDeathDescription + '\n';
-    newText = styleText(newText);
-    oldText += newText;
+    if (newText !== '') {
+        newText = styleText(newText);
+        oldText += newText;
+    };
     return oldText;
 };
 function checkNumber(line: string[]) {
@@ -38,13 +41,15 @@ function checkNumber(line: string[]) {
     return 'GOLD';
 };
 function checkAlignment(line: string[]) {
+    let count = 0;
     for (let i = 0; i < line.length; i++) {
         if (line[i].includes('You')) { 
-            return 'right';
+            count++;
         } else if (line[i].includes('defeated')) {
             return 'center';
         };
     };
+    if (count > 0) return 'right';
     return 'left';
 };
 function styleText(text: string) {
@@ -84,6 +89,8 @@ function styleText(text: string) {
     const lines = text.split('\n').map(line => {
         const styledLine = line.split(' ').map(t => style(t)).join(' ');
         const alignment = checkAlignment(line.split(' '));
+        // const bracketLeft = alignment === 'left' ? '<span style="color:red">[</span>' : alignment === 'right' ? '<span style="color:green">[</span>' : '<span style="color:#fdf6d8">[</span>';
+        // const bracketRight = alignment === 'left' ? '<span style="color:red">]</span>' : alignment === 'right' ? '<span style="color:green">]</span>' : '<span style="color:#fdf6d8">]</span>';
         return `<div style="text-align: ${alignment};">${styledLine}</div>`;
     }).join('');
     return lines;

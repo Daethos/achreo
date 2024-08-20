@@ -191,6 +191,7 @@ export const getInventory = async (id: string) => {
 
 export const getInventoryIds = async (id: string) => {
     const inventory = await db.collection(INVENTORY).doc({ _id: id }).get();
+    if (!inventory) return [];
     return inventory.inventory;
 };
 

@@ -170,30 +170,30 @@ export default class StatusEffect {
     static setModifiers = (weapon: Equipment, potentialModifiers: any, playerDamage: number, effectModifiers: any): any => {
         switch(weapon?.influences?.[0]) {
             case "Daethos": {
-                potentialModifiers.physicalDamage = playerDamage / EFFECT.TIPPITY;
-                potentialModifiers.magicalDamage = playerDamage / EFFECT.TIPPITY;
+                potentialModifiers.physicalDamage = playerDamage * EFFECT.MEDIUM / EFFECT.TIPPITY;
+                potentialModifiers.magicalDamage = playerDamage * EFFECT.MEDIUM / EFFECT.TIPPITY;
                 potentialModifiers.physicalPenetration = playerDamage / EFFECT.TIPPITY;
                 potentialModifiers.magicalPenetration = playerDamage / EFFECT.TIPPITY;
 
-                potentialModifiers.damage = playerDamage;
-                potentialModifiers.healing = playerDamage;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.MEDIUM;
                 break;
             };
             case "Achreo": {
-                potentialModifiers.physicalDamage = playerDamage / EFFECT.TIPPITY;
-                potentialModifiers.magicalDamage = playerDamage / EFFECT.TIPPITY;
-                potentialModifiers.criticalChance = playerDamage / EFFECT.TIPPITY;
-                potentialModifiers.criticalDamage = playerDamage / EFFECT.TOP;
+                potentialModifiers.physicalDamage = effectModifiers.healing * EFFECT.MEDIUM / EFFECT.TIPPITY;
+                potentialModifiers.magicalDamage = effectModifiers.healing * EFFECT.MEDIUM / EFFECT.TIPPITY;
+                potentialModifiers.criticalChance = effectModifiers.damage / EFFECT.TIPPITY;
+                potentialModifiers.criticalDamage = effectModifiers.damage / EFFECT.TOP;
 
-                potentialModifiers.damage = playerDamage;
-                potentialModifiers.healing = playerDamage * EFFECT.MEDIUM;
+                potentialModifiers.damage = effectModifiers.damage;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.MEDIUM;
                 break;
             };
             case "Ahn've": {
                 potentialModifiers.criticalDamage = effectModifiers.criticalDamage * EFFECT.LOW;
                 potentialModifiers.dodge = effectModifiers.dodge * EFFECT.LOW;
 
-                potentialModifiers.damage = playerDamage;
+                potentialModifiers.damage = effectModifiers.damage;
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
@@ -202,7 +202,7 @@ export default class StatusEffect {
                 potentialModifiers.criticalDamage = effectModifiers.criticalDamage / EFFECT.HIGH;
                 potentialModifiers.roll = effectModifiers.roll;
 
-                potentialModifiers.damage = effectModifiers.damage;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
@@ -211,7 +211,7 @@ export default class StatusEffect {
                 potentialModifiers.roll = effectModifiers.roll;
                 potentialModifiers.magicalDamage = effectModifiers.magicalDamage;
 
-                potentialModifiers.damage = playerDamage;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
@@ -220,7 +220,7 @@ export default class StatusEffect {
                 potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration;
                 potentialModifiers.criticalChance = effectModifiers.criticalChance;
 
-                potentialModifiers.damage = playerDamage * EFFECT.HIGH;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.HIGH;
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
@@ -229,7 +229,7 @@ export default class StatusEffect {
                 potentialModifiers.criticalDamage = effectModifiers.criticalDamage * EFFECT.CRITICAL;
             
                 potentialModifiers.damage = effectModifiers.damage;
-                potentialModifiers.healing = effectModifiers.healing;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.MEDIUM;
                 break;
             };
             case "Ilios": {
@@ -240,15 +240,15 @@ export default class StatusEffect {
                 potentialModifiers.physicalPosture = effectModifiers.physicalPosture / EFFECT.HIGH;
                 potentialModifiers.magicalPosture = effectModifiers.magicalPosture / EFFECT.HIGH;
 
-                potentialModifiers.damage = playerDamage;
-                potentialModifiers.healing = playerDamage * EFFECT.MEDIUM;
+                potentialModifiers.damage = effectModifiers.damage;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.MEDIUM;
                 break;
             };
             case "Kyn'gi": {
                 potentialModifiers.criticalChance = effectModifiers.criticalChance * EFFECT.LOW;
                 potentialModifiers.roll = effectModifiers.roll * EFFECT.LOW;
 
-                potentialModifiers.damage = effectModifiers.damage;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
@@ -258,7 +258,7 @@ export default class StatusEffect {
                 potentialModifiers.roll = effectModifiers.roll;
             
                 potentialModifiers.damage = effectModifiers.damage;
-                potentialModifiers.healing = playerDamage * EFFECT.HIGH;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.HIGH;
                 break;
             };
             case "Kyr'na": {
@@ -283,8 +283,8 @@ export default class StatusEffect {
                 potentialModifiers.criticalChance = effectModifiers.criticalChance / EFFECT.MEDIUM;
                 potentialModifiers.criticalDamage = effectModifiers.criticalDamage / EFFECT.MEDIUM;
 
-                potentialModifiers.damage = playerDamage * EFFECT.MEDIUM;
-                potentialModifiers.healing = playerDamage;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
+                potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
             case "Nyrolus": {
@@ -312,7 +312,7 @@ export default class StatusEffect {
                 potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration;
                 potentialModifiers.criticalDamage = effectModifiers.criticalDamage / EFFECT.HIGH;
 
-                potentialModifiers.damage = effectModifiers.damage;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
@@ -322,7 +322,7 @@ export default class StatusEffect {
                 potentialModifiers.dodge = effectModifiers.dodge;
 
                 potentialModifiers.damage = effectModifiers.damage;
-                potentialModifiers.healing = effectModifiers.healing;
+                potentialModifiers.healing = effectModifiers.healing * EFFECT.MEDIUM;
                 break;
             };
             case "Se'dyro": {
@@ -330,8 +330,8 @@ export default class StatusEffect {
                 potentialModifiers.physicalPenetration = effectModifiers.physicalPenetration;
                 potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration;
 
-                potentialModifiers.damage = playerDamage;
-                potentialModifiers.healing = playerDamage;
+                potentialModifiers.damage = effectModifiers.damage;
+                potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
             case "Se'vas": {
@@ -351,11 +351,11 @@ export default class StatusEffect {
                 break;
             };
             case "Tshaer": {
-                potentialModifiers.physicalDamage = effectModifiers.physicalDamage;
+                potentialModifiers.physicalDamage = effectModifiers.physicalDamage * EFFECT.MEDIUM;
                 potentialModifiers.physicalPenetration = effectModifiers.physicalPenetration;
                 potentialModifiers.criticalChance = effectModifiers.criticalChance;
 
-                potentialModifiers.damage = effectModifiers.damage;
+                potentialModifiers.damage = effectModifiers.damage * EFFECT.MEDIUM;
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
@@ -547,8 +547,8 @@ export default class StatusEffect {
             achre: playerIntensity,
             caeren: playerIntensity,
             kyosir: playerIntensity,
-            healing: playerIntensity * 5,
-            damage: playerIntensity * 5,
+            healing: playerIntensity,
+            damage: playerIntensity,
             buff: playerIntensity,
             debuff: playerIntensity,
         };

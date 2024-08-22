@@ -5,6 +5,7 @@ import { INTRO_NODES } from "../../utility/scene";
 
 export class Intro extends Scene {
     private background: Phaser.GameObjects.Graphics;
+    private introContainer: Phaser.GameObjects.Container;
     private introText: Phaser.GameObjects.Text;
     private introTextBorder: Phaser.GameObjects.Rectangle;
     private nextText: Phaser.GameObjects.Text;    
@@ -22,7 +23,7 @@ export class Intro extends Scene {
             fillStyle: { color: 0x000000 },
         });
         this.background.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height);
-        this.background.setDepth(4);
+        // this.background.setDepth(4);
         this.introText = this.add.text(
             0, // this.game.canvas.width * 0.15 
             0, // this.game.canvas.height * 0.2 
@@ -33,20 +34,34 @@ export class Intro extends Scene {
                 stroke: 'black',
                 strokeThickness: 2,
                 align: 'center',
+                // fixedWidth: this.game.canvas.width * 0.7,
+                wordWrap: {
+                    width: this.game.canvas.width * 0.7,
+                    callback: undefined,
+                    callbackScope: undefined,
+                    useAdvancedWrap: true
+                }
             });
-        this.introText.setPosition(this.game.canvas.width * 0.15, this.game.canvas.height * 0.2);
-        this.introText.setWordWrapWidth(this.game.canvas.width * 0.7);
-        this.introText.setOrigin(0);
+        this.introText.setPosition(this.game.canvas.width * 0.15, this.game.canvas.height * 0.2).setOrigin(0, 0).setScrollFactor(0);
+        // this.introText.setWordWrapWidth(this.game.canvas.width * 0.7);
+        // this.introText.setOrigin(0);
 
         this.introTextBorder = new Phaser.GameObjects.Rectangle(this,
-            0, // this.introText.x - this.introText.width * this.introText.originX
-            0, // this.introText.y - this.introText.height * this.introText.originY
-            this.introText.width * 1.1,
-            this.introText.height * 1.1,
+            0, // this.introText.x * 0.9,
+            0, // this.introText.y * 0.9,
+            this.game.canvas.width,
+            this.game.canvas.height,
         );
         this.introTextBorder.setStrokeStyle(2, 0xfdf6d8);
-        this.introTextBorder.setDepth(8);
-        this.introText.setDepth(6);
+        this.introTextBorder.setOrigin(0);
+        // this.introTextBorder.setDepth(8);
+
+        this.introContainer = new Phaser.GameObjects.Container(this, 0, 0, [this.introTextBorder, this.introText]);
+        this.introContainer.width = this.game.canvas.width * 0.7;
+        this.introContainer.height = this.game.canvas.height * 0.6;
+        this.add.existing(this.introContainer);
+
+        // this.introText.setDepth(6);
 
         this.node = INTRO_NODES[0];
         var typing = new TextTyping(this.introText, {
@@ -87,8 +102,12 @@ export class Intro extends Scene {
             .on('pointerdown', () => {
                 this.nextText.setColor('gold');
             })
-            .on('pointerout', () => {
+            .on('pointerup', () => {
                 this.sound.play('TV_Button_Press', { loop: false });
+                if (typing.isTyping) {
+                    typing.stop(true);
+                    return;
+                };
                 if (this.node.key === 5) {
                     EventBus.emit('save-intro');
                     return;
@@ -114,7 +133,7 @@ export class Intro extends Scene {
             .on('pointerdown', () => {
                 this.prevText.setColor('gold');
             })
-            .on('pointerout', () => {
+            .on('pointerup', () => {
                 this.sound.play('TV_Button_Press', { loop: false }); 
                 if (INTRO_NODES[this.node.prev as keyof typeof INTRO_NODES]?.prev === undefined) {
                     this.prevText.visible = false;

@@ -30,6 +30,13 @@
                         6,
                         7,
                         8
+                    ],
+                    "conditions": [
+                        {
+                            "key": "interactCount",
+                            "operator": ">=",
+                            "value": "2"
+                        }
                     ]
                 }
             ],

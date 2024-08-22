@@ -831,7 +831,7 @@ export default function PhaserGame (props: IProps) {
                 npcType: e.type,
             });
             const dialog = getNodesForNPC(npcIds[e.type]);
-            setGame({ ...game(), dialog: dialog });    
+                setGame({ ...game(), dialog: dialog, interactCount: e.interactCount });    
         });
         EventBus.on('changeDamageType', (e: string) => setCombat({ ...combat(), playerDamageType: e }));
         EventBus.on('changePrayer', (e: string) => {

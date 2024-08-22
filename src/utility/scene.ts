@@ -8,6 +8,7 @@ export const audio: { key: string, value: string }[] = [
     {key: 'consume', value: '../assets/sounds/consume.wav'},
     {key: 'stalwart', value: '../assets/sounds/stalwart.mp3'},
     {key: 'stealth', value: '../assets/sounds/stealth.mp3'},
+    {key: 'stealthing', value: '../assets/sounds/stealthing.mp3'},
     {key: 'prayer', value: '../assets/sounds/stealth.mp3'},
     {key: 'unequip', value: '../assets/sounds/unequip.wav'},
     {key: 'equip', value: '../assets/sounds/equip.wav'},
@@ -80,6 +81,7 @@ export const INTRO_NODES = {
         prev: undefined, // undefined
         next: 1,
         text: `This world is a menagerie of beauty and horror; full of bounty where humans gather, its jungle's reach is long and wild. Marred and mutated, this land is rife with the blood of Ancients. Beings of fantastic might and worship a thousand years past, grew civilization and genius from their worshipers. The Sundering eclipsed such flourishing; a War of the Ancients.`,
+        // text: "This is a sample of the introductory text. This appears to become jittery when breaking to the second line onward. It is not starting from its left position and moving right, rather it starts from the center and is moved left as it types right. Is this still true?" 
     },
     1: {
         key: 1,

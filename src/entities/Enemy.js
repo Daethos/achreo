@@ -230,25 +230,13 @@ export default class Enemy extends Entity {
     };
 
     clearShields = () => {
-        if (this.maliceBubble) {
-            this.maliceBubble.destroy();
-            this.maliceBubble = undefined;
+        if (this.reactiveBubble) {
+            this.reactiveBubble.destroy();
+            this.reactiveBubble = undefined;
         };
-        if (this.mendBubble) {
-            this.mendBubble.destroy();
-            this.mendBubble = undefined;
-        };
-        if (this.protectBubble) {
-            this.protectBubble.destroy();
-            this.protectBubble = undefined;
-        };
-        if (this.shieldBubble) {
-            this.shieldBubble.destroy();
-            this.shieldBubble = undefined;
-        };
-        if (this.wardBubble) {
-            this.wardBubble.destroy();
-            this.wardBubble = undefined;
+        if (this.negationBubble) {
+            this.negationBubble.destroy();
+            this.negationBubble = undefined;
         };
     };
 
@@ -1624,15 +1612,19 @@ export default class Enemy extends Entity {
     onHowlUpdate = (_dt) => {if (!this.isHowling) this.positiveMachine.setState(States.CLEAN);};
 
     onMaliceEnter = () => {
+        if (this.reactiveBubble) {
+            this.reactiveBubble.cleanUp();
+            this.reactiveBubble = undefined;
+        };
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.isMalicing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush');
-        this.maliceBubble = new Bubble(this.scene, this.x, this.y, 'purple', PLAYER.DURATIONS.MALICE);
+        this.reactiveBubble = new Bubble(this.scene, this.x, this.y, 'purple', PLAYER.DURATIONS.MALICE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MALICE, () => {
             this.isMalicing = false;    
-            if (this.maliceBubble) {
-                this.maliceBubble.destroy();
-                this.maliceBubble = undefined;
+            if (this.reactiveBubble) {
+                this.reactiveBubble.cleanUp();
+                this.reactiveBubble = undefined;
             };
         }, undefined, this);
         EventBus.emit('enemy-combat-text', {
@@ -1642,10 +1634,10 @@ export default class Enemy extends Entity {
     onMaliceUpdate = (_dt) => {if (!this.isMalicing) this.positiveMachine.setState(States.CLEAN);  };
 
     maliceHit = () => {
-        if (this.maliceBubble === undefined || this.isMalicing === false) {
-            if (this.maliceBubble) {
-                this.maliceBubble.destroy();
-                this.maliceBubble = undefined;
+        if (this.reactiveBubble === undefined || this.isMalicing === false) {
+            if (this.reactiveBubble) {
+                this.reactiveBubble.cleanUp();
+                this.reactiveBubble = undefined;
             };
             this.isMalicing = false;
             return;
@@ -1656,22 +1648,26 @@ export default class Enemy extends Entity {
             this.chiomic(10);
             this.scene.combatMachine.action({ data: 10, type: 'Enemy Chiomic' });
         };
-        this.maliceBubble.setCharges(this.maliceBubble.charges - 1);
-        if (this.maliceBubble.charges <= 0) {
+        this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
+        if (this.reactiveBubble.charges <= 0) {
             this.isMalicing = false;
         };
     };
 
     onMendEnter = () => {
+        if (this.reactiveBubble) {
+            this.reactiveBubble.cleanUp();
+            this.reactiveBubble = undefined;
+        };
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.isMending = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 750, 'tendril');
-        this.mendBubble = new Bubble(this.scene, this.x, this.y, 'purple', PLAYER.DURATIONS.MEND);
+        this.reactiveBubble = new Bubble(this.scene, this.x, this.y, 'purple', PLAYER.DURATIONS.MEND);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MEND, () => {
             this.isMending = false;    
-            if (this.mendBubble) {
-                this.mendBubble.destroy();
-                this.mendBubble = undefined;
+            if (this.reactiveBubble) {
+                this.reactiveBubble.cleanUp();
+                this.reactiveBubble = undefined;
             };    
         }, undefined, this);
         EventBus.emit('enemy-combat-text', {
@@ -1681,35 +1677,39 @@ export default class Enemy extends Entity {
     onMendUpdate = (_dt) => {if (!this.isMending) this.positiveMachine.setState(States.CLEAN);};
 
     mendHit = () => {
-        if (this.mendBubble === undefined || this.isMending === false) {
-            if (this.mendBubble) {
-                this.mendBubble.destroy();
-                this.mendBubble = undefined;
+        if (this.reactiveBubble === undefined || this.isMending === false) {
+            if (this.reactiveBubble) {
+                this.reactiveBubble.cleanUp();
+                this.reactiveBubble = undefined;
             };
             this.isMending = false;
             return;
         };
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril');
-        const mend = Math.round(this.healthbar.getTotal() * 0.2);
+        const mend = Math.round(this.healthbar.getTotal() * 0.15);
         const heal = Math.min(this.healthbar.getTotal(), this.health + mend);
         this.scene.combatMachine.action({ data: { key: 'enemy', value: heal, id: this.enemyID }, type: 'Health' });
-        this.mendBubble.setCharges(this.mendBubble.charges - 1);
-        if (this.mendBubble.charges <= 0) {
+        this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
+        if (this.reactiveBubble.charges <= 0) {
             this.isMending = false;
         };
     };
 
     onProtectEnter = () => {
+        if (this.negationBubble) {
+            this.negationBubble.cleanUp();
+            this.negationBubble = undefined;
+        };
         this.isProtecting = true;
         this.scene.sound.play('shield', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Protecting', 750, 'effect');
-        this.protectBubble = new Bubble(this.scene, this.x, this.y, 'gold', PLAYER.DURATIONS.PROTECT);
+        this.negationBubble = new Bubble(this.scene, this.x, this.y, 'gold', PLAYER.DURATIONS.PROTECT);
         this.scene.time.delayedCall(PLAYER.DURATIONS.PROTECT, () => {
             this.isProtecting = false;    
-            if (this.protectBubble) {
-                this.protectBubble.destroy();
-                this.protectBubble = undefined;
+            if (this.negationBubble) {
+                this.negationBubble.cleanUp();
+                this.negationBubble = undefined;
             };    
         }, undefined, this);
         EventBus.emit('enemy-combat-text', {
@@ -1749,15 +1749,19 @@ export default class Enemy extends Entity {
     onScreamUpdate = (_dt) => {if (!this.isScreaming) this.positiveMachine.setState(States.CLEAN);};
 
     onShieldEnter = () => {
+        if (this.negationBubble) {
+            this.negationBubble.cleanUp();
+            this.negationBubble = undefined;
+        };
         this.scene.sound.play('shield', { volume: this.scene.settings.volume });
         this.isShielding = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shielding', 750, 'bone');
-        this.shieldBubble = new Bubble(this.scene, this.x, this.y, 'bone', PLAYER.DURATIONS.SHIELD);
+        this.negationBubble = new Bubble(this.scene, this.x, this.y, 'bone', PLAYER.DURATIONS.SHIELD);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIELD, () => {
             this.isShielding = false;    
-            if (this.shieldBubble) {
-                this.shieldBubble.destroy();
-                this.shieldBubble = undefined;
+            if (this.negationBubble) {
+                this.negationBubble.cleanUp();
+                this.negationBubble = undefined;
             };
         }, undefined, this);
         EventBus.emit('enemy-combat-text', {
@@ -1767,18 +1771,18 @@ export default class Enemy extends Entity {
     onShieldUpdate = (_dt) => {if (!this.isShielding)this.positiveMachine.setState(States.CLEAN);};
 
     shieldHit = () => {
-        if (this.shieldBubble === undefined || this.isShielding === false) {
-            if (this.shieldBubble) {
-                this.shieldBubble.destroy();
-                this.shieldBubble = undefined;
+        if (this.negationBubble === undefined || this.isShielding === false) {
+            if (this.negationBubble) {
+                this.negationBubble.cleanUp();
+                this.negationBubble = undefined;
             };
             this.isShielding = false;
             return;
         };
         this.scene.sound.play('shield', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shield Hit', 500, 'effect');
-        this.shieldBubble.setCharges(this.shieldBubble.charges - 1);
-        if (this.shieldBubble.charges <= 0) {
+        this.negationBubble.setCharges(this.negationBubble.charges - 1);
+        if (this.negationBubble.charges <= 0) {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shield Broken', 500, 'damage');
             this.isShielding = false;
         };
@@ -1820,15 +1824,19 @@ export default class Enemy extends Entity {
     onSprintUpdate = (_dt) => {if (!this.isSprinting) this.positiveMachine.setState(States.CLEAN);};
 
     onWardEnter = () => {
+        if (this.negationBubble) {
+            this.negationBubble.cleanUp();
+            this.negationBubble = undefined;
+        };
         this.isWarding = true;
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Warding', 750, 'damage');
-        this.wardBubble = new Bubble(this.scene, this.x, this.y, 'red', PLAYER.DURATIONS.WARD);
+        this.negationBubble = new Bubble(this.scene, this.x, this.y, 'red', PLAYER.DURATIONS.WARD);
         this.scene.time.delayedCall(PLAYER.DURATIONS.WARD, () => {
             this.isWarding = false;    
-            if (this.wardBubble) {
-                this.wardBubble.destroy();
-                this.wardBubble = undefined;
+            if (this.negationBubble) {
+                this.negationBubble.cleanUp();
+                this.negationBubble = undefined;
             };
         }, undefined, this);
         EventBus.emit('enemy-combat-text', {
@@ -1838,10 +1846,10 @@ export default class Enemy extends Entity {
     onWardUpdate = (_dt) => {if (!this.isWarding) this.positiveMachine.setState(States.CLEAN);};
 
     wardHit = () => {
-        if (this.wardBubble === undefined || this.isWarding === false) {
-            if (this.wardBubble) {
-                this.wardBubble.destroy();
-                this.wardBubble = undefined;
+        if (this.negationBubble === undefined || this.isWarding === false) {
+            if (this.negationBubble) {
+                this.negationBubble.cleanUp();
+                this.negationBubble = undefined;
             };
             this.isWarding = false;
             return;
@@ -1850,11 +1858,11 @@ export default class Enemy extends Entity {
         if (this.checkPlayerResist() === true) {
             this.scene.stunned(this.scene.player.ascean._id);
         };
-        this.wardBubble.setCharges(this.wardBubble.charges - 1);
+        this.negationBubble.setCharges(this.negationBubble.charges - 1);
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Warded', 500, 'effect');
-        if (this.wardBubble.charges <= 3) {
+        if (this.negationBubble.charges <= 3) {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Ward Broken', 500, 'damage');
-            this.wardBubble.setCharges(0);
+            this.negationBubble.setCharges(0);
             this.isWarding = false;
         };
     };
@@ -2405,18 +2413,21 @@ export default class Enemy extends Entity {
     enemyActionSuccess = () => {
         if (this.isRanged) this.scene.checkPlayerSuccess();
         const shimmer = Math.random() * 101;
-        if (this.scene.player.isEnveloping || this.scene.player.isShielding || (this.scene.player.isShimmering && shimmer > 50) || this.scene.player.isWarding) {
+        if (this.scene.player.isAbsorbing || this.scene.player.isEnveloping || this.scene.player.isShielding || (this.scene.player.isShimmering && shimmer > 50) || this.scene.player.isWarding) {
+            if (this.scene.player.isAbsorbing) {
+                this.scene.player.absorb();
+            };
             if (this.scene.player.isEnveloping) {
-                this.scene.player.envelopHit();
+                this.scene.player.envelop();
             };
             if (this.scene.player.isShielding) {
-                this.scene.player.shieldHit();
+                this.scene.player.shield();
             };
             if (this.scene.player.isShimmering) {
-                this.scene.player.shimmerHit();
+                this.scene.player.shimmer();
             };
             if (this.scene.player.isWarding) {
-                this.scene.player.wardHit(this.enemyID);
+                this.scene.player.ward(this.enemyID);
             };
             if (this.particleEffect) {
                 this.killParticle();
@@ -2439,6 +2450,9 @@ export default class Enemy extends Entity {
             };
         }; 
         this.scene.useStamina(5);
+        if (this.scene.player.isMenacing || this.scene.player.isModerating || this.scene.player.isMultifaring || this.scene.player.isMystifying) {
+            this.scene.player.reactiveTarget = this.enemyID;
+        };
     };
 
     enemyDodge = () => {
@@ -2641,14 +2655,14 @@ export default class Enemy extends Entity {
             return;
         };
         if (this.isClimbing) {
-            if (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0) {
+            if (this.moving()) {
                 this.anims.play('player_climb', true);
             } else {
                 this.anims.play('player_climb', true);
                 this.anims.pause();
             };
         } else {
-            if (Math.abs(this.velocity.x) > 0 || Math.abs(this.velocity.y) > 0) {
+            if (this.moving()) {
                 this.anims.play('player_running', true);
             } else {
                 this.anims.play('player_idle', true);
@@ -2665,11 +2679,8 @@ export default class Enemy extends Entity {
         if (this.healthbar) this.healthbar.update(this);
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this); 
-        if (this.maliceBubble) this.maliceBubble.update(this.x, this.y);
-        if (this.mendBubble) this.mendBubble.update(this.x, this.y);
-        if (this.protectBubble) this.protectBubble.update(this.x, this.y);
-        if (this.shieldBubble) this.shieldBubble.update(this.x, this.y);
-        if (this.wardBubble) this.wardBubble.update(this.x, this.y);
+        if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
+        if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.inCombat === false) return;
         this.evaluateEnemyAnimation();
         if (this.isConfused && !this.stateMachine.isCurrentState(States.CONFUSED)) {

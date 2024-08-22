@@ -1,5 +1,14 @@
 export const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
 export const SPECIALS = [
+    'Menace', // reactive shield, fear
+    'Moderate', // reactive shield, slow
+    'Multifarious', // reactive shield, polymorph
+    'Mystify', // reactive shield, confuse
+    'Reconstitute', // channel, 5s, 1s/tick, +10-15% health
+    'Rein', // reactive shield, grace++
+    'Quor', // 3s, 6x, can crit, manual, mid grace, low cooldown
+    'Maiereth', // cast, 1-1.5s, direct, (var of Ascean).damage, can crit, mid range, low grace, low cooldown
+    'Ilirech', // cast, 1s, direct, -X health, X * 2 damage, low range, low grace, 2s cooldown
     'Absorb',
     'Achire',
     'Astrave',
@@ -42,49 +51,45 @@ export const SPECIALS = [
     'Ward',
     'Writhe',
 ]; // 'Charm', 'Shroud'
-export const SPECIAL = {
-    'constitution': [ // 15
-        'Astrave',
-        'Consume', 
-        'Desperation', 
-        'Disease', 
-        'Healing', 
+export const SPECIAL = { // 12 Each + Invoke && Consume
+    'constitution': [ // 14
         'Invoke', 
+        'Consume', 
+        'Absorb',
+        'Fyerus',
+        'Healing', 
+        'Ilirech', // ===== NEW ===== \\
+        'Maiereth', // ===== NEW ===== \\
         'Kyrnaicism', 
+        'Kynisos', 
         'Mend', 
         'Paralyze',
-        'Polymorph', 
-        'Recover', 
         'Renewal', 
-        'Sacrifice', 
         'Shield', 
-        'Ward'
-    ], // 15
-    'strength': [ // 15
-        'Achire',
-        'Arc', 
-        'Chiomic',
-        'Consume', 
-        'Desperation', 
-        'Howl', 
+        'Ward',
+    ], // 14 
+    'strength': [ // 14 !!!
         'Invoke', 
-        'Leap', 
-        'Recover', 
-        'Rush', 
-        'Sacrifice', 
-        'Scream', 
-        'Sprint', 
-        'Storm', 
-        'Suture', 
+        'Consume', 
+        'Arc',
+        'Desperation',
+        'Howl',
+        'Leap',
+        'Quor', // ===== NEW ===== \\
+        'Recover',
+        'Rush',
+        'Scream',
+        'Sprint',
+        'Storm',
         'Ward', 
         'Writhe'
-    ], // 15
-    'agility': [ // 15
-        'Achire',
+    ], // 14 !!!
+    'agility': [ // 14 !!!
+        'Invoke', 
         'Consume', 
+        'Achire',
         'Desperation', 
         'Envelop', 
-        'Invoke', 
         'Kynisos',
         'Leap', 
         'Pursuit', 
@@ -94,69 +99,63 @@ export const SPECIAL = {
         'Snare', 
         'Sprint', 
         'Storm', 
-        'Ward'
-    ], // 15
-    'achre': [ // 15
-        'Absorb',
-        'Achire',
-        'Astrave',
-        'Blink', 
-        'Consume', 
-        'Desperation', 
-        'Envelop', 
-        'Freeze', 
+    ], // 14 !!!
+    'achre': [ // 14 !!!
         'Invoke', 
-        'Polymorph', 
-        'Recover', 
-        'Root', 
-        'Sacrifice', 
-        'Shimmer', 
-        'Slow'
-    ], // 15
-    'caeren': [ // 15
+        'Consume', 
         'Absorb',
         'Achire',
         'Astrave',
         'Blink', 
+        'Freeze',
+        'Moderate', // ===== NEW ===== \\
+        'Multifarious', // ===== NEW ===== \\
+        'Polymorph', 
+        'Quor', // ===== NEW ===== \\
+        'Reconstitute', // ===== NEW ===== \\
+        'Rein', // ===== NEW ===== \\
+        'Slow'
+    ], // 14 !!!
+    'caeren': [ // 14
+        'Invoke', 
         'Consume', 
-        'Desperation', 
+        'Astrave',
         'Fear', 
         'Fyerus',
         'Healing', 
-        'Invoke', 
-        'Kyrnaicism', 
+        'Ilirech', // ===== NEW ===== \\
+        'Kyrnaicism',
+        'Malice', 
+        'Menace', // ===== NEW ===== \\
         'Mend', 
-        // 'Protect', 
+        'Rein', // ===== NEW ===== \\
         'Sacrifice', 
-        'Shield', 
-        'Suture'
-    ], // 15
-    'kyosir': [ // 15
-        'Absorb',
+        'Scream',
+    ], // 14
+    'kyosir': [ // 14
+        'Invoke', 
+        'Consume', 
         'Achire',
-        'Astrave',
-        'Blink', 
         'Chiomic',
         'Confuse', 
-        'Consume', 
-        'Healing', 
-        'Invoke', 
-        'Kynisos',
-        'Kyrnaicism', 
+        'Disease',
+        'Maiereth', // ===== NEW ===== \\
         'Malice', 
+        'Mystify', // ===== NEW ===== \\
         'Paralyze',
-        // 'Protect', 
-        'Scream', 
-        'Suture', 
-    ], // 15
+        'Protect', 
+        'Reconstitute', // ===== NEW ===== \\
+        'Sacrifice', 
+        'Suture'
+    ], // 14
 };
 export const STARTING_SPECIALS = {
     'constitution': ['Healing', 'Kyrnaicism', 'Mend', 'Shield', 'Ward'],
-    'strength': ['Arc', 'Howl', 'Leap', 'Storm', 'Writhe'],
+    'strength': ['Arc', 'Desperation', 'Howl', 'Leap', 'Storm'],
     'agility': ['Pursuit', 'Recover', 'Rush', 'Shimmer', 'Sprint'],
     'achre': ['Blink', 'Envelop', 'Polymorph', 'Root', 'Slow'],
-    'caeren': ['Desperation', 'Fear', 'Protect', 'Sacrifice', 'Suture'],
-    'kyosir': ['Chiomic', 'Confuse', 'Malice', 'Paralyze', 'Scream'],
+    'caeren': ['Fear', 'Ilirech', 'Mend', 'Sacrifice', 'Suture'],
+    'kyosir': ['Confuse', 'Maiereth', 'Malice', 'Paralyze', 'Reconstitute'],
 };
 export const STARTING_MASTERY_UI = {
     'constitution': {
@@ -269,15 +268,15 @@ export const STARTING_MASTERY_UI = {
     },
 };
 export const TRAIT_SPECIALS = {
-    "Astral": 'Astrication',
-    "Cambiren": 'Caerenesis',
-    "Fyeran": 'Seer',
-    "Ilian": 'Blind',
-    "Kyn'gian": 'Endurance',
-    "Sedyrist" : 'Stimulate',
-    "Se'van": 'Berserk',
-    "Shaorahi": 'Conviction',
-    "Shrygeian": 'Impermanence',
-    "Tshaeral": 'Devour',
+    "Astral": ['Astrication', 'Devour'],
+    "Cambiren": ['Caerenesis'],
+    "Fyeran": ['Seer'],
+    "Ilian": ['Blind'],
+    "Kyn'gian": ['Endurance'],
+    "Sedyrist" : ['Stimulate'],
+    "Se'van": ['Berserk', 'Seer'],
+    "Shaorahi": ['Conviction'],
+    "Shrygeian": ['Impermanence', 'Devour'],
+    "Tshaeral": ['Devour'],
 };
 export const TRAITS = ["Astrication", "Caerenesis", "Seer", "Blind", "Endurance", "Stimulate", "Berserk", "Conviction", "Impermanence", "Devour"];

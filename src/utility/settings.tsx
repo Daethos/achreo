@@ -251,7 +251,13 @@ const SpecialSettings = () => {
             Consume a prayer during combat to get receive steps into the land of hush and tendril tendril of its essence. Instant. Short Cooldown. Low Grace
             </div>
             <br />
-
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('SHIELD')} Absorb
+            </p>
+            A warped tendril wrapped round you that protects the player from melee and ranged attacks at the cost of grace. Instant. Moderate Cooldown. No Grace.
+            </div>
+            <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CAST')} Achire
@@ -401,6 +407,13 @@ const SpecialSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('CAST')} Ilirech
+            </p>
+            You rip into this world with Ilian tendrils. Cast. Moderate Cooldown. Low Grace.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('BEAM')} Impermanence
             </p>
             Your evasion becomes ethereal. Instant. Long Cooldown. Low Grace. Trait.
@@ -429,6 +442,13 @@ const SpecialSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('CAST')} Maiereth
+            </p>
+            You bleed and strike with tendrils of Ma'anre. Cast. Low Cooldown. Low Grace.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('SHIELD')} Malice
             </p>
             A warped tendril wrapped round you that damages the enemy through 6 successful attacks from them. Instant. Moderate Cooldown. Moderate Grace.
@@ -436,9 +456,37 @@ const SpecialSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('SHIELD')} Menace
+            </p>
+            A warped tendril wrapped round you that protects the player through 3 melee and ranged attacks, fearing the enemy. Instant. Long Cooldown. Moderate Grace.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('SHIELD')} Mend
             </p>
             A warped tendril wrapped round you that heal through 6 successful attacks from the enemy. Instant. Moderate Cooldown. Moderate Grace.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('SHIELD')} Moderate
+            </p>
+            A warped tendril wrapped round you that protects through 6 successful melee and ranged attacks, slowing the enemy. Instant. Long Cooldown. Moderate Grace.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('SHIELD')} Multifarious
+            </p>
+            A warped tendril wrapped round you that protects through 3 successful melee and ranged attacks, polymorphing the enemy. Instant. Long Cooldown. Moderate Grace.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('SHIELD')} Mystify
+            </p>
+            A warped tendril wrapped round you that protects through 3 successful melee and ranged attacks, confusing the enemy. Instant. Long Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
@@ -467,6 +515,13 @@ const SpecialSettings = () => {
             {svg('INVOKE')} Pursuit
             </p>
             Step into the land of hush and tendril, reentering this world at the foot of your foe. Instant. Moderate Cooldown. Moderate Grace.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('BEAM')} Reconstitute
+            </p>
+            Heals for a light amount every tick. Channel. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>

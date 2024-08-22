@@ -326,6 +326,10 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                             break;
                     };
                     break;
+                case 'Set Health':
+                    res = { ...combat(), newPlayerHealth: value };
+                    EventBus.emit('blend-combat', { newPlayerHealth: value });
+                    break;
                 case 'Enemy': // Blind Enemy Attack i.e. an enemy not targeted hitting the player
                     if (!data.ascean) return;
                     let enemyData = {
@@ -351,7 +355,9 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     EventBus.emit('blend-combat', res);
                     break;
                 case 'Sacrifice': // Shadow Word: Death
-                    const sacrifice = Math.round(combat()?.player?.[combat().player?.mastery as string] * caerenic * ((combat().player?.level as number + 9) / 10));
+                    const sacrifice = Math.round(combat()?.player?.[combat().player?.mastery as string] 
+                        * (1 + data / 100)
+                        * caerenic * ((combat().player?.level as number + 9) / 10));
                     let playerSacrifice = validateHealth(combat().newPlayerHealth) - (sacrifice / 2 * stalwart) < 0 ? 0 : validateHealth(combat().newPlayerHealth) - (sacrifice / 2 * stalwart);
                     let enemySacrifice = validateHealth(combat().newComputerHealth) - sacrifice < 0 ? 0 : validateHealth(combat().newComputerHealth) - sacrifice;
 
@@ -368,7 +374,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     playerWin = res.playerWin;
                     break;
                 case 'Suture': // Lifedrain (Instant, 50%)
-                    const suture = Math.round(combat()?.player?.[combat().player?.mastery as string] / 2 * caerenic * ((combat().player?.level as number + 9) / 10));
+                    const suture = Math.round(combat()?.player?.[combat().player?.mastery as string] / 2 * caerenic * ((combat().player?.level as number + 9) / 10)) * (1 * data / 100);
                     let playerSuture = validateHealth(combat().newPlayerHealth) + suture > combat().playerHealth ? combat().playerHealth : validateHealth(combat().newPlayerHealth) + suture;
                     let enemySuture = validateHealth(combat().newComputerHealth) - suture < 0 ? 0 : validateHealth(combat().newComputerHealth) - suture;
                     playerActionDescription = `Your tendrils suture ${combat().computer?.name}'s caeren into you, absorbing ${suture}.`;    
@@ -428,7 +434,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             } else if (affectsHealth === true) {
                 adjustTime(1000, res.newPlayerHealth);
             };
-            screenShake(instance.game.scene.scenes[3], 96); // [250, 150, 250]
+            screenShake(instance.game.scene.scenes[3], 60); // [250, 150, 250]
         } catch (err: any) {
             console.warn(err, 'Error Initiating Combat');
         };

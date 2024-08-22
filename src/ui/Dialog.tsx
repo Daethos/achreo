@@ -86,7 +86,7 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
         return options
             .filter(option => !option.conditions || option.conditions.every(condition => {
                 const { key, operator, value } = condition;
-                const optionValue = getOptionKey(ascean, combat, key);
+                const optionValue = getOptionKey(ascean, combat, game, key);
                 switch (operator) {
                     case '>':
                         return optionValue > value;
@@ -138,9 +138,9 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
     };
 
 
-    const getOptionKey = (ascean: Ascean, combat: any, key: string) => {
+    const getOptionKey = (ascean: Ascean, combat: any, game: Accessor<GameState>,  key: string) => {
         const newKey = key === 'mastery' ? ascean[key].toLowerCase() : key;
-        return ascean[newKey] !== undefined ? ascean[newKey] : combat[newKey];
+        return ascean[newKey] !== undefined ? ascean[newKey] : combat[newKey] !== undefined ? combat[newKey] : game()[newKey as keyof typeof game];
     };
   
     const handleOptionClick = (nextNodeId: string | null) => {

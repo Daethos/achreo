@@ -40,6 +40,7 @@ export interface GameState {
     merchantEquipment: any[];
     repurchase: any[];
     showLootIds: any[];
+    interactCount: number;
 
     actionButtons: any[];
     specialButtons: any[];
@@ -98,6 +99,7 @@ export const initGame: GameState = {
     merchantEquipment: [],
     repurchase: [],
     showLootIds: [],
+    interactCount: 0,
 
     actionButtons: ['Attack', 'Posture', 'Roll', 'Dodge', 'Counter'],
     specialButtons: ['Consume', 'Invoke', 'Polymorph', 'Root', 'Tshaeral'],

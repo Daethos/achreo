@@ -26,6 +26,7 @@ export default class NPC extends Entity {
         this.npcTarget = null;
         this.interacting = false;
         this.isDefeated = true;
+        this.interactCount = 0;
         this.createNPC();
         this.stateMachine = new StateMachine(this, 'npc');
         this.stateMachine
@@ -100,6 +101,7 @@ export default class NPC extends Entity {
                 if (other.gameObjectB && other.gameObjectB.name === 'player' && !other.gameObjectB.inCombat && !this.interacting) {
                     if (this.healthbar) this.healthbar.setVisible(true);
                     this.interacting = true;
+                    this.interactCount++;
                     this.scene.setupNPC(this);
                     this.npcTarget = other.gameObjectB;
                     this.stateMachine.setState(States.AWARE);
@@ -120,7 +122,6 @@ export default class NPC extends Entity {
                     if (this.healthbar) this.healthbar.setVisible(false);
                     this.interacting = false;
                     this.stateMachine.setState(States.IDLE); 
-
                     other.gameObjectB.targets = other.gameObjectB.targets.filter(obj => obj.enemyID !== this.enemyID);
                     this.scene.clearNPC();
                     other.gameObjectB.checkTargets();

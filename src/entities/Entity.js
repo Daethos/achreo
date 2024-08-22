@@ -82,9 +82,14 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.isHealing = false;
         this.isLeaping = false;
         this.isMalicing = false;
+        this.isMenacing = false;
         this.isMending = false;
+        this.isModerating = false;
+        this.isMultifaring = false;
+        this.isMystifying = false;
         this.isProtecting = false;
         this.isPursuing = false;
+        this.isReining = false;
         this.isRushing = false;
         this.isShielding = false;
         this.isShimmering = false;

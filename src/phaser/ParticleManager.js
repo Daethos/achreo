@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 export const PARTICLES = ['arrow', 'earth',  'fire',  'frost',  'lightning', 'righteous', 'sorcery', 'spooky', 'wild', 'wind'];
-const TIME = { achire: 1500, attack: 1250, parry: 1000, posture: 1500, roll: 1250, special: 1500 };
-const VELOCITY = { achire: 5.5, attack: 4.5, parry: 6.5, posture: 3.5, roll: 3.5, special: 5 }; // 7.5 || 9 || 6 || 6
+const TIME = { quor: 2500, achire: 1500, attack: 1250, parry: 1000, posture: 1500, roll: 1250, special: 1500 };
+const VELOCITY = { quor: 4, achire: 5.5, attack: 4.5, parry: 6.5, posture: 3.5, roll: 3.5, special: 5 }; // 7.5 || 9 || 6 || 6
 
 function angleTarget(x, y) {
     if (x > 0) {
@@ -22,7 +22,7 @@ class Particle {
         this.isParticle = particle === true;
         this.key = particle === true ? key + '_effect' : key;
         this.player = player;
-        this.sensorSize = special === false ? 6 : 12;
+        this.sensorSize = special === false ? 6 : action === 'achire' ? 12 : 18;
         this.special = special;
         this.success = false;
         this.target = this.setTarget(player, scene, special);
@@ -130,7 +130,7 @@ class Particle {
     };
 
     spriteMaker(scene, player, key, particle, special) {
-        return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key).setScale(particle === true && special === false ? 0.4 : 1).setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
+        return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key).setScale(particle === true && special === false ? 0.4 : this.action === 'achire' ? 0.75 : 1.15).setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
     };
 };
 

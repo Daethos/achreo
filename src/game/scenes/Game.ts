@@ -68,8 +68,9 @@ export class Game extends Scene {
     navMesh: any;
     navMeshPlugin: any;
     postFxPipeline: any;
-    musicBackground: any;
-    musicCombat: any;
+    musicBackground: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+    musicCombat: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+    musicStealth: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
 
     fpsText: GameObjects.Text;
     combatTimerText: GameObjects.Text;
@@ -184,6 +185,9 @@ export class Game extends Scene {
             this.musicBackground.play();
         };
         this.musicCombat = this.sound.add('combat', { volume: this?.settings?.volume, loop: true });
+        this.musicStealth = this.sound.add('stealthing', { volume: this?.settings?.volume, loop: true });
+        this.musicStealth.play();
+        this.musicStealth.pause();
 
     // =========================== FPS =========================== \\
         // this.fpsText = this.add.text(
@@ -375,6 +379,8 @@ export class Game extends Scene {
             if (this.combat) {
                 this.musicCombat.pause();
                 this.stopCombatTimer();    
+            } else if (this.player.isStealth) {
+                this.musicStealth.pause();
             } else {
                 this.musicBackground.pause();
             };
@@ -386,6 +392,8 @@ export class Game extends Scene {
             if (this.combat) {
                 this.musicCombat.resume();
                 this.startCombatTimer();    
+            } else if (this.player.isStealth) {
+                this.musicStealth.resume();
             } else {
                 this.musicBackground.resume();
             };
@@ -935,22 +943,32 @@ export class Game extends Scene {
         EventBus.emit('combat-engaged', bool);
         if (bool === true && this.combat !== bool) {
             this.musicCombat.play();
-            this.musicBackground.pause();
+            if (this.musicBackground.isPlaying) this.musicBackground.pause();
+            if (this.musicStealth.isPlaying) this.musicStealth.pause();
             this.startCombatTimer();
         } else if (bool === false) {
             this.musicCombat.stop();
-            this.musicBackground.resume();
+            if (this.player.isStealth) {
+                this.musicStealth.resume();
+            } else {
+                this.musicBackground.resume();
+            };
             this.stopCombatTimer();    
         };
         this.combat = bool;
     };
     pauseMusic = (): void => {
-        this.musicBackground.pause();
-        this.musicCombat.pause();
+        if (this.musicBackground.isPlaying) this.musicBackground.pause();
+        if (this.musicCombat.isPlaying) this.musicCombat.pause();
+        if (this.musicStealth.isPlaying) this.musicStealth.pause();
     };
     resumeMusic = (): void => {
         if (!this.combat) {
-            this.musicBackground.resume();
+            if (this.player.isStealth) {
+                this.musicStealth.resume();
+            } else {
+                this.musicBackground.resume();
+            };
         } else {
             this.musicCombat.resume();
         };
@@ -973,7 +991,7 @@ export class Game extends Scene {
         EventBus.emit('setup-enemy', data);
     };
     setupNPC = (npc: any): void => {
-        const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType };
+        const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType, interactCount: npc.interactCount };
         EventBus.emit('setup-npc', data);    
     };
     showDialog = (dialog: boolean): boolean => EventBus.emit('blend-game', { dialogTag: dialog }); // smallHud: dialog
@@ -1116,13 +1134,16 @@ export class Game extends Scene {
             this.musicBackground.pause();
         } else {
             this.musicCombat.pause();
+            this.musicStealth.pause();
         };
     };
     resume(): void {
         this.scene.resume();
         if (this.settings?.music === false) return;
         if (!this.combat) {
-            if (this.musicBackground.isPaused) {
+            if (this.player.isStealth) {
+                this.musicStealth.resume();
+            } else if (this.musicBackground.isPaused) {
                 this.musicBackground.resume();
             } else {
                 this.musicBackground.play();

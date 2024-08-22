@@ -84,7 +84,7 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
             <ItemModal item={state()?.player?.shield} stalwart={state().isStalwart} caerenic={false} />
         </div>
         </Show>  
-        <Show when={state().playerEffects.length > 0}>
+        <Show when={state().playerEffects.length > 0 && state().combatEngaged === true}>
         <div class='combatEffects' style={{ left: '-3vw', top: '15vh', 'height': '14vh', width: 'auto', transform: 'scale(0.75)' }}>
             <For each={state().playerEffects}>{(effect) => ( 
                 <PrayerEffects combat={state} effect={effect} enemy={false} game={game} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 

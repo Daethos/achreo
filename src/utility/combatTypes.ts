@@ -5,6 +5,7 @@ export const ATTACKS = {
     posture: 'posture against',
     roll: 'roll into',
     parry: 'parry',
+    quor: 'quorse into',
     leap: 'leap onto',
     rush: 'rush through',
     writhe: 'writhe into',
@@ -15,9 +16,11 @@ export const ACTION_TYPES = {
     ATTACK: "attack",
     LEAP: "leap",
     POSTURE: "posture",
+    QUOR: "quor",
     ROLL: "roll",
     PARRY: "parry",
     RUSH: "rush",
+    STORM: "storm",
     WRITHE: "writhe",
 };
 export const ATTACK_TYPES = { MAGIC: "Magic", PHYSICAL: "Physical" };
@@ -31,7 +34,11 @@ export const DAMAGE = {
     LOW: 1.1,
     MID: 1.15,
     HIGH: 1.3,
-    SUPER: 4,
+    ONE_FIFTY: 1.5,
+    TWO: 2,
+    THREE: 3,
+    FOUR: 4,
+    SIX: 6,
     TICK_HALF: 0.165,
     TICK_FULL: 0.33,
     HALF: 0.5,
@@ -60,8 +67,8 @@ export const DAMAGE_TYPES = {
     FROST: "Frost",
     LIGHTNING: "Lightning",
     RIGHTEOUS: "Righteous",
-    SPOOKY: "Spooky",
     SORCERY: "Sorcery",
+    SPOOKY: "Spooky",
     WIND: "Wind",
     WILD: "Wild",
 };
@@ -88,7 +95,7 @@ export const MASTERY = {
     CAEREN: 'caeren',
     KYOSIR: 'kyosir'
 };
-export const STRONG_ATTACKS = ['achire', 'attack', 'arc', 'leap', 'rush', 'special', 'storm', 'writhe'];
+export const STRONG_ATTACKS = ['achire', 'attack', 'arc', 'leap', 'quor', 'rush', 'special', 'storm', 'writhe'];
 export const STRONG_TYPES = {
     "Leather-Cloth": ["Frost","Lightning","Righteous","Pierce"],
     "Leather-Mail": ["Pierce","Slash","Wind","Sorcery","Wild"],

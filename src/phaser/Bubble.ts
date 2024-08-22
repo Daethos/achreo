@@ -7,6 +7,16 @@ const COLORS = {
     'green': 0x00FF00,
     'red': 0xFF0000,
     'purple': 0x800080,
+
+    'teal': 0x008080,
+    'lightblue': 0xADD8E6,
+    'sapphire': 0x0F52BA,
+    'ultramarine': 0x0437F2,
+    'dread': 0x8B0000, // Menace ?
+    'burned': 0xCC5500,
+    'chartreuse': 0xDFFF00, // Mystify?
+    'fuchsia': 0xFF00FF,
+    'malachite': 0x0BDA51,
 };
 
 export default class Bubble extends Phaser.GameObjects.Graphics {
@@ -30,6 +40,13 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
         });
         this.drawBubble(scene, time);
         scene.add.existing(this);
+    };
+
+    cleanUp = () => {
+        this?.glowFilter?.remove?.(this);
+        this?.warp?.remove?.(false);
+        this?.warp?.destroy?.();
+        this?.destroy?.();
     };
 
     drawBubble = (scene: Phaser.Scene, time: number) => {

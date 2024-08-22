@@ -20,9 +20,8 @@ const MenuAscean = lazy(async () => await import('./components/MenuAscean'));
 const Preview = lazy(async () => await import('./components/Preview'));
 const GameToast = lazy(async () => await import('./ui/GameToast'));
 var click = new Audio("../assets/sounds/TV_Button_Press.wav");
-var load = new Audio("../assets/sounds/stealth.mp3");
-var deleting = new Audio("../assets/sounds/freeze.wav");
-var creating = new Audio("../assets/sounds/combat-round.mp3");
+var creation = new Audio("../assets/sounds/freeze.wav");
+var load = new Audio("../assets/sounds/combat-round.mp3");
 
 export default function App() {
     const [alert, setAlert] = createSignal({ header: '', body: '', delay: 0, key: '', arg: undefined });
@@ -62,7 +61,7 @@ export default function App() {
         setMenu({ ...menu(), [option]: true });
     };
     async function createCharacter(character: CharacterSheet): Promise<void> {
-        creating.play();
+        creation.play();
         const cre = await createAscean(character);
         const pop = await populate(cre);
         const comp = asceanCompiler(pop);
@@ -73,13 +72,13 @@ export default function App() {
     };
     async function deleteCharacter(id: string | undefined): Promise<void> {
         try {
-            deleting.play();
+            creation.play();
             const newAsceans = menu()?.asceans?.filter((asc: Ascean) => asc._id !== id);
             setMenu({ ...menu(), asceans: newAsceans, choosingCharacter: newAsceans.length > 0 });
             setAscean(undefined as unknown as Ascean);
             await deleteAscean(id as string);
         } catch (err) {
-            console.warn('Error deleting Ascean:', err);
+            console.warn('Error Deleting Ascean:', err);
         };
     };
     async function fetchAscean(id: string): Promise<void> {
@@ -216,9 +215,7 @@ export default function App() {
     };
     const updateRep = async (rep: Reputation): Promise<void> => {
         try {
-            // const success = 
             await updateReputation(rep);
-            // console.log('Reputation Updated:', success);
             setReputation(rep);
         } catch (err: any) {
             console.warn('Error updating Reputation:', err);

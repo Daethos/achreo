@@ -1320,6 +1320,31 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: nu
     if (combat.action === ACTION_TYPES.RUSH) {
         combat.realizedPlayerDamage *= DAMAGE.HIGH;
     };
+    if (combat.action === ACTION_TYPES.ACHIRE) {
+        combat.realizedPlayerDamage *= DAMAGE.ONE_FIFTY;
+    };
+    if (combat.action === ACTION_TYPES.ARC) {
+        combat.realizedPlayerDamage *= DAMAGE.THREE;
+    };
+    if (combat.action === ACTION_TYPES.LEAP) {
+        combat.realizedPlayerDamage *= DAMAGE.MID;
+    };
+    if (combat.action === ACTION_TYPES.QUOR) {
+        combat.realizedPlayerDamage *= DAMAGE.THREE;
+    };
+    if (combat.action === ACTION_TYPES.RUSH) {
+        combat.realizedPlayerDamage *= DAMAGE.MID;
+    };
+    if (combat.action === ACTION_TYPES.STORM) {
+        combat.realizedPlayerDamage *= DAMAGE.NEG_LOW;
+    };
+    if (combat.action === ACTION_TYPES.ROLL ) {
+        if (combat.rollSuccess) {
+            combat.realizedPlayerDamage *= DAMAGE.MID;
+        } else {
+            combat.realizedPlayerDamage *= DAMAGE.NEG_HIGH;
+        };
+    };
     if (combat.isCaerenic === true) {
         combat.realizedPlayerDamage *= DAMAGE.MID;
     };
@@ -1461,24 +1486,27 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
             };
         }; 
     };
-
     if (playerAction === ACTION_TYPES.ACHIRE) {
-        playerPhysicalDamage *= DAMAGE.HIGH * DAMAGE.MID;
-        playerMagicalDamage *= DAMAGE.HIGH * DAMAGE.MID;
+        playerPhysicalDamage *= DAMAGE.ONE_FIFTY;
+        playerMagicalDamage *= DAMAGE.ONE_FIFTY;
     };
     if (playerAction === ACTION_TYPES.ARC) {
-        playerPhysicalDamage *= DAMAGE.SUPER;
-        playerMagicalDamage *= DAMAGE.SUPER;
+        playerPhysicalDamage *= DAMAGE.THREE;
+        playerMagicalDamage *= DAMAGE.THREE;
     };
     if (playerAction === ACTION_TYPES.LEAP) {
         playerPhysicalDamage *= DAMAGE.MID;
         playerMagicalDamage *= DAMAGE.MID;
     };
+    if (playerAction === ACTION_TYPES.QUOR) {
+        playerPhysicalDamage *= DAMAGE.THREE;
+        playerMagicalDamage *= DAMAGE.THREE;
+    };
     if (playerAction === ACTION_TYPES.RUSH) {
         playerPhysicalDamage *= DAMAGE.MID;
         playerMagicalDamage *= DAMAGE.MID;
     };
-    if (playerAction === 'storm') {
+    if (playerAction === ACTION_TYPES.STORM) {
         playerPhysicalDamage *= DAMAGE.NEG_LOW;
         playerMagicalDamage *= DAMAGE.NEG_LOW;
     };
@@ -1500,7 +1528,6 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     combat.isSeering = criticalResult.isSeering;
     playerPhysicalDamage = criticalResult.physicalDamage;
     playerMagicalDamage = criticalResult.magicalDamage;
-
     playerPhysicalDamage *= (computerPhysicalDefenseMultiplier - (combat.weapons[0]?.physicalPenetration as number)) / 100;
     playerMagicalDamage *= (computerMagicalDefenseMultiplier - (combat.weapons[0]?.magicalPenetration  as number)) / 100;
     const damageType = damageTypeCompiler(combat.playerDamageType, combat.computer as Ascean, combat.weapons[0] as Equipment, playerPhysicalDamage, playerMagicalDamage);
@@ -1509,13 +1536,11 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     const weatherResult = weatherEffectCheck(combat.weapons[0] as Equipment, playerMagicalDamage, playerPhysicalDamage, combat.weather, combat.criticalSuccess);
     playerPhysicalDamage = weatherResult.physicalDamage;
     playerMagicalDamage = weatherResult.magicalDamage;
-
     playerTotalDamage = playerPhysicalDamage + playerMagicalDamage;
     if (playerTotalDamage < 0) {
         playerTotalDamage = 0;
     };
     combat.realizedPlayerDamage = playerTotalDamage;
-
     if (combat.computerAction === ACTION_TYPES.ATTACK) {
         combat.realizedPlayerDamage *= DAMAGE.LOW;
     };
@@ -1540,14 +1565,11 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     const skill = combat.weapons[0]?.type === 'Spell' ? combat.weapons[0]?.damageType?.[0] : combat.weapons[0]?.type;
     combat.skillData.push(skill as string);
     combat.totalDamageData = Math.max(combat.realizedPlayerDamage, combat.totalDamageData);
-
     combat.playerActionDescription = `You ${ATTACKS[playerAction as keyof typeof ATTACKS]} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'damage (Critical)' : combat.glancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
-
     if (combat.newComputerHealth <= 0) {
         combat.newComputerHealth = 0;
         combat.playerWin = true;
     };
-
     return combat;
 };
 
@@ -2038,7 +2060,7 @@ function instantDamageSplitter(combat: Combat, mastery: string): Combat {
     combat.newComputerHealth -= combat.realizedPlayerDamage;
     combat.computerDamaged = true;
     combat.playerAction = 'invoke';
-    combat.playerActionDescription = `You tshaer ${combat.computer?.name}'s caeren with your ${combat.player?.mastery}'s Invocation of ${combat.weapons[0]?.influences?.[0]} for ${Math.round(damage)} Pure Damage.`;    
+    combat.playerActionDescription = `You tshaer ${combat.computer?.name}'s caeren with your ${combat.player?.mastery}'s Invocation of ${combat.weapons[0]?.influences?.[0]} for ${Math.round(damage)} Damage.`;    
     return combat;
 };
 

@@ -62,10 +62,19 @@ export default class Beam {
         });
     };
     updateEmitter = (target: any) => {
-        const dynamicConfig = {
-            moveToX: target.x - 265,
-            moveToY: target.y - 165,
-            scale: this.glow(),
+        let dynamicConfig = {};
+        if (this.player === target) {
+            dynamicConfig = {
+                moveToX: target.x - 265 + this.randomize(),
+                moveToY: target.y - 165 + this.randomize(),
+                scale: this.glow(),
+            };
+        } else {
+            dynamicConfig = {
+                moveToX: target.x - 265,
+                moveToY: target.y - 165,
+                scale: this.glow(),
+            };
         };
         this.emitter.setConfig({...this.settings, ...dynamicConfig});
     };
@@ -78,7 +87,8 @@ export default class Beam {
         };
         this.enemyEmitters[enemy.enemyID].setConfig({ ...this.settings, ...dynamicConfig });
     };
-    glow = (): number => Math.random() / 10; 
+    glow = (): number => Math.random() / 10;
+    randomize = (): number => Math.random() * 25 * (Math.random() > 0.5 ? 1 : -1); 
     reset = () => {
         this.emitter.stop(); // Added
         this.emitter.setVisible(false);

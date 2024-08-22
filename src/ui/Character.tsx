@@ -16,7 +16,7 @@ import { useResizeListener } from '../utility/dimensions';
 import { Attributes } from '../utility/attributes';
 import { Reputation, faction } from '../utility/player';
 import { playerTraits } from '../utility/ascean';
-import { SPECIAL, TRAIT_SPECIALS } from '../utility/abilities'; // SPECIALS, TRAITS
+import { SPECIAL, TRAIT_SPECIALS, SPECIALS, TRAITS } from '../utility/abilities'; // SPECIALS, TRAITS
 import { DEITIES } from '../utility/deities';
 import { Puff } from 'solid-spinner';
 import PhaserSettings from './PhaserSettings';
@@ -109,7 +109,6 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
     const [weaponCompared, setWeaponCompared] = createSignal<string>('');
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [showInventory, setShowInventory] = createSignal<boolean>(false);
-    const [scaleImage, setScaleImage] = createSignal({ id: '', scale: 48 });
     const [tutorial, setTutorial] = createSignal<string>('');
     const [levelUpModalShow, setLevelUpModalShow] = createSignal<boolean>(false);
     const [expandedCharacter, showExpandedCharacter] = createSignal<boolean>(false);
@@ -154,14 +153,13 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
     function checkSpecials() {
         const potential = [playerTraitWrapper().primary.name, playerTraitWrapper().secondary.name, playerTraitWrapper().tertiary.name];
         const mastery = SPECIAL[ascean().mastery as keyof typeof SPECIAL];
-        let extra = [];
-        // for (let i = 0; i < TRAITS.length; i++) {
-        //     extra.push(TRAITS[i]);
-        // };
+        // const mastery = SPECIALS; // Everything for testing
+        let extra: any[] = [];
+        // let extra: any[] = TRAITS;
         for (let i = 0; i < 3; i++) {
             const trait = TRAIT_SPECIALS[potential[i] as keyof typeof TRAIT_SPECIALS];
-            if (trait) {
-                extra.push(trait);
+            if (trait && trait.length > 0) {
+                extra = [ ...extra, ...trait ]
             };
         };
         if (extra.length > 0) {
@@ -173,18 +171,8 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
         };
     };
 
-    const getBackgroundStyle = () => {
-        if (scaleImage().id === highlighted()?.item?._id) {
-            return 'gold';
-        } else if (highlighted()?.item && (highlighted()?.item?._id === highlighted()?.item?._id)) {
-            return '#820303';
-        } else {
-            return 'transparent';
-        };
-    };
-
     const currentItemStyle = (rarity: string): JSX.CSSProperties => {
-        return {border: `0.15em solid ${getRarityColor(rarity)}`, 'background-color': getBackgroundStyle()};
+        return {border: `0.15em solid ${getRarityColor(rarity)}`, 'background-color': 'transparent'};
     };
 
     const checkHighlight = () => {

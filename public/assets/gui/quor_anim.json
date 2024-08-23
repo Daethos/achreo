@@ -1,0 +1,84 @@
+{
+    "anims": [
+        {
+            "key": "quor_effect",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 12,
+            "frames": [
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_9"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_10"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_11"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_10"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_11"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_12"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_11"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_12"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_13"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_12"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_13"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_12"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_11"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_12"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_11"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_10"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_11"
+                },
+                {
+                    "key": "quor_effect",
+                    "frame": "quor_10"
+                }
+            ]
+        }
+    ]
+}

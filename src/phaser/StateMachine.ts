@@ -23,6 +23,7 @@ export const States = {
     DODGE: "dodge",
     POSTURE: "posture",
     ROLL: "roll",
+    THRUST: "thrust",
     EVADE: "evade",
     HEAL: "heal",
     HURT: "hurt",

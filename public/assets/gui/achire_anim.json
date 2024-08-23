@@ -1,0 +1,156 @@
+{
+    "anims": [
+        {
+            "key": "achire_effect",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 12,
+            "frames": [
+                {
+                    "key": "achire_effect",
+                    "frame": "1"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "2"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "3"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "4"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "5"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "6"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "7"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "8"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "9"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "10"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "11"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "12"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "13"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "14"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "15"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "16"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "17"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "18"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "19"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "20"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "21"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "22"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "23"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "24"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "25"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "26"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "27"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "28"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "29"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "30"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "31"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "32"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "33"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "34"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "35"
+                },
+                {
+                    "key": "achire_effect",
+                    "frame": "36"
+                }
+            ]
+        }
+    ]
+}

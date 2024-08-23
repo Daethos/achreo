@@ -1,4 +1,4 @@
-export const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
+export const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry', 'Thrust'];
 export const SPECIALS = [
     'Menace', // reactive shield, fear
     'Moderate', // reactive shield, slow

@@ -44,6 +44,22 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
             'border': border(borderColor(state()?.playerBlessing), 0.15),
         };
     };
+    const size = (len: number) => {
+        switch (true) {
+            case len < 10: return '1.15em';
+            case len < 20: return '1em';
+            case len < 30: return '0.85em';
+            default:  return '0.6em';
+        };
+    };
+    const top = (len: number) => {
+        switch (true) {
+            case len < 10: return '-3%';
+            case len < 20: return '-2%';
+            case len < 30: return '-1%';
+            default: return '0';
+        };
+    };
     // function createPrayer() {
     //     const computer = initAscean;
     //     const exists = new StatusEffect(
@@ -56,14 +72,16 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
     //     );
     //     EventBus.emit('create-prayer', exists);
     // };
-    return <div class='playerCombatUi'> 
-        <p class='playerName' style={{ color: `${state().isStealth ? '#fdf6d8' : 'gold'}`, 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#444' : '#000'}`, 'z-index': 1 }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
-        <div class='center playerHealthBar' style={{ 'z-index': 0 }}>
-            <div class='playerPortrait' style={{ 'font-size': '1.075em', 'font-weight': 700, color: state().isStealth ? '#fdf6d8' : '#000', 'text-shadow': `0.075em 0.075em 0.075em ${state().isStealth ? '#000' : '#fdf6d8'}`, 'z-index': 1 }}>{healthDisplay()}</div>
+    return <div class='playerCombatUi' style={{ position: 'fixed' }}> 
+        <div class='center playerHealthBar' style={{ 'z-index': 0, 'max-height': '24px' }}>
+            <div class='playerPortrait' style={{ 'font-size': '1.125em', 'font-weight': 700, color: state().isStealth ? '#fdf6d8' : '#000', 'text-shadow': `0.075em 0.075em 0.075em ${state().isStealth ? '#000' : '#ff0'}`, 'z-index': 1 }}>{healthDisplay()}</div>
             <div class='healthbarPosition' style={{ width: `100%`, 'background-color': 'red' }}></div>
             <div class='healthbarPosition' style={{ width: `${healthPercentage()}%`, 'background': state()?.isStealth ? 'linear-gradient(#000, #444)' : 'linear-gradient(gold, #fdf6d8)' }}></div>
         </div>
-        <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar" onClick={changeDisplay}/>
+        <p class='playerName' style={{ 
+            'top': top(state().player?.name.length as number), left: '5vw', position: 'fixed',
+            'color': `${state().isStealth ? '#fdf6d8' : 'gold'}`, 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#444' : '#000'}`, 'z-index': 1, 'max-height': '40px', 'font-size': size(state().player?.name.length as number) }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
+        <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar" onClick={changeDisplay} style={{ 'max-height': '74px' }}/>
         <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} settings={settings} />
         <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} settings={settings} />
         <div class='combatUiWeapon' onClick={() => setShow(show => !show)} style={caerenic(state().isCaerenic) as any}>

@@ -121,29 +121,31 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         await saveSettings(newSettings);
         EventBus.emit('update-volume', e);
     };
+    // <div style={{...font('0.5em', '#fdf6d8'), margin: '1% auto', display: 'block'}}>Number Mapping Reads Left to Right. <br /> Special Options are Restricted: Mastery; Traits.</div>
     return <>
-        <div class='center' style={{ display: 'flex', 'flex-direction': 'row' }}>
-        <div class='gold' style={{ position: 'absolute', top: '5%', 'font-size': '1.25em', display: 'inline' }}>Controls <br />
-            <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.BUTTONS ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Actions</button>
+        <div class='center' style={{ display: 'flex', 'flex-direction': 'row', height: '100%' }}>
+        <div class='gold' style={{ position: 'absolute', top: '0', 'font-size': '1.25em', display: 'inline' }}>
+            <div style={{ 'padding-top': '5%' }}>Controls</div>
+            <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.BUTTONS ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Buttons</button>
             <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.POST_FX ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
             <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.DIFFICULTY ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
             <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.PHASER_UI ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.PHASER_UI)}>UI</button>
         </div>
         <Switch>
             <Match when={settings().control === CONTROLS.BUTTONS}>
-                <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
-                <div style={font('1em', '#fdf6d8')}>Action Buttons<br /></div>
+            <div class='' style={dimensions().ORIENTATION === 'landscape' ? { 'text-align': 'center', margin: 'auto', 'margin-bottom': '0' } : { 'margin-top': '50%' }}>
+                <div style={font('1em', '#fdf6d8')}>Physical Actions<br /></div>
                 {settings().actions?.map((action: string, index: number) =>
-                    <button class='highlight' onClick={() => actionModal(action, index)}>
-                        <div style={{ width: '100%', 'font-size': '0.75em', margin: '3%' }}><span class='gold'>{index + 1} </span> {action}</div>
+                    <button class='highlight' onClick={() => actionModal(action, index)} style={{display: 'block'}}>
+                        <div style={{ width: '100%', 'min-width': '60px', 'font-size': '0.75em', margin: '3%' }}><span class='gold' style={{ 'padding-right': '3px' }}>{index + 1} </span> {action}</div>
                     </button>
                 )}
                 </div>
-                <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
-                    <div style={font('1em', '#fdf6d8')}>Special Buttons<br /></div>
+                <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'text-align': 'center', margin: 'auto', 'margin-bottom': '0' } : { 'margin-top': '50%' }}>
+                    <div style={font('1em', '#fdf6d8')}>Special Actions<br /></div>
                     {settings().specials?.map((special: string, index: number) => 
-                        <button  class='highlight' onClick={() => specialModal(special, index)}>
-                            <div style={{ width: '100%', 'font-size': '0.75em', margin: '3%' }}><span class='gold'>{index + 1} </span> {special}</div>
+                        <button  class='highlight' onClick={() => specialModal(special, index)} style={{display: 'block'}}>
+                            <div style={{ width: '100%', 'min-width': '65px', 'font-size': '0.75em', margin: '3%' }}><span class='gold' style={{ 'padding-right': '3px' }}>{index + 1} </span> {special}</div>
                         </button>
                     )}
                 </div>
@@ -156,85 +158,86 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                     </button> 
                     </div>
 
-                    <div style={font('0.75em', '#fdf6d8')}>Chromatic Abb.
-                    <button class='highlight' onClick={() => handlePostFx('chromaticEnable', !settings().postFx?.chromaticEnable)}>
-                        {settings().postFx?.chromaticEnable ? 'On' : 'Off'}
-                    </button>
+                    <div class='center left' style={{ 'margin-left': '0%' }}>
+
+                        <div style={font('0.75em', '#fdf6d8')}>Chromatic Abb.
+                        <button class='highlight' onClick={() => handlePostFx('chromaticEnable', !settings().postFx?.chromaticEnable)}>
+                            {settings().postFx?.chromaticEnable ? 'On' : 'Off'}
+                        </button>
+                        </div>
+                        <div style={font('0.75em', '#fdf6d8')}>Chab ({settings().postFx.chabIntensity})</div>
+                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.chabIntensity} onChange={(e) => handlePostFx('chabIntensity', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+
+                        <div style={font('0.75em', '#fdf6d8')}>Vignette Enable
+                        <button class='highlight' onClick={() => handlePostFx('vignetteEnable', !settings().postFx?.vignetteEnable)}>
+                            {settings().postFx?.vignetteEnable ? 'On' : 'Off'}
+                        </button>
+                        </div>
+                        <div style={font('0.75em', '#fdf6d8')}>Vignette Strength ({settings().postFx.vignetteStrength})</div>
+                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vignetteStrength} onChange={(e) => handlePostFx('vignetteStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                        <div style={font('0.75em', '#fdf6d8')}>Vignette Intensity ({settings().postFx.vignetteIntensity})</div>
+                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vignetteIntensity} onChange={(e) => handlePostFx('vignetteIntensity', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+
+                        <div style={font('0.75em', '#fdf6d8')}>Noise Enable
+                        <button class='highlight' onClick={() => handlePostFx('noiseEnable', !settings().postFx?.noiseEnable)}>
+                            {settings().postFx?.noiseEnable ? 'On' : 'Off'}
+                        </button>
+                        </div>
+                        <div style={font('0.75em', '#fdf6d8')}>Noise Strength ({settings().postFx.noiseStrength})</div>
+                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.noiseStrength} onChange={(e) => handlePostFx('noiseStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                        <div style={font('0.75em', '#fdf6d8')}>Noise Seed ({settings().postFx.noiseSeed})</div>
+                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.noiseSeed} onChange={(e) => handlePostFx('noiseSeed', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                    
                     </div>
-                    <div style={font('0.75em', '#fdf6d8')}>Chab ({settings().postFx.chabIntensity})</div>
-                    <Form.Range min={0} max={1} step={0.01} value={settings().postFx.chabIntensity} onChange={(e) => handlePostFx('chabIntensity', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                    
+                    <div class='center right'>
+
+                        <div style={font('0.75em', '#fdf6d8')}>VHS Enable
+                        <button class='highlight' onClick={() => handlePostFx('vhsEnable', !settings().postFx?.vhsEnable)}>
+                            {settings().postFx?.vhsEnable ? 'On' : 'Off'}
+                        </button>
+                        </div>
+                        <div style={font('0.75em', '#fdf6d8')}>VHS Strength ({settings().postFx.vhsStrength})</div>
+                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vhsStrength} onChange={(e) => handlePostFx('vhsStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
 
 
+                        <div style={font('0.75em', '#fdf6d8')}>Scanline Enable
+                        <button class='highlight' onClick={() => handlePostFx('scanlinesEnable', !settings().postFx?.scanlinesEnable)}>
+                            {settings().postFx?.scanlinesEnable ? 'On' : 'Off'}
+                        </button>
+                        </div>
+                        <div style={font('0.75em', '#fdf6d8')}>Scanline Strength ({settings().postFx.scanStrength})</div>
+                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.scanStrength} onChange={(e) => handlePostFx('scanStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
 
-                    <div style={font('0.75em', '#fdf6d8')}>Vignette Enable
-                    <button class='highlight' onClick={() => handlePostFx('vignetteEnable', !settings().postFx?.vignetteEnable)}>
-                        {settings().postFx?.vignetteEnable ? 'On' : 'Off'}
-                    </button>
+
+                        <div style={font('0.75em', '#fdf6d8')}>CRT Enable
+                        <button class='highlight' onClick={() => handlePostFx('crtEnable', !settings().postFx?.crtEnable)}>
+                            {settings().postFx?.crtEnable ? 'On' : 'Off'}
+                        </button>
+                        </div>
+                        <div style={font('0.75em', '#fdf6d8')}>CRT Height ({settings().postFx.crtHeight})</div>
+                        <Form.Range min={0} max={5} step={0.1} value={settings().postFx.crtHeight} onChange={(e) => handlePostFx('crtHeight', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                        <div style={font('0.75em', '#fdf6d8')}>CRT Width ({settings().postFx.crtWidth})</div>
+                        <Form.Range min={0} max={5} step={0.1} value={settings().postFx.crtWidth} onChange={(e) => handlePostFx('crtWidth', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+
                     </div>
-                    <div style={font('0.75em', '#fdf6d8')}>Vignette Strength ({settings().postFx.vignetteStrength})</div>
-                    <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vignetteStrength} onChange={(e) => handlePostFx('vignetteStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
-                    <div style={font('0.75em', '#fdf6d8')}>Vignette Intensity ({settings().postFx.vignetteIntensity})</div>
-                    <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vignetteIntensity} onChange={(e) => handlePostFx('vignetteIntensity', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
-
-                    <div style={font('0.75em', '#fdf6d8')}>Noise Enable
-                    <button class='highlight' onClick={() => handlePostFx('noiseEnable', !settings().postFx?.noiseEnable)}>
-                        {settings().postFx?.noiseEnable ? 'On' : 'Off'}
-                    </button>
-                    </div>
-                    <div style={font('0.75em', '#fdf6d8')}>Noise Strength ({settings().postFx.noiseStrength})</div>
-                    <Form.Range min={0} max={1} step={0.01} value={settings().postFx.noiseStrength} onChange={(e) => handlePostFx('noiseStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
-                    <div style={font('0.75em', '#fdf6d8')}>Noise Seed ({settings().postFx.noiseSeed})</div>
-                    <Form.Range min={0} max={1} step={0.01} value={settings().postFx.noiseSeed} onChange={(e) => handlePostFx('noiseSeed', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
 
 
-                    <div style={font('0.75em', '#fdf6d8')}>VHS Enable
-                    <button class='highlight' onClick={() => handlePostFx('vhsEnable', !settings().postFx?.vhsEnable)}>
-                        {settings().postFx?.vhsEnable ? 'On' : 'Off'}
-                    </button>
-                    </div>
-                    <div style={font('0.75em', '#fdf6d8')}>VHS Strength ({settings().postFx.vhsStrength})</div>
-                    <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vhsStrength} onChange={(e) => handlePostFx('vhsStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
-
-
-                    <div style={font('0.75em', '#fdf6d8')}>Scanline Enable
-                    <button class='highlight' onClick={() => handlePostFx('scanlinesEnable', !settings().postFx?.scanlinesEnable)}>
-                        {settings().postFx?.scanlinesEnable ? 'On' : 'Off'}
-                    </button>
-                    </div>
-                    <div style={font('0.75em', '#fdf6d8')}>Scanline Strength ({settings().postFx.scanStrength})</div>
-                    <Form.Range min={0} max={1} step={0.01} value={settings().postFx.scanStrength} onChange={(e) => handlePostFx('scanStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
-
-
-                    <div style={font('0.75em', '#fdf6d8')}>CRT Enable
-                    <button class='highlight' onClick={() => handlePostFx('crtEnable', !settings().postFx?.crtEnable)}>
-                        {settings().postFx?.crtEnable ? 'On' : 'Off'}
-                    </button>
-                    </div>
-                    <div style={font('0.75em', '#fdf6d8')}>CRT Height ({settings().postFx.crtHeight})</div>
-                    <Form.Range min={0} max={5} step={0.1} value={settings().postFx.crtHeight} onChange={(e) => handlePostFx('crtHeight', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
-                    <div style={font('0.75em', '#fdf6d8')}>CRT Width ({settings().postFx.crtWidth})</div>
-                    <Form.Range min={0} max={5} step={0.1} value={settings().postFx.crtWidth} onChange={(e) => handlePostFx('crtWidth', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                     </div>
             </Match>
             <Match when={settings().control === CONTROLS.DIFFICULTY}>
                 <div class='center creature-heading wrap' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
-                    <div style={font('1em', '#fdf6d8')}>
+                    {/* <div style={font('1em', '#fdf6d8')}>
                         <h1 style={font('1.25em')}>Computer Combat</h1>
                         <button class='gold highlight' onClick={() => handleComputerCombat()}>{settings().difficulty.computer ? 'Enabled' : 'Disabled'}</button>
                     </div>
-                    <div style={font('0.5em')}>[Whether Computer Enemies Will Engage In Combat With Each Other (Not Yet Implemented)]</div>
-
-                    <div style={font('1em', '#fdf6d8')}>
-                        <h1 style={font('1.25em')}>Computer Targeting</h1>
-                        <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'Manual' : 'Auto'} Aim</button>
-                    </div>
-                    <div style={font('0.5em')}>[Whether You Use the Second Joystick to Aim Ranged Attacks in Combat]</div>
+                    <div style={font('0.5em')}>[Whether Computer Enemies Will Engage In Combat With Each Other (Not Yet Implemented)]</div> */}
 
                     <div style={font('1em', '#fdf6d8')}>
                         <h1 style={font('1.25em')}>Desktop</h1>
                         <button class='gold highlight' onClick={() => handleDesktop(!settings().desktop)}>{settings().desktop ? 'Enabled' : 'Disabled'}</button>
                     </div>
-                    <div style={font('0.5em')}>[Desktop allows you to hide the button and joystick UI, and enable keyboard for actions.]</div>
+                    <div style={font('0.5em')}>[Desktop allows you to hide the button and joystick UI, and enable keyboard and mouse for actions and movement.]</div>
 
                     <div style={font('1em', '#fdf6d8')}>
                         <h1 style={font('1.25em')}>Enemy Aggression</h1>
@@ -259,7 +262,11 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                     <div style={{...font('0.75em', '#fdf6d8'), 'margin': '3%' }}>Volume ({settings().volume})</div>
                     <Form.Range min={0} max={1} step={0.1} value={settings().volume} onChange={(e) => handleVolume(Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                     <br />
-
+                    <div style={font('1em', '#fdf6d8')}>
+                        <h1 style={font('1.25em')}>Targeting</h1>
+                        <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'Manual' : 'Auto'} Aim</button>
+                    </div>
+                    <div style={font('0.5em')}>[Whether You Use the Second Joystick to Aim Ranged Attacks in Combat]</div>
                     <h1 style={font('1.25em')}>Tidbit Popups</h1>
                         <button class='gold highlight' onClick={() => handleTidbits()}>{settings().difficulty.tidbits ? 'On' : 'Off'}</button>
                     <div style={font('0.5em')}>[On = Helpful Hints and Lore Popups, False = No Info Popups]</div>

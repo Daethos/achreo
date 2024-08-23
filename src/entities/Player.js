@@ -104,6 +104,7 @@ export default class Player extends Entity {
             .addState(States.DODGE, { onEnter: this.onDodgeEnter, onUpdate: this.onDodgeUpdate, onExit: this.onDodgeExit })
             .addState(States.POSTURE, { onEnter: this.onPostureEnter, onUpdate: this.onPostureUpdate, onExit: this.onPostureExit })
             .addState(States.ROLL, { onEnter: this.onRollEnter, onUpdate: this.onRollUpdate, onExit: this.onRollExit })
+            .addState(States.THRUST, { onEnter: this.onThrustEnter, onUpdate: this.onThrustUpdate, onExit: this.onThrustExit })
             .addState(States.STUN, { onEnter: this.onStunnedEnter, onUpdate: this.onStunnedUpdate, onExit: this.onStunnedExit })
             .addState(States.ARC, { onEnter: this.onArcEnter, onUpdate: this.onArcUpdate, onExit: this.onArcExit })
             .addState(States.ACHIRE, { onEnter: this.onAchireEnter, onUpdate: this.onAchireUpdate, onExit: this.onAchireExit })
@@ -1017,7 +1018,7 @@ export default class Player extends Entity {
     }; 
 
     onAttackEnter = () => {
-        if (this.isPosturing || this.isParrying) return;
+        if (this.isPosturing || this.isParrying || this.isThrusting) return;
         if (this.isRanged === true && this.inCombat === true) {
             const correct = this.getEnemyDirection(this.currentTarget);
             if (!correct) {
@@ -1042,24 +1043,23 @@ export default class Player extends Entity {
         this.swingReset(States.PARRY, true);
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.PARRY);
         if (this.hasMagic === true) {
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Counter Spell', 750, 'hush');
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Counter Spell', 1000, 'hush');
             this.isCounterSpelling = true;
-            this.flickerCarenic(750); 
-            this.scene.time.delayedCall(750, () => {
+            this.flickerCarenic(1000); 
+            this.scene.time.delayedCall(1000, () => {
                 this.isCounterSpelling = false;
             }, undefined, this);
         };
     };
     onParryUpdate = (_dt) => {
-        if (this.frameCount === FRAME_COUNT.PARRY_LIVE && !this.isRanged) {
-            this.scene.combatMachine.input('action', 'parry');
-        };
+        if (this.frameCount === FRAME_COUNT.PARRY_LIVE && !this.isRanged) this.scene.combatMachine.input('action', 'parry');
+        if (this.frameCount >= FRAME_COUNT.PARRY_KILL) this.isParrying = false;
         this.combatChecker(this.isParrying);
     };
     onParryExit = () => {if (this.scene.state.action === 'parry') this.scene.combatMachine.input('action', '');};
 
     onPostureEnter = () => {
-        if (this.isAttacking || this.isParrying) return;
+        if (this.isAttacking || this.isParrying || this.isThrusting) return;
         if (this.isRanged === true) {
             if (this.isMoving === true) {
                 this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Posture Issue: You are Moving', 1000, 'damage', false, true);
@@ -1145,6 +1145,27 @@ export default class Player extends Entity {
         this.body.parts[1].vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT;
     };
 
+    onThrustEnter = () => {
+        if (this.isAttacking || this.isParrying || this.isPosturing) return;
+        if (this.isRanged === true) {
+            const correct = this.getEnemyDirection(this.currentTarget);
+            if (!correct && this.inCombat === true) {
+                this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Skill Issue: Look at the Enemy!', 1000, 'damage', false, true);
+                return;
+            };
+        };
+        this.isThrusting = true;
+        this.swingReset(States.THRUST, true);
+        this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.THRUST);
+    };
+    onThrustUpdate = (_dt) => {
+        if (this.frameCount === FRAME_COUNT.THRUST_LIVE && !this.isRanged) {
+            this.scene.combatMachine.input('action', 'thrust');
+        };
+        this.combatChecker(this.isThrusting);
+    };
+    onThrustExit = () => {if (this.scene.state.action === 'thrust') this.scene.combatMachine.input('action', '');};
+
     onFlaskEnter = () => {
         this.isHealing = true;
         this.setStatic(true);
@@ -1174,13 +1195,13 @@ export default class Player extends Entity {
     onAchireExit = () => {
         if (this.castingSuccess === true) {
             const anim = this.getWeaponAnim();
-            this.particleEffect =  this.scene.particleManager.addEffect('achire', this, anim, true);
+            this.particleEffect =  this.scene.particleManager.addEffect('achire', this, 'achire', true);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `Your Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0].name}.`
             });
             this.setTimeEvent('achireCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
             this.castingSuccess = false;
-            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+            this.scene.sound.play('wild', { volume: this.scene.settings.volume });
             this.scene.useGrace(PLAYER.STAMINA.ACHIRE);
             screenShake(this.scene, 90);
         };
@@ -1879,17 +1900,15 @@ export default class Player extends Entity {
     };
     onQuorExit = () => {
         if (this.castingSuccess === true) {
-            const anim = this.getWeaponAnim();
-            // TODO: This will become its own graphic
-            this.particleEffect =  this.scene.particleManager.addEffect('quor', this, anim, true);
+            this.particleEffect =  this.scene.particleManager.addEffect('quor', this, 'quor', true);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `Your Achre is imbued with instantiation, its Quor auguring it through the ${this.scene.state.weapons[0].name}.`
             });
             this.setTimeEvent('quorCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
             this.castingSuccess = false;
-            this.scene.sound.play('earth', { volume: this.scene.settings.volume });
+            this.scene.sound.play('freeze', { volume: this.scene.settings.volume });
             this.scene.useGrace(PLAYER.STAMINA.QUOR);    
-            screenShake(this.scene, 200, 0.0075);
+            screenShake(this.scene, 180, 0.006);
         };
         this.castbar.reset();
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); 
@@ -3750,7 +3769,10 @@ export default class Player extends Entity {
                 this.anims.play('player_idle', true);
             };
         } else if (this.isParrying) {
-            this.anims.play('player_attack_2', true).on('animationcomplete', () => this.isParrying = false);
+            sprint(this.scene);
+            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isParrying = false); 
+        } else if (this.isThrusting) {
+            this.anims.play('player_attack_2', true).on('animationcomplete', () => this.isThrusting = false);
         } else if (this.isDodging) { 
             this.anims.play('player_slide', true);
             this.spriteWeapon.setVisible(false);
@@ -3906,7 +3928,7 @@ export default class Player extends Entity {
         if (!this.isConfused && !this.isFeared && !this.isPolymorphed && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && !this.scene.joystickKeys.up.isDown && !this.scene.joystickKeys.down.isDown) {
             this.playerVelocity.y = 0;
         };
-        if (this.isAttacking || this.isParrying || this.isPosturing) speed += 1;
+        if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting) speed += 1;
         if (this.isClimbing) speed *= 0.65;
         if (this.inWater) speed *= 0.75;
         this.playerVelocity.limit(speed);

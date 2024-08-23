@@ -195,7 +195,7 @@ export default function App() {
     };
     async function saveThisSetting(data: any) {
         try {
-            console.log(data, 'Data to Update Settings!');
+            // console.log(data, 'Data to Update Settings!');
             const update = { ...settings(), ...data };
             await saveSettings(update);
         } catch (err) {

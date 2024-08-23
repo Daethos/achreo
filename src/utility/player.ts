@@ -40,6 +40,7 @@ export const PLAYER = {
         PARRY: 15,
         POSTURE: 25,
         ROLL: 15, // 25
+        THRUST: 15,
 
         // Magical
         // Low Cost        

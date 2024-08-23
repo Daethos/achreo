@@ -28,6 +28,7 @@ export default class Enemy extends Entity {
             .addState(States.LEASH, { onEnter: this.onLeashEnter, onUpdate: this.onLeashUpdate, onExit: this.onLeashExit })
             .addState(States.ATTACK, { onEnter: this.onAttackEnter, onUpdate: this.onAttackUpdate, onExit: this.onAttackExit })
             .addState(States.PARRY, { onEnter: this.onParryEnter, onUpdate: this.onParryUpdate, onExit: this.onParryExit })
+            .addState(States.THRUST, { onEnter: this.onThrustEnter, onUpdate: this.onThrustUpdate, onExit: this.onThrustExit })
             .addState(States.DODGE, { onEnter: this.onDodgeEnter, onUpdate: this.onDodgeUpdate, onExit: this.onDodgeExit })
             .addState(States.POSTURE, { onEnter: this.onPostureEnter, onUpdate: this.onPostureUpdate, onExit: this.onPostureExit })
             .addState(States.ROLL, { onEnter: this.onRollEnter, onUpdate: this.onRollUpdate, onExit: this.onRollExit,    }) // ===== Negative States =====
@@ -838,12 +839,27 @@ export default class Enemy extends Entity {
     };
     onParryUpdate = (_dt) => {
         if (this.frameCount === FRAME_COUNT.PARRY_LIVE && !this.isRanged) this.scene.combatMachine.input('computerAction', 'parry', this.enemyID);
+        if (this.frameCount === FRAME_COUNT.PARRY_KILL) this.isParrying = false;
         if (!this.isRanged) this.swingMomentum(this.attacking);
         if (!this.isParrying) this.evaluateCombatDistance();
     };
     onParryExit = () => {
         if (this.scene.state.computerAction !== '') this.scene.combatMachine.input('computerAction', '', this.enemyID);
         if (this.scene.state.computerParryGuess !== '') this.scene.combatMachine.input('computerParryGuess', '', this.enemyID);
+        this.setTint(0xFF0000);
+    };
+
+    onThrustEnter = () => {
+        this.isThrusting = true;
+        this.thrust();
+    };
+    onThrustUpdate = (_dt) => {
+        if (this.frameCount === FRAME_COUNT.THRUST_LIVE && !this.isRanged) this.scene.combatMachine.input('computerAction', 'thrust', this.enemyID);
+        if (!this.isRanged) this.swingMomentum(this.attacking);
+        if (!this.isThrusting) this.evaluateCombatDistance();
+    };
+    onThrustExit = () => {
+        if (this.scene.state.computerAction !== '') this.scene.combatMachine.input('computerAction', '', this.enemyID);
         this.setTint(0xFF0000);
     };
 
@@ -2045,7 +2061,6 @@ export default class Enemy extends Entity {
     onCounterSpelledExit = () => this.setTint(0xFF0000);
 
     onFearEnter = () => { 
-        this.isFeared = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'F̶e̷a̴r̷e̵d̴', DURATION.TEXT, 'damage', false, true);
         this.spriteWeapon.setVisible(false);
         this.spriteShield.setVisible(false);
@@ -2110,7 +2125,6 @@ export default class Enemy extends Entity {
     onFearExit = () => {  
         this.evaluateCombatDistance();
         this.enemyAnimation();
-        // this.anims.play('player_running', true);
         this.spriteWeapon.setVisible(true);
         if (this.fearTimer) {
             this.fearTimer.destroy();
@@ -2544,19 +2558,16 @@ export default class Enemy extends Entity {
             if (!this.stateMachine.isCurrentState(States.COMBAT)) this.stateMachine.setState(States.COMBAT);
             if (distanceY > DISTANCE.RANGED_ALIGNMENT) {
                 this.enemyAnimation();
-                // this.anims.play('player_running', true);
                 direction.normalize();
                 this.setVelocityY(direction.y * this.speed * (this.isClimbing ? 0.65 : 1) + 0.5); // 2 || 4
             };
             if (this.attacking.position.subtract(this.position).length() > DISTANCE.THRESHOLD * multiplier) { // 225-525 
                 this.enemyAnimation();
-                // this.anims.play('player_running', true);
                 direction.normalize();
                 this.setVelocityX(direction.x * this.speed * (this.isClimbing ? 0.65 : 1)); // 2.25
                 this.setVelocityY(direction.y * this.speed * (this.isClimbing ? 0.65 : 1)); // 2.25          
             } else if (this.attacking.position.subtract(this.position).length() < DISTANCE.THRESHOLD && !this.attacking.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
                 this.enemyAnimation();
-                // this.anims.play('player_running', true);
                 direction.normalize();
                 this.setVelocityX(direction.x * -this.speed * (this.isClimbing ? 0.65 : 1)); // -2.25 | -2 | -1.75
                 this.setVelocityY(direction.y * -this.speed * (this.isClimbing ? 0.65 : 1)); // -1.5 | -1.25
@@ -2571,7 +2582,6 @@ export default class Enemy extends Entity {
             if (!this.stateMachine.isCurrentState(States.COMBAT)) this.stateMachine.setState(States.COMBAT);
             if (direction.length() > DISTANCE.ATTACK) { 
                 this.enemyAnimation();
-                // this.anims.play('player_running', true);
                 direction.normalize();
                 this.setVelocityX(direction.x * this.speed * (this.isClimbing ? 0.65 : 1)); // 2.5
                 this.setVelocityY(direction.y * this.speed * (this.isClimbing ? 0.65 : 1)); // 2.5
@@ -2777,15 +2787,16 @@ export default class Enemy extends Entity {
         let computerAction;
         let actionNumber = Math.floor(Math.random() * 101);
         const computerActions = {
-            attack: 40 + this.scene.state.attackWeight,
+            attack: 50 + this.scene.state.attackWeight,
             parry: 10 + this.scene.state.parryWeight,
-            dodge: 10 + this.scene.state.dodgeWeight,
-            posture: 20 + this.scene.state.postureWeight,
-            roll: 20 + this.scene.state.rollWeight,
-            parryAttack: 25 + this.scene.state.parryAttackWeight,
-            parryParry: 25 + this.scene.state.parryParryWeight,
-            parryPosture: 25 + this.scene.state.parryPostureWeight,
-            parryRoll: 25 + this.scene.state.parryRollWeight,
+            thrust: 10 + this.scene.state.thrustWeight,
+            posture: 15 + this.scene.state.postureWeight,
+            roll: 15 + this.scene.state.rollWeight,
+            parryAttack: 20 + this.scene.state.parryAttackWeight,
+            parryParry: 20 + this.scene.state.parryParryWeight,
+            parryPosture: 20 + this.scene.state.parryPostureWeight,
+            parryRoll: 20 + this.scene.state.parryRollWeight,
+            parryThrust: 20 + this.scene.state.parryThrustWeight,
             rollRating: this.currentWeapon ? this.currentWeapon.roll : this.ascean.weaponOne.roll,
             armorRating: (this.combatStats.defense.physicalPosture + this.combatStats.defense.magicalPosture)  /  4,
         };
@@ -2798,7 +2809,7 @@ export default class Enemy extends Entity {
         } else if (actionNumber > (100 - computerActions.attack - computerActions.parry - computerActions.posture - computerActions.roll)) {
             computerAction = 'roll';
         } else {
-            computerAction = 'dodge';
+            computerAction = 'thrust';
         };
         return computerAction;
     };

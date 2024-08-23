@@ -804,26 +804,26 @@ function computerActionCompiler(combat: Combat, playerAction: string): Combat {
         combat.sessionRound = 0;
         combat.attackWeight = 0;
         combat.parryWeight = 0;
-        combat.dodgeWeight = 0;
         combat.postureWeight = 0;
         combat.rollWeight = 0;
+        combat.thrustWeight = 0;
         combat.parryAttackWeight = 0;
         combat.parryParryWeight = 0;
-        combat.parryDodgeWeight = 0;
         combat.parryPostureWeight = 0;
         combat.parryRollWeight = 0;
+        combat.parryThrustWeight = 0;
     };
     const computerActions = {
         attack: 50 + combat.attackWeight,
         parry: 10 + combat.parryWeight,
-        dodge: 10 + combat.dodgeWeight,
         posture: 15 + combat.postureWeight,
         roll: 15 + combat.rollWeight,
+        thrust: 10 + combat.thrustWeight,
         parryAttack: 20 + combat.parryAttackWeight,
         parryParry: 20 + combat.parryParryWeight,
-        parryDodge: 20 + combat.parryDodgeWeight,
         parryPosture: 20 + combat.parryPostureWeight,
         parryRoll: 20 + combat.parryRollWeight,
+        parryThrust: 20 + combat.parryThrustWeight,
         rollRating: combat.computerWeapons[0].roll,
         armorRating: (combat?.computerDefense?.physicalPosture  as number) + (combat?.computerDefense?.magicalPosture  as number)  /  4,
     };
@@ -836,53 +836,43 @@ function computerActionCompiler(combat: Combat, playerAction: string): Combat {
             combat.postureWeight += 1.5;
             combat.rollWeight += 0.5;
         };
-        // combat.rollWeight += 1;
-        // combat.postureWeight += 1;
         combat.parryWeight += 1;
-        combat.attackWeight -= 3;
-        combat.parryAttackWeight += 4;
+        combat.thrustWeight -= 1;
+        combat.parryAttackWeight += 2;
+        combat.parryThrustWeight += 1;
         combat.parryParryWeight -= 1;
-        combat.parryDodgeWeight -= 1;
         combat.parryPostureWeight -= 1;
         combat.parryRollWeight -= 1;
     };
     if (playerAction === ACTION_TYPES.PARRY) { 
-        combat.parryWeight += 3;
-        // combat.dodgeWeight += 2;
-        combat.attackWeight -= 1;
-        combat.postureWeight -= 1;
-        combat.rollWeight -= 1;
+        combat.parryWeight -= 2;
+        combat.attackWeight += 2;
         combat.parryParryWeight += 2;
         combat.parryAttackWeight -= 1;
-        combat.parryDodgeWeight -= 1;
-    };
-    if (playerAction === 'dodge') { 
-        // combat.parryWeight += 2;
-        // combat.dodgeWeight -= 2;
-        combat.parryDodgeWeight += 4;
-        combat.parryAttackWeight -= 1;
-        combat.parryParryWeight -= 1;
-        combat.parryPostureWeight -= 1;
-        combat.parryRollWeight -= 1;
     };
     if (playerAction === ACTION_TYPES.POSTURE) { 
-        combat.attackWeight += 2;  
-        combat.postureWeight -= 3;
+        combat.rollWeight -= 1;
         combat.parryWeight += 1;
-        combat.parryPostureWeight += 3;
-        combat.parryRollWeight -= 2;
-        combat.parryAttackWeight -= 1;
+        combat.parryPostureWeight += 1;
+        combat.parryRollWeight -= 1;
     };
 
     if (playerAction === ACTION_TYPES.ROLL) { 
-        combat.attackWeight += 2;  
-        combat.rollWeight -= 3;
+        combat.postureWeight -= 1;
         combat.parryWeight += 1;
         combat.parryRollWeight += 3;
         combat.parryPostureWeight -= 2;
         combat.parryAttackWeight -= 1;
     };
 
+    if (playerAction === ACTION_TYPES.THRUST) { 
+        combat.attackWeight -= 1;
+        combat.parryWeight += 1;
+        combat.parryThrustWeight += 3;
+        combat.parryPostureWeight -= 1;
+        combat.parryAttackWeight -= 1;
+        combat.parryRollWeight -= 1;
+    };
     return combat;
 };
 
@@ -1120,6 +1110,12 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
             computerPhysicalDamage *= DAMAGE.NEG_HIGH;
             computerMagicalDamage *= DAMAGE.NEG_HIGH;
         };
+    };
+
+    
+    if (computerAction === ACTION_TYPES.THRUST ) {
+        computerPhysicalDamage *= DAMAGE.NEG_LOW;
+        computerMagicalDamage *= DAMAGE.NEG_LOW;
     };
 
     const criticalClearance = Math.floor(Math.random() * 101);
@@ -1518,6 +1514,10 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
             playerPhysicalDamage *= DAMAGE.NEG_HIGH;
             playerMagicalDamage *= DAMAGE.NEG_HIGH;
         };
+    };
+    if (playerAction === ACTION_TYPES.THRUST ) {
+        playerPhysicalDamage *= DAMAGE.NEG_LOW;
+        playerMagicalDamage *= DAMAGE.NEG_LOW;
     };
     const criticalClearance = Math.floor(Math.random() * 10100) / 100;
     let criticalChance = combat.weapons[0]?.criticalChance as number;
@@ -1965,11 +1965,13 @@ function newDataCompiler(combat: Combat): any {
         dodgeWeight: combat.dodgeWeight,
         postureWeight: combat.postureWeight,
         rollWeight: combat.rollWeight,
+        thrustWeight: combat.thrustWeight,
         parryAttackWeight: combat.parryAttackWeight,
         parryParryWeight: combat.parryParryWeight,
         parryDodgeWeight: combat.parryDodgeWeight,
         parryPostureWeight: combat.parryPostureWeight,
         parryRollWeight: combat.parryRollWeight,
+        parryThrustWeight: combat.parryThrustWeight,
         religiousSuccess: false,
         computerReligiousSuccess: false,
         dualWielding: false,

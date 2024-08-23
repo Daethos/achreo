@@ -327,3 +327,14 @@ export const initStatistics: Statistics = {
         }
     },
 };
+
+export const createStatistics = (mastery: string): Statistics => {
+    const newStatistics = {
+        ...initStatistics,
+        mastery: {
+            ...initStatistics.mastery,
+            [mastery]: 1 
+        }
+    };
+    return newStatistics;
+};

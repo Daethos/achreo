@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
-export const PARTICLES = ['arrow', 'earth',  'fire',  'frost',  'lightning', 'righteous', 'sorcery', 'spooky', 'wild', 'wind'];
-const TIME = { quor: 2500, achire: 1500, attack: 1250, parry: 1000, posture: 1500, roll: 1250, special: 1500 };
-const VELOCITY = { quor: 4, achire: 5.5, attack: 4.5, parry: 6.5, posture: 3.5, roll: 3.5, special: 5 }; // 7.5 || 9 || 6 || 6
+export const PARTICLES = ['achire', 'arrow', 'earth',  'fire',  'frost',  'lightning', 'righteous', 'quor', 'sorcery', 'spooky', 'wild', 'wind'];
+const TIME = { quor: 2500, achire: 1500, attack: 1250, thrust: 900, posture: 1500, roll: 1250, special: 1500 };
+const VELOCITY = { quor: 4, achire: 5.5, attack: 4.5, thrust: 6.5, posture: 3.5, roll: 3.5, special: 5 }; // 7.5 || 9 || 6 || 6
 
 function angleTarget(x, y) {
     if (x > 0) {
@@ -14,6 +14,7 @@ function angleTarget(x, y) {
 class Particle {
     constructor(scene, action, key, player, special) {
         const particle = PARTICLES.includes(key);
+        console.log(`Is the key: ${key} a particle? ${particle}`);
         const id = uuidv4();
         this.scene = scene;
         this.id = id;
@@ -69,7 +70,7 @@ class Particle {
                         this.scene.combatMachine.action({ type: 'Player', data: { 
                             playerAction: { 
                                 action: this.action, 
-                                parry: this.scene.state.parryGuess 
+                                thrust: this.scene.state.parryGuess 
                             },  
                             enemyID: player.attackedTarget.enemyID, 
                             ascean: player.attackedTarget.ascean, 
@@ -79,7 +80,7 @@ class Particle {
                             health: player.attackedTarget.health, 
                             actionData: { 
                                 action: player.attackedTarget.currentAction, 
-                                parry: player.attackedTarget.parryAction 
+                                thrust: player.attackedTarget.parryAction 
                             },
                         }});
                     };
@@ -130,7 +131,7 @@ class Particle {
     };
 
     spriteMaker(scene, player, key, particle, special) {
-        return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key).setScale(particle === true && special === false ? 0.4 : this.action === 'achire' ? 0.75 : 1.15).setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
+        return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key).setScale(particle === true && special === false ? 0.4 : this.action === 'achire' ? 0.75 : 0.75).setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
     };
 };
 
@@ -156,6 +157,10 @@ export default class ParticleManager extends Phaser.Scene {
         scene.load.animation('righteous_anim', '../assets/gui/righteous_anim.json');
         scene.load.atlas('spooky_effect', '../assets/gui/spooky_effect.png', '../assets/gui/spooky_json.json');
         scene.load.animation('spooky_anim', '../assets/gui/spooky_anim.json');
+        scene.load.atlas('achire_effect', '../assets/gui/achire_effect.png', '../assets/gui/achire_atlas.json');
+        scene.load.animation('achire_anim', '../assets/gui/achire_anim.json');
+        scene.load.atlas('quor_effect', '../assets/gui/quor_effect.png', '../assets/gui/quor_atlas.json');
+        scene.load.animation('quor_anim', '../assets/gui/quor_anim.json');
     };
 
     constructor(scene) {

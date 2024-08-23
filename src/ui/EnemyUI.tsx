@@ -119,12 +119,12 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
     return (
         <div class='enemyCombatUi'>
             <div class='enemyName' style={{ 'z-index': 1, 'font-size': size(state().computer?.name.length as number) }} onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
-            <div class='center enemyHealthBar' onClick={changeDisplay}>
+            <div class='center enemyHealthBar' onClick={changeDisplay} style={{ 'max-height': '24px' }}>
                 <div class='enemyPortrait' style={{ 'font-size': '1em', color: '#fdf6d8' }}>{healthDisplay()}</div>
                 <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `100%`, 'background-color': '#FF0000' }}></div>
                 <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `${healthPercentage()}%`, 'background': 'linear-gradient(#00AA00, green)' }}></div>
             </div>
-            <img id='enemyHealthbarBorder' src={'../assets/gui/enemy-healthbar.png'} alt="Health Bar" style={{ 'z-index': -1 }} />
+            <img id='enemyHealthbarBorder' src={'../assets/gui/enemy-healthbar.png'} alt="Health Bar" style={{ 'z-index': -1, 'max-height': '74px' }} />
             <div class='enemyUiWeapon' onClick={() => setItemShow(!itemShow())} style={itemStyle(state()?.computerWeapons?.[0]?.rarity as string)}>
                 <img src={state().computerWeapons?.[0]?.imgUrl} alt={state().computerWeapons?.[0]?.name} />
             </div>

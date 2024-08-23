@@ -8,6 +8,7 @@ export const ATTACKS = {
     quor: 'quorse into',
     leap: 'leap onto',
     rush: 'rush through',
+    thrust: 'thrust attack',
     writhe: 'writhe into',
 };
 export const ACTION_TYPES = {
@@ -21,6 +22,7 @@ export const ACTION_TYPES = {
     PARRY: "parry",
     RUSH: "rush",
     STORM: "storm",
+    THRUST: "thrust",
     WRITHE: "writhe",
 };
 export const ATTACK_TYPES = { MAGIC: "Magic", PHYSICAL: "Physical" };
@@ -85,6 +87,7 @@ export const ENEMY_ATTACKS = {
     parry: 'parries',
     leap: 'leaps onto',
     rush: 'rushes through',
+    thrust: 'thrust attacks',
     writhe: 'writhes into',
 };
 export const MASTERY = {

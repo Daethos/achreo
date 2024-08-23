@@ -1,7 +1,13 @@
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { Reputation } from "./player";
-
+const QUESTING = {
+    PLAYER_THRESHOLD_ONE: 4,
+    PLAYER_THRESHOLD_TWO: 8,
+    EXPERIENCE_MULTIPLIER: 500,
+    SILVER_ADDED: 25,
+    SILVER_MULTIPLIER: 10,
+};
 export default class Quest {
     public _id: string;
     public title: string;
@@ -18,7 +24,7 @@ export default class Quest {
     public reward: {
         currency: { silver: number, gold: number },
         experience: number,
-        items: Equipment[] | string[] | null
+        items: Equipment[] | string[] | undefined
     };
 
 
@@ -34,13 +40,13 @@ export default class Quest {
 
     private getCurrency(level: number) {
         let currency = { silver: 0, gold: 0 };
-        currency.silver = Math.floor(Math.random() * (level * 10) + 25);
+        currency.silver = Math.round(Math.random() * (level * QUESTING.SILVER_MULTIPLIER) + QUESTING.SILVER_ADDED);
         if (currency.silver > 100) {
-            currency.gold = Math.floor(currency.silver / 100);
+            currency.gold += Math.floor(currency.silver / 100);
             currency.silver = currency.silver % 100;
         };
-        if (level > 8) {
-            currency.gold += Math.floor(Math.random() * (level - 6) + 1);
+        if (level >= QUESTING.PLAYER_THRESHOLD_ONE) {
+            currency.gold += Math.round(Math.random() * (level - QUESTING.PLAYER_THRESHOLD_ONE) + 1);
         };
         return currency;
     };
@@ -56,17 +62,16 @@ export default class Quest {
     };
 
     private getExperience(level: number) {
-        return level * 1000;
+        return level * QUESTING.EXPERIENCE_MULTIPLIER;
     };
 
     private getItems(level: number) {
         const choices = ['Weapon', 'Armor', 'Jewelry', 'Shield'];
         const items = [];
         items.push(choices[Math.floor(Math.random() * choices.length)]);
-        if (level > 5) {
+        if (level >= QUESTING.PLAYER_THRESHOLD_ONE) {
             items.push(choices[Math.floor(Math.random() * choices.length)]);
-        };
-        if (level > 10) {
+        } else if (level >= QUESTING.PLAYER_THRESHOLD_TWO) {
             items.push(choices[Math.floor(Math.random() * choices.length)]);
         };
         return items;
@@ -118,6 +123,14 @@ export const QUEST_TEMPLATES = [
             description: `Discover the Blood Moon Prophecy.`,
         },
     }, {
+        name: ["Ma'ier Occultist", "Old Li'ivi Occultist", "Eugenes", "Garris Ashenus"],
+        title: "Blessed Hunt",
+        description: "Come frolicking with the Ma'ier in the merriment of the night to their mooon mother.",
+        requirements: {
+            completed: ["Mist of the Moon"],
+            description: `Participate in a Blessed Hunt with the Ma'ier.`,
+        },
+    }, {
         name: ["Ilire Occultist", "Old Li'ivi Occultist"],
         title: "Sheath of the Sun",
         description: "Ingratiate yourself with the Ilire and gain their trust to understand the Black Sun Prophecy",
@@ -125,18 +138,49 @@ export const QUEST_TEMPLATES = [
             description: `Discover the Black Sun Prophecy.`,
         },
     }, {
-        name: ["Achreon Druid", "Cambiren Druid"],
-        title: "The Draochre",
-        description: "Ingratiate yourself with the Druids and gain their trust to understand the Wild",
+        name: ["Ilire Occultist", "Old Li'ivi Occultist"],
+        title: "Blinding Hunt",
+        description: "Steel yourself into the savage tshaering of the Ilire.",
         requirements: {
-            description: `Discover the ritual of the Draochre and their adherence to the Wild.`,
+            completed: ["Mist of the Moon"],
+            description: `Participate in a Blind Hunt with the Ilire.`,
         },
     }, {
-        name: ["Tshaeral Shaman", "Kyn'gian Shaman", "Dorien Caderyn", "Mirio"],
+        name: ["Achreon Druid", "Cambiren Druid", "Leaf", "Vincere", "Jadei Myelle", "Dorien Caderyn"],
+        title: "The Caerchre",
+        description: "Ingratiate yourself with the Caerchre, a loose collection of occult worshipers in the Northren provinces, and gain their trust to understand the Wild",
+        requirements: {
+            description: `Discover and ingratiate yourself to the Caerchre and their adherence to the Wild.`,
+        },
+    }, {
+        name: ["Achreon Druid", "Cambiren Druid"],
+        title: "Caerchre Writhing",
+        description: "Find the way one can become more; adhere their caer to the bond of wild nature, and instantiate.",
+        requirements: {
+            completed: ["The Caerchre"],
+            description: `Discover the ritual of the Caerchre and initiate.`,
+        },
+    }, {
+        name: ["Tshaeral Shaman", "Kyn'gian Shaman", "Dorien Caderyn", "Mirio", "Rahvrecur", "Old Li'ivi Occultist", "Fierous Ashfyre"],
         title: "The Land of Hush and Tendril",
         description: "Peer into this. Spoken as though not of this world, yet all the same it wraps. Do you wish this?",
         requirements: {
             description: `Discover a way to enter the Land of Hush and Tendril.`,
+        },
+    }, {
+        name: ["Tshaeral Shaman", "Kyn'gian Shaman", "Dorien Caderyn", "Mirio", "Rahvrecur", "Old Li'ivi Occultist", "Fierous Ashfyre"],
+        title: "Shatter",
+        description: "Are you ready to relax yourself, and give into the yearning other?",
+        requirements: {
+            description: `Enter the Land of Hush and Tendril, and experience your wild caer.`,
+        },
+    }, {
+        
+        name: ["Tshaeral Shaman", "Kyn'gian Shaman", "Dorien Caderyn", "Mirio", "Rahvrecur", "Old Li'ivi Occultist", "Fierous Ashfyre"],
+        title: "Sleep",
+        description: "Take the poultice and drink deeply, allow us to entwine our minds and step into the otherland.",
+        requirements: {
+            description: `Experience the otherland in your slumber.`,
         },
     }, {
         name: ["Fyers Occultist", "Firesworn", "Torreous Ashfyre", "Fierous Ashfyre"],
@@ -146,9 +190,9 @@ export const QUEST_TEMPLATES = [
             description: `Discover the ritual of the Phoenix.`,
         },
     }, {
-        name: ["Ahn'are Apostle", "Synaethis Spiras", "Kreceus"],
+        name: ["Ahn'are Apostle", "Synaethis Spiras", "Kreceus", "Ah'gani Descaer"],
         title: "The Ahn'are",
-        description: "Learn more about the Ahn'are and their origin of flight",
+        description: "Learn more about the Ahn'are, the soaring angels of Ahn've, and their origin of flight",
         requirements: {
             description: `Discover the ritual Ahn'are ascension.`,
         },
@@ -160,14 +204,21 @@ export const QUEST_TEMPLATES = [
             description: `Become Devoted to Daethos.`,
         },
     }, {
-        name: ["Anashtre", "Ahn'are Apostle", "Astral Apostle", "Kreceus"],
+        name: ["Anashtre", "Ahn'are Apostle", "Astral Apostle", "Kreceus", "Ah'gani Descaer"],
         title: "Anashtre Ascension",
         description: "Seek information about the Anashtre and the ritual of the past to form the lightning wing of Astra",
         requirements: {
             description: `Discover the ritual to ascend to an Anashtre.`,
         },
     }, {
-        name: ["Old Li'ivi Occultist", "Chiomic Jester", "Shrygeian Bard"],
+        name: ["Anashtre", "Ahn'are Apostle", "Astral Apostle", "Kreceus", "Ah'gani Descaer"],
+        title: "Astrification",
+        description: "Seek information about Astrification and the ritual of the past to form the lightning spear of Astra",
+        requirements: {
+            description: `Discover the ritual of Astrification.`,
+        },
+    }, {
+        name: ["Old Li'ivi Occultist", "Chiomic Jester", "Shrygeian Bard", "Tshios Ash'air"],
         title: "Curse of the Ky'myr",
         description: "Track down the mystery behind the Ky'myr and its curse of ceaselessness.",
         requirements: {

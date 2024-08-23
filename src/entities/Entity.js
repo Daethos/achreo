@@ -1,12 +1,15 @@
 export const FRAME_COUNT = {
     ATTACK_LIVE: 16,
     ATTACK_SUCCESS: 39,
-    PARRY_LIVE: 5, 
-    PARRY_SUCCESS: 10,
+    PARRY_LIVE: 12, 
+    PARRY_SUCCESS: 22,
+    PARRY_KILL: 35,
     POSTURE_LIVE: 16, // 11 for frameRate: 12
     POSTURE_SUCCESS: 17, // 11 for frameRate: 12
     ROLL_LIVE: 10,
     ROLL_SUCCESS: 20,
+    THRUST_LIVE: 5, 
+    THRUST_SUCCESS: 10,
     DISTANCE_CLEAR: 51,
 }; 
 const GLOW_INTENSITY = 0.25;
@@ -318,7 +321,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         }); 
     };
     parry = () => { 
-        this.anims.play('player_attack_2', true).on('animationcomplete', () => { 
+        this.anims.play('player_attack_1', true).on('animationcomplete', () => { 
             this.isParrying = false; 
             this.currentAction = '';
         });
@@ -329,6 +332,12 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.currentAction = '';
         }); 
     }; 
+    thrust = () => { 
+        this.anims.play('player_attack_2', true).on('animationcomplete', () => { 
+            this.isThrusting = false; 
+            this.currentAction = '';
+        });
+    };
     hurt = () => {
         this.clearAnimations();
         this.clearTint();
@@ -475,6 +484,168 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
             this.frameCount += 1;
         } else if (this.isParrying) { 
+            if (this.frameCount === FRAME_COUNT.PARRY_SUCCESS) {
+                if (this.isRanged === false) this.checkActionSuccess(entity, target);
+            };
+            if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
+            if ((entity === 'player' && this.hasBow) || (entity === 'enemy' && this.hasBow)) {
+                this.spriteWeapon.setDepth(this.depth + 1);
+                if (this.flipX) {
+                    if (this.frameCount === 0) { 
+                        this.spriteWeapon.setOrigin(0.15, 0.85);
+                        this.spriteWeapon.setAngle(90);
+                    };
+                    if (this.frameCount === 4) {
+                        this.spriteWeapon.setAngle(72.5);
+                    };
+                    if (this.frameCount === 12) {
+                        this.spriteWeapon.setAngle(90);
+                    };
+                    if (this.frameCount === 13) {
+                        this.spriteWeapon.setAngle(130);
+                    };
+                    if (this.frameCount === 14) {
+                        this.spriteWeapon.setAngle(170);
+                    };
+                    if (this.frameCount === 15) {
+                        this.spriteWeapon.setAngle(210);
+                    };
+                    if (this.frameCount === 16) {
+                        this.spriteWeapon.setAngle(250);
+                    };
+                    if (this.frameCount === 18) {
+                        this.spriteWeapon.setOrigin(0.5, 0.5);
+                        this.spriteWeapon.setAngle(340);
+                    };
+                    if (this.frameCount === 20) {
+                        this.spriteWeapon.setAngle(290);
+                    };
+                    if (this.frameCount === 22) {
+                        this.spriteWeapon.setOrigin(0.25, 0.5);
+                        this.spriteWeapon.setAngle(250);
+                    };
+                } else { 
+                    if (this.frameCount === 0) { 
+                        this.spriteWeapon.setOrigin(0.85, 0.1);
+                        this.spriteWeapon.setAngle(0);
+                    }
+                    if (this.frameCount === 4) {
+                        this.spriteWeapon.setAngle(17.5);
+                    };
+                    if (this.frameCount === 12) {
+                        this.spriteWeapon.setAngle(0);
+                    };
+                    if (this.frameCount === 13) {
+                        this.spriteWeapon.setAngle(-30);
+                    };
+                    if (this.frameCount === 14) {
+                        this.spriteWeapon.setAngle(-60);
+                    };
+                    if (this.frameCount === 15) {
+                        this.spriteWeapon.setAngle(-90);
+                    };
+                    if (this.frameCount === 16) {
+                        this.spriteWeapon.setAngle(-120);
+                    };
+                    if (this.frameCount === 18) {
+                        this.spriteWeapon.setOrigin(0, 0.5);
+                        this.spriteWeapon.setAngle(-75);
+                    };
+                    if (this.frameCount === 20) {
+                        this.spriteWeapon.setAngle(-10);
+                    };
+                    if (this.frameCount === 22) {
+                        this.spriteWeapon.setOrigin(0.25, 0.5);
+                        this.spriteWeapon.setAngle(-125);
+                    };
+                }; 
+            } else {
+                if (this.flipX) {
+                    if (this.frameCount === 0) { 
+                        this.spriteWeapon.setOrigin(-0.25, 1.2);
+                        this.spriteWeapon.setAngle(-250);
+                        if (entity === 'enemy') this.setTint(0x00FF00);
+                    };
+                    if (this.frameCount === 4) {
+                        this.spriteWeapon.setAngle(-267.5);
+                    };
+                    if (this.frameCount === 12) {
+                        this.spriteWeapon.setAngle(-250);
+                    };
+                    if (this.frameCount === 13) {
+                        this.spriteWeapon.setAngle(-210);
+                    };
+                    if (this.frameCount === 14) {
+                        this.spriteWeapon.setAngle(-170);
+                    };
+                    if (this.frameCount === 15) {
+                        this.spriteWeapon.setAngle(-130);
+                    };
+                    if (this.frameCount === 16) {
+                        this.spriteWeapon.setAngle(-90);
+                    };
+                    if (this.frameCount === 18) {
+                        this.spriteWeapon.setOrigin(0.5, 0.75);
+                        this.spriteWeapon.setAngle(0);
+                    };
+                    if (this.frameCount === 20) {
+                        this.spriteWeapon.setAngle(30);
+                    };
+                    if (this.frameCount === 22) {
+                        this.spriteWeapon.setOrigin(0.25, 1.1);
+                        this.spriteWeapon.setAngle(55);
+                        if (this.isRanged === false) this.checkActionSuccess(entity, target);
+                    };
+                } else { 
+                    if (this.frameCount === 0) { 
+                        this.spriteWeapon.setOrigin(-0.15, 1.25);
+                        this.spriteWeapon.setAngle(-185);
+                        if (entity === 'enemy') this.setTint(0x00FF00);
+                    };
+                    if (this.frameCount === 4) {
+                        this.spriteWeapon.setAngle(-182.5);
+                    };
+                    if (this.frameCount === 12) {
+                        this.spriteWeapon.setAngle(150);
+                    };
+                    if (this.frameCount === 13) {
+                        this.spriteWeapon.setAngle(120);
+                    };
+                    if (this.frameCount === 14) {
+                        this.spriteWeapon.setAngle(90);
+                    };
+                    if (this.frameCount === 15) {
+                        this.spriteWeapon.setAngle(60);
+                    };
+                    if (this.frameCount === 16) {
+                        this.spriteWeapon.setAngle(30);
+                    };
+                    if (this.frameCount === 18) {
+                        this.spriteWeapon.setOrigin(-0.25, 0.75);
+                        this.spriteWeapon.setAngle(-75);
+                    };
+                    if (this.frameCount === 20) {
+                        this.spriteWeapon.setAngle(-90);
+                    };
+                    if (this.frameCount === 22) {
+                        this.spriteWeapon.setOrigin(0, 0.5);
+                        this.spriteWeapon.setAngle(-150);
+                        if (this.isRanged === false) this.checkActionSuccess(entity, target);
+                    };
+                };
+            };
+            this.frameCount += 1;
+        } else if (this.isThrusting) { 
+            if (this.frameCount === FRAME_COUNT.THRUST_LIVE) {
+                if (entity === 'player' && this.isRanged) { // && this.inCombat
+                    if (this.hasMagic) this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.currentDamageType);
+                    if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('thrust', this, 'arrow');
+                };
+                if (entity === 'enemy' && this.attacking && this.inCombat && this.isRanged) {
+                    if (this.hasMagic && this.attacking) this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.currentDamageType);
+                    if (this.hasBow && this.attacking) this.particleEffect = this.scene.particleManager.addEffect('thrust', this, 'arrow');
+                };
+            }; 
             if ((entity === 'player' && this.hasBow) || (entity === 'enemy' && this.hasBow)) {
                 if (this.flipX) {
                     this.spriteWeapon.setOrigin(0.1, 0.2);
@@ -493,7 +664,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 }; 
             };
             if (entity === 'enemy' && this.frameCount === 0) this.setTint(0x00FF00);
-            if (this.frameCount === FRAME_COUNT.PARRY_SUCCESS) {
+            if (this.frameCount === FRAME_COUNT.THRUST_SUCCESS) {
                 if (this.isRanged === false) this.checkActionSuccess(entity, target);
             };
             this.frameCount += 1; 

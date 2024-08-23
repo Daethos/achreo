@@ -132,10 +132,14 @@ export class Game extends Scene {
         map.createLayer('Tile Layer - Campfire', campfire as Tilemaps.Tileset, 0, 0);
         let lights = map.createLayer('Tile Layer - Lights', light as Tilemaps.Tileset, 0, 0);
         lights?.setDepth(5);
-        [layer0, layer1, layerC, layer2, layer3, layer4, layer5, layer6].forEach((layer, index) => { // castle_bottom, castle_top, 
+        [layer0, layer1, layerC, layer4, layer5, layer6].forEach((layer, index) => { // castle_bottom, castle_top, 
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
             if (index < 3) return;
+            layer?.setDepth(5);
+        });
+        [layer2, layer3].forEach((layer) => { // castle_bottom, castle_top, 
+            this.matter.world.convertTilemapLayer(layer!);
             layer?.setDepth(3);
         });
         // castle_decor?.setDepth(3);

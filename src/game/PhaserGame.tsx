@@ -916,7 +916,9 @@ export default function PhaserGame (props: IProps) {
                 smallHud: (!game().showPlayer || game().scrollEnabled || game().showDialog || game().showCombat) 
             });
         });
-        EventBus.on('toggle-pause', (e: boolean) => setGame({ ...game(), pauseState: e, smallHud: e }));
+        EventBus.on('toggle-pause', (e: boolean) => setGame({ ...game(), pauseState: e, 
+            smallHud: e 
+        }));
         EventBus.on('blend-combat', (e: any) => setCombat({ ...combat(), ...e }));
         EventBus.on('blend-game', (e: any) => setGame({ ...game(), ...e }));
         EventBus.on('update-combat-player', (e: any) => {
@@ -989,7 +991,7 @@ export default function PhaserGame (props: IProps) {
             setGame({ 
                 ...game(), 
                 scrollEnabled: !game().scrollEnabled, 
-                smallHud: (!game().scrollEnabled || game().showPlayer || game().showDialog) 
+                smallHud: (!game().scrollEnabled || game().showPlayer || game().showDialog || game().showCombat) 
             });
         }); 
         EventBus.on('create-prayer', (e: any) => setCombat({ ...combat(), playerEffects: combat().playerEffects.length > 0 ? [...combat().playerEffects, e] : [e] }));

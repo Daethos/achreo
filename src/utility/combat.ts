@@ -799,82 +799,82 @@ function faithCompiler(combat: Combat): Combat { // The influence will add a cha
 };
 
 // ================================= COMPUTER COMPILER FUNCTIONS ================================== \\
-function computerActionCompiler(combat: Combat, playerAction: string): Combat {
-    if (combat.sessionRound > 50) {
-        combat.sessionRound = 0;
-        combat.attackWeight = 0;
-        combat.parryWeight = 0;
-        combat.postureWeight = 0;
-        combat.rollWeight = 0;
-        combat.thrustWeight = 0;
-        combat.parryAttackWeight = 0;
-        combat.parryParryWeight = 0;
-        combat.parryPostureWeight = 0;
-        combat.parryRollWeight = 0;
-        combat.parryThrustWeight = 0;
-    };
-    const computerActions = {
-        attack: 50 + combat.attackWeight,
-        parry: 10 + combat.parryWeight,
-        posture: 15 + combat.postureWeight,
-        roll: 15 + combat.rollWeight,
-        thrust: 10 + combat.thrustWeight,
-        parryAttack: 20 + combat.parryAttackWeight,
-        parryParry: 20 + combat.parryParryWeight,
-        parryPosture: 20 + combat.parryPostureWeight,
-        parryRoll: 20 + combat.parryRollWeight,
-        parryThrust: 20 + combat.parryThrustWeight,
-        rollRating: combat.computerWeapons[0].roll,
-        armorRating: (combat?.computerDefense?.physicalPosture  as number) + (combat?.computerDefense?.magicalPosture  as number)  /  4,
-    };
+// function computerActionCompiler(combat: Combat, playerAction: string): Combat {
+//     if (combat.sessionRound > 50) {
+//         combat.sessionRound = 0;
+//         combat.attackWeight = 0;
+//         combat.parryWeight = 0;
+//         combat.postureWeight = 0;
+//         combat.rollWeight = 0;
+//         combat.thrustWeight = 0;
+//         combat.parryAttackWeight = 0;
+//         combat.parryParryWeight = 0;
+//         combat.parryPostureWeight = 0;
+//         combat.parryRollWeight = 0;
+//         combat.parryThrustWeight = 0;
+//     };
+//     const computerActions = {
+//         attack: 50 + combat.attackWeight,
+//         parry: 10 + combat.parryWeight,
+//         posture: 15 + combat.postureWeight,
+//         roll: 15 + combat.rollWeight,
+//         thrust: 10 + combat.thrustWeight,
+//         parryAttack: 20 + combat.parryAttackWeight,
+//         parryParry: 20 + combat.parryParryWeight,
+//         parryPosture: 20 + combat.parryPostureWeight,
+//         parryRoll: 20 + combat.parryRollWeight,
+//         parryThrust: 20 + combat.parryThrustWeight,
+//         rollRating: combat.computerWeapons[0].roll,
+//         armorRating: (combat?.computerDefense?.physicalPosture  as number) + (combat?.computerDefense?.magicalPosture  as number)  /  4,
+//     };
 
-    if (playerAction === ACTION_TYPES.ATTACK) { 
-        if (computerActions.rollRating > computerActions.armorRating) {
-            combat.rollWeight += 1.5;
-            combat.postureWeight += 0.5;
-        } else {
-            combat.postureWeight += 1.5;
-            combat.rollWeight += 0.5;
-        };
-        combat.parryWeight += 1;
-        combat.thrustWeight -= 1;
-        combat.parryAttackWeight += 2;
-        combat.parryThrustWeight += 1;
-        combat.parryParryWeight -= 1;
-        combat.parryPostureWeight -= 1;
-        combat.parryRollWeight -= 1;
-    };
-    if (playerAction === ACTION_TYPES.PARRY) { 
-        combat.parryWeight -= 2;
-        combat.attackWeight += 2;
-        combat.parryParryWeight += 2;
-        combat.parryAttackWeight -= 1;
-    };
-    if (playerAction === ACTION_TYPES.POSTURE) { 
-        combat.rollWeight -= 1;
-        combat.parryWeight += 1;
-        combat.parryPostureWeight += 1;
-        combat.parryRollWeight -= 1;
-    };
+//     if (playerAction === ACTION_TYPES.ATTACK) { 
+//         if (computerActions.rollRating > computerActions.armorRating) {
+//             combat.rollWeight += 1.5;
+//             combat.postureWeight += 0.5;
+//         } else {
+//             combat.postureWeight += 1.5;
+//             combat.rollWeight += 0.5;
+//         };
+//         combat.parryWeight += 1;
+//         combat.thrustWeight -= 1;
+//         combat.parryAttackWeight += 2;
+//         combat.parryThrustWeight += 1;
+//         combat.parryParryWeight -= 1;
+//         combat.parryPostureWeight -= 1;
+//         combat.parryRollWeight -= 1;
+//     };
+//     if (playerAction === ACTION_TYPES.PARRY) { 
+//         combat.parryWeight -= 2;
+//         combat.attackWeight += 2;
+//         combat.parryParryWeight += 2;
+//         combat.parryAttackWeight -= 1;
+//     };
+//     if (playerAction === ACTION_TYPES.POSTURE) { 
+//         combat.rollWeight -= 1;
+//         combat.parryWeight += 1;
+//         combat.parryPostureWeight += 1;
+//         combat.parryRollWeight -= 1;
+//     };
 
-    if (playerAction === ACTION_TYPES.ROLL) { 
-        combat.postureWeight -= 1;
-        combat.parryWeight += 1;
-        combat.parryRollWeight += 3;
-        combat.parryPostureWeight -= 2;
-        combat.parryAttackWeight -= 1;
-    };
+//     if (playerAction === ACTION_TYPES.ROLL) { 
+//         combat.postureWeight -= 1;
+//         combat.parryWeight += 1;
+//         combat.parryRollWeight += 3;
+//         combat.parryPostureWeight -= 2;
+//         combat.parryAttackWeight -= 1;
+//     };
 
-    if (playerAction === ACTION_TYPES.THRUST) { 
-        combat.attackWeight -= 1;
-        combat.parryWeight += 1;
-        combat.parryThrustWeight += 3;
-        combat.parryPostureWeight -= 1;
-        combat.parryAttackWeight -= 1;
-        combat.parryRollWeight -= 1;
-    };
-    return combat;
-};
+//     if (playerAction === ACTION_TYPES.THRUST) { 
+//         combat.attackWeight -= 1;
+//         combat.parryWeight += 1;
+//         combat.parryThrustWeight += 3;
+//         combat.parryPostureWeight -= 1;
+//         combat.parryAttackWeight -= 1;
+//         combat.parryRollWeight -= 1;
+//     };
+//     return combat;
+// };
 
 function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultiplier: number, playerMagicalDefenseMultiplier: number): Combat { // Triggers if 40+ Str/Caer for 2h, 1h + Agi/Achre Mastery and 2nd weapon is 1h
     const computer = combat.computer;
@@ -1720,7 +1720,7 @@ function dualActionSplitter(combat: Combat): Combat {
     const computerAction = newCombat.computerAction;
     const computerParry = newCombat.computerParryGuess; 
     computerWeaponMaker(newCombat);
-    computerActionCompiler(newCombat, playerAction);
+    // computerActionCompiler(newCombat, playerAction);
 
     newCombat.computerStartDescription = 
         `${newCombat.computer.name} sets to ${computerAction === '' ? 'defend' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1)}${computerParry ? '-' + computerParry.charAt(0).toUpperCase() + computerParry.slice(1) : ''} against you.`
@@ -1810,7 +1810,7 @@ function weaponActionSplitter(combat: Combat): Combat {
         };
     } else if (playerActionLive && !computerActionLive) {
         if (cleanData.action === ACTION_TYPES.PARRY) return cleanData;
-        computerActionCompiler(cleanData, cleanData.action);
+        // computerActionCompiler(cleanData, cleanData.action);
         attackCompiler(cleanData, cleanData.action);
         changes = {
             ...changes,
@@ -1960,18 +1960,18 @@ function newDataCompiler(combat: Combat): any {
         computerDeathDescription: '',
         newPlayerHealth: combat.newPlayerHealth, // New player health post-combat action
         newComputerHealth: combat.newComputerHealth, // New computer health post-combat action
-        attackWeight: combat.attackWeight,
-        parryWeight: combat.parryWeight,
-        dodgeWeight: combat.dodgeWeight,
-        postureWeight: combat.postureWeight,
-        rollWeight: combat.rollWeight,
-        thrustWeight: combat.thrustWeight,
-        parryAttackWeight: combat.parryAttackWeight,
-        parryParryWeight: combat.parryParryWeight,
-        parryDodgeWeight: combat.parryDodgeWeight,
-        parryPostureWeight: combat.parryPostureWeight,
-        parryRollWeight: combat.parryRollWeight,
-        parryThrustWeight: combat.parryThrustWeight,
+        // attackWeight: combat.attackWeight,
+        // parryWeight: combat.parryWeight,
+        // dodgeWeight: combat.dodgeWeight,
+        // postureWeight: combat.postureWeight,
+        // rollWeight: combat.rollWeight,
+        // thrustWeight: combat.thrustWeight,
+        // parryAttackWeight: combat.parryAttackWeight,
+        // parryParryWeight: combat.parryParryWeight,
+        // parryDodgeWeight: combat.parryDodgeWeight,
+        // parryPostureWeight: combat.parryPostureWeight,
+        // parryRollWeight: combat.parryRollWeight,
+        // parryThrustWeight: combat.parryThrustWeight,
         religiousSuccess: false,
         computerReligiousSuccess: false,
         dualWielding: false,
@@ -2312,28 +2312,28 @@ function prayerRemoveTickSplitter(combat: Combat, statusEffect: StatusEffect): C
     return combat;
 };
 
-function computerCombatSplitter(data: { computerOne: Combat, computerTwo: Combat }) {
-    try {
-        let { computerOne, computerTwo } = data;
-        newDataCompiler(computerOne);
-        newDataCompiler(computerTwo);
-        const computerOneActionLive = computerOne.computerAction !== '' ? true : false;
-        const computerTwoActionLive = computerTwo.computerAction !== '' ? true : false;
-        if (computerOneActionLive && computerTwoActionLive) {
-            computerOne = dualActionSplitter(computerOne);
-            computerTwo = dualActionSplitter(computerTwo);
-        } else if (computerOneActionLive && !computerTwoActionLive) {
-            computerActionCompiler(computerTwo, computerOne.computerAction);
-            computerAttackCompiler(computerTwo, computerOne.computerAction);
-        } else if (!computerOneActionLive && computerTwoActionLive) {
-            computerActionCompiler(computerOne, computerTwo.computerAction);
-            computerAttackCompiler(computerOne, computerTwo.computerAction);
-        };
-        return { computerOne, computerTwo } as { computerOne: Combat, computerTwo: Combat };
-    } catch (err) {
-        console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
-    };
-};
+// function computerCombatSplitter(data: { computerOne: Combat, computerTwo: Combat }) {
+//     try {
+//         let { computerOne, computerTwo } = data;
+//         newDataCompiler(computerOne);
+//         newDataCompiler(computerTwo);
+//         const computerOneActionLive = computerOne.computerAction !== '' ? true : false;
+//         const computerTwoActionLive = computerTwo.computerAction !== '' ? true : false;
+//         if (computerOneActionLive && computerTwoActionLive) {
+//             computerOne = dualActionSplitter(computerOne);
+//             computerTwo = dualActionSplitter(computerTwo);
+//         } else if (computerOneActionLive && !computerTwoActionLive) {
+//             computerActionCompiler(computerTwo, computerOne.computerAction);
+//             computerAttackCompiler(computerTwo, computerOne.computerAction);
+//         } else if (!computerOneActionLive && computerTwoActionLive) {
+//             computerActionCompiler(computerOne, computerTwo.computerAction);
+//             computerAttackCompiler(computerOne, computerTwo.computerAction);
+//         };
+//         return { computerOne, computerTwo } as { computerOne: Combat, computerTwo: Combat };
+//     } catch (err) {
+//         console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
+//     };
+// };
 
 // ================================= VALIDATOR - SPLITTERS ===================================== \\
 
@@ -2392,15 +2392,15 @@ function prayerRemoveTick(combat: Combat, statusEffect: StatusEffect): Combat | 
     };
 };
 
-function computerCombatCompiler(combat: { computerOne: Combat, computerTwo: Combat }): { computerOne: Combat, computerTwo: Combat } | undefined {
-    try {
-        if (!validate(combat.computerOne) || !validate(combat.computerTwo)) return combat;
-        const res = computerCombatSplitter(combat);
-        return res;
-    } catch (err) {
-        console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
-    };
-};
+// function computerCombatCompiler(combat: { computerOne: Combat, computerTwo: Combat }): { computerOne: Combat, computerTwo: Combat } | undefined {
+//     try {
+//         if (!validate(combat.computerOne) || !validate(combat.computerTwo)) return combat;
+//         const res = computerCombatSplitter(combat);
+//         return res;
+//     } catch (err) {
+//         console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
+//     };
+// };
 
 export {
     statusEffectCheck,
@@ -2410,5 +2410,5 @@ export {
     weaponActionCompiler,
     prayerEffectTick,
     prayerRemoveTick,
-    computerCombatCompiler
+    // computerCombatCompiler
 };

@@ -14,8 +14,8 @@ export const FRAME_COUNT = {
 }; 
 const GLOW_INTENSITY = 0.25;
 const SPEED = 1.5
-export const SWING_TIME = { 'One Hand': 1250, 'Two Hand': 1650 }; // 750, 1250 [old]
-export const ENEMY_SWING_TIME = { 'One Hand': 950, 'Two Hand': 1250 }; // 750, 1250 [old]
+export const SWING_TIME = { 'One Hand': 1250, 'Two Hand': 1500 }; // 750, 1250 [old]
+export const ENEMY_SWING_TIME = { 'One Hand': 1000, 'Two Hand': 1250 }; // 750, 1250 [old]
 const DAMAGE_TYPES = { 
     'magic': ['earth', 'fire', 'frost', 'lightning', 'righteous', 'spooky', 'sorcery', 'wild', 'wind'], 
     'physical': ['blunt', 'pierce', 'slash'] 

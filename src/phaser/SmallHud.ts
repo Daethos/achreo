@@ -40,11 +40,11 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         const y = scene.cameras.main.height * scene.settings.positions.smallHud.y;
         super(scene, x, y);
         this.scene = scene;
+        this.scene.add.existing(this);
         this.x = x;
         this.y = y;
         this.leftX = scene.cameras.main.width * scene.settings.positions.leftHud.x;
         this.leftY = scene.cameras.main.height * scene.settings.positions.leftHud.y;
-        this.scene.add.existing(this);
         this.bar = [];
         this.stances = [];
         this.closed = true;

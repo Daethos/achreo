@@ -2071,6 +2071,7 @@ export default class Player extends Entity {
     sacrifice = (id, val) => {
         if (id === this.getEnemyId()) {
             this.scene.combatMachine.action({ type: 'Sacrifice', data: val });
+            this.currentTarget.flickerCarenic(750);
         } else {
             const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
             const sacrifice = Math.round(this.scene.state?.player?.[this.scene.state.player?.mastery] * (1 + data / 100)* (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10));
@@ -2080,6 +2081,7 @@ export default class Player extends Entity {
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
             this.scene.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSacrifice, id: this.playerID } });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySacrifice, id: this.spellTarget } });
+            enemy.flickerCarenic(750);    
         };
     };
 
@@ -2177,6 +2179,7 @@ export default class Player extends Entity {
     suture = (id, val) => {
         if (id === this.getEnemyId()) {
             this.scene.combatMachine.action({ type: 'Suture', data: val });
+            this.currentTarget.flickerCarenic(750);
         } else {
             const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
             const suture = Math.round(this.scene.state?.player?.[this.scene.state.player?.mastery] / 2 * (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10)) * (1 * val / 100);
@@ -2186,6 +2189,7 @@ export default class Player extends Entity {
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
             this.scene.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSuture, id: this.playerID } });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySuture, id: this.spellTarget } });
+            enemy.flickerCarenic(750)    
         };
     };
 

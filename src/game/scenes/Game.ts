@@ -25,7 +25,6 @@ import NPC from '../../entities/NPC';
 import ParticleManager from '../../phaser/ParticleManager';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
-import TutorialOverlay from '../../utility/tutorial';
 const dimensions = useResizeListener();
 
 export class Game extends Scene {
@@ -79,11 +78,13 @@ export class Game extends Scene {
     joystickKeys: any;
     volumeEvent: () => void;
     matterCollision: any;
+    // smallHud: HudScene;
     smallHud: SmallHud;
-    beam: any;
-    mousePointer: PointerEvent;
+    
     baseLayer: any;
     climbingLayer: any;
+    flowers: any;
+    plants: any;
 
     constructor () {
         super('Game');
@@ -126,6 +127,8 @@ export class Game extends Scene {
         this.climbingLayer = layer1;
         const layer2 =  map.createLayer('Tile Layer 2 - Flowers', decorations as Tilemaps.Tileset, 0, 0);
         const layer3 =  map.createLayer('Tile Layer 3 - Plants', decorations as Tilemaps.Tileset, 0, 0);
+        this.flowers = layer2;
+        this.plants = layer3;
         map.createLayer('Tile Layer - Campfire', campfire as Tilemaps.Tileset, 0, 0);
         let lights = map.createLayer('Tile Layer - Lights', light as Tilemaps.Tileset, 0, 0);
         lights?.setDepth(5);
@@ -276,6 +279,9 @@ export class Game extends Scene {
         });
         this.minimap.ignore(this.minimapBorder);
         this.smallHud = new SmallHud(this);
+        // this.smallHud = new HudScene(this);
+        // this.scene.launch('Hud', this);
+        
         this.input.mouse?.disableContextMenu();
         EventBus.emit('current-scene-ready', this);
     };
@@ -1039,7 +1045,27 @@ export class Game extends Scene {
             player.inWater = true;
         } else {
             player.inWater = false;
-        };    
+        };
+        // if (this.player.playerID === player.playerID) {
+            const flower = this.flowers.getTileAt(x as number, y as number);
+            if (flower) {
+                // console.log(flower.pixelY, player.y);
+                if (flower.pixelY > player.y - 12) {
+                    player.setDepth(2);
+                } else {
+                    player.setDepth(4);
+                };
+            };
+            const plant = this.plants.getTileAt(x as number, y as number);
+            if (plant) {
+                // console.log(plant.pixelY, player.y);
+                if (plant.pixelY > player.y - 12) {
+                    player.setDepth(2);
+                } else {
+                    player.setDepth(4);
+                };
+            };
+        // };
     };
     createTextBorder(text: NewText): GameObjects.Graphics {
         const border = this.add.graphics();

@@ -7,7 +7,7 @@ import { EventBus } from "../game/EventBus";
 import { GameState } from '../stores/game';
 import { LevelSheet } from '../utility/ascean';
 import { usePhaserEvent } from '../utility/hooks';
-import { computerCombatCompiler, consumePrayer, instantActionCompiler, prayerEffectTick, prayerRemoveTick, statusEffectCheck, weaponActionCompiler } from '../utility/combat';
+import { consumePrayer, instantActionCompiler, prayerEffectTick, prayerRemoveTick, statusEffectCheck, weaponActionCompiler } from '../utility/combat';
 import { screenShake } from '../phaser/ScreenShake';
 import { Reputation } from '../utility/player';
 import { Puff } from 'solid-spinner';
@@ -66,55 +66,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     createEffect(() => EventBus.emit('settings', settings()));
     const sendEnemyData = () => EventBus.emit('get-enemy', combat().computer);
     const sendSettings = () => EventBus.emit('get-settings', settings);
-    function computerCombat(data: any, type: string) {
-        console.log(`%c Computer Combat: [Type] -- ${type}`, 'color: #ff0000');
-        const { computerOne, computerTwo } = data;
-        try {
-            switch (type) {
-                case 'Weapon': // Targeted weapon action
-                    const res = computerCombatCompiler(data);
-                    EventBus.emit('update-enemy-health', { id: computerOne.enemyID, health: res?.computerOne.newComputerHealth });
-                    EventBus.emit('update-enemy-health', { id: computerTwo.enemyID, health: res?.computerTwo.newComputerHealth });
-                    break;
-                case 'Chiomic': // Caster flays health from enemy
-                    const enemyChiomic = Math.round(computerOne.computerHealth * (data.value / 100));
-                    const computerChiomicDamage = computerTwo.newComputerHealth - enemyChiomic < 0 ? 0 : computerTwo.newComputerHealth - enemyChiomic;
-                    EventBus.emit('update-enemy-health', { id: computerTwo.enemyID, health: computerChiomicDamage });
-                    break;
-                case 'Health':
-                    // const { current, enemyID, total, value } = data;
-                    const enemyHeal = Math.floor(data.total * data.value / 100);
-                    const newHealth = data.current + enemyHeal > data.total ? data.total : data.current + enemyHeal;
-                    EventBus.emit('update-enemy-health', { id: data.enemyID, health: newHealth });
-                    break;
-                case 'Sacrifice': // Caster sacrifices health to deal damage
-                    const sacrifice = Math.round(computerOne.computer?.[computerOne.computer?.mastery as string]);
-                    const computerSacrificeHealth = computerOne.newComputerHealth - (sacrifice / 2) < 0 ? 0 : computerOne.newComputerHealth - (sacrifice / 2);
-                    const computerSacrificeDamage = computerTwo.newComputerHealth - sacrifice < 0 ? 0 : computerTwo.newComputerHealth - sacrifice;
-                    EventBus.emit('update-enemy-health', { id: computerOne.enemyID, health: computerSacrificeHealth });
-                    EventBus.emit('update-enemy-health', { id: computerTwo.enemyID, health: computerSacrificeDamage });
-                    break;
-                case 'Suture': // Caster sutures health from enemy
-                    const computerSuture = Math.round(computerOne.computer?.[computerOne.computer?.mastery as string]) / 2;
-                    const computerSutureHealth = computerOne.newComputerHealth + computerSuture > computerOne.computerHealth ? computerOne.computerHealth : computerOne.newComputerHealth + computerSuture;
-                    const computerSutureDamage = computerTwo.newComputerHealth - computerSuture < 0 ? 0 : computerTwo.newComputerHealth - computerSuture;
-                    EventBus.emit('update-enemy-health', { id: computerOne.enemyID, health: computerSutureHealth });
-                    EventBus.emit('update-enemy-health', { id: computerTwo.enemyID, health: computerSutureDamage });
-                    break;
-                case 'Tshaeral': // Caster drains health from enemy
-                    const computerTshaeral = Math.round(computerOne.computerHealth * 3 / 100);
-                    const computerTshaeralHealth = computerOne.newComputerHealth + computerTshaeral > computerOne.computerHealth ? computerOne.computerHealth : computerOne.newComputerHealth + computerTshaeral;
-                    const computerTshaeralDamage = computerTwo.newComputerHealth - computerTshaeral < 0 ? 0 : computerTwo.newComputerHealth - computerTshaeral;
-                    EventBus.emit('update-enemy-health', { id: computerOne.enemyID, health: computerTshaeralHealth });
-                    EventBus.emit('update-enemy-health', { id: computerTwo.enemyID, health: computerTshaeralDamage });
-                    break;
-                default:
-                    break;
-            };
-        } catch (err: any) {
-            console.warn(err, 'Error in Computer Combat: [Type] --', type);
-        };
-    };
     function initiateCombat(data: any, type: string) {
         try {    
             let playerWin: boolean = false, computerWin: boolean = false, res: any = undefined, playerActionDescription: string = '', computerActionDescription: string = '', affectsHealth: boolean = true, caerenic: number = combat().isCaerenic ? 1.15 : 1, stalwart: number = combat().isStalwart ? 0.85 : 1;
@@ -507,7 +458,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         });
         setEnemies(newEnemies);
     };
-    usePhaserEvent('computer-combat', (payload: { data: any, type: string }) => computerCombat(payload.data, payload.type));
+    // usePhaserEvent('computer-combat', (payload: { data: any, type: string }) => computerCombat(payload.data, payload.type));
     usePhaserEvent('initiate-combat', (payload: { data: any, type: string }) => initiateCombat(payload.data, payload.type));
     usePhaserEvent('remove-enemy', filterEnemies);
     usePhaserEvent('request-enemy', sendEnemyData);

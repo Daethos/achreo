@@ -5,16 +5,19 @@ import { States } from "../phaser/StateMachine";
 import { Compiler, asceanCompiler } from "./ascean";
 export const ENEMY_SPECIAL = {
     'constitution': [ // 11
-        'Chiomic', 
+        'Blink',
         'Desperation', 
         'Disease', 
         'Healing', 
+        'Howl', 
         'Kyrnaicism', 
         'Malice', 
         'Mend', 
         'Renewal', 
         'Sacrifice', 
+        'Scream', 
         'Shield', 
+        'Suture', 
         'Ward'
     ], // 11
 
@@ -22,7 +25,8 @@ export const ENEMY_SPECIAL = {
         'Desperation',
         'Howl', 
         'Malice', 
-        'Mend', 
+        'Mend',
+        'Pursuit', 
         'Rush',
         'Scream', 
         'Sprint', 
@@ -49,13 +53,13 @@ export const ENEMY_SPECIAL = {
 
     'achre': [ // 12
         'Blink',
-        'Chiomic', 
-        'Confuse',
         'Freeze', 
         'Healing',
+        'Kyrnaicism', 
         'Mend', 
         'Malice', 
         'Polymorph', 
+        'Sacrifice', 
         'Shimmer', 
         'Slowing',
         'Snare',
@@ -63,7 +67,7 @@ export const ENEMY_SPECIAL = {
     ], // 12
         
     'caeren': [ // 11
-        'Chiomic', 
+        'Blink',
         'Desperation', 
         'Devour',
         'Fear', 
@@ -72,6 +76,7 @@ export const ENEMY_SPECIAL = {
         'Mend', 
         'Protect', 
         'Sacrifice', 
+        'Scream', 
         'Shield', 
         'Suture'
     ], // 11
@@ -120,83 +125,147 @@ export const RANGE = {
     LEASH: 750,
 }; 
 export const INSTINCTS = {
-    'constitution': [{
-            key: 'stateMachine',
-            value: States.HEALING
-        },{
-            key: 'positiveMachine',
-            value: States.RENEWAL
-        },{
-            key: 'positiveMachine',
-            value: States.WARD
-        },{
-            key: 'stateMachine',
-            value: States.KYRNAICISM
-    }],
-    'strength': [{
-            key: 'stateMachine',
-            value: States.DEVOUR
-        },{
-            key: 'positiveMachine',
-            value: States.WARD
-        },{
+    'constitution': [
+        { // 0 - Desperate Heal
             key: 'stateMachine',
             value: States.DESPERATION
-        },{
-            key: 'stateMachine',
-            value: States.RUSH
-    }],
-    'agility': [{
-            key: 'stateMachine',
-            value: States.DESPERATION
-        },{
+        },{ // 1 - Casual Heal
             key: 'positiveMachine',
-            value: States.SHIMMER
-        },{
-            key: 'positiveMachine',
-            value: States.SPRINTING
-        },{
-            key: 'stateMachine',
-            value: States.RUSH
-    }],
-    'achre': [{
-            key: 'stateMachine',
             value: States.HEALING
-        },{
-            key: 'positiveMachine',
-            value: States.MEND
-        },{
-            key: 'stateMachine',
-            value: States.SLOW
-        },{
+        },{ // 2 - Desperate Damage
             key: 'stateMachine',
             value: States.SACRIFICE
-    }],
-    'caeren': [{
+        },{ // 3 - Casual Damage
+            key: 'stateMachine',
+            value: States.KYRNAICISM
+        // },{ // 4 - AoE
+        //     key: 'positiveMachine',
+        //     value: States.RENEWAL
+        },{ // 4 - Within 100 Distance
+            key: 'positiveMachine',
+            value: States.DISEASE
+        },{ // 5 - Melee at Distance
+            key: 'positiveMachine',
+            value: States.WARD
+        },{ // 6 - Ranged at Distance
+            key: 'stateMachine',
+            value: States.KYRNAICISM
+        }
+    ],
+    'strength': [
+        { // 0
             key: 'stateMachine',
             value: States.DESPERATION
-        },{
-            key: 'positiveMachine',
-            value: States.MEND
-        },{
+        },{ // 1
+            key: 'stateMachine',
+            value: States.TSHAERAL
+        },{ // 2
+            key: 'stateMachine',
+            value: States.RUSH
+        },{ // 3
             key: 'stateMachine',
             value: States.SUTURE
-        },{
+        },{ // 4
+            key: 'positiveMachine',
+            value: States.WRITHE
+        },{ // 5
+            key: 'positiveMachine',
+            value: States.WARD
+        },{ // 6
             key: 'stateMachine',
-            value: States.SACRIFICE
+            value: States.TSHAERAL
     }],
-    'kyosir': [{
+    'agility': [
+        { // 0
+            key: 'stateMachine',
+            value: States.DESPERATION
+        },{ // 1
+            key: 'positiveMachine',
+            value: States.MEND
+        },{ // 2
+            key: 'stateMachine',
+            value: States.RUSH
+        },{ // 3
+            key: 'stateMachine',
+            value: States.SUTURE
+        },{ // 4
+            key: 'positiveMachine',
+            value: States.WRITHE
+        },{ // 5
+            key: 'stateMachine',
+            value: States.PURSUIT
+        },{ // 6
+            key: 'positiveMachine',
+            value: States.SHIMMER
+    }],
+    'achre': [
+        { // 0
             key: 'stateMachine',
             value: States.HEALING
-        },{
-            key: 'positiveMachine',
-            value: States.MALICE
-        },{
+        },{ // 1
+            key: 'stateMachine',
+            value: States.SUTURE
+        },{ // 2
+            key: 'stateMachine',
+            value: States.SACRIFICE
+        },{ // 3
             key: 'stateMachine',
             value: States.KYRNAICISM
-        },{
+        },{ // 4
+            key: 'positiveMachine',
+            value: States.FREEZE
+        },{ // 5
+            key: 'stateMachine',
+            value: States.MALICE
+        },{ // 6
+            key: 'stateMachine',
+            value: States.SNARE
+    }],
+    'caeren': [
+        { // 0
+            key: 'stateMachine',
+            value: States.HEALING
+        },{ // 1
+            key: 'positiveMachine',
+            value: States.MEND
+        },{ // 2
+            key: 'stateMachine',
+            value: States.SACRIFICE
+        },{ // 3
+            key: 'stateMachine',
+            value: States.KYRNAICISM
+        },{ // 4
+            key: 'positiveMachine',
+            value: States.SCREAM
+        },{ // 5
+            key: 'positiveMachine',
+            value: States.SHIELD
+        },{ // 6
+            key: 'stateMachine',
+            value: States.KYRNAICISM
+    }],
+    'kyosir': [
+        { // 0
+            key: 'stateMachine',
+            value: States.HEALING
+        },{ // 1
             key: 'stateMachine',
             value: States.DEVOUR
+        },{ // 2
+            key: 'stateMachine',
+            value: States.SACRIFICE
+        },{ // 3
+            key: 'stateMachine',
+            value: States.SUTURE
+        },{ // 4
+            key: 'positiveMachine',
+            value: States.CHIOMIC
+        },{ // 5
+            key: 'positiveMachine',
+            value: States.PROTECT
+        },{ // 6
+            key: 'stateMachine',
+            value: States.KYRNAICISM
     }]
 };
 export const GRIP_SCALE = { 'One Hand': 0.5, 'Two Hand': 0.65 };

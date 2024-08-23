@@ -67,18 +67,18 @@ export interface Combat {
     realizedComputerDamage: number;
     computerDamaged: boolean;
 
-    attackWeight: number;
-    parryWeight: number;
-    dodgeWeight: number;
-    postureWeight: number;
-    rollWeight: number;
-    thrustWeight: number;
-    parryAttackWeight: number;
-    parryParryWeight: number;
-    parryDodgeWeight: number;
-    parryPostureWeight: number;
-    parryRollWeight: number;
-    parryThrustWeight: number;
+    // attackWeight: number;
+    // parryWeight: number;
+    // dodgeWeight: number;
+    // postureWeight: number;
+    // rollWeight: number;
+    // thrustWeight: number;
+    // parryAttackWeight: number;
+    // parryParryWeight: number;
+    // parryDodgeWeight: number;
+    // parryPostureWeight: number;
+    // parryRollWeight: number;
+    // parryThrustWeight: number;
 
     computerStartDescription: string;
     computerSpecialDescription: string;
@@ -201,18 +201,18 @@ export const initCombat: Combat = {
     realizedComputerDamage: 0,
     computerDamaged: false,
 
-    attackWeight: 0,
-    parryWeight: 0,
-    dodgeWeight: 0,
-    postureWeight: 0,
-    rollWeight: 0,
-    thrustWeight: 0,
-    parryAttackWeight: 0,
-    parryParryWeight: 0,
-    parryDodgeWeight: 0,
-    parryPostureWeight: 0,
-    parryRollWeight: 0,
-    thrustRollWeight: 0,
+    // attackWeight: 0,
+    // parryWeight: 0,
+    // dodgeWeight: 0,
+    // postureWeight: 0,
+    // rollWeight: 0,
+    // thrustWeight: 0,
+    // parryAttackWeight: 0,
+    // parryParryWeight: 0,
+    // parryDodgeWeight: 0,
+    // parryPostureWeight: 0,
+    // parryRollWeight: 0,
+    // parryThrustWeight: 0,
 
     computerStartDescription: '',
     computerSpecialDescription: '',

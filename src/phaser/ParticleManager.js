@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 export const PARTICLES = ['achire', 'arrow', 'earth',  'fire',  'frost',  'lightning', 'righteous', 'quor', 'sorcery', 'spooky', 'wild', 'wind'];
 const TIME = { quor: 2500, achire: 1500, attack: 1250, thrust: 900, posture: 1500, roll: 1250, special: 1500 };
-const VELOCITY = { quor: 4, achire: 5.5, attack: 4.5, thrust: 6.5, posture: 3.5, roll: 3.5, special: 5 }; // 7.5 || 9 || 6 || 6
+const VELOCITY = { quor: 4, achire: 5.5, attack: 4.5, thrust: 6, posture: 3.5, roll: 3.5, special: 5 }; // 7.5 || 9 || 6 || 6
 
 function angleTarget(x, y) {
     if (x > 0) {

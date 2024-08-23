@@ -229,7 +229,14 @@ export default class Enemy extends Entity {
         this.setGlow(this.spriteWeapon, caerenic, 'weapon');
         this.setGlow(this.spriteShield, caerenic, 'shield');
     };
-
+    flickerCarenic = (duration) => {
+        if (this.isGlowing === false) {
+            this.checkCaerenic(true);
+            this.scene.time.delayedCall(duration, () => {
+                this.checkCaerenic(false);
+            }, undefined, this);
+        };
+    };
     clearShields = () => {
         if (this.reactiveBubble) {
             this.reactiveBubble.destroy();
@@ -991,11 +998,22 @@ export default class Enemy extends Entity {
 
     instincts = () => {
         this.scene.time.delayedCall(1000, () => {
-            let chance = Math.floor(Math.random() * 2 + 1);
+            let chance = [1, 2, 3, (!this.isRanged ? 5 : 6)][Math.floor(Math.random() * 4)];
             let mastery = this.ascean.mastery;
             let health = this.health / this.ascean.health.max;
             let player = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
-            let instinct = health <= 0.3 ? 0 : player <= 0.5 ? 3 : chance;
+            const direction = this.attacking?.position.subtract(this.position);
+            const distance = direction?.length();
+            let instinct =
+                 health <= 0.33 ? 0 : // Heal
+                 health <= 0.66 ? 1 : // Heal
+                 player <= 0.33 ? 2 : // Damage
+                 player <= 0.66 ? 3 : // Damage
+                 distance <= 100 ? 4 : // AoE
+                 distance >= 250 && !this.isRanged ? 5 : // Melee at Distance
+                 distance >= 250 && this.isRanged ? 6 : // Ranged at Distance
+                 chance; // Range
+            // console.log(`Chance: ${chance} | Instinct: ${instinct} | Mastery: ${mastery}`);
             let key = INSTINCTS[mastery][instinct].key, value = INSTINCTS[mastery][instinct].value;
             this[key].setState(value);
             if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
@@ -2766,6 +2784,9 @@ export default class Enemy extends Entity {
             case 'posture':
                 this.stateMachine.setState(States.POSTURE);
                 break; 
+            case 'thrust':
+                this.stateMachine.setState(States.THRUST);
+                break; 
             default: break;                        
         }; 
     };
@@ -2787,20 +2808,16 @@ export default class Enemy extends Entity {
         let computerAction;
         let actionNumber = Math.floor(Math.random() * 101);
         const computerActions = {
-            attack: 50 + this.scene.state.attackWeight,
-            parry: 10 + this.scene.state.parryWeight,
-            thrust: 10 + this.scene.state.thrustWeight,
-            posture: 15 + this.scene.state.postureWeight,
-            roll: 15 + this.scene.state.rollWeight,
-            parryAttack: 20 + this.scene.state.parryAttackWeight,
-            parryParry: 20 + this.scene.state.parryParryWeight,
-            parryPosture: 20 + this.scene.state.parryPostureWeight,
-            parryRoll: 20 + this.scene.state.parryRollWeight,
-            parryThrust: 20 + this.scene.state.parryThrustWeight,
+            attack: 50 + this.attackWeight,
+            parry: 10 + this.parryWeight,
+            thrust: 10 + this.thrustWeight,
+            posture: 15 + this.postureWeight,
+            roll: 15 + this.rollWeight,
             rollRating: this.currentWeapon ? this.currentWeapon.roll : this.ascean.weaponOne.roll,
             armorRating: (this.combatStats.defense.physicalPosture + this.combatStats.defense.magicalPosture)  /  4,
         };
-        if (actionNumber > (100 - computerActions.attack) || target.isStunned) {
+
+        if (actionNumber > (100 - computerActions.attack)) {
             computerAction = 'attack';
         } else if (actionNumber > (100 - computerActions.attack - computerActions.parry) && !this.isRanged) {
             computerAction = 'parry';

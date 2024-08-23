@@ -135,7 +135,7 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
     };
     const showButtons = () => {
         setShow(!show());
-        EventBus.emit('blend-game', { smallHud: false}); // !game().smallHud 
+        EventBus.emit('blend-game', { smallHud: false }); // !game().smallHud 
         EventBus.emit('action-button-sound');
     };
     const showCombat = () => {
@@ -155,12 +155,8 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
     };
 
     const icon = (click: boolean, right: number) => {
-        return {height: '7.5%',  width: '2em', right: `${right}%`, filter: click === true ? 'invert(100%)' : 'sepia(100%)', 'margin-left': '-25%', 'margin-top': '-1.25%' }; // , border: '1px solid #fdf6d8'
+        return {width: '1.75em', right: `${right}%`, filter: click === true ? 'invert(100%)' : 'sepia(100%)', 'margin-left': '-25%', 'margin-top': '-1.25%' }; // , border: '1px solid #fdf6d8'
     };
-
-    // const overview = (right: number) => {
-    //     return {height: '7.5%', width: '3.75%', right: `${right}%`};
-    // };
 
     return <>
         <Show when={toastShow()}>
@@ -195,14 +191,9 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
             </Show>
         </Show>
         <Show when={game().dialogTag}>
-        {/* <button class='smallHudButtons flash' style={{ ...overview((game().smallHud !== true && !clicked().phaser) ? 4.5 + settings().positions.solidHud.right : 28.5 + settings().positions.solidHud.right ) }} onClick={dialog}>
-        </button> */}
             <img class='smallHudButtons flash' src={'../assets/images/dialog.png'} onClick={dialog} style={icon(clicked().dialog, (game().smallHud !== true && !clicked().phaser) ? 4.5 + settings().positions.solidHud.right : 28.5 + settings().positions.solidHud.right)} alt='Sh' />
         </Show>
         <Show when={game().lootTag}>
-        {/* <button class='smallHudButtons flash' style={{ ...overview((game().smallHud !== true && !clicked().phaser) ? 8.5 + settings().positions.solidHud.right : 32.5 + settings().positions.solidHud.right) }} // right: game().dialogTag ? '8%' : '4%', bottom: '4.75%' SECOND ROW
-            onClick={loot}>
-        </button> */}
             <img class='smallHudButtons flash' src={'../assets/images/loot.png'} onClick={loot} style={icon(clicked().loot, (game().smallHud !== true && !clicked().phaser) ? 8.5 + settings().positions.solidHud.right : 32.5 + settings().positions.solidHud.right)} alt='Sh' />
         </Show>
     </>;

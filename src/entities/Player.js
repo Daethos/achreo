@@ -1561,7 +1561,7 @@ export default class Player extends Entity {
     onIlirechExit = () => {
         if (this.castingSuccess === true) {
             EventBus.emit('special-combat-text', {
-                playerSpecialDescription: `You rip into this world with Ilian tendrils entwining ${this.scene.state.weapons[0].name}.`
+                playerSpecialDescription: `You rip into this world with Ilian tendrils entwining.`
             });
             this.chiomism(this.spellTarget, 15);
             this.setTimeEvent('ilirechCooldown', PLAYER.COOLDOWNS.MODERATE);

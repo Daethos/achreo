@@ -75,7 +75,11 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 Its dripping nerve seizes your caer to flourish in detritus. <br /><br />
                 And yet perchance you seek to twist ${ascean()?.faith === 'Adherent' ? 'adherence' : 'devotion'} in its seams,<br /> To taste its ${ascean()?.mastery} burning at the resin of your dreams. <br /><br />
             
-                <p class='${ascean()?.faith === 'Adherent' ? 'adherentText' : ascean()?.faith === 'Devoted' ? 'devotedText' : 'otherText'}'>You become attuned to a halt and paltry whisper,<br /> it rings and stretches your soft edges,<br /> serenity begging you hither.</p>
+                <p class='${ascean()?.faith === 'Adherent' ? 'adherentText' : ascean()?.faith === 'Devoted' ? 'devotedText' : 'otherText'}'>
+                    You become attuned to a halt and paltry whisper,<br /> 
+                    It rings and stretches your soft edges,<br /> 
+                    Pleading yield and hither.
+                </p>
                 <p class='whisperText'>
                 ^500 "Who are you?" 
                 </p>

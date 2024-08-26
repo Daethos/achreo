@@ -62,7 +62,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             closed: false,
             open: false,
         };
-
+        this.setDepth(6);
         this.createBar();
         this.listener();
     };
@@ -91,7 +91,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
 
         this.bar.forEach((item, index) => {
             item.setScrollFactor(0, 0);
-            item.setDepth(3);
+            item.setDepth(6);
             item.setOrigin(0, 0);
             item.setInteractive();
             item.setScale(this.scene.settings.positions.smallHud.scale || 0.095);
@@ -113,7 +113,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
 
         this.stances.forEach((item, index) => {
             item.setScrollFactor(0, 0);
-            item.setDepth(3);
+            item.setDepth(6);
             item.setOrigin(0, 0);
             item.setInteractive();
             item.setScale(this.scene.settings.positions.leftHud.scale || 0.095);

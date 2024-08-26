@@ -78,7 +78,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         scene.add.existing(this);
         const { width, height } = scene.cameras.main;
         this.setPosition(width / 5, height / 5); // 2.75, 1.5
-        this.setDepth(3);
+        this.setDepth(6);
         this.setScrollFactor(0, 0);
         this.setVisible(true); // false
         EventBus.on('reorder-buttons', this.reorderButtons);

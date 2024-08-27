@@ -425,7 +425,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             targets: target,
             x: { from: target.x, to: this.x, duration: time },
             y: { from: target.y, to: this.y, duration: time }, 
-            // duration: time,
             ease: 'Circ.easeInOut',
             onStart: () => this.beam.startEmitter(target, time),
             onComplete: () => this.beam.reset(),

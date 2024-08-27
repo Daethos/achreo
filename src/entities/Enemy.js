@@ -2847,11 +2847,6 @@ export default class Enemy extends Entity {
             this.negativeMachine.setState(States.SNARED); 
             return;    
         };
-        // if (this.isHooked) {
-        //     console.log('%c Hooked in Enemy.js', 'color:red')
-        //     this.setPosition(this.scene.player.x, this.scene.player.y);
-        //     this.isHooked = false;
-        // };
         if (this.actionSuccess === true) {
             this.actionSuccess = false;
             this.enemyActionSuccess();

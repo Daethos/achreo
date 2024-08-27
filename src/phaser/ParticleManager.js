@@ -44,10 +44,7 @@ class Particle {
             callback: (other) => {
                 if (other.bodyB.label === 'enemyCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && !other.gameObjectB.isDefeated && player.name === 'player') {
                     if (this.action === 'hook') {
-                        console.log('%c HOOKED', 'color:gold');
-                        // other.gameObjectB.isHooked = true;
                         player.hook(other.gameObjectB, 1500);
-                        // other.gameObjectB.setPosition(player.x + (player.flipX ? -16 : 16), player.y);
                         player.particleEffect.success = true;
                         return;
                     };

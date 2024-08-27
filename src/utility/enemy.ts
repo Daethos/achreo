@@ -4,14 +4,14 @@ import Ascean from "../models/ascean";
 import { States } from "../phaser/StateMachine";
 import { Compiler, asceanCompiler } from "./ascean";
 export const ENEMY_SPECIAL = {
-    'constitution': [ // 11
-        'Blink',
+    'constitution': [ // 14
         'Desperation', 
         'Disease', 
         'Healing', 
-        'Howl', 
+        'Ilirech',
         'Kyrnaicism', 
         'Malice', 
+        'Maiereth',
         'Mend', 
         'Renewal', 
         'Sacrifice', 
@@ -19,9 +19,9 @@ export const ENEMY_SPECIAL = {
         'Shield', 
         'Suture', 
         'Ward'
-    ], // 11
+    ], // 14
 
-    'strength': [ // 11
+    'strength': [ // 12
         'Desperation',
         'Howl', 
         'Malice', 
@@ -34,7 +34,7 @@ export const ENEMY_SPECIAL = {
         'Tshaeral', 
         'Ward', 
         'Writhe'
-    ], // 11
+    ], // 12
 
     'agility': [ // 12
         'Desperation', 
@@ -51,50 +51,57 @@ export const ENEMY_SPECIAL = {
         'Writhe'
     ], // 12
 
-    'achre': [ // 12
+    'achre': [ // 14
         'Blink',
         'Freeze', 
-        'Healing',
+        'Ilirech',
         'Kyrnaicism', 
-        'Mend', 
-        'Malice', 
+        'Maiereth',
+        'Multifarious', 
+        'Mystify', 
         'Polymorph', 
+        'Reconstitute',
         'Sacrifice', 
         'Shimmer', 
         'Slowing',
         'Snare',
         'Suture', 
-    ], // 12
+    ], // 14
         
-    'caeren': [ // 11
+    'caeren': [ // 14
         'Blink',
-        'Desperation', 
         'Devour',
         'Fear', 
         'Healing', 
+        'Ilirech',
         'Kyrnaicism', 
+        'Maiereth',
+        'Menace',
         'Mend', 
         'Protect', 
         'Sacrifice', 
         'Scream', 
         'Shield', 
         'Suture'
-    ], // 11
+    ], // 14
 
-    'kyosir': [ // 12
+    'kyosir': [ // 15
         'Chiomic', 
         'Confuse',
         'Devour',
         'Disease', 
-        'Healing', 
+        'Ilirech',
         'Kyrnaicism', 
+        'Maiereth',
         'Malice', 
+        'Mystify',
         'Protect', 
+        'Reconstitute',
         'Sacrifice', 
         'Scream', 
         'Suture', 
         'Tshaeral'
-    ], // 12
+    ], // 15
 };
 export const DISTANCE = {
     MIN: 0,
@@ -134,7 +141,7 @@ export const INSTINCTS = {
             value: States.HEALING
         },{ // 2 - Desperate Damage
             key: 'stateMachine',
-            value: States.SACRIFICE
+            value: States.MAIERETH
         },{ // 3 - Casual Damage
             key: 'stateMachine',
             value: States.KYRNAICISM
@@ -149,7 +156,7 @@ export const INSTINCTS = {
             value: States.WARD
         },{ // 6 - Ranged at Distance
             key: 'stateMachine',
-            value: States.KYRNAICISM
+            value: States.ILIRECH
         }
     ],
     'strength': [
@@ -164,7 +171,7 @@ export const INSTINCTS = {
             value: States.RUSH
         },{ // 3
             key: 'stateMachine',
-            value: States.SUTURE
+            value: States.MAIERETH
         },{ // 4
             key: 'positiveMachine',
             value: States.WRITHE
@@ -173,7 +180,7 @@ export const INSTINCTS = {
             value: States.WARD
         },{ // 6
             key: 'stateMachine',
-            value: States.TSHAERAL
+            value: States.ILIRECH
     }],
     'agility': [
         { // 0
@@ -207,16 +214,16 @@ export const INSTINCTS = {
             value: States.SUTURE
         },{ // 2
             key: 'stateMachine',
-            value: States.SACRIFICE
+            value: States.MAIERETH
         },{ // 3
             key: 'stateMachine',
-            value: States.KYRNAICISM
+            value: States.ILIRECH
         },{ // 4
             key: 'positiveMachine',
             value: States.FREEZE
         },{ // 5
-            key: 'stateMachine',
-            value: States.MALICE
+            key: 'positiveMachine',
+            value: States.MULTIFARIOUS
         },{ // 6
             key: 'stateMachine',
             value: States.SNARE
@@ -230,7 +237,7 @@ export const INSTINCTS = {
             value: States.MEND
         },{ // 2
             key: 'stateMachine',
-            value: States.SACRIFICE
+            value: States.MAIERETH
         },{ // 3
             key: 'stateMachine',
             value: States.KYRNAICISM
@@ -239,10 +246,10 @@ export const INSTINCTS = {
             value: States.SCREAM
         },{ // 5
             key: 'positiveMachine',
-            value: States.SHIELD
+            value: States.MENACE
         },{ // 6
             key: 'stateMachine',
-            value: States.KYRNAICISM
+            value: States.ILIRECH
     }],
     'kyosir': [
         { // 0
@@ -253,10 +260,10 @@ export const INSTINCTS = {
             value: States.DEVOUR
         },{ // 2
             key: 'stateMachine',
-            value: States.SACRIFICE
+            value: States.MAIERETH
         },{ // 3
             key: 'stateMachine',
-            value: States.SUTURE
+            value: States.ILIRECH
         },{ // 4
             key: 'positiveMachine',
             value: States.CHIOMIC

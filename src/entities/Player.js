@@ -1749,7 +1749,6 @@ export default class Player extends Entity {
         if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.MODERATE) || this.invalidTarget(this.currentTarget.enemyID)) return;
         this.spellTarget = this.currentTarget.enemyID;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Maiereth', 750, 'effect');
-        this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
         this.castbar.setTotal(PLAYER.DURATIONS.MAIERETH);
         this.beam.startEmitter(this.currentTarget, PLAYER.DURATIONS.MAIERETH);                          
         this.isCasting = true;
@@ -1768,7 +1767,6 @@ export default class Player extends Entity {
     onMaierethExit = () => {
         if (this.castingSuccess === true) {
             this.sacrifice(this.spellTarget, 30);
-            // this.scene.combatMachine.action({ type: 'Sacrifice', data: 30 });
             const chance = Phaser.Math.Between(1, 100);
             if (chance > 75) {
                 this.scene.fear(this.spellTarget);
@@ -2439,7 +2437,7 @@ export default class Player extends Entity {
             };
         }, undefined, this);
         EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You seek to mend oncoming attacks.`
+            playerSpecialDescription: `You seek to menace oncoming attacks.`
         });
     };
     onMenaceUpdate = (_dt) => {if (!this.isMenacing) this.positiveMachine.setState(States.CLEAN);};
@@ -2484,7 +2482,7 @@ export default class Player extends Entity {
             };
         }, undefined, this);
         EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You seek to mend oncoming attacks.`
+            playerSpecialDescription: `You seek to moderate oncoming attacks.`
         });
     };
     onModerateUpdate = (_dt) => {if (!this.isModerating) this.positiveMachine.setState(States.CLEAN);};
@@ -2529,7 +2527,7 @@ export default class Player extends Entity {
             };
         }, undefined, this);
         EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You seek to mend oncoming attacks.`
+            playerSpecialDescription: `You seek to multifare oncoming attacks.`
         });
     };
     onMultifariousUpdate = (_dt) => {if (!this.isMultifaring) this.positiveMachine.setState(States.CLEAN);};
@@ -2559,13 +2557,13 @@ export default class Player extends Entity {
             this.reactiveBubble = undefined;
         };
         this.reactiveName = States.MYSTIFY;
-        this.scene.useGrace(PLAYER.STAMINA.MODERATE);    
+        this.scene.useGrace(PLAYER.STAMINA.MYSTIFY);    
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.isMystifying = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mystifying', 750, 'effect');
-        this.reactiveBubble = new Bubble(this.scene, this.x, this.y, 'chartreuse', PLAYER.DURATIONS.MODERATE);
+        this.reactiveBubble = new Bubble(this.scene, this.x, this.y, 'chartreuse', PLAYER.DURATIONS.MYSTIFY);
         this.setTimeEvent('mystifyCooldown', PLAYER.COOLDOWNS.LONG);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.MODERATE, () => {
+        this.scene.time.delayedCall(PLAYER.DURATIONS.MYSTIFY, () => {
             this.isMystifying = false;    
             if (this.reactiveBubble && this.reactiveName === States.MYSTIFY) {
                 this.reactiveBubble.cleanUp();
@@ -3610,6 +3608,7 @@ export default class Player extends Entity {
             !this.stateMachine.isCurrentState(States.PARRY) &&
             !this.stateMachine.isCurrentState(States.ATTACK) &&
             !this.stateMachine.isCurrentState(States.POSTURE) &&
+            !this.stateMachine.isCurrentState(States.THRUST) &&
             !this.isStalwart
         );
     };
@@ -3634,6 +3633,9 @@ export default class Player extends Entity {
                     if (this.attackedTarget?.isWarding) this.attackedTarget?.ward();
                     return;    
                 };
+                if (this.attackedTarget?.isMenacing) this.attackedTarget?.menace();
+                if (this.attackedTarget?.isMultifaring) this.attackedTarget?.multifarious();
+                if (this.attackedTarget?.isMystifying) this.attackedTarget?.mystify();
             };
             if (this.enemyIdMatch()) {
                 this.scene.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: action } });
@@ -3884,10 +3886,8 @@ export default class Player extends Entity {
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this); 
         if (this.resistCombatText) this.resistCombatText.update(this);
-
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-
         this.weaponRotation('player', this.currentTarget);
     };
 
@@ -3897,20 +3897,16 @@ export default class Player extends Entity {
             this.playerVelocity.x += this.acceleration;
             this.flipX = false;
         };
-
         if (this.inputKeys.left.A.isDown || this.inputKeys.left.LEFT.isDown || this.scene.joystickKeys.left.isDown) {
             this.playerVelocity.x -= this.acceleration;
             this.flipX = true;
         };
-
         if ((this.inputKeys.up.W.isDown || this.inputKeys.up.UP.isDown) || this.scene.joystickKeys.up.isDown) {
             this.playerVelocity.y -= this.acceleration;
         }; 
-
         if (this.inputKeys.down.S.isDown || this.inputKeys.down.DOWN.isDown || this.scene.joystickKeys.down.isDown) {
             this.playerVelocity.y += this.acceleration;
         };
-
         if (this.inputKeys.strafe.E.isDown || this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0) {
             speed += 0.1;
             this.flipX = true;
@@ -3919,7 +3915,6 @@ export default class Player extends Entity {
             speed -= 0.1;    
             this.flipX = false;
         };
-
         if (!this.isConfused && !this.isFeared && !this.isPolymorphed && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.strafe.E.isDown && !this.inputKeys.strafe.Q.isDown && !this.inputKeys.left.A.isDown && !this.scene.joystickKeys.left.isDown && !this.scene.joystickKeys.right.isDown) {
             this.playerVelocity.x = 0;
         };

@@ -61,6 +61,9 @@ class Particle {
                         player.particleEffect.success = true;
                         return;
                     };
+                    if (other.gameObjectB.isMenacing && !player.isAstrifying) other.gameObjectB.menace(); 
+                    if (other.gameObjectB.isMultifaring && !player.isAstrifying) other.gameObjectB.multifarious(); 
+                    if (other.gameObjectB.isMystifying && !player.isAstrifying) other.gameObjectB.mystify(); 
                     const match = this.scene.state?.enemyID === other.gameObjectB.enemyID;
                     player.attackedTarget = other.gameObjectB;
                     if (match === true) {

@@ -341,9 +341,20 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     break;
                 case 'Enemy Sacrifice': // Shadow Word: Death
                     if (combat().computer === undefined) return;
-                    const enemySac = Math.round(combat().computer?.[combat().computer?.mastery as string] * ((validateHealth(combat().computer?.level as number) + 9) / 10) * stalwart);
-                    let playerEnemySacrifice = validateHealth(combat().newPlayerHealth) - (enemySac * (caerenic ? 1.25 : 1)) < 0 ? 0 : validateHealth(combat().newPlayerHealth) - (enemySac * (caerenic ? 1.25 : 1));
-                    let enemyEnemySacrifice = validateHealth(combat().newComputerHealth) - (enemySac / 2) < 0 ? 0 : validateHealth(combat().newComputerHealth) - (enemySac / 2);
+                    const enemySac = 
+                        Math.round(combat().computer?.[combat().computer?.mastery as string] 
+                        * ((validateHealth(combat().computer?.level as number) + 9) / 10)
+                        // * (1 + data / 100)
+                        * caerenic * stalwart);
+                    let playerEnemySacrifice = 
+                        validateHealth(combat().newPlayerHealth) 
+                        - (enemySac * (caerenic ? 1.25 : 1)) < 0 
+                        ? combat().playerHealth / 2
+                        : validateHealth(combat().newPlayerHealth) - (enemySac * (caerenic ? 1.25 : 1));
+                    let enemyEnemySacrifice = 
+                        validateHealth(combat().newComputerHealth) - (enemySac / 2) < 0 
+                        ? 0
+                        : validateHealth(combat().newComputerHealth) - (enemySac / 2);
                     computerActionDescription = `${combat().computer?.name} sacrifices ${enemySac / 2} health to rip ${enemySac * (caerenic ? 1.25 : 1)} from you.`;
                     res = {
                         ...combat(),

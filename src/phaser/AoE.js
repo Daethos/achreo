@@ -36,9 +36,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.bless = [];
         this.timer = undefined;    
         if (enemy !== undefined) {
-            this.setupEnemySensor(enemy);
+            this.setupEnemySensor(enemy, target);
             this.setupEnemyListener(scene);
-            this.setEnemyTimer(scene, enemy);
+            this.setEnemyTimer(scene, enemy, target);
             this.setupEnemyCount(scene, type, positive, enemy);
         } else {
             this.setupSensor(scene, manual, target);
@@ -101,9 +101,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     setupEnemyCount = (scene, type, positive, enemy) => {
         if (positive === true) {
             scene.time.delayedCall(975, () => {
-                this.hit.forEach((target) => {
-                    if (this.scene.player.checkPlayerResist() === true && target.playerID === this.scene.player.playerID) {
-                        scene[type](target.playerID, enemy.enemyID);
+                this.hit.forEach((targ) => {
+                    if (this.scene.player.checkPlayerResist() === true && targ.playerID === this.scene.player.playerID) {
+                        scene[type](targ.playerID, enemy.enemyID);
                     };
                 });
                 this.count -= 1;
@@ -120,8 +120,8 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             });
         } else {
             scene.time.delayedCall(975, () => {
-                this.bless.forEach((target) => {
-                    scene[`enemy${type.charAt(0).toUpperCase() + type.slice(1)}`](target.enemyID);
+                this.bless.forEach((targ) => {
+                    scene[`enemy${type.charAt(0).toUpperCase() + type.slice(1)}`](targ.enemyID);
                 });
                 this.count -= 1;
                 if (this.count === 0) {
@@ -137,9 +137,10 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             });
         };
     };
-    setEnemyTimer = (scene, enemy) => {
+    setEnemyTimer = (scene, enemy, target) => {
         let scale = 0;
         let count = 0;
+        let targ = target !== undefined ? target : enemy;
         this.timer = scene.time.addEvent({
             delay: 50,
             callback: () => {
@@ -148,7 +149,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                     scale += 0.01875;
                     this.setScale(scale);
                     this.setVisible(true);
-                    this.setPosition(enemy.x, enemy.y + 6);
+                    this.setPosition(targ.x, targ.y + 6);
                 };
                 count++;
             },
@@ -188,8 +189,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             loop: 19,
         });
     };
-    setupEnemySensor = (enemy) => {
-        const aoeSensor = Bodies.circle(enemy.x, enemy.y, 60, { 
+    setupEnemySensor = (enemy, target) => {
+        let targ = target !== undefined ? target : enemy;
+        const aoeSensor = Bodies.circle(targ.x, targ.y, 60, { 
             isSensor: true, label: 'aoeSensor' 
         });
         this.setExistingBody(aoeSensor);

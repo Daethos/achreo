@@ -58,8 +58,8 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
         'Absorb',
         'Fyerus',
         'Healing', 
-        'Ilirech', // ===== NEW ===== \\
-        'Maiereth', // ===== NEW ===== \\
+        'Ilirech',
+        'Maiereth',
         'Kyrnaicism', 
         'Kynisos', 
         'Mend', 
@@ -75,7 +75,7 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
         'Desperation',
         'Howl',
         'Leap',
-        'Quor', // ===== NEW ===== \\
+        'Quor',
         'Recover',
         'Rush',
         'Scream',
@@ -108,12 +108,12 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
         'Astrave',
         'Blink', 
         'Freeze',
-        'Moderate', // ===== NEW ===== \\
-        'Multifarious', // ===== NEW ===== \\
+        'Moderate',
+        'Multifarious',
         'Polymorph', 
-        'Quor', // ===== NEW ===== \\
-        'Reconstitute', // ===== NEW ===== \\
-        'Rein', // ===== NEW ===== \\
+        'Quor',
+        'Reconstitute',
+        'Rein',
         'Slow'
     ], // 14 !!!
     'caeren': [ // 14
@@ -123,12 +123,12 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
         'Fear', 
         'Fyerus',
         'Healing', 
-        'Ilirech', // ===== NEW ===== \\
+        'Ilirech',
         'Kyrnaicism',
         'Malice', 
-        'Menace', // ===== NEW ===== \\
+        'Menace',
         'Mend', 
-        'Rein', // ===== NEW ===== \\
+        'Rein',
         'Sacrifice', 
         'Scream',
     ], // 14
@@ -139,12 +139,12 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
         'Chiomic',
         'Confuse', 
         'Disease',
-        'Maiereth', // ===== NEW ===== \\
+        'Maiereth',
         'Malice', 
-        'Mystify', // ===== NEW ===== \\
+        'Mystify',
         'Paralyze',
         'Protect', 
-        'Reconstitute', // ===== NEW ===== \\
+        'Reconstitute',
         'Sacrifice', 
         'Suture'
     ], // 14

@@ -387,13 +387,13 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
         this.hasBow = this.checkBow(weapon.type);
     };
-
     checkPlayerResist = () => {
         const chance = Math.random() * 101;
-        const resist = this.scene.state.playerDefense.magicalDefenseModifier / 10 + 5; // 10% of Magic Defense + 5% Flat
+        const resist = this.scene.state.playerDefense.magicalDefenseModifier / 4; // 0 - 25%
         if (chance > resist) {
             return true;
         } else {
+            this.isCasting = false;
             this.scene.player.resist();
             return false;
         };
@@ -409,7 +409,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         // let pointer = this.scene.add.graphics()
         //     .lineStyle(1, 0xFF0000, 1)
         //     .strokeRect(enemy.x + xOffset, enemy.y, 1, 1);
-
         for (let i = -32; i < 32; i++) {
             // pointer.clear();
             // pointer.strokeRect(enemy.x + xOffset, enemy.y + i, 1, 1);

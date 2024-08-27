@@ -658,7 +658,7 @@ export class Game extends Scene {
             }});
         };
     };
-    astrave = (id: string): void => {
+    astrave = (id: string, enemyID: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: any) => e.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
@@ -667,6 +667,10 @@ export class Game extends Scene {
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
             enemy.count.stunned += 1;    
             enemy.isStunned = true;
+        } else if (id === this.player.playerID) {
+            let caster = this.enemies.find((e: any) => e.enemyID === enemyID);
+            caster.chiomic(15);
+            this.player.isStunned = true;
         };
     };
     blind = (id: string): void => {
@@ -678,6 +682,8 @@ export class Game extends Scene {
             const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 1);
             const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
+        } else if (id === this.player.playerID) {
+
         };
     };
     caerenesis = (id: string): void => {
@@ -702,7 +708,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
-            this.useGrace(15);
+            this.useGrace(10);
             this.player.isConfused = true;
         } else {
             enemy.count.confused += 1;
@@ -713,7 +719,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
-            this.useGrace(15);
+            this.useGrace(10);
             this.player.isConfused = true;
         } else {
             enemy.count.confused += 1;
@@ -724,7 +730,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
-            this.useGrace(15);
+            this.useGrace(10);
             this.player.isFeared = true;
         } else {
             enemy.isFeared = true;
@@ -734,7 +740,7 @@ export class Game extends Scene {
         if (id === '') return;
         let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
         if (!enemy) {
-            this.useGrace(15);
+            this.useGrace(10);
             this.player.isFrozen = true;
         } else {
             enemy.count.frozen += 1;

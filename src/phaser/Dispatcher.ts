@@ -49,11 +49,11 @@ function suture(data: number): void {
 function enemyChiomic(data: number): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.ENEMY_CHIOMIC });
 };
-function enemySacrifice(): void {
-    EventBus.emit('initiate-combat', { type: ActionTypes.ENEMY_SACRIFICE });
+function enemySacrifice(data: number): void {
+    EventBus.emit('initiate-combat', { data, type: ActionTypes.ENEMY_SACRIFICE });
 };
-function enemySuture(): void {
-    EventBus.emit('initiate-combat', { type: ActionTypes.ENEMY_SUTURE });
+function enemySuture(data: number): void {
+    EventBus.emit('initiate-combat', { data, type: ActionTypes.ENEMY_SUTURE });
 };
 function tshaeral(data: number): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.TSHAERAL });

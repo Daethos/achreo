@@ -33,11 +33,11 @@ export const States = {
     CONFUSE: "confuse",
     CONSUME: "consume",
     DESPERATION: "desperation",
-    KYRNAICISM: "kyrnaicism",
     FEAR: "fear",
     PARALYZE: "paralyze",
     HEALING: "healing",
     INVOKE: "invoke",
+    KYRNAICISM: "kyrnaicism",
     LEAP: "leap",
     POLYMORPH: "polymorph",
     PURSUIT: "pursuit",
@@ -45,6 +45,11 @@ export const States = {
     ROOT: "root",
     RUSH: "rush",
     SACRIFICE: "sacrifice",
+
+    HOOK: "hook",
+    MARK: "mark",
+    NETHERSWAP: "netherswap",
+    RECALL: "recall",
 
     ACHIRE: 'achire', // Casted, Damage Projectile, Manual Aim || Fuchsia & Teal
     ASTRAVE: 'astrave', // Casted, AoE, Damage, Manual Aim || Yelllow & Bone

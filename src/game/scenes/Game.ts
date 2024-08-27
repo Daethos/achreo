@@ -166,7 +166,7 @@ export class Game extends Scene {
         this.setPostFx(this.settings?.postFx, this.settings?.postFx.enable);
         this.combatMachine = new CombatMachine(this);
         this.particleManager = new ParticleManager(this);
-        this.target = this.add.sprite(0, 0, "target").setDepth(10).setScale(0.15).setVisible(false);
+        this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
         this.actionBar = new ActionButtons(this);
     // =========================== Input Keys =========================== \\
         this.player.inputKeys = {
@@ -909,13 +909,18 @@ export class Game extends Scene {
             this.combatMachine.action({ data: 10, type: 'Enemy Chiomic' });
         };
     };
-    writhe = (id: string, special?: string): void => {
+    writhe = (id: string, special?: string, eid?: string): void => {
         if (id === '') return;
-        let enemy = this.enemies.find((e: any) => e.enemyID === id);
+        let enemy = this.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             if (id === this.player.playerID) {
-                this.useGrace(15);
-                this.combatMachine.action({ data: 15, type: 'Enemy Chiomic' });
+                let en = this.enemies.find((e: Enemy) => e.enemyID === eid);
+                if (en.isCurrentTarget) {
+                    this.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: special, id: en.enemyID } });
+                } else {
+                    this.combatMachine.action({ type: 'Enemy', data: { enemyID: en.enemyID, ascean: en.ascean, damageType: en.currentDamageType, combatStats: en.combatStats, weapons: en.weapons, health: en.health, actionData: { action: special, parry: en.parryAction, id: eid }}});
+                };
+                this.useGrace(10);
             };
         } else {
             const match = this.player.enemyIdMatch();

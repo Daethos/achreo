@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
-export const PARTICLES = ['achire', 'arrow', 'earth',  'fire',  'frost',  'lightning', 'righteous', 'quor', 'sorcery', 'spooky', 'wild', 'wind'];
-const TIME = { quor: 2500, achire: 1500, attack: 1250, thrust: 900, posture: 1500, roll: 1250, special: 1500 };
-const VELOCITY = { quor: 4, achire: 5.5, attack: 4.5, thrust: 5.5, posture: 3.5, roll: 3.5, special: 5 }; // 7.5 || 9 || 6 || 6
+export const PARTICLES = ['achire', 'arrow', 'earth',  'fire',  'frost', 'hook', 'lightning', 'righteous', 'quor', 'sorcery', 'spooky', 'wild', 'wind'];
+const TIME = { quor: 2500, achire: 1500, attack: 1250, hook: 1500, thrust: 900, posture: 1500, roll: 1250, special: 1500 };
+const VELOCITY = { quor: 4, achire: 5.5, attack: 4.5, hook: 5, thrust: 5.5, posture: 3.5, roll: 3.5, special: 5 }; // 7.5 || 9 || 6 || 6
 
 function angleTarget(x, y) {
     if (x > 0) {
@@ -42,7 +42,15 @@ class Particle {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [sensor],
             callback: (other) => {
-                if (other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && !other.gameObjectB.isDefeated && player.name === 'player') {
+                if (other.bodyB.label === 'enemyCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && !other.gameObjectB.isDefeated && player.name === 'player') {
+                    if (this.action === 'hook') {
+                        console.log('%c HOOKED', 'color:gold');
+                        // other.gameObjectB.isHooked = true;
+                        player.hook(other.gameObjectB, 1500);
+                        // other.gameObjectB.setPosition(player.x + (player.flipX ? -16 : 16), player.y);
+                        player.particleEffect.success = true;
+                        return;
+                    };
                     if (other.gameObjectB?.isShimmering && !player.isAstrifying) {
                         const shimmer = Phaser.Math.Between(1, 100);
                         if (shimmer > 50) {
@@ -88,7 +96,7 @@ class Particle {
                     };
                     player.particleEffect.success = true;
                 };
-                if (other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy' && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
+                if (other.bodyB.label === 'playerCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy' && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
                     player.particleEffect.success = true;
                 };
             },
@@ -147,6 +155,8 @@ export default class ParticleManager extends Phaser.Scene {
         scene.load.animation('fire_anim', '../assets/gui/fire_anim.json');
         scene.load.atlas('frost_effect', '../assets/gui/frost_effect.png', '../assets/gui/frost_json.json');
         scene.load.animation('frost_anim', '../assets/gui/frost_anim.json');
+        scene.load.atlas('hook_effect', '../assets/gui/hook_effect.png', '../assets/gui/hook_atlas.json');
+        scene.load.animation('hook_anim', '../assets/gui/hook_anim.json');
         scene.load.atlas('lightning_effect', '../assets/gui/lightning_effect.png', '../assets/gui/lightning_json.json');
         scene.load.animation('lightning_anim', '../assets/gui/lightning_anim.json');
         scene.load.atlas('wind_effect', '../assets/gui/wind_effect.png', '../assets/gui/wind_json.json');

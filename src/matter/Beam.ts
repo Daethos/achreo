@@ -56,7 +56,7 @@ export default class Beam {
         this.updateEmitter(target);
         this.scene.time.addEvent({
             delay: time / 20,
-            callback: () => {if (this.target) this.updateEmitter(this.target);},
+            callback: () => {if (this.target !== undefined) this.updateEmitter(this.target);},
             callbackScope: this,
             repeat: 19
         });
@@ -88,7 +88,7 @@ export default class Beam {
         this.enemyEmitters[enemy.enemyID].setConfig({ ...this.settings, ...dynamicConfig });
     };
     glow = (): number => Math.random() / 10;
-    randomize = (): number => Math.random() * 25 * (Math.random() > 0.5 ? 1 : -1); 
+    randomize = (): number => Math.random() * 20 * (Math.random() > 0.5 ? 1 : -1); 
     reset = () => {
         this.emitter.stop(); // Added
         this.emitter.setVisible(false);

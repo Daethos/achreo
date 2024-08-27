@@ -116,15 +116,19 @@ export default class Player extends Entity {
             .addState(States.FEAR, { onEnter: this.onFearingEnter, onUpdate: this.onFearingUpdate, onExit: this.onFearingExit })
             .addState(States.FYERUS, { onEnter: this.onFyerusEnter, onUpdate: this.onFyerusUpdate, onExit: this.onFyerusExit })
             .addState(States.HEALING, { onEnter: this.onHealingEnter, onUpdate: this.onHealingUpdate, onExit: this.onHealingExit })
+            .addState(States.HOOK, { onEnter: this.onHookEnter, onUpdate: this.onHookUpdate, onExit: this.onHookExit })
             .addState(States.ILIRECH, { onEnter: this.onIlirechEnter, onUpdate: this.onIlirechUpdate, onExit: this.onIlirechExit })
             .addState(States.INVOKE, { onEnter: this.onInvokeEnter, onUpdate: this.onInvokeUpdate, onExit: this.onInvokeExit })
             .addState(States.KYNISOS, { onEnter: this.onKynisosEnter, onUpdate: this.onKynisosUpdate, onExit: this.onKynisosExit })
             .addState(States.KYRNAICISM, { onEnter: this.onKyrnaicismEnter, onUpdate: this.onKyrnaicismUpdate, onExit: this.onKyrnaicismExit })
             .addState(States.LEAP, { onEnter: this.onLeapEnter, onUpdate: this.onLeapUpdate, onExit: this.onLeapExit })
             .addState(States.MAIERETH, { onEnter: this.onMaierethEnter, onUpdate: this.onMaierethUpdate, onExit: this.onMaierethExit })
+            .addState(States.MARK, { onEnter: this.onMarkEnter, onUpdate: this.onMarkUpdate, onExit: this.onMarkExit })
+            .addState(States.NETHERSWAP, { onEnter: this.onNetherswapEnter, onUpdate: this.onNetherswapUpdate, onExit: this.onNetherswapExit })
             .addState(States.PARALYZE, { onEnter: this.onParalyzeEnter, onUpdate: this.onParalyzeUpdate, onExit: this.onParalyzeExit })
             .addState(States.POLYMORPH, { onEnter: this.onPolymorphingEnter, onUpdate: this.onPolymorphingUpdate, onExit: this.onPolymorphingExit })
             .addState(States.PURSUIT, { onEnter: this.onPursuitEnter, onUpdate: this.onPursuitUpdate, onExit: this.onPursuitExit })
+            .addState(States.RECALL, { onEnter: this.onRecallEnter, onUpdate: this.onRecallUpdate, onExit: this.onRecallExit })
             .addState(States.QUOR, { onEnter: this.onQuorEnter, onUpdate: this.onQuorUpdate, onExit: this.onQuorExit })
             .addState(States.RECONSTITUTE, { onEnter: this.onReconstituteEnter, onUpdate: this.onReconstituteUpdate, onExit: this.onReconstituteExit })
             .addState(States.ROOT, { onEnter: this.onRootingEnter, onUpdate: this.onRootingUpdate, onExit: this.onRootingExit })
@@ -207,12 +211,28 @@ export default class Player extends Entity {
             .lineStyle(4, 0xFFc700) // 3
             .setScale(0.2) // 35
             .strokeCircle(0, 0, 12) // 10 
-            .setDepth(1000);
+            .setDepth(99);
         this.scene.plugins.get('rexGlowFilterPipeline').add(this.highlight, {
             intensity: 0.005, // 005
         });
         this.highlight.setVisible(false);
         this.highlightAnimation = false;
+
+        this.mark = this.scene.add.graphics()
+            .lineStyle(4, 0xfdf6d8) // 3
+            .setScale(0.5) // 35
+            .strokeCircle(0, 0, 12) // 10 
+            // .setDepth(99);
+        this.mark.setVisible(false);
+        this.markAnimation = false;
+
+        // this.hook = new Phaser.Physics.Matter.Sprite(scene.matter.world, this.x, this.y, 'hook_effect').setScale(0.5).setOrigin(0.5, 0.5).setDepth(6).setVisible(false);    
+        // this.hook = this.scene.add.graphics()
+        //     .lineStyle(4, 0xfdf6d8) // 3
+        //     .strokeCircle(0, 0, 12) // 10
+        //     .setPosition(this.x, this.y) 
+            // .setVisible(false)
+
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health, 'player');
         this.castbar = new CastingBar(this.scene, this.x, this.y, 0, this);
         this.rushedEnemies = [];
@@ -331,6 +351,14 @@ export default class Player extends Entity {
         EventBus.off('remove-enemy', this.enemyUpdate);
         EventBus.off('tab-target', this.tabUpdate);
         EventBus.off('updated-stamina', this.updateStamina);
+    };
+    animateMark = () => {
+        this.scene.tweens.add({
+            targets: this.mark,
+            scale: 0.75,
+            duration: 250,
+            yoyo: true
+        });
     };
 
     animateTarget = () => {
@@ -1194,7 +1222,7 @@ export default class Player extends Entity {
     };
     onAchireExit = () => {
         if (this.castingSuccess === true) {
-            const anim = this.getWeaponAnim();
+            // const anim = this.getWeaponAnim();
             this.particleEffect =  this.scene.particleManager.addEffect('achire', this, 'achire', true);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `Your Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0].name}.`
@@ -1786,6 +1814,115 @@ export default class Player extends Entity {
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false);  
     };
 
+    onHookEnter = () => {
+        this.particleEffect = this.scene.particleManager.addEffect('hook', this, 'hook', true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Hook', DURATION.TEXT, 'damage', false, true);
+        this.scene.sound.play('dungeon', { volume: this.scene.settings.volume });
+        this.flickerCarenic(750);
+        this.setTimeEvent('hookCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+        this.scene.useGrace(PLAYER.STAMINA.HOOK);
+        this.beam.startEmitter(this.particleEffect.effect, 1500);
+        this.hookTime = 0;
+    };
+    onHookUpdate = (dt) => {
+        this.hookTime += dt;
+        if (this.hookTime >= 1250 || !this.particleEffect?.effect) {
+            this.combatChecker(false);
+        };
+    };
+    onHookExit = () => {
+        this.beam.reset();
+    };
+
+    onMarkEnter = () => {
+        if (this.scene.settings.desktop === false) {
+            this.scene.joystick.joystick.setVisible(false);
+            this.scene.rightJoystick.joystick.setVisible(false);
+            this.scene.actionBar.setVisible(false);
+        };
+        this.setStatic(true);
+        this.isPraying = true;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Marking', DURATION.TEXT, 'effect', false, true);
+        this.flickerCarenic(1000);
+    };
+    onMarkUpdate = (_dt) => this.combatChecker(this.isPraying);
+    onMarkExit = () => {
+        if (this.scene.settings.desktop === false) {  
+            this.scene.joystick.joystick.setVisible(true);
+            this.scene.rightJoystick.joystick.setVisible(true);
+            this.scene.actionBar.setVisible(true);
+        };
+        this.mark.setPosition(this.x, this.y + 16);
+        this.mark.setVisible(true);
+        this.animateMark();
+        this.animateMark();
+        this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
+        this.setTimeEvent('markCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+        this.scene.useGrace(PLAYER.STAMINA.MARK);
+        this.setStatic(false);
+    };
+
+    onNetherswapEnter = () => {
+        if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.MODERATE) || this.invalidTarget(this.currentTarget?.enemyID)) return; 
+        this.setStatic(true);
+        this.isPraying = true;
+        this.isNetherswapping = true;
+        this.netherswapTarget = this.currentTarget;
+        if (this.scene.settings.desktop === false) {
+            this.scene.joystick.joystick.setVisible(false);
+            this.scene.rightJoystick.joystick.setVisible(false);
+            this.scene.actionBar.setVisible(false);
+        };
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Netherswap', DURATION.TEXT, 'effect', false, true);
+        this.flickerCarenic(1000);
+    };
+    onNetherswapUpdate = (_dt) => this.combatChecker(this.isPraying);
+    onNetherswapExit = () => {
+        if (this.isNetherswapping === false) return;
+        this.isNetherswapping = false;
+        if (this.scene.settings.desktop === false) {  
+            this.scene.joystick.joystick.setVisible(true);
+            this.scene.rightJoystick.joystick.setVisible(true);
+            this.scene.actionBar.setVisible(true);
+        };
+        this.setStatic(false);
+        if (this.netherswapTarget === undefined) return; 
+        const player = new Phaser.Math.Vector2(this.x, this.y + 16);
+        const enemy = new Phaser.Math.Vector2(this.netherswapTarget.x, this.netherswapTarget.y);
+        this.setPosition(enemy.x, enemy.y);
+        this.netherswapTarget.setPosition(player.x, player.y);
+        this.netherswapTarget = undefined;
+        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
+        this.setTimeEvent('netherswapCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+        this.scene.useGrace(PLAYER.STAMINA.NETHERSWAP);
+    };
+
+    onRecallEnter = () => {
+        this.setStatic(true);
+        this.isPraying = true;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Recalling', DURATION.TEXT, 'effect', false, true);
+        this.flickerCarenic(1000);
+        if (this.scene.settings.desktop === false) {
+            this.scene.joystick.joystick.setVisible(false);
+            this.scene.rightJoystick.joystick.setVisible(false);
+            this.scene.actionBar.setVisible(false);
+        };
+        this.setTimeEvent('recallCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+        this.scene.useGrace(PLAYER.STAMINA.RECALL);
+    };
+    onRecallUpdate = (_dt) => this.combatChecker(this.isPraying);
+    onRecallExit = () => {
+        if (this.scene.settings.desktop === false) {  
+            this.scene.joystick.joystick.setVisible(true);
+            this.scene.rightJoystick.joystick.setVisible(true);
+            this.scene.actionBar.setVisible(true);
+        };
+        this.setPosition(this.mark.x, this.mark.y);
+        this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
+        this.animateMark();
+        this.setStatic(false);
+    };
+
     onParalyzeEnter = () => { 
         if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.LONG) || this.invalidTarget(this.currentTarget?.enemyID)) return;
         this.spellTarget = this.currentTarget.enemyID;
@@ -2161,7 +2298,6 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Suture', 750, 'effect');
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.scene.useGrace(PLAYER.STAMINA.SUTURE);
-        // this.scene.combatMachine.action({ type: 'Suture', data: 10 });
         this.suture(this.spellTarget, 10);
         this.setTimeEvent('sutureCooldown', PLAYER.COOLDOWNS.MODERATE);
         

@@ -1,0 +1,80 @@
+{
+    "anims": [
+        {
+            "key": "hook_effect",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 8,
+            "frames": [
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_white_4"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_white_3"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_blue_4"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_white_3"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_white_2"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_blue_3"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_white_2"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_white_1"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_blue_2"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_white_1"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_white_2"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_blue_3"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_white_2"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_white_3"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_blue_4"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_white_3"
+                },
+                {
+                    "key": "hook_effect",
+                    "frame": "hook_white_4"
+                }
+            ]
+        }
+    ]
+}

@@ -1,14 +1,9 @@
 export const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry', 'Thrust'];
 export const SPECIALS = [
-    'Menace', // reactive shield, fear
-    'Moderate', // reactive shield, slow
-    'Multifarious', // reactive shield, polymorph
-    'Mystify', // reactive shield, confuse
-    'Reconstitute', // channel, 5s, 1s/tick, +10-15% health
-    'Rein', // reactive shield, grace++
-    'Quor', // 3s, 6x, can crit, manual, mid grace, low cooldown
-    'Maiereth', // cast, 1-1.5s, direct, (var of Ascean).damage, can crit, mid range, low grace, low cooldown
-    'Ilirech', // cast, 1s, direct, -X health, X * 2 damage, low range, low grace, 2s cooldown
+    // 'Hook',
+    // 'Mark',
+    // 'Netherswap',
+    // 'Recall',
     'Absorb',
     'Achire',
     'Astrave',
@@ -25,17 +20,26 @@ export const SPECIALS = [
     'Fyerus',
     'Healing', 
     'Howl', 
+    'Ilirech', // cast, 1s, direct, -X health, X * 2 damage, low range, low grace, 2s cooldown
     'Invoke',
     'Kynisos', 
     'Kyrnaicism',
     'Leap', 
+    'Maiereth', // cast, 1-1.5s, direct, (var of Ascean).damage, can crit, mid range, low grace, low cooldown
     'Malice',
+    'Menace', // reactive shield, fear
     'Mend', 
+    'Moderate', // reactive shield, slow
+    'Multifarious', // reactive shield, polymorph
+    'Mystify', // reactive shield, confuse
     'Paralyze',
     'Polymorph',
     'Protect', 
     'Pursuit', 
+    'Quor', // 3s, 6x, can crit, manual, mid grace, low cooldown
+    'Reconstitute', // channel, 5s, 1s/tick, +10-15% health
     'Recover', 
+    'Rein', // reactive shield, grace++
     'Renewal', 
     'Root', 
     'Rush', 
@@ -108,6 +112,10 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
         'Astrave',
         'Blink', 
         'Freeze',
+        'Hook',
+        'Mark',
+        'Netherswap',
+        'Recall',
         'Moderate',
         'Multifarious',
         'Polymorph', 

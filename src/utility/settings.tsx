@@ -407,6 +407,13 @@ const SpecialSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('CAST')} Hook
+            </p>
+            You rip a tendril through this world, hungry for caer and the flesh. Cast. Moderate Cooldown. Low Grace.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('VOICE')} Howl
             </p>
             A hush that proliferates, stunning enemies caught in its piercing blast for several seconds. Instant. Moderate Cooldown. Moderate Grace.
@@ -463,6 +470,13 @@ const SpecialSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('CAST')} Mark
+            </p>
+            A sliver of a tendril wraps round the ground at your feet, awaiting your return. Cast. Low Cooldown. Low Grace.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('SHIELD')} Menace
             </p>
             A warped tendril wrapped round you that protects the player through 3 melee and ranged attacks, fearing the enemy. Instant. Long Cooldown. Moderate Grace.
@@ -498,6 +512,13 @@ const SpecialSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('CAST')} Netherswap
+            </p>
+            Say a little prayer to swap places with your target. Cast. Low Cooldown. Low Grace.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('CAST')} Paralyze
             </p>
             Paralyze your opponent for several seconds, causing them to be disabled for the duration. Cast. Moderate Cooldown. Low Grace.
@@ -522,6 +543,13 @@ const SpecialSettings = () => {
             {svg('INVOKE')} Pursuit
             </p>
             Step into the land of hush and tendril, reentering this world at the foot of your foe. Instant. Moderate Cooldown. Moderate Grace.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('CAST')} Recall
+            </p>
+            Say a little prayer to recall toward that sliver of tendril you left behind. Cast. Low Cooldown. Low Grace.
             </div>
             <br />
             <div>

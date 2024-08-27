@@ -138,7 +138,7 @@ export default class Enemy extends Entity {
         const paddedHeight = colliderHeight + 2 * paddingHeight;
         let enemyCollider = Bodies.rectangle(this.x, this.y + 10, colliderWidth, colliderHeight, { isSensor: false, label: 'enemyCollider' });
         enemyCollider.boundsPadding = { x: paddedWidth, y: paddedHeight };
-        let enemySensor = Bodies.circle(this.x, this.y + 2, 36, { isSensor: true, label: 'enemySensor' }); // Sensor was 48
+        let enemySensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: 'enemySensor' }); // Sensor was 48
         const compoundBody = Body.create({
             parts: [enemyCollider, enemySensor],
             frictionAir: 0.1, 
@@ -398,7 +398,6 @@ export default class Enemy extends Entity {
                             other.gameObjectB.checkTargets();
                         };
                         if (this.isReasonable()) this.scene.setupEnemy(this);
-                        // if (this.scene.state.enemyID !== this.enemyID && this.scene.player.inCombat === false) this.scene.setupEnemy(this);
                         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
                         if (this.stateMachine.isCurrentState(States.DEFEATED)) {
                             this.scene.showDialog(true);
@@ -420,7 +419,7 @@ export default class Enemy extends Entity {
             objectA: [enemySensor],
             callback: other => {
                 if (other.gameObjectB && other.gameObjectB.name === 'player') {
-                    this.touching = this.touching.filter((target) => target === other.gameObjectB);
+                    this.touching = this.touching.filter((target) => target !== other.gameObjectB);
                     if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
                         if (this.healthbar) this.healthbar.setVisible(false);
                         if (this.isDefeated === true) {
@@ -431,8 +430,6 @@ export default class Enemy extends Entity {
                         };
                         if (this.isCurrentTarget === true) this.scene.clearNonAggressiveEnemy();
                     };
-                // } else if (other.gameObjectB && other.gameObjectB.name === 'enemy') {
-                //     this.touching = this.touching.filter((target) => target === other.gameObjectB);
                 };
             },
             context: this.scene,
@@ -590,7 +587,7 @@ export default class Enemy extends Entity {
                 const special = ENEMY_SPECIAL[mastery][Math.floor(Math.random() * ENEMY_SPECIAL[mastery].length)].toLowerCase();
                 this.specialAction = special;
                 this.currentAction = 'special';
-                // const specific = ['menace', 'multifarious', 'mystify'];
+                // const specific = ['leap'];
                 // const test = specific[Math.floor(Math.random() * specific.length)];
                 if (this.stateMachine.isState(special)) {
                     this.stateMachine.setState(special);
@@ -1234,28 +1231,26 @@ export default class Enemy extends Entity {
     };
 
     onLeapEnter = () => {
-        this.isCasting = true;
-        this.isLeaping = true;
         const target = new Phaser.Math.Vector2(this.scene.player.x, this.scene.player.y);
         const direction = target.subtract(this.position);
+        const distance = direction.length();
+        const buffer = this.scene.player.isMoving ? 40 : 30;
+        let leap = Math.min(distance + buffer, 250);
         direction.normalize();
         this.flipX = direction.x < 0;
-        if (this.isGlowing === false) {
-            this.checkCaerenic(true);
-        };
-        this.isAttacking = true;
+        this.flickerCarenic(500);
+        this.attack();
         this.scene.tweens.add({
             targets: this,
-            x: this.x + (direction.x * 125),
-            y: this.y + (direction.y * 125),
-            duration: 750,
+            x: this.x + (direction.x * leap),
+            y: this.y + (direction.y * leap),
+            duration: 500,
             ease: 'Elastic',
             onComplete: () => { 
-                this.isLeaping = false; 
                 if (this.touching.length > 0) {
                     this.touching.forEach(enemy => {
                         if (enemy.playerID !== this.scene.player.playerID) return;
-                        this.scene.writhe(enemy.playerID, 'leap');
+                        this.scene.writhe(enemy.playerID, 'leap', this.enemyID);
                         this.scene.useStamina(15);
                     });
                 };
@@ -1263,13 +1258,11 @@ export default class Enemy extends Entity {
             },
         });       
         EventBus.emit('enemy-combat-text', {
-            computerSpecialDescription: `${this.ascean.name} launchs themself through the air!`
+            computerSpecialDescription: `${this.ascean.name} launches through the air!`
         });
     };
     onLeapUpdate = (_dt) => {};
     onLeapExit = () => {
-        this.isCasting = false;
-        this.checkCaerenic(false);
         this.evaluateCombatDistance();
     };
 
@@ -1386,23 +1379,21 @@ export default class Enemy extends Entity {
         this.scene.sound.play('stealth', { volume: this.scene.settings.volume });        
         const target = new Phaser.Math.Vector2(this.scene.player.x, this.scene.player.y);
         const direction = target.subtract(this.position);
+        this.flickerCarenic(500);
         direction.normalize();
         this.flipX = direction.x < 0;
-        if (this.isGlowing === false) {
-            this.checkCaerenic(true);
-        };
         this.isParrying = true;
         this.scene.tweens.add({
             targets: this,
             x: this.x + (direction.x * 300),
             y: this.y + (direction.y * 300),
-            duration: 600,
+            duration: 500,
             ease: 'Circ.easeOut',
             onComplete: () => {
                 if (this.rushedEnemies.length > 0) {
                     this.rushedEnemies.forEach(enemy => {
                         this.scene.useStamina(15);
-                        this.scene.writhe(enemy.playerID, 'rush');
+                        this.scene.writhe(enemy.playerID, 'rush', this.enemyID);
                     });
                 };
                 this.isRushing = false;
@@ -1413,7 +1404,6 @@ export default class Enemy extends Entity {
     onRushUpdate = (_dt) => {};
     onRushExit = () => {
         this.rushedEnemies = [];
-        if (this.isGlowing === true) this.checkCaerenic(false);
         this.isCasting = false;
         this.evaluateCombatDistance();
     };
@@ -2857,6 +2847,11 @@ export default class Enemy extends Entity {
             this.negativeMachine.setState(States.SNARED); 
             return;    
         };
+        // if (this.isHooked) {
+        //     console.log('%c Hooked in Enemy.js', 'color:red')
+        //     this.setPosition(this.scene.player.x, this.scene.player.y);
+        //     this.isHooked = false;
+        // };
         if (this.actionSuccess === true) {
             this.actionSuccess = false;
             this.enemyActionSuccess();

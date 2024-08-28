@@ -139,9 +139,9 @@ export default class StateMachine {
         this.states = new Map();
     };
 
+    // if (!state) console.warn(`State ${name} does not exist`);
     isState(name: string) {
         const state = this.states.has(name);
-        if (!state) console.warn(`State ${name} does not exist`);
         return state;
     };
 
@@ -164,9 +164,9 @@ export default class StateMachine {
         this.changeStateQueue = [];
     };
 
+    // console.warn(`State ${name} does not exist`);
     setState(name: string) {  
         if (!this.states.has(name)) {
-            console.warn(`State ${name} does not exist`);
             return;
         }; 
         if (this.isCurrentState(name)) return;

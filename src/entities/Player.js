@@ -1757,7 +1757,7 @@ export default class Player extends Entity {
                 this.isLeaping = false; 
                 if (this.touching.length > 0) {
                     this.touching.forEach(enemy => {
-                        this.scene.writhe(enemy.enemyID, 'leap');
+                        this.scene.melee(enemy.enemyID, 'leap');
                     });
                 };
             },
@@ -2153,7 +2153,7 @@ export default class Player extends Entity {
             onComplete: () => {
                 if (this.rushedEnemies.length > 0) {
                     this.rushedEnemies.forEach(enemy => {
-                        this.scene.writhe(enemy.enemyID, 'rush');
+                        this.scene.melee(enemy.enemyID, 'rush');
                     });
                 };
                 this.isRushing = false;

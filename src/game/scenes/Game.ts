@@ -803,7 +803,7 @@ export class Game extends Scene {
         };
     };
     renewal = () => {
-        this.combatMachine.action({ data: { key: 'player', value: 7.5, id: this.player.playerID }, type: 'Health' });
+        this.combatMachine.action({ data: { key: 'player', value: 10, id: this.player.playerID }, type: 'Health' });
     };
     enemyRenewal = (id: string): void => {
         if (id === '') return;
@@ -909,26 +909,29 @@ export class Game extends Scene {
             this.combatMachine.action({ data: 10, type: 'Enemy Chiomic' });
         };
     };
-    writhe = (id: string, special?: string, eid?: string): void => {
+    writhe = (id: string, enemyID?: string): void => {
         if (id === '') return;
         let enemy = this.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             if (id === this.player.playerID) {
-                let en = this.enemies.find((e: Enemy) => e.enemyID === eid);
+                let en = this.enemies.find((e: Enemy) => e.enemyID === enemyID);
+                if (!en) return;
                 if (en.isCurrentTarget) {
-                    this.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: special, id: en.enemyID } });
+                    this.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: 'writhe', id: en.enemyID } });
                 } else {
-                    this.combatMachine.action({ type: 'Enemy', data: { enemyID: en.enemyID, ascean: en.ascean, damageType: en.currentDamageType, combatStats: en.combatStats, weapons: en.weapons, health: en.health, actionData: { action: special, parry: en.parryAction, id: eid }}});
+                    this.combatMachine.action({ type: 'Enemy', data: { 
+                        enemyID: en.enemyID, ascean: en.ascean, damageType: en.currentDamageType, combatStats: en.combatStats, weapons: en.weapons, health: en.health, 
+                        actionData: { action: 'writhe', parry: en.parryAction, id: enemyID }}});
                 };
                 this.useGrace(10);
             };
         } else {
             const match = this.player.enemyIdMatch();
             if (match) { // Target Player Attack
-                this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: special || 'writhe' } });
+                this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: 'writhe' } });
             } else { // Blind Player Attack
                 this.combatMachine.action({ type: 'Player', data: { 
-                    playerAction: { action: special || 'writhe', parry: this.state.parryGuess }, 
+                    playerAction: { action: 'writhe', parry: this.state.parryGuess }, 
                     enemyID: enemy.enemyID, 
                     ascean: enemy.ascean, 
                     damageType: enemy.currentDamageType, 

@@ -176,7 +176,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.timer = scene.time.addEvent({
             delay: 50,
             callback: () => {
-                if (count >= 19) return;
+                if (count >= 20) return;
                 if (this && this.timer) {
                     scale += 0.01875;
                     this.setScale(scale);
@@ -186,7 +186,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 count++;
             },
             callbackScope: this,
-            loop: 19,
+            loop: 20,
         });
     };
     setupEnemySensor = (enemy, target) => {
@@ -247,9 +247,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 const { gameObjectB, bodyB } = collision;
                 if (gameObjectB instanceof Phaser.Physics.Matter.Sprite) {
                     if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
-                        this.hit = this.hit.filter((target) => target === gameObjectB);
+                        this.hit = this.hit.filter((target) => target !== gameObjectB);
                     } else if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
-                        this.bless = this.bless.filter((target) => target === gameObjectB);
+                        this.bless = this.bless.filter((target) => target !== gameObjectB);
                     };
                 };
             },
@@ -279,7 +279,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                     if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
                         this.hit = this.hit.filter((target) => target.enemyID !== gameObjectB.enemyID);
                     } else if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
-                        this.bless = this.bless.filter((target) => target === gameObjectB);
+                        this.bless = this.bless.filter((target) => target !== gameObjectB);
                     };
                 };
             },

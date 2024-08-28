@@ -405,88 +405,88 @@ function phaserSuccessConcerns(parrySuccess: boolean, rollSuccess: boolean, comp
     return parrySuccess || rollSuccess || computerParrySuccess || computerRollSuccess;
 };
 
-function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, weather: string, critical: boolean): { magicalDamage: number, physicalDamage: number } {
-    let magicalDamage = magDam;
-    let physicalDamage = physDam;
-    switch (weather) {
-        case 'Alluring Isles':
-            if (weapon.type === WEAPON_TYPES.BOW || weapon.type === WEAPON_TYPES.GREATBOW) {
-                physicalDamage *= DAMAGE.LOW;
-                magicalDamage *= DAMAGE.LOW;
-            };
-            break;
-        case 'Astralands':
-            magicalDamage *= DAMAGE.LOW;
-            physicalDamage *= DAMAGE.LOW;
-            break;
-        case 'Fangs': 
-            if (weapon.attackType === ATTACK_TYPES.PHYSICAL) {
-                if (weapon.type !== WEAPON_TYPES.BOW && weapon.type !== WEAPON_TYPES.GREATBOW) {
-                    physicalDamage *= DAMAGE.LOW; // +10% Physical Melee Damage
-                } else {
-                    physicalDamage *= DAMAGE.NEG_HIGH; // -10% Physical Ranged Damage
-                };
-            } else {
-                if (weapon?.damageType?.includes(DAMAGE_TYPES.FIRE) || weapon?.damageType?.includes(DAMAGE_TYPES.FROST) || weapon?.damageType?.includes(DAMAGE_TYPES.EARTH) || weapon?.damageType?.includes(DAMAGE_TYPES.WIND) || weapon?.damageType?.includes(DAMAGE_TYPES.LIGHTNING) || weapon?.damageType?.includes(DAMAGE_TYPES.WILD)) {
-                    magicalDamage *= DAMAGE.LOW; // +10% Magical Damage
-                };
-            };
-            if (weapon?.influences?.[0] !== DEITIES.DAETHOS) {
-                magicalDamage *= DAMAGE.LOW; // +10% Magical Damage
-            };
-            break;
-        case 'Firelands':
-            physicalDamage *= DAMAGE.LOW;
-            magicalDamage *= DAMAGE.LOW;
-            if (critical === true) {
-                magicalDamage *= DAMAGE.HIGH;
-                physicalDamage *= DAMAGE.HIGH;
-            };
-            break;
-        case 'Kingdom':
-            physicalDamage *= DAMAGE.LOW;
-            if (weapon?.influences?.[0] !== DEITIES.DAETHOS) {
-                magicalDamage *= DAMAGE.LOW;
-                physicalDamage *= DAMAGE.LOW;
-            };
-            break;
-        case 'Licivitas':
-            if (weapon?.influences?.[0] === DEITIES.DAETHOS) {
-                magicalDamage *= DAMAGE.MID;
-                physicalDamage *= DAMAGE.MID;
-            };
-            if (critical === true) {
-                magicalDamage *= DAMAGE.HIGH;
-                physicalDamage *= DAMAGE.HIGH;
-            };
-            break;
-        case 'Sedyrus':
-            magicalDamage *= DAMAGE.LOW;
-            if (weapon?.influences?.[0] !== DEITIES.DAETHOS) {
-                magicalDamage *= DAMAGE.LOW;
-                physicalDamage *= DAMAGE.LOW;
-            };
-            if (weapon.type === WEAPON_TYPES.BOW || weapon.type === WEAPON_TYPES.GREATBOW) {
-                physicalDamage *= DAMAGE.LOW;
-                magicalDamage *= DAMAGE.LOW;
-            };
-            if (critical === true) {
-                magicalDamage *= DAMAGE.LOW;
-                physicalDamage *= DAMAGE.LOW;
-            };
-            break;
-        case 'Soverains':
-            magicalDamage *= DAMAGE.LOW;
-            if (weapon.influences?.[0] !== DEITIES.DAETHOS) {
-                magicalDamage *= DAMAGE.LOW;
-                physicalDamage *= DAMAGE.LOW;
-            };
-            break;
-        default:
-            break;
-    };
-    return { magicalDamage, physicalDamage };
-};
+// function weatherEffectCheck(weapon: Equipment, magDam: number, physDam: number, weather: string, critical: boolean): { magicalDamage: number, physicalDamage: number } {
+//     let magicalDamage = magDam;
+//     let physicalDamage = physDam;
+//     switch (weather) {
+//         case 'Alluring Isles':
+//             if (weapon.type === WEAPON_TYPES.BOW || weapon.type === WEAPON_TYPES.GREATBOW) {
+//                 physicalDamage *= DAMAGE.LOW;
+//                 magicalDamage *= DAMAGE.LOW;
+//             };
+//             break;
+//         case 'Astralands':
+//             magicalDamage *= DAMAGE.LOW;
+//             physicalDamage *= DAMAGE.LOW;
+//             break;
+//         case 'Fangs': 
+//             if (weapon.attackType === ATTACK_TYPES.PHYSICAL) {
+//                 if (weapon.type !== WEAPON_TYPES.BOW && weapon.type !== WEAPON_TYPES.GREATBOW) {
+//                     physicalDamage *= DAMAGE.LOW; // +10% Physical Melee Damage
+//                 } else {
+//                     physicalDamage *= DAMAGE.NEG_HIGH; // -10% Physical Ranged Damage
+//                 };
+//             } else {
+//                 if (weapon?.damageType?.includes(DAMAGE_TYPES.FIRE) || weapon?.damageType?.includes(DAMAGE_TYPES.FROST) || weapon?.damageType?.includes(DAMAGE_TYPES.EARTH) || weapon?.damageType?.includes(DAMAGE_TYPES.WIND) || weapon?.damageType?.includes(DAMAGE_TYPES.LIGHTNING) || weapon?.damageType?.includes(DAMAGE_TYPES.WILD)) {
+//                     magicalDamage *= DAMAGE.LOW; // +10% Magical Damage
+//                 };
+//             };
+//             if (weapon?.influences?.[0] !== DEITIES.DAETHOS) {
+//                 magicalDamage *= DAMAGE.LOW; // +10% Magical Damage
+//             };
+//             break;
+//         case 'Firelands':
+//             physicalDamage *= DAMAGE.LOW;
+//             magicalDamage *= DAMAGE.LOW;
+//             if (critical === true) {
+//                 magicalDamage *= DAMAGE.HIGH;
+//                 physicalDamage *= DAMAGE.HIGH;
+//             };
+//             break;
+//         case 'Kingdom':
+//             physicalDamage *= DAMAGE.LOW;
+//             if (weapon?.influences?.[0] !== DEITIES.DAETHOS) {
+//                 magicalDamage *= DAMAGE.LOW;
+//                 physicalDamage *= DAMAGE.LOW;
+//             };
+//             break;
+//         case 'Licivitas':
+//             if (weapon?.influences?.[0] === DEITIES.DAETHOS) {
+//                 magicalDamage *= DAMAGE.MID;
+//                 physicalDamage *= DAMAGE.MID;
+//             };
+//             if (critical === true) {
+//                 magicalDamage *= DAMAGE.HIGH;
+//                 physicalDamage *= DAMAGE.HIGH;
+//             };
+//             break;
+//         case 'Sedyrus':
+//             magicalDamage *= DAMAGE.LOW;
+//             if (weapon?.influences?.[0] !== DEITIES.DAETHOS) {
+//                 magicalDamage *= DAMAGE.LOW;
+//                 physicalDamage *= DAMAGE.LOW;
+//             };
+//             if (weapon.type === WEAPON_TYPES.BOW || weapon.type === WEAPON_TYPES.GREATBOW) {
+//                 physicalDamage *= DAMAGE.LOW;
+//                 magicalDamage *= DAMAGE.LOW;
+//             };
+//             if (critical === true) {
+//                 magicalDamage *= DAMAGE.LOW;
+//                 physicalDamage *= DAMAGE.LOW;
+//             };
+//             break;
+//         case 'Soverains':
+//             magicalDamage *= DAMAGE.LOW;
+//             if (weapon.influences?.[0] !== DEITIES.DAETHOS) {
+//                 magicalDamage *= DAMAGE.LOW;
+//                 physicalDamage *= DAMAGE.LOW;
+//             };
+//             break;
+//         default:
+//             break;
+//     };
+//     return { magicalDamage, physicalDamage };
+// };
 
 function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Combat {
     if (player) {
@@ -679,13 +679,11 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
         combat.computerReligiousSuccess = true;
         const negativeEffect = blessing === PRAYERS.DAMAGE || blessing === PRAYERS.DEBUFF;
         let exists: StatusEffect | undefined;
-
         if (negativeEffect) {
             exists = combat.playerEffects.find(effect => effect.name === `Gift of ${weapon?.influences?.[0]}` && effect.prayer === blessing);
         } else {
             exists = combat.computerEffects.find(effect => effect.name === `Gift of ${weapon?.influences?.[0]}` && effect.prayer === blessing);   
         };
-
         if (!exists) {
             exists = new StatusEffect(combat, combat.computer as Ascean, combat.player as Ascean, weapon, combat.computerAttributes as CombatAttributes, blessing);
             if (negativeEffect) {
@@ -734,7 +732,6 @@ function faithModCompiler(player: Ascean, faithOne: number, weaponOne: Equipment
     if (player.faith === 'Adherent' && weaponOne?.influences?.[0] !== DEITIES.DAETHOS) faithOne += 3;
     if (player.faith === 'Devoted' && weaponTwo?.influences?.[0] === DEITIES.DAETHOS) faithTwo += 3;
     if (player.faith === 'Adherent' && weaponTwo?.influences?.[0] !== DEITIES.DAETHOS) faithTwo += 3;
-
     const addRarity = (rarity: string, faith: number): number => {
         faith += FAITH_RARITY[rarity as keyof typeof FAITH_RARITY]; 
         return faith;
@@ -762,7 +759,6 @@ function faithCompiler(combat: Combat): Combat { // The influence will add a cha
     let faithNumberTwo = Math.floor(Math.random() * 101); 
     let computerFaithNumber = Math.floor(Math.random() * 101);
     let computerFaithNumberTwo = Math.floor(Math.random() * 101);
-
     combat.weapons[0]!.criticalChance = Number(combat.weapons[0]?.criticalChance);
     combat.weapons[0]!.criticalDamage = Number(combat.weapons[0]?.criticalDamage);
     combat.weapons[1]!.criticalChance = Number(combat.weapons[1]?.criticalChance);
@@ -771,13 +767,8 @@ function faithCompiler(combat: Combat): Combat { // The influence will add a cha
     combat.computerWeapons[0].criticalDamage = Number(combat.computerWeapons[0].criticalDamage);
     combat.computerWeapons[1].criticalChance = Number(combat.computerWeapons[1].criticalChance);
     combat.computerWeapons[1].criticalDamage = Number(combat.computerWeapons[1].criticalDamage);
-
     const playerFaith = faithModCompiler(combat.player as Ascean, faithNumber, combat.weapons[0] as Equipment, faithNumberTwo, combat.weapons[1] as Equipment, combat.player?.amulet?.influences?.[0] as string, combat.player?.trinket?.influences?.[0] as string);
-    // faithNumber = playerFaith.faithOne;
-    // faithNumberTwo = playerFaith.faithTwo;
     const computerFaith = faithModCompiler(combat.computer as Ascean, computerFaithNumber, combat.computerWeapons[0], computerFaithNumberTwo, combat.computerWeapons[1], combat.computer?.amulet?.influences?.[0] as string, combat.computer?.trinket?.influences?.[0] as string);
-    // computerFaithNumber = computerFaith.faithOne;
-    // computerFaithNumberTwo = computerFaith.faithTwo;
     if (playerFaith.faithOne > 95) {
         combat.actionData.push('prayer');
         faithSuccess(combat, 'player', combat.weapons[0] as Equipment, 0);
@@ -786,7 +777,6 @@ function faithCompiler(combat: Combat): Combat { // The influence will add a cha
         combat.actionData.push('prayer');    
         faithSuccess(combat, 'player', combat.weapons[1] as Equipment, 1);
     };
-
     if (!combat.playerEffects.find(effect => effect.prayer === 'Silence')) {
         if (computerFaith.faithOne > 95) {
             faithSuccess(combat, 'computer', combat.computerWeapons[0], 0);
@@ -890,19 +880,19 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
 
     const weapOneClearance: number = Math.floor(Math.random() * 101);
     const weapTwoClearance: number = Math.floor(Math.random() * 101);
-    let weapOneCrit: number = combat.computerWeapons[0].criticalChance;
-    let weapTwoCrit: number = combat.computerWeapons[1].criticalChance;
+    let weapOneCrit: number = weapons[0].criticalChance;
+    let weapTwoCrit: number = weapons[1].criticalChance;
     weapOneCrit -= combat?.playerAttributes?.kyosirMod as number;
     weapTwoCrit -= combat?.playerAttributes?.kyosirMod as number;
 
-    const resultOne = criticalCompiler(false, combat.computer as Ascean, weapOneCrit, weapOneClearance, combat.computerWeapons[0], computerWeaponOnePhysicalDamage, computerWeaponOneMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
+    const resultOne = criticalCompiler(false, combat.computer as Ascean, weapOneCrit, weapOneClearance, weapons[0], computerWeaponOnePhysicalDamage, computerWeaponOneMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
     combat.computerGlancingBlow = resultOne.glancingBlow;
     combat.computerCriticalSuccess = resultOne.criticalSuccess;
     computerWeaponOnePhysicalDamage = resultOne.physicalDamage;
     computerWeaponOneMagicalDamage = resultOne.magicalDamage;
     if (weapOneCrit >= weapOneClearance) firstWeaponCrit = true;
 
-    const resultTwo = criticalCompiler(false, combat.computer as Ascean, weapTwoCrit, weapTwoClearance, combat.computerWeapons[1], computerWeaponTwoPhysicalDamage, computerWeaponTwoMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
+    const resultTwo = criticalCompiler(false, combat.computer as Ascean, weapTwoCrit, weapTwoClearance, weapons[1], computerWeaponTwoPhysicalDamage, computerWeaponTwoMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
     combat.computerGlancingBlow = resultTwo.glancingBlow;
     combat.computerCriticalSuccess = resultTwo.criticalSuccess;
     computerWeaponTwoPhysicalDamage = resultTwo.physicalDamage;
@@ -923,64 +913,50 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
     computerWeaponTwoMagicalDamage = damageTypeTwo.magicalDamage;
 
     // =============== WEATHER EFFECTS ================ \\
-    const weatherResult = weatherEffectCheck(weapons[0], computerWeaponOneMagicalDamage, computerWeaponOnePhysicalDamage, combat.weather, firstWeaponCrit);
-    computerWeaponOnePhysicalDamage = weatherResult.physicalDamage;
-    computerWeaponOneMagicalDamage = weatherResult.magicalDamage;
+    // const weatherResult = weatherEffectCheck(weapons[0], computerWeaponOneMagicalDamage, computerWeaponOnePhysicalDamage, combat.weather, firstWeaponCrit);
+    // computerWeaponOnePhysicalDamage = weatherResult.physicalDamage;
+    // computerWeaponOneMagicalDamage = weatherResult.magicalDamage;
 
-    const weatherResultTwo = weatherEffectCheck(weapons[1], computerWeaponTwoMagicalDamage, computerWeaponTwoPhysicalDamage, combat.weather, secondWeaponCrit);
-    computerWeaponTwoPhysicalDamage = weatherResultTwo.physicalDamage;
-    computerWeaponTwoMagicalDamage = weatherResultTwo.magicalDamage;
+    // const weatherResultTwo = weatherEffectCheck(weapons[1], computerWeaponTwoMagicalDamage, computerWeaponTwoPhysicalDamage, combat.weather, secondWeaponCrit);
+    // computerWeaponTwoPhysicalDamage = weatherResultTwo.physicalDamage;
+    // computerWeaponTwoMagicalDamage = weatherResultTwo.magicalDamage;
     // =============== WEATHER EFFECTS ================ \\
 
     computerWeaponOneTotalDamage = computerWeaponOnePhysicalDamage + computerWeaponOneMagicalDamage;
     computerWeaponTwoTotalDamage = computerWeaponTwoPhysicalDamage + computerWeaponTwoMagicalDamage;
 
     combat.realizedComputerDamage = computerWeaponOneTotalDamage + computerWeaponTwoTotalDamage;
-    if (combat.realizedComputerDamage < 0) {
-        combat.realizedComputerDamage = 0;
-    };
+    if (combat.realizedComputerDamage < 0) combat.realizedComputerDamage = 0;
 
-    let strength = combat?.computerAttributes?.totalStrength as number + combat.computerWeapons[0].strength  + combat.computerWeapons[1].strength;
-    let agility = combat?.computerAttributes?.totalAgility as number + combat.computerWeapons[0].agility  + combat.computerWeapons[1].agility;
-    let achre = combat?.computerAttributes?.totalAchre as number + combat.computerWeapons[0].achre  + combat.computerWeapons[1].achre;
-    let caeren = combat?.computerAttributes?.totalCaeren as number + combat.computerWeapons[0].caeren  + combat.computerWeapons[1].caeren;
+    let strength = combat?.computerAttributes?.totalStrength as number + weapons[0].strength  + weapons[1].strength;
+    let agility = combat?.computerAttributes?.totalAgility as number + weapons[0].agility  + weapons[1].agility;
+    let achre = combat?.computerAttributes?.totalAchre as number + weapons[0].achre  + weapons[1].achre;
+    let caeren = combat?.computerAttributes?.totalCaeren as number + weapons[0].caeren  + weapons[1].caeren;
 
-    if (combat.computerWeapons[0].grip === HOLD_TYPES.ONE_HAND) {
-        if (combat.computerWeapons[0].attackType === ATTACK_TYPES.PHYSICAL) {
+    if (weapons[0].grip === HOLD_TYPES.ONE_HAND) {
+        if (weapons[0].attackType === ATTACK_TYPES.PHYSICAL) {
             combat.realizedComputerDamage *= (agility / 100);
         } else {
             combat.realizedComputerDamage *= (achre / 100);
         };
     };
-
-    if (combat.computerWeapons[0].grip === HOLD_TYPES.TWO_HAND) {
-        if (combat.computerWeapons[0].attackType === ATTACK_TYPES.PHYSICAL) {
+    if (weapons[0].grip === HOLD_TYPES.TWO_HAND) {
+        if (weapons[0].attackType === ATTACK_TYPES.PHYSICAL) {
             combat.realizedComputerDamage *= (strength / 150); 
         } else {
             combat.realizedComputerDamage *= (caeren / 150);
         };
     };
-
-    if (combat.action === ACTION_TYPES.ATTACK) {
-        combat.realizedComputerDamage *= DAMAGE.LOW;
-    };
-    if (combat.action === ACTION_TYPES.POSTURE) {
-        combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
-    };
-    if (combat.prayerData.includes(PRAYERS.AVARICE)) {
-        combat.realizedComputerDamage *= DAMAGE.LOW;
-    };
-    if (combat.isStalwart) {
-        combat.realizedComputerDamage *= DAMAGE.STALWART;
-    };
-    if (combat.isCaerenic) {
-        combat.realizedComputerDamage *= DAMAGE.CAERENEIC_NEG;
-    };
-    if (combat.berserk.active === true) {
-        combat.berserk.charges += 1;
-    };
+    if (combat.action === ACTION_TYPES.ATTACK) combat.realizedComputerDamage *= DAMAGE.LOW;    
+    if (combat.action === ACTION_TYPES.POSTURE) combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
+    if (combat.action === ACTION_TYPES.LEAP) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
+    if (combat.action === ACTION_TYPES.RUSH) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
+    if (combat.action === ACTION_TYPES.WRITHE) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
+    if (combat.prayerData.includes(PRAYERS.AVARICE)) combat.realizedComputerDamage *= DAMAGE.LOW;
+    if (combat.isStalwart) combat.realizedComputerDamage *= DAMAGE.STALWART;
+    if (combat.isCaerenic) combat.realizedComputerDamage *= DAMAGE.CAERENEIC_NEG;
+    if (combat.berserk.active === true) combat.berserk.charges += 1;
     combat.newPlayerHealth -= combat.realizedComputerDamage;
-
     if (combat.newPlayerHealth < 0) {
         if (combat.playerEffects.find(effect => effect.prayer === PRAYERS.DENIAL)) {
             combat.newPlayerHealth = 1;
@@ -990,10 +966,7 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
             combat.computerWin = true;
         };
     };
-    
-    combat.computerActionDescription = 
-        `${computer?.name} dual-wield ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedComputerDamage)} ${combat.computerDamageType} and ${weapons[1].damageType?.[0] ? weapons[1].damageType[0] : ''}${weapons[1]?.damageType?.[1] ? ' / ' + weapons[1].damageType?.[1] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'damage (Partial Critical)' : combat.computerGlancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
-    
+    combat.computerActionDescription = `${computer?.name} dual-wield ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedComputerDamage)} ${combat.computerDamageType} and ${weapons[1].damageType?.[0] ? weapons[1].damageType[0] : ''}${weapons[1]?.damageType?.[1] ? ' / ' + weapons[1].damageType?.[1] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'damage (Partial Critical)' : combat.computerGlancingBlow === true ? 'damage (Glancing)' : 'damage'}.`;
     return combat;
 };
 
@@ -1002,15 +975,12 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     let computerPhysicalDamage: number = combat.computerWeapons[0].physicalDamage;
     let computerMagicalDamage: number = combat.computerWeapons[0].magicalDamage;
     let computerTotalDamage: number = 0;
-
     let playerPhysicalDefenseMultiplier = 100 - (combat.playerDefense?.physicalDefenseModifier as number);
     let playerMagicalDefenseMultiplier = 100 - (combat.playerDefense?.magicalDefenseModifier as number);
-
     if ((combat.action === ACTION_TYPES.POSTURE || combat.isStalwart) && combat.computerParrySuccess !== true && combat.computerRollSuccess !== true) {
         playerPhysicalDefenseMultiplier = 100 - (combat.playerDefense?.physicalPosture as number);
         playerMagicalDefenseMultiplier = 100 - (combat.playerDefense?.magicalPosture as number);
     };
-
     if (computerAction === (ACTION_TYPES.ATTACK || ACTION_TYPES.LEAP || ACTION_TYPES.RUSH || ACTION_TYPES.WRITHE)) {
         if (combat.computerWeapons[0].grip === HOLD_TYPES.ONE_HAND) {
             if (combat.computerWeapons[0].attackType === ATTACK_TYPES.PHYSICAL) {
@@ -1101,7 +1071,6 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
             };
         };
     };
-
     if (computerAction === ACTION_TYPES.ROLL ) {
         if (combat.computerRollSuccess === true) {
             computerPhysicalDamage *= DAMAGE.MID;
@@ -1111,67 +1080,56 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
             computerMagicalDamage *= DAMAGE.NEG_HIGH;
         };
     };
-
-    
+    if (computerAction === ACTION_TYPES.POSTURE ) {
+        computerPhysicalDamage *= DAMAGE.NEG_HIGH;
+        computerMagicalDamage *= DAMAGE.NEG_HIGH;
+    };
+    if (computerAction === ACTION_TYPES.LEAP ) {
+        computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
+        computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+    };
+    if (computerAction === ACTION_TYPES.RUSH ) {
+        computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
+        computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+    };
     if (computerAction === ACTION_TYPES.THRUST ) {
         computerPhysicalDamage *= DAMAGE.NEG_LOW;
         computerMagicalDamage *= DAMAGE.NEG_LOW;
     };
-
+    if (computerAction === ACTION_TYPES.WRITHE ) {
+        computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
+        computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+    };
     const criticalClearance = Math.floor(Math.random() * 101);
     let criticalChance = combat.computerWeapons[0].criticalChance;
     criticalChance -= combat.playerAttributes?.kyosirMod as number;
     if (combat.weather === 'Astralands') criticalChance += 10;
-
     const criticalResult = criticalCompiler(false, combat.computer as Ascean, criticalChance, criticalClearance, combat.computerWeapons[0], computerPhysicalDamage, computerMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
     combat.computerGlancingBlow = criticalResult.glancingBlow;
     combat.computerCriticalSuccess = criticalResult.criticalSuccess;
     computerPhysicalDamage = criticalResult.physicalDamage;
     computerMagicalDamage = criticalResult.magicalDamage;
-
     const physicalPenetration = combat.computerWeapons?.[0].physicalPenetration as number;
     const magicalPenetration = combat.computerWeapons?.[0].magicalPenetration as number;
     computerPhysicalDamage *= (playerPhysicalDefenseMultiplier - physicalPenetration) / 100;
     computerMagicalDamage *= (playerMagicalDefenseMultiplier - magicalPenetration) / 100;
-
     const damageType = damageTypeCompiler(combat.computerDamageType, combat.player as Ascean, combat.computerWeapons[0], computerPhysicalDamage, computerMagicalDamage);
     computerPhysicalDamage = damageType.physicalDamage;
     computerMagicalDamage = damageType.magicalDamage;
-
-    const weatherResult = weatherEffectCheck(combat.computerWeapons[0], computerMagicalDamage, computerPhysicalDamage, combat.weather, combat.computerCriticalSuccess);
-    computerPhysicalDamage = weatherResult.physicalDamage;
-    computerMagicalDamage = weatherResult.magicalDamage; 
-
+    // const weatherResult = weatherEffectCheck(combat.computerWeapons[0], computerMagicalDamage, computerPhysicalDamage, combat.weather, combat.computerCriticalSuccess);
+    // computerPhysicalDamage = weatherResult.physicalDamage;
+    // computerMagicalDamage = weatherResult.magicalDamage; 
     computerTotalDamage = computerPhysicalDamage + computerMagicalDamage;
-    if (computerTotalDamage < 0) {
-        computerTotalDamage = 0;
-    };
+    if (computerTotalDamage < 0) computerTotalDamage = 0;
     combat.realizedComputerDamage = computerTotalDamage;
-    if (combat.action === ACTION_TYPES.ATTACK) {
-        combat.realizedComputerDamage *= DAMAGE.LOW;
-    };
-    if (combat.action === ACTION_TYPES.POSTURE) {
-        combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
-    };
-
-    if (combat.prayerData.includes(PRAYERS.AVARICE)) {
-        combat.realizedComputerDamage *= DAMAGE.LOW;
-    };
-
-    if (combat.isStalwart) {
-        combat.realizedComputerDamage *= DAMAGE.STALWART;
-    };
-    if (combat.isCaerenic) {
-        combat.realizedComputerDamage *= DAMAGE.CAERENEIC_NEG;
-    };
-    if (combat.berserk.active === true) {
-        combat.berserk.charges += 1;
-    };
+    if (combat.action === ACTION_TYPES.ATTACK) combat.realizedComputerDamage *= DAMAGE.LOW;
+    if (combat.action === ACTION_TYPES.POSTURE) combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
+    if (combat.prayerData.includes(PRAYERS.AVARICE)) combat.realizedComputerDamage *= DAMAGE.LOW;
+    if (combat.isStalwart) combat.realizedComputerDamage *= DAMAGE.STALWART;
+    if (combat.isCaerenic) combat.realizedComputerDamage *= DAMAGE.CAERENEIC_NEG;
+    if (combat.berserk.active === true) combat.berserk.charges += 1;
     combat.newPlayerHealth -= combat.realizedComputerDamage;
-
-    combat.computerActionDescription = 
-        `${combat.computer?.name} ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? 'damage (Critical)' : combat.computerGlancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
-
+    combat.computerActionDescription = `${combat.computer?.name} ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? 'damage (Critical)' : combat.computerGlancingBlow === true ? 'damage (Glancing)' : 'damage'}.`;
     if (combat.newPlayerHealth <= 0) {
         if (combat.playerEffects.find(effect => effect.prayer === PRAYERS.DENIAL)) {
             combat.newPlayerHealth = 1;
@@ -1181,14 +1139,8 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
             combat.computerWin = true;
         };
     };
-
-    if (combat.newPlayerHealth > 0) {
-        combat.computerWin = false;
-    };
-
-    if (combat.newComputerHealth > 0) {
-        combat.playerWin = false;
-    };
+    if (combat.newPlayerHealth > 0) combat.computerWin = false;
+    if (combat.newComputerHealth > 0) combat.playerWin = false;
     return combat;
 }; 
     
@@ -1219,40 +1171,34 @@ function computerRollCompiler(combat: Combat, playerAction: string, computerActi
 function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: number, computerMagicalDefenseMultiplier: number): Combat { // Triggers if 40+ Str/Caer for 2h, 1h + Agi/Achre Mastery and 2nd weapon is 1h
     const computer = combat.computer;
     const weapons = combat.weapons;
-
-    let playerWeaponOnePhysicalDamage = combat.weapons[0]?.physicalDamage;
-    let playerWeaponOneMagicalDamage = combat.weapons[0]?.magicalDamage;
-    let playerWeaponTwoPhysicalDamage = combat.weapons[1]?.physicalDamage;
-    let playerWeaponTwoMagicalDamage = combat.weapons[1]?.magicalDamage;
+    let playerWeaponOnePhysicalDamage = weapons[0]?.physicalDamage;
+    let playerWeaponOneMagicalDamage = weapons[0]?.magicalDamage;
+    let playerWeaponTwoPhysicalDamage = weapons[1]?.physicalDamage;
+    let playerWeaponTwoMagicalDamage = weapons[1]?.magicalDamage;
     let playerWeaponOneTotalDamage;
     let playerWeaponTwoTotalDamage;
     let firstWeaponCrit = false;
     let secondWeaponCrit = false;
-    
     const weapOneClearance = Math.floor(Math.random() * 10100) / 100;
     const weapTwoClearance = Math.floor(Math.random() * 10100) / 100;
-    let weapOneCrit = combat.weapons[0]?.criticalChance as number
-    let weapTwoCrit = combat.weapons[1]?.criticalChance as number;
+    let weapOneCrit = weapons[0]?.criticalChance as number
+    let weapTwoCrit = weapons[1]?.criticalChance as number;
     weapOneCrit -= combat.computerAttributes?.kyosirMod as number;
     weapTwoCrit -= combat.computerAttributes?.kyosirMod as number;
-    const resultOne = criticalCompiler(true, combat.player as Ascean, weapOneCrit, weapOneClearance, combat.weapons[0] as Equipment, playerWeaponOnePhysicalDamage as number, playerWeaponOneMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess, combat.isSeering);
+    const resultOne = criticalCompiler(true, combat.player as Ascean, weapOneCrit, weapOneClearance, weapons[0] as Equipment, playerWeaponOnePhysicalDamage as number, playerWeaponOneMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess, combat.isSeering);
     combat.criticalSuccess = resultOne.criticalSuccess;
     combat.glancingBlow = resultOne.glancingBlow;
     playerWeaponOnePhysicalDamage = resultOne.physicalDamage;
     playerWeaponOneMagicalDamage = resultOne.magicalDamage;
-    if (weapOneCrit >= weapOneClearance) {
-        firstWeaponCrit = true;
-    };
-    const resultTwo = criticalCompiler(true, combat.player as Ascean, weapTwoCrit, weapTwoClearance, combat.weapons[1] as Equipment, playerWeaponTwoPhysicalDamage as number, playerWeaponTwoMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess, combat.isSeering);
+    if (weapOneCrit >= weapOneClearance) firstWeaponCrit = true;
+    const resultTwo = criticalCompiler(true, combat.player as Ascean, weapTwoCrit, weapTwoClearance, weapons[1] as Equipment, playerWeaponTwoPhysicalDamage as number, playerWeaponTwoMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess, combat.isSeering);
     combat.criticalSuccess = resultTwo.criticalSuccess;
     combat.glancingBlow = resultTwo.glancingBlow;
     combat.isSeering = resultTwo.isSeering;
     playerWeaponTwoPhysicalDamage = resultTwo.physicalDamage;
     playerWeaponTwoMagicalDamage = resultTwo.magicalDamage;
-    if (weapTwoCrit >= weapTwoClearance) {
-        secondWeaponCrit = true;
-    };
-
+    if (weapTwoCrit >= weapTwoClearance) secondWeaponCrit = true;
+    
     playerWeaponOnePhysicalDamage *= (computerPhysicalDefenseMultiplier - (weapons[0]?.physicalPenetration as number)) / 100;
     playerWeaponOneMagicalDamage *= (computerMagicalDefenseMultiplier - (weapons[0]?.magicalPenetration as number)) / 100;
 
@@ -1267,37 +1213,34 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: nu
     playerWeaponTwoPhysicalDamage = damageTypeTwo.physicalDamage;
     playerWeaponTwoMagicalDamage = damageTypeTwo.magicalDamage;
 
-    const weatherResult = weatherEffectCheck(combat.weapons[0] as Equipment, playerWeaponOneMagicalDamage, playerWeaponOnePhysicalDamage, combat.weather, firstWeaponCrit);
-    playerWeaponOnePhysicalDamage = weatherResult.physicalDamage;
-    playerWeaponOneMagicalDamage = weatherResult.magicalDamage;
+    // const weatherResult = weatherEffectCheck(combat.weapons[0] as Equipment, playerWeaponOneMagicalDamage, playerWeaponOnePhysicalDamage, combat.weather, firstWeaponCrit);
+    // playerWeaponOnePhysicalDamage = weatherResult.physicalDamage;
+    // playerWeaponOneMagicalDamage = weatherResult.magicalDamage;
 
-    const weatherResultTwo = weatherEffectCheck(combat.weapons[1] as Equipment, playerWeaponTwoMagicalDamage, playerWeaponTwoPhysicalDamage, combat.weather, secondWeaponCrit);
-    playerWeaponTwoPhysicalDamage = weatherResultTwo.physicalDamage;
-    playerWeaponTwoMagicalDamage = weatherResultTwo.magicalDamage;
+    // const weatherResultTwo = weatherEffectCheck(combat.weapons[1] as Equipment, playerWeaponTwoMagicalDamage, playerWeaponTwoPhysicalDamage, combat.weather, secondWeaponCrit);
+    // playerWeaponTwoPhysicalDamage = weatherResultTwo.physicalDamage;
+    // playerWeaponTwoMagicalDamage = weatherResultTwo.magicalDamage;
 
     playerWeaponOneTotalDamage = playerWeaponOnePhysicalDamage + playerWeaponOneMagicalDamage;
     playerWeaponTwoTotalDamage = playerWeaponTwoPhysicalDamage + playerWeaponTwoMagicalDamage;
 
     combat.realizedPlayerDamage = playerWeaponOneTotalDamage + playerWeaponTwoTotalDamage;
-    if (combat.realizedPlayerDamage < 0) {
-        combat.realizedPlayerDamage = 0;
-    };
+    if (combat.realizedPlayerDamage < 0) combat.realizedPlayerDamage = 0;
+    let strength = combat.playerAttributes?.totalStrength as number + (weapons[0]?.strength as number)  + (weapons[1]?.strength as number);
+    let agility = combat.playerAttributes?.totalAgility as number + (weapons[0]?.agility as number)  + (weapons[1]?.agility as number);
+    let achre = combat.playerAttributes?.totalAchre as number + (weapons[0]?.achre as number) + (weapons[1]?.achre as number);
+    let caeren = combat.playerAttributes?.totalCaeren as number + (weapons[0]?.caeren as number)  + (weapons[1]?.caeren as number);
 
-    let strength = combat.playerAttributes?.totalStrength as number + (combat.weapons[0]?.strength as number)  + (combat.weapons[1]?.strength as number);
-    let agility = combat.playerAttributes?.totalAgility as number + (combat.weapons[0]?.agility as number)  + (combat.weapons[1]?.agility as number);
-    let achre = combat.playerAttributes?.totalAchre as number + (combat.weapons[0]?.achre as number) + (combat.weapons[1]?.achre as number);
-    let caeren = combat.playerAttributes?.totalCaeren as number + (combat.weapons[0]?.caeren as number)  + (combat.weapons[1]?.caeren as number);
-
-    if (combat.weapons[0]?.grip === HOLD_TYPES.ONE_HAND) {
-        if (combat.weapons[0]?.attackType === ATTACK_TYPES.PHYSICAL) {
+    if (weapons[0]?.grip === HOLD_TYPES.ONE_HAND) {
+        if (weapons[0]?.attackType === ATTACK_TYPES.PHYSICAL) {
             combat.realizedPlayerDamage *= (agility / 200)
         } else {
             combat.realizedPlayerDamage *= (achre / 200)
         };
     };
 
-    if (combat.weapons[0]?.grip === HOLD_TYPES.TWO_HAND) {
-        if (combat.weapons[0]?.attackType === ATTACK_TYPES.PHYSICAL) {
+    if (weapons[0]?.grip === HOLD_TYPES.TWO_HAND) {
+        if (weapons[0]?.attackType === ATTACK_TYPES.PHYSICAL) {
             combat.realizedPlayerDamage *= (strength / 300) 
         } else {
             combat.realizedPlayerDamage *= (caeren / 300)
@@ -1311,10 +1254,14 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: nu
         combat.realizedPlayerDamage *= DAMAGE.NEG_HIGH;
     };
     if (combat.action === ACTION_TYPES.LEAP) {
-        combat.realizedPlayerDamage *= DAMAGE.HIGH;
+        combat.realizedPlayerDamage *= DAMAGE.TWO;
     };
     if (combat.action === ACTION_TYPES.RUSH) {
-        combat.realizedPlayerDamage *= DAMAGE.HIGH;
+        combat.realizedPlayerDamage *= DAMAGE.TWO;
+    };
+    
+    if (combat.action === ACTION_TYPES.WRITHE) {
+        combat.realizedPlayerDamage *= DAMAGE.TWO;
     };
     if (combat.action === ACTION_TYPES.ACHIRE) {
         combat.realizedPlayerDamage *= DAMAGE.ONE_FIFTY;
@@ -1365,11 +1312,11 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: nu
     };
   
     // ==================== STATISTIC LOGIC ====================
-    combat.typeAttackData.push(combat.weapons[0]?.attackType as string, combat.weapons[1]?.attackType as string);
+    combat.typeAttackData.push(weapons[0]?.attackType as string, weapons[1]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
-    const skill = combat.weapons[0]?.type === 'Spell' ? combat.weapons[0]?.damageType?.[0] : combat.weapons[0]?.type;
+    const skill = weapons[0]?.type === 'Spell' ? weapons[0]?.damageType?.[0] : weapons[0]?.type;
     combat.skillData.push(skill as string);
-    const skillTwo = combat.weapons[1]?.type === 'Spell' ? combat.weapons[1]?.damageType?.[0] : combat.weapons[1]?.type;
+    const skillTwo = weapons[1]?.type === 'Spell' ? weapons[1]?.damageType?.[0] : weapons[1]?.type;
     combat.skillData.push(skillTwo as string);
     combat.totalDamageData = Math.max(combat.realizedPlayerDamage, combat.totalDamageData);
     // ==================== STATISTIC LOGIC ====================
@@ -1491,16 +1438,20 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
         playerMagicalDamage *= DAMAGE.THREE;
     };
     if (playerAction === ACTION_TYPES.LEAP) {
-        playerPhysicalDamage *= DAMAGE.MID;
-        playerMagicalDamage *= DAMAGE.MID;
+        playerPhysicalDamage *= DAMAGE.TWO;
+        playerMagicalDamage *= DAMAGE.TWO;
     };
     if (playerAction === ACTION_TYPES.QUOR) {
         playerPhysicalDamage *= DAMAGE.THREE;
         playerMagicalDamage *= DAMAGE.THREE;
     };
     if (playerAction === ACTION_TYPES.RUSH) {
-        playerPhysicalDamage *= DAMAGE.MID;
-        playerMagicalDamage *= DAMAGE.MID;
+        playerPhysicalDamage *= DAMAGE.TWO;
+        playerMagicalDamage *= DAMAGE.TWO;
+    };
+    if (playerAction === ACTION_TYPES.WRITHE) {
+        playerPhysicalDamage *= DAMAGE.TWO;
+        playerMagicalDamage *= DAMAGE.TWO;
     };
     if (playerAction === ACTION_TYPES.STORM) {
         playerPhysicalDamage *= DAMAGE.NEG_LOW;
@@ -1533,9 +1484,9 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     const damageType = damageTypeCompiler(combat.playerDamageType, combat.computer as Ascean, combat.weapons[0] as Equipment, playerPhysicalDamage, playerMagicalDamage);
     playerPhysicalDamage = damageType.physicalDamage;
     playerMagicalDamage = damageType.magicalDamage;
-    const weatherResult = weatherEffectCheck(combat.weapons[0] as Equipment, playerMagicalDamage, playerPhysicalDamage, combat.weather, combat.criticalSuccess);
-    playerPhysicalDamage = weatherResult.physicalDamage;
-    playerMagicalDamage = weatherResult.magicalDamage;
+    // const weatherResult = weatherEffectCheck(combat.weapons[0] as Equipment, playerMagicalDamage, playerPhysicalDamage, combat.weather, combat.criticalSuccess);
+    // playerPhysicalDamage = weatherResult.physicalDamage;
+    // playerMagicalDamage = weatherResult.magicalDamage;
     playerTotalDamage = playerPhysicalDamage + playerMagicalDamage;
     if (playerTotalDamage < 0) {
         playerTotalDamage = 0;

@@ -571,7 +571,7 @@ export default class Enemy extends Entity {
         };
     };
 
-    setSpecialCombat = (bool, mult = 0.4) => {
+    setSpecialCombat = (bool, mult = 1) => {
         if (this.isSpecial === false) return;
         const mastery = this.ascean.mastery;
         if (bool === true) {
@@ -587,12 +587,12 @@ export default class Enemy extends Entity {
                 const special = ENEMY_SPECIAL[mastery][Math.floor(Math.random() * ENEMY_SPECIAL[mastery].length)].toLowerCase();
                 this.specialAction = special;
                 this.currentAction = 'special';
-                // const specific = ['leap'];
-                // const test = specific[Math.floor(Math.random() * specific.length)];
-                if (this.stateMachine.isState(special)) {
-                    this.stateMachine.setState(special);
-                } else if (this.positiveMachine.isState(special)) {
-                    this.positiveMachine.setState(special);
+                const specific = ['renewal'];
+                const test = specific[Math.floor(Math.random() * specific.length)];
+                if (this.stateMachine.isState(test)) {
+                    this.stateMachine.setState(test);
+                } else if (this.positiveMachine.isState(test)) {
+                    this.positiveMachine.setState(test);
                 };
                 this.setSpecialCombat(true);
             }, undefined, this);
@@ -1282,7 +1282,7 @@ export default class Enemy extends Entity {
                     this.scene.fear(this.scene.player.playerID);
                 } else {
                     EventBus.emit('special-combat-text', {
-                        computerSpecialDescription: `You resist the dread of the dripping Moon.` // Menses wink wink
+                        playerSpecialDescription: `You resist the dread of the dripping Moon.` // Menses wink wink
                     });
                 };
             };
@@ -1616,15 +1616,17 @@ export default class Enemy extends Entity {
             this.reactiveBubble.cleanUp();
             this.reactiveBubble = undefined;
         };
+        this.reactiveName = States.MALICE;
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.isMalicing = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush');
         this.reactiveBubble = new Bubble(this.scene, this.x, this.y, 'purple', PLAYER.DURATIONS.MALICE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MALICE, () => {
             this.isMalicing = false;    
-            if (this.reactiveBubble) {
+            if (this.reactiveBubble && this.reactiveName === States.MALICE) {
                 this.reactiveBubble.cleanUp();
                 this.reactiveBubble = undefined;
+                this.reactiveName = '';
             };
         }, undefined, this);
         EventBus.emit('enemy-combat-text', {
@@ -1701,15 +1703,17 @@ export default class Enemy extends Entity {
             this.reactiveBubble.cleanUp();
             this.reactiveBubble = undefined;
         };
+        this.reactiveName = States.MEND;
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.isMending = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 750, 'tendril');
         this.reactiveBubble = new Bubble(this.scene, this.x, this.y, 'purple', PLAYER.DURATIONS.MEND);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MEND, () => {
             this.isMending = false;    
-            if (this.reactiveBubble) {
+            if (this.reactiveBubble && this.reactiveName === States.MEND) {
                 this.reactiveBubble.cleanUp();
                 this.reactiveBubble = undefined;
+                this.reactiveName = '';
             };    
         }, undefined, this);
         EventBus.emit('enemy-combat-text', {
@@ -1879,15 +1883,17 @@ export default class Enemy extends Entity {
             this.negationBubble.cleanUp();
             this.negationBubble = undefined;
         };
+        this.negationName = States.SHIELD;
         this.scene.sound.play('shield', { volume: this.scene.settings.volume });
         this.isShielding = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shielding', 750, 'bone');
         this.negationBubble = new Bubble(this.scene, this.x, this.y, 'bone', PLAYER.DURATIONS.SHIELD);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIELD, () => {
             this.isShielding = false;    
-            if (this.negationBubble) {
+            if (this.negationBubble && this.negationName === States.SHIELD) {
                 this.negationBubble.cleanUp();
                 this.negationBubble = undefined;
+                this.negationName = '';
             };
         }, undefined, this);
         EventBus.emit('enemy-combat-text', {
@@ -1954,15 +1960,17 @@ export default class Enemy extends Entity {
             this.negationBubble.cleanUp();
             this.negationBubble = undefined;
         };
+        this.negationName = States.WARD;
         this.isWarding = true;
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Warding', 750, 'damage');
         this.negationBubble = new Bubble(this.scene, this.x, this.y, 'red', PLAYER.DURATIONS.WARD);
         this.scene.time.delayedCall(PLAYER.DURATIONS.WARD, () => {
             this.isWarding = false;    
-            if (this.negationBubble) {
+            if (this.negationBubble && this.negationName === States.WARD) {
                 this.negationBubble.cleanUp();
                 this.negationBubble = undefined;
+                this.negationName = '';
             };
         }, undefined, this);
         EventBus.emit('enemy-combat-text', {

@@ -337,11 +337,13 @@ export class Game extends Scene {
             if (settings.desktop === true) {
                 this.joystick?.joystick?.setVisible(false);
                 this.rightJoystick?.joystick?.setVisible(false);
-                this.actionBar?.setVisible(false);
+                if (this.actionBar) this.actionBar.draw();
+                // if (this.actionBar) this.actionBar?.setVisible(false);
             } else {
                 this.joystick?.joystick?.setVisible(true);
                 this.rightJoystick?.joystick?.setVisible(true);
-                this.actionBar?.setVisible(true);
+                if (this.actionBar) this.actionBar.draw();
+                // if (this.actionBar) this.actionBar?.setVisible(true);
             };
         });    
         EventBus.on('enemyLootDrop', (drops: any) => {
@@ -1119,9 +1121,9 @@ export class Game extends Scene {
             this.offsetX = Math.max(this.offsetX - 3, -115);
         };
         if (this.player.velocity.y > 0) {
-            this.offsetY = Math.max(this.offsetY - 2.5, -90);
+            this.offsetY = Math.max(this.offsetY - 2.5, -75);
         } else if (this.player.velocity.y < 0) {
-            this.offsetY = Math.min(90, this.offsetY + 2.5);
+            this.offsetY = Math.min(75, this.offsetY + 2.5);
         };
     };
     sortEnemies = (enemies: Enemy[]): Enemy[] => {

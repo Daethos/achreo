@@ -11,6 +11,7 @@ import { consumePrayer, instantActionCompiler, prayerEffectTick, prayerRemoveTic
 import { screenShake } from '../phaser/ScreenShake';
 import { Reputation } from '../utility/player';
 import { Puff } from 'solid-spinner';
+import Statistics from '../utility/statistics';
 const Character = lazy(async () => await import('./Character'));
 const CombatUI = lazy(async () => await import('./CombatUI'));
 const Deity = lazy(async () => await import('./Deity'));
@@ -32,6 +33,8 @@ interface Props {
     reputation: Accessor<Reputation>;
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
+    statistics: Accessor<Statistics>;
+    setStatistics: Setter<Statistics>;
     stamina: Accessor<number>;
     grace: Accessor<number>;
     tutorial: Accessor<string>;
@@ -40,7 +43,7 @@ interface Props {
     showDeity: Accessor<boolean>;
 };
 var remaining: number = 0, timer: any = undefined;
-export default function BaseUI({ instance, ascean, combat, game, reputation, settings, setSettings, stamina, grace, tutorial, showDeity, showTutorial, setShowTutorial }: Props) {
+export default function BaseUI({ instance, ascean, combat, game, reputation, settings, setSettings, statistics, setStatistics, stamina, grace, tutorial, showDeity, showTutorial, setShowTutorial }: Props) {
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [asceanState, setAsceanState] = createSignal<LevelSheet>({
         ascean: ascean(),
@@ -490,7 +493,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             </Show> 
         </div>}>
             <Suspense fallback={<Puff color="gold" />}>
-                <Character reputation={reputation} settings={settings} setSettings={setSettings} ascean={ascean} asceanState={asceanState} game={game} combat={combat} />
+                <Character reputation={reputation} settings={settings} setSettings={setSettings} statistics={statistics} ascean={ascean} asceanState={asceanState} game={game} combat={combat} />
             </Suspense>
         </Show>
         <Suspense fallback={<Puff color="gold" />}>

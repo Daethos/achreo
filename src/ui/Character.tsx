@@ -20,6 +20,7 @@ import { SPECIAL, TRAIT_SPECIALS, SPECIALS, TRAITS } from '../utility/abilities'
 import { DEITIES } from '../utility/deities';
 import { Puff } from 'solid-spinner';
 import PhaserSettings from './PhaserSettings';
+import Statistics from '../utility/statistics';
 const AsceanImageCard = lazy(async () => await import('../components/AsceanImageCard'));
 const ExperienceBar = lazy(async () => await import('./ExperienceBar'));
 const Firewater = lazy(async () => await import('./Firewater'));
@@ -83,13 +84,14 @@ interface Props {
     reputation: Accessor<Reputation>;
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
+    statistics: Accessor<Statistics>;
     ascean: Accessor<Ascean>; 
     asceanState: Accessor<any>;
     game: Accessor<GameState>;
     combat: Accessor<Combat>;
 };
 
-const Character = ({ reputation, settings, setSettings, ascean, asceanState, game, combat }: Props) => {
+const Character = ({ reputation, settings, setSettings, statistics, ascean, asceanState, game, combat }: Props) => {
     const [playerTraitWrapper, setPlayerTraitWrapper] = createSignal<any>({});
     const [dragAndDropInventory, setDragAndDropInventory] = createSignal(game()?.inventory.inventory);
     const [canUpgrade, setCanUpgrade] = createSignal<boolean>(false);
@@ -261,21 +263,21 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
                     </div>
                 </div>;
             case CHARACTERS.STATISTICS:
-                let highestDeity = Object.entries(ascean()?.statistics?.combat?.deities).reduce((a, b) => a?.[1] > b?.[1] ? a : b) || combat().weapons?.[0]?.influences?.[0]; // || combat().weapons?.[0]?.influences?.[0]
-                const highestPrayer = Object.entries(ascean()?.statistics?.combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
-                let highestMastery = Object.entries(ascean()?.statistics?.mastery).reduce((a, b) => a[1] > b[1] ? a : b);
+                let highestDeity = Object.entries(statistics().combat?.deities).reduce((a, b) => a?.[1] > b?.[1] ? a : b) || combat().weapons?.[0]?.influences?.[0]; // || combat().weapons?.[0]?.influences?.[0]
+                const highestPrayer = Object.entries(statistics().combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
+                let highestMastery = Object.entries(statistics().mastery).reduce((a, b) => a[1] > b[1] ? a : b);
                 if (highestMastery?.[1] === 0) highestMastery = [ascean()?.mastery, 0];
                 if (highestDeity?.[1] === 0) highestDeity[0] = combat().weapons?.[0]?.influences?.[0] as string; 
                 return <div class='creature-heading'>
                     <h1 style={{ 'margin-bottom': '3%' }}>Attacks</h1>
-                        Magical: <span class='gold'>{ascean()?.statistics?.combat?.attacks?.magical}</span> <br />
-                        Physical: <span class='gold'>{ascean()?.statistics?.combat?.attacks?.physical}</span><br />
-                        Highest Damage: <span class='gold'>{Math.round(ascean()?.statistics?.combat?.attacks?.total)}</span>
+                        Magical: <span class='gold'>{statistics().combat?.attacks?.magical}</span> <br />
+                        Physical: <span class='gold'>{statistics().combat?.attacks?.physical}</span><br />
+                        Highest Damage: <span class='gold'>{Math.round(statistics().combat?.attacks?.total)}</span>
                     <h1 style={{ 'margin-bottom': '3%' }}>Combat</h1>
                         Mastery: <span class='gold'>{highestMastery[0].charAt(0).toUpperCase() + highestMastery[0].slice(1)} - {highestMastery[1]}</span><br />
-                        Wins / Losses: <span class='gold'>{ascean()?.statistics?.combat?.wins} / {ascean()?.statistics?.combat?.losses}</span>
+                        Wins / Losses: <span class='gold'>{statistics().combat?.wins} / {statistics().combat?.losses}</span>
                     <h1 style={{ 'margin-bottom': '3%' }}>Prayers</h1>
-                        Consumed / Invoked: <span class='gold'>{ascean()?.statistics?.combat?.actions?.consumes} / {ascean()?.statistics?.combat?.actions?.prayers} </span><br />
+                        Consumed / Invoked: <span class='gold'>{statistics().combat?.actions?.consumes} / {statistics().combat?.actions?.prayers} </span><br />
                         Highest Prayer: <span class='gold'>{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</span><br />
                         Favored Deity: <span class='gold'>{highestDeity[0]}</span><br />
                         Blessings: <span class='gold'>{highestDeity[1]}</span>
@@ -297,9 +299,9 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
     }; 
 
     const createPrayerInfo = (): JSX.Element => {
-        const highestDeity = Object.entries(ascean()?.statistics?.combat?.deities).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
-        const highestPrayer = Object.entries(ascean()?.statistics?.combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
-        let highestMastery = Object.entries(ascean()?.statistics?.mastery).reduce((a, b) => a[1] > b[1] ? a : b);
+        const highestDeity = Object.entries(statistics().combat?.deities).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
+        const highestPrayer = Object.entries(statistics().combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
+        let highestMastery = Object.entries(statistics().mastery).reduce((a, b) => a[1] > b[1] ? a : b);
         if (highestMastery?.[1] === 0) highestMastery = [ascean()?.mastery, 0];
         const rarity = { 'Default': 0, 'Common': 1, 'Uncommon': 2, 'Rare': 3, 'Epic': 4, 'Legendary': 5 };
         const weaponInfluenceStrength = rarity[ascean().weaponOne.rarity as keyof typeof rarity];
@@ -314,7 +316,7 @@ const Character = ({ reputation, settings, setSettings, ascean, asceanState, gam
             <h1 style={{ 'margin-bottom': '3%' }}>Prayers</h1>
             <h2>That which you seek in combat.</h2>
                 Mastery: <span class='gold'>{highestMastery[0].charAt(0).toUpperCase() + highestMastery[0].slice(1)} - {highestMastery[1]}</span><br />
-                Consumed / Invoked: <span class='gold'>{ascean()?.statistics?.combat?.actions?.consumes} / {ascean()?.statistics?.combat?.actions?.prayers} </span><br />
+                Consumed / Invoked: <span class='gold'>{statistics().combat?.actions?.consumes} / {statistics().combat?.actions?.prayers} </span><br />
                 Highest Prayer: <span class='gold'>{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</span><br />
                 Favored Deity: <span class='gold'>{highestDeity[0]}</span><br />
                 Blessings: <span class='gold'>{highestDeity[1]}</span>

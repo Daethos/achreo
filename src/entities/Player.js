@@ -109,7 +109,7 @@ export default class Player extends Entity {
             .addState(States.ARC, { onEnter: this.onArcEnter, onUpdate: this.onArcUpdate, onExit: this.onArcExit })
             .addState(States.ACHIRE, { onEnter: this.onAchireEnter, onUpdate: this.onAchireUpdate, onExit: this.onAchireExit })
             .addState(States.ASTRAVE, { onEnter: this.onAstraveEnter, onUpdate: this.onAstraveUpdate, onExit: this.onAstraveExit })
-            .addState(States.BLINK, { onEnter: this.onBlinkEnter, onUpdate: this.onBlinkUpdate, onExit: this.onBlinkExit })
+            .addState(States.BLINK, { onEnter: this.onBlinkEnter, onUpdate: this.onBlinkUpdate })
             .addState(States.CONFUSE, { onEnter: this.onConfuseEnter, onUpdate: this.onConfuseUpdate, onExit: this.onConfuseExit })
             .addState(States.CONSUME, { onEnter: this.onConsumeEnter, onUpdate: this.onConsumeUpdate, onExit: this.onConsumeExit })
             .addState(States.DESPERATION, { onEnter: this.onDesperationEnter, onUpdate: this.onDesperationUpdate, onExit: this.onDesperationExit })
@@ -1332,14 +1332,10 @@ export default class Player extends Entity {
             this.scene.useGrace(PLAYER.STAMINA.BLINK);
             screenShake(this.scene);
         };
-        const blinkCooldown = this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
-        this.setTimeEvent('blinkCooldown', blinkCooldown);
+        this.setTimeEvent('blinkCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);
         this.flickerCarenic(750); 
     };
-    onBlinkUpdate = (_dt) => {
-        this.combatChecker(this.isBlinking);
-    };
-    onBlinkExit = () => {};
+    onBlinkUpdate = (_dt) => this.combatChecker(false);
 
     onConfuseEnter = () => {
         if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
@@ -1861,7 +1857,7 @@ export default class Player extends Entity {
         this.animateMark();
         this.animateMark();
         this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
-        this.setTimeEvent('markCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+        this.setTimeEvent('markCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.useGrace(PLAYER.STAMINA.MARK);
         this.setStatic(false);
     };
@@ -1897,7 +1893,7 @@ export default class Player extends Entity {
         this.netherswapTarget.setPosition(player.x, player.y);
         this.netherswapTarget = undefined;
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
-        this.setTimeEvent('netherswapCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+        this.setTimeEvent('netherswapCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.useGrace(PLAYER.STAMINA.NETHERSWAP);
     };
 
@@ -1911,7 +1907,7 @@ export default class Player extends Entity {
             this.scene.rightJoystick.joystick.setVisible(false);
             this.scene.actionBar.setVisible(false);
         };
-        this.setTimeEvent('recallCooldown', this.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+        this.setTimeEvent('recallCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.useGrace(PLAYER.STAMINA.RECALL);
     };
     onRecallUpdate = (_dt) => this.combatChecker(this.isPraying);

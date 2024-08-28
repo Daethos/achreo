@@ -26,8 +26,6 @@ export default class Quest {
         experience: number,
         items: Equipment[] | string[] | undefined
     };
-
-
     constructor(id: string, quest: any) {
         this._id = id;
         this.title = quest.title;    

@@ -8,12 +8,14 @@ import Ascean from '../../models/ascean';
 import { Asceans } from './ascean';
 import Equipment, { getOneRandom } from '../../models/equipment';
 import { Inventory, Reputation } from '../../utility/player';
+import Statistics from '../../utility/statistics';
 var db = new PseudoBase('db');
 const EQUIPMENT = 'Equipment';
 const ASCEANS = 'Asceans';
 const SETTINGS = 'Settings';
 const REPUTATION = 'Reputation';
 const INVENTORY = 'Inventory';
+const STATISTICS = 'Statistics';
 
 export const getAsceans = async () => await db.collection(ASCEANS).get();
 export const getAscean = async (id: string) => await db.collection(ASCEANS).doc({ _id: id }).get();
@@ -32,6 +34,8 @@ export const deleteAscean = async (id: string) => {
     if (settings) await db.collection(SETTINGS).doc({ _id: id }).delete();
     const inventory = await db.collection(INVENTORY).doc({ _id: id }).get();
     if (inventory) await db.collection(INVENTORY).doc({ _id: id }).delete();
+    const statistics = await db.collection(STATISTICS).doc({ _id: id }).get();
+    if (statistics) await db.collection(STATISTICS).doc({ _id: id }).delete();
 };
 
 export const blessAscean = async (id: string, entry: any): Promise<any> => {
@@ -218,7 +222,7 @@ export const updateReputation = async (reputation: Reputation) => {
     return update;
 };
 
-export const getSettings = async (id: string) => {
+export const getSettings = async (id: string): Promise<Settings> => {
     const settings = await db.collection(SETTINGS).doc({ _id: id }).get();
     if (settings) {
         return settings;
@@ -232,6 +236,23 @@ export const getSettings = async (id: string) => {
 
 export const updateSettings = async (settings: Settings) => {
     await db.collection(SETTINGS).doc({ _id: settings._id }).update(settings);
+};
+
+export const getStatistics = async (id: string): Promise<Statistics> => {
+    const stats = await db.collection(STATISTICS).doc({ _id: id }).get();
+    if (stats) {
+        return stats;
+    } else {
+        const ascean = await getAscean(id);
+        const newStats = new Statistics(id, ascean.mastery);
+        await db.collection(STATISTICS).add(newStats);
+        return newStats;
+    };
+};
+
+export const updateStatistics = async (stats: Statistics) => {
+    const update = await db.collection(STATISTICS).doc({ _id: stats._id }).update(stats);
+    return update;
 };
 
 export const populate = async (ascean: any) => {

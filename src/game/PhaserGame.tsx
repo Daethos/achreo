@@ -3,6 +3,7 @@ import { createStore } from 'solid-js/store';
 import Ascean from '../models/ascean';
 import Equipment, { getOneRandom, upgradeEquipment } from '../models/equipment';
 import Settings from '../models/settings';
+import Statistics from '../utility/statistics';
 import StartGame from './main';
 import { EventBus } from './EventBus';
 import { Menu } from '../utility/screens';
@@ -16,7 +17,6 @@ import { getAsceanTraits } from '../utility/traits';
 import { getNodesForNPC, npcIds } from '../utility/DialogNode';
 import { fetchNpc } from '../utility/npc';
 import { checkDeificConcerns } from '../utility/deities';
-import { Statistics } from '../utility/statistics';
 import { STARTING_SPECIALS } from '../utility/abilities';
 import { Inventory, Reputation, faction } from '../utility/player';
 import { Puff } from 'solid-spinner';
@@ -46,6 +46,8 @@ interface IProps {
     setReputation: Setter<Reputation>;
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
+    statistics: Accessor<Statistics>;
+    setStatistics: Setter<Statistics>;
     scene: Accessor<any>;
 };
 
@@ -102,13 +104,13 @@ export default function PhaserGame (props: IProps) {
                 kyosir: Math.round((state().ascean.kyosir + kyosir) * masteryCheck('kyosir', newMastery)),
                 mastery: newMastery, 
                 faith: state().faith,
-                statistics: {
-                    ...state().ascean.statistics,
-                    mastery: {
-                        ...state().ascean.statistics.mastery,
-                        [newMastery]: state().ascean.statistics.mastery[newMastery] + 1,
-                    }
-                } 
+                // statistics: {
+                //     ...state().ascean.statistics,
+                //     mastery: {
+                //         ...state().ascean.statistics.mastery,
+                //         [newMastery]: state().ascean.statistics.mastery[newMastery] + 1,
+                //     }
+                // } 
             };
             let hyd = asceanCompiler(update);
             const save = {
@@ -141,6 +143,15 @@ export default function PhaserGame (props: IProps) {
                 faith: save.faith,
             });                
             EventBus.emit('update-ascean', save);
+
+            let newStats = {
+                ...props.statistics(),
+                mastery: {
+                    ...props.statistics().mastery,
+                    [newMastery]: (props.statistics() as any).mastery[newMastery] + 1,
+                }
+            };
+            EventBus.emit('update-statistics', newStats);
         } catch (err: any) {
             console.warn(err, '<- Error in the Controller Updating the Level!')
         };
@@ -180,42 +191,61 @@ export default function PhaserGame (props: IProps) {
                 let inventory = Array.from(game().inventory.inventory);
                 inventory.push(item);
                 const clean = { ...game().inventory, inventory };
-                const update = { 
-                    ...props.ascean(), 
-                    statistics: { 
-                        ...props.ascean().statistics, 
-                        thievery: { 
-                            ...props.ascean().statistics.thievery, 
-                            successes: props.ascean().statistics.thievery.successes + 1, 
-                            total: props.ascean().statistics.thievery.total + 1,
-                            totalValue: props.ascean().statistics.thievery.totalValue + value 
-                        } 
-                    } 
+                // const update = { 
+                //     ...props.ascean(), 
+                //     statistics: { 
+                //         ...props.ascean().statistics, 
+                //         thievery: { 
+                //             ...props.ascean().statistics.thievery, 
+                //             successes: props.ascean().statistics.thievery.successes + 1, 
+                //             total: props.ascean().statistics.thievery.total + 1,
+                //             totalValue: props.ascean().statistics.thievery.totalValue + value 
+                //         } 
+                //     } 
+                // };
+                const newStats = {
+                    ...props.statistics(),
+                    thievery: {
+                        ...props.statistics().thievery,
+                        successes: props.statistics().thievery.successes + 1,
+                        total: props.statistics().thievery.total +1,
+                        totalValue: props.statistics().thievery.totalValue + value
+                    },
                 };
                 let merchantEquipment = [ ...game().merchantEquipment ];
                 merchantEquipment = merchantEquipment.filter((eqp) => eqp._id !== item._id);
                 setGame({ ...game(), inventory: clean, merchantEquipment });
-                EventBus.emit('update-ascean', update);
+                // EventBus.emit('update-ascean', update);
                 EventBus.emit('update-inventory', clean);
+                EventBus.emit('update-statistics', newStats);
                 EventBus.emit('stealth-sound');
             } else {
-                const update = { 
-                    ...props.ascean(), 
-                    statistics: { 
-                        ...props.ascean().statistics, 
-                        thievery: { 
-                            ...props.ascean().statistics.thievery, 
-                            failures: props.ascean().statistics.thievery.failures + 1, 
-                            total: props.ascean().statistics.thievery.total + 1,
-                            totalValue: props.ascean().statistics.thievery.totalValue + value 
-                        } 
-                    } 
+                // const update = { 
+                //     ...props.ascean(), 
+                //     statistics: { 
+                //         ...props.ascean().statistics, 
+                //         thievery: { 
+                //             ...props.ascean().statistics.thievery, 
+                //             failures: props.ascean().statistics.thievery.failures + 1, 
+                //             total: props.ascean().statistics.thievery.total + 1,
+                //             totalValue: props.ascean().statistics.thievery.totalValue + value 
+                //         } 
+                //     } 
+                // };
+                const newStats = {
+                    ...props.statistics(),
+                    thievery: {
+                        ...props.statistics().thievery,
+                        failures: props.statistics().thievery.failures + 1,
+                        total: props.statistics().thievery.total +1,
+                    },
                 };
                 await deleteEquipment(item._id as string);
                 let merchantEquipment = [ ...game().merchantEquipment ];
                 merchantEquipment = merchantEquipment.filter((eqp) => eqp._id !== item._id);
                 setGame({ ...game(), merchantEquipment });
-                EventBus.emit('update-ascean', update);
+                // EventBus.emit('update-ascean', update);
+                EventBus.emit('update-statistics', newStats);
                 EventBus.emit('death-sound');
             };
         } catch (err) {
@@ -259,9 +289,10 @@ export default function PhaserGame (props: IProps) {
         };
     };
 
-    function recordCombat(stats: any) {
+    function recordCombat(stats: any): Statistics {
         let { wins, losses, total, actionData, typeAttackData, typeDamageData, totalDamageData, prayerData, deityData } = stats;
-        let statistic = props.ascean().statistics.combat;
+        // let statistic = props.ascean().statistics.combat;
+        let statistic = props.statistics().combat;
         statistic.wins += wins;
         statistic.losses += losses;
         statistic.total += total;
@@ -273,6 +304,17 @@ export default function PhaserGame (props: IProps) {
         statistic.actions.invokes += actionData.reduce((count: number, action: string) => action === 'invoke' ? count + 1 : count, 0);
         statistic.actions.prayers += actionData.reduce((count: number, action: string) => action === 'prayer' ? count + 1 : count, 0);
         statistic.actions.consumes += actionData.reduce((count: number, action: string) => action === 'consume' ? count + 1 : count, 0);
+        
+        statistic.actions.thrusts += actionData.reduce((count: number, action: string) => action === 'thrust' ? count + 1 : count, 0);
+        statistic.actions.arcs += actionData.reduce((count: number, action: string) => action === 'arc' ? count + 1 : count, 0);
+        statistic.actions.leaps += actionData.reduce((count: number, action: string) => action === 'leap' ? count + 1 : count, 0);
+        statistic.actions.rushes += actionData.reduce((count: number, action: string) => action === 'rush' ? count + 1 : count, 0);
+        statistic.actions.storms += actionData.reduce((count: number, action: string) => action === 'storm' ? count + 1 : count, 0);
+        statistic.actions.achires += actionData.reduce((count: number, action: string) => action === 'achire' ? count + 1 : count, 0);
+        statistic.actions.quors += actionData.reduce((count: number, action: string) => action === 'quor' ? count + 1 : count, 0);
+        statistic.actions.writhes += actionData.reduce((count: number, action: string) => action === 'writhe' ? count + 1 : count, 0);
+
+        
         statistic.prayers.buff += prayerData.reduce((count: number, prayer: string) => prayer === 'Buff' ? count + 1 : count, 0);
         statistic.prayers.heal += prayerData.reduce((count: number, prayer: string) => prayer === 'Heal' ? count + 1 : count, 0);
         statistic.prayers.damage += prayerData.reduce((count: number, prayer: string) => prayer === 'Damage' ? count + 1 : count, 0);
@@ -319,9 +361,9 @@ export default function PhaserGame (props: IProps) {
         statistic.deities.Shrygei += deityData.reduce((count: number, deity: string) => deity === "Shrygei" ? count + 1 : count, 0);
         statistic.deities.Tshaer += deityData.reduce((count: number, deity: string) => deity === 'Tshaer' ? count + 1 : count, 0);
 
-        let newStatistics: Statistics = { ...props.ascean().statistics, combat: statistic };
-        if (wins > losses && props.ascean().statistics.relationships.deity.name !== '') {
-            newStatistics = checkDeificConcerns(props.ascean().statistics, props.ascean().statistics.relationships.deity.name, 'combat', 'value') as Statistics;
+        let newStatistics: Statistics = { ...props.statistics(), combat: statistic };
+        if (wins > losses && props.statistics().relationships.deity.name !== '') {
+            newStatistics = checkDeificConcerns(props.statistics(), props.statistics().relationships.deity.name, 'combat', 'value') as Statistics;
         };
 
         return newStatistics;
@@ -386,7 +428,7 @@ export default function PhaserGame (props: IProps) {
         const update = { 
             ...props.ascean(), 
             skills: newSkills,
-            statistics: newStats, 
+            // statistics: newStats, 
             health: { ...props.ascean().health, current: data.newPlayerHealth },
         };
         if (!update.tutorial.death) {
@@ -394,6 +436,7 @@ export default function PhaserGame (props: IProps) {
             setShowTutorial(true);
         };
         EventBus.emit('update-ascean', update);
+        EventBus.emit('update-statistics', newStats);    
     };
 
     function recordSkills(skills: string[]) {
@@ -476,7 +519,7 @@ export default function PhaserGame (props: IProps) {
         const update = { 
             ...props.ascean(), 
             skills: newSkills,
-            statistics: newStats, 
+            // statistics: newStats, 
             health: { ...props.ascean().health, current: health },
             experience: exp,
             currency: currency,
@@ -503,6 +546,7 @@ export default function PhaserGame (props: IProps) {
         };
         EventBus.emit('update-ascean', update);
         EventBus.emit('update-reputation', newReputation);
+        EventBus.emit('update-statistics', newStats);
     };
 
     function saveChanges(state: any) {
@@ -1091,7 +1135,7 @@ export default function PhaserGame (props: IProps) {
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
         <Show when={live() && checkUi() && props.scene() === 'Game'}>
             <Suspense fallback={<Puff color="gold" />}>
-                <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} stamina={stamina} grace={grace} tutorial={tutorial} showDeity={showDeity} showTutorial={showTutorial} setShowTutorial={setShowTutorial} />
+                <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} statistics={props.statistics} setStatistics={props.setStatistics} stamina={stamina} grace={grace} tutorial={tutorial} showDeity={showDeity} showTutorial={showTutorial} setShowTutorial={setShowTutorial} />
             </Suspense>
         </Show>
     </>;

@@ -1315,14 +1315,18 @@ export default class Player extends Entity {
     onBlinkEnter = () => {
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         if (this.velocity.x > 0) {
-            this.setVelocityX(PLAYER.SPEED.BLINK);
+            // this.setVelocityX(PLAYER.SPEED.BLINK);
+            this.setPosition(Math.min(this.x + PLAYER.SPEED.BLINK, 4096), this.y);
         } else if (this.velocity.x < 0) {
-            this.setVelocityX(-PLAYER.SPEED.BLINK);
+            // this.setVelocityX(-PLAYER.SPEED.BLINK);
+            this.setPosition(Math.max(this.x - PLAYER.SPEED.BLINK, 0), this.y);
         };
         if (this.velocity.y > 0) {
-            this.setVelocityY(PLAYER.SPEED.BLINK);
+            // this.setVelocityY(PLAYER.SPEED.BLINK);
+            this.setPosition(this.x, Math.min(this.y + PLAYER.SPEED.BLINK, 4096));
         } else if (this.velocity.y < 0) {
-            this.setVelocityY(-PLAYER.SPEED.BLINK);
+            // this.setVelocityY(-PLAYER.SPEED.BLINK);
+            this.setPosition(this.x, Math.max(this.y - PLAYER.SPEED.BLINK, 0));
         };
         if (this.moving()) {
             this.scene.useGrace(PLAYER.STAMINA.BLINK);
@@ -1852,7 +1856,7 @@ export default class Player extends Entity {
             this.scene.rightJoystick.joystick.setVisible(true);
             this.scene.actionBar.setVisible(true);
         };
-        this.mark.setPosition(this.x, this.y + 16);
+        this.mark.setPosition(this.x, this.y + 24);
         this.mark.setVisible(true);
         this.animateMark();
         this.animateMark();
@@ -1873,7 +1877,6 @@ export default class Player extends Entity {
             this.scene.rightJoystick.joystick.setVisible(false);
             this.scene.actionBar.setVisible(false);
         };
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Netherswap', DURATION.TEXT, 'effect', false, true);
         this.flickerCarenic(1000);
     };
     onNetherswapUpdate = (_dt) => this.combatChecker(this.isPraying);
@@ -1887,7 +1890,8 @@ export default class Player extends Entity {
         };
         this.setStatic(false);
         if (this.netherswapTarget === undefined) return; 
-        const player = new Phaser.Math.Vector2(this.x, this.y + 16);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Netherswap', DURATION.TEXT / 2, 'effect', false, true);
+        const player = new Phaser.Math.Vector2(this.x, this.y);
         const enemy = new Phaser.Math.Vector2(this.netherswapTarget.x, this.netherswapTarget.y);
         this.setPosition(enemy.x, enemy.y);
         this.netherswapTarget.setPosition(player.x, player.y);
@@ -1917,7 +1921,7 @@ export default class Player extends Entity {
             this.scene.rightJoystick.joystick.setVisible(true);
             this.scene.actionBar.setVisible(true);
         };
-        this.setPosition(this.mark.x, this.mark.y);
+        this.setPosition(this.mark.x, this.mark.y - 24);
         this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
         this.animateMark();
         this.setStatic(false);
@@ -3860,8 +3864,7 @@ export default class Player extends Entity {
         };
         if (this.scene.settings.desktop === true) {
             if ((this.inputKeys.shift.SHIFT.isDown) && Input.Keyboard.JustDown(this.inputKeys.attack.ONE)) {
-                const type = this.scene.settings.specials[0].toLowerCase();
-                const button = this.scene.actionBar.getButton(type);
+                const button = this.scene.actionBar.getButton(this.scene.settings.specials[0].toLowerCase());
                 if (button.isReady === true) this.scene.actionBar.pressButton(button, this.scene);
             };
             if ((this.inputKeys.shift.SHIFT.isDown) && Input.Keyboard.JustDown(this.inputKeys.posture.TWO)) {

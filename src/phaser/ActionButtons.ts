@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { Game } from '../game/scenes/Game';
+// import { Game } from '../game/scenes/Game';
 import { EventBus } from '../game/EventBus';
 import { PLAYER, STAMINA, staminaCheck } from '../utility/player';
 
@@ -55,7 +55,7 @@ export type ActionButton = {
 };
 
 export default class ActionButtons extends Phaser.GameObjects.Container {
-    public scene: Game;
+    public scene: any;
     private actionButtons: ActionButton[];
     private specialButtons: ActionButton[];
     private buttonWidth: number;
@@ -64,7 +64,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     private borderTimer: any;
     private graphicTimer: any;
 
-    constructor(scene: Game) {
+    constructor(scene: any) {
         super(scene);
         this.scene = scene;
         this.actionButtons = [];
@@ -160,7 +160,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         });
     }; 
 
-    private addButtons = (scene: Game): void => {
+    private addButtons = (scene: any): void => {
         const { width, height } = scene.cameras.main;
         const centerActionX = width * scene.settings.positions.actionButtons.x; // / 1.25
         const centerActionY = height * scene.settings.positions.actionButtons.y; // / 1.35
@@ -713,7 +713,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 
     public pressButton = (button: ActionButton, scene: any): void => {
-        if (this.scene.scene.isActive('Game') === false) return;
+        // if (this.scene.scene.isActive('Game') === false) return;
         const input = button.name.toLowerCase();
         const type = STAMINA.includes(input);
         let check: {success: boolean; cost: number;} = {success: false, cost: 0};

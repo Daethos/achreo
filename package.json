@@ -29,6 +29,7 @@
         "@capacitor/core": "^5.7.4",
         "@capacitor/ios": "^5.7.4",
         "localforage": "^1.10.0",
+        "mrpas": "^2.0.0",
         "phaser": "^3.80.1",
         "phaser-animated-tiles-phaser3.5": "^2.0.5",
         "phaser-matter-collision-plugin": "^1.0.0",

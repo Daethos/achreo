@@ -37,6 +37,7 @@ export class Preloader extends Scene {
         Entity.preload(this);
         this.load.tilemapTiledJSON('ascean_test', '../assets/gui/ascean_test_old.json');
         this.load.tilemapTiledJSON('tent', '../assets/gui/tent.json');
+        this.load.tilemapTiledJSON('underground', '../assets/gui/underground.json');
         this.load.plugin('rexvirtualjoystickplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexvirtualjoystickplugin.min.js', true); 
         this.load.plugin('rexglowfilterpipelineplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexglowfilterpipelineplugin.min.js', true);
         this.load.plugin('rextexttypingplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rextexttypingplugin.min.js', true);

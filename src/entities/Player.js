@@ -41,6 +41,11 @@ const MOVEMENT = {
     'left': { x: -5, y: 0 },
     'right': { x: 5, y: 0 },
 };
+
+const LIMIT = {
+    Game: 4096,
+    Underground: 1024
+};
  
 export default class Player extends Entity {
     constructor(data) {
@@ -198,7 +203,7 @@ export default class Player extends Entity {
         });
         this.setExistingBody(compoundBody);                                    
         this.sensor = playerSensor;
-        this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 20, 0xfdf6d8, 0);
+        this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 20, 0xfdf6d8, 0).setVisible(true);
         this.scene.add.existing(this.weaponHitbox);
         this.fearCount = 0;
         this.knocking = false;
@@ -915,63 +920,94 @@ export default class Player extends Entity {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [playerSensor],
             callback: (other) => {
-                if (other.gameObjectB && other.gameObjectB?.properties?.name === 'tent') {
-                    const chance = Math.random();
-                    if (chance >= 0.6) {
-                        EventBus.emit('alert', { 
-                            header: "Challenger's Tent", 
-                            body: `You have the option of beckoning a duelist against you! \n Would you like the challenge?`, 
-                            delay: 3000, 
-                            key: "Duel",
-                            arg: 1
-                        });
-                    } else if (chance >= 0.3) {
-                        EventBus.emit('alert', { 
-                            header: "Champion's Tent", 
-                            body: `You have the option of beckoning two fighters in a duel against you! \n Would you like the challenge?`, 
-                            delay: 3000, 
-                            key: "Duel",
-                            arg: 2
-                        });
-                    } else {
-                        EventBus.emit('alert', { 
-                            header: "Ascean Tent", 
-                            body: `You have the option of beckoning three fighters in a duel against you! \n Would you like the challenge?`, 
-                            delay: 3000, 
-                            key: "Duel",
-                            arg: 3
-                        });
+                if (other.gameObjectB && other.gameObjectB?.properties?.name === 'duel') {
+                    EventBus.emit('alert', { 
+                        header: "Dueling Ground", 
+                        body: `You have the option of summoning an enemy (${other.gameObjectB?.properties?.key}) to the dueling grounds. \n Would you like the challenge?`, 
+                        delay: 3000, 
+                        key: "Duel",
+                        arg: other.gameObjectB?.properties?.key
+                    });
+                    // const chance = Math.random();
+                    // if (chance >= 0.6) {
+                    // } else if (chance >= 0.3) {
+                    //     EventBus.emit('alert', { 
+                    //         header: "Champion's Tent", 
+                    //         body: `You have the option of beckoning two fighters in a duel against you! \n Would you like the challenge?`, 
+                    //         delay: 3000, 
+                    //         key: "Duel",
+                    //         arg: other.gameObjectB?.properties?.key
+                    //     });
+                    // } else {
+                    //     EventBus.emit('alert', { 
+                    //         header: "Ascean Tent", 
+                    //         body: `You have the option of beckoning three fighters in a duel against you! \n Would you like the challenge?`, 
+                    //         delay: 3000, 
+                    //         key: "Duel",
+                    //         arg: 3
+                    //     });
+                    // };
+                };
+                if (other.gameObjectB && other.gameObjectB?.properties?.name === 'cave') {
+                    EventBus.emit('alert', { 
+                        header: 'Cave', 
+                        body: `You have encountered a cave! \n Would you like to enter?`, 
+                        delay: 3000, 
+                        key: 'Enter Cave'
+                    });
+                };
+                if (other.gameObjectB && other.gameObjectB?.properties?.name === 'teleport') {
+                    switch (other.gameObjectB?.properties?.key) {
+                        case 'north':
+                            EventBus.emit('alert', { 
+                                header: 'North Port', 
+                                body: `This is the Northren Port \n Would you like to enter?`, 
+                                delay: 3000,
+                                key: 'Enter North Port'
+                            });
+                            break;
+                        case 'south':
+                            EventBus.emit('alert', { 
+                                header: 'South Port', 
+                                body: `This is the Southron Port \n Would you like to enter?`, 
+                                delay: 3000,
+                                key: 'Enter South Port'
+                            });
+                            break;
+                        case 'east':
+                            EventBus.emit('alert', { 
+                                header: 'East Port', 
+                                body: `This is the Eastern Port \n Would you like to enter?`, 
+                                delay: 3000,
+                                key: 'Enter East Port'
+                            });
+                            break;
+                        case 'west':
+                            EventBus.emit('alert', { 
+                                header: 'West Port', 
+                                body: `This is the Western Port \n Would you like to enter?`, 
+                                delay: 3000,
+                                key: 'Enter West Port'
+                            });
+                            break;
+                        default: break;
                     };
                 };
-                // if (other.gameObjectB && other.gameObjectB?.properties?.name === 'tent') {
-                //         EventBus.emit('alert', { 
-                //             header: 'Tent', 
-                //             body: `You have encountered a tent! \n Would you like to enter?`, 
-                //             delay: 3000, 
-                //             key: 'Enter Tent'
-                //         });
-                // };
-                // console.log(other, 'Properties!')
-                // if (other.gameObjectB && other.gameObjectB?.properties?.climb === true) {
-                //     this.climbCount++;
-                //     console.log(`Climbing! ${this.climbCount}`, 'color:green');
-                //     this.isClimbing = true;
-                //     EventBus.emit('alert', { 
-                //         header: 'Exit', 
-                //         body: `You are climbing. \n You have encountered a climbing tile!`, 
-                //         delay: 3000, 
-                //         key: 'Close'
-                //     });
-                // };
+                if (other.gameObjectB && other.gameObjectB?.properties?.name === 'stairs') {
+                    EventBus.emit('alert', { 
+                        header: 'Exit', 
+                        body: `You are at the stairs that lead back to the surface. \n Would you like to exit the cave and head up to the world?`, 
+                        delay: 3000, 
+                        key: 'Exit Cave'
+                    });
+                };
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === 'worldExit') {
-                    // if (other.gameObjectB.isTent) {
-                        EventBus.emit('alert', { 
-                            header: 'Exit', 
-                            body: `You are near the exit. \n Would you like to head back to the world?`, 
-                            delay: 3000, 
-                            key: 'Exit World'
-                        });
-                    // };
+                    EventBus.emit('alert', { 
+                        header: 'Exit', 
+                        body: `You are near the exit. \n Would you like to head back to the world?`, 
+                        delay: 3000, 
+                        key: 'Exit World'
+                    });
                 };
             },
             context: this.scene,
@@ -1316,14 +1352,14 @@ export default class Player extends Entity {
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         if (this.velocity.x > 0) {
             // this.setVelocityX(PLAYER.SPEED.BLINK);
-            this.setPosition(Math.min(this.x + PLAYER.SPEED.BLINK, 4096), this.y);
+            this.setPosition(Math.min(this.x + PLAYER.SPEED.BLINK, this.scene.map.widthInPixels), this.y);
         } else if (this.velocity.x < 0) {
             // this.setVelocityX(-PLAYER.SPEED.BLINK);
             this.setPosition(Math.max(this.x - PLAYER.SPEED.BLINK, 0), this.y);
         };
         if (this.velocity.y > 0) {
             // this.setVelocityY(PLAYER.SPEED.BLINK);
-            this.setPosition(this.x, Math.min(this.y + PLAYER.SPEED.BLINK, 4096));
+            this.setPosition(this.x, Math.min(this.y + PLAYER.SPEED.BLINK, this.scene.map.heightInPixels));
         } else if (this.velocity.y < 0) {
             // this.setVelocityY(-PLAYER.SPEED.BLINK);
             this.setPosition(this.x, Math.max(this.y - PLAYER.SPEED.BLINK, 0));

@@ -58,6 +58,11 @@ export const image: {key: string, value:string}[] = [
     {key: 'DeepCaveMainLev', value: '../assets/gui/MainLev.png'},
     {key: 'CampFireB', value: '../assets/gui/CampFireB.png'},
     {key: 'light1A', value: '../assets/gui/light1A.png'},
+
+    {key: 'Castle Decoratives', value: '../assets/gui/Castle Decoratives.png'},
+    {key: 'Castle Interior', value: '../assets/gui/Castle Interior.png'},
+    {key: 'Castle Outside', value: '../assets/gui/Castle Outside.png'},
+
     {key: 'closed', value: '../assets/images/closed.png'},
     {key: 'open', value: '../assets/images/open.png'},
     {key: 'caerenic', value: '../assets/images/caerenic.png'},

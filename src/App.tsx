@@ -274,8 +274,14 @@ export default function App() {
     };
     const actions = {
         "Duel": (val: number) => summonEnemy(val),
+        'Enter Cave': () => switchScene('Underground'),
         'Enter Tent': () => switchScene('Tent'),
+        'Enter North Port': () => EventBus.emit('Port', 'South'),
+        'Enter South Port': () => EventBus.emit('Port', 'North'),
+        'Enter East Port': () => EventBus.emit('Port', 'West'),
+        'Enter West Port': () => EventBus.emit('Port', 'East'),
         'Close': () => setShow(false),
+        'Exit Cave': () => switchScene('Game'),
         'Exit World': () => switchScene('Game'),
         'Pause': () => togglePause(true),
         'Resume': () => togglePause(false),

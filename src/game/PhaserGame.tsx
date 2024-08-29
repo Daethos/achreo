@@ -691,7 +691,7 @@ export default function PhaserGame (props: IProps) {
     };
 
     function checkUi(): boolean {
-        return props.scene() === 'Game' || props.scene() === 'Tent';
+        return props.scene() === 'Game' || props.scene() === 'Underground';
     };
     
     async function createUi(id: string): Promise<void> {
@@ -1133,7 +1133,7 @@ export default function PhaserGame (props: IProps) {
     });
     return <>
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
-        <Show when={live() && checkUi() && props.scene() === 'Game'}>
+        <Show when={live() && checkUi()}>
             <Suspense fallback={<Puff color="gold" />}>
                 <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} statistics={props.statistics} setStatistics={props.setStatistics} stamina={stamina} grace={grace} tutorial={tutorial} showDeity={showDeity} showTutorial={showTutorial} setShowTutorial={setShowTutorial} />
             </Suspense>

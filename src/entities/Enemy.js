@@ -831,7 +831,7 @@ export default class Enemy extends Entity {
         };
         this.enemyAnimation();
         this.scene.time.delayedCall(this.swingTimer, () => {
-            this.combat(this.attacking);
+            this.currentAction = this.evaluateCombat();
         }, undefined, this);
     };
     onCombatUpdate = (_dt) => this.evaluateCombatDistance();
@@ -983,7 +983,7 @@ export default class Enemy extends Entity {
         this.leashTimer = this.scene.time.addEvent({
             delay: 500,
             callback: () => {
-                let originPoint = new Phaser.Math.Vector2(this.originPoint.x, this.originPoint.y);
+                let originPoint = new Phaser.Math.Vector2(this.originalPosition.x, this.originalPosition.y);
                 this.scene.navMesh.debugDrawClear();
                 this.path = this.scene.navMesh.findPath(this.position, originPoint);
                 if (this.path && this.path.length > 1) {
@@ -995,6 +995,8 @@ export default class Enemy extends Entity {
                     this.pathDirection = pathDirection;
                     this.pathDirection.subtract(this.position);
                     this.pathDirection.normalize();
+                    this.setVelocity(this.pathDirection.x * this.speed, this.pathDirection.y * this.speed);
+                    this.enemyAnimation();
                     const distanceToNextPoint = Math.sqrt((this.nextPoint.x - this.position.x) ** 2 + (this.nextPoint.y - this.position.y) ** 2);
                     if (distanceToNextPoint < 10) {
                         this.path.shift();
@@ -1006,24 +1008,23 @@ export default class Enemy extends Entity {
         }); 
     };
     onLeashUpdate = (_dt) => {
-        let originPoint = new Phaser.Math.Vector2(this.originPoint.x, this.originPoint.y);
+        let originPoint = new Phaser.Math.Vector2(this.originalPosition.x, this.originalPosition.y);
         let direction = originPoint.subtract(this.position);
         
         if (direction.length() >= 10) {
             if (this.path && this.path.length > 1) {
-                this.setVelocity(this.pathDirection.x * (this.speed + 0.75), this.pathDirection.y * (this.speed + 0.75)); // 2.5
+                this.setVelocity(this.pathDirection.x * (this.speed), this.pathDirection.y * (this.speed)); // 2.5
             } else {
                 if (this.isPathing) this.isPathing = false;
                 direction.normalize();
-                this.setVelocity(direction.x * (this.speed + 0.75), direction.y * (this.speed + 0.75)); // 2.5
+                this.setVelocity(direction.x * (this.speed), direction.y * (this.speed)); // 2.5
             };
         } else {
             this.stateMachine.setState(States.IDLE);
         };
     };
     onLeashExit = () => {
-        this.anims.stop('player_running');
-        this.setVelocity(0, 0);
+        this.setVelocity(0);
         this.leashTimer.destroy();
         this.leashTimer = undefined;
         this.scene.navMesh.debugDrawClear(); 
@@ -2898,13 +2899,9 @@ export default class Enemy extends Entity {
         this.negativeMachine.update(this.scene.sys.game.loop.delta);
     };
 
-    combat = (target) => { 
-        if (this.inCombat === false) return;
-        const action = this.evaluateCombat(target);
-        this.currentAction = action;
-    };
+    combat = () => this.currentAction = this.evaluateCombat();
 
-    evaluateCombat = (target) => {  
+    evaluateCombat = () => {  
         let computerAction;
         let actionNumber = Math.floor(Math.random() * 101);
         const computerActions = {

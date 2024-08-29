@@ -1,6 +1,8 @@
 import { Scene } from "phaser";
 import { EventBus } from "../EventBus";
+// @ts-ignore
 import Player from '../../entities/Player';
+// @ts-ignore
 import NPC from '../../entities/NPC';
 import Joystick from "../../phaser/Joystick";
 import { Combat } from "../../stores/combat";
@@ -179,8 +181,8 @@ export class Tent extends Scene {
         const rightJoystickY = 100;
 
         this.target = this.add.sprite(0, 0, "target").setDepth(10).setScale(0.15).setVisible(false);
-        this.joystick = new Joystick(this, leftJoystickX, leftJoystickY);
-        this.rightJoystick = new Joystick(this, rightJoystickX, rightJoystickY);
+        this.joystick = new Joystick(this, leftJoystickX, leftJoystickY, this.settings.positions.leftJoystick.base, this.settings.positions.leftJoystick.thumb);
+        this.rightJoystick = new Joystick(this, rightJoystickX, rightJoystickY, this.settings.positions.rightJoystick.base, this.settings.positions.rightJoystick.thumb);
 
         this.rightJoystick.joystick.setVisible(false);
 

@@ -10,7 +10,7 @@ interface Props {
 export default function GameToast({ actions, show, setShow, alert, setAlert }: Props) {
     function performAction(actionName: string) {
         const actionFunction = actions[actionName as keyof typeof actions];
-        console.log(alert(), 'Alert', actionFunction);
+        // console.log(alert(), 'Alert', actionFunction);
         if (actionFunction) actionFunction(alert()?.arg);
     };
     function close(): void {

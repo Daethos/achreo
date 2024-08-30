@@ -82,6 +82,7 @@ export class Underground extends Scene {
     private south: any;
     private east: any;
     private west: any;
+    private markers: any;
 
     constructor () {
         super('Underground');
@@ -102,6 +103,7 @@ export class Underground extends Scene {
         this.offsetX = 0;
         this.offsetY = 0;
         this.tweenManager = {};
+        this.markers = [];
         // =========================== Camera =========================== \\
         let camera = this.cameras.main;
         camera.zoom = this.settings.positions?.camera?.zoom || 0.8; // 0.8 
@@ -141,7 +143,7 @@ export class Underground extends Scene {
                 this.west = new Phaser.Math.Vector2(tile.pixelX, tile.pixelY);
             };
         });
-        this.fov = new Fov(this.map, [this.groundLayer, this.layer2, this.layer3]);
+        this.fov = new Fov(this, this.map, [this.groundLayer, this.layer2, this.layer3]);
         // this.matter.world.createDebugGraphic(); 
         const objectLayer = map.getObjectLayer('navmesh');
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
@@ -151,6 +153,10 @@ export class Underground extends Scene {
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
         (this.sys as any).animatedTiles.init(this.map);
         this.player = new Player({ scene: this, x: this.centerX, y: 64, texture: 'player_actions', frame: 'player_idle_0' });
+        map?.getObjectLayer('summons')?.objects.forEach((summon: any) => 
+            this.markers.push(summon));
+        console.log(this.markers, 'MARKERS');
+        
 
     // =========================== Camera =========================== \\
         camera.startFollow(this.player, false, 0.1, 0.1);
@@ -483,12 +489,6 @@ export class Underground extends Scene {
                 default: break;
             };
         });
-    };
-
-    createEnemy = () => {
-        this.enemies.push(
-            new Enemy({ scene: this, x: this.centerX, y: this.centerY, texture: 'player_actions', frame: 'player_idle_0' })
-        );
     };
 
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
@@ -1024,21 +1024,22 @@ export class Underground extends Scene {
         EventBus.emit('setup-npc', data);    
     };
     showDialog = (dialog: boolean): boolean => EventBus.emit('blend-game', { dialogTag: dialog }); // smallHud: dialog
-    summonEnemy = (val: number) => {
-        let count = 0;
-        for (let i = 0; i < this.enemies.length; i++) {
-            const enemy = this.enemies[i];
-            if (enemy.isDefeated === true) continue;
-            enemy.setPosition(this.player.x + Phaser.Math.Between(-500, 500), this.player.y + Phaser.Math.Between(-500, 500));
-            enemy.checkEnemyCombatEnter();
-            if (this.player.isEnemyInTargets(enemy.enemyID) === false) {
+    createEnemy = () => {
+        const marker = this.markers[Math.floor(Math.random() * this.markers.length)];
+        console.log(`%c Coordinates of Enemy: ${marker.x} ${marker.y}`, 'coior:red');
+        const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0' });
+        this.enemies.push(enemy);
+        return enemy;
+    };
+    summonEnemy = (summons: number) => {
+        for (let i = 0; i < summons; i++) {
+            const enemy = this.createEnemy();
+            this.time.delayedCall(3000, () => {
+                console.log('This is when they would be engaged in combat normally');
+                // enemy.checkEnemyCombatEnter();
                 this.player.targets.push(enemy);
-            };
-            if (this.player.currentTarget === undefined || this.player.currentTarget?.enemyID !== enemy.enemyID) {
-                this.player.targetEngagement(enemy.enemyID);
-            };
-            count++;
-            if (count === val) return;
+                // this.player.targetEngagement(enemy.enemyID);
+            }, undefined, this);
         };
     };
     // ============================ Player ============================ \\
@@ -1068,14 +1069,14 @@ export class Underground extends Scene {
     };
     setCameraOffset = () => {
         if (this.player.flipX === true) {
-            this.offsetX = Math.min(115, this.offsetX + 3);
+            this.offsetX = Math.min(90, this.offsetX + 3);
         } else {
-            this.offsetX = Math.max(this.offsetX - 3, -115);
+            this.offsetX = Math.max(this.offsetX - 3, -90);
         };
         if (this.player.velocity.y > 0) {
-            this.offsetY = Math.max(this.offsetY - 2.5, -75);
+            this.offsetY = Math.max(this.offsetY - 2, -60);
         } else if (this.player.velocity.y < 0) {
-            this.offsetY = Math.min(75, this.offsetY + 2.5);
+            this.offsetY = Math.min(60, this.offsetY + 2);
         };
     };
     startCombatTimer = (): void => {
@@ -1108,10 +1109,10 @@ export class Underground extends Scene {
         };
         const camera = this.cameras.main;
         const bounds = new Phaser.Geom.Rectangle(
-            this.map.worldToTileX(camera.worldView.x) as number - 1,
-            this.map.worldToTileY(camera.worldView.y) as number - 1,
-            this.map.worldToTileX(camera.worldView.width) as number + 2,
-            this.map.worldToTileX(camera.worldView.height) as number + 2
+            this.map.worldToTileX(camera.worldView.x) as number - 2,
+            this.map.worldToTileY(camera.worldView.y) as number - 2,
+            this.map.worldToTileX(camera.worldView.width) as number + 4,
+            this.map.worldToTileX(camera.worldView.height) as number + 4
         );
         const player = new Phaser.Math.Vector2({
             x: this.map.worldToTileX(this.player.x) as number,

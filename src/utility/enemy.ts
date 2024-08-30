@@ -319,8 +319,7 @@ export function fetchEnemy(e: { enemyID: string; level: number; }): void {
         enemy = populateEnemy(enemy);
         const res = asceanCompiler(enemy);
         EventBus.emit('enemy-fetched', { enemy: res?.ascean, combat: res, enemyID: e.enemyID });
-        EventBus.emit('update-enemies', { ...res?.ascean, enemyID: e.enemyID });
-    } catch (err: any) {
-        console.log(err.message, 'Error retrieving Enemies')
+    } catch (err) {
+        console.warn(err, 'Error retrieving Enemies');
     };
 };

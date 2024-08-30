@@ -488,7 +488,7 @@ export class Game extends Scene {
             let camera = this.cameras.main;
             camera.zoom = zoom;
         });
-        EventBus.on('summon-enemy', this.summonEnemy);
+        // EventBus.on('summon-enemy', this.summonEnemy);
     };
 
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {

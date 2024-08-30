@@ -17,15 +17,19 @@ function updateTileAlpha(desiredAlpha: number,dt: number,tile: Tile) {
 };
 
 export default class Fov {
+    private scene: any;
     public layers: any[];
     private mrpas: Mrpas | undefined;
     private lastPos: Phaser.Math.Vector2;
     private map: Phaser.Tilemaps.Tilemap;
+    public enemies: any[];
 
-    constructor(map: Phaser.Tilemaps.Tilemap, layers: any[]) {
+    constructor(scene: any, map: Phaser.Tilemaps.Tilemap, layers: any[]) {
+        this.scene = scene;
         this.lastPos = new Phaser.Math.Vector2({x:-1,y:-1});
         this.layers = layers;
         this.map = map;
+        this.enemies = [];
         this.recalculate(map);
     };
 
@@ -54,6 +58,7 @@ export default class Fov {
                 if (tile3) updateTileAlpha(desiredAlpha, dt, tile3);
             };
         };
+        if (this.scene.enemies.length > 0) this.updateEnemies();
     };
 
     updateMRPAS(pos: Phaser.Math.Vector2) {
@@ -95,5 +100,21 @@ export default class Fov {
                 };
             }
         );
+    };
+
+    updateEnemies = () => {
+        for (let i = 0; i < this.scene.enemies.length; i++) {
+            const enemy = this.scene.enemies[i];
+            const coords = new Phaser.Math.Vector2({
+                x: this.map.worldToTileX(enemy.x) as number,
+                y: this.map.worldToTileY(enemy.y) as number
+            });
+            const distance = Math.floor(new Phaser.Math.Vector2(coords.x, coords.y).distance(new Phaser.Math.Vector2(this.lastPos.x, this.lastPos.y)));
+            const rolloffIdx = distance <= radius ? radius - distance : 0;
+            const alpha = rolloffIdx < lightDropoff.length ? lightDropoff[rolloffIdx] : 1;
+            enemy.setAlpha(alpha);
+            enemy.spriteWeapon.setAlpha(alpha);
+            enemy.spriteShield.setAlpha(alpha);
+        };
     };
 };

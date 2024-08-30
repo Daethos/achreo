@@ -268,7 +268,6 @@ export default function App() {
         EventBus.emit('summon-enemy', val);
         setShow(false);
     };
-
     function setScreen(screen: string) {
         setMenu({ ...menu(), screen });
     };
@@ -320,7 +319,7 @@ export default function App() {
     });
     usePhaserEvent('sleep-scene', (key: string) => {
         const scene = phaserRef.scene as Scene;
-        const game = scene.scene.get('Game') as Game;
+        const game = scene.scene.get(key) as any;
         game.musicBackground.pause();
         scene.scene.sleep(key);
     })

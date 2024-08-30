@@ -374,6 +374,13 @@ export class Game extends Scene {
                 this.pauseMusic();
             };
         });
+        EventBus.on('resume', (scene: string) => {
+            if (scene !== 'Game') return;
+            this.scene.resume();
+            this.scene.setVisible(true);
+            this.resumeMusic();
+            EventBus.emit('current-scene-ready', this);
+        });
         EventBus.on('switch-scene', (data: { current: string, next: string }) => {
             if (data.current !== 'Game') return;
             if (this.combat) {
@@ -385,7 +392,15 @@ export class Game extends Scene {
                 this.musicBackground.pause();
             };
             this.scene.pause(data.current);
-            this.scene.launch(data.next, this);
+            this.scene.setVisible(false);
+            const scene = this.scene.get(data.next);
+            if (scene.scene?.isPaused()) {
+                EventBus.emit('resume', data.next);
+            } else if (scene.scene?.isSleeping()) {
+                this.scene.wake(data.next);
+            } else {
+                this.scene.launch(data.next, this);
+            };
         });
         EventBus.on('wake-up', (scene: string) => {
             this.scene.resume(scene);

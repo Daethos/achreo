@@ -13,6 +13,7 @@ import { States } from '../../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
 import Joystick from '../../phaser/Joystick';
 import SmallHud from '../../phaser/SmallHud';
+import Fov from '../../phaser/Fov';
 import { Reputation, initReputation } from '../../utility/player';
 // @ts-ignore
 import Player from '../../entities/Player';
@@ -24,8 +25,7 @@ import NPC from '../../entities/NPC';
 import ParticleManager from '../../phaser/ParticleManager';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
-import { Game } from './Game';
-import { Mrpas } from 'mrpas';
+import Tile from '../../phaser/Tile';
 
 export class Underground extends Scene {
     animatedTiles: any[];
@@ -74,7 +74,7 @@ export class Underground extends Scene {
     matterCollision: any;
     smallHud: SmallHud;
     vision: any;
-    private fov?: Mrpas
+    private fov?: any;
     private groundLayer?: any;
     private layer2?: any;
     private layer3?: any;
@@ -91,7 +91,7 @@ export class Underground extends Scene {
         this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
     };
 
-    create (host: Game) {
+    create () {
         this.gameEvent();
         this.getAscean();
         this.state = this.getCombat();
@@ -120,33 +120,28 @@ export class Underground extends Scene {
         [layer1, layer2, layer3].forEach((layer) => {
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
+            layer?.forEachTile((tile) => {
+                tile = new Tile(tile);
+            });
         });
         this.groundLayer = layer1;
         this.layer2 = layer2;
         this.layer3 = layer3;
         this.layer3.forEachTile((tile: any) => {
             if (tile?.properties && tile.properties?.key === 'north') {
-                console.log(`Setting North Position: ${tile.pixelX}, ${tile.pixelY}`);
                 this.north = new Phaser.Math.Vector2(tile.pixelX, tile.pixelY);
             };
             if (tile?.properties && tile.properties?.key === 'south') {
-                console.log(`Setting South Position: ${tile.pixelX}, ${tile.pixelY}`);
                 this.south = new Phaser.Math.Vector2(tile.pixelX, tile.pixelY + 16);
             };
             if (tile?.properties && tile.properties?.key === 'east') {
-                console.log(`Setting East Position: ${tile.pixelX}, ${tile.pixelY}`);
                 this.east = new Phaser.Math.Vector2(tile.pixelX + 32, tile.pixelY);
             };
             if (tile?.properties && tile.properties?.key === 'west') {
-                console.log(`Setting West Position: ${tile.pixelX}, ${tile.pixelY}`);
                 this.west = new Phaser.Math.Vector2(tile.pixelX, tile.pixelY);
             };
         });
-        this.fov = new Mrpas(this.map.width, this.map.height, (x, y) => {
-			const tile = this.groundLayer!.getTileAt(x, y);
-			return tile && !tile.collides;
-		});
-
+        this.fov = new Fov(this.map, [this.groundLayer, this.layer2, this.layer3]);
         // this.matter.world.createDebugGraphic(); 
         const objectLayer = map.getObjectLayer('navmesh');
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
@@ -359,7 +354,6 @@ export class Underground extends Scene {
         EventBus.on('purchase-sound', () => this.sound.play('purchase', { volume: this.settings.volume }));
         EventBus.on('stealth-sound', () => this.sound.play('stealth', { volume: this.settings.volume }));
         EventBus.on('death-sound', () => this.sound.play('death', { volume: this.settings.volume / 2 }));
-
         EventBus.on('weapon-order-sound', () => this.sound.play('weaponOrder', { volume: this.settings.volume }));
         EventBus.on('action-button-sound', () => this.sound.play('TV_Button_Press', { volume: this?.settings?.volume * 2 }));
         EventBus.on('music', (on: boolean) => {
@@ -369,21 +363,27 @@ export class Underground extends Scene {
                 this.pauseMusic();
             };
         });
+        EventBus.on('resume', (scene: string) => {
+            if (scene !== 'Underground') return;
+            console.log('Resuming!');
+            this.scene.resume();
+            this.scene.setVisible(true);
+            this.resumeMusic();
+            EventBus.emit('current-scene-ready', this);
+        });
         EventBus.on('switch-scene', (data: { current: string, next: string }) => {
             if (data.current !== 'Underground') return;
-            if (this.combat) {
+            if (this.combat === true) {
                 this.musicCombat.pause();
                 this.stopCombatTimer();    
-            } else if (this.player.isStealth) {
+            } else if (this.player.isStealth === true) {
                 this.musicStealth.pause();
             } else {
                 this.musicBackground.pause();
             };
             this.scene.pause(data.current);
-            // this.scene.launch(data.next, { 
-            //     ascean: this.ascean, combat: this.state, game: this.gameState, settings: this.settings 
-            // });
-            this.scene.launch(data.next, this);
+            this.scene.setVisible(false);
+            EventBus.emit('resume', data.next);
         });
         EventBus.on('wake-up', (scene: string) => {
             this.scene.resume(scene);
@@ -1100,13 +1100,24 @@ export class Underground extends Scene {
         this.combatTime = 0;
         EventBus.emit('update-combat-timer', this.combatTime);
     };
-    update(): void {
+    update(_time: number, delta: number): void {
         this.playerUpdate();
         this.rightJoystick.update();
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update();
         };
-        this.computeFOV();
+        const camera = this.cameras.main;
+        const bounds = new Phaser.Geom.Rectangle(
+            this.map.worldToTileX(camera.worldView.x) as number - 1,
+            this.map.worldToTileY(camera.worldView.y) as number - 1,
+            this.map.worldToTileX(camera.worldView.width) as number + 2,
+            this.map.worldToTileX(camera.worldView.height) as number + 2
+        );
+        const player = new Phaser.Math.Vector2({
+            x: this.map.worldToTileX(this.player.x) as number,
+            y: this.map.worldToTileY(this.player.y) as number
+        });
+        this.fov!.update(player, bounds, delta);
         // for (let i = 0; i < this.npcs.length; i++) {
         //     this.npcs[i].update();
         // };
@@ -1134,95 +1145,5 @@ export class Underground extends Scene {
         } else {
             this.musicCombat.resume();
         };
-    };
-
-    private computeFOV() {
-        if (!this.fov || !this.map || !this.groundLayer || !this.player) return;
-        const camera = this.cameras.main;
-        const bounds = new Phaser.Geom.Rectangle(
-            this.map.worldToTileX(camera.worldView.x) as number - 1,
-            this.map.worldToTileY(camera.worldView.y) as number - 1,
-            this.map.worldToTileX(camera.worldView.width) as number + 3,
-            this.map.worldToTileX(camera.worldView.height) as number + 3
-        );
-        for (let y = bounds.y; y < bounds.y + bounds.height; y++) {
-            for (let x = bounds.x; x < bounds.x + bounds.width; x++) {
-                if (y < 0 || y >= this.map.height || x < 0 || x >= this.map.width) continue;
-                const tile = this.groundLayer.getTileAt(x, y);
-                const tile2 = this.layer2.getTileAt(x, y);
-                const tile3 = this.layer3.getTileAt(x, y);
-                if (!tile && !tile2 && !tile3) continue;
-                if (tile) {
-                    tile.alpha = 1;
-                    tile.tint = 0x404040;
-                };
-                if (tile2) {
-                    tile2.alpha = 0;
-                    // tile2.tint = 0x404040;
-                };
-                if (tile3) {
-                    tile3.alpha = 0;
-                    // tile3.tint = 0x404040;
-                };
-            };
-        };
-        const px = this.map.worldToTileX(this.player.x);
-        const py = this.map.worldToTileY(this.player.y);
-        this.fov.compute(px as number, py as number, 7,
-            (x, y) => {
-                const tile = this.groundLayer!.getTileAt(x, y);
-                if (!tile) return false;
-                return tile.tint === 0xffffff;
-            },
-            (x, y) => {
-                const tile = this.groundLayer!.getTileAt(x, y);
-                if (!tile) return;
-                const d = Phaser.Math.Distance.Between(py as number, px as number, y, x);
-                const alpha = Math.min(2 - d / 6, 1);
-                tile.tint = 0xffffff;
-                tile.alpha =  alpha;
-                
-                const tile2 = this.layer2!.getTileAt(x, y);
-                const tile3 = this.layer3!.getTileAt(x, y);
-                if (tile2) {
-                    tile2.tint = 0xffffff;
-                    tile2.alpha =  alpha;
-                };
-                if (tile3) {
-                    tile3.tint = 0xffffff;
-                    tile3.alpha =  alpha;
-                };
-            }
-        );
-        // this.fov2?.compute(px as number, py as number, 7,
-        //     (x, y) => {
-        //         const tile2 = this.layer2!.getTileAt(x, y);
-        //         if (!tile2) return false;
-        //         return tile2.tint === 0xffffff;
-        //     },
-        //     (x, y) => {
-        //         const tile2 = this.layer2!.getTileAt(x, y);
-        //         if (!tile2) return;
-        //         const d = Phaser.Math.Distance.Between(py as number, px as number, y, x);
-        //         const alpha = Math.min(2 - d / 6, 1);
-        //         tile2.tint = 0xffffff;
-        //         tile2.alpha =  alpha;
-        //     }
-        // );
-        // this.fov3?.compute(px as number, py as number, 7,
-        //     (x, y) => {
-        //         const tile3 = this.layer3!.getTileAt(x, y);
-        //         if (!tile3) return false;
-        //         return tile3.tint === 0xffffff;
-        //     },
-        //     (x, y) => {
-        //         const tile3 = this.layer3!.getTileAt(x, y);
-        //         if (!tile3) return;
-        //         const d = Phaser.Math.Distance.Between(py as number, px as number, y, x);
-        //         const alpha = Math.min(2 - d / 6, 1);
-        //         tile3.tint = 0xffffff;
-        //         tile3.alpha =  alpha;
-        //     }
-        // );
     };
 };

@@ -60,11 +60,6 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
     createEffect(() => {
         if (tutorial() === 'deity') {
             setDeity(`<div class='typewriterContainer' key='phenomena'>
-                <button class='button' data-function-name='blessPlayer'>
-                <img src=${ascean()?.faith === 'Adherent' ? '../assets/images/achreo-rising.jpg' : ascean()?.faith === 'Devoted' ? '../assets/images/daethos-forming.jpg' : '../assets/images/' + ascean().origin + '-' + ascean().sex + '.jpg'} alt=${ascean().faith}  class=${'godBorder'+ascean().mastery.charAt(0).toUpperCase()+ascean().mastery.slice(1)} />
-                </button>
-                <br />
-            
                 A tendril swirls soothing about your senses,<br /> 
                 Its sweetness teasing as hush soon possesses. <br /><br />
                 Writhing, it warps to wrap round you, seething,<br /> 
@@ -74,15 +69,18 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 Silhouette of mirth, it seeks to perish and delight us,<br /> 
                 Its dripping nerve seizes your caer to flourish in detritus. <br /><br />
                 And yet perchance you seek to twist ${ascean()?.faith === 'Adherent' ? 'adherence' : 'devotion'} in its seams,<br /> To taste its ${ascean()?.mastery} burning at the resin of your dreams. <br /><br />
-            
+                
                 <p class='${ascean()?.faith === 'Adherent' ? 'adherentText' : ascean()?.faith === 'Devoted' ? 'devotedText' : 'otherText'}'>
-                    You become attuned to a halt and paltry whisper,<br /> 
-                    It rings and stretches your soft edges,<br /> 
-                    Pleading yield and hither.
+                You become attuned to a halt and paltry whisper,<br /> 
+                It rings and stretches your soft edges,<br /> 
+                Pleading yield and hither.
                 </p>
-                <p class='whisperText'>
-                ^500 "Who are you?" 
-                </p>
+                ^500
+                <button class='button' data-function-name='blessPlayer'>
+                <img src=${ascean()?.faith === 'Adherent' ? '../assets/images/achreo-rising.jpg' : ascean()?.faith === 'Devoted' ? '../assets/images/daethos-forming.jpg' : '../assets/images/' + ascean().origin + '-' + ascean().sex + '.jpg'} alt=${ascean().faith}  class=${'godBorder'+ascean().mastery.charAt(0).toUpperCase()+ascean().mastery.slice(1)} />
+                </button>
+                <br />
+                <p class='whisperText'>"Who are you?"</p>
                 <p class='journeyText'>
                     [If you wish to peer into the land of Hush and Tendril and begin a journey of yourself and what you mean to this world, click upon the avatar. You may rebuke this calling.] 
                 </p>

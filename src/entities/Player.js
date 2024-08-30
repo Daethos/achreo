@@ -299,7 +299,6 @@ export default class Player extends Entity {
 
     enemyUpdate = (e) => {
         const index = this.targets.findIndex(obj => obj.enemyID === e);
-        console.log("ENEMY UPDATE")
         this.targets = this.targets.filter(obj => obj.enemyID !== e);
         if (this.targets.length > 0) {
             const newTarg = this.targets[index] || this.targets[0];
@@ -457,7 +456,7 @@ export default class Player extends Entity {
     };
 
     findEnemy = () => {
-        console.log('%c ----- Attempting To Find Enemy/ -----', 'color: gold');
+        // console.log('%c ----- Attempting To Find Enemy/ -----', 'color: gold');
         if (this.scene.state.newPlayerHealth <= 0) {
             // console.log('%c ----- Player Has 0 Health, Disengaging -----', 'color:red');
             this.disengage();
@@ -3105,7 +3104,6 @@ export default class Player extends Entity {
         this.isAstrifying = true;
         this.flickerCarenic(PLAYER.DURATIONS.ASTRICATION); 
         this.scene.time.delayedCall(PLAYER.DURATIONS.ASTRICATION, () => {
-            console.log(`Resetting Astrication: ${this.scene.state.astrication.charges}`);
             this.scene.combatMachine.input('astrication', {active:false,charges:0});
             this.isAstrifying = false;
         }, undefined, this);
@@ -3124,7 +3122,6 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Berserking', 750, 'damage');
         this.isBerserking = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.BERSERK, () => {
-            console.log(`Resetting Berserk: ${this.scene.state.berserk.charges}`);
             this.scene.combatMachine.input('berserk', {active:false,charges:0});
             this.isBerserking = false;
         }, undefined, this);
@@ -3176,7 +3173,6 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Conviction', 750, 'tendril');
         this.isConvicted = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.CONVICTION, () => {
-            console.log(`Resetting Conviction: ${this.scene.state.conviction.charges}`);
             this.scene.combatMachine.input('conviction', {active:false,charges:0});
             this.isConvicted = false;
         }, undefined, this);

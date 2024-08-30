@@ -93,6 +93,7 @@ export class Underground extends Scene {
     };
 
     create () {
+        this.cameras.main.fadeIn(1500, 0, 0, 0);
         this.gameEvent();
         this.getAscean();
         this.state = this.getCombat();
@@ -148,22 +149,19 @@ export class Underground extends Scene {
         const objectLayer = map.getObjectLayer('navmesh');
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;
-        const debugGraphics = this.add.graphics().setAlpha(0.75);
-        this.navMesh.enableDebug(debugGraphics); 
+        // const debugGraphics = this.add.graphics().setAlpha(0.75);
+        // this.navMesh.enableDebug(debugGraphics); 
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
         (this.sys as any).animatedTiles.init(this.map);
         this.player = new Player({ scene: this, x: this.centerX, y: 64, texture: 'player_actions', frame: 'player_idle_0' });
         map?.getObjectLayer('summons')?.objects.forEach((summon: any) => 
             this.markers.push(summon));
-        console.log(this.markers, 'MARKERS');
-        
 
     // =========================== Camera =========================== \\
         camera.startFollow(this.player, false, 0.1, 0.1);
         camera.setLerp(0.1, 0.1);
         camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         camera.setRoundPixels(true);
-
 
         var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
         this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
@@ -297,9 +295,9 @@ export class Underground extends Scene {
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].cleanUp();
         };
-        for (let i = 0; i < this.npcs.length; i++) {
-            this.npcs[i].cleanUp();
-        };
+        // for (let i = 0; i < this.npcs.length; i++) {
+        //     this.npcs[i].cleanUp();
+        // };
         this.player.cleanUp();
         this.actionBar.cleanUp();
         this.actionBar.destroy();
@@ -331,6 +329,7 @@ export class Underground extends Scene {
         });    
         EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
         EventBus.on('enemyLootDrop', (drops: any) => {
+            if (drops.scene !== 'Underground') return;
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
         });    
         EventBus.on('minimap', () => {
@@ -371,25 +370,19 @@ export class Underground extends Scene {
         });
         EventBus.on('resume', (scene: string) => {
             if (scene !== 'Underground') return;
-            console.log('Resuming!');
-            this.scene.resume();
-            this.scene.setVisible(true);
+            this.cameras.main.fadeIn(1500, 0, 0, 0);
+            this.scene.wake(scene);
             this.resumeMusic();
             EventBus.emit('current-scene-ready', this);
         });
         EventBus.on('switch-scene', (data: { current: string, next: string }) => {
             if (data.current !== 'Underground') return;
-            if (this.combat === true) {
-                this.musicCombat.pause();
-                this.stopCombatTimer();    
-            } else if (this.player.isStealth === true) {
-                this.musicStealth.pause();
-            } else {
-                this.musicBackground.pause();
-            };
-            this.scene.pause(data.current);
-            this.scene.setVisible(false);
-            EventBus.emit('resume', data.next);
+            this.cameras.main.fadeOut(1500, 0, 0, 0);
+            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
+                this.pauseMusic();
+                this.scene.sleep(data.current);
+                EventBus.emit('resume', data.next);
+            });
         });
         EventBus.on('wake-up', (scene: string) => {
             this.scene.resume(scene);
@@ -487,6 +480,18 @@ export class Underground extends Scene {
                     this.player.setPosition(this.west.x, this.north.y + 32);
                     break;
                 default: break;
+            };
+        });
+        EventBus.on('update-speed', (data: { speed: number, type: string }) => {
+            switch (data.type) {
+                case 'playerSpeed':
+                    this.player.adjustSpeed(data.speed);
+                    break;
+                case 'enemySpeed':
+                    for (let i = 0; i < this.enemies.length; i++) {
+                        this.enemies[i].adjustSpeed(data.speed);
+                    };
+                    break;
             };
         });
     };
@@ -1035,10 +1040,9 @@ export class Underground extends Scene {
         for (let i = 0; i < summons; i++) {
             const enemy = this.createEnemy();
             this.time.delayedCall(3000, () => {
-                console.log('This is when they would be engaged in combat normally');
-                // enemy.checkEnemyCombatEnter();
+                enemy.checkEnemyCombatEnter();
                 this.player.targets.push(enemy);
-                // this.player.targetEngagement(enemy.enemyID);
+                this.player.targetEngagement(enemy.enemyID);
             }, undefined, this);
         };
     };
@@ -1111,8 +1115,8 @@ export class Underground extends Scene {
         const bounds = new Phaser.Geom.Rectangle(
             this.map.worldToTileX(camera.worldView.x) as number - 2,
             this.map.worldToTileY(camera.worldView.y) as number - 2,
-            this.map.worldToTileX(camera.worldView.width) as number + 4,
-            this.map.worldToTileX(camera.worldView.height) as number + 4
+            this.map.worldToTileX(camera.worldView.width) as number + 6,
+            this.map.worldToTileX(camera.worldView.height) as number + 6
         );
         const player = new Phaser.Math.Vector2({
             x: this.map.worldToTileX(this.player.x) as number,

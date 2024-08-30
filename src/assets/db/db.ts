@@ -44,12 +44,18 @@ export const blessAscean = async (id: string, entry: any): Promise<any> => {
         const blessing = ascean.mastery;
         ascean[blessing] += 1;
         ascean.health = { ...ascean.health, current: ascean.health.max };
-        ascean.statistics.relationships.deity.Faithful.occurrence += 1;
-        ascean.statistics.relationships.deity.Faithful.value += 5;
-        ascean.statistics.relationships.deity.value += 5;
-        ascean.statistics.relationships.deity.behaviors.push('Blessed');
         ascean.interactions.deity += 1;
         ascean.journal.entries.push(entry);
+
+        let statistics = await db.collection(STATISTICS).doc({ _id: id }).get();
+        statistics.relationships.deity.Faithful.occurrence += 1;
+        statistics.relationships.deity.Faithful.value += 5;
+        statistics.relationships.deity.value += 5;
+        statistics.relationships.deity.behaviors.push('Blessed');
+        
+        const updateStats = await db.collection(STATISTICS).doc({ _id: id }).update(statistics);
+        console.log(updateStats);
+
         const update = await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
         return update;
     } catch (err) {
@@ -63,12 +69,18 @@ export const curseAscean = async (id: string, entry: any): Promise<any> => {
         ascean.firewater.charges = 0;
         ascean.experience = 0;
         ascean.health = { ...ascean.health, current: 1 };
-        ascean.statistics.relationships.deity.Unfaithful.occurrence += 1;
-        ascean.statistics.relationships.deity.Unfaithful.value -= 5;
-        ascean.statistics.relationships.deity.value -= 5;
-        ascean.statistics.relationships.deity.behaviors.push('Cursed');
         ascean.interactions.deity += 1;
         ascean.journal.entries.push(entry);
+        
+        let statistics = await db.collection(STATISTICS).doc({ _id: id }).get();
+        statistics.relationships.deity.Unfaithful.occurrence += 1;
+        statistics.relationships.deity.Unfaithful.value -= 5;
+        statistics.relationships.deity.value -= 5;
+        statistics.relationships.deity.behaviors.push('Cursed');
+        
+        const updateStats = await db.collection(STATISTICS).doc({ _id: id }).update(statistics);
+        console.log(updateStats);
+
         const update =  await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
         return update;
     } catch (err) {
@@ -107,10 +119,12 @@ export const blessAsceanRandom = async (id: string) => {
             break;
     };
 
-    ascean.statistics.relationships.deity.Faithful.occurrence += 1;
-    ascean.statistics.relationships.deity.Faithful.value += 5;
-    ascean.statistics.relationships.deity.value += 5;
-    ascean.statistics.relationships.deity.behaviors.push('Blessed');
+    let statistics = await db.collection(STATISTICS).doc({ _id: id }).get();
+    statistics.relationships.deity.Faithful.occurrence += 1;
+    statistics.relationships.deity.Faithful.value += 5;
+    statistics.relationships.deity.value += 5;
+    statistics.relationships.deity.behaviors.push('Blessed');
+    await db.collection(STATISTICS).doc({ _id: id }).update(statistics);
     await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
 };
 
@@ -145,10 +159,11 @@ export const curseAsceanRandom = async (id: string) => {
             break;
     };
 
-    ascean.statistics.relationships.deity.Unfaithful.occurrence += 1;
-    ascean.statistics.relationships.deity.Unfaithful.value -= 5;
-    ascean.statistics.relationships.deity.value -= 5;
-    ascean.statistics.relationships.deity.behaviors.push('Cursed');
+    let statistics = await db.collection(STATISTICS).doc({ _id: id }).get();
+    statistics.relationships.deity.Unfaithful.occurrence += 1;
+    statistics.relationships.deity.Unfaithful.value -= 5;
+    statistics.relationships.deity.value -= 5;
+    statistics.relationships.deity.behaviors.push('Cursed');
     await db.collection(ASCEANS).doc({ _id: ascean._id }).update(ascean);
 };
 

@@ -86,6 +86,7 @@ export class Game extends Scene {
     };
 
     create () {
+        this.cameras.main.fadeIn(1500, 0, 0, 0)
         this.gameEvent();
         this.getAscean();
         this.state = this.getCombat();
@@ -137,8 +138,8 @@ export class Game extends Scene {
         const objectLayer = map.getObjectLayer('navmesh');
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;
-        const debugGraphics = this.add.graphics().setAlpha(0.75);
-        this.navMesh.enableDebug(debugGraphics); 
+        // const debugGraphics = this.add.graphics().setAlpha(0.75);
+        // this.navMesh.enableDebug(debugGraphics); 
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
         (this.sys as any).animatedTiles.init(this.map);
         this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
@@ -335,6 +336,7 @@ export class Game extends Scene {
         });    
         EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
         EventBus.on('enemyLootDrop', (drops: any) => {
+            if (drops.scene !== 'Game') return;
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
         });    
         EventBus.on('minimap', () => {
@@ -376,31 +378,24 @@ export class Game extends Scene {
         });
         EventBus.on('resume', (scene: string) => {
             if (scene !== 'Game') return;
-            this.scene.resume();
-            this.scene.setVisible(true);
+            this.cameras.main.fadeIn(1500, 0, 0, 0);
+            this.scene.wake(scene);
             this.resumeMusic();
             EventBus.emit('current-scene-ready', this);
         });
         EventBus.on('switch-scene', (data: { current: string, next: string }) => {
             if (data.current !== 'Game') return;
-            if (this.combat) {
-                this.musicCombat.pause();
-                this.stopCombatTimer();    
-            } else if (this.player.isStealth) {
-                this.musicStealth.pause();
-            } else {
-                this.musicBackground.pause();
-            };
-            this.scene.pause(data.current);
-            this.scene.setVisible(false);
-            const scene = this.scene.get(data.next);
-            if (scene.scene?.isPaused()) {
-                EventBus.emit('resume', data.next);
-            } else if (scene.scene?.isSleeping()) {
-                this.scene.wake(data.next);
-            } else {
-                this.scene.launch(data.next, this);
-            };
+            this.cameras.main.fadeOut(1500, 0, 0, 0);
+            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
+                this.pauseMusic();
+                this.scene.sleep(data.current);
+                const scene = this.scene.get(data.next);
+                if (scene.scene?.isSleeping()) {
+                    EventBus.emit('resume', data.next);
+                } else {
+                    this.scene.launch(data.next);
+                };
+            });
         });
         EventBus.on('wake-up', (scene: string) => {
             this.scene.resume(scene);
@@ -487,6 +482,18 @@ export class Game extends Scene {
         EventBus.on('update-camera-zoom', (zoom: number) => {
             let camera = this.cameras.main;
             camera.zoom = zoom;
+        });
+        EventBus.on('update-speed', (data: { speed: number, type: string }) => {
+            switch (data.type) {
+                case 'playerSpeed':
+                    this.player.adjustSpeed(data.speed);
+                    break;
+                case 'enemySpeed':
+                    for (let i = 0; i < this.enemies.length; i++) {
+                        this.enemies[i].adjustSpeed(data.speed);
+                    };
+                    break;
+            };
         });
         // EventBus.on('summon-enemy', this.summonEnemy);
     };
@@ -1119,14 +1126,14 @@ export class Game extends Scene {
     };
     setCameraOffset = () => {
         if (this.player.flipX === true) {
-            this.offsetX = Math.min(115, this.offsetX + 3);
+            this.offsetX = Math.min(105, this.offsetX + 3);
         } else {
-            this.offsetX = Math.max(this.offsetX - 3, -115);
+            this.offsetX = Math.max(this.offsetX - 3, -105);
         };
         if (this.player.velocity.y > 0) {
-            this.offsetY = Math.max(this.offsetY - 2.5, -75);
+            this.offsetY = Math.max(this.offsetY - 2.5, -70);
         } else if (this.player.velocity.y < 0) {
-            this.offsetY = Math.min(75, this.offsetY + 2.5);
+            this.offsetY = Math.min(70, this.offsetY + 2.5);
         };
     };
     sortEnemies = (enemies: Enemy[]): Enemy[] => {

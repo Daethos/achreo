@@ -115,6 +115,7 @@ export default class Fov {
             enemy.setAlpha(alpha);
             enemy.spriteWeapon.setAlpha(alpha);
             enemy.spriteShield.setAlpha(alpha);
+            enemy.healthbar.setAlpha(alpha);
         };
     };
 };

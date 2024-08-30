@@ -87,7 +87,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     };
                     consume = consumePrayer(consume) as Combat;
                     res = { ...combat(), ...consume };
-                    console.log(res, '-- Consume Action --');
                     playerWin = res.playerWin;
                     EventBus.emit('blend-combat', { 
                         newComputerHealth: res.newComputerHealth,

@@ -1,5 +1,17 @@
 import { Game } from "../game/scenes/Game";
 import { masteryNumber } from "../utility/styling";
+const CONVERSION = {
+    // X: 0.064697265625, // 265 || this.scene.map.widthInPixels * CONVERSION.X
+    // Y: 0.040283203125, // 165 || this.scene.map.heightInPixels * CONVERSION.Y
+    Game: {
+        X: 265,
+        Y: 165
+    },
+    Underground: {
+        X: 500,
+        Y: 35
+    },
+};
 export default class Beam {
     player: any;
     color: number;
@@ -8,11 +20,15 @@ export default class Beam {
     enemyEmitters: any;
     target: any;
     settings: any;
+    xOffset: number;
+    yOffset: number;
     constructor(player: any) {
         this.player = player;
         this.color = masteryNumber(player.ascean.mastery);
         this.scene = player.scene;
         this.target = undefined;    
+        this.xOffset = CONVERSION[this.scene.scene.key as keyof typeof CONVERSION].X;
+        this.yOffset = CONVERSION[this.scene.scene.key as keyof typeof CONVERSION].Y;
         this.settings = {
             alpha: 0.25,
             angle: {min:0, max:360},
@@ -26,7 +42,7 @@ export default class Beam {
             speedY: {min:35, max:75},
             reserve: 25,
             follow: this.player,
-            followOffset: { x: -265, y: -165 },
+            followOffset: { x: -this.xOffset, y: -this.yOffset },
             visible: true
         };
         this.emitter = this.scene.add.particles(player.x, player.y, 'beam', this.settings);
@@ -65,14 +81,14 @@ export default class Beam {
         let dynamicConfig = {};
         if (this.player === target) {
             dynamicConfig = {
-                moveToX: target.x - 265 + this.randomize(),
-                moveToY: target.y - 165 + this.randomize(),
+                moveToX: target.x - this.xOffset + this.randomize(),
+                moveToY: target.y - this.yOffset + this.randomize(),
                 scale: this.glow(),
             };
         } else {
             dynamicConfig = {
-                moveToX: target.x - 265,
-                moveToY: target.y - 165,
+                moveToX: target.x - this.xOffset,
+                moveToY: target.y - this.yOffset,
                 scale: this.glow(),
             };
         };

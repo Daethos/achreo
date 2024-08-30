@@ -90,8 +90,10 @@ export default function App() {
             const pop = await populate(asc);
             const comp = asceanCompiler(pop);
             const full = { ...comp?.ascean }; // , inventory: inv
+            const stats = await getStatistics(id);
             setAscean(full as Ascean);
             setInventory(inv);
+            setStatistics(stats);
         } catch (err: any) {
             console.warn('Error fetching Ascean:', err);
         };

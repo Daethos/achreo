@@ -8,6 +8,7 @@ import { useResizeListener } from "../utility/dimensions";
 import { font } from "../utility/styling";
 import { Form } from "solid-bootstrap";
 import { ActionButtonModal } from "../utility/buttons";
+import { roundToTwoDecimals } from "../utility/combat";
 const PhaserShaper = lazy(async () => await import('./PhaserShaper'));
 const CONTROLS = {
     BUTTONS: 'Buttons',
@@ -108,6 +109,18 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         const newSettings = { ...settings(), music: !settings().music };
         await saveSettings(newSettings);
         EventBus.emit('music', newSettings.music);
+    };
+
+    async function handleSpeed(speed: number, type: string, change: number) {
+        const newSettings = { 
+            ...settings(), 
+            difficulty: {
+                ...settings().difficulty, 
+                [type]: speed
+            } 
+        };
+        await saveSettings(newSettings);
+        EventBus.emit('update-speed', {speed: change, type});
     };
 
     async function handleTidbits() {
@@ -252,6 +265,20 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                         <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.special} onChange={(e) => handleSpecial(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                     </div>
                     <div style={font('0.5em')}>[Special (Elite) Enemy Occurrence: 0 - 100% <br /> Restart Game For This Change To Take Effect.]</div>
+
+                    <h1 style={font('1.25em')}>Speed</h1>
+                    <div style={font('0.5em')}>[Adjusts the movement speed of the associated entity. This effect is immediate.]</div>
+                    <div style={font('1em')}>
+                        <button class='highlight' onClick={() => handleSpeed(roundToTwoDecimals(Math.max(-1, (settings().difficulty.playerSpeed - 0.025) || 0), 3), 'playerSpeed', -0.025)}>-</button>            
+                        Player: ({settings().difficulty.playerSpeed})
+                        <button class='highlight' onClick={() => handleSpeed(roundToTwoDecimals(Math.min(1, (settings().difficulty.playerSpeed + 0.025) || 0), 3), 'playerSpeed', 0.025)}>+</button>
+                    </div>
+                    
+                    <div style={font('1em')}>
+                        <button class='highlight' onClick={() => handleSpeed(roundToTwoDecimals(Math.max(-1, (settings().difficulty.enemySpeed - 0.025) || 0), 3), 'enemySpeed', -0.025)}>-</button>            
+                        Enemy: ({settings().difficulty.enemySpeed})
+                        <button class='highlight' onClick={() => handleSpeed(roundToTwoDecimals(Math.min(1, (settings().difficulty.enemySpeed + 0.025) || 0), 3), 'enemySpeed', 0.025)}>+</button>
+                    </div>
 
                     <h1 style={font('1.25em')}>Sound</h1>
                     <div style={font('0.75em', '#fdf6d8')}> 

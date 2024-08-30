@@ -1297,7 +1297,7 @@ export default class Enemy extends Entity {
     };
     
     onPolymorphingEnter = () => this.startCasting('Polymorphing', PLAYER.DURATIONS.POLYMORPH, 'cast');
-    onPolymorphingUpdate = (_dt) => {
+    onPolymorphingUpdate = (dt) => {
         this.counterCheck();
         this.isSuccessful(PLAYER.DURATIONS.POLYMORPH);
         this.combatChecker(this.isCasting);
@@ -2582,7 +2582,7 @@ export default class Enemy extends Entity {
                 this.scene.combatMachine.action({ type: 'Enemy', data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.currentAction, parry: this.parryAction, id: this.enemyID }}});
             };
         }; 
-        this.scene.useStamina(5);
+        this.scene.useStamina(3);
         if (this.scene.player.isMenacing || this.scene.player.isModerating || this.scene.player.isMultifaring || this.scene.player.isMystifying) {
             this.scene.player.reactiveTarget = this.enemyID;
         };

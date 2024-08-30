@@ -30,6 +30,8 @@ export default class Settings {
         computer: boolean;
         special: number;
         tidbits: boolean; 
+        playerSpeed: number;
+        enemySpeed: number;
     };
     public postFx: { 
         enable: boolean; 
@@ -152,6 +154,8 @@ export default class Settings {
             computer: false,
             special: 0.5,
             tidbits: false,
+            playerSpeed: 0,
+            enemySpeed: 0,
         };
         this.postFx = {
             enable: false, 

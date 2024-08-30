@@ -55,7 +55,7 @@ const styleMap: StyleMap = {
         'font-variant': "small-caps",
     },
     godBorderConstitution: {
-        'animation': '5s glowing infinite',
+        // 'animation': '3s glowing infinite',
         'margin-bottom': "5%",
         'width': "25em",
         'margin-left': '-87.5%',
@@ -65,7 +65,7 @@ const styleMap: StyleMap = {
         'box-shadow': "0 0 3em #fdf6d8",
     },
     godBorderStrength: {
-        'animation': '5s glowing infinite',
+        // 'animation': '3s glowing infinite',
         'margin-bottom': "5%",
         'width': "25em",
         'margin-left': '-87.5%',
@@ -75,7 +75,7 @@ const styleMap: StyleMap = {
         'box-shadow': "0 0 3em #ff0000",
     },
     godBorderAgility: {
-        'animation': '5s glowing infinite',
+        // 'animation': '3s glowing infinite',
         'margin-bottom': "5%",
         'width': "25em",
         'margin-left': '-87.5%',
@@ -85,7 +85,7 @@ const styleMap: StyleMap = {
         'box-shadow': "0 0 3em #00ff00",
     },
     godBorderAchre: {
-        'animation': '5s glowing infinite',
+        // 'animation': '3s glowing infinite',
         'margin-bottom': "5%",
         'width': "25em",
         'margin-left': '-87.5%',
@@ -95,7 +95,7 @@ const styleMap: StyleMap = {
         'box-shadow': "0 0 3em blue",
     },
     godBorderCaeren: {
-        'animation': '5s glowing infinite',
+        // 'animation': '3s glowing infinite',
         'margin-bottom': "5%",
         'width': "25em",
         'margin-left': '-87.5%',
@@ -105,7 +105,7 @@ const styleMap: StyleMap = {
         'box-shadow': "0 0 3em purple",
     },
     godBorderKyosir: {
-        'animation': '5s glowing infinite',
+        // 'animation': '3s glowing infinite',
         'margin-bottom': "5%",
         'width': "25em",
         'margin-left': '-87.5%',

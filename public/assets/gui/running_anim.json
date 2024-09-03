@@ -1,0 +1,68 @@
+{
+    "anims": [
+        {
+            "key": "run_down",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 8,
+            "frames": [
+                {
+                    "key": "running",
+                    "frame": "run_down_one"
+                },
+                {
+                    "key": "running",
+                    "frame": "run_down_two"
+                },
+                {
+                    "key": "running",
+                    "frame": "run_down_three"
+                },
+                {
+                    "key": "running",
+                    "frame": "run_down_four"
+                },
+                {
+                    "key": "running",
+                    "frame": "run_down_five"
+                },
+                {
+                    "key": "running",
+                    "frame": "run_down_six"
+                }
+            ]
+        },
+        {
+            "key": "run_up",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 8,
+            "frames": [
+                {
+                    "key": "running",
+                    "frame": "run_up_one"
+                },
+                {
+                    "key": "running",
+                    "frame": "run_up_two"
+                },
+                {
+                    "key": "running",
+                    "frame": "run_up_three"
+                },
+                {
+                    "key": "running",
+                    "frame": "run_up_four"
+                },
+                {
+                    "key": "running",
+                    "frame": "run_up_five"
+                },
+                {
+                    "key": "running",
+                    "frame": "run_up_six"
+                }
+            ]
+        }
+    ]
+}

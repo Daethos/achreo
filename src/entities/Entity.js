@@ -30,6 +30,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         scene.load.animation(`player_actions_three_anim`, '../assets/gui/player_actions_three_anim.json');
         scene.load.atlas(`player_attacks`, '../assets/gui/player_attacks.png', '../assets/gui/player_attacks_atlas.json');
         scene.load.animation(`player_attacks_anim`, '../assets/gui/player_attacks_anim.json');   
+        scene.load.atlas(`running`, '../assets/gui/running.png', '../assets/gui/running_atlas.json');
+        scene.load.animation(`running_anim`, '../assets/gui/running_anim.json');   
         scene.load.atlas('rabbit_idle', '../assets/gui/rabbit_idle.png', '../assets/gui/rabbit_idle_atlas.json');
         scene.load.animation('rabbit_idle_anim', '../assets/gui/rabbit_idle_anim.json');
         scene.load.atlas('rabbit_movement', '../assets/gui/rabbit_movement.png', '../assets/gui/rabbit_movement_atlas.json');
@@ -378,6 +380,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if ("vibrate" in navigator) navigator.vibrate(100);
     };
     moving = () => this.body.velocity.x !== 0 || this.body.velocity.y !== 0;
+    movingHorizontal = () => this.body.velocity.x !== 0 && this.body.velocity.y === 0;
+    movingVertical = () => this.body.velocity.x === 0 && this.body.velocity.y !== 0;
+    movingDown = () => this.body.velocity.x === 0 && this.body.velocity.y > 0;
+    movingUp = () => this.body.velocity.x === 0 && this.body.velocity.y < 0;
+
     
     checkBow = (type) => type === 'Bow' || type === 'Greatbow';
     checkDamageType = (type, concern) => DAMAGE_TYPES[concern].includes(type);
@@ -464,7 +471,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
             this.hitBoxCheck(target);
         };
-
         if (entity === 'enemy' && target) {
             const direction = target.position.subtract(this.position);
             const distance = direction.length();
@@ -475,6 +481,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     weaponRotation = (entity, target) => {  
         if (!this.isPosturing && !this.isStalwart && this.spriteShield) this.spriteShield.setVisible(false); // && !this.isStrafing
         if (this.isDodging || this.isRolling) this.spriteShield.setVisible(false);
+        if (!this.movingVertical()) {this.spriteWeapon.setVisible(true);this.spriteShield.setDepth(this.depth + 1);};
         if (this.isDodging || this.isRolling) this.spriteWeapon.setVisible(false);
         if (this.isStalwart && !this.isRolling && !this.isDodging) this.spriteShield.setVisible(true);
         if (this.isPraying || this.isCasting) {
@@ -1068,6 +1075,23 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 };
             };
             this.frameCount += 1;
+        } else if (this.movingVertical()) {
+            if (!this.flipX) {
+                if (this.isStalwart) {
+                    this.spriteShield.setOrigin(-0.2, 0.25);
+                };    
+            } else {
+                if (this.isStalwart) {
+                    this.spriteShield.setOrigin(1.2, 0.25);
+                };
+            }
+            if (this.movingDown()) {
+                this.spriteShield.setDepth(this.depth + 1);
+            } else {
+                this.spriteShield.setDepth(this.depth - 1);
+            };
+            this.spriteWeapon.setVisible(false);
+            this.frameCount = 0;
         } else if (((Math.abs(this.body.velocity.x) > 0.1 || Math.abs(this.body.velocity.y) > 0.1)) && !this.isRolling && !this.flipX) {
             if (this.isStalwart) {
                 this.spriteShield.setOrigin(-0.2, 0.25);
@@ -1081,7 +1105,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.spriteWeapon.setOrigin(-0.25, 0.5);
                 this.spriteWeapon.setAngle(107.5);
             };
-            if (this.frameCount > 0) this.frameCount = 0;
+            this.frameCount = 0;
         } else if (((Math.abs(this.body.velocity.x) > 0.1 || Math.abs(this.body.velocity.y) > 0.1)) && !this.isRolling && this.flipX) { 
             if (this.isStalwart) {
                 this.spriteShield.setOrigin(1.2, 0.25);
@@ -1095,7 +1119,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.spriteWeapon.setOrigin(0.5, 1.2);
                 this.spriteWeapon.setAngle(-194.5);
             };
-            if (this.frameCount > 0) this.frameCount = 0;
+            this.frameCount = 0;
         } else if (this.flipX) {
             if ((entity === 'player' && this.hasBow) || (entity === 'enemy' && this.hasBow)) {
                 this.spriteWeapon.setDepth(this.depth + 1);
@@ -1106,7 +1130,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.spriteWeapon.setOrigin(-0.25, 1.2);
                 this.spriteWeapon.setAngle(-250);
             };
-            if (this.frameCount > 0) this.frameCount = 0;
+            this.frameCount = 0;
         } else {
             if ((entity === 'player' && this.hasBow) || (entity === 'enemy' && this.hasBow)) {
                 this.spriteWeapon.setDepth(this.depth + 1);
@@ -1117,7 +1141,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.spriteWeapon.setOrigin(-0.15, 1.3);
                 this.spriteWeapon.setAngle(-195);
             };
-            if (this.frameCount > 0) this.frameCount = 0;
+            this.frameCount = 0;
         };
     };
 };

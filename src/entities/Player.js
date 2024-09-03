@@ -3329,7 +3329,6 @@ export default class Player extends Entity {
             this.scene.rightJoystick.joystick.setVisible(true);
             this.scene.actionBar.setVisible(true);
         };
-        this.anims.play('player_running', true);
         this.spriteWeapon.setVisible(true);
         if (this.confuseTimer) {
             this.confuseTimer.destroy();
@@ -3398,7 +3397,6 @@ export default class Player extends Entity {
         };
         this.isFeared = false;
         this.fearCount = 0;
-        this.anims.play('player_running', true);
         this.spriteWeapon.setVisible(true);
         if (this.fearTimer) {
             this.fearTimer.destroy();
@@ -3491,7 +3489,6 @@ export default class Player extends Entity {
         this.scene.actionBar.setVisible(true);
         if (this.isPolymorphed) this.isPolymorphed = false;
         this.clearAnimations();
-        this.anims.play('player_running', true);
         this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
         this.spriteWeapon.setVisible(true);
         if (this.polymorphTimer) {
@@ -3937,7 +3934,15 @@ export default class Player extends Entity {
             this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
         } else if (this.isConfused || this.isFeared) {
             if (this.moving()) {
-                this.anims.play('player_running', true);
+                if (!Math.abs(this.velocity.x)) {
+                    if (this.velocity.y > 0) {
+                        this.anims.play('run_down', true);
+                    } else {
+                        this.anims.play('run_up', true);
+                    };
+                } else {
+                    this.anims.play('player_running', true);
+                };
             } else {
                 this.anims.play('player_idle', true);
             };
@@ -3948,12 +3953,10 @@ export default class Player extends Entity {
             this.anims.play('player_attack_2', true).on('animationcomplete', () => this.isThrusting = false);
         } else if (this.isDodging) { 
             this.anims.play('player_slide', true);
-            this.spriteWeapon.setVisible(false);
             if (this.dodgeCooldown === 0) this.playerDodge();
         } else if (this.isRolling) { 
             this.anims.play('player_roll', true);
             sprint(this.scene);
-            this.spriteWeapon.setVisible(false);
             if (this.rollCooldown === 0) this.playerRoll();
         } else if (this.isPosturing) {
             sprint(this.scene);
@@ -3972,7 +3975,15 @@ export default class Player extends Entity {
                         this.isWalking = undefined;
                     }, undefined, this);
                 };
-                this.anims.play('player_running', true);
+                if (!Math.abs(this.velocity.x)) {
+                    if (this.velocity.y > 0) {
+                        this.anims.play('run_down', true);
+                    } else {
+                        this.anims.play('run_up', true);
+                    };
+                } else {
+                    this.anims.play('player_running', true);
+                };
             };
             if (!this.isMoving) this.isMoving = true;
         } else if (this.isConsuming) { 
@@ -3984,7 +3995,15 @@ export default class Player extends Entity {
             this.anims.play('player_pray', true).on('animationcomplete', () => this.isPraying = false);
         } else if (this.isStealthing) {
             if (this.isMoving) {
-                this.anims.play('player_running', true);
+                if (!Math.abs(this.velocity.x)) {
+                    if (this.velocity.y > 0) {
+                        this.anims.play('run_down', true);
+                    } else {
+                        this.anims.play('run_up', true);
+                    };
+                } else {
+                    this.anims.play('player_running', true);
+                };
             } else if (this.inWater) {
                 this.anims.play('player_climb', true);
             } else {

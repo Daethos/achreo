@@ -566,8 +566,8 @@ const attributeCompiler = (ascean: Ascean,
 
     newAttributes.healthTotal = 50 + ((newAttributes.totalConstitution * ascean.level) + ((newAttributes.constitutionMod + Math.round((newAttributes.caerenMod + newAttributes.strengthMod) / 2)) * ascean.level));
     newAttributes.initiative = 10 + (newAttributes.agilityMod + newAttributes.achreMod);
-    newAttributes.stamina = 100 + (newAttributes.constitutionMod + newAttributes.strengthMod + newAttributes.agilityMod);
-    newAttributes.grace = 100 + (newAttributes.achreMod + newAttributes.caerenMod + newAttributes.kyosirMod); // Future Idea Maybe
+    newAttributes.stamina = 75 + (newAttributes.constitutionMod + newAttributes.strengthMod + newAttributes.agilityMod);
+    newAttributes.grace = 75 + (newAttributes.achreMod + newAttributes.caerenMod + newAttributes.kyosirMod); // Future Idea Maybe
     newAttributes.stamina *= (ascean.origin === RACE.QUOREITE ? 1.1 : (ascean.origin === RACE.LIIVI || ascean.origin === RACE.NOTHEO) ? 1.05 : 1);
     newAttributes.grace *= (ascean.origin === RACE.FYERS ? 1.1 : (ascean.origin === RACE.LIIVI || ascean.origin === RACE.NOTHOS) ? 1.05 : 1);
     return newAttributes;

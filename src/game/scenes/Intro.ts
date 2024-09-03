@@ -10,6 +10,7 @@ export class Intro extends Scene {
     private introTextBorder: Phaser.GameObjects.Rectangle;
     private nextText: Phaser.GameObjects.Text;    
     private prevText: Phaser.GameObjects.Text;
+    private fullText: Phaser.GameObjects.Text;
     private node: any;
 
     constructor() {super('Intro');};
@@ -92,6 +93,15 @@ export class Intro extends Scene {
             align: 'center',
         });
         this.prevText.setOrigin(0); 
+        this.fullText = this.add.text(this.game.canvas.width * 0.45, this.game.canvas.height * 0.85, 'Full Text', {
+            color: '#fdf6d8',
+            fontFamily: 'Cinzel',
+            fontSize: '18px',
+            stroke: 'black',
+            strokeThickness: 2,
+            align: 'center',
+        });
+        this.fullText.setOrigin(0); 
         if (this.node.prev === undefined) {
             this.prevText.visible = false;
         };
@@ -104,10 +114,10 @@ export class Intro extends Scene {
             })
             .on('pointerup', () => {
                 this.sound.play('TV_Button_Press', { loop: false });
-                if (typing.isTyping) {
-                    typing.stop(true);
-                    return;
-                };
+                // if (typing.isTyping) {
+                //     typing.stop(true);
+                //     return;
+                // };
                 if (this.node.key === 5) {
                     EventBus.emit('save-intro');
                     return;
@@ -147,13 +157,23 @@ export class Intro extends Scene {
                     this.nextText.visible = true;
                 };
                 if (this.node.prev !== undefined) {
-                    console.log(this.node.prev, 'This is not undefined')
                     this.node = INTRO_NODES[this.node.prev as keyof typeof INTRO_NODES];
                     typing.start(this.node.text);
                 };
                 this.prevText.setColor('#fdf6d8');
-            })
+            });
 
+        this.fullText.setInteractive()
+            .on('pointerdown', () => {
+                this.fullText.setColor('gold');
+            })
+            .on('pointerup', () => {
+                this.sound.play('TV_Button_Press', { loop: false });
+                if (typing.isTyping) {
+                    typing.stop(true);
+                    return;
+                };
+            });
         EventBus.emit('current-scene-ready', this);
     };
 };

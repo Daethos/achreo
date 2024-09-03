@@ -8,7 +8,7 @@ export const { Bodies } = Phaser.Physics.Matter.Matter;
 export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.Matter.Image  
     _id: string;
     drop: Equipment;
-    scene: Game;
+    scene: any;
 
     constructor(data: any) {
         let { scene, enemyID, drop } = data;
@@ -22,6 +22,21 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
         this.drop = drop;
         this.setupCollider();
         this.setupListener();
+        this.setInteractive(new Phaser.Geom.Rectangle(
+            0, 0,
+            32, 32
+        ), Phaser.Geom.Rectangle.Contains)
+            .on('pointerdown', () => {
+                this.clearTint();
+                this.setTint(0x00FF00); 
+                this.scene.player.interacting.push(this);
+                const interactingLoot = { loot: this._id, interacting: true };
+                EventBus.emit('interacting-loot', interactingLoot);
+                EventBus.emit('blend-game', { showLoot: true });
+            })
+            .on('pointerout', () => {
+                this.clearTint();
+            });
     }; 
     cleanUp = () => EventBus.off('destroy-lootdrop', this.destroyLootDrop);
     setupCollider = () => {

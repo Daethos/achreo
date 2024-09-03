@@ -1,9 +1,9 @@
 export const ACTIONS = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry', 'Thrust'];
 export const SPECIALS = [
-    // 'Hook',
-    // 'Mark',
-    // 'Netherswap',
-    // 'Recall',
+    'Hook',
+    'Mark',
+    'Netherswap',
+    'Recall',
     'Absorb',
     'Achire',
     'Astrave',
@@ -59,6 +59,9 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
     'constitution': [ // 14
         'Invoke', 
         'Consume', 
+        'Hook',
+        'Mark',
+        'Recall',
         'Absorb',
         'Fyerus',
         'Healing', 
@@ -74,7 +77,10 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
     ], // 14 
     'strength': [ // 14 !!!
         'Invoke', 
-        'Consume', 
+        'Consume',
+        'Hook',
+        'Mark',
+        'Recall',
         'Arc',
         'Desperation',
         'Howl',
@@ -90,7 +96,10 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
     ], // 14 !!!
     'agility': [ // 14 !!!
         'Invoke', 
-        'Consume', 
+        'Consume',
+        'Hook',
+        'Mark',
+        'Recall',
         'Achire',
         'Desperation', 
         'Envelop', 
@@ -107,15 +116,15 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
     'achre': [ // 14 !!!
         'Invoke', 
         'Consume', 
+        'Hook',
+        'Mark',
+        'Netherswap',
+        'Recall',
         'Absorb',
         'Achire',
         'Astrave',
         'Blink', 
         'Freeze',
-        'Hook',
-        'Mark',
-        'Netherswap',
-        'Recall',
         'Moderate',
         'Multifarious',
         'Polymorph', 
@@ -127,6 +136,9 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
     'caeren': [ // 14
         'Invoke', 
         'Consume', 
+        'Hook',
+        'Mark',
+        'Recall',
         'Astrave',
         'Fear', 
         'Fyerus',
@@ -143,6 +155,8 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
     'kyosir': [ // 14
         'Invoke', 
         'Consume', 
+        'Hook',
+        'Netherswap',
         'Achire',
         'Chiomic',
         'Confuse', 
@@ -278,12 +292,12 @@ export const STARTING_MASTERY_UI = {
 export const TRAIT_SPECIALS = {
     "Astral": ['Astrication', 'Devour'],
     "Cambiren": ['Caerenesis'],
-    "Fyeran": ['Seer'],
+    "Fyeran": ['Caerenesis', 'Seer'],
     "Ilian": ['Blind'],
     "Kyn'gian": ['Endurance'],
     "Sedyrist" : ['Stimulate'],
     "Se'van": ['Berserk', 'Seer'],
-    "Shaorahi": ['Conviction'],
+    "Shaorahi": ['Caerenesis', 'Conviction'],
     "Shrygeian": ['Impermanence', 'Devour'],
     "Tshaeral": ['Devour'],
 };

@@ -41,11 +41,6 @@ const MOVEMENT = {
     'left': { x: -5, y: 0 },
     'right': { x: 5, y: 0 },
 };
-
-const LIMIT = {
-    Game: 4096,
-    Underground: 1024
-};
  
 export default class Player extends Entity {
     constructor(data) {
@@ -3407,7 +3402,7 @@ export default class Player extends Entity {
 
     onFrozenEnter = () => {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Frozen', DURATION.TEXT, 'cast', false, true);
-        if (!this.isPolymorphed) this.clearAnimations();
+        this.clearAnimations();
         this.anims.play('player_idle', true);
         this.setStatic(true);
         this.scene.time.addEvent({
@@ -3462,20 +3457,20 @@ export default class Player extends Entity {
             this.playerVelocity.y = this.polymorphVelocity.y;
         };
         this.polymorphTimer = this.scene.time.addEvent({
-            delay: 1250,
+            delay: 2000,
             callback: () => {
                 iteration++;
-                if (iteration === 8) {
+                if (iteration === 5) {
                     iteration = 0;
                     this.isPolymorphed = false;
                 } else {   
                     randomDirection();
-                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '...thump', 750, 'effect');
-                    this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: 7.5, id: this.playerID } });
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '...thump', 1000, 'effect');
+                    this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: 20, id: this.playerID } });
                 };
             },
             callbackScope: this,
-            repeat: 8,
+            repeat: 5,
         }); 
     };
     onPolymorphedUpdate = (_dt) => {

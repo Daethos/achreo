@@ -26,8 +26,8 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
         };
         if (effectTimer() <= 0) {
             // console.log('%c Prayer Effect Removed', 'color: red');
-            clearInterval(timeout);
             EventBus.emit('initiate-combat', { data: effect, type: 'Remove Tick' });
+            clearInterval(timeout);
             return;
         };
         if (effect.endTime - combat().combatTimer > effectTimer()) {

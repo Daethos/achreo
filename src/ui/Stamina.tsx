@@ -1,6 +1,6 @@
 import { Accessor, createSignal, onCleanup, onMount } from "solid-js";
 import { EventBus } from "../game/EventBus";
-const STAMINA = { TICK: 100, UPDATE: 1000 };
+const STAMINA = { TICK: 100, UPDATE: 750 };
 export default function createStamina(stam: Accessor<number>) {
     const [stamina, setStamina] = createSignal(stam());
     const [staminaPercentage, setStaminaPercentage] = createSignal(0);

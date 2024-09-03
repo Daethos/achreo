@@ -93,7 +93,7 @@ export class Intro extends Scene {
             align: 'center',
         });
         this.prevText.setOrigin(0); 
-        this.fullText = this.add.text(this.game.canvas.width * 0.45, this.game.canvas.height * 0.85, 'Full Text', {
+        this.fullText = this.add.text(this.game.canvas.width * 0.475, this.game.canvas.height * 0.85, 'Full Text', {
             color: '#fdf6d8',
             fontFamily: 'Cinzel',
             fontSize: '18px',
@@ -114,10 +114,6 @@ export class Intro extends Scene {
             })
             .on('pointerup', () => {
                 this.sound.play('TV_Button_Press', { loop: false });
-                // if (typing.isTyping) {
-                //     typing.stop(true);
-                //     return;
-                // };
                 if (this.node.key === 5) {
                     EventBus.emit('save-intro');
                     return;

@@ -46,18 +46,18 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
     };
     const size = (len: number) => {
         switch (true) {
-            case len < 10: return '1.15em';
-            case len < 20: return '1em';
-            case len < 30: return '0.85em';
-            default:  return '0.6em';
+            case len < 10: return '1.25em'; // 1.15em
+            case len < 20: return '1.1em'; // 1em
+            case len < 30: return '1em'; // 0.85em
+            default:  return '0.85em'; // 0.6em
         };
     };
     const top = (len: number) => {
         switch (true) {
-            case len < 10: return '-3%';
-            case len < 20: return '-2%';
-            case len < 30: return '-1%';
-            default: return '0';
+            case len < 10: return '-3.5%'; // -3%
+            case len < 20: return '-2.5%'; // -2%
+            case len < 30: return '-1.5%'; // -1%
+            default: return '-0.5%';
         };
     };
     // function createPrayer() {
@@ -79,7 +79,7 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
             <div class='healthbarPosition' style={{ width: `${healthPercentage()}%`, 'background': state()?.isStealth ? 'linear-gradient(#000, #444)' : 'linear-gradient(gold, #fdf6d8)' }}></div>
         </div>
         <p class='playerName' style={{ 
-            'top': top(state().player?.name.length as number), left: '5vw', position: 'fixed',
+            'top': top(state().player?.name.length as number), left: '4.5vw', position: 'fixed',
             'color': `${state().isStealth ? '#fdf6d8' : 'gold'}`, 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#444' : '#000'}`, 'z-index': 1, 'max-height': '40px', 'font-size': size(state().player?.name.length as number) }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
         <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar" onClick={changeDisplay} style={{ 'max-height': '74px' }}/>
         <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} settings={settings} />

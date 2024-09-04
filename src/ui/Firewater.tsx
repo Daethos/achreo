@@ -98,7 +98,7 @@ export default function Firewater({ ascean }: {ascean: Accessor<Ascean>;}) {
         };
     };
     return <>
-        <button class='playerSaveInventoryOuter' style={{ transform: 'scale(0.7)', top: '0.2em', right: '0.2em' }} onClick={() => setShowFirewater(!showFirewater())}>
+        <button class='playerSaveInventoryOuter' style={{ transform: 'scale(0.8)', top: '-0.1em', right: '0.35em' }} onClick={() => setShowFirewater(!showFirewater())}>
             <img src={'../assets/images/firewater.png'} alt="Firewater" />
         </button>
         <Show when={showFirewater()}>

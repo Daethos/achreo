@@ -16,7 +16,7 @@ import { useResizeListener } from '../utility/dimensions';
 import { Attributes } from '../utility/attributes';
 import { Reputation, faction } from '../utility/player';
 import { playerTraits } from '../utility/ascean';
-import { SPECIAL, TRAIT_SPECIALS, SPECIALS, TRAITS } from '../utility/abilities'; // SPECIALS, TRAITS
+import { SPECIAL, TRAIT_SPECIALS } from '../utility/abilities'; // SPECIALS, TRAITS
 import { DEITIES } from '../utility/deities';
 import { Puff } from 'solid-spinner';
 import PhaserSettings from './PhaserSettings';
@@ -487,7 +487,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
             <button class='highlight' style={{ 'margin-left': '4%', 'font-size': '1.1em', 'margin-top': '3%' }} onClick={() => setNextView()}>
                 <div class='playerMenuHeading'>Character</div>
             </button>
-            <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1 }}>
+            <div class='playerSettingSelect' style={{ position: 'fixed', top: '-1vh', right: '0.5vh', 'z-index': 1, 'font-size': '1.25em' }}>
                 { settings().characterViews === CHARACTERS.REPUTATION ? (
                     <button class='highlight menuButton' onClick={() => currentCharacterView(CHARACTERS.SKILLS)}>
                         <div>Reputation</div>
@@ -508,7 +508,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
             </div> 
         </> ) : settings().asceanViews === VIEWS.INVENTORY ? ( <>
             <button class='highlight' style={{ 'margin-left': '4%', 'font-size': '1.1em', 'margin-top': '3%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Inventory</div></button>
-            <button class='highlight menuButton' onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ position: 'fixed', top: 0, right: '10vh', 'z-index': 1 }}>
+            <button class='highlight menuButton' onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ position: 'fixed', top: '-1.25vh', right: '10vh', 'z-index': 1, 'font-size': '1.15em' }}>
                 <div>{expandedCharacter() === true ? 'Player Stats' : 'Equipment'}</div>
             </button>
             <Suspense fallback={<Puff color="gold"/>}>
@@ -517,18 +517,18 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
         </> ) : settings().asceanViews === VIEWS.SETTINGS ? ( <>
             <button class='highlight' style={{ 'margin-left': '4%', 'font-size': '1.1em', 'margin-top': '3%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Gameplay</div></button>
             {(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) && (
-                <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1, 'font-family': 'Cinzel-Regular' }}>
-                    <button class='highlight menuButton' onClick={() => currentView(SETTINGS.ACTIONS)}><div>Actions</div></button>
-                    <button class='highlight menuButton' onClick={() => currentView(SETTINGS.SPECIALS)}><div>Specials</div></button>
-                    <button class='highlight menuButton' onClick={() => currentView(SETTINGS.CONTROL)}><div>Control</div></button>
-                    <button class='highlight menuButton' onClick={() => currentView(SETTINGS.GENERAL)}><div>General</div></button>
-                    <button class='highlight menuButton' onClick={() => currentView(SETTINGS.INVENTORY)}><div>Inventory</div></button>
-                    <button class='highlight menuButton' onClick={() => currentView(SETTINGS.TACTICS)}><div>Tactics</div></button>
+                <div class='playerSettingSelect' style={{ position: 'fixed', top: '-1vh', right: '0.75vw', 'z-index': 1, 'font-family': 'Cinzel-Regular', 'font-size': '1.25em' }}>
+                    <button class='highlight menuButton' style={{ margin: '0.5em 0.25em 0 0' }} onClick={() => currentView(SETTINGS.ACTIONS)}><div>Actions</div></button>
+                    <button class='highlight menuButton' style={{ margin: '0.5em 0.25em 0 0' }} onClick={() => currentView(SETTINGS.SPECIALS)}><div>Specials</div></button>
+                    <button class='highlight menuButton' style={{ margin: '0.5em 0.25em 0 0' }} onClick={() => currentView(SETTINGS.CONTROL)}><div>Control</div></button>
+                    <button class='highlight menuButton' style={{ margin: '0.5em 0.25em 0 0' }} onClick={() => currentView(SETTINGS.GENERAL)}><div>General</div></button>
+                    <button class='highlight menuButton' style={{ margin: '0.5em 0.25em 0 0' }} onClick={() => currentView(SETTINGS.INVENTORY)}><div>Inventory</div></button>
+                    <button class='highlight menuButton' style={{ margin: '0.5em 0.25em 0 0' }} onClick={() => currentView(SETTINGS.TACTICS)}><div>Tactics</div></button>
                 </div>
             )}
         </> ) : ( <>
             <button class='highlight' style={{ 'margin-left': '4%', 'font-size': '1.1em', 'margin-top': '3%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Personal</div></button>
-            <div class='playerSettingSelect' style={{ position: 'fixed', top: 0, right: '0.5vh', 'z-index': 1 }}>
+            <div class='playerSettingSelect' style={{ position: 'fixed', top: '-1vh', right: '0.5vh', 'z-index': 1, 'font-size': '1.25em' }}>
             { settings().faithViews === FAITH.DEITIES ? (
                 <button class='highlight menuButton' onClick={() => currentFaithView(FAITH.JOURNAL)}>
                     <div>Deities</div>
@@ -550,15 +550,17 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                     <div class='' style={{ 'justify-content': 'center', 'align-items': 'center', 'text-align': 'center' }}>
                         <p style={{ color: 'gold', 'font-size': '1.25em' }}>Feedback</p>
                         <Form class='verticalCenter' style={{ 'text-wrap': 'balance' }}>
+                            <Form.Text class="text-muted">
+                                If you happen across any bugs, errors, or have any thoughts about the game, please leave an email. It would greatly help understanding my blindspots as a developer and progrmamer.
+                            </Form.Text>
+                            <br /><br />
                         <Form.Group class="mb-3" controlId="formBasicEmail">
                             <Form.Text class="text-muted">
                                 Warning: This will prompt your browser to open up a mail service of your choice.
                             </Form.Text>
-                            <br />
-                            <br />
+                            <br /><br />
                             <a href="mailto:ascean@gmx.com">Send Gameplay Feedback </a>
-                            <br />
-                            <br />
+                            <br /><br />
                             <Form.Text class="text-muted">
                                 [Bugs, Errors, Issues, or Suggestions]
                             </Form.Text>

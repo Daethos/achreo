@@ -45,7 +45,7 @@
         "text": "${ascean.name}, I have not regaled thought with humans in some time. Forgive me, I require from you a gift, for our tether is ^500 limited.",
         "options": [
           {
-            "text": "My liege.",
+            "text": "My caeren liege.",
             "next": "0006",
             "npcIds": ["Deity"],
             "conditions": [],
@@ -108,7 +108,7 @@
         "text": "Do not mistake this entreatment with an absence of my Caer upon you. That you may witness me echoes its tendrils.",
         "options": [
           {
-            "text": "Forgive my concern, ${enemy.name}, I have witnessed all manner of Chiomic cruelty and Tshaeral mengaerie. I am ${ascean.name}, in service to you my liege. ",
+            "text": "Forgive my concern, ${enemy.name}, I have witnessed all manner of Chiomic cruelty and Tshaeral mengaerie. I am ${ascean.name}, in service to you my caeren liege. ",
             "next": "0002",
             "npcIds": ["Deity"],
             "conditions": [],
@@ -163,7 +163,7 @@
         "text": "Nothing you truly possess, fleeting caer which resonates and imbues to you from its source. That of the fallen which come cross your way. This is not thankless, as I have gifted you a boon to augur brilliance.",
         "options": [
           {
-            "text": "I shall seek it at once, my liege.",
+            "text": "I shall seek it at once, my caeren liege.",
             "next": "0007",
             "npcIds": ["Deity"],
             "conditions": [],

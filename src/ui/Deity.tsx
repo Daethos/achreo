@@ -8,6 +8,7 @@ import { EventBus } from '../game/EventBus';
 import { NPC } from '../utility/npc';
 import { DialogTree } from './Dialog';
 import { evaluateDeity } from '../utility/deities';
+import Statistics from '../utility/statistics';
 
 const colors = {
     constitution: '#fdf6d8',
@@ -56,9 +57,10 @@ interface DeityProps {
     ascean: Accessor<Ascean>;
     combat: Accessor<Combat>;
     game: Accessor<GameState>;
+    statistics: Accessor<Statistics>;
 };
 
-export default function Deity({ ascean, combat, game }: DeityProps) {
+export default function Deity({ ascean, combat, game, statistics }: DeityProps) {
     const [playerResponses, setPlayerResponses] = createSignal<string[]>([]);
     const [keywordResponses, setKeywordResponses] = createSignal<string[]>([]);
     const [dialogNodes, setDialogNodes] = createSignal<DialogNode[]>([]);
@@ -69,7 +71,7 @@ export default function Deity({ ascean, combat, game }: DeityProps) {
         resolveDeity: () => resolveDeity(),
     };
     createEffect(() => {
-        setDeity({name: ascean()?.statistics.relationships.deity.name === '' ? highestFaith() : ascean()?.statistics.relationships.deity.name});
+        setDeity({name: statistics().relationships.deity.name === '' ? highestFaith() : statistics().relationships.deity.name});
         getDialogNodes();
         checkOptions(game()?.currentNode as DialogNode);
     }); 
@@ -94,6 +96,7 @@ export default function Deity({ ascean, combat, game }: DeityProps) {
     async function resolveDeity() {
         try {
             const data = {
+                statistics,
                 asceanID: ascean()._id,
                 deity: deity().name,
                 entry: {

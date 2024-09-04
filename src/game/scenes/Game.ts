@@ -25,6 +25,7 @@ import NPC from '../../entities/NPC';
 import ParticleManager from '../../phaser/ParticleManager';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
+import Logger, { ConsoleLogger } from '../../utility/Logger';
 const dimensions = useResizeListener();
 
 export class Game extends Scene {
@@ -76,6 +77,7 @@ export class Game extends Scene {
     climbingLayer: any;
     flowers: any;
     plants: any;
+    logger!: Logger;
 
     constructor () {
         super('Game');
@@ -188,6 +190,13 @@ export class Game extends Scene {
         this.musicStealth.play();
         this.musicStealth.pause();
 
+        this.logger = new Logger();
+        this.logger.add('console', new ConsoleLogger());
+        this.time.delayedCall(2000, () => {
+            this.logger.log('Console: Something concerning but potentially innocuous!');
+            this.logger.log('Warning: Some function did not work, but did not crash the game!');
+            this.logger.log('Error: Some portion if not all of the game has crashed!');
+        }, undefined, this);
     // =========================== FPS =========================== \\
         // this.fpsText = this.add.text(
         //     dimensions()?.WIDTH * this.settings.positions.fpsText.x, 

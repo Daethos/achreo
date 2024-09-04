@@ -95,12 +95,18 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
     };
     const size = (len: number) => {
         switch (true) {
-            case len < 20:
-                return '1em';
-            case len < 30:
-                return '0.85em';
-            default:
-                return '0.6em';
+            case len < 10: return '1.25em'; // 1.15em
+            case len < 20: return '1.1em'; // 1em
+            case len < 30: return '1em'; // 0.85em
+            default:  return '0.85em'; // 0.6em
+        };
+    };
+    const top = (len: number) => {
+        switch (true) {
+            case len < 10: return '1.5%'; // -3%
+            case len < 20: return '2%'; // -2%
+            case len < 30: return '2.5%'; // -1%
+            default: return '3%';
         };
     };
     // function createPrayer() {
@@ -118,7 +124,7 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
     // };
     return (
         <div class='enemyCombatUi'>
-            <div class='enemyName' style={{ 'z-index': 1, 'font-size': size(state().computer?.name.length as number) }} onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
+            <div class='enemyName' style={{ position: 'fixed', 'z-index': 1, 'font-size': size(state().computer?.name.length as number), 'right': '4.5vw', 'top': top(state().computer?.name.length as number) }} onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
             <div class='center enemyHealthBar' onClick={changeDisplay} style={{ 'max-height': '24px' }}>
                 <div class='enemyPortrait' style={{ 'font-size': '1em', color: '#fdf6d8' }}>{healthDisplay()}</div>
                 <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `100%`, 'background-color': '#FF0000' }}></div>

@@ -1,5 +1,7 @@
+import { Accessor } from "solid-js";
 import { getAscean, updateAscean } from "../assets/db/db";
-import { Statistics } from "./statistics";
+import Statistics from "./statistics";
+import { EventBus } from "../game/EventBus";
 
 export const DEITIES = {
     "Daethos": {
@@ -490,9 +492,9 @@ export const checkDeificConcerns = (statistics: Statistics, worship: string, sta
     };
 };
 
-export async function evaluateDeity(data: { asceanID: string, deity: string, entry: any }): Promise<any> {
+export async function evaluateDeity(data: { statistics: Accessor<Statistics>, asceanID: string, deity: string, entry: any }): Promise<any> {
     try {
-        let { asceanID, deity, entry } = data;
+        let { statistics, asceanID, deity, entry } = data;
         let ascean = await getAscean(asceanID);
 
         const keywordCount = {
@@ -585,25 +587,29 @@ export async function evaluateDeity(data: { asceanID: string, deity: string, ent
         ascean.interactions.deity += 1;
 
         console.log(behavior, "Behavior");
-        if (ascean.statistics.relationships.deity.name === '') ascean.statistics.relationships.deity.name = deity;
-        ascean.statistics.relationships.deity.Compliant.occurrence += keywordCount.Compliant.occurrence;
-        ascean.statistics.relationships.deity.Faithful.occurrence += keywordCount.Faithful.occurrence;
-        ascean.statistics.relationships.deity.Unfaithful.occurrence += keywordCount.Unfaithful.occurrence;
-        ascean.statistics.relationships.deity.Disobedient.occurrence += keywordCount.Disobedient.occurrence;
-        ascean.statistics.relationships.deity.Compliant.value += keywordCount.Compliant.value;
-        ascean.statistics.relationships.deity.Faithful.value += keywordCount.Faithful.value;
-        ascean.statistics.relationships.deity.Unfaithful.value += keywordCount.Unfaithful.value;
-        ascean.statistics.relationships.deity.Disobedient.value += keywordCount.Disobedient.value;
-        ascean.statistics.relationships.deity.value += valueSum;
-        ascean.statistics.relationships.deity.behaviors.push(behavior);
+        let newStats = statistics();
+
+        if (newStats.relationships.deity.name === '') newStats.relationships.deity.name = deity;
+        newStats.relationships.deity.Compliant.occurrence += keywordCount.Compliant.occurrence;
+        newStats.relationships.deity.Faithful.occurrence += keywordCount.Faithful.occurrence;
+        newStats.relationships.deity.Unfaithful.occurrence += keywordCount.Unfaithful.occurrence;
+        newStats.relationships.deity.Disobedient.occurrence += keywordCount.Disobedient.occurrence;
+        newStats.relationships.deity.Compliant.value += keywordCount.Compliant.value;
+        newStats.relationships.deity.Faithful.value += keywordCount.Faithful.value;
+        newStats.relationships.deity.Unfaithful.value += keywordCount.Unfaithful.value;
+        newStats.relationships.deity.Disobedient.value += keywordCount.Disobedient.value;
+        newStats.relationships.deity.value += valueSum;
+        (newStats.relationships.deity.behaviors as any).push(behavior);
+
+        EventBus.emit('update-statistics', newStats);
 
         if (ascean.capable < 5) {
             ascean.capable += 1;
         };
 
-        // const goodBehavior = ascean.statistics.relationships.deity.behaviors.filter(behavior => behavior === 'Faithful' || behavior === 'Compliant');
-        // const badBehavior = ascean.statistics.relationships.deity.behaviors.filter(behavior => behavior === 'Unfaithful' || behavior === 'Disobedient');
-        // const middlingBehavior = ascean.statistics.relationships.deity.behaviors.filter(behavior => behavior === 'Somewhat Faithful' || behavior === 'Somewhat Compliant' || behavior === 'Somewhat Unfaithful' || behavior === 'Somewhat Disobedient');
+        // const goodBehavior = newStats.relationships.deity.behaviors.filter(behavior => behavior === 'Faithful' || behavior === 'Compliant');
+        // const badBehavior = newStats.relationships.deity.behaviors.filter(behavior => behavior === 'Unfaithful' || behavior === 'Disobedient');
+        // const middlingBehavior = newStats.relationships.deity.behaviors.filter(behavior => behavior === 'Somewhat Faithful' || behavior === 'Somewhat Compliant' || behavior === 'Somewhat Unfaithful' || behavior === 'Somewhat Disobedient');
         // const goodBehaviorCount = goodBehavior.length;
         // const badBehaviorCount = badBehavior.length;
         // const middlingBehaviorCount = middlingBehavior.length;

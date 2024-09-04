@@ -4,7 +4,7 @@
             "key": "run_down",
             "type": "frames",
             "repeat": -1,
-            "frameRate": 10,
+            "frameRate": 8,
             "frames": [
                 {
                     "key": "running",
@@ -36,7 +36,7 @@
             "key": "run_up",
             "type": "frames",
             "repeat": -1,
-            "frameRate": 10,
+            "frameRate": 8,
             "frames": [
                 {
                     "key": "running",

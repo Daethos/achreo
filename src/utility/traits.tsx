@@ -97,17 +97,17 @@ export const TRAIT_DESCRIPTIONS = {
     "Lilosian": {
         persuasion: {
             description: "you can speak to you and your enemies common faith and sway their hand at violence.",
-            action: "Speak on the virtues of {ascean.weapon_one.influences[0]} to {enemy.name}.",
+            action: "Speak on the virtues of {ascean.weaponOne.influences[0]} to {enemy.name}.",
             modal: "Pathos (Affects all enemies of the same faith)",
-            success: ["Tears well up in {enemy?.name}'s eyes. `I'm sorry, {ascean.name}, I'm sorry. I'm sorry for everything I've done. I'm sorry for everything I've said. I'm sorry for everything I've thought. I'm sorry for everything I've been. I'm sorry.`", "Tears well up in the {enemy.name}'s eyes. 'All of that glory in all those years, {ascean.name}, and all this time there was something sweeter. I am so instilled with harmony, having heard your beautiful hymn of {ascean.weapon_one.influences[0]}.'", ],
-            failure: "A beautiful speech upended by the simple notion of {enemy.name}'s {enemy.faith} faith to {enemy.weapon_one.influences[0]}."
+            success: ["Tears well up in {enemy?.name}'s eyes. `I'm sorry, {ascean.name}, I'm sorry. I'm sorry for everything I've done. I'm sorry for everything I've said. I'm sorry for everything I've thought. I'm sorry for everything I've been. I'm sorry.`", "Tears well up in the {enemy.name}'s eyes. 'All of that glory in all those years, {ascean.name}, and all this time there was something sweeter. I am so instilled with harmony, having heard your beautiful hymn of {ascean.weaponOne.influences[0]}.'", ],
+            failure: "A beautiful speech upended by the simple notion of {enemy.name}'s {enemy.faith} faith to {enemy.weaponOne.influences[0]}."
         },
         luckout: {
             description: "you can convince the enemy to profess their follies and willow.",
-            action: "Show {enemy.name} the way of peace through {ascean.weapon_one.influences[0]}",
+            action: "Show {enemy.name} the way of peace through {ascean.weaponOne.influences[0]}",
             modal: "Peace (Allow the enemy to let go of their human failures)",
-            success: ["Tears well up in {enemy?.name}'s eyes. `I'm sorry, {ascean.name}, I'm sorry. I'm sorry for everything I've done. I'm sorry for everything I've said. I'm sorry for everything I've thought. I'm sorry for everything I've been. I'm sorry.`", "Tears well up in the {enemy.name}'s eyes. 'All of that glory in all those years, {ascean.name}, and all this time there was something sweeter. I am so instilled with harmony, having heard your beautiful hymn of {ascean.weapon_one.influences[0]}.'", ],
-            failure: "A beautiful gesture upended by the simple notion of {enemy.name}'s {enemy.faith} faith to {enemy.weapon_one.influences[0]}."
+            success: ["Tears well up in {enemy?.name}'s eyes. `I'm sorry, {ascean.name}, I'm sorry. I'm sorry for everything I've done. I'm sorry for everything I've said. I'm sorry for everything I've thought. I'm sorry for everything I've been. I'm sorry.`", "Tears well up in the {enemy.name}'s eyes. 'All of that glory in all those years, {ascean.name}, and all this time there was something sweeter. I am so instilled with harmony, having heard your beautiful hymn of {ascean.weaponOne.influences[0]}.'", ],
+            failure: "A beautiful gesture upended by the simple notion of {enemy.name}'s {enemy.faith} faith to {enemy.weaponOne.influences[0]}."
         }
     },
     "Kyr'naic": {
@@ -215,7 +215,7 @@ export const TRAIT_DESCRIPTIONS = {
     "Shaorahi": {
         conviction: {
             description: "your attacks grow stronger the more you realize them.",
-            action: "Speak to your {ascean.weapon_one.name} in Shao'rahi",
+            action: "Speak to your {ascean.weaponOne.name} in Shao'rahi",
             success: "Success!",
             failure: "Failure!"
         },
@@ -383,7 +383,7 @@ export const LuckoutModal = ({ traits, callback, name, influence, show, setShow 
                             <button class='dialog-buttons inner' 
                                 style={{ color: traitStyle(trait.name), 'font-size': "1em", background: '#000' }} 
                                 onClick={() => callback(trait.name)}>
-                                    [{trait.name}] - {trait.luckout.modal.replace('{enemy.name}', name).replace('{ascean.weapon_one.influences[0]}', influence())}</button>
+                                    [{trait.name}] - {trait.luckout.modal.replace('{enemy.name}', name).replace('{ascean.weaponOne.influences[0]}', influence())}</button>
                         </div>
                     )
                 })}
@@ -399,7 +399,7 @@ export const LuckoutModal = ({ traits, callback, name, influence, show, setShow 
         {traits().map((trait: any) => {
             return (
                 <div style={{ margin: '3%' }}>
-                    <button class='dialog-buttons inner' style={{ color: traitStyle(trait.name), background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}] - {trait.luckout.action.replace('{enemy.name}', name).replace('{ascean.weapon_one.influences[0]}', influence())}</button>
+                    <button class='dialog-buttons inner' style={{ color: traitStyle(trait.name), background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}] - {trait.luckout.action.replace('{enemy.name}', name).replace('{ascean.weaponOne.influences[0]}', influence())}</button>
                 </div>
             )
         })}
@@ -424,7 +424,7 @@ export const PersuasionModal = ({ traits, callback, name, influence, show, setSh
                 {traits().map((trait: any) => {
                     return (
                         <div style={{ margin: '3%' }}>
-                            <button class='dialog-buttons inner' style={{ color: traitStyle(trait.name), 'font-size': "1em", background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}]: {trait.persuasion.modal.replace('{enemy.name}', name).replace('{ascean.weapon_one.influences[0]}', influence())}</button>
+                            <button class='dialog-buttons inner' style={{ color: traitStyle(trait.name), 'font-size': "1em", background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}]: {trait.persuasion.modal.replace('{enemy.name}', name).replace('{ascean.weaponOne.influences[0]}', influence())}</button>
                         </div>
                     )
                 })}
@@ -438,7 +438,7 @@ export const PersuasionModal = ({ traits, callback, name, influence, show, setSh
         {traits().map((trait: any) => {
             return (
                 <div style={{ margin: '5%' }}>
-                    <button class='dialog-buttons inner' style={{ color: traitStyle(trait.name), background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}]: {trait.persuasion.action.replace('{enemy.name}', name).replace('{ascean.weapon_one.influences[0]}', influence())}</button>
+                    <button class='dialog-buttons inner' style={{ color: traitStyle(trait.name), background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}]: {trait.persuasion.action.replace('{enemy.name}', name).replace('{ascean.weaponOne.influences[0]}', influence())}</button>
                 </div>
             )
         })}

@@ -20,10 +20,7 @@ const EnemyUI = lazy(async () => await import('./EnemyUI'));
 const SmallHud = lazy(async () => await import('./SmallHud'));
 const TutorialOverlay = lazy(async () => await import('../utility/tutorial'));
 function validateHealth(val: number): number {
-    if (Number.isNaN(val)) {
-        return 1;
-    };
-    return val;
+    return Number.isNaN(val) ? 1 : val;
 };
 interface Props {
     instance: any;
@@ -471,7 +468,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         });
         setEnemies(newEnemies);
     };
-    // usePhaserEvent('computer-combat', (payload: { data: any, type: string }) => computerCombat(payload.data, payload.type));
     usePhaserEvent('initiate-combat', (payload: { data: any, type: string }) => initiateCombat(payload.data, payload.type));
     usePhaserEvent('remove-enemy', filterEnemies);
     usePhaserEvent('request-enemy', sendEnemyData);
@@ -505,7 +501,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         </Show>
         <Show when={showDeity()}>
         <Suspense fallback={<Puff color="gold" />}>
-            <Deity ascean={ascean} combat={combat} game={game} />
+            <Deity ascean={ascean} combat={combat} game={game} statistics={statistics} />
         </Suspense>
         </Show>
     </div>;

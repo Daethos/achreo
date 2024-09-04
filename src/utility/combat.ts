@@ -511,7 +511,7 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
                 combat.playerWin = false;
             };
         };
-        combat.computerSpecialDescription = `${combat.computer?.name}'s ${effect.name} damages you for ${Math.round(computerDamage)}.`;
+        combat.computerSpecialDescription = `You are damaged for ${Math.round(computerDamage)} from ${combat.computer?.name}'s ${effect.name}.`;
     };
     return combat;
 };

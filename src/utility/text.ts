@@ -4,11 +4,13 @@ const ATTACKS = ['Attack', 'Posture', 'Roll', 'Parry', 'attack', 'posture', 'rol
     'flay', 'flays'];
 const CAST = ['confuse', 'confusing', 'fear', 'fearing', 'paralyze', 'polymorph', 'polymorphs', 'polymorphing', 'slow', 'slowing', 'snare', 'snaring'];
 const COLORS = { BONE: '#fdf6d8', GREEN: 'green', HEAL: '#0BDA51', GOLD: 'gold', PURPLE: 'purple', TEAL: 'teal', RED: 'red', BLUE: 'blue', LIGHT_BLUE: 'lightblue', FUCHSIA: 'fuchsia' };
-const DAMAGE = [ 'Blunt', 'Pierce',  'Slash',  'Earth',  'Fire',  'Frost',  'Lightning', 'Righteous', 'Sorcery', 'Spooky',  'Wild', 'Wind' ];
+const DAMAGE = ['Blunt', 'Pierce',  'Slash',  'Earth',  'Fire',  'Frost',  'Lightning', 'Righteous', 'Sorcery', 'Spooky',  'Wild', 'Wind' ];
 const HUSH = ['Invocation', 'Hush', 'hush', 'sacrifice', 'shimmer', 'shimmers', 'protect', 'protects', 'astrave', 'fyerus'];
 const NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 const TENDRIL = ['Tendril', 'tendril', 'tendrils', 'suture', 'shield', 'shields', 'mend', 'achire', 'kynisos'];
-
+const CONSOLE = 'Console';
+const ERROR = 'Error';
+const WARNING = 'Warning';
 export const text = (prev: string, data: Combat) => {
     let oldText: any = prev !== undefined ? prev : undefined;
     let newText: any = '';
@@ -45,7 +47,7 @@ function checkAlignment(line: string[]) {
     for (let i = 0; i < line.length; i++) {
         if (line[i].includes('You')) { 
             count++;
-        } else if (line[i].includes('defeated')) {
+        } else if (line[i].includes('defeated') || line[i].includes('Console') || line[i].includes('Warning') || line[i].includes('Error')) {
             return 'center';
         };
     };
@@ -66,6 +68,9 @@ function styleText(text: string) {
         const isCritical = t.includes('Critical');
         const isPartial = t.includes('Partial');
         const isGlancing = t.includes('Glancing');
+        const isConsole = t.includes(CONSOLE);
+        const isError = t.includes(ERROR);
+        const isWarning = t.includes(WARNING);
         const lush = isAttack === true || isCast === true || isNumber === true || isHush === true || isTendril === true;
         const fontWeight = isNumber ? '700' : 'normal';
         const fontSize = lush ? '0.7em' : '0.6em';
@@ -74,14 +79,15 @@ function styleText(text: string) {
         numberCheck.push(newLine);
         const numType = checkNumber(numberCheck);
         const color = 
-            isCast === true ? COLORS.BLUE :
+            (isCast === true || isConsole) ? COLORS.BLUE :
             isDamage === true ? COLORS.TEAL :
             isNumber === true ? COLORS[numType as keyof typeof COLORS] : 
             isHeal === true ? COLORS.HEAL :
             isGlancing ? COLORS.LIGHT_BLUE : 
             isTendril === true ? COLORS.FUCHSIA : 
-            (isAttack === true || isCritical === true || isPartial === true) ? COLORS.RED : 
+            (isAttack === true || isCritical === true || isPartial === true || isError === true) ? COLORS.RED : 
             isHush === true ? COLORS.FUCHSIA :
+            isWarning === true ? COLORS.GOLD :
             COLORS.BONE;
         const line = `<span style="color: ${color}; font-style: ${style}; font-weight: ${fontWeight}; font-size: ${fontSize}; margin: 0;">${newLine}</span>`;
         return line;

@@ -684,7 +684,11 @@ export default class Enemy extends Entity {
                 this.anims.pause();
             };
         } else if (this.inWater) {
-            this.anims.play('player_climb', true);
+            if (this.velocity.y > 0) {
+                this.anims.play('swim_down', true);
+            } else {
+                this.anims.play('swim_up', true);
+            };
         } else {
             if (this.moving()) {
                 this.anims.play('player_running', true);
@@ -1637,7 +1641,7 @@ export default class Enemy extends Entity {
     onMaliceUpdate = (_dt) => {if (!this.isMalicing) this.positiveMachine.setState(States.CLEAN);  };
 
     maliceHit = () => {
-        if (this.reactiveBubble === undefined || this.isMalicing === false) {
+        if (this.reactiveBubble === undefined || this.isMalicing === false || !this.inCombat) {
             if (this.reactiveBubble) {
                 this.reactiveBubble.cleanUp();
                 this.reactiveBubble = undefined;
@@ -1682,7 +1686,7 @@ export default class Enemy extends Entity {
     onMenaceUpdate = (_dt) => {if (!this.isMenacing) this.positiveMachine.setState(States.CLEAN);};
 
     menace = () => {
-        if (this.reactiveBubble === undefined || this.isMenacing === false) {
+        if (this.reactiveBubble === undefined || this.isMenacing === false || !this.inCombat) {
             if (this.reactiveBubble) {
                 this.reactiveBubble.cleanUp();
                 this.reactiveBubble = undefined;
@@ -1724,7 +1728,7 @@ export default class Enemy extends Entity {
     onMendUpdate = (_dt) => {if (!this.isMending) this.positiveMachine.setState(States.CLEAN);};
 
     mendHit = () => {
-        if (this.reactiveBubble === undefined || this.isMending === false) {
+        if (this.reactiveBubble === undefined || this.isMending === false || !this.inCombat) {
             if (this.reactiveBubble) {
                 this.reactiveBubble.cleanUp();
                 this.reactiveBubble = undefined;
@@ -1768,7 +1772,7 @@ export default class Enemy extends Entity {
     onMultifariousUpdate = (_dt) => {if (!this.isMultifaring) this.positiveMachine.setState(States.CLEAN);};
 
     multifarious = () => {
-        if (this.reactiveBubble === undefined || this.isMultifaring === false) {
+        if (this.reactiveBubble === undefined || this.isMultifaring === false || !this.inCombat) {
             if (this.reactiveBubble) {
                 this.reactiveBubble.cleanUp();
                 this.reactiveBubble = undefined;
@@ -1810,7 +1814,7 @@ export default class Enemy extends Entity {
     onMystifyUpdate = (_dt) => {if (!this.isMystifying) this.positiveMachine.setState(States.CLEAN);};
 
     mystify = () => {
-        if (this.reactiveBubble === undefined || this.isMystifying === false) {
+        if (this.reactiveBubble === undefined || this.isMystifying === false || !this.inCombat) {
             if (this.reactiveBubble) {
                 this.reactiveBubble.cleanUp();
                 this.reactiveBubble = undefined;

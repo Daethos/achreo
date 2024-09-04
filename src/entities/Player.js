@@ -4009,7 +4009,6 @@ export default class Player extends Entity {
             } else if (this.isClimbing) {
                 this.anims.play('player_climb', true);
             } else if (this.inWater) {
-                // this.anims.play('player_climb', true);
                 if (this.velocity.y > 0) {
                     this.anims.play('swim_down', true);
                 } else {
@@ -4029,7 +4028,6 @@ export default class Player extends Entity {
                 } else {
                     this.anims.play('swim_up', true);
                 };
-                // this.anims.play('player_climb', true);
             } else {
                 this.anims.play('player_idle', true);
             };
@@ -4128,8 +4126,8 @@ export default class Player extends Entity {
             this.playerVelocity.y = 0;
         };
         if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting) speed += 1;
-        if (this.isClimbing) speed *= 0.65;
-        if (this.inWater) speed *= 0.75;
+        if (this.isClimbing || this.inWater) speed *= 0.6;
+        // if (this.inWater) speed *= 0.75;
         this.playerVelocity.limit(speed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
     }; 

@@ -217,6 +217,16 @@ export class Underground extends Scene {
         this.rightJoystick.createPointer(this); 
         this.joystickKeys = this.joystick.createCursorKeys();
 
+        if (this.settings.desktop === true) {
+            this.joystick?.joystick?.setVisible(false);
+            this.rightJoystick?.joystick?.setVisible(false);
+            if (this.actionBar) this.actionBar.draw();
+        } else {
+            this.joystick?.joystick?.setVisible(true);
+            this.rightJoystick?.joystick?.setVisible(true);
+            if (this.actionBar) this.actionBar.draw();
+        };
+
     // =========================== Mini Map =========================== \\
         this.minimap = this.cameras.add((this.scale.width * 0.5) - (this.scale.width * 0.1171875), this.scale.height * 0.75, this.scale.width * 0.234375, this.scale.height * 0.234375).setName('mini');
         this.minimap.setOrigin(0.5); 

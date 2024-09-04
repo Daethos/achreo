@@ -81,7 +81,7 @@
         {
             "filename": "run_down_one",
             "frame": {
-                "w": 128,
+                "w": 112,
                 "h": 65,
                 "x": 0,
                 "y": 195
@@ -94,7 +94,7 @@
         {
             "filename": "run_down_two",
             "frame": {
-                "w": 128,
+                "w": 112,
                 "h": 65,
                 "x": 128,
                 "y": 195
@@ -107,7 +107,7 @@
         {
             "filename": "run_down_three",
             "frame": {
-                "w": 128,
+                "w": 112,
                 "h": 65,
                 "x": 0,
                 "y": 260
@@ -120,7 +120,7 @@
         {
             "filename": "run_down_four",
             "frame": {
-                "w": 128,
+                "w": 112,
                 "h": 65,
                 "x": 128,
                 "y": 260
@@ -133,7 +133,7 @@
         {
             "filename": "run_down_five",
             "frame": {
-                "w": 128,
+                "w": 112,
                 "h": 65,
                 "x": 0,
                 "y": 325
@@ -146,7 +146,7 @@
         {
             "filename": "run_down_six",
             "frame": {
-                "w": 128,
+                "w": 112,
                 "h": 65,
                 "x": 128,
                 "y": 325

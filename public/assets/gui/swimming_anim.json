@@ -1,0 +1,68 @@
+{
+    "anims": [
+        {
+            "key": "swim_down",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 6,
+            "frames": [
+                {
+                    "key": "swimming",
+                    "frame": "swim_down_one"
+                },
+                {
+                    "key": "swimming",
+                    "frame": "swim_down_two"
+                },
+                {
+                    "key": "swimming",
+                    "frame": "swim_down_three"
+                },
+                {
+                    "key": "swimming",
+                    "frame": "swim_down_four"
+                },
+                {
+                    "key": "swimming",
+                    "frame": "swim_down_five"
+                },
+                {
+                    "key": "swimming",
+                    "frame": "swim_down_six"
+                }
+            ]
+        },
+        {
+            "key": "swim_up",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 6,
+            "frames": [
+                {
+                    "key": "swimming",
+                    "frame": "swim_up_one"
+                },
+                {
+                    "key": "swimming",
+                    "frame": "swim_up_two"
+                },
+                {
+                    "key": "swimming",
+                    "frame": "swim_up_three"
+                },
+                {
+                    "key": "swimming",
+                    "frame": "swim_up_four"
+                },
+                {
+                    "key": "swimming",
+                    "frame": "swim_up_five"
+                },
+                {
+                    "key": "swimming",
+                    "frame": "swim_up_six"
+                }
+            ]
+        }
+    ]
+}

@@ -64,7 +64,7 @@
             "key": "player_climb",
             "type": "frames",
             "repeat": -1,
-            "frameRate": 12,
+            "frameRate": 6,
             "frames": [
                 {
                     "key": "player_actions_three",

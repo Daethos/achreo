@@ -3960,9 +3960,16 @@ export default class Player extends Entity {
             sprint(this.scene);
             this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isAttacking = false); 
         } else if (this.moving()) {
-            if (this.isClimbing || this.inWater) {
+            if (this.isClimbing) {
                 sprint(this.scene);
                 this.anims.play('player_climb', true);
+            } else if (this.inWater) {
+                sprint(this.scene);
+                if (this.velocity.y > 0) {
+                    this.anims.play('swim_down', true);
+                } else {
+                    this.anims.play('swim_up', true);
+                };
             } else {
                 if (!this.isWalking) {
                     this.isWalking = this.scene.time.delayedCall(400, () => {
@@ -3999,8 +4006,15 @@ export default class Player extends Entity {
                 } else {
                     this.anims.play('player_running', true);
                 };
-            } else if (this.inWater) {
+            } else if (this.isClimbing) {
                 this.anims.play('player_climb', true);
+            } else if (this.inWater) {
+                // this.anims.play('player_climb', true);
+                if (this.velocity.y > 0) {
+                    this.anims.play('swim_down', true);
+                } else {
+                    this.anims.play('swim_up', true);
+                };
             } else {
                 this.anims.play('player_crouch_idle', true);
             };
@@ -4010,7 +4024,12 @@ export default class Player extends Entity {
                 this.anims.play('player_climb', true);
                 this.anims.pause();
             } else if (this.inWater) {
-                this.anims.play('player_climb', true);
+                if (this.velocity.y > 0) {
+                    this.anims.play('swim_down', true);
+                } else {
+                    this.anims.play('swim_up', true);
+                };
+                // this.anims.play('player_climb', true);
             } else {
                 this.anims.play('player_idle', true);
             };

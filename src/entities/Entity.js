@@ -32,6 +32,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         scene.load.animation(`player_attacks_anim`, '../assets/gui/player_attacks_anim.json');   
         scene.load.atlas(`running`, '../assets/gui/running.png', '../assets/gui/running_atlas.json');
         scene.load.animation(`running_anim`, '../assets/gui/running_anim.json');   
+        scene.load.atlas(`swimming`, '../assets/gui/swimming.png', '../assets/gui/swimming_atlas.json');
+        scene.load.animation(`swimming_anim`, '../assets/gui/swimming_anim.json');   
         scene.load.atlas('rabbit_idle', '../assets/gui/rabbit_idle.png', '../assets/gui/rabbit_idle_atlas.json');
         scene.load.animation('rabbit_idle_anim', '../assets/gui/rabbit_idle_anim.json');
         scene.load.atlas('rabbit_movement', '../assets/gui/rabbit_movement.png', '../assets/gui/rabbit_movement_atlas.json');

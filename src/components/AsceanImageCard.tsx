@@ -10,7 +10,13 @@ interface Props {
 };
 export default function AsceanImageCard({ ascean, setEquipment, show, setShow }: Props) { 
     function item(rarity: string) {
-        return { border: '0.2em solid ' + getRarityColor(rarity), transform: 'scale(1.1)', 'background-color': 'black', 'margin-top': '0.25em', 'margin-bottom': '0.25em', 'padding-bottom': '-0.25em'};
+        return { 
+            'border': '0.2em solid ' + getRarityColor(rarity), 
+            'transform': 'scale(1.1)', 
+            'background-color': 'black', 
+            'padding-bottom': '-0.25em',
+            margin: '0.25em',
+        };
     };
     const div = (eqp: Equipment) => {
         return <div onClick={() => info(eqp)} style={item(eqp.rarity as string)}>
@@ -22,7 +28,7 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow }:
         setEquipment(item);
         setShow(!show());
     }; 
-    return <div class='imageCardGrid' style={{ width: '70%', margin: 'auto' }}>
+    return <div class='imageCardGrid' style={{ width: '80%', margin: 'auto' }}>
         <div class='imageCardLeft'>
             {div(ascean().weaponOne)}
             {div(ascean().weaponTwo)}

@@ -10,23 +10,25 @@ export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
     const dimensions = useResizeListener();
     const shortDescription = (desc: string): string => desc.split(' ').slice(0, 3).join(' ') + (desc.length > 4 ? '...' : '');
     const style = (m: Accessor<Menu>, d: Accessor<DIMS>) => {
+        const length = m()?.asceans.length;
         return {
             'height': d().ORIENTATION === 'landscape' ? 'auto' 
-                : m()?.asceans.length === 3 ? `${(d().HEIGHT / 3) - (25)}px` 
-                : m()?.asceans.length === 2 ? `${(d().HEIGHT / 3) - (25)}px` 
+                : length === 3 ? `${(d().HEIGHT / 3) - (25)}px` 
+                : length === 2 ? `${(d().HEIGHT / 3) - (25)}px` 
                 : `${(d().HEIGHT / 3) - (25)}px`,
             'width': d().ORIENTATION === 'landscape' 
-                ? (m()?.asceans.length === 3 ? '30%' : m()?.asceans.length === 2 ? '45%' : '50vw') 
-                : m()?.asceans.length === 1 ? '100%' : '80vw',
+                ? (length === 3 ? '30%' : length === 2 ? '45%' : '50vw') 
+                : length === 1 ? '100%' : '80vw',
             'transform': d()?.ORIENTATION === 'landscape' 
-                ? '' : (m()?.asceans.length === 3 ? 'scale(1)' 
-                : m()?.asceans.length === 2 ?  'scale(1)' : 'scale(1.2)'),
+                ? '' : (length === 3 ? 'scale(1)' 
+                : length === 2 ?  'scale(1)' : 'scale(1.2)'),
             'margin-left': d()?.ORIENTATION === 'landscape' 
-                ? (m()?.asceans.length === 3 ? '0.5%' : m()?.asceans.length === 2 ? '1.5%' : '0%') 
-                : (m()?.asceans.length === 3 ? '1.25%' : m()?.asceans.length === 2 ? '2%' : '0%'),
+                ? (length === 3 ? '0.5%' : length === 2 ? '1.5%' : '0%') 
+                : (length === 3 ? '1.25%' : length === 2 ? '2%' : '0%'),
             'overflow': d().ORIENTATION === 'landscape' ? '' : '',
-            'margin-bottom': m()?.asceans.length > 1 ? '2.5%' : '0%',
-            'margin-top': m()?.asceans.length > 1 ? '2.5%' : '0%',
+            'margin-bottom': length > 1 ? '2.5%' : '0%',
+            'margin-top': length > 1 ? '2.5%' : '0%',
+            'border-width': '0.25em',
         };
     };
     const shortName = (name: string): string => name.split(' ').slice(0, 2).join(' ');

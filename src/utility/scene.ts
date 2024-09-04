@@ -45,6 +45,13 @@ export const audio: { key: string, value: string }[] = [
     {key: 'howl', value: '../assets/sounds/howl.wav'},
     {key: 'scream', value: '../assets/sounds/scream.wav'},
     {key: 'leap', value: '../assets/sounds/leap.wav'},
+    
+    {key: 'walk1', value: '../assets/sounds/walk-1.mp3'},
+    {key: 'walk2', value: '../assets/sounds/walk-2.mp3'},
+    {key: 'walk3', value: '../assets/sounds/walk-3.mp3'},
+    {key: 'walk-crunch', value: '../assets/sounds/walk-crunch.mp3'},
+    {key: 'walk-metallic', value: '../assets/sounds/walk-metallic.mp3'},
+    {key: 'walk-swim', value: '../assets/sounds/walk-swim.mp3'},
 ];
 
 export const image: {key: string, value:string}[] = [

@@ -18,7 +18,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
     const viewMargin = { margin: '4%' };
 
     return <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
-        <div class='border superCenter center' style={{ height: '100', width: '85%', overflow: 'scroll', 'scrollbar-width': 'none' }}>
+        <div class='border superCenter center' style={{ height: '100', width: '85%', overflow: 'scroll', 'scrollbar-width': 'none', 'border-width': '0.25em' }}>
         <div class='creature-heading' style={{ width: '100%', height: '100%' }}>
             <h1>{ascean().name}</h1>
             <h2 class='mb-3'>{ascean().description}</h2>
@@ -50,7 +50,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
         </div>
     }>
         <div class='stat-block superCenter' style={{ width: '90%', overflow: 'scroll', 'scrollbar-width': 'none' }}>
-            <div class='border left center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
+            <div class='border left center' style={{ height: '77.5vh', width: '48%', top: '10%', 'border-width': '0.25em' }}>
                 <div class='creature-heading superCenter' style={{ width: '100%' }}>
                     <h1>{ascean().name}</h1>
                     <h2>{ascean().description}</h2>
@@ -61,7 +61,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                 </div>
             </div>
 
-            <div class='border right center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
+            <div class='border right center' style={{ height: '77.5vh', width: '48%', top: '10%', 'border-width': '0.25em' }}>
                 <div class='superCenter' style={{ 'margin-top': '0' }}>
                 <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
                 <Suspense fallback={<Puff color="gold" />}>

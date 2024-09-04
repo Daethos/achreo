@@ -422,7 +422,6 @@ export class Game extends Scene {
             const { x, y } = data;
             const newX = dimensions()?.WIDTH * x;
             const newY = dimensions()?.HEIGHT * y;
-            console.log(newX, newY, 'New X and Y');
             this.fpsText.setPosition(newX, newY);
         });
         EventBus.on('update-joystick-color', (data: { color: number, side: string, type: string }) => {
@@ -462,7 +461,6 @@ export class Game extends Scene {
             };
         });
         EventBus.on('update-joystick-opacity', (data: { side: string, opacity: number }) => {
-            console.log(this.joystick.joystick.base, this.joystick.joystick.thumbj, '<<<--- BASE and THUMB')
             const { side, opacity } = data;
             switch (side) {
                 case 'left':
@@ -1085,26 +1083,22 @@ export class Game extends Scene {
         } else {
             player.inWater = false;
         };
-        // if (this.player.playerID === player.playerID) {
-            const flower = this.flowers.getTileAt(x as number, y as number);
-            if (flower) {
-                // console.log(flower.pixelY, player.y);
-                if (flower.pixelY > player.y - 12) {
-                    player.setDepth(2);
-                } else {
-                    player.setDepth(4);
-                };
+        const flower = this.flowers.getTileAt(x as number, y as number);
+        if (flower) {
+            if (flower.pixelY > player.y - 12) {
+                player.setDepth(2);
+            } else {
+                player.setDepth(4);
             };
-            const plant = this.plants.getTileAt(x as number, y as number);
-            if (plant) {
-                // console.log(plant.pixelY, player.y);
-                if (plant.pixelY > player.y - 12) {
-                    player.setDepth(2);
-                } else {
-                    player.setDepth(4);
-                };
+        };
+        const plant = this.plants.getTileAt(x as number, y as number);
+        if (plant) {
+            if (plant.pixelY > player.y - 12) {
+                player.setDepth(2);
+            } else {
+                player.setDepth(4);
             };
-        // };
+        };
     };
     createTextBorder(text: NewText): GameObjects.Graphics {
         const border = this.add.graphics();

@@ -104,13 +104,6 @@ export default function PhaserGame (props: IProps) {
                 kyosir: Math.round((state().ascean.kyosir + kyosir) * masteryCheck('kyosir', newMastery)),
                 mastery: newMastery, 
                 faith: state().faith,
-                // statistics: {
-                //     ...state().ascean.statistics,
-                //     mastery: {
-                //         ...state().ascean.statistics.mastery,
-                //         [newMastery]: state().ascean.statistics.mastery[newMastery] + 1,
-                //     }
-                // } 
             };
             let hyd = asceanCompiler(update);
             const save = {

@@ -6,7 +6,7 @@ import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import HealthBar from "../phaser/HealthBar";
 import { EventBus } from "../game/EventBus";
 import CastingBar from "../phaser/CastingBar";
-import { PLAYER } from "../utility/player";
+import { PHYSICAL_ACTIONS, PHYSICAL_EVASIONS, PLAYER, staminaCheck } from "../utility/player";
 import AoE from "../phaser/AoE";
 import Bubble from "../phaser/Bubble";
 import Beam from "../matter/Beam";
@@ -680,7 +680,7 @@ export default class Player extends Entity {
                 this.scene.sound.play('religious', { volume: this.scene.settings.volume });
             };
             if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) {
-                this.scene.sound.play('roll', { volume: this.scene.settings.volume });
+                this.scene.sound.play('roll', { volume: this.scene.settings.volume / 2 });
             };
             if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) {
                 this.scene.sound.play('parry', { volume: this.scene.settings.volume });
@@ -1146,7 +1146,7 @@ export default class Player extends Entity {
         this.isDodging = true;
         this.scene.useStamina(PLAYER.STAMINA.DODGE);
         this.swingReset(States.DODGE, true);
-        this.scene.sound.play('dodge', { volume: this.scene.settings.volume });
+        this.scene.sound.play('dodge', { volume: this.scene.settings.volume / 2 });
         this.wasFlipped = this.flipX; 
         this.body.parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;
         this.body.parts[2].circleRadius = PLAYER.SENSOR.EVADE;
@@ -1178,7 +1178,7 @@ export default class Player extends Entity {
         this.isRolling = true;
         this.scene.useStamina(this.staminaModifier + PLAYER.STAMINA.ROLL);
         this.swingReset(States.ROLL, true);
-        this.scene.sound.play('roll', { volume: this.scene.settings.volume });
+        this.scene.sound.play('roll', { volume: this.scene.settings.volume / 2 });
         this.body.parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;
         this.body.parts[2].circleRadius = PLAYER.SENSOR.EVADE;
         this.body.parts[1].vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
@@ -3760,15 +3760,24 @@ export default class Player extends Entity {
         if (this.isRolling) return 'roll';
         return '';
     };
+
+    inputClear = (input) => {
+        const action = PHYSICAL_ACTIONS.includes(input);
+        const evasions = PHYSICAL_EVASIONS.includes(input);
+        if (action) {
+            return this.canSwing;
+        } else if (evasions) {
+            return this.movementClear();
+        } else {
+            return true;
+        };
+    };
     
     movementClear = () => {
         return (
             !this.stateMachine.isCurrentState(States.ROLL) &&
             !this.stateMachine.isCurrentState(States.DODGE) &&
             !this.stateMachine.isCurrentState(States.PARRY) &&
-            !this.stateMachine.isCurrentState(States.ATTACK) &&
-            !this.stateMachine.isCurrentState(States.POSTURE) &&
-            !this.stateMachine.isCurrentState(States.THRUST) &&
             !this.isStalwart
         );
     };
@@ -3904,20 +3913,30 @@ export default class Player extends Entity {
                 if (button.isReady === true) this.scene.actionBar.pressButton(button, this.scene);
             };
 
-            if (Input.Keyboard.JustDown(this.inputKeys.attack.ONE) && this.stamina >= PLAYER.STAMINA.ATTACK && this.canSwing) {
-                this.stateMachine.setState(States.ATTACK);
+            if (Input.Keyboard.JustDown(this.inputKeys.attack.ONE)) {
+                const button = this.scene.actionBar.getButton(this.scene.settings.actions[0].toLowerCase());
+                const clear = this.inputClear(button.name.toLowerCase());
+                if (button.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);
             };
-            if (Input.Keyboard.JustDown(this.inputKeys.posture.TWO) && this.stamina >= PLAYER.STAMINA.POSTURE && this.canSwing) {
-                this.stateMachine.setState(States.POSTURE);
+            if (Input.Keyboard.JustDown(this.inputKeys.posture.TWO)) {
+                const button = this.scene.actionBar.getButton(this.scene.settings.actions[1].toLowerCase());
+                const clear = this.inputClear(button.name.toLowerCase());
+                if (button.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);
             };
-            if (Input.Keyboard.JustDown(this.inputKeys.roll.THREE) && this.stamina >= PLAYER.STAMINA.ROLL && this.movementClear()) {
-                this.stateMachine.setState(States.ROLL);
+            if (Input.Keyboard.JustDown(this.inputKeys.roll.THREE)) {
+                const button = this.scene.actionBar.getButton(this.scene.settings.actions[2].toLowerCase());
+                const clear = this.inputClear(button.name.toLowerCase());
+                if (button.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);
             };
-            if (Input.Keyboard.JustDown(this.inputKeys.dodge.FOUR) && this.stamina >= PLAYER.STAMINA.DODGE && this.movementClear()) {
-                this.stateMachine.setState(States.DODGE);
+            if (Input.Keyboard.JustDown(this.inputKeys.dodge.FOUR)) {
+                const button = this.scene.actionBar.getButton(this.scene.settings.actions[3].toLowerCase());
+                const clear = this.inputClear(button.name.toLowerCase());
+                if (button.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);
             };
-            if (Input.Keyboard.JustDown(this.inputKeys.parry.FIVE) && this.stamina >= PLAYER.STAMINA.PARRY && this.canSwing) { 
-                this.stateMachine.setState(States.PARRY);
+            if (Input.Keyboard.JustDown(this.inputKeys.parry.FIVE)) {
+                const button = this.scene.actionBar.getButton(this.scene.settings.actions[4].toLowerCase());
+                const clear = this.inputClear(button.name.toLowerCase());
+                if (button.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);
             };
         };
     };
@@ -3942,16 +3961,16 @@ export default class Player extends Entity {
                 this.anims.play('player_idle', true);
             };
         } else if (this.isParrying) {
-            sprint(this.scene);
             this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isParrying = false); 
         } else if (this.isThrusting) {
+            sprint(this.scene);
             this.anims.play('player_attack_2', true).on('animationcomplete', () => this.isThrusting = false);
         } else if (this.isDodging) { 
             this.anims.play('player_slide', true);
             if (this.dodgeCooldown === 0) this.playerDodge();
         } else if (this.isRolling) { 
-            this.anims.play('player_roll', true);
             sprint(this.scene);
+            this.anims.play('player_roll', true);
             if (this.rollCooldown === 0) this.playerRoll();
         } else if (this.isPosturing) {
             sprint(this.scene);
@@ -3961,22 +3980,16 @@ export default class Player extends Entity {
             this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isAttacking = false); 
         } else if (this.moving()) {
             if (this.isClimbing) {
-                sprint(this.scene);
+                walk(this.scene);
                 this.anims.play('player_climb', true);
             } else if (this.inWater) {
-                sprint(this.scene);
+                walk(this.scene);
                 if (this.velocity.y > 0) {
                     this.anims.play('swim_down', true);
                 } else {
                     this.anims.play('swim_up', true);
                 };
             } else {
-                if (!this.isWalking) {
-                    this.isWalking = this.scene.time.delayedCall(400, () => {
-                        walk(this.scene);
-                        this.isWalking = undefined;
-                    }, undefined, this);
-                };
                 if (!Math.abs(this.velocity.x)) {
                     if (this.velocity.y > 0) {
                         this.anims.play('run_down', true);
@@ -4126,8 +4139,7 @@ export default class Player extends Entity {
             this.playerVelocity.y = 0;
         };
         if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting) speed += 1;
-        if (this.isClimbing || this.inWater) speed *= 0.6;
-        // if (this.inWater) speed *= 0.75;
+        if (this.isClimbing || this.inWater) speed *= 0.65;
         this.playerVelocity.limit(speed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
     }; 

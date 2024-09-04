@@ -1,5 +1,6 @@
 import Equipment from "../models/equipment";
-
+export const PHYSICAL_ACTIONS = ['attack', 'posture', 'thrust'];
+export const PHYSICAL_EVASIONS = ['dodge', 'roll'];
 const COST = {LOW: 25, MID: 50, HIGH: 75};
 const DURATION = {BOTTOM: 750, STANDARD: 1500, ONE: 1000, THREE: 3000, FIVE: 5000, MODERATE: 6000, HIGH: 8000, TEN: 10000};
 export const PLAYER = {

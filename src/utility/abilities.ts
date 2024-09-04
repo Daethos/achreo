@@ -8,60 +8,61 @@ export const SPECIALS = [
     'Achire',
     'Astrave',
     'Arc',
-    'Blink', 
-    'Chiomic', 
-    'Confuse', 
+    'Blink',
+    'Chiomic',
+    'Confuse',
     'Consume',
     'Desperation',
     'Disease',
     'Envelop',
-    'Fear', 
+    'Fear',
     'Freeze',
     'Fyerus',
-    'Healing', 
-    'Howl', 
-    'Ilirech', // cast, 1s, direct, -X health, X * 2 damage, low range, low grace, 2s cooldown
+    'Healing',
+    'Howl',
+    'Ilirech',
     'Invoke',
-    'Kynisos', 
+    'Kynisos',
     'Kyrnaicism',
-    'Leap', 
-    'Maiereth', // cast, 1-1.5s, direct, (var of Ascean).damage, can crit, mid range, low grace, low cooldown
+    'Leap',
+    'Maiereth',
     'Malice',
-    'Menace', // reactive shield, fear
-    'Mend', 
-    'Moderate', // reactive shield, slow
-    'Multifarious', // reactive shield, polymorph
-    'Mystify', // reactive shield, confuse
+    'Menace',
+    'Mend',
+    'Moderate',
+    'Multifarious',
+    'Mystify',
     'Paralyze',
     'Polymorph',
-    'Protect', 
-    'Pursuit', 
-    'Quor', // 3s, 6x, can crit, manual, mid grace, low cooldown
-    'Reconstitute', // channel, 5s, 1s/tick, +10-15% health
-    'Recover', 
-    'Rein', // reactive shield, grace++
-    'Renewal', 
-    'Root', 
-    'Rush', 
+    'Protect',
+    'Pursuit',
+    'Quor',
+    'Reconstitute',
+    'Recover',
+    'Rein',
+    'Renewal',
+    'Root',
+    'Rush',
     'Sacrifice',
-    'Scream', 
+    'Scream',
     'Shield',
     'Shimmer',
     'Slow',
-    'Snare', 
+    'Snare',
     'Sprint',
     'Storm',
     'Suture',
     'Ward',
     'Writhe',
 ]; // 'Charm', 'Shroud'
-export const SPECIAL = { // 12 Each + Invoke && Consume
-    'constitution': [ // 14
+export const SPECIAL = { // 12 Each + Invoke, Consume, and New: [Hook, Mark, Netherswap, Recall]
+    'constitution': [ // 12
         'Invoke', 
         'Consume', 
         'Hook',
         'Mark',
         'Recall',
+
         'Absorb',
         'Fyerus',
         'Healing', 
@@ -74,13 +75,14 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
         'Renewal', 
         'Shield', 
         'Ward',
-    ], // 14 
-    'strength': [ // 14 !!!
+    ], // 12 
+    'strength': [ // 12
         'Invoke', 
         'Consume',
         'Hook',
         'Mark',
         'Recall',
+
         'Arc',
         'Desperation',
         'Howl',
@@ -93,13 +95,14 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
         'Storm',
         'Ward', 
         'Writhe'
-    ], // 14 !!!
-    'agility': [ // 14 !!!
+    ], // 12
+    'agility': [ // 12
         'Invoke', 
         'Consume',
         'Hook',
         'Mark',
         'Recall',
+        
         'Achire',
         'Desperation', 
         'Envelop', 
@@ -112,14 +115,15 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
         'Snare', 
         'Sprint', 
         'Storm', 
-    ], // 14 !!!
-    'achre': [ // 14 !!!
+    ], // 12
+    'achre': [ // 12 
         'Invoke', 
         'Consume', 
         'Hook',
         'Mark',
         'Netherswap',
         'Recall',
+
         'Absorb',
         'Achire',
         'Astrave',
@@ -132,13 +136,14 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
         'Reconstitute',
         'Rein',
         'Slow'
-    ], // 14 !!!
-    'caeren': [ // 14
+    ], // 12 
+    'caeren': [ // 12
         'Invoke', 
         'Consume', 
         'Hook',
         'Mark',
         'Recall',
+
         'Astrave',
         'Fear', 
         'Fyerus',
@@ -151,12 +156,13 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
         'Rein',
         'Sacrifice', 
         'Scream',
-    ], // 14
-    'kyosir': [ // 14
+    ], // 12
+    'kyosir': [ // 12
         'Invoke', 
         'Consume', 
         'Hook',
         'Netherswap',
+
         'Achire',
         'Chiomic',
         'Confuse', 
@@ -169,7 +175,7 @@ export const SPECIAL = { // 12 Each + Invoke && Consume
         'Reconstitute',
         'Sacrifice', 
         'Suture'
-    ], // 14
+    ], // 12
 };
 export const STARTING_SPECIALS = {
     'constitution': ['Healing', 'Kyrnaicism', 'Mend', 'Shield', 'Ward'],

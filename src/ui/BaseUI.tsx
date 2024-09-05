@@ -214,11 +214,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     computerWin = newPlayerHealth === 0;
                     computerActionDescription = `${combat().computer?.name} flays ${enemyChiomic} health from you with their hush.`;
                     res = { ...combat(), newPlayerHealth, computerWin, computerActionDescription };
-                    EventBus.emit('blend-combat', {
-                        newPlayerHealth,
-                        computerWin,
-                        damagedID: combat().enemyID
-                    });
+                    EventBus.emit('blend-combat', { newPlayerHealth, computerWin, damagedID: combat().enemyID });
                     break;
                 case 'Tshaeral': // Lifedrain (Tick, 100%)
                     if (combat().computer === undefined) return;
@@ -227,13 +223,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     newComputerHealth = newComputerHealth - drained < 0 ? 0 : newComputerHealth - drained;
                     playerWin = newComputerHealth === 0;
                     playerActionDescription = `You tshaer and devour ${drained} health from ${combat().computer?.name}.`;
-                    res = { 
-                        ...combat(), 
-                        newPlayerHealth, 
-                        newComputerHealth, 
-                        playerWin,
-                        playerActionDescription,
-                    };
+                    res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin,playerActionDescription };
                     EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, playerWin });
                     break;
                 case 'Enemy Tshaeral': // Lifedrain (Tick, 100%)
@@ -243,14 +233,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     newComputerHealth = newComputerHealth + enemyDrain > computerHealth ? computerHealth : newComputerHealth + enemyDrain;
                     computerWin = newPlayerHealth === 0;
                     computerActionDescription = `${combat().computer?.name} tshaers and devours ${enemyDrain} health from you.`;
-                    res = {
-                        ...combat(),
-                        newPlayerHealth,
-                        newComputerHealth,
-                        computerWin,
-                        computerActionDescription,
-                        damagedID: combat().enemyID
-                    };
+                    res = { ...combat(), newPlayerHealth, newComputerHealth, computerWin, computerActionDescription, damagedID: combat().enemyID };
                     EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, computerWin });
                     break;
                 case 'Health': // Either Enemy or Player Gaining / Losing Health
@@ -353,7 +336,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                         newComputerHealth - (enemySac / 2) < 0 
                         ? 0 : newComputerHealth - (enemySac / 2);
                     computerActionDescription = `${combat().computer?.name} sacrifices ${enemySac / 2} health to rip ${enemySac * caerenicVulnerable} from you.`;
-                    res = { ...combat(), newPlayerHealth: playerEnemySacrifice, newComputerHealth: enemyEnemySacrifice, computerWin: playerEnemySacrifice === 0, computerActionDescription, playerWin: enemyEnemySacrifice === 0 };
+                    res = { ...combat(), newPlayerHealth: playerEnemySacrifice, newComputerHealth: enemyEnemySacrifice, computerWin: playerEnemySacrifice === 0, computerActionDescription, playerWin: enemyEnemySacrifice === 0, damagedID: combat().enemyID };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerEnemySacrifice, newComputerHealth: enemyEnemySacrifice, computerWin: playerEnemySacrifice === 0, damagedID: combat().enemyID });
                     computerWin = res.computerWin;
                     playerWin = res.playerWin;
@@ -370,6 +353,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                         newComputerHealth: enemyEnemySuture,
                         computerWin: playerEnemySuture === 0,
                         computerActionDescription,
+                        damagedID: combat().enemyID
                     };
                     EventBus.emit('blend-combat', { newPlayerHealth: playerEnemySuture, newComputerHealth: enemyEnemySuture, computerWin: playerEnemySuture === 0, damagedID: combat().enemyID });
                     computerWin = res.computerWin;

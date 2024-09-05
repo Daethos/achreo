@@ -611,7 +611,6 @@ export default class Enemy extends Entity {
         } else {
             const chiomic = Math.round(this.mastery() / 2 * (1 + (strength / 100))  * this.playerCaerenic() * this.playerStalwart() * ((this.ascean?.level + 9) / 10));
             const ratio = chiomic / this.scene.state.playerHealth * 100;
-            const testHealth = Math.floor(this.scene.state.playerHealth * (-ratio / 100));
             const computerActionDescription = `${this.ascean?.name} flays ${chiomic} health from you with their hush.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: -ratio, id: this.enemyID } });
@@ -628,7 +627,6 @@ export default class Enemy extends Entity {
             let newComputerHealth = this.health + dev > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + dev;
             const computerActionDescription = `${this.ascean?.name} tshaers and devours ${dev} health from you.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
-            // this.scene.combatMachine.input('damagedID', this.enemyID);
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: -power, id: this.enemyID } });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
         };
@@ -639,10 +637,8 @@ export default class Enemy extends Entity {
             this.scene.combatMachine.action({ type: 'Enemy Sacrifice', data: power });
         } else {
             const sacrifice = Math.round(this.mastery() * this.playerCaerenic() * this.playerStalwart() * (1 + power / 100) * ((this.ascean?.level + 9) / 10));
-            // let newPlayerHealth = this.scene.state.newPlayerHealth - suture < 0 ? 0 : this.scene.state.newPlayerHealth - suture;
             let newComputerHealth = this.health + (sacrifice / 2) > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + (sacrifice / 2);
             const computerActionDescription = `${this.ascean?.name} sacrifices ${sacrifice / 2} health to rip ${sacrifice * (1 + power / 100)} from you.`;
-            // this.scene.combatMachine.input('damagedID', this.enemyID);
             const ratio = sacrifice / this.scene.state.playerHealth * 100;
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: -ratio, id: this.enemyID } });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
@@ -657,7 +653,6 @@ export default class Enemy extends Entity {
             const suture = Math.round(this.mastery() / 2 * this.playerCaerenic() * this.playerStalwart() * ((this.ascean?.level + 9) / 10)) * (1 + power / 100);
             let newComputerHealth = this.health + suture > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + suture;
             const computerActionDescription = `${this.ascean?.name} sutured ${suture} health from you, absorbing ${suture}.`;
-            // this.scene.combatMachine.input('damagedID', this.enemyID);
             const ratio = suture / this.scene.state.playerHealth * 100;
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: -ratio, id: this.enemyID } });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });

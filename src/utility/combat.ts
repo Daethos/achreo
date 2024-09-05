@@ -1964,6 +1964,7 @@ function newDataCompiler(combat: Combat): any {
         skillData: combat.skillData,
         weather: combat.weather,
         enemyID: combat.enemyID,
+        damagedID: combat.enemyID,
         combatTimer: combat.combatTimer,
         isCaerenic: combat.isCaerenic,
         isStalwart: combat.isStalwart,

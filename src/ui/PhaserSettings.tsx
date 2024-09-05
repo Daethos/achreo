@@ -95,10 +95,10 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         await saveSettings(newSettings);
     };
 
-    async function handleComputerCombat() {
-        const newSettings = { ...settings(), difficulty: { ...settings().difficulty, computer: !settings().difficulty.computer } };
-        await saveSettings(newSettings);
-    };
+    // async function handleComputerCombat() {
+    //     const newSettings = { ...settings(), difficulty: { ...settings().difficulty, computer: !settings().difficulty.computer } };
+    //     await saveSettings(newSettings);
+    // };
  
     async function handleSpecial(e: any) {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, special: e.target.value } };

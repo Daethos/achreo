@@ -1,4 +1,4 @@
-import { KVEI } from "./CombatMachine";
+import { KVI } from "./CombatMachine";
 import { EventBus } from "../game/EventBus";
 const ActionTypes = {
     WEAPON: 'Weapon',
@@ -19,7 +19,7 @@ const ActionTypes = {
     ENEMY_SUTURE: 'Enemy Suture',
     ENEMY_TSHAERAL: 'Enemy Tshaeral',
 };
-function weapon(data: KVEI): void {
+function weapon(data: KVI): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.WEAPON });
 };
 function instant(data: string): void {
@@ -61,11 +61,11 @@ function tshaeral(data: number): void {
 function enemyTshaeral(data: number): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.ENEMY_TSHAERAL });
 };
-function health(data: KVEI): void {
+function health(data: KVI): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.HEALTH });
 };
 
-function setHealth(data: KVEI): void {
+function setHealth(data: KVI): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.HEALTH });
 };
 export { weapon, instant, prayer, player, enemy, actionInput, chiomic, tshaeral, health, setHealth, sacrifice, suture, enemyChiomic, enemySacrifice, enemySuture, enemyTshaeral };

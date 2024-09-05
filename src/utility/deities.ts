@@ -534,9 +534,6 @@ export async function evaluateDeity(data: { statistics: Accessor<Statistics>, as
         const evaluateBehavior = (count: { [s: string]: unknown; } | ArrayLike<unknown>) => {
             const sortCountOccurrence = Object.entries(count as { [key: string]: { occurrence: number, value: number } }).sort((a, b) => b[1].occurrence - a[1].occurrence);
             const mostFrequentBehavior = sortCountOccurrence[0][0];
-
-            console.log(sortCountOccurrence, mostFrequentBehavior, "sortCountOccurrence, sortCountValue");
-
             if (mostFrequentBehavior === 'Faithful') {
                 if (valueSum >= 4) {
                     return 'Convicted';
@@ -581,14 +578,9 @@ export async function evaluateDeity(data: { statistics: Accessor<Statistics>, as
                 return 'Neutral';
             };
         };
-
         const behavior = evaluateBehavior(keywordCount);
-
         ascean.interactions.deity += 1;
-
-        console.log(behavior, "Behavior");
         let newStats = statistics();
-
         if (newStats.relationships.deity.name === '') newStats.relationships.deity.name = deity;
         newStats.relationships.deity.Compliant.occurrence += keywordCount.Compliant.occurrence;
         newStats.relationships.deity.Faithful.occurrence += keywordCount.Faithful.occurrence;
@@ -600,23 +592,18 @@ export async function evaluateDeity(data: { statistics: Accessor<Statistics>, as
         newStats.relationships.deity.Disobedient.value += keywordCount.Disobedient.value;
         newStats.relationships.deity.value += valueSum;
         (newStats.relationships.deity.behaviors as any).push(behavior);
-
         EventBus.emit('update-statistics', newStats);
-
         if (ascean.capable < 5) {
             ascean.capable += 1;
         };
-
         // const goodBehavior = newStats.relationships.deity.behaviors.filter(behavior => behavior === 'Faithful' || behavior === 'Compliant');
         // const badBehavior = newStats.relationships.deity.behaviors.filter(behavior => behavior === 'Unfaithful' || behavior === 'Disobedient');
         // const middlingBehavior = newStats.relationships.deity.behaviors.filter(behavior => behavior === 'Somewhat Faithful' || behavior === 'Somewhat Compliant' || behavior === 'Somewhat Unfaithful' || behavior === 'Somewhat Disobedient');
         // const goodBehaviorCount = goodBehavior.length;
         // const badBehaviorCount = badBehavior.length;
         // const middlingBehaviorCount = middlingBehavior.length;
-
         const presentTense = ascean.faith === 'Adherent' ? 'adherence to' : ascean.faith === 'Devoted' ? 'devotion to' : 'curiosity with';
         const pastTense = ascean.faith === 'Adherent' ? 'adherent toward' : ascean.faith === 'Devoted' ? 'devoted toward' : 'curious with';
-
         switch (behavior) {
             case 'Convicted':
                 ascean[keywords[ascean.mastery as keyof typeof keywords]] += 1;

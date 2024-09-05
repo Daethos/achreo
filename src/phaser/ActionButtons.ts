@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-// import { Game } from '../game/scenes/Game';
 import { EventBus } from '../game/EventBus';
 import { PLAYER, STAMINA, staminaCheck } from '../utility/player';
 

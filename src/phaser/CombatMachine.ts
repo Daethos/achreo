@@ -8,15 +8,15 @@ interface Action {
     data: any;
     id?: string | undefined;
 };
-export type KVEI = {
+export type KVI = {
     key: string;
     value: string | number | boolean;
     id?: string; 
 };
 const ACTIONS: { [key: string]: ActionHandler } = {
-    'Weapon': (data: KVEI) => Dispatcher.weapon(data),
-    'Health': (data: KVEI) => Dispatcher.health(data),
-    'Set Health': (data: KVEI) => Dispatcher.setHealth(data),
+    'Weapon': (data: KVI) => Dispatcher.weapon(data),
+    'Health': (data: KVI) => Dispatcher.health(data),
+    'Set Health': (data: KVI) => Dispatcher.setHealth(data),
     'Instant': (data: string) => Dispatcher.instant(data),
     'Consume': (data: any[]) => Dispatcher.prayer(data),
     'Chiomic': (data: number) => Dispatcher.chiomic(data),
@@ -35,7 +35,7 @@ export default class CombatMachine {
     private context: any;
     private actionQueue: Action[];
     private clearQueue: string[];
-    private inputQueue: KVEI[];
+    private inputQueue: KVI[];
 
     constructor(context: any) { // dispatch: any
         this.context = context;

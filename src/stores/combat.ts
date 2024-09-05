@@ -122,6 +122,7 @@ export interface Combat {
     isStealth: boolean; //
     isSeering: boolean;
     enemyID: string;
+    damagedID: string;
     combatTimer: number;
     soundEffects: boolean;
 
@@ -256,6 +257,7 @@ export const initCombat: Combat = {
     isStealth: false,
     isSeering: false,
     enemyID: '',
+    damagedID: '',
     combatTimer: 0,
     soundEffects: false,
 

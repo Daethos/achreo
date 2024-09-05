@@ -45,7 +45,6 @@ export const audio: { key: string, value: string }[] = [
     {key: 'howl', value: '../assets/sounds/howl.wav'},
     {key: 'scream', value: '../assets/sounds/scream.wav'},
     {key: 'leap', value: '../assets/sounds/leap.wav'},
-    
     {key: 'walk1', value: '../assets/sounds/walk-1.mp3'},
     {key: 'walk2', value: '../assets/sounds/walk-2.mp3'},
     {key: 'walk3', value: '../assets/sounds/walk-3.mp3'},

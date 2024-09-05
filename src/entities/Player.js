@@ -336,7 +336,6 @@ export default class Player extends Entity {
         sprite.setDepth(this);
         return sprite;
     }; 
-
     cleanUp() {
         EventBus.off('set-player', this.setPlayer);
         EventBus.off('combat', this.constantUpdate);
@@ -359,7 +358,6 @@ export default class Player extends Entity {
             yoyo: true
         });
     };
-
     animateTarget = () => {
         this.scene.tweens.add({
             targets: this.highlight,
@@ -557,7 +555,7 @@ export default class Player extends Entity {
             if (this.isConfused) this.isConfused = false;
             if (this.isPolymorphed) this.isPolymorphed = false;
             if (this.reactiveBubble) {
-                if (this.isMalicing) this.malice();
+                if (this.isMalicing) this.malice(e.damagedID);
                 if (this.isMending) this.mend();
                 if (this.isRecovering) this.recover();
                 if (this.isReining) this.rein();
@@ -1024,6 +1022,7 @@ export default class Player extends Entity {
 
     getEnemyDirection = (target) => {
         if (!target) return false;
+        if (this.scene.settings.difficulty.aim) return true;
         const skills = this.scene.state.player.skills;
         const type = this.hasMagic ? this.scene.state.playerDamageType : this.scene.state.weapons[0].type;
         const skill = skills[type];
@@ -1633,19 +1632,6 @@ export default class Player extends Entity {
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false); 
     };
 
-    chiomism = (id, val) => {
-        if (id === this.getEnemyId()) {
-            this.scene.combatMachine.action({ type: 'Chiomic', data: val }); 
-        } else {
-            const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
-            const chiomic = Math.round(this.scene.state.playerHealth * (val / 100) * (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10));
-            const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
-            const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
-            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
-            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.spellTarget } });
-        };
-    };
-
     onInvokeEnter = () => {
         if (this.currentTarget === undefined || this.invalidTarget(this.currentTarget?.enemyID)) return;
         this.isPraying = true;
@@ -1743,6 +1729,18 @@ export default class Player extends Entity {
             this.chiomicTimer.remove(false);
             this.chiomicTimer = undefined;
         }; 
+    };
+    chiomism = (id, val) => {
+        if (id === this.getEnemyId()) {
+            this.scene.combatMachine.action({ type: 'Chiomic', data: val }); 
+        } else {
+            const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
+            const chiomic = Math.round(this.scene.state.playerHealth * (val / 100) * (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10));
+            const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
+            const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
+            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
+            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.spellTarget } });
+        };
     };
     kyrnaicism = () => {
         if (!this.isCasting || this.scene.state.playerWin || this.scene.state.newComputerHealth <= 0) {
@@ -2224,7 +2222,6 @@ export default class Player extends Entity {
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Sacrifice', 750, 'effect');
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
         this.scene.useGrace(PLAYER.STAMINA.SACRIFICE);
-        // this.scene.combatMachine.action({ type: 'Sacrifice', data: 10 });
         this.sacrifice(this.spellTarget, 10);
         this.setTimeEvent('sacrificeCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.flickerCarenic(500);  
@@ -2244,7 +2241,7 @@ export default class Player extends Entity {
             let enemySacrifice = enemy.health - sacrifice < 0 ? 0 : enemy.health - sacrifice;
             const playerActionDescription = `You sacrifice ${sacrifice / 2 * (this.isStalwart ? 0.85 : 1)} health to rip ${sacrifice} from ${enemy.ascean?.name}.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
-            this.scene.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSacrifice, id: this.playerID } });
+            this.scene.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSacrifice, id: this.spellTarget } });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySacrifice, id: this.spellTarget } });
             enemy.flickerCarenic(750);    
         };
@@ -2330,12 +2327,10 @@ export default class Player extends Entity {
         this.scene.useGrace(PLAYER.STAMINA.SUTURE);
         this.suture(this.spellTarget, 10);
         this.setTimeEvent('sutureCooldown', PLAYER.COOLDOWNS.MODERATE);
-        
         this.flickerCarenic(500); 
         this.scene.time.delayedCall(500, () => {
             this.isSuturing = false;
         }, undefined, this);
-        
     };
     onSutureUpdate = (_dt) => this.combatChecker(this.isSuturing);
     onSutureExit = () => this.spellTarget = '';
@@ -2351,7 +2346,7 @@ export default class Player extends Entity {
             let enemySuture = enemy.health - suture < 0 ? 0 : enemy.health - suture;                    
             const playerActionDescription = `Your tendrils suture ${enemy.ascean?.name}'s caeren into you, absorbing ${suture}.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
-            this.scene.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSuture, id: this.playerID } });
+            this.scene.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSuture, id: this.spellTarget } });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySuture, id: this.spellTarget } });
             enemy.flickerCarenic(750)    
         };
@@ -2520,7 +2515,7 @@ export default class Player extends Entity {
     };
     onMaliceUpdate = (_dt) => {if (!this.isMalicing) this.positiveMachine.setState(States.CLEAN);};
 
-    malice = () => {
+    malice = (id) => {
         if (this.reactiveBubble === undefined || this.isMalicing === false) {
             if (this.reactiveBubble) {
                 this.reactiveBubble.destroy();
@@ -2531,7 +2526,7 @@ export default class Player extends Entity {
         };
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush');
-        this.scene.combatMachine.action({ data: 10, type: 'Chiomic' });
+        this.chiomism(id, 10);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 0) {
             this.isMalicing = false;
@@ -2575,7 +2570,7 @@ export default class Player extends Entity {
         };
         this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril');
-        this.scene.combatMachine.action({ data: { key: 'player', value: 20, id: this.playerID }, type: 'Health' });
+        this.scene.combatMachine.action({ data: { key: 'player', value: 15, id: this.playerID }, type: 'Health' });
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 0) {
             this.isMending = false;

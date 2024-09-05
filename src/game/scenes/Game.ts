@@ -26,6 +26,7 @@ import ParticleManager from '../../phaser/ParticleManager';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 import Logger, { ConsoleLogger } from '../../utility/Logger';
+import MovingPlatform from '../../phaser/MovingPlatform';
 const dimensions = useResizeListener();
 
 export class Game extends Scene {
@@ -78,6 +79,8 @@ export class Game extends Scene {
     flowers: any;
     plants: any;
     logger!: Logger;
+    platform: MovingPlatform;
+    platform2: MovingPlatform;
 
     constructor () {
         super('Game');
@@ -197,7 +200,15 @@ export class Game extends Scene {
             this.logger.log('Warning: Some function did not work, but did not crash the game!');
             this.logger.log('Error: Some portion if not all of the game has crashed!');
         }, undefined, this);
-    // =========================== FPS =========================== \\
+
+        // this.platform = new MovingPlatform(this, 650, 3200, 'player-castbar', { isStatic: true });
+        // this.platform.vertical(0, -3000, 12000);
+        
+        // this.platform2 = new MovingPlatform(this, 500, 3950, 'player-castbar', { isStatic: true });
+        // this.platform2.setAngle(90);
+        // this.platform2.horizontal(0, 3500, 14000);
+
+        // =========================== FPS =========================== \\
         // this.fpsText = this.add.text(
         //     dimensions()?.WIDTH * this.settings.positions.fpsText.x, 
         //     dimensions()?.HEIGHT * this.settings.positions.fpsText.y, 

@@ -758,14 +758,14 @@ export default class Enemy extends Entity {
         this.setVelocity(0);
         this.enemyAnimation();
         this.scene.showDialog(true);
-        this.setStatic(true);
+        // this.setStatic(true);
     };
     onAwarenessUpdate = (_dt) => {
         this.enemyAnimation();
     };
     onAwarenessExit = () => {
         this.enemyAnimation();
-        this.setStatic(false);
+        // this.setStatic(false);
         this.scene.showDialog(false);
     };
 

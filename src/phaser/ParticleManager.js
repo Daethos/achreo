@@ -42,6 +42,8 @@ class Particle {
     construct(particle, action, player, special, key) {
         const idKey = PARTICLES.includes(key) ? `${key}_effect` : key;
         this.action = action
+        this.isParticle = PARTICLES.includes(key);
+        this.key = idKey;
         this.special = special;
         this.success = false;
         this.target = this.setTarget(player, this.scene, special);
@@ -232,10 +234,6 @@ export default class ParticleManager extends Phaser.Scene {
         particle.effect.setVisible(false);
         particle.effect.world.remove(particle.effect.body);
         particle.effect.stop();
-    };
-
-    updateEffect(particle, action, player, special) {
-        particle.construct(particle, action, player, special);
     };
 
     update(particle) { 

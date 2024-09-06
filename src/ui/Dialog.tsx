@@ -594,7 +594,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                         <p class='blueMarkup'>Senic: 3g</p> 
                         <p class='purpleMarkup'>Kyris: 12g</p>  
                         <p class='darkorangeMarkup'>Sedyrus: 60g</p>`} 
-                    styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                    styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                     <br />
                     { upgradeItems() ? (
                         upgradeItems().map((item: any) => {
@@ -611,10 +611,10 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             ) : combat().npcType === 'Merchant-Alchemy' ? (
                 <> 
                     { game().player?.firewater?.charges === 5 ? (
-                        <Typewriter stringText={`The Alchemist sways in a slight tune to the swish of your flask as he turns to you. <br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Seems you're set for now, come back when you're needing more."`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                        <Typewriter stringText={`The Alchemist sways in a slight tune to the swish of your flask as he turns to you. <br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Seems you're set for now, come back when you're needing more."`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                     ) : (
                         <>
-                            <Typewriter stringText={`The Alchemist's eyes scatter about your presence, eyeing ${game().player?.firewater?.charges} swigs left of your Fyervas Firewater before tapping on on a pipe, its sound wrapping round and through the room to its end, a quaint, little spigot with a grated catch on the floor.<br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Fill up your flask meanwhile, 10s a fifth what you say? I'll need you alive for patronage."`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                            <Typewriter stringText={`The Alchemist's eyes scatter about your presence, eyeing ${game().player?.firewater?.charges} swigs left of your Fyervas Firewater before tapping on on a pipe, its sound wrapping round and through the room to its end, a quaint, little spigot with a grated catch on the floor.<br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Fill up your flask meanwhile, 10s a fifth what you say? I'll need you alive for patronage."`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                             <br />
                             <button class='highlight dialog-buttons' style={{ color: 'blueviolet' }} onClick={refillFlask}>Walk over and refill your firewater?</button>
                         </>
@@ -631,7 +631,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                     <>
                     { combat().persuasionScenario ? (
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={persuasionString} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                            <Typewriter stringText={persuasionString} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                             <br />
                             { combat().enemyPersuaded ? (
                                 <>
@@ -644,7 +644,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                         </div>
                     ) : combat().luckoutScenario ? (
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={luckoutString} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                            <Typewriter stringText={luckoutString} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                             <br />
                             { combat().playerLuckout ? (
                                 <>
@@ -658,30 +658,30 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                     ) : combat().playerWin ? (
                         <div>
                             { namedEnemy() ? (
-                                <Typewriter stringText={`"Congratulations ${combat()?.player?.name}, you were fated this win. This is all I have to offer, if it pleases you."`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                <Typewriter stringText={`"Congratulations ${combat()?.player?.name}, you were fated this win. This is all I have to offer, if it pleases you."`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                             ) : ( 
-                                <Typewriter stringText={`"Appears I were wrong to treat with you in such a way, ${combat()?.player?.name}. Take this if it suits you, I've no need."`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                <Typewriter stringText={`"Appears I were wrong to treat with you in such a way, ${combat()?.player?.name}. Take this if it suits you, I've no need."`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                             ) } 
                         </div> 
                     ) : combat().computerWin ? (
                         <div>
                             { namedEnemy() ? (
-                                <Typewriter stringText={`"${combat()?.player?.name}, surely this was a jest? Come now, you disrespect me with such play. What was it that possessed you to even attempt this failure?"`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                <Typewriter stringText={`"${combat()?.player?.name}, surely this was a jest? Come now, you disrespect me with such play. What was it that possessed you to even attempt this failure?"`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                             ) : ( 
-                                <Typewriter stringText={`"The ${combat()?.computer?.name} are not to be trifled with."`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                <Typewriter stringText={`"The ${combat()?.computer?.name} are not to be trifled with."`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                             ) } 
                         </div> 
                     ) : (
                         <div>
                             { namedEnemy() ? ( 
                                 <>
-                                    <Typewriter stringText={`"Greetings traveler, I am ${combat()?.computer?.name}. ${combat()?.player?.name}, is it? You seem a bit dazed, can I be of some help?"`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                    <Typewriter stringText={`"Greetings traveler, I am ${combat()?.computer?.name}. ${combat()?.player?.name}, is it? You seem a bit dazed, can I be of some help?"`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                                     <br />
                                     <button class='highlight dialog-buttons' style={{ color: 'red' }} onClick={() => engageCombat(combat()?.enemyID)}>Forego pleasantries and surprise attack {combat()?.computer?.name}?</button>
                                 </> 
                             ) : ( 
                                 <>
-                                    <Typewriter stringText={`${capitalize(enemyArticle())} ${combat()?.computer?.name} stares at you, unflinching. Eyes lightly trace about you, reacting to your movements in wait. Grip your ${combat().weapons[0]?.name} and get into position?`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                    <Typewriter stringText={`${capitalize(enemyArticle())} ${combat()?.computer?.name} stares at you, unflinching. Eyes lightly trace about you, reacting to your movements in wait. Grip your ${combat().weapons[0]?.name} and get into position?`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                                     <br />
                                     <button class='highlight dialog-buttons' style={{ color: 'red' }} onClick={() => engageCombat(combat()?.enemyID)}>Engage in hostilities with {combat()?.computer?.name}?</button>
                                 </> 
@@ -693,12 +693,12 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                     ) } 
                     </>
                 ) : game().currentIntent === 'conditions' ? (
-                    <Typewriter stringText={"This portion has not yet been written. Here you will be able to evaluate the conditions you have with said individual; disposition and the like."} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                    <Typewriter stringText={"This portion has not yet been written. Here you will be able to evaluate the conditions you have with said individual; disposition and the like."} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                 ) : game().currentIntent === 'farewell' ? (
                     <>
                         { combat().persuasionScenario ? (
                             <div style={{ color: "gold" }}>
-                                <Typewriter stringText={persuasionString} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                <Typewriter stringText={persuasionString} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                                 <br />
                                 { combat().enemyPersuaded ? (
                                     <>
@@ -711,7 +711,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                             </div>
                         ) : combat().luckoutScenario ? (
                             <div style={{ color: "gold" }}>
-                                <Typewriter stringText={luckoutString} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                <Typewriter stringText={luckoutString} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                                 <br />
                                 { combat().playerLuckout ? (
                                     <>
@@ -725,24 +725,24 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                         ) : combat().playerWin ? (
                             <>
                                 { namedEnemy() ? (
-                                    <Typewriter stringText={`"${combat()?.player?.name}, you are truly unique in someone's design. Before you travel further, if you wish to have it, its yours."`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                    <Typewriter stringText={`"${combat()?.player?.name}, you are truly unique in someone's design. Before you travel further, if you wish to have it, its yours."`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                                 ) : ( 
-                                    <Typewriter stringText={`"Go now, ${combat()?.player?.name}, take what you will and find those better pastures."`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                    <Typewriter stringText={`"Go now, ${combat()?.player?.name}, take what you will and find those better pastures."`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                                 ) }
                                 <br />
                                 <button class='highlight dialog-buttons' onClick={() => clearDuel()}>Seek those pastures and leave your lesser to their pitious nature.</button>
                             </>
                         ) : combat().computerWin ? (
                             <>
-                                <Typewriter stringText={`"If you weren't entertaining in defeat I'd have a mind to simply snuff you out here and now. Seek refuge, ${combat().player?.name}, your frailty wears on my caer."`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                <Typewriter stringText={`"If you weren't entertaining in defeat I'd have a mind to simply snuff you out here and now. Seek refuge, ${combat().player?.name}, your frailty wears on my caer."`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                                 <button class='highlight dialog-buttons' style={{ color: 'teal' }} onClick={() => clearDuel()}>Feign scamperping away to hide your shame and wounds. There's always another chance, perhaps.</button>
                             </>
                         ) : (
                             <>
                             { namedEnemy() ? ( 
-                                <Typewriter stringText={`"I hope you find what you seek, ${combat()?.player?.name}. Take care in these parts, you may never know when someone wishes to approach out of malice and nothing more. Strange denizens these times."`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                <Typewriter stringText={`"I hope you find what you seek, ${combat()?.player?.name}. Take care in these parts, you may never know when someone wishes to approach out of malice and nothing more. Strange denizens these times."`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                             ) : ( 
-                                <Typewriter stringText={`The ${combat()?.computer?.name}'s mild flicker of thought betrays their stance, lighter and relaxed.`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                <Typewriter stringText={`The ${combat()?.computer?.name}'s mild flicker of thought betrays their stance, lighter and relaxed.`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                             ) }
                                 <br />
                                 <button class='highlight dialog-buttons' style={{ color: 'teal' }} onClick={() => clearDuel()}>Keep moving.</button>
@@ -753,9 +753,9 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                         ) : ( '' ) }
                     </>
                 ) : game().currentIntent === 'localLore' ? (
-                    <Typewriter stringText={`This will entail the local lore of the region you inhabit, and the history of the area from the perspective of the enemy in question, and hopefully grant more insight into the world.`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                    <Typewriter stringText={`This will entail the local lore of the region you inhabit, and the history of the area from the perspective of the enemy in question, and hopefully grant more insight into the world.`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                 ) : game().currentIntent === 'localWhispers' ? (
-                    <Typewriter stringText={`Local Whispers will provide localized intrigue to the region you're inhabiting and the actual details of the map itself.`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                    <Typewriter stringText={`Local Whispers will provide localized intrigue to the region you're inhabiting and the actual details of the map itself.`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                 ) : game().currentIntent === 'persuasion' ? (
                     <>
                         { combat().playerWin ? (
@@ -767,7 +767,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                         ) : ('') }
                         { combat().persuasionScenario ? (
                             <div style={{ color: "gold" }}>
-                                <Typewriter stringText={persuasionString} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                <Typewriter stringText={persuasionString} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                                 <br />
                                 { combat().enemyPersuaded ? (
                                     <>
@@ -787,20 +787,21 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                         { combat().playerWin || combat().enemyPersuaded ? (
                             <>
                                 <ProvincialWhispersButtons options={regionInformation} handleRegion={handleRegion}  />
-                                <Typewriter stringText={`"There's concern in places all over, despite what has been said about steadying tides of war amongst the more civilized. Of where are you inquiring?"`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                <br /><br />
+                                <Typewriter stringText={`"There's concern in places all over, despite what has been said about steadying tides of war amongst the more civilized. Of where are you inquiring?"`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                                 <br />
                                 <div style={{ color: 'gold' }}>
-                                    <Typewriter stringText={region} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                                    <Typewriter stringText={region} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                                 </div>
                             </>
                         ) : combat().computerWin ? (
-                            <Typewriter stringText={`"I guess those whipspers must wait another day."`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                            <Typewriter stringText={`"Those whispers must wait another day, then."`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                         ) : ( 
-                            <Typewriter stringText={`"What is it you wish to hear? If you can best me I will tell you what I know in earnest."`} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />                            
+                            <Typewriter stringText={`"What is it you wish to hear? If you can best me in combat, I will tell you what I know in earnest."`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />                            
                         ) }
                     </>
                 ) : game().currentIntent === 'worldLore' ? (
-                        <Typewriter stringText={"This will entail the world lore of the region you inhabit, the history of the world from the perspective of the enemy in question, and hopefully grant more insight into the cultural mindset."} styling={{ overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                        <Typewriter stringText={"This will entail the world lore of the region you inhabit, the history of the world from the perspective of the enemy in question, and hopefully grant more insight into the cultural mindset."} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                 ) : ( '' ) }
                 </div>
             ) : combat().computer && combat().npcType !== 'Merchant-Alchemy' && combat().npcType !== 'Merchant-Smith' ? (
@@ -822,7 +823,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             ) : ( '' ) }
             </div>
             { combat().isEnemy ? (
-                <div class='story-dialog-options' style={{ width: '30%', margin: 'auto', 'text-align': 'center', overflow: 'scroll', height: 'auto', 'scrollbar-width': 'none' }}>
+                <div class='story-dialog-options' style={{ width: '25%', margin: 'auto', 'text-align': 'center', overflow: 'scroll', height: 'auto', 'scrollbar-width': 'none' }}>
                     <DialogButtons options={game().dialog} setIntent={handleIntent} />
                 </div>
             ) : ( '' ) }

@@ -93,7 +93,7 @@ export class Intro extends Scene {
             align: 'center',
         });
         this.prevText.setOrigin(0); 
-        this.fullText = this.add.text(this.game.canvas.width * 0.475, this.game.canvas.height * 0.85, 'Full Text', {
+        this.fullText = this.add.text(this.game.canvas.width * 0.475, this.game.canvas.height * 0.85, 'Reveal', {
             color: '#fdf6d8',
             fontFamily: 'Cinzel',
             fontSize: '18px',

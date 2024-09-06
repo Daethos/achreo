@@ -836,6 +836,7 @@ export default function PhaserGame (props: IProps) {
                 playerTrait: e.playerTrait,
                 playerWin: e.isDefeated,
                 computerWin: combat().newPlayerHealth >= 1 ? false : e.isTriumphant,
+                damagedID: e.id,
                 enemyID: e.id,
             });
             const dialog = getNpcDialog();

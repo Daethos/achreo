@@ -1478,26 +1478,6 @@ export default class Player extends Entity {
             this.devourTimer = undefined;
         };
     };
-    devour = () => {
-        if (this.isCasting === false || this.scene.state.playerWin === true || this.scene.state.newComputerHealth <= 0) {
-            this.isCasting = false;
-            this.devourTimer.remove(false);
-            this.devourTimer = undefined;
-            return;
-        };
-        if (this.spellTarget === this.getEnemyId()) {
-            this.scene.combatMachine.action({ type: 'Tshaeral', data: 4 });
-        } else {
-            const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
-            const drained = Math.round(this.scene.state.playerHealth * 0.04 * (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10));
-            const newPlayerHealth = drained / this.scene.state.playerHealth * 100;
-            const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
-            const playerActionDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
-            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
-            this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: newPlayerHealth, id: this.playerID } });
-            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newHealth, id: this.spellTarget } });
-        };
-    };
 
     onFearingEnter = () => {
         if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.MODERATE) || this.invalidTarget(this.currentTarget?.enemyID)) return;
@@ -1730,16 +1710,39 @@ export default class Player extends Entity {
             this.chiomicTimer = undefined;
         }; 
     };
+    caerenicDamage = () => this.isCaerenic ? 1.15 : 1;
+    levelModifier = () => (this.scene.state.player.level + 9) / 10;
+    mastery = () => this.scene.state.player[this.scene.state.player.mastery];
     chiomism = (id, val) => {
-        if (id === this.getEnemyId()) {
+        if (id === this.getEnemyId() || id === this.playerID) {
             this.scene.combatMachine.action({ type: 'Chiomic', data: val }); 
         } else {
-            const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
-            const chiomic = Math.round(this.scene.state.playerHealth * (val / 100) * (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10));
+            const enemy = this.scene.enemies.find(e => e.enemyID === id);
+            const chiomic = Math.round(this.mastery() * (1 + val / 100) * this.caerenicDamage() * this.levelModifier());
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
-            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.spellTarget } });
+            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: id } });
+        };
+    };
+    devour = () => {
+        if (this.isCasting === false || this.scene.state.playerWin === true || this.scene.state.newComputerHealth <= 0) {
+            this.isCasting = false;
+            this.devourTimer.remove(false);
+            this.devourTimer = undefined;
+            return;
+        };
+        if (this.spellTarget === this.getEnemyId()) {
+            this.scene.combatMachine.action({ type: 'Tshaeral', data: 4 });
+        } else {
+            const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
+            const drained = Math.round(this.scene.state.playerHealth * 0.04 * this.caerenicDamage() * this.levelModifier());
+            const newPlayerHealth = drained / this.scene.state.playerHealth * 100;
+            const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
+            const playerActionDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
+            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
+            this.scene.combatMachine.action({ type: 'Health', data: { key: 'player', value: newPlayerHealth, id: this.playerID } });
+            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newHealth, id: this.spellTarget } });
         };
     };
     kyrnaicism = () => {
@@ -1751,16 +1754,48 @@ export default class Player extends Entity {
         };
         this.scene.slow(this.spellTarget, 975);
         if (this.spellTarget === this.getEnemyId()) {
-            this.scene.combatMachine.action({ type: 'Chiomic', data: 7.5 }); 
+            this.scene.combatMachine.action({ type: 'Chiomic', data: 10 }); 
         } else {
             const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
-            const chiomic = Math.round(this.scene.state.playerHealth * 0.075 * (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10));
+            const chiomic = Math.round(this.mastery() * 1.1 * this.caerenicDamage() * this.levelModifier());
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.spellTarget } });
         };
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
+    };
+    sacrifice = (id, val) => {
+        if (id === this.getEnemyId()) {
+            this.scene.combatMachine.action({ type: 'Sacrifice', data: val });
+            this.currentTarget.flickerCarenic(750);
+        } else {
+            const enemy = this.scene.enemies.find(e => e.enemyID === id);
+            const sacrifice = Math.round(this.mastery() * (1 + data / 20) * this.caerenicDamage() * this.levelModifier());
+            let playerSacrifice = this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.isStalwart ? 0.85 : 1)) < 0 ? 0 : this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.isStalwart ? 0.85 : 1));
+            let enemySacrifice = enemy.health - sacrifice < 0 ? 0 : enemy.health - sacrifice;
+            const playerActionDescription = `You sacrifice ${sacrifice / 2 * (this.isStalwart ? 0.85 : 1)} health to rip ${sacrifice} from ${enemy.ascean?.name}.`;
+            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
+            this.scene.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSacrifice, id } });
+            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySacrifice, id } });
+            enemy.flickerCarenic(750);    
+        };
+    };
+    suture = (id, val) => {
+        if (id === this.getEnemyId()) {
+            this.scene.combatMachine.action({ type: 'Suture', data: val });
+            this.currentTarget.flickerCarenic(750);
+        } else {
+            const enemy = this.scene.enemies.find(e => e.enemyID === id);
+            const suture = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier()) * (1 * val / 100);
+            let playerSuture = this.scene.state.newPlayerHealth + suture > this.scene.state.playerHealth ? this.scene.state.playerHealth : this.scene.state.newPlayerHealth + suture;
+            let enemySuture = enemy.health - suture < 0 ? 0 : enemy.health - suture;                    
+            const playerActionDescription = `Your suture ${enemy.ascean?.name}'s caeren into you, absorbing and healing for ${suture}.`;
+            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
+            this.scene.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSuture, id} });
+            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySuture, id} });
+            enemy.flickerCarenic(750)    
+        };
     };
 
     onLeapEnter = () => {
@@ -2230,23 +2265,6 @@ export default class Player extends Entity {
     onSacrificeUpdate = (_dt) => this.combatChecker(this.isSacrificing);
     onSacrificeExit = () => this.spellTarget = '';
 
-    sacrifice = (id, val) => {
-        if (id === this.getEnemyId()) {
-            this.scene.combatMachine.action({ type: 'Sacrifice', data: val });
-            this.currentTarget.flickerCarenic(750);
-        } else {
-            const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
-            const sacrifice = Math.round(this.scene.state?.player?.[this.scene.state.player?.mastery] * (1 + data / 100)* (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10));
-            let playerSacrifice = this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.isStalwart ? 0.85 : 1)) < 0 ? 0 : this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.isStalwart ? 0.85 : 1));
-            let enemySacrifice = enemy.health - sacrifice < 0 ? 0 : enemy.health - sacrifice;
-            const playerActionDescription = `You sacrifice ${sacrifice / 2 * (this.isStalwart ? 0.85 : 1)} health to rip ${sacrifice} from ${enemy.ascean?.name}.`;
-            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
-            this.scene.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSacrifice, id: this.spellTarget } });
-            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySacrifice, id: this.spellTarget } });
-            enemy.flickerCarenic(750);    
-        };
-    };
-
     onSnaringEnter = () => {
         if (this.currentTarget === undefined || this.outOfRange(PLAYER.RANGE.LONG) || this.invalidTarget(this.currentTarget.enemyID)) return;
         this.spellTarget = this.currentTarget.enemyID;
@@ -2334,23 +2352,6 @@ export default class Player extends Entity {
     };
     onSutureUpdate = (_dt) => this.combatChecker(this.isSuturing);
     onSutureExit = () => this.spellTarget = '';
-
-    suture = (id, val) => {
-        if (id === this.getEnemyId()) {
-            this.scene.combatMachine.action({ type: 'Suture', data: val });
-            this.currentTarget.flickerCarenic(750);
-        } else {
-            const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
-            const suture = Math.round(this.scene.state?.player?.[this.scene.state.player?.mastery] / 2 * (this.isCaerenic ? 1.15 : 1) * ((this.scene.state.player?.level + 9) / 10)) * (1 * val / 100);
-            let playerSuture = this.scene.state.newPlayerHealth + suture > this.scene.state.playerHealth ? this.scene.state.playerHealth : this.scene.state.newPlayerHealth + suture;
-            let enemySuture = enemy.health - suture < 0 ? 0 : enemy.health - suture;                    
-            const playerActionDescription = `Your tendrils suture ${enemy.ascean?.name}'s caeren into you, absorbing ${suture}.`;
-            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
-            this.scene.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSuture, id: this.spellTarget } });
-            this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySuture, id: this.spellTarget } });
-            enemy.flickerCarenic(750)    
-        };
-    };
 
     // ================= META MACHINE STATES ================= \\
     onCleanEnter = () => {};

@@ -200,26 +200,49 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
     function typewriter(text: string | Accessor<string>) {
         const check = typeof text === 'function' ? text() : text;
         const clean = styleHTML(check);
-        const interval = setInterval(() => scrollToBottom(), 750);
         const typedContent = {
             strings: [clean],
-            typeSpeed: 25,
+            typeSpeed: 20,
             backSpeed: 0,
             showCursor: false,
-            onComplete: () => clearInterval(interval),
+            onComplete: () => {cancelScroll();},
         };
         typed = new Typed(el(), typedContent);
+        // const interval = setInterval(() => scrollToBottom(), 500);
+        // const scrollToBottom = () => {
+        //     console.log((el() as any).scrollTop, el()?.scrollHeight);
+        //     (el() as any).scrollTop = el()?.scrollHeight;
+        // };
+
+        let scrollAnimationId: number | null = null;
+    
         const scrollToBottom = () => {
-            (el() as any).scrollTop = el()?.scrollHeight;
+            if (el()) {
+                console.log((el() as any).scrollTop, el()?.scrollHeight);
+                (el() as any).scrollTop = el()?.scrollHeight;
+                scrollAnimationId = requestAnimationFrame(scrollToBottom);
+            };
         };
+        scrollToBottom();
+
+        const cancelScroll = () => {
+            if (scrollAnimationId) {
+                cancelAnimationFrame(scrollAnimationId);
+                scrollAnimationId = null;
+            };
+        };
+
         return () => {
             (typed as Typed).destroy();
-            clearInterval(interval);    
+            // clearInterval(interval);   
+            cancelScroll(); 
         };
-    };
+    }; // complete() ? 'center' : 
 
     return (
-        <div id="typewriter" ref={setEl} style={styling} />
+        <div>
+        <div id="typewriter" ref={setEl} style={{...styling, 'text-align': 'left'}}></div>
+        </div>
     );
 };
 

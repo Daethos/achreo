@@ -183,8 +183,7 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
         EventBus.emit('respacing-buttons', update);
     };
 
-    async function handleButtonWidth(e: any, type: string) {
-        const rewidth = Number(e.target.value); 
+    async function handleButtonWidth(rewidth: number, type: string) {
         const newSettings = {
             ...settings(),
             positions: {
@@ -292,7 +291,6 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
 
     async function handleHudOffset(e: number, side: string) {
         const offset = roundToTwoDecimals(e, 2);
-        console.log(offset, 'Scale', side, 'Side');
         switch (side) {
             case 'left':
                 const newSettings = { 
@@ -344,8 +342,6 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
     };
 
     async function handleHudScale(scale: number, side: string) {
-        // const scale = Number(e.target.value);
-        // console.log(scale, 'Scale', side, 'Side');
         switch (side) {
             case 'left':
                 const newSettings = { 
@@ -571,12 +567,11 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
                 onChange={(e) => handleButtonOpacity(e, 'action')} 
                 value={settings().positions.actionButtons.opacity} 
             />
-            <div style={font('1em')}>Scale: ({settings().positions.actionButtons.width})</div>
-            <Form.Range 
-                min={0} max={2} step={0.1} 
-                onChange={(e) => handleButtonWidth(e, 'action')} 
-                value={settings().positions.actionButtons.width} 
-            />
+            <div style={font('1em')}>
+                <button class='highlight' onClick={() => handleButtonWidth(roundToTwoDecimals(Math.max(0, settings().positions.actionButtons.width - 0.05)), 'action')}>-</button>
+                    Scale: ({settings().positions.actionButtons.width})
+                <button class='highlight' onClick={() => handleButtonWidth(roundToTwoDecimals(Math.min(2, settings().positions.actionButtons.width + 0.05)), 'action')}>+</button>
+            </div>
             <div style={font('1em')}>Spacing: ({settings().positions.actionButtons.spacing})</div>
             <Form.Range 
                 min={1} max={5} step={0.5} 
@@ -625,12 +620,13 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
                 onChange={(e) => handleButtonOpacity(e, 'special')} 
                 value={settings().positions.specialButtons.opacity} 
             />
-            <div style={font('1em')}>Scale: ({settings().positions.specialButtons.width})</div>
-            <Form.Range 
-                min={0} max={2} step={0.1} 
-                onChange={(e) => handleButtonWidth(e, 'special')} 
-                value={settings().positions.specialButtons.width} 
-            />
+            
+            <div style={font('1em')}>
+                <button class='highlight' onClick={() => handleButtonWidth(roundToTwoDecimals(Math.max(0, settings().positions.specialButtons.width - 0.05)), 'special')}>-</button>
+                    Scale: ({settings().positions.specialButtons.width})
+                <button class='highlight' onClick={() => handleButtonWidth(roundToTwoDecimals(Math.min(2, settings().positions.specialButtons.width + 0.05)), 'special')}>+</button>
+            </div>
+
             <div style={font('1em')}>Spacing: ({settings().positions.specialButtons.spacing})</div>
             <Form.Range 
                 min={1} max={5} step={0.5} 

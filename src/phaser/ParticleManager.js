@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 export const PARTICLES = ['achire', 'arrow', 'earth',  'fire',  'frost', 'hook', 'lightning', 'righteous', 'quor', 'sorcery', 'spooky', 'wild', 'wind'];
 const TIME = { quor: 2500, achire: 1500, attack: 1250, hook: 1500, thrust: 900, posture: 1500, roll: 1250, special: 1500 };
-const VELOCITY = { quor: 4, achire: 5.5, attack: 4.5, hook: 5, thrust: 5.5, posture: 3.5, roll: 3.5, special: 5 }; // 7.5 || 9 || 6 || 6
+const VELOCITY = { quor: 4.5, achire: 6, attack: 5, hook: 5.5, thrust: 6, posture: 4, roll: 4, special: 5 }; // 7.5 || 9 || 6 || 6
+const { Bodies } = Phaser.Physics.Matter.Matter;
 
 function angleTarget(x, y) {
     if (x > 0) {
@@ -17,6 +18,7 @@ class Particle {
         const id = uuidv4();
         this.scene = scene;
         this.id = id;
+        this.pID = player.particleID;
         this.action = action;
         this.effect = this.spriteMaker(this.scene, player, particle === true ? key + '_effect' : key, particle, special); 
         this.isParticle = particle === true;
@@ -29,7 +31,6 @@ class Particle {
         this.timer = this.setTimer(action, id);
         this.triggered = false;
         this.velocity = this.setVelocity(action);
-        const { Bodies } = Phaser.Physics.Matter.Matter;
         const effectSensor = Bodies.circle(player.x, player.y, this.sensorSize, { isSensor: true, label: `effectSensor-${id}`}); 
         this.effect.setExistingBody(effectSensor); 
         scene.add.existing(this.effect);
@@ -38,6 +39,19 @@ class Particle {
         this.effect.flipX = !player.flipX && !this.effect.flipX;
     };
 
+    construct(particle, action, player, special, key) {
+        const idKey = PARTICLES.includes(key) ? `${key}_effect` : key;
+        this.action = action
+        this.special = special;
+        this.success = false;
+        this.target = this.setTarget(player, this.scene, special);
+        this.timer = this.setTimer(action, this.id);
+        this.triggered = false;
+        this.velocity = this.setVelocity(action);
+        this.effect.setScale(particle.isParticle === true && special === false ? 0.4 : this.action === 'achire' ? 0.75 : 0.75);
+        this.effect.setTexture(idKey);
+        this.effect.flipX = !player.flipX && !this.effect.flipX;
+    };
     sensorListener = (player, sensor) => {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [sensor],
@@ -123,14 +137,9 @@ class Particle {
     };
 
     setTimer(action, id) {
-        this.scene.time.addEvent({
-            delay: TIME[action],
-            callback: () => {
-                this.scene.particleManager.removeEffect(id);
-            },
-            callbackScope: this.scene,
-            loop: false,
-        });
+        this.scene.time.delayedCall(TIME[action], () => {
+            this.scene.particleManager.removeEffect(id);
+        }, undefined, this);
     };
 
     setVelocity(action) {
@@ -178,10 +187,30 @@ export default class ParticleManager extends Phaser.Scene {
         this.particles = []; 
     };  
 
+    despawnEffect(particle) {
+        particle.setVelocity(0);
+        particle.effect.setActive(false);
+        particle.effect.setVisible(false);
+        particle.effect.world.remove(particle.effect.body);
+    };
+
+    spawnEffect(particle) {
+        particle.effect.setActive(true);
+        particle.effect.setVisible(true);
+        particle.effect.setPosition(particle.player.x, particle.player.y);
+        particle.effect.world.add(particle.effect.body);
+    };
+
     addEffect(action, player, key, special = false) {
-        const newParticle = new Particle(this.scene, action, key, player, special); 
-        this.particles.push(newParticle);
-        return newParticle;
+        let particle = this.particles.find((particle) => particle.effect?.active === false && particle.pID === player.particleID);
+        if (particle) {
+            particle.construct(particle, action, player, special, key);
+            this.spawnEffect(particle);
+        } else {
+            particle = new Particle(this.scene, action, key, player, special); 
+            this.particles.push(particle);
+        };
+        return particle;
     };
 
     getEffect(id) {
@@ -192,25 +221,30 @@ export default class ParticleManager extends Phaser.Scene {
         this.stopEffect(id);
         let particle = this.particles.find(particle => particle.id === id);
         if (particle) {
-            particle.effect.destroy();
-            this.particles = this.particles.filter(particle => particle.id !== id);
+            this.despawnEffect(particle);
         };
     };
 
     stopEffect(id) {
         let particle = this.particles.find(particle => particle.id === id);
         if (!particle) return;
+        particle.effect.setActive(false);
         particle.effect.setVisible(false);
+        particle.effect.world.remove(particle.effect.body);
         particle.effect.stop();
     };
 
-    update(effect) { 
-        if (effect == undefined || effect.effect == undefined || !this.particles.find((particle) => particle.id === effect.id)) return;
-        if (effect.isParticle === true) {
-            effect.effect.play(effect.key, true);
+    updateEffect(particle, action, player, special) {
+        particle.construct(particle, action, player, special);
+    };
+
+    update(particle) { 
+        if (particle == undefined || particle.effect == undefined || !this.particles.find((part) => part.id === particle.id)) return;
+        if (particle.isParticle === true) {
+            particle.effect.play(particle.key, true);
         } else {
-            effect.effect.setAngle(angleTarget(effect.target.x, effect.target.y));
+            particle.effect.setAngle(angleTarget(particle.target.x, particle.target.y));
         };
-        effect.effect.setVelocity(effect.velocity * effect.target.x, effect.target.y * effect.velocity);
+        particle.effect.setVelocity(particle.velocity * particle.target.x, particle.target.y * particle.velocity);
     };
 };

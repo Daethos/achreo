@@ -205,7 +205,7 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
             typeSpeed: 20,
             backSpeed: 0,
             showCursor: false,
-            onComplete: () => {cancelScroll();},
+            // onComplete: () => {cancelScroll();},
         };
         typed = new Typed(el(), typedContent);
         // const interval = setInterval(() => scrollToBottom(), 500);
@@ -214,31 +214,31 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
         //     (el() as any).scrollTop = el()?.scrollHeight;
         // };
 
-        let scrollAnimationId: number | null = null;
+        // let scrollAnimationId: number | null = null;
     
-        const scrollToBottom = () => {
-            if (el()) {
-                console.log((el() as any).scrollTop, el()?.scrollHeight);
-                (el() as any).scrollTop = el()?.scrollHeight;
-                scrollAnimationId = requestAnimationFrame(scrollToBottom);
-            };
-        };
-        scrollToBottom();
+        // const scrollToBottom = () => {
+        //     if (el()) {
+        //         console.log((el() as any).scrollTop, el()?.scrollHeight);
+        //         (el() as any).scrollTop = el()?.scrollHeight;
+        //         // setEl({...el(), scrollTop: el().scrollHeight});
+        //         scrollAnimationId = requestAnimationFrame(scrollToBottom);
+        //     };
+        // };
+        // scrollToBottom();
 
-        const cancelScroll = () => {
-            if (scrollAnimationId) {
-                cancelAnimationFrame(scrollAnimationId);
-                scrollAnimationId = null;
-            };
-        };
+        // const cancelScroll = () => {
+        //     if (scrollAnimationId) {
+        //         cancelAnimationFrame(scrollAnimationId);
+        //         scrollAnimationId = null;
+        //     };
+        // };
 
         return () => {
             (typed as Typed).destroy();
             // clearInterval(interval);   
-            cancelScroll(); 
+            // cancelScroll(); 
         };
     }; // complete() ? 'center' : 
-
     return (
         <div>
         <div id="typewriter" ref={setEl} style={{...styling, 'text-align': 'left'}}></div>

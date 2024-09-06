@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 export const FRAME_COUNT = {
     ATTACK_LIVE: 16,
     ATTACK_SUCCESS: 39,
@@ -51,6 +52,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.health = health;
         this.combatStats = undefined;
         this.stamina = 0;
+        const id = uuidv4();
+        this.particleID = id;
         this._position = new Phaser.Math.Vector2(this.x, this.y);
         this.scene.add.existing(this);
         this.setVisible(false);

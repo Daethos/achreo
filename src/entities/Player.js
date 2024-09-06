@@ -1718,7 +1718,7 @@ export default class Player extends Entity {
             this.scene.combatMachine.action({ type: 'Chiomic', data: val }); 
         } else {
             const enemy = this.scene.enemies.find(e => e.enemyID === id);
-            const chiomic = Math.round(this.mastery() * (1 + val / 100) * this.caerenicDamage() * this.levelModifier());
+            const chiomic = Math.round(this.mastery() / 2 * (1 + val / 100) * this.caerenicDamage() * this.levelModifier());
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
@@ -1771,7 +1771,7 @@ export default class Player extends Entity {
             this.currentTarget.flickerCarenic(750);
         } else {
             const enemy = this.scene.enemies.find(e => e.enemyID === id);
-            const sacrifice = Math.round(this.mastery() * (1 + data / 20) * this.caerenicDamage() * this.levelModifier());
+            const sacrifice = Math.round(this.mastery() * (1 + data / 50) * this.caerenicDamage() * this.levelModifier());
             let playerSacrifice = this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.isStalwart ? 0.85 : 1)) < 0 ? 0 : this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.isStalwart ? 0.85 : 1));
             let enemySacrifice = enemy.health - sacrifice < 0 ? 0 : enemy.health - sacrifice;
             const playerActionDescription = `You sacrifice ${sacrifice / 2 * (this.isStalwart ? 0.85 : 1)} health to rip ${sacrifice} from ${enemy.ascean?.name}.`;
@@ -1787,7 +1787,7 @@ export default class Player extends Entity {
             this.currentTarget.flickerCarenic(750);
         } else {
             const enemy = this.scene.enemies.find(e => e.enemyID === id);
-            const suture = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier()) * (1 * val / 100);
+            const suture = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier()) * (1 * val / 100) * 0.8;
             let playerSuture = this.scene.state.newPlayerHealth + suture > this.scene.state.playerHealth ? this.scene.state.playerHealth : this.scene.state.newPlayerHealth + suture;
             let enemySuture = enemy.health - suture < 0 ? 0 : enemy.health - suture;                    
             const playerActionDescription = `Your suture ${enemy.ascean?.name}'s caeren into you, absorbing and healing for ${suture}.`;
@@ -3414,9 +3414,11 @@ export default class Player extends Entity {
     onFrozenExit = () => this.setStatic(false);
 
     onPolymorphedEnter = () => {
-        this.scene.joystick.joystick.setVisible(false);
-        this.scene.rightJoystick.joystick.setVisible(false);
-        this.scene.actionBar.setVisible(false);
+        if (this.scene.settings.desktop === false) {
+            this.scene.joystick.joystick.setVisible(false);
+            this.scene.rightJoystick.joystick.setVisible(false);
+            this.scene.actionBar.setVisible(false);
+        };
         this.isPolymorphed = true;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphed', DURATION.TEXT, 'effect', false, true);
         this.clearAnimations();
@@ -3475,9 +3477,11 @@ export default class Player extends Entity {
         this.playerVelocity.y = this.polymorphVelocity.y;
     };
     onPolymorphedExit = () => { 
-        this.scene.joystick.joystick.setVisible(true);
-        this.scene.rightJoystick.joystick.setVisible(true);
-        this.scene.actionBar.setVisible(true);
+        if (this.scene.settings.desktop === false) {
+            this.scene.joystick.joystick.setVisible(true);
+            this.scene.rightJoystick.joystick.setVisible(true);
+            this.scene.actionBar.setVisible(true);
+        };
         if (this.isPolymorphed) this.isPolymorphed = false;
         this.clearAnimations();
         this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
@@ -3781,7 +3785,7 @@ export default class Player extends Entity {
     playerActionSuccess = () => {
         if (this.particleEffect) {
             this.scene.particleManager.removeEffect(this.particleEffect.id);
-            this.particleEffect.effect.destroy();
+            // this.particleEffect.effect.destroy();
             this.particleEffect = undefined;
         } else {
             const action = this.checkPlayerAction();

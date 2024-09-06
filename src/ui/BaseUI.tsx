@@ -295,12 +295,12 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     break;
                 case 'Sacrifice': // Shadow Word: Death
                     if (combat().computer === undefined) return;
-                    const sacrifice = Math.round(playerMastery * caerenic * playerLevel) * (1 + data / 20);
+                    const sacrifice = Math.round(playerMastery * caerenic * playerLevel) * (1 + data / 50);
                     newPlayerHealth = newPlayerHealth - (sacrifice / 2 * stalwart) < 0 ? 0 : newPlayerHealth - (sacrifice / 2 * stalwart);
                     newComputerHealth = newComputerHealth - sacrifice < 0 ? 0 : newComputerHealth - sacrifice;
                     playerWin = newComputerHealth === 0;
                     computerWin = newPlayerHealth === 0;
-                    playerActionDescription = `You sacrifice ${sacrifice / 2 * stalwart} health to rip ${sacrifice} from ${combat().computer?.name}.`;
+                    playerActionDescription = `You sacrifice ${Math.round(sacrifice / 2 * stalwart)} health to rip ${Math.round(sacrifice)} from ${combat().computer?.name}.`;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin, playerActionDescription, computerWin };
                     EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, playerWin });
                     computerWin = res.computerWin;
@@ -308,7 +308,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     break;
                 case 'Suture': // Lifedrain (Instant, 50%)
                     if (combat().computer === undefined) return;
-                    const suture = Math.round(playerMastery * caerenic * playerLevel) * (1 + data / 100);
+                    const suture = Math.round(playerMastery * caerenic * playerLevel * (1 + data / 100) * 0.8);
                     newPlayerHealth = newPlayerHealth + suture > combat().playerHealth ? combat().playerHealth : newPlayerHealth + suture;
                     newComputerHealth = newComputerHealth - suture < 0 ? 0 : newComputerHealth - suture;
                     playerActionDescription = `Your suture ${combat().computer?.name}'s caeren into you, absorbing and healing for ${suture}.`;    
@@ -319,7 +319,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     break;
                 case 'Enemy Sacrifice': // Shadow Word: Death
                     if (combat().computer === undefined) return;
-                    const enemySac = Math.round(computerMastery * computerLevel * (1 + data / 100) * caerenicVulnerable * stalwart);
+                    const enemySac = Math.round(computerMastery * computerLevel * (1 + data / 50) * caerenicVulnerable * stalwart);
                     newPlayerHealth = newPlayerHealth - (enemySac * caerenicVulnerable) < 0 ? 0 : newPlayerHealth - (enemySac * caerenicVulnerable);
                     newComputerHealth = newComputerHealth - (enemySac / 2) < 0 ? 0 : newComputerHealth - (enemySac / 2);
                     computerActionDescription = `${combat().computer?.name} sacrifices ${enemySac / 2} health to rip ${enemySac * caerenicVulnerable} from you.`;
@@ -332,8 +332,8 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     break;
                 case 'Enemy Suture': // Lifedrain (Instant, 50%)
                     if (combat().computer === undefined) return;
-                    const enemySut = Math.round(computerMastery / 2 * caerenicVulnerable * computerLevel * stalwart);
-                    newPlayerHealth = newPlayerHealth - (enemySut * 1.25) < 0 ? 0 : newPlayerHealth - (enemySut * 1.25);
+                    const enemySut = Math.round(computerMastery * caerenicVulnerable * (1 + data / 100) * computerLevel * stalwart * 0.8);
+                    newPlayerHealth = newPlayerHealth - enemySut < 0 ? 0 : newPlayerHealth - enemySut;
                     newComputerHealth = newComputerHealth + enemySut > computerHealth ? computerHealth : newComputerHealth + enemySut;
                     computerActionDescription = `${combat().computer?.name} sutured ${enemySut} health from you, absorbing ${enemySut}.`;
                     computerWin = newPlayerHealth === 0;

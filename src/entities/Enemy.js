@@ -636,7 +636,7 @@ export default class Enemy extends Entity {
         if (this.isCurrentTarget === true) {
             this.scene.combatMachine.action({ type: 'Enemy Sacrifice', data: power });
         } else {
-            const sacrifice = Math.round(this.mastery() * this.playerCaerenic() * this.playerStalwart() * (1 + power / 100) * ((this.ascean?.level + 9) / 10));
+            const sacrifice = Math.round(this.mastery() * this.playerCaerenic() * this.playerStalwart() * (1 + power / 50) * ((this.ascean?.level + 9) / 10));
             let newComputerHealth = this.health + (sacrifice / 2) > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + (sacrifice / 2);
             const computerActionDescription = `${this.ascean?.name} sacrifices ${sacrifice / 2} health to rip ${sacrifice * (1 + power / 100)} from you.`;
             const ratio = sacrifice / this.scene.state.playerHealth * 100;
@@ -650,7 +650,7 @@ export default class Enemy extends Entity {
         if (this.isCurrentTarget === true) {
             this.scene.combatMachine.action({ type: 'Enemy Suture', data: power });
         } else {
-            const suture = Math.round(this.mastery() / 2 * this.playerCaerenic() * this.playerStalwart() * ((this.ascean?.level + 9) / 10)) * (1 + power / 100);
+            const suture = Math.round(this.mastery() * this.playerCaerenic() * this.playerStalwart() * ((this.ascean?.level + 9) / 10)) * (1 + power / 100) * 0.8;
             let newComputerHealth = this.health + suture > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + suture;
             const computerActionDescription = `${this.ascean?.name} sutured ${suture} health from you, absorbing ${suture}.`;
             const ratio = suture / this.scene.state.playerHealth * 100;
@@ -875,7 +875,7 @@ export default class Enemy extends Entity {
         };
         this.enemyAnimation();
         this.scene.time.delayedCall(this.swingTimer, () => {
-            this.currentAction = this.evaluateCombat();
+            if (this.currentAction === '') this.currentAction = this.evaluateCombat();
         }, undefined, this);
     };
     onCombatUpdate = (_dt) => this.evaluateCombatDistance();
@@ -2536,7 +2536,7 @@ export default class Enemy extends Entity {
 
     killParticle = () => {
         this.scene.particleManager.removeEffect(this.particleEffect.id);
-        this.particleEffect.effect.destroy();
+        // this.particleEffect.effect.destroy();
         this.particleEffect = undefined;
     };
 
@@ -2559,9 +2559,7 @@ export default class Enemy extends Entity {
             if (this.scene.player.isWarding) {
                 this.scene.player.ward(this.enemyID);
             };
-            if (this.particleEffect) {
-                this.killParticle();
-            };
+            if (this.particleEffect) this.killParticle();
             return;
         };
         if (this.particleEffect) {

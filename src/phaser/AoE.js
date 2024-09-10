@@ -65,7 +65,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         if (positive === true) {
             scene.time.delayedCall(975, () => {
                 this.bless.forEach((_target) => {
-                    scene[type]();
+                    scene.combatManager[type]();
                 });
                 this.count -= 1;
                 if (this.count === 0) {
@@ -82,7 +82,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         } else {
             scene.time.delayedCall(975, () => {
                 this.hit.forEach((target) => {
-                    scene[type](target.enemyID);
+                    scene.combatManager[type](target.enemyID);
                 });
                 this.count -= 1;
                 if (this.count === 0) {
@@ -103,7 +103,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             scene.time.delayedCall(975, () => {
                 this.hit.forEach((targ) => {
                     if (this.scene.player.checkPlayerResist() === true && targ.playerID === this.scene.player.playerID) {
-                        scene[type](targ.playerID, enemy.enemyID);
+                        scene.combatManager[type](targ.playerID, enemy.enemyID);
                     };
                 });
                 this.count -= 1;
@@ -121,7 +121,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         } else {
             scene.time.delayedCall(975, () => {
                 this.bless.forEach((targ) => {
-                    scene[`enemy${type.charAt(0).toUpperCase() + type.slice(1)}`](targ.enemyID);
+                    scene.combatManager[`enemy${type.charAt(0).toUpperCase() + type.slice(1)}`](targ.enemyID);
                 });
                 this.count -= 1;
                 if (this.count === 0) {

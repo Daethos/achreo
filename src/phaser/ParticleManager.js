@@ -26,6 +26,7 @@ class Particle {
         this.player = player;
         this.sensorSize = special === false ? 6 : action === 'achire' ? 12 : 18;
         this.special = special;
+        this.collided = false;
         this.success = false;
         this.target = this.setTarget(player, scene, special);
         this.timer = this.setTimer(action, id);
@@ -45,6 +46,7 @@ class Particle {
         this.isParticle = PARTICLES.includes(key);
         this.key = idKey;
         this.special = special;
+        this.collided = false;
         this.success = false;
         this.target = this.setTarget(player, this.scene, special);
         this.timer = this.setTimer(action, this.id);
@@ -58,6 +60,11 @@ class Particle {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [sensor],
             callback: (other) => {
+                if (other.gameObjectB?.properties?.wall === true) {
+                    console.log('Tracking Sensor in Particle Manager ----- PARRTICLE COLLIDED');
+                    this.collided = true;
+                    return;
+                };
                 if (other.bodyB.label === 'enemyCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && !other.gameObjectB.isDefeated && player.name === 'player') {
                     if (this.action === 'hook') {
                         player.hook(other.gameObjectB, 1500);
@@ -88,9 +95,9 @@ class Particle {
                     const match = this.scene.state?.enemyID === other.gameObjectB.enemyID;
                     player.attackedTarget = other.gameObjectB;
                     if (match === true) {
-                        this.scene.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: this.action }});
+                        this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: this.action }});
                     } else {
-                        this.scene.combatMachine.action({ type: 'Player', data: { 
+                        this.scene.combatManager.combatMachine.action({ type: 'Player', data: { 
                             playerAction: { 
                                 action: this.action, 
                                 thrust: this.scene.state.parryGuess 

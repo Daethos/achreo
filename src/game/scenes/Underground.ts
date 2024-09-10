@@ -4,7 +4,6 @@ import { Combat, initCombat } from '../../stores/combat';
 import { EventBus } from '../EventBus';
 import NewText from '../../phaser/NewText';
 import LootDrop from '../../matter/LootDrop';
-import CombatMachine from '../../phaser/CombatMachine';
 import ActionButtons from '../../phaser/ActionButtons';
 import { GameState } from '../../stores/game';
 import Settings, { initSettings } from '../../models/settings';
@@ -26,6 +25,7 @@ import ParticleManager from '../../phaser/ParticleManager';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 import Tile from '../../phaser/Tile';
+import { CombatManager } from '../CombatManager';
 
 export class Underground extends Scene {
     animatedTiles: any[];
@@ -52,7 +52,6 @@ export class Underground extends Scene {
     combatTimer: Time.TimerEvent;
     tweenManager: any;
     actionBar: ActionButtons;
-    combatMachine: CombatMachine;
     particleManager: ParticleManager;
     map: Tilemaps.Tilemap;
     background: GameObjects.Image;
@@ -73,6 +72,7 @@ export class Underground extends Scene {
     volumeEvent: () => void;
     matterCollision: any;
     smallHud: SmallHud;
+    combatManager: CombatManager;
     vision: any;
     private fov?: any;
     private groundLayer?: any;
@@ -167,7 +167,7 @@ export class Underground extends Scene {
         var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
         this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
         this.setPostFx(this.settings?.postFx, this.settings?.postFx.enable);
-        this.combatMachine = new CombatMachine(this);
+        // this.combatMachine = new CombatMachine(this);
         this.particleManager = new ParticleManager(this);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
         this.actionBar = new ActionButtons(this);
@@ -280,6 +280,7 @@ export class Underground extends Scene {
         });
         this.minimap.ignore(this.minimapBorder);
         this.smallHud = new SmallHud(this);
+        this.combatManager = new CombatManager(this);
         this.input.mouse?.disableContextMenu();
         EventBus.emit('current-scene-ready', this);
     };
@@ -312,7 +313,6 @@ export class Underground extends Scene {
         this.player.cleanUp();
         this.actionBar.cleanUp();
         this.actionBar.destroy();
-        this.combatMachine.cleanUp();
         this.smallHud.cleanUp();
         this.smallHud.destroy();
         this.joystick.cleanUp();
@@ -658,313 +658,6 @@ export class Underground extends Scene {
         return point;
     };
 
-    // ============================ Combat Specials ============================ \\ 
-    melee = (id: string, type: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        const match = this.player.enemyIdMatch();
-        if (match) { // Target Player Attack
-            this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: type } });
-        } else { // Blind Player Attack
-            if (enemy.isDefaeted) return;
-            this.combatMachine.action({ type: 'Player', data: { 
-                playerAction: { action: type, parry: this.state.parryGuess }, 
-                enemyID: enemy.enemyID, 
-                ascean: enemy.ascean, 
-                damageType: enemy.currentDamageType, 
-                combatStats: enemy.combatStats, 
-                weapons: enemy.weapons, 
-                health: enemy.health, 
-                actionData: { action: enemy.currentAction, parry: enemy.parryAction }
-            }});
-        };
-    };
-    astrave = (id: string, enemyID: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 1);
-            const health = enemy.health - damage;
-            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
-            enemy.count.stunned += 1;    
-            enemy.isStunned = true;
-        } else if (id === this.player.playerID) {
-            let caster = this.enemies.find((e: any) => e.enemyID === enemyID);
-            caster.chiomic(15);
-            this.player.isStunned = true;
-        };
-    };
-    blind = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            enemy.count.feared += 1;
-            enemy.isFeared = true;
-            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 1);
-            const health = enemy.health - damage;
-            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
-        } else if (id === this.player.playerID) {
-
-        };
-    };
-    caerenesis = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            enemy.isParalyzed = true;
-            if (this.player.currentTarget && this.player.currentTarget.enemyID === this.player.getEnemyId()) {
-                this.combatMachine.action({ type: 'Tshaeral', data: 10 });
-            } else {
-                const drained = Math.round(this.state.playerHealth * 0.1 * (this.player.isCaerenic ? 1.15 : 1) * ((this.state.player?.level as number + 9) / 10));
-                const newPlayerHealth = drained / this.state.playerHealth * 100;
-                const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
-                const tshaeralDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
-                EventBus.emit('add-combat-logs', { ...this.state, playerActionDescription: tshaeralDescription });
-                this.combatMachine.action({ type: 'Health', data: { key: 'player', value: newPlayerHealth, id: this.player.playerID } });
-                this.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newHealth, id: enemy.enemyID } });
-            };
-        };
-    };
-    chiomic = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (!enemy) {
-            this.useGrace(10);
-            this.player.isConfused = true;
-        } else {
-            enemy.count.confused += 1;
-            enemy.isConfused = true;
-        };
-    };
-    confuse = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (!enemy) {
-            this.useGrace(10);
-            this.player.isConfused = true;
-        } else {
-            enemy.count.confused += 1;
-            enemy.isConfused = true;
-        };
-    };
-    fear = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (!enemy) {
-            this.useGrace(10);
-            this.player.isFeared = true;
-        } else {
-            enemy.isFeared = true;
-        };
-    };
-    freeze = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (!enemy) {
-            this.useGrace(10);
-            this.player.isFrozen = true;
-        } else {
-            enemy.count.frozen += 1;
-            enemy.isFrozen = true;
-        };
-    };
-    fyerus = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.35) * (this.player.isCaerenic ? 1.15 : 1) * ((this.state.player?.level as number + 9) / 10);
-            const health = enemy.health - damage;
-            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
-            enemy.slowDuration = 950;
-            enemy.count.slowed += 1;
-            enemy.isSlowed = true;
-        };
-    };
-    howl = (id: string): void => {
-        if (id === '') return;
-        this.stunned(id);
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.75);
-            const health = enemy.health - damage;
-            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
-        };
-    };
-    kynisos = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (!enemy) {
-            this.player.isRooted = true;
-        } else {
-            this.root(id);
-            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player]) * (this.player.isCaerenic ? 1.15 : 1) * ((this.state.player?.level as number + 9) / 10);
-            const health = enemy.health - damage;
-            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
-        };
-    };
-    paralyze = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (!enemy) {
-            this.useGrace(15);
-            this.player.isParalyzed = true;
-        } else {
-            enemy.count.paralyzed += 1;
-            enemy.isParalyzed = true;
-        };
-    };
-    polymorph = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (!enemy) {
-            this.player.isPolymorphed = true;
-        } else {
-            enemy.count.polymorphed += 1;
-            enemy.isPolymorphed = true;
-        };
-    };
-    renewal = () => {
-        this.combatMachine.action({ data: { key: 'player', value: 10, id: this.player.playerID }, type: 'Health' });
-    };
-    enemyRenewal = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (!enemy) return;
-        const heal = enemy.ascean.health.max * 0.1;
-        const health = Math.min(enemy.health + heal, enemy.ascean.health.max);
-        this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
-    };
-    root = (id: string): void => {
-        let enemy = this.enemies.find((enemy: any) => enemy.enemyID === id);
-        if (!enemy) return;
-        this.targetTarget = enemy;
-        let x = enemy.x; // this.rightJoystick.pointer.x;
-        let x2 = window.innerWidth / 2;
-        let y = enemy.y; // this.rightJoystick.pointer.y;
-        let y2 = window.innerHeight / 2;
-        const worldX = (x > x2 ? x : -x) + this.player.x;
-        const worldY = (y > y2 ? y : -y) + this.player.y;
-        const duration = Phaser.Math.Distance.Between(this.player.x, this.player.y, worldX, worldY);
-        const rootTween = this.add.tween({
-            targets: this.target,
-            x: { from: this.player.x, to: worldX, duration: 1000 },
-            y: { from: this.player.y, to: worldY, duration: 1000 }, 
-            ease: 'Linear',
-            yoyo: false,
-            onStart: () => {
-                this.target.setVisible(true);
-                enemy.isRooted = true;
-                enemy.count.rooted += 1;
-            },    
-            onComplete: () => {
-                this.time.delayedCall(3000 - duration, () => {
-                    this.target.setVisible(false);
-                    rootTween.destroy();
-                }, undefined, this);
-            }, 
-        });
-    };
-    scream = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        if (!enemy) {
-            this.useGrace(15);
-            this.player.isFeared = true;
-        } else {
-            enemy.isFeared = true;
-            enemy.count.feared += 1;
-        };
-    };
-    slow = (id: string, time: number = 3000): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        if (!enemy) {
-            this.player.isSlowed = true;
-            this.player.slowDuration = time;
-        } else {
-            enemy.count.slowed += 1;
-            enemy.isSlowed = true;
-            enemy.slowDuration = time;
-        };
-    };
-    snare = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        if (!enemy) {
-            this.player.isSnared = true;
-        } else {
-            enemy.count.snared += 1;
-            enemy.isSnared = true;
-        };
-    };
-    stun = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        if (!enemy) {
-            this.player.isStunned = true;
-            this.useStamina(15);
-        } else {
-            enemy.count.stunned += 1;
-            enemy.isStunned = true;
-        };
-    };
-    stunned = (id: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        if (!enemy) {
-            this.player.isStunned = true;
-            this.useStamina(15);
-        } else {
-            enemy.count.stunned += 1;
-            enemy.isStunned = true;
-        };
-    };
-    tendril = (id: string, _enemyID: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((e: any) => e.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            const damage = Math.round(this?.state?.player?.[this?.state?.player?.mastery as keyof typeof this.state.player] * 0.3);
-            const total = Math.max(0, enemy.health - damage);
-            this.combatMachine.action({ data: { key: 'enemy', value: total, id }, type: 'Health' });
-        } else if (id === this.player.playerID) {
-            this.combatMachine.action({ data: 10, type: 'Enemy Chiomic' });
-        };
-    };
-    writhe = (id: string, enemyID?: string): void => {
-        if (id === '') return;
-        let enemy = this.enemies.find((e: Enemy) => e.enemyID === id);
-        if (!enemy) {
-            if (id === this.player.playerID) {
-                let en = this.enemies.find((e: Enemy) => e.enemyID === enemyID);
-                if (!en) return;
-                if (en.isCurrentTarget) {
-                    this.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: 'writhe', id: en.enemyID } });
-                } else {
-                    this.combatMachine.action({ type: 'Enemy', data: { 
-                        enemyID: en.enemyID, ascean: en.ascean, damageType: en.currentDamageType, combatStats: en.combatStats, weapons: en.weapons, health: en.health, 
-                        actionData: { action: 'writhe', parry: en.parryAction, id: enemyID }}});
-                };
-                this.useGrace(10);
-            };
-        } else {
-            const match = this.player.enemyIdMatch();
-            if (match) { // Target Player Attack
-                this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: 'writhe' } });
-            } else { // Blind Player Attack
-                this.combatMachine.action({ type: 'Player', data: { 
-                    playerAction: { action: 'writhe', parry: this.state.parryGuess }, 
-                    enemyID: enemy.enemyID, 
-                    ascean: enemy.ascean, 
-                    damageType: enemy.currentDamageType, 
-                    combatStats: enemy.combatStats, 
-                    weapons: enemy.weapons, 
-                    health: enemy.health, 
-                    actionData: { action: enemy.currentAction, parry: enemy.parryAction }
-                }});
-            };
-        };
-    };
-
     // ============================ Underground ============================ \\
     rotateTween = (tween: any, count: number, active: boolean) => {
         if (active === true) {
@@ -978,9 +671,6 @@ export class Underground extends Scene {
         } else {
             this.tweenManager[tween.name].stop();
         };
-    };
-    checkPlayerSuccess = (): void => {
-        if (!this.player.actionSuccess && (this.state.action !== 'parry' && this.state.action !== 'roll' && this.state.action !== '')) this.combatMachine.input('action', '');
     };
     clearNonAggressiveEnemy = (): boolean => EventBus.emit('clear-enemy');
     clearNPC = (): boolean => EventBus.emit('clear-npc'); 
@@ -1058,16 +748,6 @@ export class Underground extends Scene {
         };
     };
     // ============================ Player ============================ \\
-    caerenic = (): boolean => EventBus.emit('update-caerenic');
-    stalwart = (): boolean => EventBus.emit('update-stalwart');
-    useGrace = (value: number) => {
-        EventBus.emit('update-grace', value);
-        this.player.grace -= value;
-    };
-    useStamina = (value: number) => {
-        EventBus.emit('update-stamina', value);
-        this.player.stamina -= value;
-    };
     createTextBorder(text: NewText): GameObjects.Graphics {
         const border = this.add.graphics();
         border.lineStyle(4, 0x2A0134, 1);
@@ -1077,10 +757,9 @@ export class Underground extends Scene {
     };   
     playerUpdate = (): void => {
         this.player.update(); 
-        this.combatMachine.process();
+        this.combatManager.combatMachine.process();
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
-        this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };
     setCameraOffset = () => {
         if (this.player.flipX === true) {
@@ -1093,6 +772,7 @@ export class Underground extends Scene {
         } else if (this.player.velocity.y < 0) {
             this.offsetY = Math.min(60, this.offsetY + 2);
         };
+        this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };
     startCombatTimer = (): void => {
         if (this.combatTimer) {

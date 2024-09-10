@@ -119,6 +119,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     });
                     break;
                 case 'Instant': // Invoking Prayer
+                    if (combat().computer === undefined) return;
                     let insta = { ...combat(), playerBlessing: data };
                     insta = instantActionCompiler(insta) as Combat;
                     playerWin = insta.playerWin;
@@ -141,6 +142,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     affectsHealth = false;
                     break;
                 case 'Player': // Blind Player Attack i.e. hitting a non targeted enemy
+                    if (combat().computer === undefined) return;
                     const { playerAction, enemyID, ascean, damageType, combatStats, weapons, health, actionData } = data;
                     let playerData = {
                         action: playerAction.action,

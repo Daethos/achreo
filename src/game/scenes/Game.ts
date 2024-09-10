@@ -295,6 +295,7 @@ export class Game extends Scene {
         this.smallHud = new SmallHud(this);
         // this.smallHud = new HudScene(this);
         this.input.mouse?.disableContextMenu();
+        this.registry.set('player', this.player);
         EventBus.emit('current-scene-ready', this);
     };
 

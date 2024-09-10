@@ -399,8 +399,8 @@ export default class StatusEffect {
             achre: playerIntensity,
             caeren: playerIntensity,
             kyosir: playerIntensity,
-            healing: playerIntensity * EFFECT.TWENTY_FIVE,
-            damage: playerIntensity * EFFECT.TWENTY_FIVE,
+            healing: playerIntensity * EFFECT.TEN,
+            damage: playerIntensity * EFFECT.TEN,
             buff: playerIntensity,
             debuff: playerIntensity,
         };

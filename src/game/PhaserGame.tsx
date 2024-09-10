@@ -156,7 +156,8 @@ export default function PhaserGame (props: IProps) {
 
     function purchaseItem(purchase: { item: Equipment; cost: { silver: number; gold: number; }; }) {
         try {
-            let inventory = Array.from(game().inventory.inventory);
+            // let inventory = Array.from(game().inventory.inventory);
+            let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
             inventory.push(purchase.item);
             const clean = { ...game().inventory, inventory };
             let cost = {
@@ -181,7 +182,8 @@ export default function PhaserGame (props: IProps) {
         console.log(success, item, value);
         try {
             if (success === true) {
-                let inventory = Array.from(game().inventory.inventory);
+                // let inventory = Array.from(game().inventory.inventory);
+                let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
                 inventory.push(item);
                 const clean = { ...game().inventory, inventory };
                 // const update = { 
@@ -248,8 +250,9 @@ export default function PhaserGame (props: IProps) {
 
     function sellItem(item: Equipment) {
         try {
-            let inventory = Array.from(game().inventory.inventory);
-            inventory = inventory.filter((eqp) => eqp._id !== item._id);
+            let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
+            // let inventory = Array.from(game().inventory.inventory);
+            inventory = inventory.filter((eqp: any) => eqp._id !== item._id);
             const clean = { ...game().inventory, inventory };
             let gold: number = 0, silver: number = 0;
             switch (item.rarity) {
@@ -606,8 +609,9 @@ export default function PhaserGame (props: IProps) {
         const oldEquipment = props.ascean()[type as keyof Ascean] as Equipment;
         const newEquipment = item;
         let newAscean = {...props.ascean(), [type]: newEquipment};
-        let inventory = [...game().inventory.inventory];
-        inventory = inventory.filter((inv) => inv._id !== newEquipment._id);
+        let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
+        // let inventory = [...game().inventory.inventory];
+        inventory = inventory.filter((inv: any) => inv._id !== newEquipment._id);
         if (!oldEquipment.name.includes('Empty') && !oldEquipment.name.includes('Starter')) {
             inventory.push(oldEquipment);
         } else {
@@ -652,7 +656,9 @@ export default function PhaserGame (props: IProps) {
                 itemsToRemove = itemsToRemove.slice(0, 3);
             };
             const itemsIdsToRemove = itemsToRemove.map((itr: Equipment) => itr._id);
-            let inventory: Equipment[] = game().inventory.inventory.length > 0 ? [ ...game().inventory.inventory ] : [];
+            let inventory = game().inventory.inventory.length > 0? JSON.parse(JSON.stringify(game().inventory.inventory)) : [];
+
+            // let inventory: Equipment[] = game().inventory.inventory.length > 0 ? [ ...game().inventory.inventory ] : [];
             inventory.push(item[0]);
             itemsIdsToRemove.forEach(async (itemID: string) => {
                 const itemIndex = inventory.findIndex((item: Equipment) => item._id === itemID);
@@ -747,7 +753,8 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('preload-ascean', createUi)
         EventBus.on('set-player', setPlayer);
         EventBus.on('add-item', (e: Equipment[]) => {
-            const inv = [...game().inventory.inventory];
+            const inv = JSON.parse(JSON.stringify(game().inventory.inventory));
+            // const inv = [...game().inventory.inventory];
             const inventory = inv.length > 0 ? [...inv, ...e] : e;
             const clean = { ...game().inventory, inventory };
             setGame({ ...game(), inventory: clean });
@@ -893,7 +900,8 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('gain-experience', (e: { state: any; }) => saveChanges(e));
         EventBus.on('level-up', (e: any) => levelUp(e));
         EventBus.on('add-loot', (e: Equipment[]) => {
-            const newInventory = game().inventory.inventory.length > 0 ? [...game().inventory.inventory, ...e] : e;
+            let newInventory = game().inventory.inventory.length > 0 ? [...JSON.parse(JSON.stringify(game().inventory.inventory)), ...e] : e;
+            // const newInventory = game().inventory.inventory.length > 0 ? [...game().inventory.inventory, ...e] : e;
             const newClean = { ...game().inventory, inventory: newInventory };
             setGame({ ...game(), inventory: newClean });
             EventBus.emit('update-inventory', newClean);
@@ -987,7 +995,8 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('add-lootdrop', (e: Equipment[]) => {
             const newLootDrops = game().lootDrops.length > 0 ? [...game().lootDrops, ...e] : e;
             const newLootIds = game().showLootIds.length > 0 ? [...game().showLootIds, ...e.map((loot) => loot._id)] : e.map((loot) => loot._id);
-            const inv = [...game().inventory.inventory];
+            let inv = JSON.parse(JSON.stringify(game().inventory.inventory));
+            // const inv = [...game().inventory.inventory];
             const newInv = inv.length > 0 ? [...inv, ...e] : e;
             const newClean = { ...game().inventory, inventory: newInv };
             setGame({ 

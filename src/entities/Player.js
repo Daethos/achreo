@@ -1718,6 +1718,7 @@ export default class Player extends Entity {
             this.scene.combatMachine.action({ type: 'Chiomic', data: val }); 
         } else {
             const enemy = this.scene.enemies.find(e => e.enemyID === id);
+            if (!enemy) return;
             const chiomic = Math.round(this.mastery() / 2 * (1 + val / 100) * this.caerenicDamage() * this.levelModifier());
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
@@ -1736,6 +1737,7 @@ export default class Player extends Entity {
             this.scene.combatMachine.action({ type: 'Tshaeral', data: 4 });
         } else {
             const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
+            if (!enemy) return;
             const drained = Math.round(this.scene.state.playerHealth * 0.04 * this.caerenicDamage() * this.levelModifier());
             const newPlayerHealth = drained / this.scene.state.playerHealth * 100;
             const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
@@ -1757,6 +1759,7 @@ export default class Player extends Entity {
             this.scene.combatMachine.action({ type: 'Chiomic', data: 10 }); 
         } else {
             const enemy = this.scene.enemies.find(e => e.enemyID === this.spellTarget);
+            if (!enemy) return;
             const chiomic = Math.round(this.mastery() * 1.1 * this.caerenicDamage() * this.levelModifier());
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
@@ -1771,6 +1774,7 @@ export default class Player extends Entity {
             this.currentTarget.flickerCarenic(750);
         } else {
             const enemy = this.scene.enemies.find(e => e.enemyID === id);
+            if (!enemy) return;
             const sacrifice = Math.round(this.mastery() * (1 + data / 50) * this.caerenicDamage() * this.levelModifier());
             let playerSacrifice = this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.isStalwart ? 0.85 : 1)) < 0 ? 0 : this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.isStalwart ? 0.85 : 1));
             let enemySacrifice = enemy.health - sacrifice < 0 ? 0 : enemy.health - sacrifice;
@@ -1787,6 +1791,7 @@ export default class Player extends Entity {
             this.currentTarget.flickerCarenic(750);
         } else {
             const enemy = this.scene.enemies.find(e => e.enemyID === id);
+            if (!enemy) return;
             const suture = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier()) * (1 * val / 100) * 0.8;
             let playerSuture = this.scene.state.newPlayerHealth + suture > this.scene.state.playerHealth ? this.scene.state.playerHealth : this.scene.state.newPlayerHealth + suture;
             let enemySuture = enemy.health - suture < 0 ? 0 : enemy.health - suture;                    
@@ -1794,7 +1799,7 @@ export default class Player extends Entity {
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
             this.scene.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSuture, id} });
             this.scene.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySuture, id} });
-            enemy.flickerCarenic(750)    
+            enemy.flickerCarenic(750);
         };
     };
 

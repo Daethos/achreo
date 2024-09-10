@@ -13,6 +13,7 @@ import { screenShake } from "../phaser/ScreenShake";
 
 const ENEMY_COLOR = 0xFF0000;
 const TARGET_COLOR = 0x00FF00;
+const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 
 export default class Enemy extends Entity {
     constructor(data) {
@@ -131,9 +132,8 @@ export default class Enemy extends Entity {
         this.sensorDisp = 12;
         this.colliderDisp = 16; 
 
-        const { Body, Bodies } = Phaser.Physics.Matter.Matter;
-        const colliderWidth = 20; 
-        const colliderHeight = 36; 
+        const colliderWidth = PLAYER.COLLIDER.WIDTH; 
+        const colliderHeight = PLAYER.COLLIDER.HEIGHT; 
         const paddingWidth = 10;         
         const paddingHeight = 10; 
 
@@ -174,7 +174,10 @@ export default class Enemy extends Entity {
                 this.clearTint();
                 this.setTint(ENEMY_COLOR);
             });
-        this.scene.time.delayedCall(3000, () => this.setVisible(true));
+        this.scene.time.delayedCall(3000, () => {
+            this.setVisible(true);
+            this.spriteWeapon.setVisible(true);
+        });
     };
 
     cleanUp() {
@@ -479,7 +482,6 @@ export default class Enemy extends Entity {
 
     setEnemyColor = () => {
         this.currentTargetCheck();
-        console.log(this.isCurrentTarget, 'Current Target?');
         if (this.isCurrentTarget === true) {
             return TARGET_COLOR;
         } else {
@@ -520,8 +522,8 @@ export default class Enemy extends Entity {
         this.spriteShield = new Phaser.GameObjects.Sprite(this.scene, 0, 0, shieldName);
         this.spriteShield.setScale(0.6);
         this.spriteShield.setOrigin(0.5, 0.5);
-        this.scene.add.existing(this.spriteShield);
         this.spriteShield.setVisible(false);
+        this.scene.add.existing(this.spriteShield);
     };
 
     createWeapon = (weapon) => {
@@ -535,9 +537,10 @@ export default class Enemy extends Entity {
         } else {
             this.spriteWeapon.setScale(0.5);
         };
-        this.spriteWeapon.setOrigin(0.25, 1);
-        this.scene.add.existing(this.spriteWeapon);
         this.spriteWeapon.setAngle(-195);
+        this.spriteWeapon.setOrigin(0.25, 1);
+        this.spriteWeapon.setVisible(false);
+        this.scene.add.existing(this.spriteWeapon);
     }; 
 
     clearCombatWin = () => { 
@@ -824,6 +827,7 @@ export default class Enemy extends Entity {
 
     onChaseEnter = () => {
         if (!this.attacking) return;
+        this.enemyAnimation();
         this.chaseTimer = this.scene.time.addEvent({
             delay: 500,
             callback: () => {
@@ -870,6 +874,7 @@ export default class Enemy extends Entity {
         };
     }; 
     onChaseExit = () => {
+        this.enemyAnimation();
         this.scene.navMesh.debugDrawClear();
         this.setVelocity(0, 0);
         if (this.chaseTimer) {
@@ -885,20 +890,24 @@ export default class Enemy extends Entity {
             return;
         };
         this.enemyAnimation();
-        this.scene.time.delayedCall(this.swingTimer, () => {
-            if (this.currentAction === '') this.currentAction = this.evaluateCombat();
-        }, undefined, this);
+        if (!this.isSwinging) {
+            this.isSwinging = true;
+            this.scene.time.delayedCall(this.swingTimer, () => {
+                this.isSwinging = false;
+                if (this.currentAction === '') this.currentAction = this.evaluateCombat();
+            }, undefined, this);
+        };
     };
     onCombatUpdate = (_dt) => this.evaluateCombatDistance();
     onCombatExit = () => {};
 
     onEvasionEnter = () => {
-        const x = Phaser.Math.Between(1, 100);
-        const y = Phaser.Math.Between(1, 100);
-        const evade = Phaser.Math.Between(1, 100);
-        this.evadeRight = x > 50 ? true : false;
-        this.evadeUp = y > 50 ? true : false;
-        if (evade > 50) {
+        const x = Phaser.Math.Between(1, 2);
+        const y = Phaser.Math.Between(1, 2);
+        const evade = Phaser.Math.Between(1, 2);
+        this.evadeRight = x === 1;
+        this.evadeUp = y === 1;
+        if (evade === 1) {
             this.isDodging = true;
         } else {
             this.isRolling = true;
@@ -1234,7 +1243,7 @@ export default class Enemy extends Entity {
     };
     onIlirechExit = () => {
         if (this.castingSuccess === true && this.checkPlayerResist() === true) {
-            this.chiomic(15);
+            this.chiomic(100);
             EventBus.emit('special-combat-text', {
                 computerSpecialDescription: `${this.ascean.name} rips into this world with Ilian tendrils entwining.`
             });
@@ -1342,7 +1351,7 @@ export default class Enemy extends Entity {
                     });
                 };
             };
-            EventBus.emit('special-combat-text', {
+            EventBus.emit('enemy-combat-text', {
                 computerSpecialDescription: `${this.ascean.name} bleeds and strikes you with tendrils of Ma'anre.`
             });
             this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
@@ -1499,7 +1508,7 @@ export default class Enemy extends Entity {
     onSnaringExit = () => {
         if (this.castingSuccess === true && this.checkPlayerResist() === true) {
             this.scene.combatManager.useGrace(10);
-            this.scene.snare(this.scene.state.player._id);
+            this.scene.combatManager.snare(this.scene.state.player._id);
             this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
             EventBus.emit('enemy-combat-text', {
                 computerSpecialDescription: `${this.ascean.name} ensorcels you into a snare!`
@@ -1999,7 +2008,7 @@ export default class Enemy extends Entity {
         };
         this.scene.sound.play('parry', { volume: this.scene.settings.volume });
         if (this.checkPlayerResist() === true) {
-            this.scene.stunned(this.scene.player.ascean._id);
+            this.scene.combatManager.stunned(this.scene.player.ascean._id);
         };
         this.negationBubble.setCharges(this.negationBubble.charges - 1);
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Warded', 500, 'effect');
@@ -2936,4 +2945,18 @@ export default class Enemy extends Entity {
         };
         return computerAction;
     };
+    // evaluateCombat = () => {
+    //     let actionNumber = Phaser.Math.Between(1, 100);
+    //     if (actionNumber > 60) {
+    //         return 'attack';
+    //     } else if (actionNumber > 45 && !this.isRanged) {
+    //         return 'parry';
+    //     } else if (actionNumber > 30) {
+    //         return 'posture';
+    //     } else if (actionNumber > 15) {
+    //         return 'roll';
+    //     } else {
+    //         return 'thrust';
+    //     };
+    // };
 };

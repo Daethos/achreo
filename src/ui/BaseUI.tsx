@@ -83,6 +83,10 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 caerenic: number = combat().isCaerenic ? 1.15 : 1,
                 caerenicVulnerable: number = combat().isCaerenic ? 1.25 : 1,
                 stalwart: number = combat().isStalwart ? 0.85 : 1;
+            if (newComputerHealth === 0 && type !== 'Health') {
+                console.log('Player is at 0 health, returning');
+                return;
+            };
             switch (type) {
                 case 'Weapon': // Targeted Weapon Action by Enemy or Player
                     const weapon = { ...combat(), [data.key]: data.value };
@@ -245,15 +249,19 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                             const healed = Math.floor(combat().playerHealth * (value / 100));
                             newPlayerHealth = newPlayerHealth + healed > combat().playerHealth ? combat().playerHealth : newPlayerHealth + healed;
                             computerWin = newPlayerHealth <= 0;
-                            playerActionDescription =  healed > 0 ? `You heal for ${healed}, back to ${Math.round(newPlayerHealth)}.` : `You are damaged for ${Math.abs(healed)}, down to ${Math.round(newPlayerHealth)}`;
+                            playerActionDescription =  
+                                healed > 0 ? `You heal for ${healed}, back to ${Math.round(newPlayerHealth)}.` 
+                                : `You are damaged for ${Math.abs(healed)}, down to ${Math.round(newPlayerHealth)}`;
                             res = { ...combat(), newPlayerHealth, playerActionDescription, damagedID: id };
                             EventBus.emit('blend-combat', { newPlayerHealth, computerWin, damagedID: id });
                             break;
                         case 'enemy':
+                            computerActionDescription = value > newComputerHealth ? 
+                                `${combat().computer?.name} heals for ${Math.round(value - newComputerHealth)}, back up to ${Math.round(value)}` : 
+                                `${combat().computer?.name} is damaged for ${Math.round(newComputerHealth - value)}, down to ${Math.round(value)}.`;
                             newComputerHealth = value > 0 ? value : 0;
                             playerWin = newComputerHealth === 0;
                             if (combat().enemyID === id) {
-                                computerActionDescription = `${combat().computer?.name} health shifts to ${Math.round(newComputerHealth)}.`;
                                 res = { ...combat(), newComputerHealth, playerWin, computerActionDescription };
                                 EventBus.emit('blend-combat', { newComputerHealth, playerWin });
                             } else {

@@ -6,8 +6,8 @@ const DURATION = {BOTTOM: 750, STANDARD: 1500, ONE: 1000, THREE: 3000, FIVE: 500
 export const PLAYER = {
     COLLIDER: {
         DISPLACEMENT: 16,
-        HEIGHT: 36,
-        WIDTH: 20,
+        HEIGHT: 32,
+        WIDTH: 16,
     },
     SPEED: {
         INITIAL: 1.5, // 1.75
@@ -127,7 +127,7 @@ export const PLAYER = {
     },
     DURATIONS: {
         ABSORB: DURATION.HIGH,
-        ACHIRE: DURATION.ONE,
+        ACHIRE: DURATION.STANDARD,
         ASTRAVE: DURATION.STANDARD,
         ARCING: DURATION.THREE,
         CHIOMIC: DURATION.ONE,

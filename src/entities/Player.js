@@ -222,16 +222,8 @@ export default class Player extends Entity {
             .lineStyle(4, 0xfdf6d8) // 3
             .setScale(0.5) // 35
             .strokeCircle(0, 0, 12) // 10 
-            // .setDepth(99);
         this.mark.setVisible(false);
         this.markAnimation = false;
-
-        // this.hook = new Phaser.Physics.Matter.Sprite(scene.matter.world, this.x, this.y, 'hook_effect').setScale(0.5).setOrigin(0.5, 0.5).setDepth(6).setVisible(false);    
-        // this.hook = this.scene.add.graphics()
-        //     .lineStyle(4, 0xfdf6d8) // 3
-        //     .strokeCircle(0, 0, 12) // 10
-        //     .setPosition(this.x, this.y) 
-            // .setVisible(false)
 
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health, 'player');
         this.castbar = new CastingBar(this.scene, this.x, this.y, 0, this);
@@ -240,7 +232,6 @@ export default class Player extends Entity {
         this.setFixedRotation();   
         this.checkEnemyCollision(playerSensor);
         this.checkWorldCollision(playerSensor);
-        // this.checkWorldCollider(playerCollider);
         this.beam = new Beam(this);
         this.setInteractive(new Phaser.Geom.Rectangle(
             48, 0,
@@ -601,7 +592,7 @@ export default class Player extends Entity {
         };
         if (e.parrySuccess === true) {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Parry', PLAYER.DURATIONS.TEXT, 'heal', true);
-            this.scene.stunned(e.enemyID);
+            this.scene.combatManager.stunned(e.enemyID);
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'attack');
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'parry');
@@ -1600,7 +1591,7 @@ export default class Player extends Entity {
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You rip into this world with Ilian tendrils entwining.`
             });
-            this.chiomism(this.spellTarget, 15);
+            this.chiomism(this.spellTarget, 100);
             this.setTimeEvent('ilirechCooldown', PLAYER.COOLDOWNS.MODERATE);
             this.castingSuccess = false;
             this.scene.sound.play('fire', { volume: this.scene.settings.volume });
@@ -3060,7 +3051,7 @@ export default class Player extends Entity {
             return;
         };
         this.scene.sound.play('parry', { volume: this.scene.settings.volume });
-        this.scene.stunned(id);
+        this.scene.combatManager.stunned(id);
         this.negationBubble.setCharges(this.negationBubble.charges - 1);
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Warded', 500, 'effect');
         if (this.negationBubble.charges <= 3) {

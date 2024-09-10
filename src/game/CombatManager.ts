@@ -1,22 +1,18 @@
 import CombatMachine from '../phaser/CombatMachine';
 // @ts-ignore
 import Enemy from '../entities/Enemy';
-// // @ts-ignore
-// import ParticleManager from '../phaser/ParticleManager';
 import { Game } from './scenes/Game';
 import { Underground } from './scenes/Underground';
 import { EventBus } from './EventBus';
 
 export class CombatManager extends Phaser.Scene {
     combatMachine: CombatMachine;
-    // particleManager: ParticleManager;
     context: Game | Underground;
 
     constructor(scene: Game | Underground) {
         super('Combat');
         this.context = scene;
         this.combatMachine = new CombatMachine(this);
-        // this.particleManager = new ParticleManager(this);    
     };
 
         // ============================ Combat Specials ============================ \\ 

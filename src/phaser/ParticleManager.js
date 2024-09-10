@@ -24,7 +24,7 @@ class Particle {
         this.isParticle = particle === true;
         this.key = particle === true ? key + '_effect' : key;
         this.player = player;
-        this.sensorSize = special === false ? 6 : action === 'achire' ? 12 : 18;
+        this.sensorSize = this.sensorer(special, action);
         this.special = special;
         this.collided = false;
         this.success = false;
@@ -52,16 +52,27 @@ class Particle {
         this.timer = this.setTimer(action, this.id);
         this.triggered = false;
         this.velocity = this.setVelocity(action);
-        this.effect.setScale(particle.isParticle === true && special === false ? 0.4 : this.action === 'achire' ? 0.75 : 0.75);
+        this.effect.setScale(this.scaler(particle.isParticle, special, this.action));
         this.effect.setTexture(idKey);
         this.effect.flipX = !player.flipX && !this.effect.flipX;
+    };
+    scaler = (particle, special, action) => {
+        if (particle && !special) {
+            return 0.5;
+        } else if (action === 'achire') {
+            return 0.75;
+        } else {
+            return 0.6; // 0.75
+        };
+    };
+    sensorer = (special, action) => {
+        return !special ? 6 : action === 'achire' ? 9 : 16;
     };
     sensorListener = (player, sensor) => {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [sensor],
             callback: (other) => {
                 if (other.gameObjectB?.properties?.wall === true) {
-                    console.log('Tracking Sensor in Particle Manager ----- PARRTICLE COLLIDED');
                     this.collided = true;
                     return;
                 };
@@ -156,7 +167,9 @@ class Particle {
     };
 
     spriteMaker(scene, player, key, particle, special) {
-        return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key).setScale(particle === true && special === false ? 0.4 : this.action === 'achire' ? 0.75 : 0.75).setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
+        return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key)
+            .setScale(this.scaler(particle, special, this.action))
+            .setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
     };
 };
 
@@ -211,7 +224,7 @@ export default class ParticleManager extends Phaser.Scene {
     };
 
     addEffect(action, player, key, special = false) {
-        let particle = this.particles.find((particle) => particle.effect?.active === false && particle.pID === player.particleID);
+        let particle = this.particles.find((particle) => particle.effect?.active === false && particle.pID === player.particleID && particle.key === key);
         if (particle) {
             particle.construct(particle, action, player, special, key);
             this.spawnEffect(particle);

@@ -290,7 +290,7 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
     // };
 
     async function handleHudOffset(e: number, side: string) {
-        const offset = roundToTwoDecimals(e, 2);
+        const offset = roundToTwoDecimals(e, 3);
         switch (side) {
             case 'left':
                 const newSettings = { 
@@ -423,13 +423,13 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
     {/* <div style={font('0.5em')}>[Aggressive AI Range: 0 - 100%]</div> */}
     return (
         <div class='center creature-heading' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '0' } : { 'margin-top': '50%' }}>
-            <h1 style={font('1.25em')}>Camera</h1>
+            {/* <h1 style={font('1.25em')}>Camera</h1>
             <div style={font('1em')}>
             <button class='highlight' onClick={() => handleCamera(Math.max(roundToTwoDecimals(Number(settings().positions.camera?.zoom - 0.05)), 0.5))}
             >-</button>
             Zoom: ({settings().positions.camera?.zoom})
             <button class='highlight' onClick={() => handleCamera(Math.min(roundToTwoDecimals(Number(settings().positions.camera?.zoom + 0.05)), 1.5))}
-            >+</button></div>
+            >+</button></div> */}
             <h1 style={font('1.25em')}>Castbar</h1>
             <div style={font('1em')}>
             <button class='highlight' onClick={() => handleCastbar('Height', settings().positions.castbar.barHeight - 2)}
@@ -704,9 +704,9 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
 
             <h1 style={font('1.25em')}>Solid (Overview) HUD</h1>
             <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.max(0, settings().positions.solidHud.right - 0.5)), 'solid')}>-</button>
+                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.max(0, settings().positions.solidHud.right - 0.125), 3), 'solid')}>-</button>
                 X: ({settings().positions.solidHud.right})
-                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.min(20, settings().positions.solidHud.right + 0.5)), 'solid')}>+</button>
+                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.min(20, settings().positions.solidHud.right + 0.125), 3), 'solid')}>+</button>
                 </div>
         </div>
     );

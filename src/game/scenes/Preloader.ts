@@ -32,6 +32,8 @@ export class Preloader extends Scene {
 
     init() {};
 
+    // tile-extruder --tileWidth 32 --tileHeight 32 --input ./AncientForestMainLev.png --output ./AncientForestMainLev-extruded.png
+
     preload() {
         ParticleManager.preload(this);
         Entity.preload(this);

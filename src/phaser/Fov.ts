@@ -1,7 +1,7 @@
 import { Mrpas } from "mrpas";
 import Tile from "./Tile";
 
-const radius = 9;
+const radius = 7;
 const fogAlpha = 0.15;
 const lightDropoff = [0.15, 0.3, 0.6, 0.7];
 const alphaPerMs = 0.004;

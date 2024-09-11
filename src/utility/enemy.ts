@@ -290,15 +290,15 @@ export type EnemySheet = {
     playerTrait: string;
 };
 const levelRanges = [
-    { range: [1, 2], min: 1, max: 2 },
-    { range: [3, 4], min: 2, max: 4 },
-    { range: [5, 6], min: 4, max: 6 },
-    { range: [7, 8], min: 5, max: 9 },
-    { range: [9, 10], min: 7, max: 12 },
-    { range: [11, 12], min: 8, max: 14 },
-    { range: [13, 14], min: 10, max: 16 },
-    { range: [15, 18], min: 12, max: 18 },
-    { range: [19, 20], min: 16, max: 20 }
+    { range: [1, 2], min: 1, max: 2 }, // { range: [1, 2], min: 1, max: 2 },  
+    { range: [3, 4], min: 1, max: 4 }, // { range: [3, 4], min: 2, max: 4 }, 
+    { range: [5, 6], min: 2, max: 6 }, // { range: [5, 6], min: 4, max: 6 }, 
+    { range: [7, 8], min: 4, max: 9 }, // { range: [7, 8], min: 5, max: 9 }, 
+    { range: [9, 10], min: 4, max: 12 }, // { range: [9, 10], min: 7, max: 12 }, 
+    { range: [11, 12], min: 6, max: 14 }, // { range: [11, 12], min: 8, max: 14 }, 
+    { range: [13, 14], min: 6, max: 16 }, // { range: [13, 14], min: 10, max: 16 }, 
+    { range: [15, 18], min: 6, max: 18 }, // { range: [15, 18], min: 12, max: 18 }, 
+    { range: [19, 20], min: 8, max: 20 } // { range: [19, 20], min: 16, max: 20 }, 
 ];
 function getEnemyLevels(level: number): { min: number, max: number } {
     let min: number = 0, max: number = 0; 
@@ -311,7 +311,7 @@ function getEnemyLevels(level: number): { min: number, max: number } {
         };
     };
     return { min, max };
-}; 
+};
 export function fetchEnemy(e: { enemyID: string; level: number; }): void {
     try { 
         const { min, max } = getEnemyLevels(e.level); 

@@ -190,8 +190,6 @@ export class Game extends Scene {
         };
         this.musicCombat = this.sound.add('combat', { volume: this?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.settings?.volume, loop: true });
-        this.musicStealth.play();
-        this.musicStealth.pause();
 
         this.logger = new Logger();
         this.logger.add('console', new ConsoleLogger());
@@ -371,7 +369,7 @@ export class Game extends Scene {
             if (this.combat) {
                 this.musicCombat.resume();
                 this.startCombatTimer();    
-            } else if (this.player.isStealth) {
+            } else if (this.player.isStealthing) {
                 this.musicStealth.resume();
             } else {
                 this.musicBackground.resume();
@@ -631,18 +629,18 @@ export class Game extends Scene {
         };
     };
     clearNonAggressiveEnemy = (): boolean => EventBus.emit('clear-enemy');
-    clearNPC = (): boolean => EventBus.emit('clear-npc'); 
+    clearNPC = (): boolean => EventBus.emit('clear-npc');
     combatEngaged = (bool: boolean) => {
         EventBus.emit('combat-engaged', bool);
         if (bool === true && this.combat !== bool) {
             this.musicCombat.play();
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
-            if (this.musicStealth.isPlaying) this.musicStealth.pause();
+            if (this.musicStealth.isPlaying) this.musicStealth.stop();
             this.startCombatTimer();
         } else if (bool === false) {
             this.musicCombat.stop();
-            if (this.player.isStealth) {
-                this.musicStealth.resume();
+            if (this.player.isStealthing) {
+                this.musicStealth.stop();
             } else {
                 this.musicBackground.resume();
             };
@@ -657,10 +655,12 @@ export class Game extends Scene {
     };
     resumeMusic = (): void => {
         if (!this.combat) {
-            if (this.player.isStealth) {
-                this.musicStealth.resume();
-            } else {
+            if (this.player.isStealthing) {
+                this.musicStealth.play();
+            } else if (this.musicBackground.isPaused) {
                 this.musicBackground.resume();
+            } else {
+                this.musicBackground.play();
             };
         } else {
             this.musicCombat.resume();
@@ -687,7 +687,7 @@ export class Game extends Scene {
         const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType, interactCount: npc.interactCount };
         EventBus.emit('setup-npc', data);    
     };
-    showDialog = (dialog: boolean): boolean => EventBus.emit('blend-game', { dialogTag: dialog }); // smallHud: dialog
+    showDialog = (dialogTag: boolean): boolean => EventBus.emit('blend-game', { dialogTag }); // smallHud: dialog
     summonEnemy = (val: number) => {
         let count = 0;
         for (let i = 0; i < this.enemies.length; i++) {
@@ -740,25 +740,6 @@ export class Game extends Scene {
             };
         };
     };
-    createTextBorder(text: NewText): GameObjects.Graphics {
-        const border = this.add.graphics();
-        border.lineStyle(4, 0x2A0134, 1);
-        border.strokeRect(text.x - text.width * text.origin.x - 2.5,text.y - text.height * text.origin.y - 2.5, text.width + 5, text.height + 5 );
-        this.add.existing(border);
-        return border;
-    };   
-    enemyUpdate = (): void => {
-        const enemies = this.sortEnemies(this.enemies);
-        for (let i = 0; i < enemies.length; i++) {
-            enemies[i].update();
-        };
-    };
-    npcUpdate = (): void => {
-        const npcs = this.sortNpcs(this.npcs);
-        for (let i = 0; i < npcs.length; i++) {
-            npcs[i].update();
-        };
-    };
     playerUpdate = (): void => {
         this.player.update(); 
         this.combatManager.combatMachine.process();
@@ -778,20 +759,6 @@ export class Game extends Scene {
             this.offsetY = Math.min(70, this.offsetY + 2.5);
         };
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
-    };
-    sortEnemies = (enemies: Enemy[]): Enemy[] => {
-        let sorted = [];
-        for (let i = 0; i < enemies.length; i++) {
-            enemies[i].inCombat === true ? sorted.unshift(enemies[i]) : sorted.push(enemies[i]);
-        };
-        return sorted;
-    };
-    sortNpcs = (npcs: NPC[]): NPC[] => {
-        let sorted = [];
-        for (let i = 0; i < npcs.length; i++) {
-            npcs[i].interacing === true ? sorted.unshift(npcs[i]) : sorted.push(npcs[i]);
-        };
-        return sorted;
     };
     startCombatTimer = (): void => {
         if (this.combatTimer) {
@@ -826,29 +793,14 @@ export class Game extends Scene {
             this.npcs[i].update();
         };
     };
-    // this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2)); 
+    // this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2));
     pause(): void {
         this.scene.pause();
-        if (!this.combat) {
-            this.musicBackground.pause();
-        } else {
-            this.musicCombat.pause();
-            this.musicStealth.pause();
-        };
+        this.pauseMusic();
     };
     resume(): void {
         this.scene.resume();
         if (this.settings?.music === false) return;
-        if (!this.combat) {
-            if (this.player.isStealth) {
-                this.musicStealth.resume();
-            } else if (this.musicBackground.isPaused) {
-                this.musicBackground.resume();
-            } else {
-                this.musicBackground.play();
-            }
-        } else {
-            this.musicCombat.resume();
-        };
+        this.resumeMusic();
     };
 };

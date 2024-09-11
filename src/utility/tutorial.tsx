@@ -57,6 +57,10 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
         blessPlayer: () => blessPlayer(),
         rebukePlayer: () => rebukePlayer(),
     };
+    function burning(mastery: string) {
+        const achre = mastery === 'achre' || mastery === 'agility' || mastery === 'kyosir';    
+        return achre ? 'achre' : 'caeren';
+    };
     createEffect(() => {
         if (tutorial() === 'deity') {
             setDeity(`<div class='typewriterContainer' key='phenomena'>
@@ -68,7 +72,7 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
                 It shears and sutures you; a sheath of torrid pain and pleases. <br /><br />
                 Silhouette of mirth, it seeks to perish and delight us,<br /> 
                 Its dripping nerve seizes your caer to flourish in detritus. <br /><br />
-                And yet perchance you seek to twist ${ascean()?.faith === 'Adherent' ? 'adherence' : 'devotion'} in its seams,<br /> To taste its ${ascean()?.mastery} burning at the resin of your dreams. <br /><br />
+                And yet perchance you seek to twist ${ascean()?.faith === 'Adherent' ? 'adherence' : 'devotion'} in its seams,<br /> To taste its ${burning(ascean()?.mastery)} burning at the resin of your dreams. <br /><br />
                 
                 <p class='${ascean()?.faith === 'Adherent' ? 'adherentText' : ascean()?.faith === 'Devoted' ? 'devotedText' : 'otherText'}'>
                 You become attuned to a halt and paltry whisper,<br /> 
@@ -310,7 +314,7 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
             </div>}
             {tutorial() === 'deity' && <div 
                 style={{ position: 'absolute', height: '100%', width: '100%', background: 'rgba(0, 0, 0, 1)', display: 'inline-flex', overflow: 'scroll', 'scrollbar-width': 'none' }}>
-                <Typewriter stringText={deity} styling={{ 'overflow-y': 'auto', 'scrollbar-width': 'none' }} performAction={performAction} />
+                <Typewriter stringText={deity} styling={{ 'overflow-y': 'auto', 'scrollbar-width': 'none', 'text-align' : 'center' }} performAction={performAction} />
             </div>}
             {tutorial() !== 'deity' && <button class='cornerBR gold highlight animate' style={{ bottom: '0', right: '0', 'font-weight': 700 }} onClick={() => exitTutorial()}>
                 {arrows.right} Exit

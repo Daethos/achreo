@@ -1306,7 +1306,7 @@ export default class Player extends Entity {
     };
     onArcUpdate = (dt) => {
         this.combatChecker(this.isArcing);
-        if (this.isArcing) this.castbar.update(dt, 'channel', 0xFF0000);
+        if (this.isArcing) this.castbar.update(dt, 'channel', 'DAMAGE');
         if (this.castbar.time >= PLAYER.DURATIONS.ARCING * 0.25 && this.castbar.time <= PLAYER.DURATIONS.ARCING * 0.26) {
             this.isAttacking = true;
         };
@@ -1456,7 +1456,7 @@ export default class Player extends Entity {
     onDevourUpdate = (dt) => {
         this.combatChecker(this.isCasting);
         if (this.isCasting === true) {
-            this.castbar.update(dt, 'channel', 0xA700FF);
+            this.castbar.update(dt, 'channel', 'TENDRIL');
         };
     };
     onDevourExit = () => {
@@ -1529,7 +1529,7 @@ export default class Player extends Entity {
         };
         this.combatChecker(this.isCasting);
         if (this.isCasting === true) {
-            this.castbar.update(dt, 'channel', 0xE0115F);
+            this.castbar.update(dt, 'channel', 'FYERUS');
         };
     };
     onFyerusExit = () => {
@@ -1553,7 +1553,7 @@ export default class Player extends Entity {
             this.castingSuccess = true;
             this.isCasting = false;
         };
-        if (this.isCasting === true) this.castbar.update(dt, 'cast', 0x00C200);
+        if (this.isCasting === true) this.castbar.update(dt, 'cast', 'HEAL');
     };
     onHealingExit = () => {
         if (this.castingSuccess === true) {
@@ -1689,7 +1689,7 @@ export default class Player extends Entity {
     };
     onKyrnaicismUpdate = (dt) => {
         this.combatChecker(this.isCasting);
-        if (this.isCasting) this.castbar.update(dt, 'channel', 0xA700FF);
+        if (this.isCasting) this.castbar.update(dt, 'channel', 'TENDRIL');
     };
     onKyrnaicismExit = () => {
         this.castbar.reset();
@@ -2134,7 +2134,7 @@ export default class Player extends Entity {
     onReconstituteUpdate = (dt) => {
         if (this.isMoving) this.isCasting = false;
         this.combatChecker(this.isCasting);
-        if (this.isCasting) this.castbar.update(dt, 'channel', 0x00FF00);
+        if (this.isCasting) this.castbar.update(dt, 'channel', 'HEAL');
     };
     onReconstituteExit = () => {
         this.castbar.reset();
@@ -2659,7 +2659,7 @@ export default class Player extends Entity {
         this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril');
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
-        if (this.reactiveBubble.charges <= 3) {
+        if (this.reactiveBubble.charges <= 0) {
             this.isModerating = false;
         };
     };
@@ -2960,6 +2960,8 @@ export default class Player extends Entity {
     onStealthEnter = () => {
         if (!this.isShimmering) this.isStealthing = true; 
         this.stealthEffect(true);    
+        this.scene.pauseMusic();
+        this.scene.resumeMusic();
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You step halfway into the land of hush and tendril.`
         });
@@ -2968,14 +2970,12 @@ export default class Player extends Entity {
     onStealthExit = () => { 
         this.isStealthing = false;
         this.stealthEffect(false);
+        this.scene.pauseMusic();
+        this.scene.resumeMusic();
     };
 
     stealthEffect = (stealth) => {
         if (stealth) {
-            if (this.scene.musicStealth.isPaused && !this.inCombat) {
-                this.scene.musicBackground.pause();
-                this.scene.musicStealth.play();
-            };
             const getStealth = (object) => {
                 object.setAlpha(0.5); 
                 object.setBlendMode(BlendModes.SCREEN);
@@ -2992,14 +2992,6 @@ export default class Player extends Entity {
             getStealth(this.spriteWeapon);
             getStealth(this.spriteShield);
         } else {
-            if (this.scene.musicStealth.isPlaying) {
-                this.scene.musicStealth.pause();
-                if (this.inCombat) {
-                    this.scene.musicCombat.play();
-                } else {
-                    this.scene.musicBackground.resume();
-                };
-            };
             const clearStealth = (object) => {
                 this.scene.tweens.killTweensOf(object);
                 object.setAlpha(1);
@@ -3754,6 +3746,7 @@ export default class Player extends Entity {
         if (this.isParrying) return 'parry';
         if (this.isPosturing) return 'posture';
         if (this.isRolling) return 'roll';
+        if (this.isThrusting) return 'thrust';
         return '';
     };
 
@@ -3781,7 +3774,6 @@ export default class Player extends Entity {
     playerActionSuccess = () => {
         if (this.particleEffect) {
             this.scene.particleManager.removeEffect(this.particleEffect.id);
-            // this.particleEffect.effect.destroy();
             this.particleEffect = undefined;
         } else {
             const action = this.checkPlayerAction();

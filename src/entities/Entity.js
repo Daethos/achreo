@@ -85,6 +85,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.hasMagic = false;
         this.hasBow = false;
 
+        this.isAbsorbing = false;
         this.isArcing = false;
         this.isChiomic = false;
         this.isEnveloping = false;
@@ -390,7 +391,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     movingDown = () => this.body.velocity.x === 0 && this.body.velocity.y > 0;
     movingUp = () => this.body.velocity.x === 0 && this.body.velocity.y < 0;
 
-    
     checkBow = (type) => type === 'Bow' || type === 'Greatbow';
     checkDamageType = (type, concern) => DAMAGE_TYPES[concern].includes(type);
     checkMeleeOrRanged = (weapon) => {

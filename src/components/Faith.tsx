@@ -11,7 +11,7 @@ export const FAITHS = [{
     iconography: '../assets/images/achreo-rising.jpg'
 }, {
     name: 'Daethos',
-    origin: "Founded by Laetrois Ath'Shaorah, mythic general during the War of the Ancients. Of unknown origin, Laetrois and his army of soliders descended from obscure lands in the nothren'eas, seen as a force entering in the later stages of the war against both armies led by Ilios and Ma'anre, respectively. Seen as saving humanity, the death of the general during the aftermath of the war led to his faithful companion, the Good Lorian to establish the Seyr in the City of Lor, later codifying the oratory nature of its principles in the Daethica.",
+    origin: "Founded by mythic general, Laetrois Ath'Shaorah, during the War of the Ancients. Of unknown origin, Laetrois and his army of soliders are believed to have descended from obscure lands in the nothren'eas; seen as a force entering in the later stages of the war against both armies led by Ilios and Ma'anre, respectively. Saving humanity, the death of the general during the aftermath of the war led to his faithful companion, the Good Lorian, to establish the Seyr in the City of Lor, later codifying the oratory nature of its principles into the Daethica.",
     quote: "Writhing, it warps to wrap round you, seething, \n Forms of shade simmer to dance upon your being",
     worshipers: 'Devoted',
     character: "To be Daethic is to become Atshaer Ascean, the Shaorahi, Laetrois Ath'Shaorah.",

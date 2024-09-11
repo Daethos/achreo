@@ -426,7 +426,8 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
         };
         try {
             console.log(`Upgrading ${highlighted().item?.name} of ${highlighted().item?.rarity} quality.`);
-            const matches = dragAndDropInventory().filter((item) => item.name === highlighted().item?.name && item?.rarity === highlighted().item?.rarity);
+            let match = JSON.parse(JSON.stringify(dragAndDropInventory()));
+            match = match.filter((item: Equipment) => item.name === highlighted().item?.name && item?.rarity === highlighted().item?.rarity);
             const data = {
                 asceanID: ascean()._id,
                 upgradeID: highlighted().item?._id,
@@ -434,7 +435,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                 upgradeType: highlighted().item?.itemType,
                 currentRarity: highlighted().item?.rarity,
                 inventoryType: inventoryType(),
-                upgradeMatches: matches,
+                upgradeMatches: match,
             };
             EventBus.emit('upgrade-item', data);
             EventBus.emit('play-equip');
@@ -544,9 +545,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
         <Show when={(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) || settings().asceanViews !== VIEWS.SETTINGS}>
             <Switch>
                 <Match when={settings().asceanViews === VIEWS.SETTINGS}>
-                <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
-                    { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'hidden' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 
-                }}>
+                <div class='playerWindow' style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: '0.25vw', overflow: 'hidden' }}>
                     <div class='' style={{ 'justify-content': 'center', 'align-items': 'center', 'text-align': 'center' }}>
                         <p style={{ color: 'gold', 'font-size': '1.25em' }}>Feedback</p>
                         <Form class='verticalCenter' style={{ 'text-wrap': 'balance' }}>
@@ -570,7 +569,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                 </div>
                 </Match>    
                 <Match when={settings().asceanViews === VIEWS.INVENTORY && expandedCharacter() === true}>
-                <div class='playerWindow creature-heading' style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'scroll' }}>
+                <div class='playerWindow creature-heading' style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: '0.25vw', overflow: 'scroll' }}>
                     { dimensions().ORIENTATION === 'landscape' ? ( <>
                         <img onClick={() => setShowOrigin(!showOrigin())} id='origin-pic' src={asceanPic()} alt={ascean().name} style={{ 'margin-top': '2.5%', 'margin-bottom': '2.5%' }} />
                         <h2 style={{ margin: '2%' }}>{combat()?.player?.description}</h2>
@@ -599,23 +598,21 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                 </div>
                 </Match>
                 <Match when={settings().asceanViews !== VIEWS.SETTINGS && settings().asceanViews !== VIEWS.FAITH && expandedCharacter() !== true}>
-                    <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
-                        { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'hidden' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 
-                    }}>
-                            {/* <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getInventory()}>
-                                <p>Get Eqp</p>
-                            </button> */}
-                            {/* <button class='highlight cornerTR' style={{ 'background-color': 'green', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getMoney()}>
-                                <p>Get Money</p>
-                            </button> */}
-                            {/* <button class='highlight cornerTR' style={{ 'background-color': 'gold', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }}onClick={() => getExperience()}>
-                                <p>Get Exp</p>
-                            </button> */}
-                            { ascean().experience >= ascean().level * 1000 && (
-                                <button class='highlight cornerTR' style={{ 'background-color': 'purple', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
-                                    <p class='animate' style={{ 'padding-left': '0.75em', 'padding-right': '0.75em' }}>Level++</p>
-                                </button>
-                            ) }
+                    <div class='playerWindow' style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: '0.25vw', overflow: 'hidden' }}>
+                        {/* <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => getInventory()}>
+                            <p>Get Eqp</p>
+                        </button> */}
+                        {/* <button class='highlight cornerTR' style={{ 'background-color': 'green', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => getMoney()}>
+                            <p>Get Money</p>
+                        </button> */}
+                        {/* <button class='highlight cornerTR' style={{ 'background-color': 'gold', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => getExperience()}>
+                            <p>Get Exp</p>
+                        </button> */}
+                        { ascean().experience >= ascean().level * 1000 && (
+                            <button class='highlight cornerTR' style={{ 'background-color': 'purple', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
+                                <p class='animate' style={{ 'padding-left': '0.75em', 'padding-right': '0.75em' }}>Level++</p>
+                            </button>
+                        ) }
                         <div class='gold' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5%', 'text-align': 'center' } : { margin: '5%', 'text-align': 'center' }}>
                             {combat()?.player?.name}
                         </div>
@@ -635,10 +632,8 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                     </div>
                 </Match>
                 <Match when={settings().asceanViews === VIEWS.FAITH}>
-                    <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? 
-                        { height: `${dimensions().HEIGHT * 0.8}px`, left: '0.5vw', overflow: 'scroll' } : { height: `${dimensions().HEIGHT * 0.31}`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 
-                    }}>
-                        <div style={dimensions().ORIENTATION === 'landscape' ? { 'margin-left': '0', 'margin-top': '7.5%', transform: 'scale(0.9)' } : { 'margin-left': '5%', transform: 'scale(0.75)', 'margin-top': '20%' }}>
+                    <div class='playerWindow' style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: '0.25vw', overflow: 'scroll' }}>
+                        <div style={{ 'margin-left': '0', 'margin-top': '7.5%', transform: 'scale(0.9)' }}>
                             <div class='creature-heading' style={{ 'margin-top': '-5%' }}>
                                 <h1>Blessings</h1>
                             </div>
@@ -664,9 +659,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
             </Switch>
         </Show>
         {/* <<----- WINDOW TWO -----> */}
-        <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? { height: `${dimensions().HEIGHT * 0.8}px`, left: '33.5vw', } : {
-            height: `${dimensions().HEIGHT * 0.31}px`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 'margin-top': '64%'
-        }}>
+        <div class='playerWindow' style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: '33.5vw' }}>
             { settings().asceanViews === VIEWS.CHARACTER ? (
                 <div class='center creature-heading' style={{ overflow: 'scroll', 'scrollbar-width': 'none' }}>
                     { dimensions().ORIENTATION === 'landscape' ? ( <>
@@ -720,7 +713,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
         </div>
         {/* <<----- WINDOW THREE ----->> */}
         <Show when={(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) || settings().asceanViews !== VIEWS.SETTINGS}>
-            <div class='playerWindow' style={dimensions().ORIENTATION === 'landscape' ? {height: `${dimensions().HEIGHT * 0.8}px`, left: '66.5vw' } : { height: `${dimensions().HEIGHT * 0.31}px`, left: '1vw', width: `${dimensions().WIDTH * 0.98}px`, 'margin-top': '129%' }}>
+            <div class='playerWindow' style={{height: `${dimensions().HEIGHT * 0.8}px`, left: '66.75vw'}}>
                 { settings().asceanViews === VIEWS.CHARACTER ? (
                     <div class='center wrap'> 
                         {createCharacterInfo(settings()?.characterViews)}
@@ -817,7 +810,6 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
             </div>
             </div>
         </Show>
-        
         <Show when={showTutorial()}>
         <Suspense fallback={<Puff color="gold"/>}>
             <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} /> 

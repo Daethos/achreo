@@ -178,6 +178,18 @@ const borderColor = (prayer: string): string => {
         case 'Avarice' : return 'greenyellow';
         case 'Denial' : return '#0cf';
         case 'Silence' : return 'black';
+        case 'Blunt': return '#fdf6d8';
+        case 'Pierce': return '#fdf6d8';
+        case 'Slash': return '#fdf6d8';
+        case 'Earth': return 'brown';
+        case 'Fire': return 'red';
+        case 'Frost': return 'blue';
+        case 'Lightning': return 'yellow';
+        case 'Righteous': return 'gold';
+        case 'Sorcery': return '#A700FF';
+        case 'Spooky': return 'purple';
+        case 'Wild': return 'green';
+        case 'Wind': return 'aqua';
         default: return 'white';
     };
 };

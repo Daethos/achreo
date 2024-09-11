@@ -1,6 +1,5 @@
 import Entity from "./Entity"; 
 import StateMachine, { States } from "../phaser/StateMachine";
-import HealthBar from "../phaser/HealthBar";  
 import { v4 as uuidv4 } from 'uuid';
 import { EventBus } from "../game/EventBus";
 let idCount = 0;
@@ -23,7 +22,7 @@ export default class NPC extends Entity {
         const types = ['Merchant-Alchemy', 'Merchant-Armor', 'Merchant-Smith', 'Merchant-Jewelry', 'Merchant-General', 'Merchant-Tailor', 'Merchant-Mystic', 'Merchant-Weapon'];
         this.isEnemy = false;
         this.npcType = types[this.id];
-        this.npcTarget = null;
+        this.npcTarget = undefined;
         this.interacting = false;
         this.isDefeated = true;
         this.interactCount = 0;
@@ -32,7 +31,6 @@ export default class NPC extends Entity {
         this.stateMachine
             .addState(States.IDLE, {
                 onEnter: this.onIdleEnter, 
-                onExit: this.onIdleExit,
             }) 
             .addState(States.AWARE, {
                 onEnter: this.onAwarenessEnter,
@@ -79,10 +77,12 @@ export default class NPC extends Entity {
 
     cleanUp() {
         EventBus.off('npc-fetched', this.npcFetched);
+        this.removeAllListeners();
+        this.removeInteractive();
     };
 
     createNPC = () => {
-        EventBus.on('npc-fetched', this.npcFetched);
+        EventBus.once('npc-fetched', this.npcFetched);
         EventBus.emit('fetch-npc', { enemyID: this.enemyID, npcType: this.npcType });
     };
 
@@ -91,7 +91,6 @@ export default class NPC extends Entity {
         this.ascean = e.game;
         this.health = e.combat.attributes.healthTotal;
         this.combatStats = e.combat;
-        this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health);
     };
 
     npcCollision = (npcSensor) => {
@@ -99,7 +98,6 @@ export default class NPC extends Entity {
             objectA: [npcSensor],
             callback: other => {
                 if (other.gameObjectB && other.gameObjectB.name === 'player' && !other.gameObjectB.inCombat && !this.interacting) {
-                    if (this.healthbar) this.healthbar.setVisible(true);
                     this.interacting = true;
                     this.interactCount++;
                     this.scene.setupNPC(this);
@@ -119,7 +117,6 @@ export default class NPC extends Entity {
             objectA: [npcSensor],
             callback: other => {
                 if (other.gameObjectB && other.gameObjectB.name === 'player' && this.interacting) {
-                    if (this.healthbar) this.healthbar.setVisible(false);
                     this.interacting = false;
                     this.stateMachine.setState(States.IDLE); 
                     other.gameObjectB.targets = other.gameObjectB.targets.filter(obj => obj.enemyID !== this.enemyID);
@@ -131,31 +128,15 @@ export default class NPC extends Entity {
         }); 
     }; 
 
-    onIdleEnter = () => {
-        this.anims.play('player_idle', true);
-    };  
-    onIdleExit = () => {
-        this.anims.stop('player_idle');
-    };  
-
-    onAwarenessEnter = () => {
-        this.anims.play('player_idle', true);
-        this.scene.showDialog(true);
-        this.setVelocity(0);
-    };
-    onAwarenessUpdate = (dt) => {
+    onIdleEnter = () => this.anims.play('player_idle', true);
+    onAwarenessEnter = () => this.scene.showDialog(true);
+    onAwarenessUpdate = (_dt) => {
         if (this.npcTarget) {
             const direction = this.npcTarget.position.subtract(this.position);
             if (direction.x < 0) { this.flipX = true } else { this.flipX = false };
         };
     };
-    onAwarenessExit = () => {
-        this.anims.stop('player_idle');
-        this.scene.showDialog(false);
-    };
+    onAwarenessExit = () => this.scene.showDialog(false);
 
-    update = () => {
-        this.stateMachine.update(this.scene.sys.game.loop.delta);
-        if (this.healthbar) this.healthbar.update(this);
-    };
+    update = () => this.stateMachine.update(this.scene.sys.game.loop.delta);
 };

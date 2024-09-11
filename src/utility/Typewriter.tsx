@@ -1,8 +1,6 @@
 import { Accessor, JSX, createEffect, createSignal } from 'solid-js';
 import Typed from "typed.js";
-
 type StyleMap = { [key: string]: JSX.CSSProperties };
-
 const styleMap: StyleMap = {
     rebukeButton: {
         float: "right",
@@ -55,7 +53,6 @@ const styleMap: StyleMap = {
         'font-variant': "small-caps",
     },
     godBorderConstitution: {
-        // 'animation': '3s glowing infinite',
         'margin-bottom': "5%",
         'width': "25em",
         'margin-left': '-87.5%',
@@ -65,7 +62,6 @@ const styleMap: StyleMap = {
         'box-shadow': "0 0 3em #fdf6d8",
     },
     godBorderStrength: {
-        // 'animation': '3s glowing infinite',
         'margin-bottom': "5%",
         'width': "25em",
         'margin-left': '-87.5%',
@@ -75,7 +71,6 @@ const styleMap: StyleMap = {
         'box-shadow': "0 0 3em #ff0000",
     },
     godBorderAgility: {
-        // 'animation': '3s glowing infinite',
         'margin-bottom': "5%",
         'width': "25em",
         'margin-left': '-87.5%',
@@ -85,7 +80,6 @@ const styleMap: StyleMap = {
         'box-shadow': "0 0 3em #00ff00",
     },
     godBorderAchre: {
-        // 'animation': '3s glowing infinite',
         'margin-bottom': "5%",
         'width': "25em",
         'margin-left': '-87.5%',
@@ -95,7 +89,6 @@ const styleMap: StyleMap = {
         'box-shadow': "0 0 3em blue",
     },
     godBorderCaeren: {
-        // 'animation': '3s glowing infinite',
         'margin-bottom': "5%",
         'width': "25em",
         'margin-left': '-87.5%',
@@ -105,7 +98,6 @@ const styleMap: StyleMap = {
         'box-shadow': "0 0 3em purple",
     },
     godBorderKyosir: {
-        // 'animation': '3s glowing infinite',
         'margin-bottom': "5%",
         'width': "25em",
         'margin-left': '-87.5%',
@@ -116,29 +108,33 @@ const styleMap: StyleMap = {
     },
     greenMarkup: {
         color: "#fdf6d8",
+        'margin-right':'0.5em',
         'text-shadow': "1.5px 1.5px 1.5px green",
-        'font-size': "20px",
+        'font-size': "16px",
         'font-weight': 700,
         display: 'inline-block'
     },
     blueMarkup: {
         color: "#fdf6d8",
+        'margin-right':'0.5em',
         'text-shadow': "1.5px 1.5px 1.5px blue",
-        'font-size': "20px",
+        'font-size': "16px",
         'font-weight': 700,
         display: 'inline-block'
     },
     purpleMarkup: {
         color: "#fdf6d8",
+        'margin-right':'0.5em',
         'text-shadow': "1.5px 1.5px 1.5px purple",
-        'font-size': "20px",
+        'font-size': "16px",
         'font-weight': 700,
         display: 'inline-block'
     },
     darkorangeMarkup: {
         color: "#fdf6d8",
+        // 'margin-right':'1em',
         'text-shadow': "1.5px 1.5px 1.5px darkorange",
-        'font-size': "20px",
+        'font-size': "16px",
         'font-weight': 700,
         display: 'inline-block'
     },
@@ -156,43 +152,44 @@ const styleMap: StyleMap = {
         'font-weight': 700,
         display: 'inline-block'
     },
+    highlight: {
+        color: '#fdf6d8', 
+        background: '#000', 
+        'border-radius': '0.25rem', 
+        padding: '0.25rem 1rem', 
+        margin: '0.5rem',
+    },
 };
-
 interface TypewriterProps {
     stringText: string | Accessor<any>;
     styling?: JSX.CSSProperties;
     performAction: (action: string) => void;
 };
 
-const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => {
+export default function Typewriter({ stringText, styling, performAction }: TypewriterProps) {
     const [el, setEl] = createSignal<HTMLDivElement | null>(null);
     let typed: Typed | null = null;
     (window as any).handleButton = (button: string) => performAction(button);
-
     const applyStyles = (element: any): void => {
         for (const [property, value] of Object.entries(styleMap[element?.attributes?.class?.value])) {
             element.style[property as any] = value;
         };
     };
-
     const applyEventListeners = (element: HTMLElement): void => {
         const functionName = element?.attributes?.["data-function-name" as any]?.value;
         element.setAttribute('onclick', `handleButton('${functionName}')`);
     };
-
     const styleHTML = (html: string) => {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, "text/html");
         const traverseElement = (element: any): void => {
             if (element?.attributes?.class?.value) applyStyles(element);
             if (element?.tagName === "BUTTON" && element?.attributes?.["data-function-name"]?.value) applyEventListeners(element as HTMLElement);
-            
             for (const child of element.children as any) traverseElement(child);
         };
         traverseElement(doc.body);
         return doc.body.innerHTML;
     };
-
     createEffect(() => {
         if (typed) (typed as Typed).destroy();
         if (el()) typewriter(stringText);
@@ -205,45 +202,11 @@ const Typewriter = ({ stringText, styling, performAction }: TypewriterProps) => 
             typeSpeed: 20,
             backSpeed: 0,
             showCursor: false,
-            // onComplete: () => {cancelScroll();},
         };
         typed = new Typed(el(), typedContent);
-        // const interval = setInterval(() => scrollToBottom(), 500);
-        // const scrollToBottom = () => {
-        //     console.log((el() as any).scrollTop, el()?.scrollHeight);
-        //     (el() as any).scrollTop = el()?.scrollHeight;
-        // };
-
-        // let scrollAnimationId: number | null = null;
-    
-        // const scrollToBottom = () => {
-        //     if (el()) {
-        //         console.log((el() as any).scrollTop, el()?.scrollHeight);
-        //         (el() as any).scrollTop = el()?.scrollHeight;
-        //         // setEl({...el(), scrollTop: el().scrollHeight});
-        //         scrollAnimationId = requestAnimationFrame(scrollToBottom);
-        //     };
-        // };
-        // scrollToBottom();
-
-        // const cancelScroll = () => {
-        //     if (scrollAnimationId) {
-        //         cancelAnimationFrame(scrollAnimationId);
-        //         scrollAnimationId = null;
-        //     };
-        // };
-
-        return () => {
-            (typed as Typed).destroy();
-            // clearInterval(interval);   
-            // cancelScroll(); 
-        };
-    }; // complete() ? 'center' : 
+        return () => (typed as Typed).destroy();
+    };
     return (
-        <div>
-        <div id="typewriter" ref={setEl} style={{...styling, 'text-align': 'left'}}></div>
-        </div>
+        <div id="typewriter" ref={setEl} style={{'text-align': 'left', ...styling}}></div>
     );
 };
-
-export default Typewriter;

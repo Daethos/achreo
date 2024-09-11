@@ -38,7 +38,7 @@ export default function CombatSettings({ combat, game }: { combat: Accessor<Comb
         let newTypes = []; 
         for (let i = 0; i < types.length; i++) {
             newTypes.push(
-                <p style={{ color: borderColor(types[i]), display: 'inline-block', margin: '0%', 'text-shadow': '0.065em 0.065em 0.065em #fdf6d8', 'font-size': '1.25em' }}>
+                <p style={{ color: borderColor(types[i]), display: 'inline-block', margin: '0%', 'text-shadow': '0.025em 0.025em 0.025em #fdf6d8', 'font-size': '1.4em' }}>
                     {`-> ${types[i]} <- ${(i + 1) % 4 === 0 ? '\n\n' : ''}`}    
                 </p>
             );
@@ -93,7 +93,7 @@ export default function CombatSettings({ combat, game }: { combat: Accessor<Comb
         : `${highlightCycle[game().selectedHighlight as keyof typeof highlightCycle].next}`;
     };
 
-    return <div class='center combatSettings' style={dimensions().ORIENTATION === 'landscape' ? { height: '40%', width: "50%", top: '50%', left: '25%', background: '#000', 'border': '0.1em solid #FFC700', 'border-radius': '0.25em', 'box-shadow': '0 0 0.1em 0.1em #FFC700' }: { top: '70%', left: '10%' }}>
+    return <div class='center combatSettings' style={dimensions().ORIENTATION === 'landscape' ? { height: '40%', width: "60%", top: '50%', left: '20%', background: '#000', 'border': '0.1em solid #FFC700', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700' }: { top: '70%', left: '10%' }}>
         <div class='center shadow' style={{ display: 'flex', 'flex-direction': 'row', 'margin-top': '1%', width: '100%', 'z-index': 1 }}>
         <For each={BUTTONS}>{((button) => {
             return <button class='highlight gold' style={{ 'z-index': 1 }} onClick={() => handleButton(button.direction)}>
@@ -112,13 +112,13 @@ export default function CombatSettings({ combat, game }: { combat: Accessor<Comb
             </Match>
             <Match when={game().selectedHighlight === 'Damage'}>
                 <div>
-                    <p class='shadow' style={highlightStyle}>Damage Style: {combat()?.weapons?.[0]?.damageType?.[game().selectedDamageTypeIndex]}</p>
+                    <p class='shadow' style={highlightStyle}>Damage Style: <span style={{ color: borderColor(combat()?.weapons?.[0]?.damageType?.[game().selectedDamageTypeIndex] as string) }}>{combat()?.weapons?.[0]?.damageType?.[game().selectedDamageTypeIndex]}</span></p>
                     <p style={optionStyle}>{mapTypes(combat()?.weapons?.[0]?.damageType)}</p>
                 </div>
             </Match>
             <Match when={game().selectedHighlight === 'Prayer'}>
                 <div class='center'>
-                    <p class='shadow' style={highlightStyle}>Current Prayer: {PRAYERS[game().selectedPrayerIndex]}</p>
+                    <p class='shadow' style={highlightStyle}>Current Prayer: <span style={{ color: borderColor(PRAYERS[game().selectedPrayerIndex]), 'text-shadow': '0.025em 0.025em 0.025em #fdf6d8' }}>{PRAYERS[game().selectedPrayerIndex]}</span></p>
                     <div style={optionStyle}>{mapTypes(PRAYERS)}</div>
                 </div>
             </Match>

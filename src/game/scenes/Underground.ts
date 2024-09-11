@@ -2,7 +2,6 @@ import Ascean from '../../models/ascean';
 import { Cameras, GameObjects, Scene, Tilemaps, Time } from 'phaser';
 import { Combat, initCombat } from '../../stores/combat';
 import { EventBus } from '../EventBus';
-import NewText from '../../phaser/NewText';
 import LootDrop from '../../matter/LootDrop';
 import ActionButtons from '../../phaser/ActionButtons';
 import { GameState } from '../../stores/game';
@@ -58,8 +57,6 @@ export class Underground extends Scene {
     background: GameObjects.Image;
     camera: Cameras.Scene2D.Camera;
     minimap: MiniMap;
-    // minimapBorder: GameObjects.Rectangle;
-    // minimapReset: GameObjects.Rectangle;
     rexUI: any;
     navMesh: any;
     navMeshPlugin: any;
@@ -75,15 +72,15 @@ export class Underground extends Scene {
     smallHud: SmallHud;
     combatManager: CombatManager;
     vision: any;
-    private fov?: any;
-    private groundLayer?: any;
-    private layer2?: any;
-    private layer3?: any;
-    private north: any;
-    private south: any;
-    private east: any;
-    private west: any;
-    private markers: any;
+    fov?: any;
+    groundLayer?: any;
+    layer2?: any;
+    layer3?: any;
+    north: any;
+    south: any;
+    east: any;
+    west: any;
+    markers: any;
 
     constructor () {
         super('Underground');
@@ -106,17 +103,14 @@ export class Underground extends Scene {
         this.offsetY = 0;
         this.tweenManager = {};
         this.markers = [];
-        // =========================== Camera =========================== \\
         let camera = this.cameras.main;
         camera.zoom = this.settings.positions?.camera?.zoom || 0.8; // 0.8 
-    // =========================== Ascean Test Map =========================== \\
         const map = this.make.tilemap({ key: 'underground' });
         this.map = map;
         this.add.rectangle(0, 0, 4096, 4096, 0x000000);
         const tileSize = 32;
         const castleInterior = map.addTilesetImage('Castle Interior', 'Castle Interior', tileSize, tileSize, 0, 0);
         const castleDecorations = map.addTilesetImage('Castle Decoratives', 'Castle Decoratives', tileSize, tileSize, 0, 0);
-        // const castleOutside = map.addTilesetImage('Castle Outside', 'Castle Outside', tileSize, tileSize, 0, 0);
         let layer1 = map.createLayer('Floors', castleInterior as Tilemaps.Tileset, 0, 0);
         let layer2 = map.createLayer('Stairs', castleInterior as Tilemaps.Tileset, 0, 0);
         let layer3 = map.createLayer('Decorations', castleDecorations as Tilemaps.Tileset, 0, 0);
@@ -124,9 +118,7 @@ export class Underground extends Scene {
         [layer1, layer2, layer3].forEach((layer) => {
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
-            layer?.forEachTile((tile) => {
-                tile = new Tile(tile);
-            });
+            layer?.forEachTile((tile) => {tile = new Tile(tile);});
         });
         this.groundLayer = layer1;
         this.layer2 = layer2;
@@ -146,18 +138,13 @@ export class Underground extends Scene {
             };
         });
         this.fov = new Fov(this, this.map, [this.groundLayer, this.layer2, this.layer3]);
-        // this.matter.world.createDebugGraphic(); 
         const objectLayer = map.getObjectLayer('navmesh');
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;
-        // const debugGraphics = this.add.graphics().setAlpha(0.75);
-        // this.navMesh.enableDebug(debugGraphics); 
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
         (this.sys as any).animatedTiles.init(this.map);
-        // this.player = this.registry.get('player');
         this.player = new Player({ scene: this, x: this.centerX, y: 64, texture: 'player_actions', frame: 'player_idle_0' });
-        map?.getObjectLayer('summons')?.objects.forEach((summon: any) => 
-            this.markers.push(summon));
+        map?.getObjectLayer('summons')?.objects.forEach((summon: any) => this.markers.push(summon));
 
     // =========================== Camera =========================== \\
         camera.startFollow(this.player, false, 0.1, 0.1);
@@ -195,8 +182,6 @@ export class Underground extends Scene {
         if (this.settings?.music === true) this.musicBackground.play();
         this.musicCombat = this.sound.add('combat', { volume: this?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.settings?.volume, loop: true });
-        this.musicStealth.play();
-        this.musicStealth.pause();
         this.postFxEvent();
     // =========================== Joystick =========================== \\
         this.joystick = new Joystick(this, 
@@ -351,7 +336,7 @@ export class Underground extends Scene {
             if (this.combat) {
                 this.musicCombat.resume();
                 this.startCombatTimer();    
-            } else if (this.player.isStealth) {
+            } else if (this.player.isStealthing) {
                 this.musicStealth.resume();
             } else {
                 this.musicBackground.resume();
@@ -429,7 +414,6 @@ export class Underground extends Scene {
         EventBus.on('Port', (direction: string) => {
             switch (direction) {
                 case 'North':
-                    // Search For South name Tile, set Position
                     this.player.setPosition(this.north.x, this.north.y + 32);
                     break;
                 case 'South':
@@ -439,7 +423,7 @@ export class Underground extends Scene {
                     this.player.setPosition(this.east.x, this.east.y + 32);
                     break;
                 case 'West':
-                    this.player.setPosition(this.west.x, this.north.y + 32);
+                    this.player.setPosition(this.west.x, this.west.y + 32);
                     break;
                 default: break;
             };
@@ -460,12 +444,8 @@ export class Underground extends Scene {
 
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
-        if (type === 'bloom') {
-            this.postFxPipeline.setBloomRadius(val);
-        };
-        if (type === 'threshold') {
-            this.postFxPipeline.setBloomThreshold(val);
-        };
+        if (type === 'bloom') this.postFxPipeline.setBloomRadius(val);
+        if (type === 'threshold') this.postFxPipeline.setBloomThreshold(val);
         if (type === 'chromatic') {
             if (val === true) {
                 this.postFxPipeline.setChromaticEnable();
@@ -473,9 +453,7 @@ export class Underground extends Scene {
                 this.postFxPipeline.setChromaticEnable(val);
             };
         };
-        if (type === 'chabIntensity') {
-            this.postFxPipeline.setChabIntensity(val);
-        };
+        if (type === 'chabIntensity') this.postFxPipeline.setChabIntensity(val);
         if (type === 'vignetteEnable') {
             if (val === true) {
                 this.postFxPipeline.setVignetteEnable();
@@ -483,13 +461,8 @@ export class Underground extends Scene {
                 this.postFxPipeline.setVignetteEnable(val);
             };
         };
-        if (type === 'vignetteStrength') {
-            this.postFxPipeline.setVignetteStrength(val);
-        };
-        if (type === 'vignetteIntensity') {
-            this.postFxPipeline.setVignetteIntensity(val);
-        };
-
+        if (type === 'vignetteStrength') this.postFxPipeline.setVignetteStrength(val);
+        if (type === 'vignetteIntensity') this.postFxPipeline.setVignetteIntensity(val);
         if (type === 'noiseEnable') {
             if (val === true) {
                 this.postFxPipeline.setNoiseEnable();
@@ -497,13 +470,8 @@ export class Underground extends Scene {
                 this.postFxPipeline.setNoiseEnable(val);
             };
         };
-        if (type === 'noiseSeed') {
-            this.postFxPipeline.setNoiseSeed(val);
-        };
-        if (type === 'noiseStrength') {
-            this.postFxPipeline.setNoiseStrength(val);
-        };
-
+        if (type === 'noiseSeed') this.postFxPipeline.setNoiseSeed(val);
+        if (type === 'noiseStrength') this.postFxPipeline.setNoiseStrength(val);
         if (type === 'vhsEnable') {
             if (val === true) {
                 this.postFxPipeline.setVHSEnable();
@@ -511,10 +479,7 @@ export class Underground extends Scene {
                 this.postFxPipeline.setVHSEnable(val);
             };
         };
-        if (type === 'vhsStrength') {
-            this.postFxPipeline.setVhsStrength(val);
-        };
-
+        if (type === 'vhsStrength') this.postFxPipeline.setVhsStrength(val);
         if (type === 'scanlinesEnable') {
             if (val === true) {
                 this.postFxPipeline.setScanlinesEnable();
@@ -522,10 +487,7 @@ export class Underground extends Scene {
                 this.postFxPipeline.setScanlinesEnable(val);
             };
         };
-        if (type === 'scanStrength') {
-            this.postFxPipeline.setScanStrength(val);
-        };
-        
+        if (type === 'scanStrength') this.postFxPipeline.setScanStrength(val);
         if (type === 'crtEnable') {
             if (val === true) {
                 this.postFxPipeline.setCRTEnable();
@@ -533,13 +495,8 @@ export class Underground extends Scene {
                 this.postFxPipeline.setCRTEnable(val);
             };
         };
-        if (type === 'crtHeight') {
-            this.postFxPipeline.crtHeight = val;
-        };
-        if (type === 'crtWidth') {
-            this.postFxPipeline.crtWidth = val;
-        };
-
+        if (type === 'crtHeight') this.postFxPipeline.crtHeight = val;
+        if (type === 'crtWidth') this.postFxPipeline.crtWidth = val;
         if (type === 'enable') {
             if (val === true) {
                 this.setPostFx(this.settings?.postFx, true);
@@ -624,18 +581,18 @@ export class Underground extends Scene {
         };
     };
     clearNonAggressiveEnemy = (): boolean => EventBus.emit('clear-enemy');
-    clearNPC = (): boolean => EventBus.emit('clear-npc'); 
+    clearNPC = (): boolean => EventBus.emit('clear-npc');
     combatEngaged = (bool: boolean) => {
         EventBus.emit('combat-engaged', bool);
         if (bool === true && this.combat !== bool) {
             this.musicCombat.play();
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
-            if (this.musicStealth.isPlaying) this.musicStealth.pause();
+            if (this.musicStealth.isPlaying) this.musicStealth.stop();
             this.startCombatTimer();
         } else if (bool === false) {
             this.musicCombat.stop();
-            if (this.player.isStealth) {
-                this.musicStealth.resume();
+            if (this.player.isStealthing) {
+                this.musicStealth.stop();
             } else {
                 this.musicBackground.resume();
             };
@@ -650,10 +607,12 @@ export class Underground extends Scene {
     };
     resumeMusic = (): void => {
         if (!this.combat) {
-            if (this.player.isStealth) {
-                this.musicStealth.resume();
-            } else {
+            if (this.player.isStealthing) {
+                this.musicStealth.play();
+            } else if (this.musicBackground.isPaused) {
                 this.musicBackground.resume();
+            } else {
+                this.musicBackground.play();
             };
         } else {
             this.musicCombat.resume();
@@ -680,10 +639,10 @@ export class Underground extends Scene {
         const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType, interactCount: npc.interactCount };
         EventBus.emit('setup-npc', data);    
     };
-    showDialog = (dialog: boolean): boolean => EventBus.emit('blend-game', { dialogTag: dialog }); // smallHud: dialog
+    showDialog = (dialogTag: boolean): boolean => EventBus.emit('blend-game', { dialogTag });
     createEnemy = () => {
         const marker = this.markers[Math.floor(Math.random() * this.markers.length)];
-        console.log(`%c Coordinates of Enemy: ${marker.x} ${marker.y}`, 'coior:red');
+        // console.log(`%c Coordinates of Enemy: ${marker.x} ${marker.y}`, 'coior:red');
         const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0' });
         this.enemies.push(enemy);
         return enemy;
@@ -699,13 +658,6 @@ export class Underground extends Scene {
         };
     };
     // ============================ Player ============================ \\
-    createTextBorder(text: NewText): GameObjects.Graphics {
-        const border = this.add.graphics();
-        border.lineStyle(4, 0x2A0134, 1);
-        border.strokeRect(text.x - text.width * text.origin.x - 2.5,text.y - text.height * text.origin.y - 2.5, text.width + 5, text.height + 5 );
-        this.add.existing(border);
-        return border;
-    };   
     playerUpdate = (): void => {
         this.player.update(); 
         this.combatManager.combatMachine.process();
@@ -726,9 +678,7 @@ export class Underground extends Scene {
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };
     startCombatTimer = (): void => {
-        if (this.combatTimer) {
-            this.combatTimer.destroy();
-        };
+        if (this.combatTimer) this.combatTimer.destroy();
         this.combatTimer = this.time.addEvent({
             delay: 1000,
             callback: () => {
@@ -741,9 +691,7 @@ export class Underground extends Scene {
         });
     };
     stopCombatTimer = (): void => {
-        if (this.combatTimer) {
-            this.combatTimer.destroy();
-        };
+        if (this.combatTimer) this.combatTimer.destroy();
         this.combatTime = 0;
         EventBus.emit('update-combat-timer', this.combatTime);
     };
@@ -771,26 +719,11 @@ export class Underground extends Scene {
     };
     pause(): void {
         this.scene.pause();
-        if (!this.combat) {
-            this.musicBackground.pause();
-        } else {
-            this.musicCombat.pause();
-            this.musicStealth.pause();
-        };
+        this.pauseMusic();
     };
     resume(): void {
         this.scene.resume();
         if (this.settings?.music === false) return;
-        if (!this.combat) {
-            if (this.player.isStealth) {
-                this.musicStealth.resume();
-            } else if (this.musicBackground.isPaused) {
-                this.musicBackground.resume();
-            } else {
-                this.musicBackground.play();
-            }
-        } else {
-            this.musicCombat.resume();
-        };
+        this.resumeMusic();
     };
 };

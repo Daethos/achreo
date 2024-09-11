@@ -16,10 +16,21 @@ import { getRarityColor, sellRarity } from '../utility/styling';
 import ItemModal from '../components/ItemModal';
 import { getQuests } from '../utility/quests';
 import { namedNameCheck } from '../utility/player';
-
+const GET_FORGE_COST = {
+    Common: 1,
+    Uncommon: 3,
+    Rare: 12,
+    Epic: 60,
+};
+const GET_NEXT_RARITY = {
+    Common: "Uncommon",
+    Uncommon: 'Rare',
+    Rare: "Epic",
+    Epic: "Legendary",
+};
 interface DialogOptionProps {
     option: DialogNodeOption;
-    onClick: (nextNodeId: string | null) => void;
+    onClick: (nextNodeId: string | undefined) => void;
     actions: { [key: string]: Function };
     setPlayerResponses: Setter<string[]>;
     setKeywordResponses: Setter<string[]>;
@@ -43,7 +54,7 @@ const DialogOption = ({ option, onClick, actions, setPlayerResponses, setKeyword
                 // return;
             };
         };
-        onClick(option.next);
+        onClick(option.next as string);
         setShowDialogOptions(false);
     };
 
@@ -143,8 +154,8 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
         return ascean[newKey] !== undefined ? ascean[newKey] : combat[newKey] !== undefined ? combat[newKey] : game()[newKey as keyof typeof game];
     };
   
-    const handleOptionClick = (nextNodeId: string | null) => {
-        if (nextNodeId === null) {
+    const handleOptionClick = (nextNodeId: string | undefined) => {
+        if (nextNodeId === undefined) {
             EventBus.emit('blend-game', { currentNodeIndex: 0 });
         } else {
             let nextNodeIndex = dialogNodes.findIndex((node: any) => node.id === nextNodeId);
@@ -201,10 +212,11 @@ interface StoryDialogProps {
 };
 
 export default function Dialog({ ascean, asceanState, combat, game }: StoryDialogProps) {
+    const [forgeModalShow, setForgeModalShow] = createSignal(false); 
     const [influence, setInfluence] = createSignal(combat()?.weapons[0]?.influences?.[0]);
     const [persuasionString, setPersuasionString] = createSignal<string>('');
     const [luckoutString, setLuckoutString] = createSignal<string>('');
-    const [upgradeItems, setUpgradeItems] = createSignal<any | null>(null);
+    const [upgradeItems, setUpgradeItems] = createSignal<any | undefined>(undefined);
     const [namedEnemy, setNamedEnemy] = createSignal<boolean>(false);
     const [playerResponses, setPlayerResponses] = createSignal<string[]>([]);
     const [keywordResponses, setKeywordResponses] = createSignal<string[]>([]);
@@ -216,12 +228,15 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [persuasionTraits, setPersuasionTraits] = createSignal<any>([]);
     const [enemyArticle, setEnemyArticle] = createSignal<any>('');
     const [merchantTable, setMerchantTable] = createSignal<any>({});
+    const [blacksmithSell, setBlacksmithSell] = createSignal<boolean>(false);
     const [region, setRegion] = createSignal<any>(regionInformation['Astralands']);
     const [showSell, setShowSell] = createSignal<boolean>(false);
     const [sellItem, setSellItem] = createSignal<Equipment | undefined>(undefined);
     const [showItem, setShowItem] = createSignal<boolean>(false);
     const [quests, setQuests] = createSignal<any[]>([]);
     const [showQuests, setShowQuests] = createSignal<boolean>(false);
+    const [forge, setForge] = createSignal<Equipment | undefined>(undefined);
+    const [forgeSee, setForgeSee] = createSignal<boolean>(false);
     const dimensions = useResizeListener();
     const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
@@ -236,20 +251,11 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         checkLuckout(game());
         checkPersuasion(game());
         checkInfluence(ascean);
+        checkUpgrades();
     });
 
     createEffect(() => setMerchantTable(game().merchantEquipment));
     
-    onMount(() => {
-        if (game().inventory.inventory.length < 3) return;
-        const matchedItem = canUpgrade(game()?.inventory.inventory);
-        if (matchedItem) {
-            setUpgradeItems(matchedItem);
-        } else {
-            setUpgradeItems(null);
-        };
-    });
-
     const actions = {
         getCombat: () => engageCombat(combat()?.enemyID),
         getArmor: async () => await getLoot('armor'),
@@ -260,7 +266,19 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         getWeapon: async () => await getLoot('physical-weapon'),
         getFlask: () => refillFlask(),
         getSell: () => setShowSell(!showSell()),
+        setBlacksmithSell: () => setBlacksmithSell(!blacksmithSell()),
+        setForgeSee: () => setForgeSee(!forgeSee()),
     }; 
+
+    function checkUpgrades() {
+        if (game().inventory.inventory.length < 3) return;
+        const matchedItem = canUpgrade(game()?.inventory.inventory);
+        if (matchedItem) {
+            setUpgradeItems(matchedItem);
+        } else {
+            setUpgradeItems(undefined);
+        };
+    };
 
     const checkEnemy = (enemy: Ascean) => {
         if (!enemy) return;
@@ -463,7 +481,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         };
     }; 
 
-    const canUpgrade = (inventory: any[]): any[] | null => {
+    const canUpgrade = (inventory: any[]): any[] | undefined => {
         const groups: Record<string, any[]> = {};
         inventory.forEach(item => {
             const key = `${item?.name}-${item?.rarity}`;
@@ -479,7 +497,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 };
             };
         };
-        return matches.length > 0 ? matches : null;
+        return matches.length > 0 ? matches : undefined;
     };
 
     const checkingLoot = (): void => {
@@ -569,44 +587,115 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         EventBus.emit('alert', { header: 'Selling Item In Inventory', body: `You have sold your ${sellItem()?.name} for ${sellRarity(sellItem()?.rarity as string)}` })
         EventBus.emit('sell-item', sellItem());    
     };
+    async function handleUpgradeItem() {
+        let type = '';
+        if (forge()?.grip) type = 'weaponOne';
+        if (forge()?.name.includes('Hood') || forge()?.name.includes('Helm') || forge()?.name.includes('Mask')) type = 'helmet';
+        if (forge()?.name.includes('Cuirass') || forge()?.name.includes('Robes') || forge()?.name.includes('Armor')) type = 'chest';
+        if (forge()?.name.includes('Greaves') || forge()?.name.includes('Pants') || forge()?.name.includes('Legs')) type = 'legs';
+        if (forge()?.name.includes('Amulet') || forge()?.name.includes('Necklace')) type = 'amulet';
+        if (forge()?.name.includes('Ring')) type = 'ringOne';
+        if (forge()?.name.includes('Trinket')) type = 'trinket';
+        if (forge()?.type.includes('Shield')) type = 'shield';
 
+        if (forge()?.rarity === 'Common' && ascean()?.currency?.gold < GET_FORGE_COST.Common) {
+            return;
+        } else if (forge()?.rarity === 'Uncommon' && ascean()?.currency?.gold < 3) {
+            return;
+        } else if (forge()?.rarity === 'Rare' && ascean()?.currency?.gold < 12) {
+            return;
+        } else if (forge()?.rarity === 'Epic' && ascean()?.currency?.gold < 60) {
+            return;
+        } else if (forge()?.rarity === 'Legendary' && ascean()?.currency?.gold < 300) {
+            return;
+        } else if (forge()?.rarity === 'Mythic' && ascean()?.currency?.gold < 1500) {
+            return;
+        } else if (forge()?.rarity === 'Divine' && ascean()?.currency?.gold < 7500) {
+            return;
+        } else if (forge()?.rarity === 'Ascended' && ascean()?.currency?.gold < 37500) {
+            return;
+        } else if (forge()?.rarity === 'Godly' && ascean()?.currency?.gold < 225000) {
+            return;
+        };
+        try {
+            console.log(`Upgrading ${forge()?.name} of ${forge()?.rarity} quality.`);
+            let match = JSON.parse(JSON.stringify(game().inventory.inventory));
+            match = match.filter((item: Equipment) => item.name === forge()?.name && item?.rarity === forge()?.rarity);
+            const data = {
+                asceanID: ascean()._id,
+                upgradeID: forge()?._id,
+                upgradeName: forge()?.name,
+                upgradeType: forge()?.itemType,
+                currentRarity: forge()?.rarity,
+                inventoryType: type,
+                upgradeMatches: match,
+            };
+            EventBus.emit('upgrade-item', data);
+            EventBus.emit('play-equip');
+            setForgeModalShow(false);
+        } catch (err) {
+            console.warn(err, '<- Error upgrading item');
+        };
+    };
+
+    const currentItemStyle = (rarity: string): JSX.CSSProperties => {
+        return {border: `0.15em solid ${getRarityColor(rarity)}`, 'background-color': 'transparent'};
+    };
+
+    function itemForge(item: Equipment) {
+        console.log(item, 'Item to Prospectively Forge');
+        setForge(item);
+        setForgeModalShow(true);
+    };
+    function performAction(actionName: string) {
+        const actionFunction = actions[actionName as keyof typeof actions];
+        if (actionFunction) {
+            actionFunction();
+        };
+    };
     return (
         <Show when={combat().computer}>
-        <div style={{ 
-            position: 'absolute', height: '50%', width: '60%', left: '20%', background: '#000', top: '40%', overflow: 'scroll', 'scrollbar-width': 'none',
-            border: '0.1em solid gold', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700', display: 'inline-flex' 
-        }}>
+        <div class='dialog-window'>
             <div class='wrap' style={{ width: combat().isEnemy ? '75%' : '100%', padding: '3%', height: 'auto' }}> 
             <div style={{ color: 'gold', 'font-size': '1em', 'margin-bottom': "5%" }}>
                 <div style={{ display: 'inline' }}>
                     <img src={`../assets/images/${combat()?.computer?.origin}-${combat()?.computer?.sex}.jpg`} alt={combat()?.computer?.name} style={{ width: '10%', 'border-radius': '50%', border: '0.1em solid #fdf6d8' }} class='origin-pic' />
-                    {' '}<div style={{ display: 'inline' }}>{combat()?.computer?.name} <p style={{ display: 'inline', 'font-size': '0.75em' }}>[Level {combat()?.computer?.level}]</p>
-                    <br />
-                    </div>
+                    {' '}<div style={{ display: 'inline' }}>{combat()?.computer?.name} <p style={{ display: 'inline', 'font-size': '0.75em' }}>[Level {combat()?.computer?.level}]</p><br /></div>
                 </div>
             </div>
-            { combat().npcType === 'Merchant-Smith' ? (
-                <>
-                    <Typewriter stringText={`"You've come for forging? I only handle chiomic quality and above. Check my rates and hand me anything you think worth's it. Elsewise I trade with the Armorer if you want to find what I've made already."
-                        <br /><br />
-                        Hanging on the wall is a list of prices for the various items you can forge. The prices are based on the quality. <br /><br />
-                        <p class='greenMarkup'>Kyn'gian: 1g</p>  
-                        <p class='blueMarkup'>Senic: 3g</p> 
-                        <p class='purpleMarkup'>Kyris: 12g</p>  
-                        <p class='darkorangeMarkup'>Sedyrus: 60g</p>`} 
-                    styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
-                    <br />
-                    { upgradeItems() ? (
-                        upgradeItems().map((item: any) => {
-                            console.log(item, 'Item!');
-                            return (
-                                <div style={{ display: 'inline-block', 'margin-right': '5%', 'margin-bottom': '10%' }}>
-                                    {/* <Inventory inventory={item} bag={gameState.player.inventory} ascean={gameState.player} blacksmith={true} index={index} /> */}
-                                </div>
-                            )
-                        })
-                    ) : ( '' ) }
-                    <br />
+            { combat().npcType === 'Merchant-Smith' ? ( <>
+                <Typewriter stringText={`"You've come for forging? I only handle chiomic quality and above. Check my rates and hand me anything you think worth's it. Elsewise I trade with the Armorer if you want to find what I've made already."
+                    <br /><br />
+                    Hanging on the wall is a list of prices for the various items you can forge. The prices are based on the quality. <br />
+                    <p class='greenMarkup'>[Achiom - 1g]</p>
+                    <p class='blueMarkup'>[Senic - 3g]</p>
+                    <p class='purpleMarkup'>[Kyr - 12g]</p>
+                    <p class='darkorangeMarkup'>[Sedyreal - 60g]</p>
+                    <br /><button class='highlight' data-function-name='setForgeSee'>See if any of your equipment can be Forged?</button>
+                    <br /><button class='highlight' data-function-name='getSell'>Sell your equipment to the Traveling Blacksmith?</button>
+                `} styling={{ margin: '0 5%', width: '90%', overflow: 'auto', 'scrollbar-width': 'none', 'font-size':'0.9em' }} performAction={performAction} />
+                <br />
+                {forgeSee() && upgradeItems() ? ( <div class='playerInventoryBag center' style={{ width: '65%', 'margin-bottom': '5%' }}> 
+                    {upgradeItems().map((item: any) => {
+                        console.log(item, 'Item!');
+                        if (item === undefined || item === undefined) return;
+                        return (
+                            <div class='center' onClick={() => itemForge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: '5%',padding: '0.25em',width: 'auto' }}>
+                                <img src={item?.imgUrl} alt={item?.name} />
+                                Forge
+                            </div>
+                        );
+                    })}
+                </div> ) : forgeSee() ? ( 'There is nothing in your inventory to be forged.' ) : ( '' )}
+                <br />
+                {blacksmithSell() && <div class='playerInventoryBag center' style={{ width: '65%', 'margin-bottom': '5%' }}>
+                    <For each={game()?.inventory.inventory}>{(item) => {
+                        if (item === undefined || item === undefined) return;
+                        return <div class='center' onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: '5.5%',padding: '0.25em',width: 'auto' }}>
+                            <img src={item?.imgUrl} alt={item?.name} />
+                        </div>;
+                    }}</For>
+                </div>}
                 </>
             ) : combat().npcType === 'Merchant-Alchemy' ? (
                 <> 
@@ -810,24 +899,34 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                     setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions}
                 />
             ) : ( '' ) } 
-            { combat().npcType !== '' ? (
-                <Currency ascean={ascean} />
-            ) : ( '' ) }
-            { merchantTable()?.length > 0 ? (
-                <>
-                {/* <button class='highlight' onClick={() => setShowSell(!showSell())}>
-                    Sell to {combat().computer?.name}?
-                </button> */}
-                <MerchantTable table={merchantTable} game={game} ascean={ascean}  />
-                </>
-            ) : ( '' ) }
+            {combat().npcType !== '' && <Currency ascean={ascean} />}
+            {merchantTable()?.length > 0 && <MerchantTable table={merchantTable} game={game} ascean={ascean} />}
             </div>
-            { combat().isEnemy ? (
-                <div class='story-dialog-options' style={{ width: '25%', margin: 'auto', 'text-align': 'center', overflow: 'scroll', height: 'auto', 'scrollbar-width': 'none' }}>
-                    <DialogButtons options={game().dialog} setIntent={handleIntent} />
-                </div>
-            ) : ( '' ) }
+            {combat().isEnemy && <div class='story-dialog-options' style={{ width: '25%', margin: 'auto', 'text-align': 'center', overflow: 'scroll', height: 'auto', 'scrollbar-width': 'none' }}>
+                <DialogButtons options={game().dialog} setIntent={handleIntent} />
+            </div>}
         </div>
+        <Show when={forgeModalShow()}> 
+            <div class='modal'>
+                <div class='border superCenter wrap' style={{ width: '50%' }}>
+                <p class='center wrap' style={{ color: "red", 'font-size': "1.25em", margin: '3%' }}>
+                    Do You Wish To Collapse Three {forge()?.name} into one of {GET_NEXT_RARITY[forge()?.rarity as string as keyof typeof GET_NEXT_RARITY]} Quality for {GET_FORGE_COST[forge()?.rarity as string as keyof typeof GET_FORGE_COST]} Gold?
+                </p>
+                <div>
+                    <button class='highlight' style={{ color: 'gold', 'font-weight': 600, 'font-size': "1.5em" }} onClick={() => handleUpgradeItem()}>
+                        {forge()?.rarity && GET_FORGE_COST[forge()?.rarity as string as keyof typeof GET_FORGE_COST]} Gold Forge
+                    </button>    
+                    <div style={{ color: "gold", 'font-weight': 600 }}>
+                        <p style={{ 'font-size': '2em' }}>
+                            (3) <img src={forge()?.imgUrl} alt={forge()?.name} style={currentItemStyle(forge()?.rarity as string)} /> 
+                            {' => '} <img src={forge()?.imgUrl} alt={forge()?.name} style={currentItemStyle(GET_NEXT_RARITY[forge()?.rarity as string as keyof typeof GET_NEXT_RARITY])} />
+                            </p> 
+                    </div>
+                <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setForgeModalShow(false)}>x</button>
+                </div>
+                </div>
+            </div>
+        </Show>
         <Show when={showSell()}>
             <div class='modal' style={{ background: 'rgba(0, 0, 0, 0.5)' }}>
                 <div class='creature-heading' style={{ 
@@ -849,7 +948,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 </div>
                 <div class='playerInventoryBag center' style={{ width: '65%', 'margin-bottom': '5%' }}> 
                     <For each={game()?.inventory.inventory}>{(item, _index) => {
-                        if (item === undefined || item === null) return;
+                        if (item === undefined || item === undefined) return;
                         return (
                             <div class='center' onClick={() => setItem(item)} style={{ 
                                 ...getItemStyle(item?.rarity as string), 

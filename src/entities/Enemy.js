@@ -1140,7 +1140,7 @@ export default class Enemy extends Entity {
     onAstraveExit = () => {
         if (this.castingSuccess === true && this.checkPlayerResist() === true) {
             this.aoe = new AoE(this.scene, 'astrave', 1, true, this, false, this.scene.player);    
-            EventBus.emit('special-combat-text', {
+            EventBus.emit('enemy-combat-text', {
                 computerSpecialDescription: `${this.ascean.name} unearths the winds and lightning from the land of hush and tendril.`
             });
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
@@ -1244,7 +1244,7 @@ export default class Enemy extends Entity {
     onIlirechExit = () => {
         if (this.castingSuccess === true && this.checkPlayerResist() === true) {
             this.chiomic(100);
-            EventBus.emit('special-combat-text', {
+            EventBus.emit('enemy-combat-text', {
                 computerSpecialDescription: `${this.ascean.name} rips into this world with Ilian tendrils entwining.`
             });
             this.scene.sound.play('fire', { volume: this.scene.settings.volume });
@@ -1284,7 +1284,7 @@ export default class Enemy extends Entity {
     onKyrnaicismUpdate = (dt) => {
         this.counterCheck();
         this.combatChecker(this.isCasting);
-        if (this.isCasting === true) this.castbar.update(dt, 'channel', 0xA700FF, this.x, this.y);
+        if (this.isCasting === true) this.castbar.update(dt, 'channel', 'TENDRIL');
     };
     onKyrnaicismExit = () => {
         this.channelCount = 0;
@@ -1410,7 +1410,7 @@ export default class Enemy extends Entity {
     onReconstituteUpdate = (dt) => {
         this.counterCheck();
         this.combatChecker(this.isCasting);
-        if (this.isCasting) this.castbar.update(dt, 'channel', 0x00FF00);
+        if (this.isCasting) this.castbar.update(dt, 'channel', 'HEAL');
     };
     onReconstituteExit = () => {
         this.castbar.reset();
@@ -1559,7 +1559,7 @@ export default class Enemy extends Entity {
     onDevourUpdate = (dt) => {
         this.counterCheck();
         this.combatChecker(this.isCasting);
-        if (this.isCasting === true) this.castbar.update(dt, 'channel', 0xA700FF, this.x, this.y);
+        if (this.isCasting === true) this.castbar.update(dt, 'channel', 'TENDRIL');
     };
     onDevourExit = () => {
         this.channelCount = 0;
@@ -1692,7 +1692,7 @@ export default class Enemy extends Entity {
                 this.reactiveName = '';
             };
         }, undefined, this);
-        EventBus.emit('special-combat-text', {
+        EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} seeks to menace oncoming attacks.`
         });
     };
@@ -1778,7 +1778,7 @@ export default class Enemy extends Entity {
                 this.reactiveName = '';
             };
         }, undefined, this);
-        EventBus.emit('special-combat-text', {
+        EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} seeks to multifare oncoming attacks.`
         });
     };
@@ -1820,7 +1820,7 @@ export default class Enemy extends Entity {
                 this.reactiveName = '';
             };
         }, undefined, this);
-        EventBus.emit('special-combat-text', {
+        EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} seeks to mystify oncoming attacks.`
         });
     };
@@ -2238,7 +2238,13 @@ export default class Enemy extends Entity {
                 iteration++;
                 if (iteration === 4) {
                     iteration = 0;
-                    this.isFeared = false;
+                    this.count.feared -= 1;
+                    if (this.count.feared <= 0) {
+                        this.count.feared = 0;
+                        this.isFeared = false;
+                    } else {
+                        this.stateMachine.setState(States.FEARED);
+                    };
                 } else {   
                     randomDirection();
                     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, fears[Math.floor(Math.random() * 5)], 1000, 'effect');
@@ -2338,7 +2344,6 @@ export default class Enemy extends Entity {
                 this.isParalyzed = false;
             } else {
                 this.stateMachine.setState(States.COMBAT);
-                // this.stateMachine.setState(States.PARALYZED);
             };
         }, undefined, this);
     };
@@ -2556,7 +2561,6 @@ export default class Enemy extends Entity {
 
     killParticle = () => {
         this.scene.particleManager.removeEffect(this.particleEffect.id);
-        // this.particleEffect.effect.destroy();
         this.particleEffect = undefined;
     };
 
@@ -2564,21 +2568,11 @@ export default class Enemy extends Entity {
         if (this.isRanged) this.scene.combatManager.checkPlayerSuccess();
         const shimmer = Math.random() * 101;
         if (this.scene.player.isAbsorbing || this.scene.player.isEnveloping || this.scene.player.isShielding || (this.scene.player.isShimmering && shimmer > 50) || this.scene.player.isWarding) {
-            if (this.scene.player.isAbsorbing) {
-                this.scene.player.absorb();
-            };
-            if (this.scene.player.isEnveloping) {
-                this.scene.player.envelop();
-            };
-            if (this.scene.player.isShielding) {
-                this.scene.player.shield();
-            };
-            if (this.scene.player.isShimmering) {
-                this.scene.player.shimmer();
-            };
-            if (this.scene.player.isWarding) {
-                this.scene.player.ward(this.enemyID);
-            };
+            if (this.scene.player.isAbsorbing === true) this.scene.player.absorb();
+            if (this.scene.player.isEnveloping === true) this.scene.player.envelop();
+            if (this.scene.player.isShielding === true) this.scene.player.shield();
+            if (this.scene.player.isShimmering === true) this.scene.player.shimmer();
+            if (this.scene.player.isWarding === true) this.scene.player.ward(this.enemyID);
             if (this.particleEffect) this.killParticle();
             return;
         };
@@ -2678,7 +2672,7 @@ export default class Enemy extends Entity {
     rangedDistanceMultiplier = (num) => this.isRanged ? num : 1;
 
     evaluateCombatDistance = () => {
-        if (this.isCasting) return;
+        if (this.isCasting === true) return;
         if (this.attacking === undefined || this.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
             this.stateMachine.setState(States.LEASH);
             return;
@@ -2798,9 +2792,7 @@ export default class Enemy extends Entity {
     }; 
 
     evaluateEnemyAnimation = () => {
-        if (!this.cleanCombatAnimation()) {
-            return;
-        };
+        if (!this.cleanCombatAnimation()) return;
         if (this.isClimbing) {
             if (this.moving()) {
                 this.anims.play('player_climb', true);
@@ -2917,8 +2909,6 @@ export default class Enemy extends Entity {
         this.negativeMachine.update(this.scene.sys.game.loop.delta);
     };
 
-    combat = () => this.currentAction = this.evaluateCombat();
-
     evaluateCombat = () => {  
         let computerAction;
         let actionNumber = Math.floor(Math.random() * 101);
@@ -2945,18 +2935,4 @@ export default class Enemy extends Entity {
         };
         return computerAction;
     };
-    // evaluateCombat = () => {
-    //     let actionNumber = Phaser.Math.Between(1, 100);
-    //     if (actionNumber > 60) {
-    //         return 'attack';
-    //     } else if (actionNumber > 45 && !this.isRanged) {
-    //         return 'parry';
-    //     } else if (actionNumber > 30) {
-    //         return 'posture';
-    //     } else if (actionNumber > 15) {
-    //         return 'roll';
-    //     } else {
-    //         return 'thrust';
-    //     };
-    // };
 };

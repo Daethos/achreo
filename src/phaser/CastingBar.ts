@@ -2,7 +2,14 @@ import Phaser from 'phaser';
 import { useResizeListener } from '../utility/dimensions';
 import { EventBus } from '../game/EventBus';
 import { Game } from '../game/scenes/Game';
-
+const COLORS = {
+    CAST: 0x0000FF,
+    DAMAGE: 0xFF0000,
+    HEAL: 0x00CC00,
+    HUSH: 0xA700FF,
+    TENDRIL: 0x800080,
+    FYERUS: 0xE0115F,
+};
 const dimensions = useResizeListener();
 
 export default class CastingBar extends Phaser.GameObjects.Container {
@@ -41,7 +48,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
             this.barWidth = scene.settings.positions.castbar.barWidth;
 
             this.borderColor = 0x000000;
-            this.fillColor = 0x0000FF;
+            this.fillColor = COLORS.CAST;
             this.bar = new Phaser.GameObjects.Graphics(scene);
             this.bar.fillStyle(this.fillColor);
             this.bar.fillRect(-this.barWidth / 2, -this.barHeight / 2, this.barWidth, this.barHeight);
@@ -64,7 +71,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
             this.barHeight = 12;
             this.barWidth = 100;
             this.borderColor = 0x000000;
-            this.fillColor = 0x0000FF;
+            this.fillColor = COLORS.CAST;
             this.bar = new Phaser.GameObjects.Graphics(scene);
             this.bar.fillStyle(this.fillColor);
             this.bar.fillRect(-this.barWidth / 2, -this.barHeight / 2, this.barWidth, this.barHeight);
@@ -104,12 +111,12 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     
     public setTime = (time: number, color?: number): void => {
         this.time = time > this.total ? this.total : time;
-        this.draw(color || 0x0000FF);
+        this.draw(color || COLORS.CAST);
     };
     
-    public setTotal = (total: number, color?: number): void => {
+    public setTotal = (total: number, color?: string): void => {
         this.total = total;
-        this.draw(color || 0x0000FF);
+        this.draw(COLORS[color as string as keyof typeof COLORS] || COLORS.CAST);
     };
 
     private castbarListener = () => {
@@ -135,7 +142,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         });
     };
 
-    public update = (dt: number, type: string, color?: number, x?: number, y?: number): void => {
-        this.setTime(type === 'cast' ? this.time + dt : this.time - dt, color || 0x0000FF);
+    public update = (dt: number, type: string, color: string = 'CAST'): void => {
+        this.setTime(type === 'cast' ? this.time + dt : this.time - dt, COLORS[color as keyof typeof COLORS]);
     };
 };

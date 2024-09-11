@@ -9,9 +9,17 @@ export const PLAYER = {
         HEIGHT: 32,
         WIDTH: 16,
     },
+    DODGE: {
+        DISTANCE: 2800, // 126 || 2304
+        DURATION: 350, // 18 || 288
+    },
+    ROLL: {
+        DISTANCE: 1920, // 140
+        DURATION: 320 // 20
+    },
     SPEED: {
         INITIAL: 1.5, // 1.75
-        ACCELERATION: 0.125,
+        ACCELERATION: 0.5,
         DECELERATION: 0.05,
         CAERENIC: 0.5,
         SLOW: 1,

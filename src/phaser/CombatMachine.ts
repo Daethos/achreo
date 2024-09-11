@@ -71,5 +71,5 @@ export default class CombatMachine {
 
     public action = (act: Action): number => this.actionQueue.push(act);
     public clear = (id: string): number => this.clearQueue.push(id); 
-    public input = (key: string, value: string | number | boolean, id?: string): number => this.inputQueue.push({key, value, id}); 
+    public input = (key: string, value: string | number | boolean | any, id?: string): number => this.inputQueue.push({key, value, id}); 
 };

@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { EventBus } from '../game/EventBus';
 import { PLAYER, STAMINA, staminaCheck } from '../utility/player';
-
 const ACTIONS = [
     { ATTACK: 0x800080 }, // 0xFA0000 
     { POSTURE: 0x800080 }, // 0x005100 
@@ -9,7 +8,6 @@ const ACTIONS = [
     { DODGE: 0x800080 }, // 0xFAFA00 
     { PARRY: 0x800080 }
 ];
-
 const SPECIALS = [
     { INVOKE: 0x000000 }, 
     { TSHAERAL: 0x000000 }, // 0x7000FF 
@@ -17,14 +15,12 @@ const SPECIALS = [
     { ROOT: 0x000000 }, // 0xFF2E00
     { SNARE: 0x000000 }, // 0xCB0050
 ];
-
 const DISPLAY = {
     ARC: 'arc',
     DIAGONAL: 'diagonal',
     HORIZONTAL: 'horizontal',
     VERTICAL: 'vertical',
 };
-
 const SETTINGS = {
     SCALE: 1,
     SCALE_SPECIAL: 0.75,
@@ -35,7 +31,6 @@ const SETTINGS = {
     BORDER_LINE: 4,
     BORDER_OFFSET: 1,
 };
-
 export type ActionButton = {
     key: string;
     name: string;
@@ -52,17 +47,15 @@ export type ActionButton = {
     isReady: boolean;
     on?: (event: string, fn: () => void, context?: any) => void;
 };
-
 export default class ActionButtons extends Phaser.GameObjects.Container {
     public scene: any;
-    private actionButtons: ActionButton[];
-    private specialButtons: ActionButton[];
+    public actionButtons: ActionButton[];
+    public specialButtons: ActionButton[];
     private buttonWidth: number;
     private buttonHeight: number;
     private glowFilter: any;
     private borderTimer: any;
     private graphicTimer: any;
-
     constructor(scene: any) {
         super(scene);
         this.scene = scene;
@@ -115,27 +108,14 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 this.graphicTimer[key] = this.scene.time.addEvent({
                     delay: 30, // 125 Adjust the delay as needed
                     callback: () => this.updateGlow(object, color),
-                    // loop: true,
                     repeat: 5,
                     callbackScope: this
                 });
-
-            // let count: number = 0;
-            // this.graphicTimer[key] = this.scene.time.delayedCall(30, () => {
-            //     count++
-            //     if (count >= 5) {
-                    
-            //     };
-            //     this.updateGlow(object, color);
-
-            //     // loop: true,
-            // }, undefined, this);
                 break;
             case 'border':
                 this.borderTimer[key] = this.scene.time.addEvent({
                     delay: 30, // 125 Adjust the delay as needed
                     callback: () => this.updateGlow(object, color),
-                    // loop: true,
                     repeat: 5,
                     callbackScope: this
                 });
@@ -149,7 +129,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const outerStrength = 2 + Math.sin(this.scene.time.now * 0.005) * 2; // Adjust the frequency and amplitude as needed
         const innerStrength = 2 + Math.cos(this.scene.time.now * 0.005) * 2;
         const intensity = 0.5;
-
         this.glowFilter.add(object, {
             outerStrength,
             innerStrength,
@@ -165,14 +144,13 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const centerActionY = height * scene.settings.positions.actionButtons.y; // / 1.35
         const centerSpecialX = width * scene.settings.positions.specialButtons.x; // width * 0.725 || / 1.375
         const centerSpecialY = height * scene.settings.positions.specialButtons.y; // height * 0.6 || / 1.675
-        
         ACTIONS.forEach((_element, index) => {
             const { buttonX, buttonY } = this.displayButton('action', 
                 this.scene.settings.positions.actionButtons.display, 
                 this.scene.settings.positions.specialButtons.spacing,
                 index, centerActionX, centerActionY, height
             );
-             let button: ActionButton = {
+            let button: ActionButton = {
                 key: 'action',
                 name: scene.settings.actions[index],
                 border: new Phaser.GameObjects.Graphics(scene),
@@ -186,10 +164,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 width: this.buttonWidth,
                 isReady: true,
             };
-
             button.graphic.fillStyle(scene.settings.positions.actionButtons.color, scene.settings.positions.actionButtons.opacity);
             button.graphic.fillCircle(buttonX, buttonY, button.width as number);
-            
             button.border.lineStyle(SETTINGS.BORDER_LINE, scene.settings.positions.actionButtons.border, scene.settings.positions.actionButtons.opacity);
             button.border.strokeCircle(buttonX, buttonY, button.width + SETTINGS.BORDER_OFFSET as number);
             this.scaleButton(button, scene.settings.positions.actionButtons.width, scene.settings.positions.actionButtons.opacity, scene.settings.positions.actionButtons.border);
@@ -209,14 +185,12 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             this.add(button.border);
             this.add(button.graphic);
         });
-
         SPECIALS.forEach((_element, index) => {
             const { buttonX, buttonY } = this.displayButton('special', 
                 this.scene.settings.positions.specialButtons.display, 
                 this.scene.settings.positions.specialButtons.spacing,
                 index, centerSpecialX, centerSpecialY, height,
             );
-
             let button: ActionButton = {
                 key: 'special',
                 name: scene.settings.specials[index],
@@ -231,13 +205,10 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 width: this.buttonWidth,
                 isReady: true
             };
-
             button.graphic.fillStyle(scene.settings.positions.specialButtons.color, scene.settings.positions.specialButtons.opacity);
             button.graphic.fillCircle(buttonX, buttonY, button.width as number);
-            
             button.border.lineStyle(SETTINGS.BORDER_LINE, scene.settings.positions.specialButtons.border, scene.settings.positions.specialButtons.opacity);
             button.border.strokeCircle(buttonX, buttonY, button.width + SETTINGS.BORDER_OFFSET as number);
-
             this.scaleButton(button, 0.75 * scene.settings.positions.specialButtons.width, scene.settings.positions.specialButtons.opacity, scene.settings.positions.specialButtons.border);
             button.graphic.setInteractive(new Phaser.Geom.Circle(
                 buttonX, buttonY, 
@@ -246,11 +217,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
                         this.pressButton(button, scene);
                     }); 
-            
             button.graphic.setScrollFactor(0, 0);
             button.border.setScrollFactor(0, 0);
             button.graphic.setDepth(3);
-
             this.specialButtons.push(button);
             this.add(button.border);
             this.add(button.graphic);
@@ -397,8 +366,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         EventBus.on('recolor-buttons', this.recolorButton);
         EventBus.on('stalwart-buttons', this.stalwartButtons);
     };
-
-
 
     private stalwartButtons = (stalwart: boolean) => {
         if (stalwart === true) {
@@ -712,7 +679,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 
     public pressButton = (button: ActionButton, scene: any): void => {
-        // if (this.scene.scene.isActive('Game') === false) return;
         const input = button.name.toLowerCase();
         const type = STAMINA.includes(input);
         let check: {success: boolean; cost: number;} = {success: false, cost: 0};
@@ -721,10 +687,10 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         } else {
             check = staminaCheck(this.scene.player.grace, PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA]);
         };
-        if (check.success === true && scene.player.stateMachine.isState(input)) {
-            scene.player.stateMachine.setState(`${input}`);
-        } else if (check.success === true && scene.player.positiveMachine.isState(input)) {
-            scene.player.positiveMachine.setState(`${input}`);
+        if (check.success === true && scene.player.playerMachine.stateMachine.isState(input)) {
+            scene.player.playerMachine.stateMachine.setState(`${input}`);
+        } else if (check.success === true && scene.player.playerMachine.positiveMachine.isState(input)) {
+            scene.player.playerMachine.positiveMachine.setState(`${input}`);
         };
     };
 

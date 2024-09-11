@@ -1,5 +1,5 @@
 export interface StateInterface {
-    name: string;
+    name?: string;
     onEnter?: () => void;
     onUpdate?: (dt: number) => void;
     onExit?: () => void;

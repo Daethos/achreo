@@ -1,4 +1,3 @@
-import Phaser from 'phaser';
 import { useResizeListener } from '../utility/dimensions';
 import { EventBus } from '../game/EventBus';
 import { Game } from '../game/scenes/Game';
@@ -18,9 +17,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     private barHeight: number;
     private border: Phaser.GameObjects.Graphics;
     private borderColor: number;
-    private entity: any;
     private fillColor: number;
-    private zoom: number;
     private time: number;
     private total: number;
     private castbar: Phaser.GameObjects.Sprite;
@@ -29,10 +26,8 @@ export default class CastingBar extends Phaser.GameObjects.Container {
 
     constructor(scene: Game, x: number, y: number, time: number, entity: any) {
         super(scene, x, y);
-        this.entity = entity;
         this.total = time;
         this.time = 0;
-        this.zoom = scene.cameras.main.zoom;
         this.create(entity, scene);
         scene.add.existing(this);
         this.setDepth(5);
@@ -120,9 +115,6 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     };
 
     private castbarListener = () => {
-        EventBus.on('castbar-zoom-update', (e: number) => {
-            this.zoom = e;
-        });
         EventBus.on('castbar-y', (y: number) => {
             this.barY = y;
             this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - y);
@@ -133,13 +125,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
             this.barHeight = height;
             this.castbar.setDisplaySize(this.barWidth * 1.2, this.barHeight * 2.3);
         });
-        EventBus.on('show-castbar', (show: boolean) => {
-            if (show === true) {
-                this.setVisible(true);
-            } else {
-                this.setVisible(false);
-            };
-        });
+        EventBus.on('show-castbar', (show: boolean) => this.setVisible(show));
     };
 
     public update = (dt: number, type: string, color: string = 'CAST'): void => {

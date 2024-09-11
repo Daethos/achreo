@@ -2568,11 +2568,11 @@ export default class Enemy extends Entity {
         if (this.isRanged) this.scene.combatManager.checkPlayerSuccess();
         const shimmer = Math.random() * 101;
         if (this.scene.player.isAbsorbing || this.scene.player.isEnveloping || this.scene.player.isShielding || (this.scene.player.isShimmering && shimmer > 50) || this.scene.player.isWarding) {
-            if (this.scene.player.isAbsorbing === true) this.scene.player.absorb();
-            if (this.scene.player.isEnveloping === true) this.scene.player.envelop();
-            if (this.scene.player.isShielding === true) this.scene.player.shield();
-            if (this.scene.player.isShimmering === true) this.scene.player.shimmer();
-            if (this.scene.player.isWarding === true) this.scene.player.ward(this.enemyID);
+            if (this.scene.player.isAbsorbing === true) this.scene.player.playerMachine.absorb();
+            if (this.scene.player.isEnveloping === true) this.scene.player.playerMachine.envelop();
+            if (this.scene.player.isShielding === true) this.scene.player.playerMachine.shield();
+            if (this.scene.player.isShimmering === true) this.scene.player.playerMachine.shimmer();
+            if (this.scene.player.isWarding === true) this.scene.player.playerMachine.ward(this.enemyID);
             if (this.particleEffect) this.killParticle();
             return;
         };
@@ -2873,7 +2873,6 @@ export default class Enemy extends Entity {
         if (this.particleEffect) this.currentParticleCheck();
         this.getDirection();
         this.currentTargetCheck();
-
         if (this.isSuffering() === true || this.isCasting === true) return;
         if (this.isUnderRangedAttack()) {
             this.stateMachine.setState(States.EVADE);

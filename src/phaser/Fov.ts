@@ -23,6 +23,7 @@ export default class Fov {
     private lastPos: Phaser.Math.Vector2;
     private map: Phaser.Tilemaps.Tilemap;
     public enemies: any[];
+    private radius: number;
 
     constructor(scene: any, map: Phaser.Tilemaps.Tilemap, layers: any[]) {
         this.scene = scene;
@@ -30,18 +31,22 @@ export default class Fov {
         this.layers = layers;
         this.map = map;
         this.enemies = [];
+        this.radius = radius;
         this.recalculate(map);
     };
+
+    lighting = () => radius + (this.scene.player.isCaerenic ? 2 : this.scene.player.isStealthing ? -2 : 0);
 
     recalculate = (map: Phaser.Tilemaps.Tilemap) => {
         this.mrpas = new Mrpas(map.width, map.height, (x, y) => {
             const tile = this.layers[0].getTileAt(x, y);
-			return tile && !tile.collides;
+			return tile && !tile.properties?.edge; // && !tile.collides;
         });
     };
 
     update(pos: Phaser.Math.Vector2,bounds: Phaser.Geom.Rectangle,dt: number) {
-        if (!this.lastPos.equals(pos)) {
+        if (!this.lastPos.equals(pos) || this.lighting() !== this.radius) {
+            this.radius = this.lighting();
             this.updateMRPAS(pos);
             this.lastPos = pos.clone();
         };
@@ -70,8 +75,7 @@ export default class Fov {
                 };
             });
         };
-
-        this.mrpas!.compute(pos.x,pos.y,radius,
+        this.mrpas!.compute(pos.x,pos.y,this.radius,
             (x: number, y: number) => {
                 const tile = this.layers[0].getTileAt(x, y);
                 return tile && tile.seen;
@@ -80,7 +84,7 @@ export default class Fov {
                 const tile = this.layers[0].getTileAt(x, y);
                 if (!tile) return;
                 const distance = Math.floor(new Phaser.Math.Vector2(x, y).distance(new Phaser.Math.Vector2(pos.x, pos.y)));
-                const rolloffIdx = distance <= radius ? radius - distance : 0;
+                const rolloffIdx = distance <= this.radius ? this.radius - distance : 0;
                 const alpha = rolloffIdx < lightDropoff.length ? lightDropoff[rolloffIdx] : 1;
                 tile.desiredAlpha = alpha;
                 tile.tint = 0xffffff;
@@ -110,7 +114,7 @@ export default class Fov {
                 y: this.map.worldToTileY(enemy.y) as number
             });
             const distance = Math.floor(new Phaser.Math.Vector2(coords.x, coords.y).distance(new Phaser.Math.Vector2(this.lastPos.x, this.lastPos.y)));
-            const rolloffIdx = distance <= radius ? radius - distance : 0;
+            const rolloffIdx = distance <= this.radius ? this.radius - distance : 0;
             const alpha = rolloffIdx < lightDropoff.length ? lightDropoff[rolloffIdx] : 1;
             enemy.setAlpha(alpha);
             enemy.spriteWeapon.setAlpha(alpha);

@@ -2,7 +2,6 @@ import Ascean from '../../models/ascean';
 import { Cameras, GameObjects, Scene, Tilemaps, Time } from 'phaser';
 import { Combat, initCombat } from '../../stores/combat';
 import { EventBus } from '../EventBus';
-import NewText from '../../phaser/NewText';
 import LootDrop from '../../matter/LootDrop';
 import ActionButtons from '../../phaser/ActionButtons';
 import { GameState } from '../../stores/game';
@@ -29,7 +28,6 @@ import MovingPlatform from '../../phaser/MovingPlatform';
 import { CombatManager } from '../CombatManager';
 import MiniMap from '../../phaser/MiniMap';
 const dimensions = useResizeListener();
-const SCALE_FACTOR = 0.3;
 export class Game extends Scene {
     animatedTiles: any[];
     offsetX: number;
@@ -50,6 +48,7 @@ export class Game extends Scene {
     npcs: any = [];
     lootDrops: LootDrop[] = [];
     combat: boolean = false;
+    stealth: boolean = false;
     combatTime: number = 0;
     combatTimer: Time.TimerEvent;
     tweenManager: any;
@@ -92,7 +91,7 @@ export class Game extends Scene {
     };
 
     create () {
-        this.cameras.main.fadeIn(1500, 0, 0, 0)
+        this.cameras.main.fadeIn()
         this.gameEvent();
         this.getAscean();
         this.state = this.getCombat();
@@ -102,11 +101,6 @@ export class Game extends Scene {
         this.offsetX = 0;
         this.offsetY = 0;
         this.tweenManager = {};
-
-    // =========================== Camera =========================== \\
-        let camera = this.cameras.main;
-        camera.zoom = this.settings.positions?.camera?.zoom || 0.8; // 0.8 
-    // =========================== Ascean Test Map =========================== \\
         const map = this.make.tilemap({ key: 'ascean_test' });
         this.map = map;
         const tileSize = 32;
@@ -139,7 +133,6 @@ export class Game extends Scene {
             this.matter.world.convertTilemapLayer(layer!);
             layer?.setDepth(3);
         });
-        // castle_decor?.setDepth(3);
         // this.matter.world.createDebugGraphic(); 
         const objectLayer = map.getObjectLayer('navmesh');
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
@@ -153,19 +146,19 @@ export class Game extends Scene {
             this.enemies.push(new Enemy({ scene: this, x: enemy.x, y: enemy.y, texture: 'player_actions', frame: 'player_idle_0' })));
         map?.getObjectLayer('Npcs')?.objects.forEach((npc: any) => 
             this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' })));
-    // =========================== Camera =========================== \\
+
+        let camera = this.cameras.main;
+        camera.zoom = this.settings.positions?.camera?.zoom || 0.8; // 0.8 
         camera.startFollow(this.player, false, 0.1, 0.1);
         camera.setLerp(0.1, 0.1);
         camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         camera.setRoundPixels(true);
-
         var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
         this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
         this.setPostFx(this.settings?.postFx, this.settings?.postFx.enable);
         this.particleManager = new ParticleManager(this);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
         this.actionBar = new ActionButtons(this);
-    // =========================== Input Keys =========================== \\
         this.player.inputKeys = {
             up: this?.input?.keyboard?.addKeys('W,UP'),
             down: this?.input?.keyboard?.addKeys('S,DOWN'),
@@ -183,14 +176,10 @@ export class Game extends Scene {
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 200, 0.0675, 0.0675); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-    // =========================== Music =========================== \\
         this.musicBackground = this.sound.add('background', { volume: this?.settings?.volume ?? 0 / 2, loop: true });
-        if (this.settings?.music === true) {
-            this.musicBackground.play();
-        };
         this.musicCombat = this.sound.add('combat', { volume: this?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.settings?.volume, loop: true });
-
+        if (this.settings?.music === true) this.musicBackground.play();
         this.logger = new Logger();
         this.logger.add('console', new ConsoleLogger());
         this.time.delayedCall(2000, () => {
@@ -198,27 +187,12 @@ export class Game extends Scene {
             this.logger.log('Warning: Some function did not work, but did not crash the game!');
             this.logger.log('Error: Some portion if not all of the game has crashed!');
         }, undefined, this);
-
         // this.platform = new MovingPlatform(this, 650, 3200, 'player-castbar', { isStatic: true });
         // this.platform.vertical(0, -3000, 12000);
-        
         // this.platform2 = new MovingPlatform(this, 500, 3950, 'player-castbar', { isStatic: true });
         // this.platform2.setAngle(90);
         // this.platform2.horizontal(0, 3500, 14000);
-
-        // =========================== FPS =========================== \\
-        // this.fpsText = this.add.text(
-        //     dimensions()?.WIDTH * this.settings.positions.fpsText.x, 
-        //     dimensions()?.HEIGHT * this.settings.positions.fpsText.y, 
-        //     'FPS: ', { font: '16px Cinzel', color: '#fdf6d8' }
-        // );
-        // this.fpsText.setScrollFactor(0);
-    // =========================== Combat Timer =========================== \\
-        // this.combatTimerText = this.add.text(window.innerWidth / 2 - 40, window.innerHeight + 30, 'Combat Timer: ', { font: '16px Cinzel', color: '#fdf6d8' });
-        // this.combatTimerText.setScrollFactor(0);
-        // this.combatTimerText.setVisible(false);
         this.postFxEvent();
-    // =========================== Joystick =========================== \\
         this.joystick = new Joystick(this, 
             camera.width * this.settings.positions.leftJoystick.x, 
             camera.height * this.settings.positions.leftJoystick.y,
@@ -227,7 +201,6 @@ export class Game extends Scene {
         );
         this.joystick.joystick.base.setAlpha(this.settings.positions.leftJoystick.opacity);
         this.joystick.joystick.thumb.setAlpha(this.settings.positions.leftJoystick.opacity);
-        
         this.rightJoystick = new Joystick(this,
             camera.width * this.settings.positions.rightJoystick.x, 
             camera.height * this.settings.positions.rightJoystick.y,
@@ -238,7 +211,6 @@ export class Game extends Scene {
         this.rightJoystick.joystick.thumb.setAlpha(this.settings.positions.rightJoystick.opacity);
         this.rightJoystick.createPointer(this); 
         this.joystickKeys = this.joystick.createCursorKeys();
-
         this.smallHud = new SmallHud(this);
         this.combatManager = new CombatManager(this);
         this.minimap = new MiniMap(this);
@@ -293,12 +265,10 @@ export class Game extends Scene {
                 this.joystick?.joystick?.setVisible(false);
                 this.rightJoystick?.joystick?.setVisible(false);
                 if (this.actionBar) this.actionBar.draw();
-                // if (this.actionBar) this.actionBar?.setVisible(false);
             } else {
                 this.joystick?.joystick?.setVisible(true);
                 this.rightJoystick?.joystick?.setVisible(true);
                 if (this.actionBar) this.actionBar.draw();
-                // if (this.actionBar) this.actionBar?.setVisible(true);
             };
         });    
         EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
@@ -343,24 +313,39 @@ export class Game extends Scene {
                 this.pauseMusic();
             };
         });
+        EventBus.on('check-stealth', (stealth: boolean) => {
+            this.stealth = stealth;
+        });
         EventBus.on('resume', (scene: string) => {
             if (scene !== 'Game') return;
-            this.cameras.main.fadeIn(1500, 0, 0, 0);
+            this.cameras.main.fadeIn();
             this.scene.wake(scene);
             this.resumeMusic();
+            this.actionBar.setActive(true);
+            this.actionBar.setVisible(true);
+            this.smallHud.setActive(true);
+            this.smallHud.setVisible(true);
+            if (this.state.isStealth) {
+                this.player.playerMachine.positiveMachine.setState(States.STEALTH);
+                this.stealthEngaged(true, this.scene.key);
+            };
             EventBus.emit('current-scene-ready', this);
         });
         EventBus.on('switch-scene', (data: { current: string, next: string }) => {
             if (data.current !== 'Game') return;
-            this.cameras.main.fadeOut(1500, 0, 0, 0);
+            this.cameras.main.fadeOut();
             this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
+                this.actionBar.setActive(false);
+                this.actionBar.setVisible(false);
+                this.smallHud.setActive(false);
+                this.smallHud.setVisible(false);
                 this.pauseMusic();
                 this.scene.sleep(data.current);
                 const scene = this.scene.get(data.next);
                 if (scene.scene?.isSleeping()) {
                     EventBus.emit('resume', data.next);
                 } else {
-                    this.scene.launch(data.next);
+                    this.scene.launch(data.next, this);
                 };
             });
         });
@@ -462,15 +447,10 @@ export class Game extends Scene {
         });
         // EventBus.on('summon-enemy', this.summonEnemy);
     };
-
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
-        if (type === 'bloom') {
-            this.postFxPipeline.setBloomRadius(val);
-        };
-        if (type === 'threshold') {
-            this.postFxPipeline.setBloomThreshold(val);
-        };
+        if (type === 'bloom') this.postFxPipeline.setBloomRadius(val);
+        if (type === 'threshold') this.postFxPipeline.setBloomThreshold(val);
         if (type === 'chromatic') {
             if (val === true) {
                 this.postFxPipeline.setChromaticEnable();
@@ -478,9 +458,7 @@ export class Game extends Scene {
                 this.postFxPipeline.setChromaticEnable(val);
             };
         };
-        if (type === 'chabIntensity') {
-            this.postFxPipeline.setChabIntensity(val);
-        };
+        if (type === 'chabIntensity') this.postFxPipeline.setChabIntensity(val);
         if (type === 'vignetteEnable') {
             if (val === true) {
                 this.postFxPipeline.setVignetteEnable();
@@ -488,13 +466,8 @@ export class Game extends Scene {
                 this.postFxPipeline.setVignetteEnable(val);
             };
         };
-        if (type === 'vignetteStrength') {
-            this.postFxPipeline.setVignetteStrength(val);
-        };
-        if (type === 'vignetteIntensity') {
-            this.postFxPipeline.setVignetteIntensity(val);
-        };
-
+        if (type === 'vignetteStrength') this.postFxPipeline.setVignetteStrength(val);
+        if (type === 'vignetteIntensity') this.postFxPipeline.setVignetteIntensity(val);
         if (type === 'noiseEnable') {
             if (val === true) {
                 this.postFxPipeline.setNoiseEnable();
@@ -502,13 +475,8 @@ export class Game extends Scene {
                 this.postFxPipeline.setNoiseEnable(val);
             };
         };
-        if (type === 'noiseSeed') {
-            this.postFxPipeline.setNoiseSeed(val);
-        };
-        if (type === 'noiseStrength') {
-            this.postFxPipeline.setNoiseStrength(val);
-        };
-
+        if (type === 'noiseSeed') this.postFxPipeline.setNoiseSeed(val);
+        if (type === 'noiseStrength') this.postFxPipeline.setNoiseStrength(val);
         if (type === 'vhsEnable') {
             if (val === true) {
                 this.postFxPipeline.setVHSEnable();
@@ -516,10 +484,7 @@ export class Game extends Scene {
                 this.postFxPipeline.setVHSEnable(val);
             };
         };
-        if (type === 'vhsStrength') {
-            this.postFxPipeline.setVhsStrength(val);
-        };
-
+        if (type === 'vhsStrength') this.postFxPipeline.setVhsStrength(val);
         if (type === 'scanlinesEnable') {
             if (val === true) {
                 this.postFxPipeline.setScanlinesEnable();
@@ -527,10 +492,7 @@ export class Game extends Scene {
                 this.postFxPipeline.setScanlinesEnable(val);
             };
         };
-        if (type === 'scanStrength') {
-            this.postFxPipeline.setScanStrength(val);
-        };
-        
+        if (type === 'scanStrength') this.postFxPipeline.setScanStrength(val);
         if (type === 'crtEnable') {
             if (val === true) {
                 this.postFxPipeline.setCRTEnable();
@@ -538,13 +500,8 @@ export class Game extends Scene {
                 this.postFxPipeline.setCRTEnable(val);
             };
         };
-        if (type === 'crtHeight') {
-            this.postFxPipeline.crtHeight = val;
-        };
-        if (type === 'crtWidth') {
-            this.postFxPipeline.crtWidth = val;
-        };
-
+        if (type === 'crtHeight') this.postFxPipeline.crtHeight = val;
+        if (type === 'crtWidth') this.postFxPipeline.crtWidth = val;
         if (type === 'enable') {
             if (val === true) {
                 this.setPostFx(this.settings?.postFx, true);
@@ -553,7 +510,6 @@ export class Game extends Scene {
             };
         };
     });
-
     setPostFx = (settings: any, enable: boolean): void => { 
         if (enable === true) {
             this.postFxPipeline.setEnable();
@@ -604,7 +560,6 @@ export class Game extends Scene {
         EventBus.emit('request-settings');
         return this.settings;
     };
-    // ================== Combat ================== \\
     getEnemy = (id: string): Enemy => {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };
@@ -613,8 +568,6 @@ export class Game extends Scene {
         const point = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
         return point;
     };
-
-    // ============================ Game ============================ \\
     rotateTween = (tween: any, count: number, active: boolean) => {
         if (active === true) {
             this.tweenManager[tween.name] = this.tweens.add({
@@ -648,15 +601,38 @@ export class Game extends Scene {
         };
         this.combat = bool;
     };
+    stealthEngaged = (bool: boolean, scene: string) => {
+        if (this.scene.key !== scene) return;
+        if (bool) {
+            if (this.musicBackground.isPlaying) this.musicBackground.pause();
+            if (this.musicCombat.isPlaying) this.musicCombat.pause();
+            if (this.musicStealth.isPaused) {
+                this.musicStealth.resume();
+            } else {
+                this.musicStealth.play();
+            };
+        } else {
+            this.musicStealth.stop();
+            if (this.combat) {
+                this.musicCombat.play();
+            } else {
+                this.musicBackground.resume();
+            };
+        };
+    };
     pauseMusic = (): void => {
         if (this.musicBackground.isPlaying) this.musicBackground.pause();
         if (this.musicCombat.isPlaying) this.musicCombat.pause();
-        if (this.musicStealth.isPlaying) this.musicStealth.pause();
+        this.musicStealth.pause();
     };
     resumeMusic = (): void => {
         if (!this.combat) {
             if (this.player.isStealthing) {
-                this.musicStealth.play();
+                if (this.musicStealth.isPaused) {
+                    this.musicStealth.resume();
+                } else {
+                    this.musicStealth.play();
+                };
             } else if (this.musicBackground.isPaused) {
                 this.musicBackground.resume();
             } else {
@@ -793,7 +769,6 @@ export class Game extends Scene {
             this.npcs[i].update();
         };
     };
-    // this.fpsText.setText('FPS: ' + this.game.loop.actualFps.toFixed(2));
     pause(): void {
         this.scene.pause();
         this.pauseMusic();

@@ -266,6 +266,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     case 'stealth':
                         if (this.scene.combat === true) return;
                         this.switches.stealth = !this.switches.stealth;
+                        this.scene.stealthEngaged(!this.switches.stealth);
                         EventBus.emit('update-stealth');
                         break;
                     case 'stalwart':

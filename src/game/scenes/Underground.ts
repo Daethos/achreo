@@ -48,6 +48,7 @@ export class Underground extends Scene {
     npcs: NPC[] | [] = [];
     lootDrops: LootDrop[] = [];
     combat: boolean = false;
+    stealth: boolean = false;
     combatTime: number = 0;
     combatTimer: Time.TimerEvent;
     tweenManager: any;
@@ -91,7 +92,7 @@ export class Underground extends Scene {
     };
 
     create () {
-        this.cameras.main.fadeIn(1500, 0, 0, 0);
+        this.cameras.main.fadeIn();
         this.gameEvent();
         this.getAscean();
         this.state = this.getCombat();
@@ -175,7 +176,7 @@ export class Underground extends Scene {
             firewater: this?.input?.keyboard?.addKeys('T'),
         }; 
         this.lights.enable();
-        this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 200, 0.0675, 0.0675); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
+        this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 100, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     // =========================== Music =========================== \\
         this.musicBackground = this.sound.add('background', { volume: this?.settings?.volume ?? 0 / 2, loop: true });
@@ -315,20 +316,31 @@ export class Underground extends Scene {
                 this.pauseMusic();
             };
         });
+        EventBus.on('check-stealth', (stealth: boolean) => {
+            this.stealth = stealth;
+        });
         EventBus.on('resume', (scene: string) => {
             if (scene !== 'Underground') return;
-            this.cameras.main.fadeIn(1500, 0, 0, 0);
+            this.cameras.main.fadeIn();
             this.scene.wake(scene);
             this.resumeMusic();
+            this.actionBar.setActive(true);
+            this.actionBar.setVisible(true);
+            this.smallHud.setActive(true);
+            this.smallHud.setVisible(true);
+            if (this.state.isStealth) {
+                this.player.playerMachine.positiveMachine.setState(States.STEALTH);
+                this.stealthEngaged(true, this.scene.key);
+            };
             EventBus.emit('current-scene-ready', this);
         });
         EventBus.on('switch-scene', (data: { current: string, next: string }) => {
             if (data.current !== 'Underground') return;
-            this.cameras.main.fadeOut(1500, 0, 0, 0);
+            this.cameras.main.fadeOut();
             this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
                 this.pauseMusic();
                 this.scene.sleep(data.current);
-                EventBus.emit('resume', data.next);
+                EventBus.emit('resume', data.next, this.player.isStealthing);
             });
         });
         EventBus.on('wake-up', (scene: string) => {
@@ -441,7 +453,6 @@ export class Underground extends Scene {
             };
         });
     };
-
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
         if (type === 'bloom') this.postFxPipeline.setBloomRadius(val);
@@ -505,7 +516,6 @@ export class Underground extends Scene {
             };
         };
     });
-
     setPostFx = (settings: any, enable: boolean): void => { 
         if (enable === true) {
             this.postFxPipeline.setEnable();
@@ -556,7 +566,6 @@ export class Underground extends Scene {
         EventBus.emit('request-settings');
         return this.settings;
     };
-    // ================== Combat ================== \\
     getEnemy = (id: string): Enemy => {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };
@@ -565,8 +574,6 @@ export class Underground extends Scene {
         const point = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
         return point;
     };
-
-    // ============================ Underground ============================ \\
     rotateTween = (tween: any, count: number, active: boolean) => {
         if (active === true) {
             this.tweenManager[tween.name] = this.tweens.add({
@@ -600,15 +607,38 @@ export class Underground extends Scene {
         };
         this.combat = bool;
     };
+    stealthEngaged = (bool: boolean, scene: string) => {
+        if (this.scene.key !== scene) return;
+        if (bool) {
+            if (this.musicBackground.isPlaying) this.musicBackground.pause();
+            if (this.musicCombat.isPlaying) this.musicCombat.pause();
+            if (this.musicStealth.isPaused) {
+                this.musicStealth.resume();
+            } else {
+                this.musicStealth.play();
+            };
+        } else {
+            this.musicStealth.stop();
+            if (this.combat) {
+                this.musicCombat.play();
+            } else {
+                this.musicBackground.resume();
+            };
+        };
+    };
     pauseMusic = (): void => {
         if (this.musicBackground.isPlaying) this.musicBackground.pause();
         if (this.musicCombat.isPlaying) this.musicCombat.pause();
-        if (this.musicStealth.isPlaying) this.musicStealth.pause();
+        this.musicStealth.pause();
     };
     resumeMusic = (): void => {
         if (!this.combat) {
             if (this.player.isStealthing) {
-                this.musicStealth.play();
+                if (this.musicStealth.isPaused) {
+                    this.musicStealth.resume();
+                } else {
+                    this.musicStealth.play();
+                };
             } else if (this.musicBackground.isPaused) {
                 this.musicBackground.resume();
             } else {
@@ -642,7 +672,6 @@ export class Underground extends Scene {
     showDialog = (dialogTag: boolean): boolean => EventBus.emit('blend-game', { dialogTag });
     createEnemy = () => {
         const marker = this.markers[Math.floor(Math.random() * this.markers.length)];
-        // console.log(`%c Coordinates of Enemy: ${marker.x} ${marker.y}`, 'coior:red');
         const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0' });
         this.enemies.push(enemy);
         return enemy;

@@ -42,7 +42,6 @@ export default class PlayerMachine {
     negativeMachine: StateMachine;
 
     constructor(scene: Game | Underground, player: Player) {
-        console.log(scene, 'This player doesn not exist apparentlky?? ');
         this.scene = scene;
         this.player = player;
         this.stateMachine = new StateMachine(this, 'player');
@@ -136,9 +135,11 @@ export default class PlayerMachine {
             .addState(States.FROZEN, { onEnter: this.onFrozenEnter, onExit: this.onFrozenExit })
             .addState(States.SLOWED, { onEnter: this.onSlowedEnter, onExit: this.onSlowedExit })
             .addState(States.SNARED, { onEnter: this.onSnaredEnter, onExit: this.onSnaredExit });
-        this.positiveMachine.setState(States.CLEAN);
-
-        console.log(this.player, 'This player doesn not exist apparentlky?? ');
+        if (this.scene.state.isStealth) {
+            this.scene.time.delayedCall(500, () => this.positiveMachine.setState(States.STEALTH), undefined, this);
+        } else {
+            this.positiveMachine.setState(States.CLEAN);
+        };
     };
 
     
@@ -1450,18 +1451,18 @@ export default class PlayerMachine {
 
     onAbsorbEnter = () => {
         this.player.isAbsorbing = true;
-        this.player.reactiveName = States.ABSORB;
+        this.player.negationName = States.ABSORB;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.ABSORB);    
         this.scene.sound.play(States.ABSORB, { volume: this.scene.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Absorbing', 750, 'effect');
-        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'aqua', PLAYER.DURATIONS.ABSORB);
+        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'aqua', PLAYER.DURATIONS.ABSORB);
         this.player.setTimeEvent('absorbCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.ABSORB, () => {
             this.player.isAbsorbing = false;    
-            if (this.player.reactiveBubble) {
-                this.player.reactiveBubble.destroy();
-                this.player.reactiveBubble = undefined;
-                if (this.player.reactiveName === States.ABSORB) this.player.reactiveName = '';
+            if (this.player.negationBubble) {
+                this.player.negationBubble.destroy();
+                this.player.negationBubble = undefined;
+                if (this.player.negationName === States.ABSORB) this.player.negationName = '';
             };    
         }, undefined, this);
         EventBus.emit('special-combat-text', {
@@ -2056,8 +2057,6 @@ export default class PlayerMachine {
     onStealthEnter = () => {
         if (!this.player.isShimmering) this.player.isStealthing = true; 
         this.stealthEffect(true);    
-        this.scene.pauseMusic();
-        this.scene.resumeMusic();
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You step halfway into the land of hush and tendril.`
         });
@@ -2066,11 +2065,10 @@ export default class PlayerMachine {
     onStealthExit = () => { 
         this.player.isStealthing = false;
         this.stealthEffect(false);
-        this.scene.pauseMusic();
-        this.scene.resumeMusic();
     };
 
     stealthEffect = (stealth: boolean) => {
+        this.scene.stealthEngaged(stealth, this.scene.scene.key);
         if (stealth) {
             const getStealth = (object: any) => {
                 object.setAlpha(0.5); 
@@ -2084,7 +2082,7 @@ export default class PlayerMachine {
                 }); 
             };
             this.player.adjustSpeed(-PLAYER.SPEED.STEALTH);
-            getStealth(this);
+            getStealth(this.player);
             getStealth(this.player.spriteWeapon);
             getStealth(this.player.spriteShield);
         } else {
@@ -2095,7 +2093,7 @@ export default class PlayerMachine {
                 object.setBlendMode(BlendModes.NORMAL);
             };
             this.player.adjustSpeed(PLAYER.SPEED.STEALTH);
-            clearStealth(this);
+            clearStealth(this.player);
             clearStealth(this.player.spriteWeapon);
             clearStealth(this.player.spriteShield);
             this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);

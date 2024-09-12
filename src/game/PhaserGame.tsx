@@ -420,11 +420,11 @@ export default function PhaserGame (props: IProps) {
             computerDeathDescription: '',            
             playerWin: false,
             computerWin: false,
+            combatEngaged: false,
         });
         const update = { 
             ...props.ascean(), 
             skills: newSkills,
-            // statistics: newStats, 
             health: { ...props.ascean().health, current: data.newPlayerHealth },
         };
         if (!update.tutorial.death) {
@@ -748,11 +748,11 @@ export default function PhaserGame (props: IProps) {
         });
         EventBus.on('main-menu', (_sceneInstance: Phaser.Scene) => props.setMenu({ ...props?.menu, gameRunning: false }));
         EventBus.on('enter-game', enterGame);
-        EventBus.on('preload-ascean', createUi)
+        EventBus.on('preload-ascean', createUi);
+        EventBus.on('check-stealth', () => EventBus.emit('stealth-check', combat().isStealth));
         EventBus.on('set-player', setPlayer);
         EventBus.on('add-item', (e: Equipment[]) => {
             const inv = JSON.parse(JSON.stringify(game().inventory.inventory));
-            // const inv = [...game().inventory.inventory];
             const inventory = inv.length > 0 ? [...inv, ...e] : e;
             const clean = { ...game().inventory, inventory };
             setGame({ ...game(), inventory: clean });
@@ -899,7 +899,6 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('level-up', (e: any) => levelUp(e));
         EventBus.on('add-loot', (e: Equipment[]) => {
             let newInventory = game().inventory.inventory.length > 0 ? [...JSON.parse(JSON.stringify(game().inventory.inventory)), ...e] : e;
-            // const newInventory = game().inventory.inventory.length > 0 ? [...game().inventory.inventory, ...e] : e;
             const newClean = { ...game().inventory, inventory: newInventory };
             setGame({ ...game(), inventory: newClean });
             EventBus.emit('update-inventory', newClean);
@@ -934,8 +933,7 @@ export default function PhaserGame (props: IProps) {
                 EventBus.emit('update-pause', !game().showCombat);
             };
             setGame({ 
-                ...game(), 
-                showCombat: !game().showCombat, 
+                ...game(), showCombat: !game().showCombat, 
                 smallHud: (!game().showCombat || game().scrollEnabled || game().showDialog || game().showPlayer) 
             });
         });
@@ -945,8 +943,7 @@ export default function PhaserGame (props: IProps) {
                 EventBus.emit('update-pause', !game().showDialog);
             };
             setGame({ 
-                ...game(), 
-                showDialog: !game().showDialog, 
+                ...game(), showDialog: !game().showDialog, 
                 smallHud: (!game().showDialog || game().scrollEnabled || game().showPlayer || game().showCombat) 
             });
         });
@@ -955,34 +952,19 @@ export default function PhaserGame (props: IProps) {
                 EventBus.emit('update-pause', !game().showPlayer);
             };
             setGame({ 
-                ...game(), 
-                showPlayer: !game().showPlayer, 
+                ...game(), showPlayer: !game().showPlayer, 
                 smallHud: (!game().showPlayer || game().scrollEnabled || game().showDialog || game().showCombat) 
             });
         });
-        EventBus.on('toggle-pause', (e: boolean) => setGame({ ...game(), pauseState: e, 
-            smallHud: e 
-        }));
+        EventBus.on('toggle-pause', (e: boolean) => setGame({ ...game(), pauseState: e, smallHud: e }));
         EventBus.on('blend-combat', (e: any) => setCombat({ ...combat(), ...e }));
         EventBus.on('blend-game', (e: any) => setGame({ ...game(), ...e }));
-        EventBus.on('update-combat-player', (e: any) => {
-            setCombat({ 
-                ...combat(), 
-                player: { ...e.ascean }, 
-                playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, 
-                playerAttributes: e.attributes, 
-                playerDefense: e.defense, 
-                playerDefenseDefault: e.defense 
-            });
-        });
+        EventBus.on('update-combat-player', (e: any) => setCombat({ ...combat(), player: { ...e.ascean }, playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, playerAttributes: e.attributes, playerDefense: e.defense, playerDefenseDefault: e.defense }));
         EventBus.on('update-combat-state', (e: { key: string; value: string }) => setCombat({ ...combat(), [e.key]: e.value }));
         EventBus.on('update-combat-timer', (e: number) => setCombat({ ...combat(), combatTimer: e }));
         EventBus.on('update-caerenic', () => setCombat({ ...combat(), isCaerenic: !combat().isCaerenic }));
         EventBus.on('update-stalwart', () => setCombat({ ...combat(), isStalwart: !combat().isStalwart }));      
-        EventBus.on('update-stealth', () => {
-            setCombat({ ...combat(), isStealth: !combat().isStealth });
-            EventBus.emit('stealth-sound');
-        });
+        EventBus.on('update-stealth', () => {setCombat({ ...combat(), isStealth: !combat().isStealth }); EventBus.emit('stealth-sound');});
         EventBus.on('update-health', (e: number) => {
             const update = {
                 ...props.ascean(),
@@ -994,17 +976,9 @@ export default function PhaserGame (props: IProps) {
             const newLootDrops = game().lootDrops.length > 0 ? [...game().lootDrops, ...e] : e;
             const newLootIds = game().showLootIds.length > 0 ? [...game().showLootIds, ...e.map((loot) => loot._id)] : e.map((loot) => loot._id);
             let inv = JSON.parse(JSON.stringify(game().inventory.inventory));
-            // const inv = [...game().inventory.inventory];
             const newInv = inv.length > 0 ? [...inv, ...e] : e;
             const newClean = { ...game().inventory, inventory: newInv };
-            setGame({ 
-                ...game(), 
-                inventory: newClean,
-                lootDrops: newLootDrops, 
-                showLoot: newLootIds.length > 0,
-                lootTag: newLootIds.length > 0,
-                showLootIds: newLootIds
-            });
+            setGame({ ...game(), inventory: newClean,lootDrops: newLootDrops, showLoot: newLootIds.length > 0,lootTag: newLootIds.length > 0,showLootIds: newLootIds });
             EventBus.emit('update-inventory', newClean);
         });
         EventBus.on('remove-lootdrop', (e: string) => {
@@ -1012,13 +986,7 @@ export default function PhaserGame (props: IProps) {
             updatedLootIds = updatedLootIds.filter(id => id !== e);
             let updatedLootDrops = [...game().lootDrops];
             updatedLootDrops = updatedLootDrops.filter((loot) => loot._id !== e);
-            setGame({
-                ...game(),
-                lootDrops: updatedLootDrops,
-                showLoot: updatedLootIds.length > 0,
-                lootTag: updatedLootIds.length > 0,
-                showLootIds: updatedLootIds
-            });
+            setGame({ ...game(), lootDrops: updatedLootDrops, showLoot: updatedLootIds.length > 0, lootTag: updatedLootIds.length > 0, showLootIds: updatedLootIds });
         });
         EventBus.on('update-lootdrops', (e: Equipment[]) => 
             setGame({ 
@@ -1034,8 +1002,7 @@ export default function PhaserGame (props: IProps) {
                 EventBus.emit('update-pause', !game().scrollEnabled);
             };
             setGame({ 
-                ...game(), 
-                scrollEnabled: !game().scrollEnabled, 
+                ...game(), scrollEnabled: !game().scrollEnabled, 
                 smallHud: (!game().scrollEnabled || game().showPlayer || game().showDialog || game().showCombat) 
             });
         }); 

@@ -343,56 +343,39 @@ export default class Player extends Entity {
     };
 
     findEnemy = () => {
-        // console.log('%c ----- Attempting To Find Enemy/ -----', 'color: gold');
         if (this.scene.state.newPlayerHealth <= 0) {
-            // console.log('%c ----- Player Has 0 Health, Disengaging -----', 'color:red');
             this.disengage();
             return;
         };
         const first = this.scene.state.enemyID;
         if (first === '') {
-            // console.log('%c ----- State Does Not Contain Enemy ID ----', 'color: red');
             if (this.targets.length > 0) {
-                // console.log('%c No Enemy ID In State, Yes TARGETS, Checking Array For Combat -----', 'color: gold');
                 for (let i = 0; i < this.targets.length; i++) {
-                    const combat = this.targets[i].inCombat;
-                    if (combat === true) {
+                    if (this.targets[i].inCombat === true) {
                         if (this.scene.state.newPlayerHealth <= 0) {
-                            // console.log(`%c ----- TARGET In Combat: ${this.targets[i].ascean?.name}, However, Player is at 0 Health. Ejecting Enemy From Combat -----`, 'color: red');
                             this.clearEnemy(this.targets[i]);
                             return;
                         } else {
-                            // console.log(`%c ----- TARGET In Combat: ${this.targets[i].ascean?.name}, Becoming Current Target -----`, 'color: green');
                             this.quickTarget(this.targets[i]);
                             return;
                         };
                     };
                 };
-                // console.log('%c Made it to the other side, no targets but in combat? Flush targets, refindEnemy', 'color: gold');
                 this.clearEnemies();
                 this.findEnemy();
             } else if (this.touching.length > 0) {
-                // console.log('%c No Enemy ID, No Targets, Yes TOUCHING, Checking Array For Combat', 'color: gold');
                 for (let i = 0; i < this.touching.length; i++) {
-                    const combat = this.touching[i].inCombat;
-                    if (combat === true) {
-                        console.log(`%c ----- TOUCHING In Combat: ${this.touching[i].ascean?.name}, Becoming Current Target -----`, 'color: green');
+                    if (this.touching[i].inCombat === true) {
                         this.quickTarget(this.touching[i]);
                         return;
                     };
                 };
-                // console.log('%c No Enemy ID, No Targets, No Touching, Not Sure Why You Are In Combat', 'color: red');
-            } else {
-                // console.log('%c No Enemy ID, No Targets, No Touching, Not Sure Why You Are In Combat', 'color: red');
             };
         } else {
             const enemy = this.scene.getEnemy(first);
             if (enemy === undefined) {
-                // console.log('%c `First` Enemy is UNDEFINED, Not Sure Why You Are In Combat, Disengaging', 'color: red');
                 this.disengage();
-                return;
             } else {
-                // console.log(`%c Found ENEMY: ${enemy.ascean?.name}. Engaging Combat`, 'color: green');
                 this.quickTarget(enemy);
             };
         };
@@ -468,20 +451,13 @@ export default class Player extends Entity {
                 };
             };
         };
-        if (this.health < e.newPlayerHealth) {
-            let heal = Math.round(e.newPlayerHealth - this.health);
-            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, PLAYER.DURATIONS.TEXT, 'heal');
-        };
+        if (this.health < e.newPlayerHealth) this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, Math.round(e.newPlayerHealth - this.health), PLAYER.DURATIONS.TEXT, 'heal');
         this.health = e.newPlayerHealth;
         this.healthbar.setValue(this.health);
         if (this.healthbar.getTotal() < e.playerHealth) this.healthbar.setTotal(e.playerHealth);
-
-        if (this.targets.length > 0) this.checkTargets();
         if (this.currentRound !== e.combatRound && this.scene.combat === true) {
             this.currentRound = e.combatRound;
-            if (e.computerDamaged || e.playerDamaged || e.rollSuccess || e.parrySuccess || e.computerRollSuccess || e.computerParrySuccess) {
-                this.soundEffects(e);
-            };
+            if (e.computerDamaged || e.playerDamaged || e.rollSuccess || e.parrySuccess || e.computerRollSuccess || e.computerParrySuccess) this.soundEffects(e);
         };
         if (e.computerParrySuccess === true) {
             this.playerMachine.stateMachine.setState(States.STUN);
@@ -502,28 +478,13 @@ export default class Player extends Entity {
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'posture');
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
         };
-        if (e.computerRollSuccess === true) {
-            this.resistCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);
-        };
-        if (e.newComputerHealth <= 0 && e.playerWin === true) {
-            this.defeatedEnemyCheck(e.enemyID);
-        };
-        if (e.computerWin === true) {
-            this.anims.play('player_pray', true).on('animationcomplete', () => {
-                this.anims.play('player_idle', true);
-            });
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Defeat', DURATION.TEXT, 'damage');
-        };
-        if (e.newPlayerHealth <= 0) {
-            this.disengage();    
-        };
+        if (e.computerRollSuccess === true) this.resistCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);
+        if (e.newComputerHealth <= 0 && e.playerWin === true) this.defeatedEnemyCheck(e.enemyID);
+        if (e.newPlayerHealth <= 0) this.disengage();    
         if (e.playerAttributes.stamina > this.maxStamina) this.maxStamina = e.playerAttributes.stamina;
         if (e.playerAttributes.grace > this.maxGrace) this.maxGrace = e.playerAttributes.grace;
-        if (this.inCombat === false) {
-            if (this.scene.combat === true) {
-                this.scene.combatEngaged(false);
-            };
-        };
+        if (this.inCombat === false && this.scene.combat === true) this.scene.combatEngaged(false);
+        if (this.targets.length > 0) this.checkTargets();
     };
 
     resist = () => {
@@ -560,27 +521,13 @@ export default class Player extends Entity {
                         return this.scene.sound.play('blunt', { volume: this.scene.settings.volume });
                 };
             };
-            if (sfx.computerDamaged === true) {
-                const { playerDamageType } = sfx;
-                soundEffectMap(playerDamageType, sfx.computerWeapons[0]);                
-            };
-            if (sfx.playerDamaged === true) {
-                const { computerDamageType } = sfx;
-                soundEffectMap(computerDamageType, sfx.computerWeapons[0]);
-            };
-            if (sfx.religiousSuccess === true) {
-                this.scene.sound.play('religious', { volume: this.scene.settings.volume });
-            };
-            if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) {
-                this.scene.sound.play('roll', { volume: this.scene.settings.volume / 2 });
-            };
-            if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) {
-                this.scene.sound.play('parry', { volume: this.scene.settings.volume });
-            };
+            if (sfx.computerDamaged === true) soundEffectMap(sfx.playerDamageType, sfx.computerWeapons[0]);                
+            if (sfx.playerDamaged === true) soundEffectMap(sfx.computerDamageType, sfx.computerWeapons[0]);
+            if (sfx.religiousSuccess === true) this.scene.sound.play('religious', { volume: this.scene.settings.volume });            
+            if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.sound.play('roll', { volume: this.scene.settings.volume / 2 });
+            if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) this.scene.sound.play('parry', { volume: this.scene.settings.volume });
             EventBus.emit('blend-combat', { 
-                computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false,
-                parrySuccess: false, computerParrySuccess: false, rollSuccess: false, computerRollSuccess: false,
-                criticalSuccess: false, computerCriticalSuccess: false, religiousSuccess: false,
+                computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false, parrySuccess: false, computerParrySuccess: false, rollSuccess: false, computerRollSuccess: false, criticalSuccess: false, computerCriticalSuccess: false, religiousSuccess: false,
             });
         } catch (err) {
             console.warn(err.message, 'Error Setting Sound Effects');
@@ -598,7 +545,7 @@ export default class Player extends Entity {
                 this.staminaModifier = 0;
                 this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
             } else {
-                this.staminaModifier = 5;
+                this.staminaModifier = 3;
                 this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
             };
         };
@@ -610,24 +557,22 @@ export default class Player extends Entity {
 
     defeatedEnemyCheck = (id) => {
         this.targets = this.targets.filter(target => {
-            const check =(target.enemyID !== id && target.inCombat === false)
-            return !check;
+            return target.enemyID !== id || target.health >= 0;
         });
         this.sendEnemies(this.targets);
         this.currentTarget = undefined;
         this.attacking = undefined;
         this.removeHighlight();
         this.scene.combatManager.combatMachine.clear(id);
-        if (this.targets.every(obj => obj.inCombat === false)) {
-            this.disengage();
+        const enemyInCombat = this.targets.find(obj => obj.inCombat && obj.health > 0);
+        if (enemyInCombat) {
+            this.scene.setupEnemy(enemyInCombat);
+            this.setAttacking(enemyInCombat);
+            this.setCurrentTarget(enemyInCombat);
+            this.targetID = enemyInCombat.enemyID;
+            this.highlightTarget(enemyInCombat);
         } else {
-            const newTarget = this.targets.find(obj => obj.enemyID !== id);
-            if (!newTarget) return;
-            this.scene.setupEnemy(newTarget);
-            this.setAttacking(newTarget);
-            this.setCurrentTarget(newTarget);
-            this.targetID = newTarget.enemyID;
-            this.highlightTarget(newTarget);
+            this.disengage();
         };
         this.checkTargets();
     };
@@ -1344,6 +1289,10 @@ export default class Player extends Entity {
                 this.scene.particleManager.update(this.particleEffect);
             };
         };
+        // if (this.isStealthing && !this.playerMachine.stateMachine.isCurrentState(States.STEALTH)) {
+        //     this.playerMachine.stateMachine.setState(States.STEALTH);
+        //     return;
+        // };
         if (this.isConfused && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
             this.playerMachine.stateMachine.setState(States.CONFUSED);
             return;

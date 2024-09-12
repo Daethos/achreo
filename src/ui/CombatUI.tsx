@@ -76,7 +76,7 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
         <div class='center playerHealthBar' style={{ 'z-index': 0, 'max-height': '24px', width: '20.5vw', left: '2vw' }}>
             <div class='playerPortrait' style={{ 'font-size': '1.125em', 'font-weight': 700, color: state().isStealth ? '#fdf6d8' : '#000', 'text-shadow': `0.075em 0.075em 0.075em ${state().isStealth ? '#000' : '#ff0'}`, 'z-index': 1 }}>{healthDisplay()}</div>
             <div class='healthbarPosition' style={{ width: `100%`, 'background-color': 'red' }}></div>
-            <div class='healthbarPosition' style={{ width: `${healthPercentage()}%`, 'background': state()?.isStealth ? 'linear-gradient(#000, #444)' : 'linear-gradient(gold, #fdf6d8)' }}></div>
+            <div class='healthbarPosition' style={{ width: `${healthPercentage()}%`, 'background': state()?.isStealth ? 'linear-gradient(#000, #444)' : 'linear-gradient(gold, #fdf6d8)', transition: 'width 1s ease-out, background 1s ease-out' }}></div>
         </div>
         <p class='playerName' style={{ 
             'top': top(state().player?.name.length as number), left: '4.5vw', position: 'fixed',

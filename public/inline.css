@@ -50,6 +50,9 @@
 .combatUiShield {position: absolute;top: 2.5vh;left: 42.25vw; align-items: center;justify-content: center;background-color: #000;max-height: 10vh;border-radius: 50% 50% 50% 50% / 12% 12% 88% 88%;transform: scale(1.2);}
 .combatUiWeapon {position: absolute;top: 2.5vh;left: 37vw;align-items: center;justify-content: center;border-radius: 50%;transform: scale(1.2);max-height: 10vh;}
 .healthbar {display: flex;position: absolute;margin-left: 15%;width: 70%;overflow: hidden;border: 0.1em solid #fdf6d8;border-radius: 0.5em;}
+.healthbar > div {
+    transition: width 0.5 ease;
+}
 .healthbarPosition {position: absolute; bottom: 0; left: 0; top: 0; z-index: -1;}
 .playerInventoryBag {height: 100%;width: 100%;z-index: 1;background-color: #000;display: grid;grid-template-columns: repeat(5, 1fr);}
 .playerName {left: 5vw;font-family: 'Cinzel Regular';font-weight: 600;}

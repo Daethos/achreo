@@ -54,7 +54,8 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
 
     function expiring() {
         return combat().combatEngaged === false 
-            || (effect?.enemyID === combat().enemyID && combat().newComputerHealth <= 0)
+            || (effect.enemyID === combat().enemyID && combat().newComputerHealth <= 0)
+            || (enemy === true && effect.enemyID === combat().enemyID)
             || (enemy === true && combat().playerWin === true) 
             || (enemy === true && combat().newComputerHealth <= 0);
     };

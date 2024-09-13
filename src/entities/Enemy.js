@@ -45,7 +45,7 @@ export default class Enemy extends Entity {
             .addState(States.STUNNED, { onEnter: this.onStunEnter, onUpdate: this.onStunUpdate, onExit: this.onStunExit })
             .addState(States.CONSUMED, { onEnter: this.onConsumedEnter, onUpdate: this.onConsumedUpdate, onExit: this.onConsumedExit })
             .addState(States.HURT, { onEnter: this.onHurtEnter, onUpdate: this.onHurtUpdate, onExit: this.onHurtExit })
-            .addState(States.DEATH, { onEnter: this.onDeathEnter })
+            .addState(States.DEATH, { onEnter: this.onDeathEnter, onUpdate: this.onDeathUpdate })
             .addState(States.DEFEATED, { onEnter: this.onDefeatedEnter }) // ====== Special States ======
             .addState(States.ASTRAVE, { onEnter: this.onAstraveEnter, onUpdate: this.onAstraveUpdate, onExit: this.onAstraveExit })
             .addState(States.BLINK, { onEnter: this.onBlinkEnter, onUpdate: this.onBlinkUpdate, onExit: this.onBlinkExit })
@@ -128,7 +128,7 @@ export default class Enemy extends Entity {
         this.parryAction = '';
         this.originalPosition = new Phaser.Math.Vector2(this.x, this.y);
         this.originPoint = {}; // For Leashing
-
+        this.isDeleting = false;
         this.sensorDisp = 12;
         this.colliderDisp = 16; 
 
@@ -187,6 +187,15 @@ export default class Enemy extends Entity {
         EventBus.off('enemy-persuasion', this.persuasionUpdate);
         EventBus.off('enemy-luckout', this.luckoutUpdate);
         EventBus.off('update-enemy-health', this.healthUpdate);
+        this.setActive(false);
+        this.removeInteractive();
+        this.spriteWeapon.destroy();
+        this.spriteWeapon = undefined;
+        this.spriteShield.destroy();
+        this.spriteShield = undefined;
+        this.glowFilter.destroy();
+        this.glowFilter = undefined;
+        this.body.destroy();
     };
 
     enemyStateListener() {
@@ -757,16 +766,8 @@ export default class Enemy extends Entity {
         }, undefined, this);
         this.stateMachine.setState(States.IDLE);
     };
-    onDeathEnter = () => {
-        this.isDead = true;
-        this.anims.play('player_death', true);
-        this.inCombat = false;
-        this.setSpecialCombat(false);
-        this.attacking = undefined;
-        this.spriteWeapon.destroy();
-        this.spriteShield.destroy();
-        this.healthbar.destroy();
-    };
+    onDeathEnter = () => this.clearTint();
+    onDeathUpdate = () => this.anims.play('player_hurt', true);
 
     onIdleEnter = () => {
         this.setVelocity(0);

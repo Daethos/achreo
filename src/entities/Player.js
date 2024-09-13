@@ -637,6 +637,7 @@ export default class Player extends Entity {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [playerSensor],
             callback: (other) => {
+                if (this.isDeleting) return;
                 if (this.isValidEnemyCollision(other)) {
                     this.touching.push(other.gameObjectB);
                     this.isValidRushEnemy(other.gameObjectB);
@@ -662,6 +663,7 @@ export default class Player extends Entity {
         this.scene.matterCollision.addOnCollideActive({
             objectA: [playerSensor],
             callback: (other) => {
+                if (this.isDeleting) return;
                 if (this.isValidEnemyCollision(other)) {
                     this.actionTarget = other;
                     this.isValidRushEnemy(other.gameObjectB);
@@ -676,6 +678,7 @@ export default class Player extends Entity {
         this.scene.matterCollision.addOnCollideEnd({
             objectA: [playerSensor],
             callback: (other) => {
+                if (this.isDeleting) return;
                 this.touching = this.touching.filter(obj => obj?.enemyID !== other?.gameObjectB?.enemyID);
                 if (this.isValidEnemyCollision(other) && !this.touching.length) {
                     this.actionAvailable = false;

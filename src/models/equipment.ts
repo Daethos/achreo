@@ -121,46 +121,62 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
                 };
             };
             for (const attribute of CHANCE) {    
-                if (item[attribute] > 10) {
-                    item[attribute] = randomIntFromInterval(item[attribute] -2, item[attribute] + 5);
-                } else if (item[attribute] > 5) { // 6-10
-                    item[attribute] = randomIntFromInterval(item[attribute] - 1, item[attribute] + 3);
-                } else if (item[attribute] >= 3) { // 3-5
+                if (item[attribute] >= 10) {// 10+  +/ 4/0
+                    item[attribute] = randomIntFromInterval(item[attribute], item[attribute] + 4);
+                } else if (item[attribute] >= 6) { // 6-9 +/ 2/0
                     item[attribute] = randomIntFromInterval(item[attribute], item[attribute] + 2);
-                } else if (item[attribute] > 0) { // 1-2
-                    item[attribute] = randomIntFromInterval(item[attribute], item[attribute] + 1);
+                } else if (item[attribute] >= 4) { // 4-5 +/ 2/1
+                    item[attribute] = randomIntFromInterval(item[attribute] - 1, item[attribute] + 2);
+                } else if (item[attribute] >= 2) { // 2-3 +/ 1/1
+                    item[attribute] = randomIntFromInterval(item[attribute] - 1, item[attribute] + 1);
+                } else { // 0-1  +/ 0/1
+                    item[attribute] = randomIntFromInterval(item[attribute] - 1 || 0, item[attribute]);
                 };
             };
             for (const damage of DAMAGE) {    
-                if (item[damage] > 20) { // 21 +/- 5/3
-                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage] + 5);
-                } else if (item[damage] > 10) { // 11-20 +/- 3/2
-                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage] + 3);
-                } else if (item[damage] > 5) { // 6-10 +/- 2/1
+                if (item[damage] >= 20) { // 20+ +/- 2/0
+                    item[damage] = randomIntFromInterval(item[damage], item[damage] + 4);
+                } else if (item[damage] >= 18) { // 18-19 +/- 2/0
                     item[damage] = randomIntFromInterval(item[damage], item[damage] + 2);
-                } else if (item[damage] > 1) { // 2-5 +/- 1/0
-                    item[damage] = randomIntFromInterval(item[damage], item[damage] + 1);
+                } else if (item[damage] >= 16) { // 16-17 +/- 2/0
+                    item[damage] = randomIntFromInterval(item[damage], item[damage] + 2);
+                } else if (item[damage] >= 14) { // 14-15 +/- 2/0
+                    item[damage] = randomIntFromInterval(item[damage], item[damage] + 2);
+                } else if (item[damage] >= 12) { // 12-13 +/- 2/0
+                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage] + 2);
+                } else if (item[damage] >= 10) { // 10-11 +/- 2/1
+                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage] + 2);
+                } else if (item[damage] >= 8) { // 8-9 +/- 2/1
+                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage] + 1);
+                } else if (item[damage] >= 6) { // 6-7 +/- 1/1
+                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage] + 1);
+                } else if (item[damage] >= 4) { // 2-5 +/- 1/1
+                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage]);
+                } else if (item[damage] >= 2) { // 2-3 +/- 0/1
+                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage]);
+                } else { // 0-1  +/ 0/1
+                    item[damage] = randomIntFromInterval(item[damage] - 1 || 0, item[damage]);
                 };
             };
             for (const damage of CRITICAL) {    
                 if (item[damage] > 1.99) { // 2.0 +/- 0.3/0.25 (0.55 Range)
-                    item[damage] = randomFloatFromInterval(item[damage] - 0.25, item[damage] + 0.3);
-                } else if (item[damage] > 1.74) { // 1.75 +/- 0.25/0.2 (0.45 Range)
                     item[damage] = randomFloatFromInterval(item[damage] - 0.2, item[damage] + 0.25);
-                } else if (item[damage] > 1.49) { // 1.5 +/- 0.2/0.15 (0.35 Range)
+                } else if (item[damage] > 1.74) { // 1.75 +/- 0.25/0.2 (0.45 Range)
                     item[damage] = randomFloatFromInterval(item[damage] - 0.15, item[damage] + 0.2);
-                } else if (item[damage] > 1.24) { // 1.25 +/- 0.15/0.1 (0.25 Range)
+                } else if (item[damage] > 1.49) { // 1.5 +/- 0.2/0.15 (0.35 Range)
                     item[damage] = randomFloatFromInterval(item[damage] - 0.1, item[damage] + 0.15);
+                } else if (item[damage] > 1.24) { // 1.25 +/- 0.15/0.1 (0.25 Range)
+                    item[damage] = randomFloatFromInterval(item[damage] - 0.05, item[damage] + 0.1);
                 } else if (item[damage] > 1.09) { // 1.1 +/- 0.05/0.02 (0.07 Range)
-                    item[damage] = randomFloatFromInterval(item[damage] - 0.02, item[damage] + 0.05);
+                    item[damage] = randomFloatFromInterval(item[damage] - 0.02, item[damage] + 0.03);
                 } else if (item[damage] > 1.05) { // 1.05 +/- 0.04/0.01 (0.05 Range)
-                    item[damage] = randomFloatFromInterval(item[damage] - 0.01, item[damage] + 0.04);
+                    item[damage] = randomFloatFromInterval(item[damage] - 0.01, item[damage] + 0.03);
                 } else if (item[damage] === 1.03) { // 1.00 +/- 0.03/0 (0.03 Range)
-                    item[damage] = randomFloatFromInterval(item[damage], item[damage] + 0.03);
+                    item[damage] = randomFloatFromInterval(item[damage] - 0.01, item[damage] + 0.02);
                 } else if (item[damage] === 1.02) { // 1.00 +/- 0.02/0 (0.02 Range)
-                    item[damage] = randomFloatFromInterval(item[damage], item[damage] + 0.02);
+                    item[damage] = randomFloatFromInterval(item[damage] - 0.01, item[damage] + 0.02);
                 } else if (item[damage] === 1.01) { // 1.00 +/- 0.01/0 (0.01 Range)
-                    item[damage] = randomFloatFromInterval(item[damage], item[damage] + 0.01);
+                    item[damage] = randomFloatFromInterval(item[damage] - 0.01, item[damage] + 0.01);
                 };
             };
             if (item.influences) {

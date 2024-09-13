@@ -759,7 +759,6 @@ export default function PhaserGame (props: IProps) {
         });
         EventBus.on('upgrade-item', (data: any) => upgradeItem(data));
         EventBus.on('clear-enemy', () => {
-            console.log('CLEARING ENEMY');
             setCombat({
                 ...combat(),
                 computer: undefined,
@@ -817,7 +816,6 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('request-combat', () => EventBus.emit('request-combat-ready', combat()));
         EventBus.on('request-game', () => EventBus.emit('game', game()));
         EventBus.on('setup-enemy', (e: any) => {
-            console.log('SETTING UP ENEMY');
             setCombat({
                 ...combat(),
                 computer: e.game,

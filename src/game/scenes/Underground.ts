@@ -26,6 +26,7 @@ import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.mi
 import Tile from '../../phaser/Tile';
 import { CombatManager } from '../CombatManager';
 import MiniMap from '../../phaser/MiniMap';
+import ScrollingCombatText from '../../phaser/ScrollingCombatText';
 
 export class Underground extends Scene {
     animatedTiles: any[];
@@ -121,6 +122,7 @@ export class Underground extends Scene {
             this.matter.world.convertTilemapLayer(layer!);
             layer?.forEachTile((tile) => {tile = new Tile(tile);});
         });
+        layer2?.setDepth(6);
         this.groundLayer = layer1;
         this.layer2 = layer2;
         this.layer3 = layer3;
@@ -591,6 +593,7 @@ export class Underground extends Scene {
     // clearNonAggressiveEnemy = (): boolean => EventBus.emit('clear-enemy');
     clearNPC = (): boolean => EventBus.emit('clear-npc');
     combatEngaged = (bool: boolean) => {
+        if (this.scene.isSleeping(this.scene.key)) return;
         EventBus.emit('combat-engaged', bool);
         if (bool === true && this.combat !== bool) {
             this.musicCombat.play();
@@ -610,6 +613,7 @@ export class Underground extends Scene {
     };
     stealthEngaged = (bool: boolean, scene: string) => {
         if (this.scene.key !== scene) return;
+        if (this.scene.isSleeping(this.scene.key)) return;
         if (bool) {
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
             if (this.musicCombat.isPlaying) this.musicCombat.pause();
@@ -628,11 +632,13 @@ export class Underground extends Scene {
         };
     };
     pauseMusic = (): void => {
+        if (this.scene.isSleeping(this.scene.key)) return;
         if (this.musicBackground.isPlaying) this.musicBackground.pause();
         if (this.musicCombat.isPlaying) this.musicCombat.pause();
         this.musicStealth.pause();
     };
     resumeMusic = (): void => {
+        if (this.scene.isSleeping(this.scene.key)) return;
         if (!this.combat) {
             if (this.player.isStealthing) {
                 if (this.musicStealth.isPaused) {
@@ -676,6 +682,16 @@ export class Underground extends Scene {
         const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0' });
         this.enemies.push(enemy);
         return enemy;
+    };
+    destroyEnemy = (enemy: Enemy) => {
+        enemy.isDeleting = true;
+        enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, "Something is tearing into me. Please, help!", 1500, 'damage', false, true);
+        enemy.stateMachine.setState(States.DEATH);
+        this.time.delayedCall(3000, () => {
+            this.enemies = this.enemies.filter((e: Enemy) => e !== enemy);
+            enemy.cleanUp();
+            enemy.destroy();
+        }, undefined, this);
     };
     summonEnemy = (summons: number) => {
         for (let i = 0; i < summons; i++) {
@@ -730,6 +746,7 @@ export class Underground extends Scene {
         this.rightJoystick.update();
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update();
+            if (this.enemies[i].isDefeated && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
         };
         const camera = this.cameras.main;
         const bounds = new Phaser.Geom.Rectangle(

@@ -114,6 +114,7 @@ export class Game extends Scene {
         let layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Tilemaps.Tileset, 0, 0);
         let layer4 = map.createLayer('Tile Layer 4 - Primes', decorations as Tilemaps.Tileset, 0, 0);
         let layer5 = map.createLayer('Tile Layer 5 - Snags', decorations as Tilemaps.Tileset, 0, 0);
+        let layerT = map.createLayer('Tile Layer - Tree Trunks', decorations as Tilemaps.Tileset, 0, 0);
         let layer6 = map.createLayer('Tile Layer 6 - Camps', camps as Tilemaps.Tileset, 0, 0);
         this.baseLayer = layer0;
         this.climbingLayer = layer1;
@@ -123,10 +124,10 @@ export class Game extends Scene {
         this.plants = layer3;
         map.createLayer('Tile Layer - Campfire', campfire as Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer - Lights', light as Tilemaps.Tileset, 0, 0);
-        [layer0, layer1, layerC, layer4, layer5, layer6].forEach((layer, index) => { // castle_bottom, castle_top, 
+        [layer0, layer1, layerC, layerT, layer4, layer5, layer6].forEach((layer, index) => { // castle_bottom, castle_top, 
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
-            if (index < 3) return;
+            if (index < 4) return;
             layer?.setDepth(5);
         });
         [layer2, layer3].forEach((layer) => { // castle_bottom, castle_top, 
@@ -174,7 +175,7 @@ export class Game extends Scene {
             firewater: this?.input?.keyboard?.addKeys('T'),
         }; 
         this.lights.enable();
-        this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 200, 0.0675, 0.0675); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
+        this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 150, 0.06, 0.06); // 0xFFD700 || 0xFDF6D8 || 0xDAA520 || 0.0675
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
         this.musicBackground = this.sound.add('background', { volume: this?.settings?.volume ?? 0 / 2, loop: true });
         this.musicCombat = this.sound.add('combat', { volume: this?.settings?.volume, loop: true });
@@ -585,6 +586,7 @@ export class Game extends Scene {
     // clearNonAggressiveEnemy = (): boolean => EventBus.emit('clear-enemy');
     clearNPC = (): boolean => EventBus.emit('clear-npc');
     combatEngaged = (bool: boolean) => {
+        if (this.scene.isSleeping(this.scene.key)) return;
         EventBus.emit('combat-engaged', bool);
         if (bool === true && this.combat !== bool) {
             this.musicCombat.play();
@@ -604,6 +606,7 @@ export class Game extends Scene {
     };
     stealthEngaged = (bool: boolean, scene: string) => {
         if (this.scene.key !== scene) return;
+        if (this.scene.isSleeping(this.scene.key)) return;
         if (bool) {
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
             if (this.musicCombat.isPlaying) this.musicCombat.pause();
@@ -622,11 +625,13 @@ export class Game extends Scene {
         };
     };
     pauseMusic = (): void => {
+        if (this.scene.isSleeping(this.scene.key)) return;
         if (this.musicBackground.isPlaying) this.musicBackground.pause();
         if (this.musicCombat.isPlaying) this.musicCombat.pause();
         this.musicStealth.pause();
     };
     resumeMusic = (): void => {
+        if (this.scene.isSleeping(this.scene.key)) return;
         if (!this.combat) {
             if (this.player.isStealthing) {
                 if (this.musicStealth.isPaused) {

@@ -339,7 +339,7 @@ export default class PlayerMachine {
     onAchireExit = () => {
         if (this.player.castingSuccess === true) {
             // const anim = this.getWeaponAnim();
-            this.player.particleEffect =  this.scene.particleManager.addEffect('achire', this, 'achire', true);
+            this.player.particleEffect =  this.scene.particleManager.addEffect('achire', this.player, 'achire', true);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `Your Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0]?.name}.`
             });
@@ -800,13 +800,14 @@ export default class PlayerMachine {
     caerenicDamage = () => this.player.isCaerenic ? 1.15 : 1;
     levelModifier = () => (this.scene.state.player?.level as number + 9) / 10;
     mastery = () => this.scene.state.player?.[this.scene.state.player?.mastery as keyof typeof this.scene.state.player];
-    chiomism = (id: string, val: number) => {
+    chiomism = (id: string, power: number) => {
+        this.player.entropicMultiplier(power);
         if (id === this.player.getEnemyId() || id === this.player.playerID) {
-            this.scene.combatManager.combatMachine.action({ type: 'Chiomic', data: val }); 
+            this.scene.combatManager.combatMachine.action({ type: 'Chiomic', data: power }); 
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
-            const chiomic = Math.round(this.mastery() / 2 * (1 + val / 100) * this.caerenicDamage() * this.levelModifier());
+            const chiomic = Math.round(this.mastery() / 2 * (1 + power / 100) * this.caerenicDamage() * this.levelModifier());
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
@@ -843,11 +844,11 @@ export default class PlayerMachine {
         };
         this.scene.combatManager.slow(this.player.spellTarget, 975);
         if (this.player.spellTarget === this.player.getEnemyId()) {
-            this.scene.combatManager.combatMachine.action({ type: 'Chiomic', data: 10 }); 
+            this.scene.combatManager.combatMachine.action({ type: 'Chiomic', data: this.player.entropicMultiplier(10) }); 
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === this.player.spellTarget);
             if (!enemy) return;
-            const chiomic = Math.round(this.mastery() * 1.1 * this.caerenicDamage() * this.levelModifier());
+            const chiomic = Math.round(this.mastery() * (1 + (this.player.entropicMultiplier(10) / 100)) * this.caerenicDamage() * this.levelModifier());
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
@@ -855,16 +856,17 @@ export default class PlayerMachine {
         };
         this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
     };
-    sacrifice = (id: string, val: number) => {
+    sacrifice = (id: string, power: number) => {
+        this.player.entropicMultiplier(power);
         if (id === this.player.getEnemyId()) {
-            this.scene.combatManager.combatMachine.action({ type: 'Sacrifice', data: val });
-            this.player.currentTarget.flickerCarenic(750);
+            this.scene.combatManager.combatMachine.action({ type: 'Sacrifice', data: power });
+            this.player.currentTarget?.flickerCarenic(750);
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
-            const sacrifice = Math.round(this.mastery() * (1 + val / 50) * this.caerenicDamage() * this.levelModifier());
+            const sacrifice = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier());
             let playerSacrifice = this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.player.isStalwart ? 0.85 : 1)) < 0 ? 0 : this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.player.isStalwart ? 0.85 : 1));
-            let enemySacrifice = enemy.health - sacrifice < 0 ? 0 : enemy.health - sacrifice;
+            let enemySacrifice = enemy.health - (sacrifice * (1 + power / 50)) < 0 ? 0 : enemy.health - (sacrifice * (1 + power / 50));
             const playerActionDescription = `You sacrifice ${sacrifice / 2 * (this.player.isStalwart ? 0.85 : 1)} health to rip ${sacrifice} from ${enemy.ascean?.name}.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
             this.scene.combatManager.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSacrifice, id } });
@@ -872,14 +874,15 @@ export default class PlayerMachine {
             enemy.flickerCarenic(750);    
         };
     };
-    suture = (id: string, val: number) => {
+    suture = (id: string, power: number) => {
+        this.player.entropicMultiplier(power);
         if (id === this.player.getEnemyId()) {
-            this.scene.combatManager.combatMachine.action({ type: 'Suture', data: val });
-            this.player.currentTarget.flickerCarenic(750);
+            this.scene.combatManager.combatMachine.action({ type: 'Suture', data: power });
+            this.player.currentTarget?.flickerCarenic(750);
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
-            const suture = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier()) * (1 * val / 100) * 0.8;
+            const suture = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier()) * (1 * power / 100) * 0.8;
             let playerSuture = this.scene.state.newPlayerHealth + suture > this.scene.state.playerHealth ? this.scene.state.playerHealth : this.scene.state.newPlayerHealth + suture;
             let enemySuture = enemy.health - suture < 0 ? 0 : enemy.health - suture;                    
             const playerActionDescription = `Your suture ${enemy.ascean?.name}'s caeren into you, absorbing and healing for ${suture}.`;
@@ -970,7 +973,7 @@ export default class PlayerMachine {
     };
 
     onHookEnter = () => {
-        this.player.particleEffect = this.scene.particleManager.addEffect('hook', this, 'hook', true);
+        this.player.particleEffect = this.scene.particleManager.addEffect('hook', this.player, 'hook', true);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Hook', DURATION.TEXT, 'damage', false, true);
         this.scene.sound.play('dungeon', { volume: this.scene.settings.volume });
         this.player.flickerCarenic(750);
@@ -1190,7 +1193,7 @@ export default class PlayerMachine {
     };
     onQuorExit = () => {
         if (this.player.castingSuccess === true) {
-            this.player.particleEffect =  this.scene.particleManager.addEffect('quor', this, 'quor', true);
+            this.player.particleEffect =  this.scene.particleManager.addEffect('quor', this.player, 'quor', true);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `Your Achre is imbued with instantiation, its Quor auguring it through the ${this.scene.state.weapons[0]?.name}.`
             });

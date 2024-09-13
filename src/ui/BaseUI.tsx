@@ -13,6 +13,7 @@ import { Reputation } from '../utility/player';
 import { Puff } from 'solid-spinner';
 import Statistics from '../utility/statistics';
 import { validateHealth, validateLevel, validateMastery } from '../utility/validators';
+import { adjustTime } from './Timer';
 const Character = lazy(async () => await import('./Character'));
 const CombatUI = lazy(async () => await import('./CombatUI'));
 const Deity = lazy(async () => await import('./Deity'));
@@ -30,7 +31,6 @@ interface Props {
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
     statistics: Accessor<Statistics>;
-    setStatistics: Setter<Statistics>;
     stamina: Accessor<number>;
     grace: Accessor<number>;
     tutorial: Accessor<string>;
@@ -38,8 +38,7 @@ interface Props {
     setShowTutorial: Setter<boolean>;
     showDeity: Accessor<boolean>;
 };
-var remaining: number = 0, timer: any = undefined;
-export default function BaseUI({ instance, ascean, combat, game, reputation, settings, setSettings, statistics, setStatistics, stamina, grace, tutorial, showDeity, showTutorial, setShowTutorial }: Props) {
+export default function BaseUI({ instance, ascean, combat, game, reputation, settings, setSettings, statistics, stamina, grace, tutorial, showDeity, showTutorial, setShowTutorial }: Props) {
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [asceanState, setAsceanState] = createSignal<LevelSheet>({
         ascean: ascean(),
@@ -289,12 +288,12 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     break;
                 case 'Sacrifice': 
                     if (combat().computer === undefined || newComputerHealth === 0) return;
-                    const sacrifice = Math.round(playerMastery * caerenic * playerLevel) * (1 + data / 50);
+                    const sacrifice = Math.round(playerMastery * caerenic * playerLevel);
                     newPlayerHealth = newPlayerHealth - (sacrifice / 2 * stalwart) < 0 ? 0 : newPlayerHealth - (sacrifice / 2 * stalwart);
-                    newComputerHealth = newComputerHealth - sacrifice < 0 ? 0 : newComputerHealth - sacrifice;
+                    newComputerHealth = newComputerHealth - (sacrifice * (1 + data / 50)) < 0 ? 0 : newComputerHealth - (sacrifice * (1 + data / 50));
                     playerWin = newComputerHealth === 0;
                     computerWin = newPlayerHealth === 0;
-                    playerActionDescription = `You sacrifice ${Math.round(sacrifice / 2 * stalwart)} health to rip ${Math.round(sacrifice)} from ${combat().computer?.name}.`;
+                    playerActionDescription = `You sacrifice ${Math.round(sacrifice / 2 * stalwart)} health to rip ${Math.round(sacrifice * (1 + data / 50))} from ${combat().computer?.name}.`;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin, playerActionDescription, computerWin };
                     EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, playerWin });
                     computerWin = res.computerWin;
@@ -313,10 +312,10 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     break;
                 case 'Enemy Sacrifice': 
                     if (combat().computer === undefined) return;
-                    const enemySac = Math.round(computerMastery * computerLevel * (1 + data / 50) * caerenicVulnerable * stalwart);
-                    newPlayerHealth = newPlayerHealth - (enemySac * caerenicVulnerable) < 0 ? 0 : newPlayerHealth - (enemySac * caerenicVulnerable);
+                    const enemySac = Math.round(computerMastery * computerLevel * caerenicVulnerable * stalwart);
+                    newPlayerHealth = newPlayerHealth - (enemySac * (1 + data / 50)) < 0 ? 0 : newPlayerHealth - (enemySac * (1 + data / 50));
                     newComputerHealth = newComputerHealth - (enemySac / 2) < 0 ? 0 : newComputerHealth - (enemySac / 2);
-                    computerActionDescription = `${combat().computer?.name} sacrifices ${enemySac / 2} health to rip ${enemySac * caerenicVulnerable} from you.`;
+                    computerActionDescription = `${combat().computer?.name} sacrifices ${enemySac / 2} health to rip ${enemySac * (1 + data / 50)} from you.`;
                     computerWin = newPlayerHealth === 0;
                     playerWin = newComputerHealth === 0;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, computerWin, computerActionDescription, playerWin, damagedID: combat().enemyID };
@@ -336,26 +335,31 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     EventBus.emit('blend-combat', { newPlayerHealth: newPlayerHealth, newComputerHealth, computerWin, playerWin, damagedID: combat().enemyID });
                     computerWin = res.computerWin;
                     break;
+                case 'Remove Enemy':
+                    if (combat().computer === undefined) return;
+                    filterEnemies(combat().enemyID);
+                    EventBus.emit('clear-enemy');
+                    return;
                 default:
                     break;
             };
             if (playerWin === true) res.computerDeathDescription = `${res.computer.name} has been defeated.`;
             if (computerWin === true) res.playerDeathDescription = `You have been defeated.`;
-            EventBus.emit('update-combat', res);
-            EventBus.emit('add-combat-logs', res);
+            if (res) EventBus.emit('update-combat', res);
+            if (res) EventBus.emit('add-combat-logs', res);
             if (playerWin === true || computerWin === true) {
                 resolveCombat(res);
             } else if (affectsHealth === true) {
-                adjustTime(1000, res.newPlayerHealth);
+                adjustTime(1000, res.combatEngaged, res.newPlayerHealth);
             };
-            screenShake(instance.game.scene.scenes[3], 60); // [250, 150, 250]
+            screenShake(instance.game.scene.scenes[3], 64); // [250, 150, 250]
         } catch (err: any) {
             console.warn(err, 'Error Initiating Combat');
         };
     };
     function resolveCombat(res: Combat) {
         try {
-            adjustTime(0, 0, true);
+            adjustTime(0, res.combatEngaged, 0, true);
             if (res.playerWin === true) {
                 let experience: number = Math.round((res.computer?.level as number) * 100 * (res.computer?.level as number / res?.player?.level!) + (res?.playerAttributes?.rawKyosir as number));
                 experience = balanceExperience(experience, res?.player?.level as number);
@@ -381,30 +385,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             console.warn(err, 'Error Resolving Combat');
         };
     };    
-    function startCountdown(health: number) {
-        if (combat().combatEngaged === false) {
-            EventBus.emit('save-health', health);
-            return;
-        };
-        timer = setInterval(() => {
-            remaining -= 1000;
-            if (remaining <= 0) {
-                clearInterval(timer);
-                remaining = 0;
-                timer = undefined;
-                EventBus.emit('save-health', health);
-            };
-        }, 1000);
-    };
-    function adjustTime(amount: number, health: number, cancel?: boolean) {
-        if (cancel === true) {
-            clearInterval(timer);
-            timer = undefined;
-            return;
-        };
-        remaining += amount;
-        if (!timer) startCountdown(health);
-    };
     function balanceExperience(experience: number, level: number) {
         experience *= (110 - (level * 10)) / 100;
         experience = Math.round(experience);

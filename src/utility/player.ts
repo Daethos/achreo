@@ -37,8 +37,8 @@ export const PLAYER = {
         WEAPON_TWO: 0.65,
     },
     SENSOR: {
-        COMBAT: 48,
-        DEFAULT: 48,
+        COMBAT: 40,
+        DEFAULT: 40,
         DISPLACEMENT: 12,
         EVADE: 21,
     },

@@ -581,7 +581,8 @@ export class Game extends Scene {
             this.tweenManager[tween.name].stop();
         };
     };
-    clearNonAggressiveEnemy = (): boolean => EventBus.emit('clear-enemy');
+    clearNonAggressiveEnemy = () => this.combatManager.combatMachine.action({ data: { key: 'player', value: 0, id: this.player.playerID }, type: 'Remove Enemy' });
+    // clearNonAggressiveEnemy = (): boolean => EventBus.emit('clear-enemy');
     clearNPC = (): boolean => EventBus.emit('clear-npc');
     combatEngaged = (bool: boolean) => {
         EventBus.emit('combat-engaged', bool);

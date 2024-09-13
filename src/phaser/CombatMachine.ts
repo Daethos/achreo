@@ -29,6 +29,7 @@ const ACTIONS: { [key: string]: ActionHandler } = {
     'Tshaeral': (data: number) => Dispatcher.tshaeral(data),
     'Player': (data: any) => Dispatcher.player(data),
     'Enemy': (data: any) => Dispatcher.enemy(data),
+    'Remove Enemy': (data: KVI) => Dispatcher.removeEnemy(data),
 };
 
 export default class CombatMachine {

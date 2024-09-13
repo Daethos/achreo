@@ -430,7 +430,7 @@ export default function App() {
             </Suspense>
         )}
         </>}>
-            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} inventory={inventory} setInventory={setInventory} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} statistics={statistics} setStatistics={setStatistics} scene={scene} />
+            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} inventory={inventory} setInventory={setInventory} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} statistics={statistics} scene={scene} />
         </Show>
         <Show when={show()}>
         <Suspense fallback={<Puff color="gold"/>}>

@@ -9,9 +9,10 @@ import { EventBus } from '../game/EventBus';
 export default function PrayerEffects({ combat, effect, enemy, game, setEffect, show, setShow }: { combat: Accessor<Combat>; effect: StatusEffect; enemy: boolean; game: Accessor<GameState>, setEffect: Setter<StatusEffect>; show: Accessor<boolean>; setShow: Setter<boolean>; }) {
     const [effectTimer, setEffectTimer] = createSignal(effect.endTime - effect.startTime);
     var timeout: any = undefined;
+    // console.log(effect, 'Effect')
     function tick(): void {
-        if (combat().combatEngaged === false || (enemy === true && combat().playerWin === true)) { 
-            // console.log('%c Prayer Effect Removed', 'color: red');
+        if (expiring()) { 
+            // console.log('%c Prayer Effect Expired', 'color: red');
             EventBus.emit('initiate-combat', { data: effect, type: 'Remove Tick' });
             clearInterval(timeout);
             return;
@@ -25,7 +26,7 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
             EventBus.emit('initiate-combat', { data: { effect, effectTimer: effectTimer() }, type: 'Tick' });    
         };
         if (effectTimer() <= 0) {
-            // console.log('%c Prayer Effect Removed', 'color: red');
+            // console.log('%c Prayer Effect Removed Naturally', 'color: red');
             EventBus.emit('initiate-combat', { data: effect, type: 'Remove Tick' });
             clearInterval(timeout);
             return;
@@ -50,6 +51,13 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
             && combat().newComputerHealth !== 0
             && (prayer.prayer === 'Heal' || prayer.prayer === 'Damage');
     }; 
+
+    function expiring() {
+        return combat().combatEngaged === false 
+            || (effect?.enemyID === combat().enemyID && combat().newComputerHealth <= 0)
+            || (enemy === true && combat().playerWin === true) 
+            || (enemy === true && combat().newComputerHealth <= 0);
+    };
 
     function showEffect(): void {
         setEffect(effect);

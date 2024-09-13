@@ -71,6 +71,7 @@ export default class StatusEffect {
     public description: string;
     public playerName: string;
     public enemyName: string;
+    public enemyID: string;
     public deity: string;
     public special: boolean;
     public debuffTarget: string;
@@ -92,6 +93,7 @@ export default class StatusEffect {
         this.name = this.setName(weapon?.influences?.[0] as string);
         this.playerName = player.name;
         this.enemyName = enemy.name;
+        this.enemyID = combat.enemyID;
         this.deity = weapon?.influences?.[0] as string;
         this.weapon = { name: weapon.name, id: weapon._id as string};
         this.special = this.setSpecial(prayer);

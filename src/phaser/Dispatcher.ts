@@ -18,6 +18,7 @@ const ActionTypes = {
     ENEMY_SACRIFICE: 'Enemy Sacrifice',
     ENEMY_SUTURE: 'Enemy Suture',
     ENEMY_TSHAERAL: 'Enemy Tshaeral',
+    REMOVE: 'Remove Enemy',
 };
 function weapon(data: KVI): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.WEAPON });
@@ -68,4 +69,8 @@ function health(data: KVI): void {
 function setHealth(data: KVI): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.HEALTH });
 };
-export { weapon, instant, prayer, player, enemy, actionInput, chiomic, tshaeral, health, setHealth, sacrifice, suture, enemyChiomic, enemySacrifice, enemySuture, enemyTshaeral };
+
+function removeEnemy(data: KVI) {
+    EventBus.emit('initiate-combat', { data, type: ActionTypes.REMOVE })
+};
+export { weapon, instant, prayer, player, enemy, actionInput, chiomic, tshaeral, health, setHealth, sacrifice, suture, enemyChiomic, enemySacrifice, enemySuture, enemyTshaeral, removeEnemy };

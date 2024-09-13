@@ -416,6 +416,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
     };
 
+    entropicMultiplier = (power) => {
+        return Phaser.Math.Between(power * 0.5, power * 1.5);
+    };
+
     imgSprite = (item) => {
         return item.imgUrl.split('/')[3].split('.')[0];
     };

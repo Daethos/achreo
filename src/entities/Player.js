@@ -186,42 +186,6 @@ export default class Player extends Entity {
         EventBus.emit('stalwart-buttons', this.isStalwart);
     };
 
-    enemyUpdate = (e) => {
-        const index = this.targets.findIndex(obj => obj.enemyID === e);
-        this.targets = this.targets.filter(obj => obj.enemyID !== e);
-        if (this.targets.length > 0) {
-            const newTarg = this.targets[index] || this.targets[0];
-            if (!newTarg) return;
-            this.currentTarget = newTarg;
-            this.highlightTarget(this.currentTarget);
-            this.scene.setupEnemy(this.currentTarget);
-        };
-    };
-
-    tabUpdate = (enemy) => {
-        const newTarget = this.targets.find(obj => obj.enemyID === enemy.id);
-        this.targetIndex = this.targets.findIndex(obj => obj.enemyID === enemy.id);
-        if (!newTarget) return;
-        if (newTarget.npcType) {
-            this.scene.setupNPC(newTarget);
-        } else {
-            this.attacking = newTarget;
-        };
-        this.currentTarget = newTarget;
-        this.targetID = newTarget.enemyID;
-        if (this.currentTarget) {
-            this.highlightTarget(this.currentTarget); 
-            this.animateTarget();
-            if (this.inCombat && !this.scene.state.computer) {
-                this.scene.setupEnemy(this.currentTarget);
-            }; 
-        } else {
-            if (this.highlight.visible) {
-                this.removeHighlight();
-            };
-        };
-    };
-
     createSprite = (imgUrl, x, y, scale, originX, originY) => {
         const sprite = new GameObjects.Sprite(this.scene, x, y, imgUrl);
         sprite.setScale(scale);
@@ -410,10 +374,10 @@ export default class Player extends Entity {
     targetEngagement = (id) => {
         const enemy = this.scene.enemies.find(obj => obj.enemyID === id);
         if (!enemy) return;
-        this.targets.push(enemy);
+        if (this.isNewEnemy(enemy)) this.targets.push(enemy);
+        if (this.scene.state.enemyID !== id) this.scene.setupEnemy(enemy);
         this.inCombat = true;
         this.scene.combatEngaged(true);
-        this.scene.setupEnemy(enemy);
         this.targetID = id;
         this.setAttacking(enemy);
         this.setCurrentTarget(enemy);
@@ -472,10 +436,8 @@ export default class Player extends Entity {
         if (e.parrySuccess === true) {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Parry', PLAYER.DURATIONS.TEXT, 'heal', true);
             this.scene.combatManager.stunned(e.enemyID);
-            this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'attack');
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'parry');
-            this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'posture');
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
         };
         if (e.computerRollSuccess === true) this.resistCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);
@@ -484,7 +446,7 @@ export default class Player extends Entity {
         if (e.playerAttributes.stamina > this.maxStamina) this.maxStamina = e.playerAttributes.stamina;
         if (e.playerAttributes.grace > this.maxGrace) this.maxGrace = e.playerAttributes.grace;
         if (this.inCombat === false && this.scene.combat === true) this.scene.combatEngaged(false);
-        if (this.targets.length > 0) this.checkTargets();
+        // if (this.targets.length > 0) this.checkTargets();
     };
 
     resist = () => {
@@ -555,15 +517,53 @@ export default class Player extends Entity {
         };
     };
 
+    enemyUpdate = (e) => {
+        const index = this.targets.findIndex(obj => obj.enemyID === e);
+        this.targets = this.targets.filter(obj => obj.enemyID !== e);
+        if (this.targets.length > 0) {
+            const newTarg = this.targets[index] || this.targets[0];
+            if (!newTarg) return;
+            this.currentTarget = newTarg;
+            this.highlightTarget(this.currentTarget);
+            this.scene.setupEnemy(this.currentTarget);
+        };
+    };
+
+    tabUpdate = (enemy) => {
+        const newTarget = this.targets.find(obj => obj.enemyID === enemy.id);
+        this.targetIndex = this.targets.findIndex(obj => obj.enemyID === enemy.id);
+        if (!newTarget) return;
+        if (newTarget.npcType) {
+            this.scene.setupNPC(newTarget);
+        } else {
+            this.attacking = newTarget;
+        };
+        this.currentTarget = newTarget;
+        this.targetID = newTarget.enemyID;
+        if (this.currentTarget) {
+            this.highlightTarget(this.currentTarget); 
+            this.animateTarget();
+            if (this.inCombat && !this.scene.state.computer) {
+                this.scene.setupEnemy(this.currentTarget);
+            }; 
+        } else {
+            if (this.highlight.visible) {
+                this.removeHighlight();
+            };
+        };
+    };
+
     defeatedEnemyCheck = (id) => {
-        this.targets = this.targets.filter(target => {
-            return target.enemyID !== id || target.health >= 0;
-        });
-        this.sendEnemies(this.targets);
         this.currentTarget = undefined;
         this.attacking = undefined;
         this.removeHighlight();
-        this.scene.combatManager.combatMachine.clear(id);
+        const enemy = this.scene.enemies.find(e => e.enemyID === id && e.health <= 0);
+        if (enemy) {
+            this.targets = this.targets.filter(target => target.enemyID !== id);
+            this.sendEnemies(this.targets);
+            if (this.highlight.visible) this.removeHighlight();
+            this.scene.combatManager.combatMachine.clear(id);
+        };
         const enemyInCombat = this.targets.find(obj => obj.inCombat && obj.health > 0);
         if (enemyInCombat) {
             this.scene.setupEnemy(enemyInCombat);
@@ -574,11 +574,10 @@ export default class Player extends Entity {
         } else {
             this.disengage();
         };
-        this.checkTargets();
     };
 
     isPlayerInCombat = () => {
-        return this.inCombat && this.scene.combat && this.scene.state.combatEngaged;
+        return this.scene.enemies.some(e => e.inCombat && e.health > 0) || (this.inCombat && this.scene.combat && this.scene.state.combatEngaged);
     };
 
     shouldPlayerEnterCombat = (other) => {
@@ -610,44 +609,27 @@ export default class Player extends Entity {
         this.highlightTarget(other.gameObjectB);
     };
 
-    isAttackTarget = (enemy) => {
-        if (this.getEnemyId() === enemy.enemyID) {
-            return true;
-        };
-        return false;
-    };
+    isAttackTarget = (enemy) => this.getEnemyId() === enemy.enemyID;
+    isNewEnemy = (enemy) => this.targets.every(obj => obj.enemyID !== enemy.enemyID);
 
-    isNewEnemy = (enemy) => {
-        const newEnemy = this.targets.every(obj => obj.enemyID !== enemy.enemyID);
-        if (newEnemy) {
-            return true;
-        };
-        return false;
-    };
+    isValidEnemyCollision = (other) =>  (
+        other.gameObjectB &&
+        other.bodyB.label === 'enemyCollider' &&
+        other.gameObjectB.isAggressive &&
+        other.gameObjectB.ascean
+    );
+    
 
-    isValidEnemyCollision(other) {
-        return (
-            other.gameObjectB &&
-            other.bodyB.label === 'enemyCollider' &&
-            other.gameObjectB.isAggressive &&
-            other.gameObjectB.ascean
-        );
-    };
-
-    isValidNeutralCollision(other) {
-        return (
-            other.gameObjectB &&
-            other.bodyB.label === 'enemyCollider' &&
-            other.gameObjectB.ascean
-        );
-    };
+    isValidNeutralCollision = (other) => (
+        other.gameObjectB &&
+        other.bodyB.label === 'enemyCollider' &&
+        other.gameObjectB.ascean
+    );
 
     isValidRushEnemy = (enemy) => {
         if (this.isRushing) {
-            const newEnemy =  this.rushedEnemies.every(obj => obj.enemyID !== enemy.enemyID);
-            if (newEnemy) {
-                this.rushedEnemies.push(enemy);
-            };
+            const newEnemy = this.rushedEnemies.every(obj => obj.enemyID !== enemy.enemyID);
+            if (newEnemy) this.rushedEnemies.push(enemy);
         };
     };
  
@@ -702,7 +684,6 @@ export default class Player extends Entity {
                     this.actionAvailable = false;
                     this.triggeredActionAvailable = undefined;
                 };
-                this.checkTargets();
             },
             context: this.scene,
         });
@@ -866,6 +847,7 @@ export default class Player extends Entity {
     };
 
     checkTargets = () => {
+        // console.log('CHECKING TARGETS');
         const playerCombat = this.isPlayerInCombat();
         this.targets = this.targets.filter(gameObject => {
             if (gameObject.npcType && playerCombat === true) {
@@ -883,27 +865,31 @@ export default class Player extends Entity {
         };
         this.sendEnemies(this.targets);
         if (this.targets.length === 0) {
+            // console.log('DISENGAGE checkTargets | target.length');
             this.disengage();
             return;
         };
-        const someInCombat = this.targets.some(gameObject => gameObject.inCombat);
-        if (someInCombat && !playerCombat) {
+        const someInCombat = this.targets.some(gameObject => gameObject.inCombat && gameObject.health > 0);
+        // console.log(`%c PLAYER COMBAT: ${playerCombat} | SOME IM IN COMBAT: ${someInCombat}`, 'color:red');
+        if (!playerCombat && someInCombat) {
             this.scene.combatEngaged(true);
             this.inCombat = true;
-        } else if (!someInCombat && playerCombat && !this.isStealthing && this.currentTarget === undefined) {
+        } else if (!someInCombat && playerCombat && !this.isStealthing) { // && this.currentTarget === undefined
+            // console.log('DISENGAGE checkTargets | !someInCombat && playerCombat && !this.isStealthing');
             this.disengage();
         };
     };
 
     removeTarget = (enemyID) => {
         this.targets = this.targets.filter(gameObject => gameObject.enemyID !== enemyID);
+        this.sendEnemies(this.targets);
         this.tabEnemy(enemyID);
         this.checkTargets();
     };
 
     addEnemy = (enemy) => {
         this.targets.push(enemy);
-        this.checkTargets();
+        this.sendEnemies(this.targets);
     };
 
     isEnemyInTargets = (id) => {
@@ -917,34 +903,22 @@ export default class Player extends Entity {
     };
 
     tabEnemy = (enemyID) => {
-        if (!this.inCombat) {
-            this.setCurrentTarget(undefined);
-            if (this.highlight.visible) {
-                this.removeHighlight();
-            };
+        if (!this.isPlayerInCombat()) {
+            this.disengage();
             return;
         };
         const currentTargetIndex = this.targets.findIndex(obj => obj.enemyID === enemyID);
         const newTarget = this.targets[currentTargetIndex + 1] || this.targets[0];
         if (!newTarget) return;
+        this.currentTarget = newTarget;
+        this.targetID = newTarget.enemyID;
         if (newTarget.npcType) {
             this.scene.setupNPC(newTarget);
         } else {
             this.scene.setupEnemy(newTarget);
             this.attacking = newTarget;
         };
-        this.currentTarget = newTarget;
-        this.targetID = newTarget.enemyID;
-        if (this.currentTarget) {
-            this.highlightTarget(this.currentTarget); 
-            if (this.inCombat && !this.scene.state.computer) {
-                this.scene.setupEnemy(this.currentTarget);
-            }; 
-        } else {
-            if (this.highlight.visible) {
-                this.removeHighlight();
-            };
-        };
+        this.highlightTarget(this.currentTarget); 
     };
 
     clearEnemies = () => {
@@ -1289,10 +1263,6 @@ export default class Player extends Entity {
                 this.scene.particleManager.update(this.particleEffect);
             };
         };
-        // if (this.isStealthing && !this.playerMachine.stateMachine.isCurrentState(States.STEALTH)) {
-        //     this.playerMachine.stateMachine.setState(States.STEALTH);
-        //     return;
-        // };
         if (this.isConfused && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
             this.playerMachine.stateMachine.setState(States.CONFUSED);
             return;

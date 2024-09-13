@@ -130,7 +130,7 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
                 } else if (item[attribute] >= 2) { // 2-3 +/ 1/1
                     item[attribute] = randomIntFromInterval(item[attribute] - 1, item[attribute] + 1);
                 } else { // 0-1  +/ 0/1
-                    item[attribute] = randomIntFromInterval(item[attribute] - 1 || 0, item[attribute]);
+                    item[attribute] = randomIntFromInterval(Math.max(item[attribute] - 1, 0), item[attribute]);
                 };
             };
             for (const damage of DAMAGE) {    
@@ -155,7 +155,7 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
                 } else if (item[damage] >= 2) { // 2-3 +/- 0/1
                     item[damage] = randomIntFromInterval(item[damage] - 1, item[damage]);
                 } else { // 0-1  +/ 0/1
-                    item[damage] = randomIntFromInterval(item[damage] - 1 || 0, item[damage]);
+                    item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage]);
                 };
             };
             for (const damage of CRITICAL) {    

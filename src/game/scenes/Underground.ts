@@ -340,6 +340,12 @@ export class Underground extends Scene {
             if (data.current !== 'Underground') return;
             this.cameras.main.fadeOut();
             this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
+                this.showDialog(false);
+                this.actionBar.setActive(false);
+                this.actionBar.setVisible(false);
+                this.smallHud.setActive(false);
+                this.smallHud.setVisible(false);
+                this.player.disengage();
                 this.pauseMusic();
                 this.scene.sleep(data.current);
                 EventBus.emit('resume', data.next, this.player.isStealthing);
@@ -590,7 +596,6 @@ export class Underground extends Scene {
         };
     };
     clearNonAggressiveEnemy = () => this.combatManager.combatMachine.action({ data: { key: 'player', value: 0, id: this.player.playerID }, type: 'Remove Enemy' });
-    // clearNonAggressiveEnemy = (): boolean => EventBus.emit('clear-enemy');
     clearNPC = (): boolean => EventBus.emit('clear-npc');
     combatEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
@@ -603,7 +608,11 @@ export class Underground extends Scene {
         } else if (bool === false) {
             this.musicCombat.stop();
             if (this.player.isStealthing) {
-                this.musicStealth.stop();
+                if (this.musicStealth.isPaused) {
+                    this.musicStealth.resume();
+                } else {
+                    this.musicStealth.play();
+                };
             } else {
                 this.musicBackground.resume();
             };

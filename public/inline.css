@@ -28,6 +28,8 @@
 .superfade-in {animation: 5s glowing infinite;}
 .superfade-out {animation: 3s 1 invisible;}
 .flash {animation: 3s 1 invert;}
+.combatUiAnimation {animation: 3s 1 form;}
+@keyframes form {0% {filter: invert(0%);transform: scale(1.2);}50% {filter: invert(100%);transform: scale(1.35);}100% {filter: invert(0%);transform: scale(1.2);}}
 @keyframes invert {0% {filter: invert(0%);transform: scale(1);}50% {filter: invert(100%);transform: scale(1.1);}100% {filter: invert(0%);transform: scale(1);}}
 .shadow {text-shadow: 0 0 0.5em rgba(0, 0, 0, 1);}
 .small {font-size: 0.875em;}

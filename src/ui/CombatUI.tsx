@@ -84,12 +84,12 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
         <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar" onClick={changeDisplay} style={{ 'max-height': '74px' }}/>
         <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} settings={settings} />
         <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} settings={settings} />
-        <div class='combatUiWeapon' onClick={() => setShow(show => !show)} style={caerenic(state().isCaerenic) as any}>
+        <div class='combatUiWeapon flash' onClick={() => setShow(show => !show)} style={caerenic(state().isCaerenic) as any}>
             <img src={state()?.weapons?.[0]?.imgUrl} alt={state()?.weapons?.[0]?.name} />
         </div>
         <Show when={state().isStalwart}>
-        <div class='combatUiShield' onClick={() => setShieldShow(shieldShow => !shieldShow)} style={itemStyle(state()?.player?.shield?.rarity as string)}>
-            <img src={state()?.player?.shield.imgUrl} alt={state()?.player?.shield.name} style={{ transform: `[{ rotate: '-45deg' }, { scale: 0.875 }]` }} />
+        <div class='combatUiShield combatUiAnimation' onClick={() => setShieldShow(shieldShow => !shieldShow)} style={itemStyle(state()?.player?.shield?.rarity as string)}>
+            <img src={state()?.player?.shield.imgUrl} alt={state()?.player?.shield.name} style={{ transform: `[{ rotate: '-45deg' }, { scale: 0.875 }]`, transition: 'transform: setScale(1.1) 1s ease-out' }} />
         </div>
         </Show>
         <Show when={show()}>
@@ -110,7 +110,7 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
         </div>
         </Show> 
         <Show when={state().isStealth && state().computer}> 
-        <button class='disengage highlight' style={{ top: '12.5vh', left: '0vw' }} onClick={() => disengage()}>
+        <button class='disengage highlight flash' style={{ top: '12.5vh', left: '0vw' }} onClick={() => disengage()}>
             <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>Disengage</div>
         </button> 
         </Show>

@@ -127,7 +127,8 @@ export default class Player extends Entity {
             .strokeCircle(0, 0, 12) // 10 
         this.mark.setVisible(false);
         this.markAnimation = false;
-
+        if (this.scene.state.isCaerenic) this.caerenicUpdate();
+        if (this.scene.state.isStalwart) this.stalwartUpdate();
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health, 'player');
         this.castbar = new CastingBar(this.scene, this.x, this.y, 0, this);
         this.rushedEnemies = [];

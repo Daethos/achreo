@@ -35,7 +35,7 @@ export default class Fov {
         this.recalculate(map);
     };
 
-    lighting = () => radius + (this.scene.player.isCaerenic ? 2 : this.scene.player.isStealthing ? -2 : 0);
+    lighting = () => radius + (this.scene.player.isCaerenic ? 2 : 0) + (this.scene.player.isStealthing ? -2 : 0);
 
     recalculate = (map: Phaser.Tilemaps.Tilemap) => {
         this.mrpas = new Mrpas(map.width, map.height, (x, y) => {
@@ -120,6 +120,8 @@ export default class Fov {
             enemy.spriteWeapon.setAlpha(alpha);
             enemy.spriteShield.setAlpha(alpha);
             enemy.healthbar.setAlpha(alpha);
+            enemy.reactiveBubble?.setAlpha(alpha);
+            enemy.negationBubble?.setAlpha(alpha);
         };
     };
 };

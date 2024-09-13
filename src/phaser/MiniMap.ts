@@ -4,7 +4,7 @@ import { Underground } from "../game/scenes/Underground";
 const SCALE_FACTOR = 0.3;
 const X = 0.675;
 const Y = 0.05;
-const ZOOM = 0.125;
+const ZOOM = 0.2; // 125
 
 export default class MiniMap extends Phaser.Scene {
     minimap: Phaser.Cameras.Scene2D.Camera;
@@ -24,10 +24,11 @@ export default class MiniMap extends Phaser.Scene {
             false,
             'minimap'
         )
-        .setOrigin(0.5)
+        .setAlpha(0.75)
         .setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels)
         .startFollow(scene.player)
         .setLerp(0.1)
+        .setOrigin(0.5)
         .setVisible(false)
         .setZoom(ZOOM)
         .ignore(scene.actionBar)
@@ -69,6 +70,7 @@ export default class MiniMap extends Phaser.Scene {
             height + 4,
             0x000000, 0.5
         )
+        .setAlpha(0.75)
         .setDepth(6)
         .setInteractive()
         .setOrigin(0)

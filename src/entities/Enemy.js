@@ -240,7 +240,8 @@ export default class Enemy extends Entity {
         };
         const isNewEnemy = this.isNewEnemy(this.scene.player);
         if (isNewEnemy === true || this.inCombat === false) {
-            if (isNewEnemy) this.scene.player.targetEngagement(this.enemyID);
+            // if (isNewEnemy) 
+            this.scene.player.targetEngagement(this.enemyID);
             this.jumpIntoCombat();
         };
     };
@@ -594,10 +595,10 @@ export default class Enemy extends Entity {
                 // this.currentAction = 'special';
                 const specific = ['malice'];
                 const test = specific[Math.floor(Math.random() * specific.length)];
-                if (this.stateMachine.isState(special)) {
-                    this.stateMachine.setState(special);
-                } else if (this.positiveMachine.isState(special)) {
-                    this.positiveMachine.setState(special);
+                if (this.stateMachine.isState(test)) {
+                    this.stateMachine.setState(test);
+                } else if (this.positiveMachine.isState(test)) {
+                    this.positiveMachine.setState(test);
                 };
                 this.setSpecialCombat(true);
             }, undefined, this);
@@ -766,7 +767,7 @@ export default class Enemy extends Entity {
         }, undefined, this);
         this.stateMachine.setState(States.IDLE);
     };
-    onDeathEnter = () => this.clearTint();
+    onDeathEnter = () => {this.clearTint(); this.setStatic(true)};
     onDeathUpdate = () => this.anims.play('player_hurt', true);
 
     onIdleEnter = () => {
@@ -778,7 +779,7 @@ export default class Enemy extends Entity {
         this.idleWait -= dt;
         if (this.idleWait <= 0) {
             this.idleWait = Phaser.Math.RND.between(4000, 6000);
-            if (this.stateMachine.isCurrentState(States.IDLE)) this.stateMachine.setState(States.PATROL);
+            if (this.stateMachine.isCurrentState(States.IDLE) && !this.isDeleting) this.stateMachine.setState(States.PATROL);
         };
     };
     onIdleExit = () => this.anims.stop('player_idle');
@@ -792,6 +793,7 @@ export default class Enemy extends Entity {
         const delay = Phaser.Math.RND.between(2000, 4000); // 3500
 
         this.scene.time.delayedCall(delay, () => {
+            if (this.isDeleting) return;
             this.setVelocity(0, 0);
             if (this.stateMachine.isCurrentState(States.PATROL)) this.stateMachine.setState(States.IDLE);
         }, undefined, this);

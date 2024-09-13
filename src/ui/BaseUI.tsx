@@ -84,7 +84,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 stalwart: number = combat().isStalwart ? 0.85 : 1;
             switch (type) {
                 case 'Weapon': // Targeted Weapon Action by Enemy or Player
-                    if (newComputerHealth === 0) return;
+                    if (combat().computer === undefined) return;
                     const weapon = { ...combat(), [data.key]: data.value };
                     res = weaponActionCompiler(weapon) as Combat;
                     EventBus.emit('blend-combat', res);
@@ -345,8 +345,8 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             };
             if (playerWin === true) res.computerDeathDescription = `${res.computer.name} has been defeated.`;
             if (computerWin === true) res.playerDeathDescription = `You have been defeated.`;
-            if (res) EventBus.emit('update-combat', res);
-            if (res) EventBus.emit('add-combat-logs', res);
+            EventBus.emit('update-combat', res);
+            EventBus.emit('add-combat-logs', res);
             if (playerWin === true || computerWin === true) {
                 resolveCombat(res);
             } else if (affectsHealth === true) {

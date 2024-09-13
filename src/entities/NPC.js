@@ -10,18 +10,19 @@ const paddingWidth = 10;
 const paddingHeight = 10; 
 const x = colliderWidth + 2 * paddingWidth;
 const y = colliderHeight + 2 * paddingHeight;
+const types = ['Merchant-Alchemy', 'Merchant-Armor', 'Merchant-Smith', 'Merchant-Jewelry', 'Merchant-General', 'Merchant-Tailor', 'Merchant-Mystic', 'Merchant-Weapon', 'Merchant-Weapon-All', 'Merchant-Armor-All'];
 export default class NPC extends Entity { 
     constructor(data) {
-        let { scene } = data;
+        let { scene, type } = data;
+        console.log(type, 'Is there a type?');
         super({ ...data, name: "npc", ascean: undefined, health: 0 }); 
         this.scene = scene;
-        if (idCount >= 8) idCount = 0;
-        this.id = idCount++;
+        if (idCount >= 10) idCount = 0;
+        this.id = type ? type === 'Merchant-All-Armor' ? 9 : 10 : idCount++;
         this.scene.add.existing(this);
         this.enemyID = uuidv4();
-        const types = ['Merchant-Alchemy', 'Merchant-Armor', 'Merchant-Smith', 'Merchant-Jewelry', 'Merchant-General', 'Merchant-Tailor', 'Merchant-Mystic', 'Merchant-Weapon'];
         this.isEnemy = false;
-        this.npcType = types[this.id];
+        this.npcType = type ? type : types[this.id];
         this.npcTarget = undefined;
         this.interacting = false;
         this.isDefeated = true;

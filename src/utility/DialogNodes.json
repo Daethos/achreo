@@ -2,7 +2,7 @@
     "nodes": [
         {
             "id": "0001",
-            "text": "Greethings there, I'm a ${enemy.name}. Who are you, this glorious day?",
+            "text": "Greetings, I'm a ${enemy.name}. Who might you be?",
             "options": [
                 {
                     "text": "Hello there ${enemy.name}, my name is ${ascean.name}.",
@@ -38,6 +38,21 @@
                             "value": "3"
                         }
                     ]
+                },
+                {
+                    "text": "My name's ${ascean.name}. I think you know what brings me?",
+                    "next": "0020",
+                    "npcIds": [
+                        9,
+                        10
+                    ],
+                    "conditions": [
+                        {
+                            "key": "interactCount",
+                            "operator": ">=",
+                            "value": "0"
+                        }
+                    ]
                 }
             ],
             "npcIds": [
@@ -48,7 +63,9 @@
                 5,
                 6,
                 7,
-                8
+                8,
+                9,
+                10
             ]
         },
         {
@@ -521,7 +538,7 @@
                     "action": "getJewelry"
                 },
                 {
-                    "text": "Oh dear, you don't seem quite ready yet, come back in time and perchance I'll have something for you.",
+                    "text": "Oh dear, you don't seem quite ready to harness such jewelry, come back in time and perchance I'll have something enchanting for you.",
                     "next": "0001",
                     "npcIds": [
                         4
@@ -571,6 +588,86 @@
                 4,
                 7,
                 8
+            ]
+        },
+        {
+            "id": "0020",
+            "text": "Of course, ${ascean.name}. Why else would I be here?",
+            "options": [
+                {
+                    "text": "See the martial weapons available for purchase.",
+                    "next": "0007",
+                    "npcIds": [
+                        10
+                    ],
+                    "action": "getWeapon"
+                },
+                {
+                    "text": "Sift through the soft cloths and silks.",
+                    "next": "0020",
+                    "npcIds": [
+                        9
+                    ],
+                    "action": "getTailor"
+                },
+                {
+                    "text": "See what armors the ${enemy.name} has on hand.",
+                    "next": "0008",
+                    "npcIds": [
+                        9
+                    ],
+                    "action": "getArmor"
+                },
+                {
+                    "text": "See such bejeweled enchantments on offer.",
+                    "next": "0020",
+                    "npcIds": [
+                        9
+                    ],
+                    "conditions": [
+                        {
+                            "key": "level",
+                            "operator": ">=",
+                            "value": "4"
+                        }
+                    ],
+                    "action": "getJewelry"
+                },
+                {
+                    "text": "Oh dear, you don't seem quite ready to harness such jewelry, come back in time and perchance I'll have something enchanting for you.",
+                    "next": "0020",
+                    "npcIds": [
+                        9
+                    ],
+                    "conditions": [
+                        {
+                            "key": "level",
+                            "operator": "<",
+                            "value": "4"
+                        }
+                    ]
+                },
+                {
+                    "text": "See such weapons of an other nature.",
+                    "next": "0020",
+                    "npcIds": [
+                        10
+                    ],
+                    "action": "getMystic"
+                },
+                {
+                    "text": "Sell your wares to the ${enemy.name}.",
+                    "next": "0020",
+                    "npcIds": [
+                        9,
+                        10
+                    ],
+                    "action": "getSell"
+                }
+            ],
+            "npcIds": [
+                9,
+                10
             ]
         }
     ]

@@ -331,6 +331,51 @@
         }, 
         {
          "draworder":"topdown",
+         "id":6,
+         "name":"npcs",
+         "objects":[
+                {
+                 "class":"",
+                 "height":0,
+                 "id":116,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"Merchant-All-Armor"
+                        }],
+                 "rotation":0,
+                 "visible":true,
+                 "width":0,
+                 "x":40,
+                 "y":1184
+                }, 
+                {
+                 "class":"",
+                 "height":0,
+                 "id":118,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"Merchant-All-Weapon"
+                        }],
+                 "rotation":0,
+                 "visible":true,
+                 "width":0,
+                 "x":1608,
+                 "y":1600
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":4,
          "name":"navmesh",
          "objects":[
@@ -890,8 +935,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":6,
- "nextobjectid":110,
+ "nextlayerid":7,
+ "nextobjectid":121,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.9.2",

@@ -148,6 +148,10 @@ export class Underground extends Scene {
         (this.sys as any).animatedTiles.init(this.map);
         this.player = new Player({ scene: this, x: this.centerX, y: 64, texture: 'player_actions', frame: 'player_idle_0' });
         map?.getObjectLayer('summons')?.objects.forEach((summon: any) => this.markers.push(summon));
+        map?.getObjectLayer('npcs')?.objects.forEach((npc: any) => {
+            console.log(npc, 'NPC?');
+            (this.npcs as any).push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0', type: npc.properties[0].value }));
+        });
 
     // =========================== Camera =========================== \\
         camera.startFollow(this.player, false, 0.1, 0.1);
@@ -757,6 +761,9 @@ export class Underground extends Scene {
             this.enemies[i].update();
             if (this.enemies[i].isDefeated && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
         };
+        for (let i = 0; i < this.npcs.length; i++) {
+            this.npcs[i].update();
+        };
         const camera = this.cameras.main;
         const bounds = new Phaser.Geom.Rectangle(
             this.map.worldToTileX(camera.worldView.x) as number - 2,
@@ -769,9 +776,6 @@ export class Underground extends Scene {
             y: this.map.worldToTileY(this.player.y) as number
         });
         this.fov!.update(player, bounds, delta);
-        // for (let i = 0; i < this.npcs.length; i++) {
-        //     this.npcs[i].update();
-        // };
     };
     pause(): void {
         this.scene.pause();

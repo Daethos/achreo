@@ -38,10 +38,18 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
         EventBus.emit('action-button-sound');
         EventBus.emit('update-small-hud');
     };
-    function caerenic(caerenic: boolean) {
+    function caerenic(caerenic: boolean, stealth: boolean) {
         return {
-            'background-color': caerenic ? masteryColor(state()?.player?.mastery as string) : 'black',
+            'background': caerenic && stealth ? `linear-gradient(${masteryColor(state()?.player?.mastery as string)}, #444)` : caerenic ? masteryColor(state()?.player?.mastery as string) : stealth ? 'linear-gradient(#000, #444)' : 'black',
             'border': border(borderColor(state()?.playerBlessing), 0.15),
+            'mix-blend-mode': 'multiply',
+            transition: 'background 0.5s ease-out',
+        };
+    };
+    function stalwart(caerenic: boolean, stealth: boolean) {
+        return {
+            'background': caerenic && stealth ? `linear-gradient(${masteryColor(state()?.player?.mastery as string)}, #444)` : caerenic ? masteryColor(state()?.player?.mastery as string) : stealth ? 'linear-gradient(#000, #444)' : 'black',
+            transition: 'background 0.5s ease-out',
         };
     };
     const size = (len: number) => {
@@ -76,20 +84,18 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
         <div class='center playerHealthBar' style={{ 'z-index': 0, 'max-height': '24px', width: '20.5vw', left: '2vw' }}>
             <div class='playerPortrait' style={{ 'font-size': '1.125em', 'font-weight': 700, color: state().isStealth ? '#fdf6d8' : '#000', 'text-shadow': `0.075em 0.075em 0.075em ${state().isStealth ? '#000' : '#ff0'}`, 'z-index': 1 }}>{healthDisplay()}</div>
             <div class='healthbarPosition' style={{ width: `100%`, 'background': 'linear-gradient(#aa0000, red)' }}></div>
-            <div class='healthbarPosition' style={{ width: `${healthPercentage()}%`, 'background': state()?.isStealth ? 'linear-gradient(#000, #444)' : 'linear-gradient(gold, #fdf6d8)', transition: 'width 1s ease-out, background 1s ease-out' }}></div>
+            <div class='healthbarPosition' style={{ width: `${healthPercentage()}%`, 'background': state()?.isStealth ? 'linear-gradient(#000, #444)' : 'linear-gradient(gold, #fdf6d8)', transition: 'width 1s ease-out' }}></div>
         </div>
-        <p class='playerName' style={{ 
-            'top': top(state().player?.name.length as number), left: '4.5vw', position: 'fixed',
-            'color': `${state().isStealth ? '#fdf6d8' : 'gold'}`, 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#444' : '#000'}`, 'z-index': 1, 'max-height': '40px', 'font-size': size(state().player?.name.length as number) }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
+        <p class='playerName' style={{ 'top': top(state().player?.name.length as number), left: '4.5vw', position: 'fixed', 'color': `${state().isStealth ? '#fdf6d8' : 'gold'}`, 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#444' : '#000'}`, 'z-index': 1, 'max-height': '40px', 'font-size': size(state().player?.name.length as number) }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
         <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar" onClick={changeDisplay} style={{ 'max-height': '74px' }}/>
         <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} settings={settings} />
         <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} settings={settings} />
-        <div class='combatUiWeapon flash' onClick={() => setShow(show => !show)} style={caerenic(state().isCaerenic) as any}>
+        <div class='combatUiWeapon' onClick={() => setShow(show => !show)} style={caerenic(state().isCaerenic, state().isStealth) as any}>
             <img src={state()?.weapons?.[0]?.imgUrl} alt={state()?.weapons?.[0]?.name} />
         </div>
         <Show when={state().isStalwart}>
-        <div class='combatUiShield combatUiAnimation' onClick={() => setShieldShow(shieldShow => !shieldShow)} style={itemStyle(state()?.player?.shield?.rarity as string)}>
-            <img src={state()?.player?.shield.imgUrl} alt={state()?.player?.shield.name} style={{ transform: `[{ rotate: '-45deg' }, { scale: 0.875 }]`, transition: 'transform: setScale(1.1) 1s ease-out' }} />
+        <div class={`combatUiShield ${state().isStalwart ? 'super-in' : 'superfade-out'}`} onClick={() => setShieldShow(shieldShow => !shieldShow)} style={{ ...itemStyle(state()?.player?.shield?.rarity as string), ...stalwart(state().isCaerenic, state().isStealth), }}>
+            <img src={state()?.player?.shield.imgUrl} alt={state()?.player?.shield.name} style={{transform: `[{ rotate: '-45deg' }, { scale: 0.875 }]` }} />
         </div>
         </Show>
         <Show when={show()}>
@@ -110,7 +116,7 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
         </div>
         </Show> 
         <Show when={state().isStealth && state().computer}> 
-        <button class='disengage highlight flash' style={{ top: '12.5vh', left: '0vw' }} onClick={() => disengage()}>
+        <button class='disengage highlight combatUiAnimation' style={{ top: '12.5vh', left: '0vw' }} onClick={() => disengage()}>
             <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>Disengage</div>
         </button> 
         </Show>

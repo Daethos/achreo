@@ -411,6 +411,8 @@ const CITY_OPTIONS = {
     'Merchant-Tailor': 'Tailor',
     'Merchant-Mystic': 'Senarian',
     'Merchant-Weapon': 'Sevasi',
+    'Merchant-All-Armor': 'Kyrisian',
+    'Merchant-All-Weapon': 'Sedyreal',
 };
 
 export function fetchNpc(e: { enemyID: string; npcType: string; }): void { 

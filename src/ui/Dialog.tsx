@@ -29,6 +29,8 @@ const GET_NEXT_RARITY = {
     Epic: "Legendary",
 };
 interface DialogOptionProps {
+    currentIndex: Accessor<number>;
+    dialogNodes: any;
     option: DialogNodeOption;
     onClick: (nextNodeId: string | undefined) => void;
     actions: { [key: string]: Function };
@@ -38,7 +40,7 @@ interface DialogOptionProps {
     showDialogOptions: Accessor<boolean>;
 };
 
-const DialogOption = ({ option, onClick, actions, setPlayerResponses, setKeywordResponses, setShowDialogOptions, showDialogOptions }: DialogOptionProps) => {
+const DialogOption = ({ currentIndex, dialogNodes, option, onClick, actions, setPlayerResponses, setKeywordResponses, setShowDialogOptions, showDialogOptions }: DialogOptionProps) => {
     const hollowClick = () => console.log("Hollow Click");
     const handleClick = async (): Promise<void> => {
         setPlayerResponses((prev) => [...prev, option.text]);
@@ -54,6 +56,7 @@ const DialogOption = ({ option, onClick, actions, setPlayerResponses, setKeyword
                 // return;
             };
         };
+        // if (dialogNodes[currentIndex()]?.id !== option.next) 
         onClick(option.next as string);
         setShowDialogOptions(false);
     };
@@ -84,6 +87,7 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
     const [showDialogOptions, setShowDialogOptions] = createSignal<boolean>(false);
     const [renderedText, setRenderedText] = createSignal<string>('');
     const [renderedOptions, setRenderedOptions] = createSignal<any>(undefined);
+    const [currentIndex, setCurrentIndex] = createSignal<number>(0);
 
     const processText = (text: string, context: any): string => {
         if (!text) return '';
@@ -138,7 +142,7 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
         });
         setRenderedOptions(newOptions);
         setRenderedText(newText);
-        
+        setCurrentIndex(index || 0);
         const dialogTimeout = setTimeout(() => {
             setShowDialogOptions(true);
         }, currentNode?.text.split('').reduce((a: number, s: string | any[]) => a + s.length * 35, 0));
@@ -169,7 +173,7 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
             <Typewriter stringText={renderedText} styling={{ 'overflow-y': 'auto' }} performAction={handleOptionClick} />
             <br />
             {renderedOptions()?.map((option: DialogNodeOption) => (
-                <DialogOption option={option} onClick={handleOptionClick} actions={actions} setPlayerResponses={setPlayerResponses} setKeywordResponses={setKeywordResponses} setShowDialogOptions={setShowDialogOptions} showDialogOptions={showDialogOptions} />
+                <DialogOption currentIndex={currentIndex} dialogNodes={dialogNodes} option={option} onClick={handleOptionClick} actions={actions} setPlayerResponses={setPlayerResponses} setKeywordResponses={setKeywordResponses} setShowDialogOptions={setShowDialogOptions} showDialogOptions={showDialogOptions} />
             ))}
             <br />
         </div>

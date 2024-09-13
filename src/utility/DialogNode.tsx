@@ -37,9 +37,12 @@ export const npcIds: NpcIds = {
     "Merchant-Smith": 6,
     "Merchant-Mystic": 7,
     "Merchant-Tailor": 8,
+    "Merchant-All-Armor": 9,
+    "Merchant-All-Weapon": 10,
 };
 
 export function getNodesForEnemy(enemy: Ascean): DialogNode[] {
+    console.log(enemy, 'Enemey?')
     const matchingNodes: DialogNode[] = [];
     for (const node of EnemyDialogNodes.nodes) {
         if (node.options.length === 0) {

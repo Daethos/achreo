@@ -125,7 +125,7 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
     return (
         <div class='enemyCombatUi'>
             <div class='enemyName' style={{ position: 'fixed', 'z-index': 1, 'font-size': size(state().computer?.name.length as number), 'right': '4.5vw', 'top': top(state().computer?.name.length as number) }} onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
-            <div class='center enemyHealthBar' onClick={changeDisplay} style={{ 'max-height': '24px', 'margin-left':'12.5%', width:'20.5vw' }}>
+            <div class='center enemyHealthBar' onClick={changeDisplay} style={{ 'max-height': '24px', 'right':'2%', width:'20.75vw' }}>
                 <div class='enemyPortrait' style={{ 'font-size': '1em', color: '#fdf6d8' }}>{healthDisplay()}</div>
                 <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `100%`, 'background': 'linear-gradient(#aa0000, red)' }}></div>
                 <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `${healthPercentage()}%`, 'background': 'linear-gradient(#00AA00, green)', transition: 'width 1s ease-out, background 1s ease-out' }}></div>

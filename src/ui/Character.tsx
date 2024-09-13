@@ -769,7 +769,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                 <Modal 
                     items={inspectItems as Accessor<{ item: Equipment | undefined; type: string; }[]>} 
                     inventory={highlighted().item} callback={handleInspect} forge={forgeModalShow} setForge={setForgeModalShow} 
-                    upgrade={canUpgrade} setUpgrade={setCanUpgrade} show={inspectModalShow} setShow={setInspectModalShow} 
+                    upgrade={canUpgrade} show={inspectModalShow} setShow={setInspectModalShow} 
                 />
             </div>
         </Show>

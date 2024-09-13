@@ -56,9 +56,10 @@ const DialogOption = ({ currentIndex, dialogNodes, option, onClick, actions, set
                 // return;
             };
         };
-        // if (dialogNodes[currentIndex()]?.id !== option.next) 
-        onClick(option.next as string);
-        setShowDialogOptions(false);
+        if (dialogNodes[currentIndex()]?.id !== option.next) {
+            onClick(option.next as string);
+            setShowDialogOptions(false);
+        };
     };
 
     return (

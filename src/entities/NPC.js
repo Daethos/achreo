@@ -14,7 +14,6 @@ const types = ['Merchant-Alchemy', 'Merchant-Armor', 'Merchant-Smith', 'Merchant
 export default class NPC extends Entity { 
     constructor(data) {
         let { scene, type } = data;
-        console.log(type, 'Is there a type?');
         super({ ...data, name: "npc", ascean: undefined, health: 0 }); 
         this.scene = scene;
         if (idCount >= 10) idCount = 0;

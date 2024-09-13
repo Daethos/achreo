@@ -42,7 +42,6 @@ export const npcIds: NpcIds = {
 };
 
 export function getNodesForEnemy(enemy: Ascean): DialogNode[] {
-    console.log(enemy, 'Enemey?')
     const matchingNodes: DialogNode[] = [];
     for (const node of EnemyDialogNodes.nodes) {
         if (node.options.length === 0) {

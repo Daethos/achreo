@@ -15,6 +15,7 @@ const ATTRIBUTE_RANGE = {
 const ATTRIBUTES = ['strength', 'constitution', 'agility', 'achre', 'caeren', 'kyosir'];
 const CHANCE = ['criticalChance', 'physicalPenetration', 'magicalPenetration', 'roll', 'dodge'];
 const DAMAGE = ['physicalDamage', 'magicalDamage'];
+const DEFENSE = ['physicalResistance', 'magicalResistance'];
 const CRITICAL = ['criticalDamage'];
 
 function influence(influences: string[] | undefined): string[] | undefined {
@@ -121,16 +122,30 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
                 };
             };
             for (const attribute of CHANCE) {    
-                if (item[attribute] >= 10) {// 10+  +/ 4/0
-                    item[attribute] = randomIntFromInterval(item[attribute], item[attribute] + 4);
-                } else if (item[attribute] >= 6) { // 6-9 +/ 2/0
-                    item[attribute] = randomIntFromInterval(item[attribute], item[attribute] + 2);
-                } else if (item[attribute] >= 4) { // 4-5 +/ 2/1
-                    item[attribute] = randomIntFromInterval(item[attribute] - 1, item[attribute] + 2);
-                } else if (item[attribute] >= 2) { // 2-3 +/ 1/1
-                    item[attribute] = randomIntFromInterval(item[attribute] - 1, item[attribute] + 1);
+                if (item[attribute] >= 24) { // 24+ +/- 2/0
+                    item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 4);
+                } else if (item[attribute] >= 20) { // 20-23 +/- 2/0
+                    item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 2);
+                } else if (item[attribute] >= 18) { // 18-19 +/- 2/0
+                    item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 2);
+                } else if (item[attribute] >= 16) { // 16-17 +/- 2/0
+                    item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 1.5);
+                } else if (item[attribute] >= 14) { // 14-15 +/- 2/0
+                    item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 1.5);
+                } else if (item[attribute] >= 12) { // 12-13 +/- 2/0
+                    item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 1.5);
+                } else if (item[attribute] >= 10) { // 10-11 +/- 2/1
+                    item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 1.5);
+                } else if (item[attribute] >= 8) { // 8-9 +/- 2/1
+                    item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 1);
+                } else if (item[attribute] >= 6) { // 6-7 +/- 1/1
+                    item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 1);
+                } else if (item[attribute] >= 4) { // 2-5 +/- 1/1
+                    item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 0.5);
+                } else if (item[attribute] >= 2) { // 2-3 +/- 0/1
+                    item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 0.5);
                 } else { // 0-1  +/ 0/1
-                    item[attribute] = randomIntFromInterval(Math.max(item[attribute] - 1, 0), item[attribute]);
+                    item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute]);
                 };
             };
             for (const damage of DAMAGE) {    
@@ -143,19 +158,44 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
                 } else if (item[damage] >= 14) { // 14-15 +/- 2/0
                     item[damage] = randomIntFromInterval(item[damage], item[damage] + 2);
                 } else if (item[damage] >= 12) { // 12-13 +/- 2/0
-                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage] + 2);
+                    item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage] + 2);
                 } else if (item[damage] >= 10) { // 10-11 +/- 2/1
-                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage] + 2);
+                    item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage] + 2);
                 } else if (item[damage] >= 8) { // 8-9 +/- 2/1
-                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage] + 1);
+                    item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage] + 1);
                 } else if (item[damage] >= 6) { // 6-7 +/- 1/1
-                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage] + 1);
+                    item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage] + 1);
                 } else if (item[damage] >= 4) { // 2-5 +/- 1/1
-                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage]);
-                } else if (item[damage] >= 2) { // 2-3 +/- 0/1
-                    item[damage] = randomIntFromInterval(item[damage] - 1, item[damage]);
-                } else { // 0-1  +/ 0/1
                     item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage]);
+                } else if (item[damage] >= 2) { // 2-3 +/- 0/1
+                    item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage]);
+                } else { // 0-1  +/ 0/1
+                    item[damage] = randomIntFromInterval(item[damage], item[damage]);
+                };
+            };
+            for (const defense of DEFENSE) {    
+                if (item[defense] >= 20) { // 20+ +/- 2/0
+                    item[defense] = randomFloatFromInterval(item[defense], item[defense] + 3);
+                } else if (item[defense] >= 18) { // 18-19 +/- 2/0
+                    item[defense] = randomFloatFromInterval(item[defense], item[defense] + 1.5);
+                } else if (item[defense] >= 16) { // 16-17 +/- 2/0
+                    item[defense] = randomFloatFromInterval(item[defense], item[defense] + 1.5);
+                } else if (item[defense] >= 14) { // 14-15 +/- 2/0
+                    item[defense] = randomFloatFromInterval(item[defense], item[defense] + 1.5);
+                } else if (item[defense] >= 12) { // 12-13 +/- 2/0
+                    item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense] + 1);
+                } else if (item[defense] >= 10) { // 10-11 +/- 2/1
+                    item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense] + 1);
+                } else if (item[defense] >= 8) { // 8-9 +/- 2/1
+                    item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense] + 0.5);
+                } else if (item[defense] >= 6) { // 6-7 +/- 1/1
+                    item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense] + 0.5);
+                } else if (item[defense] >= 4) { // 2-5 +/- 1/1
+                    item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense]);
+                } else if (item[defense] >= 2) { // 2-3 +/- 0/1
+                    item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense]);
+                } else { // 0-1  +/ 0/1
+                    item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense]);
                 };
             };
             for (const damage of CRITICAL) {    
@@ -176,7 +216,7 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
                 } else if (item[damage] === 1.02) { // 1.00 +/- 0.02/0 (0.02 Range)
                     item[damage] = randomFloatFromInterval(item[damage] - 0.01, item[damage] + 0.02);
                 } else if (item[damage] === 1.01) { // 1.00 +/- 0.01/0 (0.01 Range)
-                    item[damage] = randomFloatFromInterval(item[damage] - 0.01, item[damage] + 0.01);
+                    item[damage] = randomFloatFromInterval(item[damage], item[damage] + 0.01);
                 };
             };
             if (item.influences) {

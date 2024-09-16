@@ -696,7 +696,6 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                         setInspectItems={setInspectItems as Setter<{ item: Equipment | undefined; type: string; }[]>} 
                         setInspectModalShow={setInspectModalShow} 
                         setRemoveModalShow={setRemoveModalShow} removeModalShow={removeModalShow} 
-                        forge={forgeModalShow} setForge={setForgeModalShow} 
                         upgrade={canUpgrade} setUpgrade={setCanUpgrade}
                     />
                     </Suspense>

@@ -6,7 +6,6 @@ import Ascean from '../models/ascean';
 interface Props {
     ascean: Accessor<Ascean>;
     inventory: Equipment;
-    blacksmith?: boolean;
     compare?: boolean;
     setRingCompared: Setter<string>;
     setHighlighted: Setter<{ item: Equipment | undefined; comparing: boolean; type: string }>;
@@ -16,7 +15,7 @@ interface Props {
     inventorySwap: Accessor<any>;
 };
 
-export default function Inventory({ ascean, inventory, blacksmith = false, setInventoryType, setRingCompared, setHighlighted, highlighted, setWeaponCompared, inventorySwap }: Props) {
+export default function Inventory({ ascean, inventory, setInventoryType, setRingCompared, setHighlighted, highlighted, setWeaponCompared, inventorySwap }: Props) {
     const [trueType, setTrueType] = createSignal('');
     const [editState, setEditState] = createSignal<any>({
         weaponOne: ascean().weaponOne,

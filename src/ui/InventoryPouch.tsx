@@ -4,7 +4,6 @@ import { EventBus } from "../game/EventBus";
 import { useResizeListener } from "../utility/dimensions";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
-
 interface Props {
     ascean: Accessor<Ascean>;
     setHighlighted: Setter<{ item: Equipment | undefined; comparing: boolean; type: string }>;
@@ -20,7 +19,6 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
     const [prospectiveId, setProspectiveId] = createSignal<string | null>(null);
     const dimensions = useResizeListener();
     const [doubleTapCount, setDoubleTapCount] = createSignal(0);
-
     createEffect(() => {
         if (inventorySwap().start.id === null || inventorySwap().end.id === null) return;
         if (inventorySwap().start.id === inventorySwap().end.id) {
@@ -29,7 +27,6 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
         };
         handleInventoryDrop();
     });
-
     function doubleTap(inventory: Equipment, index: Accessor<number>) {
         setDoubleTapCount((prev) => prev + 1);
         if (doubleTapCount() ===1) {
@@ -58,7 +55,6 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
             setDoubleTapCount(0);
         }, 600);
     };
-
     function handleInventoryDrop() {
         const { start, end } = inventorySwap();
         let copy: Equipment[] = Array.from(dragAndDropInventory());
@@ -75,8 +71,7 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
             if (item === undefined || item === null) return;
             return <div onClick={() => doubleTap(item, index)} class='sortable' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5.5%' } : { margin: '2.5%' }}>
                 <Inventory ascean={ascean} setRingCompared={setRingCompared} setWeaponCompared={setWeaponCompared} 
-                    highlighted={highlighted} setHighlighted={setHighlighted} 
-                    inventory={item} setInventoryType={setInventoryType} inventorySwap={inventorySwap}
+                    highlighted={highlighted} setHighlighted={setHighlighted} inventory={item} setInventoryType={setInventoryType} inventorySwap={inventorySwap}
                 />
             </div>;
         }}</For>

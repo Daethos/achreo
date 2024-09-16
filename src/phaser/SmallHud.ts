@@ -94,13 +94,13 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             item.setDepth(6);
             item.setOrigin(0, 0);
             item.setInteractive();
-            item.setScale(this.scene.settings.positions.smallHud.scale || 0.095);
+            item.setScale(this.scene.settings.positions.smallHud.scale); // || 0.095
             if (this.closed === true) {
                 if (item.texture.key !== 'closed') {
                     item.setVisible(false);
                 };
             };
-            item.x = xModifier(this.x, Math.min(index, 9), this.scene.settings.positions.smallHud.offset || 43.75);
+            item.x = xModifier(this.x, Math.min(index, 9), this.scene.settings.positions.smallHud.offset); // || 43.75
             item.on('pointerdown', () => {
                 this.pressButton(item);
             });
@@ -116,9 +116,9 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             item.setDepth(6);
             item.setOrigin(0, 0);
             item.setInteractive();
-            item.setScale(this.scene.settings.positions.leftHud.scale || 0.095);
+            item.setScale(this.scene.settings.positions.leftHud.scale); // || 0.095
             item.setVisible(true);
-            item.x = leftXModifier(this.leftX, Math.min(index, 4), this.scene.settings.positions.leftHud.offset || 43.75);
+            item.x = leftXModifier(this.leftX, Math.min(index, 4), this.scene.settings.positions.leftHud.offset); // || 43.75
             item.on('pointerdown', () => {
                 this.pressStance(item);
             });
@@ -131,7 +131,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
 
     draw = () => {
         this.bar.forEach((item, index) => {
-            item.x = xModifier(this.x, Math.min(index, 6), this.scene.settings.positions.smallHud.offset || 43.75);
+            item.x = xModifier(this.x, Math.min(index, 6), this.scene.settings.positions.smallHud.offset); // || 43.75
             item.y = this.y;
             if (this.closed === true) {
                 if (item.texture.key === 'closed') {
@@ -149,7 +149,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         });
 
         this.stances.forEach((item, index) => {
-            item.x = leftXModifier(this.leftX, Math.min(index, 4), this.scene.settings.positions.leftHud.offset || 43.75);
+            item.x = leftXModifier(this.leftX, Math.min(index, 4), this.scene.settings.positions.leftHud.offset); // || 43.75
             item.y = this.leftY;
         });
     };
@@ -186,7 +186,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         });
         EventBus.on('update-small-hud-offset', (offset: number) => {
             this.bar.forEach((item, index) => {
-                item.x = xModifier(this.x, Math.min(index, 6), offset || 43.75);
+                item.x = xModifier(this.x, Math.min(index, 6), offset); // || 43.75
 
             });
         });

@@ -16,13 +16,11 @@ interface Props {
     removeModalShow: Accessor<boolean>;
     setInspectModalShow: Setter<boolean>;
     setInspectItems: Setter<{ item: Equipment | undefined; type: string; }[]>;
-    forge: Accessor<boolean>;
-    setForge: Setter<boolean>;
     upgrade: Accessor<boolean>;
     setUpgrade: Setter<boolean>;
 };
 
-export default function Highlight({ ascean, pouch, highlighted, inventoryType, ringCompared, weaponCompared, setInspectItems, setInspectModalShow, setRemoveModalShow, removeModalShow, forge, setForge, upgrade, setUpgrade }: Props) {
+export default function Highlight({ ascean, pouch, highlighted, inventoryType, ringCompared, weaponCompared, setInspectItems, setInspectModalShow, setRemoveModalShow, removeModalShow, upgrade, setUpgrade }: Props) {
     const [trueType, setTrueType] = createSignal<string>('');
     const dimensions = useResizeListener();
 

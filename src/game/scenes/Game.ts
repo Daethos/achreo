@@ -14,6 +14,8 @@ import SmallHud from '../../phaser/SmallHud';
 import { useResizeListener } from '../../utility/dimensions';
 import { Reputation, initReputation } from '../../utility/player';
 // @ts-ignore
+import { PhaserNavMeshPlugin } from 'phaser-navmesh';
+// @ts-ignore
 import Player from '../../entities/Player';
 // @ts-ignore
 import Enemy from '../../entities/Enemy';
@@ -61,7 +63,7 @@ export class Game extends Scene {
     // minimapBorder: GameObjects.Rectangle;
     // minimapReset: GameObjects.Rectangle;
     navMesh: any;
-    navMeshPlugin: any;
+    navMeshPlugin: PhaserNavMeshPlugin;
     postFxPipeline: any;
     musicBackground: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicCombat: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;

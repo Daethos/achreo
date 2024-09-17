@@ -6,9 +6,8 @@ interface CurrencyProps {
 };
 const Currency = ({ ascean }: CurrencyProps) => {
     return (
-        <div>
+        <div style={{ padding: '2%' }}>
             <img src={'../assets/images/gold-full.png'} alt="Gold Stack" /> {ascean().currency.gold} <img src={'../assets/images/silver-full.png'} alt="Silver Stack" /> {ascean().currency.silver}
-            <br /><br />
         </div>
     );
 };

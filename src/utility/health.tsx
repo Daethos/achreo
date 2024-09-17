@@ -17,7 +17,7 @@ export function createHealthDisplay(combat: Accessor<Combat>, game:Accessor<Game
     createEffect(() => setDisplay(game().healthDisplay));  
     createEffect(() => {
         if (display() === 'FULL') {
-            setHealthDisplay(`${Math.round(enemy ? combat().newComputerHealth : combat().newPlayerHealth)} / ${enemy ? combat().computerHealth : combat().playerHealth} [${healthPercentage()}%]`);
+            setHealthDisplay(`${Math.round(enemy ? combat().newComputerHealth : combat().newPlayerHealth)} / ${enemy ? combat().computerHealth : combat().playerHealth} (${healthPercentage()}%)`);
         } else if (display() === 'NONE') {
             setHealthDisplay(`          `);
         } else if (display() === 'NUMBER') {

@@ -21,6 +21,7 @@ import { DEITIES } from '../utility/deities';
 import { Puff } from 'solid-spinner';
 import PhaserSettings from './PhaserSettings';
 import Statistics from '../utility/statistics';
+import { FAITH_RARITY } from '../utility/combatTypes';
 const AsceanImageCard = lazy(async () => await import('../components/AsceanImageCard'));
 const ExperienceBar = lazy(async () => await import('./ExperienceBar'));
 const Firewater = lazy(async () => await import('./Firewater'));
@@ -303,10 +304,9 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
         const highestPrayer = Object.entries(statistics().combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
         let highestMastery = Object.entries(statistics().mastery).reduce((a, b) => a[1] > b[1] ? a : b);
         if (highestMastery?.[1] === 0) highestMastery = [ascean()?.mastery, 0];
-        const rarity = { 'Default': 0, 'Common': 1, 'Uncommon': 2, 'Rare': 3, 'Epic': 4, 'Legendary': 5 };
-        const weaponInfluenceStrength = rarity[ascean().weaponOne.rarity as keyof typeof rarity];
-        const amuletInfluenceStrength = rarity[ascean().amulet.rarity as keyof typeof rarity];
-        const trinketInfluenceStrength = rarity[ascean().trinket.rarity as keyof typeof rarity];
+        const weaponInfluenceStrength = FAITH_RARITY[ascean().weaponOne.rarity as keyof typeof FAITH_RARITY];
+        const amuletInfluenceStrength = FAITH_RARITY[ascean().amulet.rarity as keyof typeof FAITH_RARITY];
+        const trinketInfluenceStrength = FAITH_RARITY[ascean().trinket.rarity as keyof typeof FAITH_RARITY];
         return <div class='creature-heading' style={{ padding: '5%' }}>
             <h1 style={{ 'margin-bottom': '3%' }}>Influence</h1>
             <h2>The influences of your equipment increase the likelihood of receiving a prayer from the associated deity.</h2>

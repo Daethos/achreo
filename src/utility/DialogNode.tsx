@@ -1,9 +1,8 @@
-import { Accessor, Setter, onMount } from "solid-js";
+import { Accessor, onMount } from "solid-js";
 import Ascean from "../models/ascean";
 import { GameState } from "../stores/game";
 import DialogNodes from "./DialogNodes.json";
 import EnemyDialogNodes from './EnemyDialogNodes.json';
-import { NPC } from "./npc";
 import { EventBus } from "../game/EventBus";
 
 export interface DialogNodeOption {
@@ -15,9 +14,16 @@ export interface DialogNodeOption {
     keywords?: any[];
 };
 
+export interface DialogNodeText {
+    text: string;
+    next: string | null;
+    npcIds?: Array<number | string>;
+    conditions?: { key: string; operator: string; value: string; }[];
+};
+
 export interface DialogNode {
     id: string;
-    text: string;
+    text: string | DialogNodeText[];
     options: DialogNodeOption[] | [];
     npcIds: any[];
     rootId?: string;
@@ -25,6 +31,23 @@ export interface DialogNode {
 
 interface NpcIds {
     [key: string]: number;
+};
+
+export function getNpcId(id: string) {
+    return npcIds[REVERSE_KEY[id as keyof typeof REVERSE_KEY]];
+};
+
+const REVERSE_KEY = {
+    'Traveling Alchemist': 'Merchant-Alchemy',
+    'Traveling Armorer': 'Merchant-Armor',
+    'Traveling Blacksmith': 'Merchant-Smith',
+    'Traveling Jeweler': 'Merchant-Jewelry',
+    'Traveling General Merchant': 'Merchant-General',
+    'Traveling Tailor': 'Merchant-Tailor',
+    'Traveling Senarian': 'Merchant-Mystic',
+    'Traveling Sevasi': 'Merchant-Weapon',
+    'Traveling Kyrisian': 'Merchant-All-Armor',
+    'Traveling Sedyreal': 'Merchant-All-Weapon',
 };
 
 export const npcIds: NpcIds = {
@@ -62,7 +85,7 @@ export function getNodesForNPC(npcId: number): DialogNode[] {
         if (node.options.length === 0) {
             continue;
         };
-        const npcOptions = node.options.filter((option) => (option as DialogNodeOption)?.npcIds?.includes(npcId))
+        const npcOptions = node.options.filter((option) => (option as DialogNodeOption)?.npcIds?.includes(npcId));
         if (npcOptions.length > 0) {
             const updatedNode = { ...node, options: npcOptions };
             matchingNodes.push(updatedNode);
@@ -127,8 +150,52 @@ const DialogTree = ({ ascean, engageCombat, getLoot, dialogNodes, game, state, r
         if (game()?.currentNode) {
             let newText = game()?.currentNode?.text;
             let newOptions: DialogNodeOption[] = [];
-            if (game()?.currentNode?.text) {
-                newText = game()?.currentNode?.text?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
+            console.log(typeof game().currentNode?.text, 'Type of text?')
+            if (typeof game().currentNode?.text === 'string') {
+                newText = (game().currentNode?.text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
+            } else if (Array.isArray(game().currentNode?.text)) {
+                // newText = (game()?.currentNode?.text?.text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
+                // const id = getNpcId(ascean.name);
+                // const npcOptions = (game().currentNode?.text as DialogNodeText[]).filter((option: any) => {
+                //     const id = getNpcId(enemy.name);
+                //     const included = (option as DialogNodeOption)?.npcIds?.includes(id);
+                //     console.log(enemy.name, id, option, included, 'enemy name, id, option,  included');
+                //     return included;
+                // });
+
+
+                if (game().currentNode?.text) {
+                    newOptions = (game()?.currentNode?.text as DialogNodeText[]).filter((node: any) => {
+                        if (node.conditions) {
+                            return node.conditions.every((condition: any) => {
+                                const { key, operator, value } = condition;
+                                const optionValue = ascean[key] !== undefined ? ascean[key] : state[key]; // Hopefully this works!
+                                switch (operator) {
+                                case '>':
+                                    return optionValue > value;
+                                case '>=':
+                                    return optionValue >= value;
+                                case '<':
+                                    return optionValue < value;
+                                case '<=':
+                                    return optionValue <= value;
+                                case '=':
+                                    return optionValue === value;
+                                default:
+                                    return false;
+                                }
+                            });
+                        } else {
+                            return true;
+                        };
+                    }).map((node: { text: string; }) => {
+                        const renderedOption = node.text.replace(/\${(.*?)}/g, (_, g) => eval(g));
+                        return {
+                            ...node,
+                            text: renderedOption,
+                        };
+                    }) as DialogNodeOption[];
+                };
             };
             if (game()?.currentNode?.options) {
                 newOptions = game()?.currentNode?.options.filter((option: any) => {

@@ -39,6 +39,7 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
     };
 
     createEffect(() => {
+        console.log(game().pauseState)
         if (game().pauseState === true) return;    
         timeout = setInterval(tick, 1000);
         onCleanup(() => clearInterval(timeout));

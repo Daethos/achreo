@@ -2,7 +2,30 @@
     "nodes": [
         {
             "id": "0001",
-            "text": "Greetings, I'm a ${enemy.name}. Who might you be?",
+            "text": [
+                {
+                    "text": "Greetings, I'm a ${enemy.name}. Who might you be?",
+                    "next": "0002",
+                    "npcIds": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8
+                    ]
+                },
+                {
+                    "text": "The ${enemy.name} remains silent, observing you.",
+                    "next": "0020",
+                    "npcIds": [
+                        9,
+                        10
+                    ]
+                }
+            ],
             "options": [
                 {
                     "text": "Hello there ${enemy.name}, my name is ${ascean.name}.",

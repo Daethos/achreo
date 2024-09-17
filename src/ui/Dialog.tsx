@@ -5,7 +5,7 @@ import Ascean from '../models/ascean';
 import { GameState } from '../stores/game';
 import { ProvincialWhispersButtons, Region, regionInformation } from '../utility/regions';
 import { LuckoutModal, PersuasionModal, QuestModal, checkTraits } from '../utility/traits';
-import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds } from '../utility/DialogNode';
+import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, getNpcId, npcIds } from '../utility/DialogNode';
 import Typewriter from '../utility/Typewriter';
 import Currency from '../utility/Currency';
 import MerchantTable from './MerchantTable';
@@ -16,6 +16,8 @@ import { getRarityColor, sellRarity } from '../utility/styling';
 import ItemModal from '../components/ItemModal';
 import { getQuests } from '../utility/quests';
 import { namedNameCheck } from '../utility/player';
+import Thievery from './Thievery';
+import Merchant from './Merchant';
 const GET_FORGE_COST = {
     Common: 1,
     Uncommon: 3,
@@ -131,28 +133,34 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
         let newOptions: DialogNodeOption[] = [];
         let currentNode = dialogNodes?.[index];
         if (currentNode === undefined) return;
-
+        let delay = 0;
         const { text, options } = currentNode as DialogNode;
-        newText = processText(text, { ascean, enemy, combat });
+        if (typeof text === 'string') {
+            newText = (text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
+            delay = text?.split('').reduce((a: number, s: string | any[]) => a + s.length * 35, 0);
+        } else if (Array.isArray(text)) {
+            const npcOptions = text.filter((option: any) => {
+                const id = getNpcId(enemy.name);
+                const included = (option as DialogNodeOption)?.npcIds?.includes(id);
+                return included;
+            });
+            delay = npcOptions[0].text?.split('').reduce((a: number, s: string | any[]) => a + s.length * 35, 0);
+            newText = (npcOptions[0]?.text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
+        };
+        newText = processText(newText, { ascean, enemy, combat });
         newOptions = processOptions(options, { ascean, enemy, combat });
+        setRenderedOptions(newOptions);
+        setRenderedText(newText);
+        setCurrentIndex(index || 0);
         EventBus.emit('blend-game', { 
             currentNode: currentNode,
             currentNodeIndex: index || 0,
             renderedOptions: newOptions, 
             renderedText: newText
         });
-        setRenderedOptions(newOptions);
-        setRenderedText(newText);
-        setCurrentIndex(index || 0);
-        const dialogTimeout = setTimeout(() => {
-            setShowDialogOptions(true);
-        }, currentNode?.text.split('').reduce((a: number, s: string | any[]) => a + s.length * 35, 0));
-        
-        return(() => {
-            clearTimeout(dialogTimeout);
-        }); 
+        const dialogTimeout = setTimeout(() => setShowDialogOptions(true), delay);
+        return(() => clearTimeout(dialogTimeout)); 
     };
-
 
     const getOptionKey = (ascean: Ascean, combat: any, game: Accessor<GameState>,  key: string) => {
         const newKey = key === 'mastery' ? ascean[key].toLowerCase() : key;
@@ -176,7 +184,6 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
             {renderedOptions()?.map((option: DialogNodeOption) => (
                 <DialogOption currentIndex={currentIndex} dialogNodes={dialogNodes} option={option} onClick={handleOptionClick} actions={actions} setPlayerResponses={setPlayerResponses} setKeywordResponses={setKeywordResponses} setShowDialogOptions={setShowDialogOptions} showDialogOptions={showDialogOptions} />
             ))}
-            <br />
         </div>
     );
 };
@@ -238,10 +245,13 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [showSell, setShowSell] = createSignal<boolean>(false);
     const [sellItem, setSellItem] = createSignal<Equipment | undefined>(undefined);
     const [showItem, setShowItem] = createSignal<boolean>(false);
+    const [showBuy, setShowBuy] = createSignal<boolean>(false);
     const [quests, setQuests] = createSignal<any[]>([]);
     const [showQuests, setShowQuests] = createSignal<boolean>(false);
     const [forge, setForge] = createSignal<Equipment | undefined>(undefined);
     const [forgeSee, setForgeSee] = createSignal<boolean>(false);
+    const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
+    const [thievery, setThievery] = createSignal<boolean>(false);
     const dimensions = useResizeListener();
     const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
@@ -274,7 +284,9 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         setBlacksmithSell: () => setBlacksmithSell(!blacksmithSell()),
         setForgeSee: () => setForgeSee(!forgeSee()),
     }; 
-
+    function steal(item: Equipment): void {
+        setStealing({ stealing: true, item });
+    };
     function checkUpgrades() {
         if (game().inventory.inventory.length < 3) return;
         const matchedItem = canUpgrade(game()?.inventory.inventory);
@@ -577,6 +589,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 merchantEquipment = await getClothEquipment(combat()?.player?.level as number);
             };
             setMerchantTable(merchantEquipment);
+            setShowBuy(true);
             EventBus.emit('blend-game', { merchantEquipment: merchantEquipment });
         } catch (err) {
             console.warn(err, '--- Error Getting Loot! ---');
@@ -661,8 +674,8 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     return (
         <Show when={combat().computer}>
         <div class='dialog-window'>
-            <div class='wrap' style={{ width: combat().isEnemy ? '75%' : '100%', padding: '3%', height: 'auto' }}> 
-            <div style={{ color: 'gold', 'font-size': '1em', 'margin-bottom': "5%" }}>
+            <div class='wrap' style={{ width: combat().isEnemy ? '75%' : '100%', padding: '2%', height: 'auto' }}> 
+            <div style={{ color: 'gold', 'font-size': '1em', 'margin-bottom': "3%" }}>
                 <div style={{ display: 'inline' }}>
                     <img src={`../assets/images/${combat()?.computer?.origin}-${combat()?.computer?.sex}.jpg`} alt={combat()?.computer?.name} style={{ width: '10%', 'border-radius': '50%', border: '0.1em solid #fdf6d8' }} class='origin-pic' />
                     {' '}<div style={{ display: 'inline' }}>{combat()?.computer?.name} <p style={{ display: 'inline', 'font-size': '0.75em' }}>[Level {combat()?.computer?.level}]</p><br /></div>
@@ -904,13 +917,25 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                     setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions}
                 />
             ) : ( '' ) } 
-            {combat().npcType !== '' && <Currency ascean={ascean} />}
-            {merchantTable()?.length > 0 && <MerchantTable table={merchantTable} game={game} ascean={ascean} />}
+            {merchantTable()?.length > 0 && 
+                <button class='highlight' style={{ 'color': 'green' }} onClick={() => setShowBuy(true)}>See the merchant's current set of items</button>
+            }
             </div>
             {combat().isEnemy && <div class='story-dialog-options' style={{ width: '25%', margin: 'auto', 'text-align': 'center', overflow: 'scroll', height: 'auto', 'scrollbar-width': 'none' }}>
                 <DialogButtons options={game().dialog} setIntent={handleIntent} />
             </div>}
         </div>
+        <Merchant ascean={ascean} game={game} />
+        <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
+        <Show when={showBuy() && merchantTable()?.length > 0}>
+            <div class='modal'>
+            <div class='creature-heading' style={{ position: 'absolute',left: '20%',top: '20%',height: '70%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center' }}>
+                <Currency ascean={ascean} />
+                <MerchantTable table={merchantTable} ascean={ascean} steal={steal} thievery={thievery} />
+            </div>
+            <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setShowBuy(false)}>x</button>
+            </div>
+        </Show>
         <Show when={forgeModalShow()}> 
             <div class='modal'>
                 <div class='border superCenter wrap' style={{ width: '50%' }}>
@@ -934,19 +959,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         </Show>
         <Show when={showSell()}>
             <div class='modal' style={{ background: 'rgba(0, 0, 0, 0.5)' }}>
-                <div class='creature-heading' style={{ 
-                    position: 'absolute',
-                    left: '50%',
-                    top: '65%',
-                    height: '50%',
-                    width: '60%',
-                    transform: 'translate(-50%, -50%)',
-                    background: '#000',
-                    border: '0.1em solid gold',
-                    'border-radius': '0.25em',
-                    'box-shadow': '0 0 0.5em #FFC700',
-                    overflow: 'scroll',
-                 }}>
+                <div class='creature-heading' style={{ position: 'absolute',left: '20%',top: '20%',height: '70%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll'}}>
                     <h1 class='center' style={{ 'margin-bottom': '3%' }}>Sell Items</h1>
                 <div class='center'>
                 <Currency ascean={ascean} />
@@ -955,12 +968,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                     <For each={game()?.inventory.inventory}>{(item, _index) => {
                         if (item === undefined || item === undefined) return;
                         return (
-                            <div class='center' onClick={() => setItem(item)} style={{ 
-                                ...getItemStyle(item?.rarity as string), 
-                                margin: dimensions().ORIENTATION === 'landscape' ? '5.5%' : '2.5%',
-                                padding: '0.25em',
-                                width: 'auto', 
-                            }}>
+                            <div class='center' onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: '5.5%',padding: '0.25em',width: 'auto' }}>
                                 <img src={item?.imgUrl} alt={item?.name} />
                             </div>
                         );

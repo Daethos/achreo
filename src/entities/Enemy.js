@@ -788,56 +788,38 @@ export default class Enemy extends Entity {
  
     onPatrolEnter = () => {
         this.enemyAnimation();
-        
-        // Generate 1-4 random patrol points using the navmesh
         const numberOfPatrolPoints = Phaser.Math.RND.between(1, 3);
         this.patrolPath = this.generatePatrolPath(numberOfPatrolPoints); // Generate patrol points via navmesh
-    
-        // If no valid path is found, fallback to idle state
         if (!this.patrolPath || this.patrolPath.length < 2) {
             this.stateMachine.setState(States.IDLE);
             return;
         };
-    
-        // Set the first point as the next destination
         this.nextPatrolPoint = this.patrolPath[1]; // First patrol point
         this.pathDirection = new Phaser.Math.Vector2(this.nextPatrolPoint.x, this.nextPatrolPoint.y).subtract(this.position).normalize();
-    
-        // Set a dynamic delay based on the distance to the next patrol point
         const distanceToNextPoint = this.calculateDistance(this.position, this.nextPatrolPoint);
         this.patrolDelay = this.calculatePatrolDelay(distanceToNextPoint, this.speed);
-    
-
-        // Start the patrol after reaching the next point
         this.patrolTimer = this.scene.time.delayedCall(this.patrolDelay, () => {
             if (this.isDeleting) return;
             this.patrolNextPoint();
         }, undefined, this);
     };
     
-    // Patrol update function
     onPatrolUpdate = (_dt) => {
         this.enemyAnimation();
-    
-        // Move the enemy towards the next patrol point
         if (this.patrolPath && this.patrolPath.length > 1) {
             const distanceToNextPoint = this.calculateDistance(this.position, this.nextPatrolPoint);
             if (distanceToNextPoint < 10) { // If close to the patrol point, move to the next one
                 this.patrolNextPoint();
             } else {
-                // Move towards the patrol point
                 this.setVelocity(
                     this.pathDirection.x * (this.speed * 0.5) * (this.isClimbing ? 0.65 : 1), 
                     this.pathDirection.y * (this.speed * 0.5) * (this.isClimbing ? 0.65 : 1)
                 );
             };
         };
-
-        // Get the proper facing direction for the patrol
         this.getDirection();
     };
     
-    // Handle the patrol path exit logic
     onPatrolExit = () => {
         this.setVelocity(0);
         this.enemyAnimation();
@@ -849,12 +831,10 @@ export default class Enemy extends Entity {
         // this.scene.navMesh.debugDrawClear(); // Clear the path drawing when exiting patrol
     };
     
-    // Generates a patrol path using navmesh
     generatePatrolPath = (numberOfPoints) => {
         let patrolPath = [];
         let currentPosition = this.position;
         
-        // Find multiple random points on the navmesh
         for (let i = 0; i < numberOfPoints; i++) {
             let pointFound = false;
             let randomPoint;
@@ -865,49 +845,37 @@ export default class Enemy extends Entity {
                 };
             };
             const pathToPoint = this.scene.navMesh.findPath(currentPosition, randomPoint);
-            
-            // If valid path is found, add it to the patrol path
             if (pathToPoint && pathToPoint.length > 1) {
                 patrolPath = patrolPath.concat(pathToPoint);
                 currentPosition = randomPoint;
             };
         };
-    
         // // Debugging: Draw the patrol path
         // this.scene.navMesh.enableDebug();
         // this.scene.navMesh.debugDrawPath(patrolPath, 0x00ff00);
-    
         return patrolPath;
     };
     
-    // Moves to the next patrol point in the path
     patrolNextPoint = () => {
         if (this.isDeleting) return;
-
         if (this.patrolPath && this.patrolPath.length > 1) {
             this.patrolPath.shift(); // Remove the current point
             if (this.patrolPath.length > 1) {
-                // Set the new next point and direction
                 this.nextPatrolPoint = this.patrolPath[0];
                 this.pathDirection = new Phaser.Math.Vector2(this.nextPatrolPoint.x, this.nextPatrolPoint.y).subtract(this.position).normalize();
 
-                // Set the new patrol delay based on distance to the next point
                 const distanceToNextPoint = this.calculateDistance(this.position, this.nextPatrolPoint);
                 this.patrolDelay = this.calculatePatrolDelay(distanceToNextPoint, this.speed);
                 
-                // Continue patrolling
                 this.patrolTimer = this.scene.time.delayedCall(this.patrolDelay, this.patrolNextPoint, undefined, this);
             } else {
-                // If no more points, go back to idle
                 this.stateMachine.setState(States.IDLE);
             };
         };
     };
     
-    // Calculates the distance between two points
     calculateDistance = (pointA, pointB) => Math.sqrt((pointB.x - pointA.x) ** 2 + (pointB.y - pointA.y) ** 2);
     
-    // Calculates the patrol delay based on the distance and speed
     calculatePatrolDelay = (distance, speed) => {
         const timeToNextPoint = (distance / (speed * 0.25)) * 1000; // Calculate time in milliseconds
         return timeToNextPoint; // Add some base delay to ensure smooth movement

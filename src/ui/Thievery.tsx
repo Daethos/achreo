@@ -138,7 +138,7 @@ export default function Thievery({ ascean, game, setThievery, stealing, setSteal
     };
     return <div>
         <Show when={thieveryAnimation().on}>
-            <div class='modal'>
+            <div class='modal' style={{ 'z-index': 99 }}>
             <div class='button superCenter' style={{ 'background-color': 'black', width: '30%' }}>
                 <div class='wrap' style={{ margin: '5%' }}>
 

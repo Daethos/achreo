@@ -11,7 +11,6 @@ import Currency from '../utility/Currency';
 import MerchantTable from './MerchantTable';
 import Equipment, { getArmorEquipment, getClothEquipment, getJewelryEquipment, getMagicalWeaponEquipment, getMerchantEquipment, getPhysicalWeaponEquipment } from '../models/equipment';
 import { LevelSheet } from '../utility/ascean';
-import { useResizeListener } from '../utility/dimensions';
 import { getRarityColor, sellRarity } from '../utility/styling';
 import ItemModal from '../components/ItemModal';
 import { getQuests } from '../utility/quests';
@@ -252,7 +251,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [forgeSee, setForgeSee] = createSignal<boolean>(false);
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
     const [thievery, setThievery] = createSignal<boolean>(false);
-    const dimensions = useResizeListener();
+    const [lootType, setLootType] = createSignal<string>('');
     const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
@@ -271,6 +270,17 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
 
     createEffect(() => setMerchantTable(game().merchantEquipment));
     
+    const keys = {
+        'Traveling Senarian':'magical-weapon',
+        'Traveling Sevasi':'physical-weapon',
+        'Traveling Armorer':'armor',
+        'Traveling Jeweler':'jewelry',
+        'Traveling Tailor':'cloth',
+        'Traveling General Merchant':'general',
+        'Traveling Sedyreal':'physical-weapon',
+        'Traveling Kyrisian':'armor',
+    };
+
     const actions = {
         getCombat: () => engageCombat(combat()?.enemyID),
         getArmor: async () => await getLoot('armor'),
@@ -570,6 +580,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     };
 
     const getLoot = async (type: string): Promise<void> => {
+        setLootType(type);
         if (game()?.merchantEquipment.length > 0) {
             EventBus.emit('delete-merchant-equipment', { equipment: game()?.merchantEquipment });
         };
@@ -594,6 +605,27 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         } catch (err) {
             console.warn(err, '--- Error Getting Loot! ---');
         };
+    };
+
+    function refreshLoot() {
+        try {
+            const refresh = async () => {
+                const key = keys[combat().computer?.name as keyof typeof keys] || 'armor';
+                await getLoot(key);
+            };
+            refresh();
+        } catch (err) {
+            console.warn(err, 'Error Refreshing Loot');
+        };
+    };
+
+    function switchToBuy() {
+        setShowSell(false);
+        setShowBuy(true);
+        if (game()?.merchantEquipment.length > 0) return;
+        const key = keys[combat().computer?.name as keyof typeof keys] || 'armor';
+        const switching = async () => await getLoot(key);
+        switching();
     };
 
     function setItem(item: Equipment) {
@@ -933,6 +965,8 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 <Currency ascean={ascean} />
                 <MerchantTable table={merchantTable} ascean={ascean} steal={steal} thievery={thievery} />
             </div>
+            <button class='highlight cornerTR' style={{ 'background-color': 'green', color: '#000', 'font-weight': 700 }} onClick={() => refreshLoot()}>Refresh Loot Table</button>
+            <button class='highlight cornerTL' style={{ 'background-color': 'gold', color: '#000', 'font-weight': 700 }} onClick={() => setShowSell(true)}>Sell Loot</button>
             <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setShowBuy(false)}>x</button>
             </div>
         </Show>
@@ -976,9 +1010,8 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 </div>
                 <br /><br />
                 </div>
-                <button class='cornerBR highlight' onClick={() => setShowSell(false)} style={{ 'background-color': 'red' }}>
-                    X
-                </button>
+                <button class='highlight cornerTL' style={{ 'background-color': 'gold', color: '#000', 'font-weight': 700 }} onClick={() => switchToBuy()}>Check the Merchant's Wares</button>
+                <button class='cornerBR highlight' onClick={() => setShowSell(false)} style={{ 'background-color': 'red' }}>X</button>
             </div>
         </Show>
         <Show when={showItem()}>

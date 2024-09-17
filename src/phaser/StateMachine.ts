@@ -130,7 +130,7 @@ export default class StateMachine {
     private currentState?: StateInterface;
     private id: string = (++idCount).toString();
     private context?: object;
-    private isChangingState: boolean = false;
+    public isChangingState: boolean = false;
     private changeStateQueue: string[] = []; 
 
     constructor(context?: object, id?: string) {

@@ -991,8 +991,59 @@ export default class Player extends Entity {
 
     playerActionSuccess = () => {
         if (this.particleEffect) {
+            const action = this.particleEffect.action;
+
             this.scene.particleManager.removeEffect(this.particleEffect.id);
             this.particleEffect = undefined;
+            console.log('Attempting playerActionSuccess for: ', action);
+            if (action === 'hook') {
+                this.hook(this.attackedTarget, 1500);
+                return;
+            };
+            if (!this.isAstrifying) {
+                if (this.attackedTarget?.isShimmering) {
+                    const shimmer = Phaser.Math.Between(1, 100);
+                    if (shimmer > 50) {
+                        this.attackedTarget?.shimmerHit();
+                        return;
+                    };
+                };
+
+                if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
+                    if (this.attackedTarget?.isShielding) {
+                        this.attackedTarget?.shieldHit();
+                    };
+                    if (this.attackedTarget?.isWarding) {
+                        this.attackedTarget?.wardHit();
+                    };
+                    return;
+                };
+
+                if (this.attackedTarget.isMenacing) this.attackedTarget.menace(); 
+                if (this.attackedTarget.isMultifaring) this.attackedTarget.multifarious(); 
+                if (this.attackedTarget.isMystifying) this.attackedTarget.mystify(); 
+            };
+            const match = this.scene.state?.enemyID === this.attackedTarget.enemyID;
+            if (match === true) {
+                this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: action }});
+            } else {
+                this.scene.combatManager.combatMachine.action({ type: 'Player', data: { 
+                    playerAction: { 
+                        action: action, 
+                        thrust: this.scene.state.parryGuess 
+                    },  
+                    enemyID: this.attackedTarget.enemyID, 
+                    ascean: this.attackedTarget.ascean, 
+                    damageType: this.attackedTarget.currentDamageType, 
+                    combatStats: this.attackedTarget.combatStats, 
+                    weapons: this.attackedTarget.weapons, 
+                    health: this.attackedTarget.health, 
+                    actionData: { 
+                        action: this.attackedTarget.currentAction, 
+                        thrust: this.attackedTarget.parryAction 
+                    },
+                }});
+            };
         } else {
             const action = this.checkPlayerAction();
             if (!action) return;

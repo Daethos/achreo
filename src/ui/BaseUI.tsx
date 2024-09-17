@@ -364,7 +364,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         try {
             adjustTime(0, res.combatEngaged, 0, true);
             if (res.playerWin === true) {
-                let experience: number = Math.round((res.computer?.level as number) * 100 * (res.computer?.level as number / res?.player?.level!) + (res?.playerAttributes?.rawKyosir as number));
+                let experience: number = Math.round((res.computer?.level as number) * 50 * (res.computer?.level as number / res?.player?.level!) + (res?.playerAttributes?.rawKyosir as number));
                 experience = balanceExperience(experience, res?.player?.level as number);
                 experience += ascean().experience;
                 const newState = { 
@@ -389,7 +389,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         };
     };    
     function balanceExperience(experience: number, level: number) {
-        experience *= (110 - (level * 10)) / 100;
+        experience *= (110 - (level * 5)) / 100;
         experience = Math.round(experience);
         return experience;
     };

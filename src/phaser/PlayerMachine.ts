@@ -173,7 +173,6 @@ export default class PlayerMachine {
         this.player.isAttacking = true;
         this.player.swingReset(States.ATTACK, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ATTACK);
-        this.scene.combatManager.combatMachine.input('action', 'attack');
     }; 
     onAttackUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) {
@@ -219,7 +218,6 @@ export default class PlayerMachine {
         this.player.isPosturing = true;
         this.player.swingReset(States.POSTURE, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.POSTURE);
-        this.scene.combatManager.combatMachine.input('action', 'posture');
     };
     onPostureUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.POSTURE_LIVE && !this.player.isRanged) {
@@ -303,7 +301,6 @@ export default class PlayerMachine {
         this.player.isThrusting = true;
         this.player.swingReset(States.THRUST, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.THRUST);
-        this.scene.combatManager.combatMachine.input('action', 'thrust');
     };
     onThrustUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) {
@@ -340,8 +337,7 @@ export default class PlayerMachine {
         if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
     };
     onAchireExit = () => {
-        if (this.player.castingSuccess === true) {
-            // const anim = this.getWeaponAnim();
+        if (this.player.castingSuccess === true) { 
             this.player.particleEffect =  this.scene.particleManager.addEffect('achire', this.player, 'achire', true);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `Your Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0]?.name}.`
@@ -352,7 +348,9 @@ export default class PlayerMachine {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ACHIRE);
             screenShake(this.scene, 90);
         };
+        this.player.isCasting = false;
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
     };
 
@@ -386,7 +384,9 @@ export default class PlayerMachine {
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ASTRAVE);    
         };
+        this.player.isCasting = false;
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
     };
 
@@ -428,6 +428,7 @@ export default class PlayerMachine {
             };
         };
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         this.player.setStatic(false);
     };
 
@@ -486,8 +487,10 @@ export default class PlayerMachine {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.CONFUSE);    
             screenShake(this.scene);
         };
+        this.player.isCasting = false;
         this.player.spellTarget = '';
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
     };
 
@@ -559,7 +562,9 @@ export default class PlayerMachine {
         };
     };
     onDevourExit = () => {
-        this.player.castbar.reset(); 
+        this.player.isCasting = false;
+        this.player.castbar.reset();
+        this.player.frameCount = 0; 
         this.player.beam.reset();
         this.player.spellTarget = '';
         this.player.setStatic(false);
@@ -599,8 +604,10 @@ export default class PlayerMachine {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.FEAR);    
             screenShake(this.scene);
         };
+        this.player.isCasting = false;
         this.player.spellTarget = '';
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);  
     };
 
@@ -634,6 +641,7 @@ export default class PlayerMachine {
     onFyerusExit = () => {
         if (this.player.aoe) this.player.aoe.cleanAnimation(this.scene);
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         this.player.isCasting = false;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
     };
@@ -662,7 +670,9 @@ export default class PlayerMachine {
             this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 25, id: this.player.playerID }, type: 'Health' });
             this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
         };
+        this.player.isCasting = false;
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
     };
 
@@ -697,7 +707,9 @@ export default class PlayerMachine {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ILIRECH);    
             screenShake(this.scene, 90);
         };
+        this.player.isCasting = false;
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         this.player.beam.reset();
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
     };
@@ -752,6 +764,7 @@ export default class PlayerMachine {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.KYNISOS);    
         };
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
     };
 
@@ -791,7 +804,9 @@ export default class PlayerMachine {
         if (this.player.isCasting) this.player.castbar.update(dt, 'channel', 'TENDRIL');
     };
     onKyrnaicismExit = () => {
+        this.player.isCasting = false;
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         this.player.beam.reset();
         this.player.spellTarget = '';
         this.player.setStatic(false);
@@ -969,8 +984,10 @@ export default class PlayerMachine {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.MAIERETH);    
             screenShake(this.scene, 90);
         };
+        this.player.isCasting = false;
         this.player.spellTarget = '';
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         this.player.beam.reset();
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);  
     };
@@ -1114,8 +1131,10 @@ export default class PlayerMachine {
             });
             screenShake(this.scene);
         };
+        this.player.isCasting = false;
         this.player.spellTarget = '';
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
     };
 
@@ -1147,10 +1166,12 @@ export default class PlayerMachine {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.POLYMORPH);
             this.player.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });        
-            this.player.spellTarget = '';
             screenShake(this.scene);
         };
+        this.player.spellTarget = '';
+        this.player.isCasting = false;
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
     };
 
@@ -1206,7 +1227,9 @@ export default class PlayerMachine {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.QUOR);    
             screenShake(this.scene, 180, 0.006);
         };
+        this.player.isCasting = false;
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
     };
 
@@ -1239,7 +1262,9 @@ export default class PlayerMachine {
         if (this.player.isCasting) this.player.castbar.update(dt, 'channel', 'HEAL');
     };
     onReconstituteExit = () => {
+        this.player.isCasting = false;
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         this.player.beam.reset();
         if (this.player.reconTimer) {
             this.player.reconTimer.remove(false);
@@ -1287,8 +1312,10 @@ export default class PlayerMachine {
                 playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, rooting them!`
             });
         };
+        this.player.isCasting = false;
         this.player.spellTarget = '';
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         this.player.beam.reset();
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
     };
@@ -1394,8 +1421,10 @@ export default class PlayerMachine {
             this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
             screenShake(this.scene);
         };
+        this.player.isCasting = false;
         this.player.spellTarget = '';
         this.player.castbar.reset();
+        this.player.frameCount = 0;
         this.player.beam.reset();
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
     };

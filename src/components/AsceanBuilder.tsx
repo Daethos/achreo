@@ -101,7 +101,7 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
                         <Suspense fallback={<Puff color="gold" />}>
                         <For each={STARTING_CHARACTERS}>
                             {(ascean, _index) => (
-                                <div class='border row' onClick={() => setNewAscean(ascean)} style={{ width: '70%', margin: '0.5em auto', 'border-color': masteryColor(ascean.mastery) }}>
+                                <div class='border row' onClick={() => setNewAscean(ascean)} style={{ width: '70%', margin: '1em auto', 'border-color': masteryColor(ascean.mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(ascean.mastery)} 0 0 0 0.3em` }}>
                                     <h4 class='highlight gold' style={{ 'font-family': 'Cinzel-Regular' }}>{ascean.name.split(' ')[0]}</h4>
                                     <img style={{...photo, 'border-color': masteryColor(ascean.mastery)}} src={`../assets/images/${ascean.origin}-${ascean.sex}.jpg`} /><br />
                                     <h4 class='highlight gold' style={{ 'font-family': 'Cinzel-Regular' }}>{ascean.mastery.charAt(0).toUpperCase() + ascean.mastery.slice(1)}</h4>

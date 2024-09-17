@@ -77,55 +77,56 @@ class Particle {
                     return;
                 };
                 if (other.bodyB.label === 'enemyCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && other.gameObjectB.health > 0 && player.name === 'player') { // !other.gameObjectB.isDefeated
-                    if (this.action === 'hook') {
-                        player.hook(other.gameObjectB, 1500);
-                        player.particleEffect.success = true;
-                        return;
-                    };
-                    if (other.gameObjectB?.isShimmering && !player.isAstrifying) {
-                        const shimmer = Phaser.Math.Between(1, 100);
-                        if (shimmer > 50) {
-                            player.particleEffect.success = true;
-                            other.gameObjectB?.shimmerHit();
-                            return;
-                        };
-                    };
-                    if ((other.gameObjectB?.isProtecting || other.gameObjectB?.isShielding || other.gameObjectB?.isWarding) && !player.isAstrifying) {
-                        if (other.gameObjectB?.isShielding) {
-                            other.gameObjectB?.shieldHit();
-                        };
-                        if (other.gameObjectB?.isWarding) {
-                            other.gameObjectB?.wardHit();
-                        };
-                        player.particleEffect.success = true;
-                        return;
-                    };
-                    if (other.gameObjectB.isMenacing && !player.isAstrifying) other.gameObjectB.menace(); 
-                    if (other.gameObjectB.isMultifaring && !player.isAstrifying) other.gameObjectB.multifarious(); 
-                    if (other.gameObjectB.isMystifying && !player.isAstrifying) other.gameObjectB.mystify(); 
-                    const match = this.scene.state?.enemyID === other.gameObjectB.enemyID;
                     player.attackedTarget = other.gameObjectB;
-                    if (match === true) {
-                        this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: this.action }});
-                    } else {
-                        this.scene.combatManager.combatMachine.action({ type: 'Player', data: { 
-                            playerAction: { 
-                                action: this.action, 
-                                thrust: this.scene.state.parryGuess 
-                            },  
-                            enemyID: player.attackedTarget.enemyID, 
-                            ascean: player.attackedTarget.ascean, 
-                            damageType: player.attackedTarget.currentDamageType, 
-                            combatStats: player.attackedTarget.combatStats, 
-                            weapons: player.attackedTarget.weapons, 
-                            health: player.attackedTarget.health, 
-                            actionData: { 
-                                action: player.attackedTarget.currentAction, 
-                                thrust: player.attackedTarget.parryAction 
-                            },
-                        }});
-                    };
                     player.particleEffect.success = true;
+
+                    // if (this.action === 'hook') {
+                    //     player.hook(other.gameObjectB, 1500);
+                    //     player.particleEffect.success = true;
+                    //     return;
+                    // };
+                    // if (other.gameObjectB?.isShimmering && !player.isAstrifying) {
+                    //     const shimmer = Phaser.Math.Between(1, 100);
+                    //     if (shimmer > 50) {
+                    //         player.particleEffect.success = true;
+                    //         other.gameObjectB?.shimmerHit();
+                    //         return;
+                    //     };
+                    // };
+                    // if ((other.gameObjectB?.isProtecting || other.gameObjectB?.isShielding || other.gameObjectB?.isWarding) && !player.isAstrifying) {
+                    //     if (other.gameObjectB?.isShielding) {
+                    //         other.gameObjectB?.shieldHit();
+                    //     };
+                    //     if (other.gameObjectB?.isWarding) {
+                    //         other.gameObjectB?.wardHit();
+                    //     };
+                    //     player.particleEffect.success = true;
+                    //     return;
+                    // };
+                    // if (other.gameObjectB.isMenacing && !player.isAstrifying) other.gameObjectB.menace(); 
+                    // if (other.gameObjectB.isMultifaring && !player.isAstrifying) other.gameObjectB.multifarious(); 
+                    // if (other.gameObjectB.isMystifying && !player.isAstrifying) other.gameObjectB.mystify(); 
+                    // const match = this.scene.state?.enemyID === other.gameObjectB.enemyID;
+                    // if (match === true) {
+                    //     this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: this.action }});
+                    // } else {
+                    //     this.scene.combatManager.combatMachine.action({ type: 'Player', data: { 
+                    //         playerAction: { 
+                    //             action: this.action, 
+                    //             thrust: this.scene.state.parryGuess 
+                    //         },  
+                    //         enemyID: player.attackedTarget.enemyID, 
+                    //         ascean: player.attackedTarget.ascean, 
+                    //         damageType: player.attackedTarget.currentDamageType, 
+                    //         combatStats: player.attackedTarget.combatStats, 
+                    //         weapons: player.attackedTarget.weapons, 
+                    //         health: player.attackedTarget.health, 
+                    //         actionData: { 
+                    //             action: player.attackedTarget.currentAction, 
+                    //             thrust: player.attackedTarget.parryAction 
+                    //         },
+                    //     }});
+                    // };
                 };
                 if (other.bodyB.label === 'playerCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy' && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
                     player.particleEffect.success = true;

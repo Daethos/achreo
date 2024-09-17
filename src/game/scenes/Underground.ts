@@ -27,6 +27,7 @@ import Tile from '../../phaser/Tile';
 import { CombatManager } from '../CombatManager';
 import MiniMap from '../../phaser/MiniMap';
 import ScrollingCombatText from '../../phaser/ScrollingCombatText';
+import Logger, { ConsoleLogger } from '../../utility/Logger';
 
 export class Underground extends Scene {
     animatedTiles: any[];
@@ -83,6 +84,7 @@ export class Underground extends Scene {
     east: any;
     west: any;
     markers: any;
+    logger: Logger;
 
     constructor () {
         super('Underground');
@@ -220,7 +222,13 @@ export class Underground extends Scene {
             this.rightJoystick?.joystick?.setVisible(true);
             if (this.actionBar) this.actionBar.draw();
         };
-
+        this.logger = new Logger();
+        this.logger.add('console', new ConsoleLogger());
+        this.time.delayedCall(2000, () => {
+            this.logger.log('Console: Something concerning but potentially innocuous!');
+            this.logger.log('Warning: Some function did not work, but did not crash the game!');
+            this.logger.log('Error: Some portion if not all of the game has crashed!');
+        }, undefined, this);
         this.smallHud = new SmallHud(this);
         this.combatManager = new CombatManager(this);
         this.minimap = new MiniMap(this);

@@ -125,8 +125,11 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     break;
                 case 'Remove Tick': // Removing Prayer
                     const remove = prayerRemoveTick(combat(), data);
-                    res = { ...combat(), ...remove };
-                    EventBus.emit('blend-combat', remove);                    
+
+                    playerActionDescription = `${data.playerName === combat().player?.name ? 'Your' : `${combat().computer?.name}'s`} ${data.name} prayer has expired.`;
+                    // console.log(remove, 'Remove');
+                    res = { ...combat(), ...remove, playerActionDescription };
+                    EventBus.emit('blend-combat', remove);
                     affectsHealth = false;
                     break;
                 case 'Player': // Blind Player Attack i.e. hitting a non targeted enemy

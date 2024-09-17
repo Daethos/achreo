@@ -130,7 +130,7 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
         const asceanName = ascean()[inventoryType()]?.name.includes('Starter') ? ascean()[inventoryType()]?.name.split(' ')[0] + ' ' + ascean()[inventoryType()]?.name.split(' ')[1] : ascean()[inventoryType()]?.name;
         const inventoryName = highlighted()?.item?.name.includes('Starter') ? highlighted()?.item?.name.split(' ')[0] + ' ' + highlighted()?.item?.name.split(' ')[1] : highlighted()?.item?.name;
         const asceanTypeGrip = ascean()[inventoryType()]?.grip && ascean()[inventoryType()]?.type ? <>
-                        {ascean()[inventoryType()]?.type} [{ascean()[inventoryType()]?.grip}]
+                        {ascean()[inventoryType()]?.type} [{ascean()[inventoryType()]?.grip}] 
                         {ascean()[inventoryType()]?.attackType} [{ascean()[inventoryType()]?.damageType?.[0]}{ascean()[inventoryType()]?.damageType?.[1] ? ' / ' + ascean()[inventoryType()]?.damageType[1] : null }{ascean()[inventoryType()]?.damageType?.[2] ? ' / ' + ascean()[inventoryType()]?.damageType[2] : null }] 
                 </> : ascean()[inventoryType()]?.type ? <> {ascean()[inventoryType()]?.type} </> : undefined;
         const inventoryTypeGrip = highlighted()?.item?.grip && highlighted()?.item?.type ? <div style={{ 'text-wrap': 'balance' }}>
@@ -179,25 +179,25 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
             <table style={dimensions().ORIENTATION === 'landscape' ? { width: `${dimensions().WIDTH * 0.32}px`, overflow: 'scroll', 'scrollbar-width': 'none' } : { width: `${dimensions().WIDTH * 0.975}px`, 'scrollbar-width': 'none' }}>
             <tbody>
                 <tr>
-                    <td class='border gold' style={{ 'font-size': responsiveSizeStyle(asceanName?.length) }}>{asceanName}
+                    <td class='compare-border gold' style={{ 'font-size': responsiveSizeStyle(asceanName?.length) }}>{asceanName}
                     <img src={ascean()[inventoryType()]?.imgUrl} />
                     </td>
-                    <td class='border gold' style={{ 'font-size': responsiveSizeStyle(inventoryName?.length) }}>{inventoryName}
+                    <td class='compare-border gold' style={{ 'font-size': responsiveSizeStyle(inventoryName?.length) }}>{inventoryName}
                     <img src={highlighted()?.item?.imgUrl} />
                     </td>
                 </tr>
 
                 <tr>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(asceanTypeGrip?.toString().length as number) }}>{asceanTypeGrip}</td>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(inventoryTypeGrip?.toString().length as number) }}>{inventoryTypeGrip}</td>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(asceanTypeGrip?.toString().length as number) }}>{asceanTypeGrip}</td>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(inventoryTypeGrip?.toString().length as number) }}>{inventoryTypeGrip}</td>
                 </tr>
                 { highlighted()?.item?.constituion > 0 || ascean()[inventoryType()]?.constitution > 0 || highlighted()?.item?.strength > 0 || ascean()[inventoryType()]?.strength > 0 || highlighted()?.item?.agility > 0 || ascean()[inventoryType()]?.agility > 0 || highlighted()?.item?.achre > 0 || ascean()[inventoryType()]?.achre > 0 || highlighted()?.item?.caeren > 0 || ascean()[inventoryType()]?.caeren > 0 || highlighted()?.item?.kyosir > 0 || ascean()[inventoryType()]?.kyosir > 0 ? (
                 <tr>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(asceanStats?.toString()?.length as number), color: textColor((ascean()[inventoryType()]?.constitution + ascean()[inventoryType()]?.strength + ascean()[inventoryType()]?.agility + ascean()[inventoryType()]?.achre + ascean()[inventoryType()]?.caeren + ascean()[inventoryType()]?.kyosir), 
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(asceanStats?.toString()?.length as number), color: textColor((ascean()[inventoryType()]?.constitution + ascean()[inventoryType()]?.strength + ascean()[inventoryType()]?.agility + ascean()[inventoryType()]?.achre + ascean()[inventoryType()]?.caeren + ascean()[inventoryType()]?.kyosir), 
                         (highlighted()?.item?.constitution + highlighted()?.item?.strength + highlighted()?.item?.agility + highlighted()?.item?.achre + highlighted()?.item?.caeren + highlighted()?.item?.kyosir)) }}>
                         {asceanStats}
                         </td>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(inventoryStats?.toString()?.length as number), color: textColor((highlighted()?.item?.constitution + highlighted()?.item?.strength + highlighted()?.item?.agility + highlighted()?.item?.achre + highlighted()?.item?.caeren + highlighted()?.item?.kyosir), 
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(inventoryStats?.toString()?.length as number), color: textColor((highlighted()?.item?.constitution + highlighted()?.item?.strength + highlighted()?.item?.agility + highlighted()?.item?.achre + highlighted()?.item?.caeren + highlighted()?.item?.kyosir), 
                         (ascean()[inventoryType()]?.constitution + ascean()[inventoryType()]?.strength + ascean()[inventoryType()]?.agility + ascean()[inventoryType()]?.achre + ascean()[inventoryType()]?.caeren + ascean()[inventoryType()]?.kyosir)) }}>
                         {inventoryStats}
                     </td>
@@ -205,73 +205,73 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
                 ) : ( undefined )}
                 { (highlighted()?.item?.physicalDamage && highlighted()?.item?.grip) || (highlighted()?.item?.magicalDamage && highlighted()?.item?.grip) ? (
                 <tr>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(asceanDamage.length), color: textColor((ascean()[inventoryType()]?.physicalDamage + ascean()[inventoryType()]?.magicalDamage), (highlighted()?.item?.physicalDamage + highlighted()?.item?.magicalDamage)) }}>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(asceanDamage.length), color: textColor((ascean()[inventoryType()]?.physicalDamage + ascean()[inventoryType()]?.magicalDamage), (highlighted()?.item?.physicalDamage + highlighted()?.item?.magicalDamage)) }}>
                         {asceanDamage}
                     </td>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(inventoryDamage.length), color: textColor((highlighted()?.item?.physicalDamage + highlighted()?.item?.magicalDamage), (ascean()[inventoryType()]?.physicalDamage + ascean()[inventoryType()]?.magicalDamage)) }}>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(inventoryDamage.length), color: textColor((highlighted()?.item?.physicalDamage + highlighted()?.item?.magicalDamage), (ascean()[inventoryType()]?.physicalDamage + ascean()[inventoryType()]?.magicalDamage)) }}>
                         {inventoryDamage}
                     </td>
                 </tr>
                 ) : ( undefined ) }
                 { highlighted()?.item?.physicalResistance as number > 0 || ascean()[inventoryType()]?.physicalResistance > 0 || highlighted()?.item?.magicalResistance as number > 0 || ascean()[inventoryType()]?.magicalResistance ? 
                     <tr>
-                        <td class='border' style={{ 'font-size': responsiveSizeStyle(asceanDefense?.length), color: textColor((ascean()[inventoryType()]?.physicalResistance + ascean()[inventoryType()]?.magicalResistance), (highlighted()?.item?.physicalResistance as number + (highlighted()?.item?.magicalResistance ?? 0))) }}>
+                        <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(asceanDefense?.length), color: textColor((ascean()[inventoryType()]?.physicalResistance + ascean()[inventoryType()]?.magicalResistance), (highlighted()?.item?.physicalResistance as number + (highlighted()?.item?.magicalResistance ?? 0))) }}>
                             {asceanDefense}
                         </td>
-                        <td class='border' style={{ 'font-size': responsiveSizeStyle(inventoryDefense?.length), color: textColor((highlighted()?.item?.physicalResistance as number + (highlighted()?.item?.magicalResistance ?? 0)), (ascean()[inventoryType()]?.physicalResistance + ascean()[inventoryType()]?.magicalResistance)) }}>
+                        <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(inventoryDefense?.length), color: textColor((highlighted()?.item?.physicalResistance as number + (highlighted()?.item?.magicalResistance ?? 0)), (ascean()[inventoryType()]?.physicalResistance + ascean()[inventoryType()]?.magicalResistance)) }}>
                             {inventoryDefense}
                         </td>
                     </tr>
                 : ( undefined ) }            
                 { ((highlighted()?.item?.magicalPenetration && highlighted()?.item?.magicalPenetration as number > 0) || ascean()[inventoryType()]?.magicalPenetration > 0 || (highlighted()?.item?.physicalPenetration && highlighted()?.item?.physicalPenetration as number > 0) || ascean()[inventoryType()]?.physicalPenetration > 0) ? (
                 <tr>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(asceanPenetration.length), color: textColor((ascean()[inventoryType()]?.physicalPenetration + ascean()[inventoryType()]?.magicalPenetration), (highlighted()?.item?.physicalPenetration as number + (highlighted()?.item?.magicalPenetration ?? 0))) }}>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(asceanPenetration.length), color: textColor((ascean()[inventoryType()]?.physicalPenetration + ascean()[inventoryType()]?.magicalPenetration), (highlighted()?.item?.physicalPenetration as number + (highlighted()?.item?.magicalPenetration ?? 0))) }}>
                         {asceanPenetration}
                     </td>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(inventoryPenetration.length), color: textColor((highlighted()?.item?.physicalPenetration as number + (highlighted()?.item?.magicalPenetration ?? 0)), (ascean()[inventoryType()]?.physicalPenetration + ascean()[inventoryType()]?.magicalPenetration)) }}>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(inventoryPenetration.length), color: textColor((highlighted()?.item?.physicalPenetration as number + (highlighted()?.item?.magicalPenetration ?? 0)), (ascean()[inventoryType()]?.physicalPenetration + ascean()[inventoryType()]?.magicalPenetration)) }}>
                         {inventoryPenetration}
                     </td>
                 </tr>
                 ) : ( undefined ) }
                 <tr>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(asceanCritChance.length), color: textColor(ascean()[inventoryType()]?.criticalChance, highlighted()?.item?.criticalChance) }}>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(asceanCritChance.length), color: textColor(ascean()[inventoryType()]?.criticalChance, highlighted()?.item?.criticalChance) }}>
                         {asceanCritChance}
                     </td>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(inventoryCritChance.length), color: textColor(highlighted()?.item?.criticalChance, ascean()[inventoryType()]?.criticalChance) }}>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(inventoryCritChance.length), color: textColor(highlighted()?.item?.criticalChance, ascean()[inventoryType()]?.criticalChance) }}>
                         {inventoryCritChance}
                     </td>
                 </tr>
                 <tr>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(asceanCritDamage.length), color: textColor(ascean()[inventoryType()]?.criticalDamage, highlighted()?.item?.criticalDamage) }}>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(asceanCritDamage.length), color: textColor(ascean()[inventoryType()]?.criticalDamage, highlighted()?.item?.criticalDamage) }}>
                         {asceanCritDamage}
                     </td>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(inventoryCritDamage.length), color: textColor(highlighted()?.item?.criticalDamage, ascean()[inventoryType()]?.criticalDamage) }}>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(inventoryCritDamage.length), color: textColor(highlighted()?.item?.criticalDamage, ascean()[inventoryType()]?.criticalDamage) }}>
                         {inventoryCritDamage}
                     </td>
                 </tr> 
                 <tr>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(asceanRoll.length), color: textColor(ascean()[inventoryType()]?.roll, highlighted()?.item?.roll) }}>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(asceanRoll.length), color: textColor(ascean()[inventoryType()]?.roll, highlighted()?.item?.roll) }}>
                         {asceanRoll}
                     </td>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(inventoryRoll.length), color: textColor(highlighted()?.item?.roll, ascean()[inventoryType()]?.roll) }}>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(inventoryRoll.length), color: textColor(highlighted()?.item?.roll, ascean()[inventoryType()]?.roll) }}>
                         {inventoryRoll}
                     </td>
                 </tr>
                 { (highlighted()?.item?.influences?.length as number > 0 || ascean()[inventoryType()]?.influences?.length > 0) ?
                 <tr>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(ascean()[inventoryType()]?.influences?.length)}}>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(ascean()[inventoryType()]?.influences?.length)}}>
                     {asceanInfluence}
                     </td>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(highlighted()?.item?.influences?.length as number)}}>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(highlighted()?.item?.influences?.length as number)}}>
                     {inventoryInfluence}
                     </td>
                 </tr>
                 : ( undefined ) }
                 <tr>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(ascean()[inventoryType()]?.rarity?.length as number), color: getRarityColor(ascean()[inventoryType()]?.rarity)}}>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(ascean()[inventoryType()]?.rarity?.length as number), color: getRarityColor(ascean()[inventoryType()]?.rarity)}}>
                         {ascean()[inventoryType()]?.rarity}
                     </td>
-                    <td class='border' style={{ 'font-size': responsiveSizeStyle(highlighted()?.item?.rarity?.length as number), color: getRarityColor(highlighted()?.item?.rarity as string)}}>{highlighted()?.item?.rarity}</td>
+                    <td class='compare-border' style={{ 'font-size': responsiveSizeStyle(highlighted()?.item?.rarity?.length as number), color: getRarityColor(highlighted()?.item?.rarity as string)}}>{highlighted()?.item?.rarity}</td>
                 </tr>
 
             </tbody>

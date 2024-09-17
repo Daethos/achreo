@@ -5,7 +5,19 @@
 #origin-bonus {color: gold; font-weight: 500;}
 #popover-image {right: 0;}
 #typewriter {width: 100%;} 
-.border {border: 0.2em solid #fdf6d8; border-radius: 0.25rem; margin: 0.5rem; background-color: black;}
+.border {border: 0.1em solid #fdf6d8; border-radius: 0.25rem; margin: 0.5rem; background-color: black; z-index: 0;
+    box-shadow:
+    inset #000 0 0 0 0.2em, 
+    inset #fdf6d8 0 0 0 0.3em; 
+    /* inset #d6cb83 0 0 0 1px, 
+    inset hsl(58, 44%, 67%) 0 0 0 1px,
+    inset #ffe68c 0 0 0 1px, 
+    inset #e4c248 0 0 0 1px,
+    inset #f9f6e5 0 0 0 1px, 
+    inset #f7efbf 0 0 0 1px; */
+    /* text-shadow: 1px 1px 1px #bfecf7; */
+}
+.compare-border {border: 0.1em solid #fdf6d8;border-left: 0.1em solid #fdf6d8;border-right: 0.1em solid #fdf6d8;padding:0.5%;}
 .borderless {border: none;}
 .borderCircle {border-radius: 50%;}
 .buttonBorderless {font-family: "Cinzel Regular";padding: 0.5em;background-color: #000;color: rgba(253, 246, 216, 0.87);border: none;cursor: pointer;transition: all 0.3s;

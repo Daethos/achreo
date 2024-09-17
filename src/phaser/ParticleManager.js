@@ -76,7 +76,7 @@ class Particle {
                     this.collided = true;
                     return;
                 };
-                if (other.bodyB.label === 'enemyCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && !other.gameObjectB.isDefeated && player.name === 'player') {
+                if (other.bodyB.label === 'enemyCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && other.gameObjectB.health > 0 && player.name === 'player') { // !other.gameObjectB.isDefeated
                     if (this.action === 'hook') {
                         player.hook(other.gameObjectB, 1500);
                         player.particleEffect.success = true;

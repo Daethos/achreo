@@ -347,9 +347,7 @@ export default class Player extends Entity {
     };
     invalidTarget = (id) => {
         const enemy = this.scene.enemies.find(enemy => enemy.enemyID === id);
-        if (enemy) {
-            return enemy.isDefeated;
-        };
+        if (enemy) return enemy.health === 0; // enemy.isDefeated;
         this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Combat Issue: NPC Targeted`, 1000, 'damage');
         return true;
     };
@@ -858,7 +856,7 @@ export default class Player extends Entity {
                 this.scene.combatEngaged(false);
                 this.inCombat = false;
             };
-            if (playerCombat === true && (gameObject.isDefeated === true || gameObject.isLuckout === true || gameObject.isPersuaded === true)) {
+            if (playerCombat === true && (gameObject.health === 0 || gameObject.isLuckout === true || gameObject.isPersuaded === true)) {
                 return false;
             };
             return true;

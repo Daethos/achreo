@@ -241,9 +241,8 @@ export default class Enemy extends Entity {
         };
         const isNewEnemy = this.isNewEnemy(this.scene.player);
         if (isNewEnemy === true || this.inCombat === false) {
-            // if (isNewEnemy) 
-            this.scene.player.targetEngagement(this.enemyID);
             this.jumpIntoCombat();
+            this.scene.player.targetEngagement(this.enemyID);
         };
     };
 
@@ -317,7 +316,7 @@ export default class Enemy extends Entity {
             if (this.isMalicing === true) this.maliceHit();
             if (this.isMending === true) this.mendHit();
             if (e.newComputerHealth <= 0) this.stateMachine.setState(States.DEFEATED);
-            if (!this.inCombat && !this.isDefeated && e.newComputerHealth > 0) this.checkEnemyCombatEnter();
+            if (!this.inCombat && e.newComputerHealth > 0) this.checkEnemyCombatEnter();
         } else if (this.health < e.newComputerHealth) { 
             let heal = Math.round(e.newComputerHealth - this.health);
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, 1500, 'heal');
@@ -449,12 +448,10 @@ export default class Enemy extends Entity {
     };
 
     jumpIntoCombat = () => {
-        const newEnemy = this.isNewEnemy(this.scene.player);
-        if (newEnemy) {
-            this.scene.player.targets.push(this);
-        };
         this.attacking = this.scene.player;
         this.inCombat = true;
+        const newEnemy = this.isNewEnemy(this.scene.player);
+        if (newEnemy) this.scene.player.targets.push(this);
         this.setSpecialCombat(true);
         if (this.healthbar) this.healthbar.setVisible(true);
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
@@ -462,10 +459,10 @@ export default class Enemy extends Entity {
     };
 
     checkEnemyCombatEnter = () => {
-        const newEnemy = this.isNewEnemy(this.scene.player);
-        if (newEnemy) this.scene.player.targets.push(this);
         this.attacking = this.scene.player;
         this.inCombat = true;
+        const newEnemy = this.isNewEnemy(this.scene.player);
+        if (newEnemy) this.scene.player.targets.push(this);
         this.setSpecialCombat(true);
         if (this.healthbar) this.healthbar.setVisible(true);
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
@@ -827,7 +824,6 @@ export default class Enemy extends Entity {
             this.patrolTimer.destroy();
             this.patrolTimer = undefined;
         };
-        this.stateMachine.setState(States.IDLE);
         // this.scene.navMesh.debugDrawClear(); // Clear the path drawing when exiting patrol
     };
     
@@ -2741,7 +2737,7 @@ export default class Enemy extends Entity {
     rangedDistanceMultiplier = (num) => this.isRanged ? num : 1;
 
     evaluateCombatDistance = () => {
-        if (this.isCasting === true) return;
+        if (this.isCasting === true || this.isSuffering() === true) return;
         if (this.attacking === undefined || this.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
             this.stateMachine.setState(States.LEASH);
             return;

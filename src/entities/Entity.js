@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { roundToTwoDecimals } from '../utility/combat';
 export const FRAME_COUNT = {
     ATTACK_LIVE: 16,
     ATTACK_SUCCESS: 39,
@@ -406,7 +407,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
     checkPlayerResist = () => {
         const chance = Math.random() * 101;
-        const resist = this.scene.state.playerDefense.magicalDefenseModifier / 4; // 0 - 25%
+        const playerResist = this.scene.state.isStalwart ? this.scene.state.playerDefense.magicalPosture / 4 : this.scene.state.playerDefense.magicalDefenseModifier / 4;
+        const enemyPenetration = this.combatStats?.attributes?.kyosirMod || 0;
+        this.scene.logger.log(`Initial Enemy Special Chance: ${roundToTwoDecimals(chance)} | Player Resist: ${playerResist} | Enemy Penetration: ${enemyPenetration}`);
+        const resist = playerResist - enemyPenetration; // 0 - 25% - 0 - 25%
         if (chance > resist) {
             return true;
         } else {

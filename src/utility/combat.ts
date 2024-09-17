@@ -2261,6 +2261,8 @@ function prayerRemoveTickSplitter(combat: Combat, statusEffect: StatusEffect): C
             return false;
         });
     };
+    combat.playerEffects = combat.playerEffects.filter((effect: StatusEffect) => effect !== statusEffect);
+    combat.computerEffects = combat.computerEffects.filter((effect: StatusEffect) => effect !== statusEffect);
     return combat;
 };
 

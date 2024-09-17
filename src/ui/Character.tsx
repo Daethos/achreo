@@ -310,9 +310,9 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
         return <div class='creature-heading' style={{ padding: '5%' }}>
             <h1 style={{ 'margin-bottom': '3%' }}>Influence</h1>
             <h2>The influences of your equipment increase the likelihood of receiving a prayer from the associated deity.</h2>
-                {ascean().weaponOne.name}: <span class='gold'>[{ascean().weaponOne?.influences?.[0]}] +{weaponInfluenceStrength}%</span><br />
-                {ascean().amulet.name}: <span class='gold'>{ascean().amulet?.influences?.length as number > 0 ? [ascean().amulet?.influences?.[0]] : ''} +{amuletInfluenceStrength}%</span><br />
-                {ascean().trinket.name}: <span class='gold'>{ascean().amulet?.influences?.length as number > 0 ? [ascean().trinket?.influences?.[0]] : ''} +{trinketInfluenceStrength}%</span>        
+                {ascean().weaponOne.name}: <span class='gold'>{ascean().weaponOne?.influences?.[0]} [{weaponInfluenceStrength}]</span><br />
+                {ascean().amulet.name}: <span class='gold'>{ascean().amulet?.influences?.length as number > 0 ? `${ascean().amulet?.influences?.[0]}` : ''} [{amuletInfluenceStrength}]</span><br />
+                {ascean().trinket.name}: <span class='gold'>{ascean().amulet?.influences?.length as number > 0 ? `${ascean().trinket?.influences?.[0]}` : ''} [{trinketInfluenceStrength}]</span>        
             <h1 style={{ 'margin-bottom': '3%' }}>Prayers</h1>
             <h2>That which you seek in combat.</h2>
                 Mastery: <span class='gold'>{highestMastery[0].charAt(0).toUpperCase() + highestMastery[0].slice(1)} - {highestMastery[1]}</span><br />

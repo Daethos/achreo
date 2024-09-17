@@ -29,6 +29,7 @@ import Logger, { ConsoleLogger } from '../../utility/Logger';
 import MovingPlatform from '../../phaser/MovingPlatform';
 import { CombatManager } from '../CombatManager';
 import MiniMap from '../../phaser/MiniMap';
+import { screenShake } from '../../phaser/ScreenShake';
 const dimensions = useResizeListener();
 export class Game extends Scene {
     animatedTiles: any[];
@@ -591,6 +592,11 @@ export class Game extends Scene {
     combatEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
         EventBus.emit('combat-engaged', bool);
+        if (bool === true) {
+            screenShake(this, 100, 0.005)    
+            this.cameras.main.flash(100, 0, 0, 0, false, undefined, this)
+        };
+        
         if (bool === true && this.combat !== bool) {
             this.musicCombat.play();
             if (this.musicBackground.isPlaying) this.musicBackground.pause();

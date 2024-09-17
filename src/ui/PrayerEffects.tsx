@@ -8,6 +8,7 @@ import { EventBus } from '../game/EventBus';
 
 export default function PrayerEffects({ combat, effect, enemy, game, setEffect, show, setShow }: { combat: Accessor<Combat>; effect: StatusEffect; enemy: boolean; game: Accessor<GameState>, setEffect: Setter<StatusEffect>; show: Accessor<boolean>; setShow: Setter<boolean>; }) {
     const [effectTimer, setEffectTimer] = createSignal(effect.endTime - effect.startTime);
+    const [effectEndTime, setEffectEndTime] = createSignal(effect.endTime);
     var timeout: any = undefined;
     // console.log(effect, 'Effect')
     function tick(): void {
@@ -31,15 +32,15 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
             clearInterval(timeout);
             return;
         };
-        if (effect.endTime - combat().combatTimer > effectTimer()) {
-            setEffectTimer(effect.endTime - combat().combatTimer);
-        } else {
-            setEffectTimer((prev) => prev - 1);
+        if (effectEndTime() !== effect.endTime) {
+            const difference = effect.endTime - effectTimer();
+            setEffectEndTime(effect.endTime);
+            setEffectTimer(effectTimer() + difference);
         };
+        setEffectTimer((prev) => prev - 1);
     };
 
     createEffect(() => {
-        console.log(game().pauseState)
         if (game().pauseState === true) return;    
         timeout = setInterval(tick, 1000);
         onCleanup(() => clearInterval(timeout));
@@ -54,7 +55,7 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
     }; 
 
     function expiring() {
-        return combat().combatEngaged === false 
+        return combat().combatEngaged === false
             || (effect.enemyID === combat().enemyID && combat().newComputerHealth <= 0)
             || (enemy === true && effect.enemyID !== combat().enemyID)
             || (enemy === true && combat().playerWin === true) 

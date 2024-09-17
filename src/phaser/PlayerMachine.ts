@@ -162,7 +162,7 @@ export default class PlayerMachine {
     }; 
 
     onAttackEnter = () => {
-        if (this.player.isPosturing || this.player.isParrying || this.player.isThrusting) return;
+        if (this.player.isPosturing || this.player.isParrying || this.player.isThrusting) {return};
         if (this.player.isRanged === true && this.player.inCombat === true) {
             const correct = this.player.getEnemyDirection(this.player.currentTarget);
             if (!correct) {
@@ -173,6 +173,7 @@ export default class PlayerMachine {
         this.player.isAttacking = true;
         this.player.swingReset(States.ATTACK, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ATTACK);
+        this.scene.combatManager.combatMachine.input('action', 'attack');
     }; 
     onAttackUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) {
@@ -218,6 +219,7 @@ export default class PlayerMachine {
         this.player.isPosturing = true;
         this.player.swingReset(States.POSTURE, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.POSTURE);
+        this.scene.combatManager.combatMachine.input('action', 'posture');
     };
     onPostureUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.POSTURE_LIVE && !this.player.isRanged) {
@@ -301,6 +303,7 @@ export default class PlayerMachine {
         this.player.isThrusting = true;
         this.player.swingReset(States.THRUST, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.THRUST);
+        this.scene.combatManager.combatMachine.input('action', 'thrust');
     };
     onThrustUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) {
@@ -2335,7 +2338,8 @@ export default class PlayerMachine {
         for (let i = 0; i < this.scene.actionBar.specialButtons.length; i++) {
             const name = this.scene.settings.specials[i].toLowerCase();
             if (name === "stimulate") continue;
-            console.log(`%c Resetting the cooldown on ${name}`, 'color: gold');
+            // console.log(`%c Resetting the cooldown on ${name}`, 'color: gold');
+            this.scene.logger.log(`Resetting the cooldown on ${name}`);
             this.player.setTimeEvent(`${name}Cooldown`, 20);
         };
     };

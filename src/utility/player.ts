@@ -534,7 +534,7 @@ const initFactions: faction[] = [
         faith: 'Adherent',
         dialog: 25,
     }, {
-        name: "Sedreal Guard",
+        name: "Sedyreal Guard",
         reputation: 0,
         named: false,
         aggressive: true,

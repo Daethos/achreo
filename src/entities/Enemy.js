@@ -687,8 +687,6 @@ export default class Enemy extends Entity {
             this.isCasting = false;
         };
     };
-
-    isSuffering = () => this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed || this.isStunned;
     
     startCasting = (name, duration, style, channel = false) => {
         this.isCasting = true;

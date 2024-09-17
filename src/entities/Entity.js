@@ -391,6 +391,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     movingVertical = () => this.body.velocity.x === 0 && this.body.velocity.y !== 0;
     movingDown = () => this.body.velocity.x === 0 && this.body.velocity.y > 0;
     movingUp = () => this.body.velocity.x === 0 && this.body.velocity.y < 0;
+    
+    isSuffering = () => this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed || this.isStunned;
 
     checkBow = (type) => type === 'Bow' || type === 'Greatbow';
     checkDamageType = (type, concern) => DAMAGE_TYPES[concern].includes(type);

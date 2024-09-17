@@ -151,7 +151,6 @@ export class Underground extends Scene {
         this.player = new Player({ scene: this, x: this.centerX, y: 64, texture: 'player_actions', frame: 'player_idle_0' });
         map?.getObjectLayer('summons')?.objects.forEach((summon: any) => this.markers.push(summon));
         map?.getObjectLayer('npcs')?.objects.forEach((npc: any) => {
-            console.log(npc, 'NPC?');
             (this.npcs as any).push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0', type: npc.properties[0].value }));
         });
 

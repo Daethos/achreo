@@ -113,8 +113,8 @@ export class Game extends Scene {
         const campfire = map.addTilesetImage('CampFireB', 'CampFireB', tileSize, tileSize, 0, 0);
         const light = map.addTilesetImage('light1A', 'light1A', tileSize, tileSize, 0, 0);
         let layer0 = map.createLayer('Tile Layer 0 - Base', tileSet as Tilemaps.Tileset, 0, 0);
-        let layerC = map.createLayer('Tile Layer - Construction', tileSet as Tilemaps.Tileset, 0, 0);
         let layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Tilemaps.Tileset, 0, 0);
+        let layerC = map.createLayer('Tile Layer - Construction', tileSet as Tilemaps.Tileset, 0, 0);
         let layer4 = map.createLayer('Tile Layer 4 - Primes', decorations as Tilemaps.Tileset, 0, 0);
         let layer5 = map.createLayer('Tile Layer 5 - Snags', decorations as Tilemaps.Tileset, 0, 0);
         let layerT = map.createLayer('Tile Layer - Tree Trunks', decorations as Tilemaps.Tileset, 0, 0);
@@ -127,13 +127,13 @@ export class Game extends Scene {
         this.plants = layer3;
         map.createLayer('Tile Layer - Campfire', campfire as Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer - Lights', light as Tilemaps.Tileset, 0, 0);
-        [layer0, layer1, layerC, layerT, layer4, layer5, layer6].forEach((layer, index) => { // castle_bottom, castle_top, 
+        [layer0, layer1, layerC, layerT, layer4, layer5, layer6].forEach((layer, index) => {
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
             if (index < 4) return;
             layer?.setDepth(5);
         });
-        [layer2, layer3].forEach((layer) => { // castle_bottom, castle_top, 
+        [layer2, layer3].forEach((layer) => { // Flowers, Plants
             this.matter.world.convertTilemapLayer(layer!);
             layer?.setDepth(3);
         });

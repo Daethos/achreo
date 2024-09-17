@@ -84,12 +84,14 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 stalwart: number = combat().isStalwart ? 0.85 : 1;
             switch (type) {
                 case 'Weapon': // Targeted Weapon Action by Enemy or Player
-                    if (combat().computer === undefined) return;
+                    if (newComputerHealth === 0) return;
                     const weapon = { ...combat(), [data.key]: data.value };
                     res = weaponActionCompiler(weapon) as Combat;
-                    EventBus.emit('blend-combat', res);
                     playerWin = res.playerWin;
                     computerWin = res.computerWin;
+
+                    // EventBus.emit('blend-combat', res);
+                    EventBus.emit('blend-combat', { newComputerHealth: res.newComputerHealth, newPlayerHealth: res.newPlayerHealth, computerEffects: res.computerEffects, playerEffects: res.playerEffects, playerWin, computerWin });
                     break;
                 case 'Consume': // Consuming Prayer
                     if (newComputerHealth === 0) return;    

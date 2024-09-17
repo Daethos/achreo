@@ -1016,8 +1016,8 @@ export default class PlayerMachine {
         if (this.scene.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(false);
             this.scene.rightJoystick.joystick.setVisible(false);
-            this.scene.actionBar.setVisible(false);
         };
+        this.scene.actionBar.setVisible(false);
         this.player.setStatic(true);
         this.player.isPraying = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Marking', DURATION.TEXT, 'effect', false, true);
@@ -1028,8 +1028,8 @@ export default class PlayerMachine {
         if (this.scene.settings.desktop === false) {  
             this.scene.joystick.joystick.setVisible(true);
             this.scene.rightJoystick.joystick.setVisible(true);
-            this.scene.actionBar.setVisible(true);
         };
+        this.scene.actionBar.setVisible(true);
         this.player.mark.setPosition(this.player.x, this.player.y + 24);
         this.player.mark.setVisible(true);
         this.player.animateMark();
@@ -1049,8 +1049,8 @@ export default class PlayerMachine {
         if (this.scene.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(false);
             this.scene.rightJoystick.joystick.setVisible(false);
-            this.scene.actionBar.setVisible(false);
         };
+        this.scene.actionBar.setVisible(false);
         this.player.flickerCarenic(1000);
     };
     onNetherswapUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
@@ -1060,8 +1060,8 @@ export default class PlayerMachine {
         if (this.scene.settings.desktop === false) {  
             this.scene.joystick.joystick.setVisible(true);
             this.scene.rightJoystick.joystick.setVisible(true);
-            this.scene.actionBar.setVisible(true);
         };
+        this.scene.actionBar.setVisible(true);
         this.player.setStatic(false);
         if (this.player.netherswapTarget === undefined) return; 
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Netherswap', DURATION.TEXT / 2, 'effect', false, true);
@@ -1083,8 +1083,8 @@ export default class PlayerMachine {
         if (this.scene.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(false);
             this.scene.rightJoystick.joystick.setVisible(false);
-            this.scene.actionBar.setVisible(false);
         };
+        this.scene.actionBar.setVisible(false);
         this.player.setTimeEvent('recallCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.combatManager.useGrace(PLAYER.STAMINA.RECALL);
     };
@@ -2379,8 +2379,8 @@ export default class PlayerMachine {
         if (this.scene.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(false);
             this.scene.rightJoystick.joystick.setVisible(false);
-            this.scene.actionBar.setVisible(false);
         };
+        this.scene.actionBar.setVisible(false);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, '?c .on-f-u`SeD~', DURATION.TEXT, 'effect', false, true);
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
@@ -2436,8 +2436,8 @@ export default class PlayerMachine {
         if (this.scene.settings.desktop === false) {  
             this.scene.joystick.joystick.setVisible(true);
             this.scene.rightJoystick.joystick.setVisible(true);
-            this.scene.actionBar.setVisible(true);
         };
+        this.scene.actionBar.setVisible(true);
         this.player.spriteWeapon.setVisible(true);
         if (this.player.confuseTimer) {
             this.player.confuseTimer.destroy();
@@ -2450,8 +2450,8 @@ export default class PlayerMachine {
         if (this.scene.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(false);
             this.scene.rightJoystick.joystick.setVisible(false);
-            this.scene.actionBar.setVisible(false);
         };
+        this.scene.actionBar.setVisible(false);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'F̶e̷a̴r̷e̵d̴', DURATION.TEXT, 'damage', false, true);
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
@@ -2502,8 +2502,8 @@ export default class PlayerMachine {
         if (this.scene.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(true);
             this.scene.rightJoystick.joystick.setVisible(true);
-            this.scene.actionBar.setVisible(true);
         };
+        this.scene.actionBar.setVisible(true);
         this.player.isFeared = false;
         this.player.fearCount = 0;
         this.player.spriteWeapon.setVisible(true);
@@ -2535,8 +2535,8 @@ export default class PlayerMachine {
         if (this.scene.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(false);
             this.scene.rightJoystick.joystick.setVisible(false);
-            this.scene.actionBar.setVisible(false);
         };
+        this.scene.actionBar.setVisible(false);
         this.player.isPolymorphed = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Polymorphed', DURATION.TEXT, 'effect', false, true);
         this.player.clearAnimations();
@@ -2598,8 +2598,8 @@ export default class PlayerMachine {
         if (this.scene.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(true);
             this.scene.rightJoystick.joystick.setVisible(true);
-            this.scene.actionBar.setVisible(true);
         };
+        this.scene.actionBar.setVisible(true);
         if (this.player.isPolymorphed) this.player.isPolymorphed = false;
         this.player.clearAnimations();
         this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
@@ -2646,8 +2646,8 @@ export default class PlayerMachine {
         if (this.scene.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(false);
             this.scene.rightJoystick.joystick.setVisible(false);
-            this.scene.actionBar.setVisible(false);
         };
+        this.scene.actionBar.setVisible(false);
         this.player.isStunned = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Stunned', PLAYER.DURATIONS.STUNNED, 'effect', false, true);
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;
@@ -2669,8 +2669,8 @@ export default class PlayerMachine {
         if (this.scene.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(true);
             this.scene.rightJoystick.joystick.setVisible(true);
-            this.scene.actionBar.setVisible(true);
         };
+        this.scene.actionBar.setVisible(true);
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
         this.player.setStatic(false);

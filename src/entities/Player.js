@@ -1142,7 +1142,7 @@ export default class Player extends Entity {
         } else if (this.highlight.visible) {
             this.removeHighlight();
         };
-        if (this.scene.settings.desktop === true) {
+        if (this.scene.settings.desktop === true && !this.isSuffering()) {
             if ((this.inputKeys.shift.SHIFT.isDown) && Input.Keyboard.JustDown(this.inputKeys.attack.ONE)) {
                 const button = this.scene.actionBar.getButton(this.scene.settings.specials[0].toLowerCase());
                 if (button.isReady === true) this.scene.actionBar.pressButton(button, this.scene);
@@ -1379,16 +1379,16 @@ export default class Player extends Entity {
             speed -= 0.1;    
             this.flipX = false;
         };
-        if (!this.isConfused && !this.isFeared && !this.isPolymorphed && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.strafe.E.isDown && !this.inputKeys.strafe.Q.isDown && !this.inputKeys.left.A.isDown && !this.scene.joystickKeys.left.isDown && !this.scene.joystickKeys.right.isDown) {
+        if (!this.isSuffering() && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.left.A.isDown && !this.scene.joystickKeys.left.isDown && !this.scene.joystickKeys.right.isDown) {
             this.playerVelocity.x = 0;
         };
-        if (!this.isConfused && !this.isFeared && !this.isPolymorphed && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.strafe.E.isDown && !this.inputKeys.strafe.Q.isDown && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && !this.scene.joystickKeys.right.isDown && !this.scene.joystickKeys.left.isDown) {
+        if (!this.isSuffering() && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && !this.scene.joystickKeys.right.isDown && !this.scene.joystickKeys.left.isDown) {
             this.playerVelocity.x = 0;
         };
-        if (!this.isConfused && !this.isFeared && !this.isPolymorphed && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && !this.scene.joystickKeys.down.isDown && !this.scene.joystickKeys.up.isDown) {
+        if (!this.isSuffering() && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && !this.scene.joystickKeys.down.isDown && !this.scene.joystickKeys.up.isDown) {
             this.playerVelocity.y = 0;
         };
-        if (!this.isConfused && !this.isFeared && !this.isPolymorphed && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && !this.scene.joystickKeys.up.isDown && !this.scene.joystickKeys.down.isDown) {
+        if (!this.isSuffering() && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && !this.scene.joystickKeys.up.isDown && !this.scene.joystickKeys.down.isDown) {
             this.playerVelocity.y = 0;
         };
         if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting) speed += 1;

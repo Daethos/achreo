@@ -8,6 +8,7 @@ export const ATTACKS = {
     quor: 'quorse into',
     leap: 'leap onto',
     rush: 'rush through',
+    storm: 'storm through',
     thrust: 'thrust attack',
     writhe: 'writhe into',
 };

@@ -606,8 +606,24 @@ export class Underground extends Scene {
             this.tweenManager[tween.name].stop();
         };
     };
+    isStateEnemy = (id: string): boolean => id === this.state.enemyID;
+    quickCombat = () => {
+        for (let i = 0; i < this.enemies.length; i++) {
+            if (this.enemies[i].inCombat === true) {
+                this.player.quickTarget(this.enemies[i]);
+                return;    
+            };
+        };
+    };
     clearNonAggressiveEnemy = () => this.combatManager.combatMachine.action({ data: { key: 'player', value: 0, id: this.player.playerID }, type: 'Remove Enemy' });
     clearNPC = (): boolean => EventBus.emit('clear-npc');
+    clearAggression = () => {
+        for (let i = 0; i < this.enemies.length; i++) {
+            if (this.enemies[i].inCombat === true) {
+                this.enemies[i].clearCombat();
+            };
+        };
+    };
     combatEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
         EventBus.emit('combat-engaged', bool);

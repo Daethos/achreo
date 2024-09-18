@@ -62,6 +62,7 @@ export default class NPC extends Entity {
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
+                if (this.scene.combat === true) return;
                 this.clearTint();
                 this.setTint(0x00FF00); 
                 this.scene.setupNPC(this);

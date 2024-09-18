@@ -31,6 +31,18 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
             console.warn(err, "Error Saving Game Settings");
         };
     };
+    const handleEnemyCombatInteractive = async (interactive: boolean) => {
+        try {
+            console.log(interactive, 'Interactiving with Enemies in Combat?');
+            const newSettings = {...settings(), difficulty: {
+                ...settings().difficulty,
+                enemyCombatInteract: interactive
+            }};
+            await saveSettings(newSettings);
+        } catch (err) {
+            console.warn(err, 'Error Handling Desktop');
+        };
+    };
     const handleDesktop = async (desktop: boolean) => {
         try {
             const newSettings = { ...settings(), desktop };
@@ -258,6 +270,12 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                         <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.aggression} onChange={(e) => handleAggression(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                     </div>
                     <div style={font('0.5em')}>[Aggressive Enemy Occurrence: 0 - 100% <br /> Restart Game For This Change To Take Effect.]</div>
+
+                    <div style={font('1em', '#fdf6d8')}>
+                        <h1 style={font('1.25em')}>Enemy Combat Interactive</h1>
+                        <button class='gold highlight' onClick={() => handleEnemyCombatInteractive(!settings().difficulty.enemyCombatInteract)}>{settings().difficulty.enemyCombatInteract ? 'Enabled' : 'Disabled'}</button> <br />
+                    </div>
+                    <div style={font('0.5em')}>[Enabled: You can focus ANY enemy. <br /> Disabled: If in combat, you cannot focus enemies that are not in combat.]</div>
 
                     <h1 style={font('1.25em')}>Enemy Specials</h1>
                     <div style={font('1em', '#fdf6d8')}>

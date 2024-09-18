@@ -48,6 +48,8 @@ export default class HealthBar extends Phaser.GameObjects.Container {
         this.bar.fillRect(-this.barWidth / 2, -this.barHeight / 2, (this.value / this.total) * this.barWidth, this.barHeight);
     };
 
+    public getValue = (): number => this.value;
+
     public getTotal = (): number => this.total;
 
     public setTotal = (total: number): void => {

@@ -587,8 +587,24 @@ export class Game extends Scene {
             this.tweenManager[tween.name].stop();
         };
     };
+    isStateEnemy = (id: string): boolean => id === this.state.enemyID;
+    quickCombat = () => {
+        for (let i = 0; i < this.enemies.length; i++) {
+            if (this.enemies[i].inCombat === true) {
+                this.player.quickTarget(this.enemies[i]);
+                return;    
+            };
+        };
+    };
     clearNonAggressiveEnemy = () => this.combatManager.combatMachine.action({ data: { key: 'player', value: 0, id: this.player.playerID }, type: 'Remove Enemy' });
     clearNPC = (): boolean => EventBus.emit('clear-npc');
+    clearAggression = () => {
+        for (let i = 0; i < this.enemies.length; i++) {
+            if (this.enemies[i].inCombat === true) {
+                this.enemies[i].clearCombat();
+            };
+        };
+    };
     combatEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
         EventBus.emit('combat-engaged', bool);
@@ -596,13 +612,13 @@ export class Game extends Scene {
             screenShake(this, 64, 0.005);
             this.cameras.main.flash(64, 156, 163, 168, false, undefined, this);
         };
-        
         if (bool === true && this.combat !== bool) {
             this.musicCombat.play();
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
             if (this.musicStealth.isPlaying) this.musicStealth.stop();
             this.startCombatTimer();
         } else if (bool === false) {
+            this.clearAggression();
             this.musicCombat.stop();
             if (this.player.isStealthing) {
                 if (this.musicStealth.isPaused) {

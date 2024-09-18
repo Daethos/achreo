@@ -159,6 +159,7 @@ export default class Enemy extends Entity {
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
+                if (!this.scene.settings.difficulty.enemyCombatInteract && this.scene.combat && !this.inCombat) return;
                 this.clearTint();
                 this.setTint(TARGET_COLOR);
                 if (this.enemyID !== this.scene.state.enemyID) this.scene.setupEnemy(this);
@@ -166,7 +167,6 @@ export default class Enemy extends Entity {
                 if (newEnemy) {
                     this.scene.player.addEnemy(this);
                 };
-                this.scene.player.setAttacking(this);
                 this.scene.player.setCurrentTarget(this);
                 this.scene.player.animateTarget();
             })
@@ -212,7 +212,6 @@ export default class Enemy extends Entity {
         switch (e.action) {
             case 'health':
                 this.health = e.payload;
-                this.healthbar.setValue(this.health);
                 this.updateHealthBar(this.health);
                 break;
             default:
@@ -228,21 +227,23 @@ export default class Enemy extends Entity {
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e?.critical);
             if (this.isMalicing) this.maliceHit();
             if (this.isMending) this.mendHit();
+            // This used to be outside of being 'damaged' -- seeing if this fixes things like leap/rush when not targeted and not in combat
+            const isNewEnemy = this.isNewEnemy(this.scene.player);
+            if (isNewEnemy === true || this.inCombat === false) {
+                // this.checkEnemyCombatEnter();
+                this.jumpIntoCombat();
+                this.scene.player.inCombat = true;
+                // this.scene.player.targetEngagement(this.enemyID);
+            };
         } else if (this.health < e.health) {
             let heal = Math.round(e.health - this.health);
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, 1500, 'heal');
         };
         this.health = e.health;
-        this.healthbar.setValue(e.health);
         this.updateHealthBar(e.health);
         if (e.health <= 0) {
             this.isDefeated = true;
             this.stateMachine.setState(States.DEFEATED);
-        };
-        const isNewEnemy = this.isNewEnemy(this.scene.player);
-        if (isNewEnemy === true || this.inCombat === false) {
-            this.jumpIntoCombat();
-            this.scene.player.targetEngagement(this.enemyID);
         };
     };
 
@@ -264,11 +265,11 @@ export default class Enemy extends Entity {
     
     clearShields = () => {
         if (this.reactiveBubble) {
-            this.reactiveBubble.destroy();
+            this.reactiveBubble.cleanUp();
             this.reactiveBubble = undefined;
         };
         if (this.negationBubble) {
-            this.negationBubble.destroy();
+            this.negationBubble.cleanUp();
             this.negationBubble = undefined;
         };
     };
@@ -295,26 +296,27 @@ export default class Enemy extends Entity {
             };
             return;
         };
-        if (this.health > e.newComputerHealth) { 
+        if (this.health > e.newComputerHealth) {
             let damage = Math.round(this.health - e.newComputerHealth);
-            damage = e.criticalSuccess === true ? `${damage} (Critical)` : e.glancingBlow === true ? `${damage} (Glancing)` : damage;
+            // console.log(damage, 'Enemy taking Damage?');
+            damage = e.criticalSuccess ? `${damage} (Critical)` : e.glancingBlow ? `${damage} (Glancing)` : damage;
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.criticalSuccess);
-            if (this.isConsumed === false && this.isHurt === false && this.isSuffering() === false && this.isCasting === false) this.stateMachine.setState(States.HURT);
+            if (!this.isSuffering() && !this.isCasting) this.stateMachine.setState(States.HURT); // !this.isHurt && 
             if (this.currentRound !== e.combatRound || !this.inCombat) {
-                if (this.isConfused === true) this.isConfused = false;
-                if (this.isFeared === true) {
+                if (this.isConfused) this.isConfused = false;
+                if (this.isFeared) {
                     const chance = Math.random() < 0.1 + this.fearCount;
-                    if (chance === true) {
+                    if (chance) {
                         this.statusCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect');
                         this.isFeared = false;
                     } else {
                         this.fearCount += 0.1;
                     };
                 };
-                if (this.isPolymorphed === true) this.isPolymorphed = false;
+                if (this.isPolymorphed) this.isPolymorphed = false;
+                if (this.isMalicing) this.maliceHit();
+                if (this.isMending) this.mendHit();
             };
-            if (this.isMalicing === true) this.maliceHit();
-            if (this.isMending === true) this.mendHit();
             if (e.newComputerHealth <= 0) this.stateMachine.setState(States.DEFEATED);
             if (!this.inCombat && e.newComputerHealth > 0) this.checkEnemyCombatEnter();
         } else if (this.health < e.newComputerHealth) { 
@@ -322,9 +324,10 @@ export default class Enemy extends Entity {
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, 1500, 'heal');
         }; 
         this.health = e.newComputerHealth;
-        this.healthbar.setValue(this.health);
+        // this.healthbar.setValue(this.health);
         if (this.healthbar.getTotal() < e.computerHealth) this.healthbar.setTotal(e.computerHealth);
-        if (this.healthbar.visible === true) this.updateHealthBar(this.health);
+        // if (this.healthbar.visible) 
+        this.updateHealthBar(e.newComputerHealth);
         this.weapons = e.computerWeapons;
         this.setWeapon(e.computerWeapons[0]); 
         this.checkDamage(e.computerDamageType.toLowerCase()); 
@@ -403,7 +406,9 @@ export default class Enemy extends Entity {
                             other.gameObjectB.targets.push(this);
                             other.gameObjectB.checkTargets();
                         };
-                        if (this.isReasonable()) this.scene.setupEnemy(this);
+                        if (this.isReasonable()) {
+                            this.scene.setupEnemy(this);
+                        } 
                         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
                         if (this.stateMachine.isCurrentState(States.DEFEATED)) {
                             this.scene.showDialog(true);
@@ -439,6 +444,7 @@ export default class Enemy extends Entity {
     isReasonable = () => {
         return this.scene.state.enemyID !== this.enemyID
             && this.scene.player.inCombat === false
+            && this.scene.player.isRushing === false
             && this.scene.player.currentTarget === undefined;
     };
 
@@ -450,12 +456,13 @@ export default class Enemy extends Entity {
     jumpIntoCombat = () => {
         this.attacking = this.scene.player;
         this.inCombat = true;
-        const newEnemy = this.isNewEnemy(this.scene.player);
-        if (newEnemy) this.scene.player.targets.push(this);
+        // const newEnemy = this.isNewEnemy(this.scene.player);
+        // if (newEnemy) this.scene.player.targets.push(this);
         this.setSpecialCombat(true);
         if (this.healthbar) this.healthbar.setVisible(true);
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
         this.stateMachine.setState(States.CHASE);
+        this.scene.combatEngaged(true);
     };
 
     checkEnemyCombatEnter = () => {
@@ -468,6 +475,7 @@ export default class Enemy extends Entity {
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
         this.stateMachine.setState(States.CHASE); 
         if (this.scene.player.inCombat === false) this.scene.player.targetEngagement(this.enemyID);
+        this.scene.combatEngaged(true);
     };
 
     setEnemyColor = () => {
@@ -490,8 +498,8 @@ export default class Enemy extends Entity {
     enemyFetchedOn = (e) => {
         if (this.enemyID !== e.enemyID) return;
         this.ascean = e.enemy;
-        this.health = e.combat.attributes.healthTotal;
-        this.combatStats = e.combat; 
+        this.health = e.combat.attributes?.healthTotal;
+        this.combatStats = e.combat;
         this.weapons = [e.combat.combatWeaponOne, e.combat.combatWeaponTwo, e.combat.combatWeaponThree];
         this.speed = this.startingSpeed(e.enemy);
         this.heldSpeed = this.speed;
@@ -533,6 +541,14 @@ export default class Enemy extends Entity {
         this.scene.add.existing(this.spriteWeapon);
     }; 
 
+    clearCombat = () => {
+        this.inCombat = false;
+        this.setSpecialCombat(false);
+        this.attacking = undefined;
+        this.isAggressive = false; // Added to see if that helps with post-combat losses for the player
+        this.stateMachine.setState(States.LEASH); 
+    };
+    
     clearCombatWin = () => { 
         this.inCombat = false;
         this.setSpecialCombat(false);
@@ -720,7 +736,7 @@ export default class Enemy extends Entity {
     };
 
     updateHealthBar(health) {
-        this.healthbar.setValue(health);
+        return this.healthbar.setValue(health);
     };
 
     enemyAnimation = () => {
@@ -2475,7 +2491,7 @@ export default class Enemy extends Entity {
                         };
                     } else if (this.health < this.ascean.health.max) {
                         this.health = this.health + (this.ascean.health.max * 0.15);
-                        this.healthbar.setValue(this.health);
+                        // this.healthbar.setValue(this.health);
                         this.updateHealthBar(this.health);
                     };
                 };
@@ -2809,11 +2825,6 @@ export default class Enemy extends Entity {
 
     currentTargetCheck = () => {
         this.isCurrentTarget = this.enemyID === this.scene.state.enemyID;
-        // if (this.scene.state.enemyID === this.enemyID) { // attacking.currentTarget?.enemyID
-        //     this.isCurrentTarget = true;
-        // } else {
-        //     this.isCurrentTarget = false;
-        // };
     };
 
     currentWeaponCheck = () => {

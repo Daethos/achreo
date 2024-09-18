@@ -32,6 +32,7 @@ export default class Settings {
         tidbits: boolean; 
         playerSpeed: number;
         enemySpeed: number;
+        enemyCombatInteract: boolean;
     };
     public postFx: { 
         enable: boolean; 
@@ -156,6 +157,7 @@ export default class Settings {
             tidbits: false,
             playerSpeed: 0,
             enemySpeed: 0,
+            enemyCombatInteract: true,
         };
         this.postFx = {
             enable: false, 

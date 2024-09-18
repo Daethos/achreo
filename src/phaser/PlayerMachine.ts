@@ -460,6 +460,7 @@ export default class PlayerMachine {
     onConfuseEnter = () => {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.spellName = this.player.currentTarget.ascean?.name;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Confusing', PLAYER.DURATIONS.CONFUSE / 2, 'cast');
         this.player.castbar.setTotal(PLAYER.DURATIONS.CONFUSE);
         this.player.isCasting = true;
@@ -478,17 +479,18 @@ export default class PlayerMachine {
     onConfuseExit = () => {
         if (this.player.castingSuccess === true) {
             this.scene.combatManager.confuse(this.player.spellTarget);
-            EventBus.emit('special-combat-text', {
-                playerSpecialDescription: `You confuse ${this.scene.state.computer?.name}, and they stumble around in a daze.`
-            });
             this.player.setTimeEvent('confuseCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
             this.player.castingSuccess = false;
             this.scene.sound.play('death', { volume: this.scene.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.CONFUSE);    
             screenShake(this.scene);
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You confuse ${this.player.spellName}, and they stumble around in a daze.`
+            });
         };
         this.player.isCasting = false;
         this.player.spellTarget = '';
+        this.player.spellName = '';
         this.player.castbar.reset();
         this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
@@ -577,6 +579,7 @@ export default class PlayerMachine {
     onFearingEnter = () => {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.spellName = this.player.currentTarget.ascean?.name;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Fearing', PLAYER.DURATIONS.FEAR / 2, 'cast');
         this.player.castbar.setTotal(PLAYER.DURATIONS.FEAR);
         this.player.isCasting = true;
@@ -595,17 +598,18 @@ export default class PlayerMachine {
     onFearingExit = () => {
         if (this.player.castingSuccess === true) {
             this.scene.combatManager.fear(this.player.spellTarget);
-            EventBus.emit('special-combat-text', {
-                playerSpecialDescription: `You strike fear into ${this.scene.state.computer?.name}!`
-            });
             this.player.setTimeEvent('fearCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
             this.player.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.FEAR);    
             screenShake(this.scene);
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You strike fear into ${this.scene.state.computer?.name}!`
+            });
         };
         this.player.isCasting = false;
         this.player.spellTarget = '';
+        this.player.spellName = '';
         this.player.castbar.reset();
         this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);  
@@ -912,36 +916,7 @@ export default class PlayerMachine {
     };
 
     onLeapEnter = () => {
-        this.player.isLeaping = true;
-        const target = this.scene.getWorldPointer();
-        const direction = target.subtract(this.player.position);
-        direction.normalize();
-        this.player.flipX = direction.x < 0;
-        this.player.isAttacking = true;
-        this.scene.tweens.add({
-            targets: this,
-            x: this.player.x + (direction.x * 125),
-            y: this.player.y + (direction.y * 125),
-            duration: 750,
-            ease: 'Elastic',
-            onStart: () => {
-                this.scene.sound.play('leap', { volume: this.scene.settings.volume });
-                this.player.flickerCarenic(750); 
-            },
-            onComplete: () => { 
-                this.scene.combatManager.useGrace(PLAYER.STAMINA.LEAP);
-                this.player.isLeaping = false; 
-                if (this.player.touching.length > 0) {
-                    this.player.touching.forEach((enemy: any) => {
-                        this.scene.combatManager.melee(enemy.enemyID, 'leap');
-                    });
-                };
-            },
-        });       
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You launch yourself through the air!`
-        });
-        screenShake(this.scene, 120, 0.005);
+        this.player.leap();
     };
     onLeapUpdate = (_dt: number) => this.player.combatChecker(this.player.isLeaping);
     onLeapExit = () => {
@@ -1104,6 +1079,7 @@ export default class PlayerMachine {
     onParalyzeEnter = () => { 
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.spellName = this.player.currentTarget.ascean?.name;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Paralyzing', PLAYER.DURATIONS.PARALYZE / 2, 'cast');
         this.player.castbar.setTotal(PLAYER.DURATIONS.PARALYZE);
         this.player.isCasting = true;
@@ -1133,6 +1109,7 @@ export default class PlayerMachine {
         };
         this.player.isCasting = false;
         this.player.spellTarget = '';
+        this.player.spellName = '';
         this.player.castbar.reset();
         this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
@@ -1141,6 +1118,7 @@ export default class PlayerMachine {
     onPolymorphingEnter = () => {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.spellName = this.player.currentTarget.ascean?.name
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Polymorphing', PLAYER.DURATIONS.POLYMORPH / 2, 'cast');
         this.player.castbar.setTotal(PLAYER.DURATIONS.POLYMORPH);
         this.player.isCasting = true;
@@ -1160,7 +1138,7 @@ export default class PlayerMachine {
         if (this.player.castingSuccess === true) {
             this.scene.combatManager.polymorph(this.player.spellTarget);
             EventBus.emit('special-combat-text', {
-                playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, polymorphing them!`
+                playerSpecialDescription: `You ensorcel ${this.player.spellName}, polymorphing them!`
             });
             this.player.setTimeEvent('polymorphCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.scene.combatManager.useGrace(PLAYER.STAMINA.POLYMORPH);
@@ -1169,6 +1147,7 @@ export default class PlayerMachine {
             screenShake(this.scene);
         };
         this.player.spellTarget = '';
+        this.player.spellName = '';
         this.player.isCasting = false;
         this.player.castbar.reset();
         this.player.frameCount = 0;
@@ -1286,6 +1265,7 @@ export default class PlayerMachine {
     onRootingEnter = () => {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.spellName = this.player.currentTarget.ascean?.name;
         this.player.isCasting = true;
         this.player.castbar.setTotal(PLAYER.DURATIONS.ROOTING);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Rooting', PLAYER.DURATIONS.ROOTING / 2, 'cast');
@@ -1309,11 +1289,12 @@ export default class PlayerMachine {
             this.player.setTimeEvent('rootCooldown', PLAYER.COOLDOWNS.SHORT); 
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ROOT);
             EventBus.emit('special-combat-text', {
-                playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, rooting them!`
+                playerSpecialDescription: `You ensorcel ${this.player.spellName}, rooting them!`
             });
         };
         this.player.isCasting = false;
         this.player.spellTarget = '';
+        this.player.spellName = '';
         this.player.castbar.reset();
         this.player.frameCount = 0;
         this.player.beam.reset();
@@ -1321,34 +1302,11 @@ export default class PlayerMachine {
     };
 
     onRushEnter = () => {
-        this.player.isRushing = true;
-        this.scene.sound.play('stealth', { volume: this.scene.settings.volume });        
-        const target = this.scene.getWorldPointer();
-        const direction = target.subtract(this.player.position);
-        direction.normalize();
-        this.player.flipX = direction.x < 0;
-        this.player.isParrying = true;
-        this.scene.tweens.add({
-            targets: this,
-            x: this.player.x + (direction.x * 300),
-            y: this.player.y + (direction.y * 300),
-            duration: 600,
-            ease: 'Circ.easeOut',
-            onStart: () => {
-                screenShake(this.scene);
-                this.player.flickerCarenic(600);  
-            },
-            onComplete: () => {
-                if (this.player.rushedEnemies.length > 0) {
-                    this.player.rushedEnemies.forEach((enemy: any) => {
-                        this.scene.combatManager.melee(enemy.enemyID, 'rush');
-                    });
-                };
-                this.player.isRushing = false;
-            },
-        });         
+        this.player.rush();
     };
-    onRushUpdate = (_dt: number) => this.player.combatChecker(this.player.isRushing);
+    onRushUpdate = (_dt: number) => {
+        this.player.combatChecker(this.player.isRushing);
+    };
     onRushExit = () => {
         this.player.rushedEnemies = [];
         const rushCooldown = this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
@@ -1368,7 +1326,7 @@ export default class PlayerMachine {
         this.player.flickerCarenic(500); 
         this.scene.time.delayedCall(500, () => this.player.isSlowing = false, undefined, this);
         EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, slowing them!`
+            playerSpecialDescription: `You ensorcel ${this.player.currentTarget.ascean?.name}, slowing them!`
         });
         screenShake(this.scene);
     };
@@ -1393,6 +1351,7 @@ export default class PlayerMachine {
     onSnaringEnter = () => {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.spellName = this.player.currentTarget.ascean?.name;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Snaring', PLAYER.DURATIONS.SNARE, 'cast');
         this.player.castbar.setTotal(PLAYER.DURATIONS.SNARE);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.SNARE);
@@ -1412,17 +1371,18 @@ export default class PlayerMachine {
     onSnaringExit = () => {
         if (this.player.castingSuccess === true) {
             this.player.setTimeEvent('snareCooldown', PLAYER.COOLDOWNS.SHORT);
-            EventBus.emit('special-combat-text', {
-                playerSpecialDescription: `You ensorcel ${this.scene.state.computer?.name}, snaring them!`
-            });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.SNARE);
             this.scene.combatManager.snare(this.player.spellTarget);
             this.player.castingSuccess = false;
             this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
             screenShake(this.scene);
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You ensorcel ${this.player.spellName}, snaring them!`
+            });
         };
         this.player.isCasting = false;
         this.player.spellTarget = '';
+        this.player.spellName = '';
         this.player.castbar.reset();
         this.player.frameCount = 0;
         this.player.beam.reset();
@@ -1430,35 +1390,7 @@ export default class PlayerMachine {
     };
 
     onStormEnter = () => {
-        this.player.isStorming = true;
-        this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Storming', 800, 'damage'); 
-        this.player.isAttacking = true;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.STORM);
-        this.scene.tweens.add({
-            targets: this,
-            angle: 360,
-            duration: 800,
-            onStart: () => this.player.flickerCarenic(3200),
-            onLoop: () => {
-                this.player.isAttacking = true;
-                screenShake(this.scene);
-                this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Storming', 800, 'damage');
-                if (this.player.touching.length > 0) {
-                    this.player.touching.forEach((enemy: any) => {
-                        if (enemy.isDefeated === true) return;
-                        this.scene.combatManager.melee(enemy.enemyID, 'storm');
-                    });
-                };
-            },
-            onComplete: () => {
-                this.player.isStorming = false; 
-            },
-            loop: 3,
-        });  
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You begin storming with your ${this.scene.state.weapons[0]?.name}.`
-        });
-        screenShake(this.scene);
+        this.player.storm();
     };
     onStormUpdate = (_dt: number) => this.player.combatChecker(this.player.isStorming);
     onStormExit = () => this.player.setTimeEvent('stormCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);
@@ -2367,7 +2299,6 @@ export default class PlayerMachine {
         for (let i = 0; i < this.scene.actionBar.specialButtons.length; i++) {
             const name = this.scene.settings.specials[i].toLowerCase();
             if (name === "stimulate") continue;
-            // console.log(`%c Resetting the cooldown on ${name}`, 'color: gold');
             this.scene.logger.log(`Resetting the cooldown on ${name}`);
             this.player.setTimeEvent(`${name}Cooldown`, 20);
         };

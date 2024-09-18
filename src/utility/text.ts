@@ -47,7 +47,7 @@ function checkAlignment(line: string[]) {
     for (let i = 0; i < line.length; i++) {
         if (line[i].includes('You')) { 
             count++;
-        } else if (line[i].includes('defeated') || line[i].includes('Console') || line[i].includes('Warning') || line[i].includes('Error') || line[i].includes('Initial')) {
+        } else if (line[i].includes('defeated') || line[i].includes('Resetting') || line[i].includes('Console') || line[i].includes('Warning') || line[i].includes('Error') || line[i].includes('Initial')) {
             return 'center';
         };
     };

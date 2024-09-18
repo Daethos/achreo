@@ -1,6 +1,6 @@
 import { GameObjects, Input, Math as pMath, Physics } from "phaser";
 import Entity from "./Entity";  
-import { sprint, walk } from "../phaser/ScreenShake";
+import { screenShake, sprint, walk } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import HealthBar from "../phaser/HealthBar";
@@ -124,7 +124,7 @@ export default class Player extends Entity {
         this.mark = this.scene.add.graphics()
             .lineStyle(4, 0xfdf6d8) // 3
             .setScale(0.5) // 35
-            .strokeCircle(0, 0, 12) // 10 
+            .strokeCircle(0, 0, 12); // 10 
         this.mark.setVisible(false);
         this.markAnimation = false;
         if (this.scene.state.isCaerenic) this.caerenicUpdate();
@@ -274,12 +274,10 @@ export default class Player extends Entity {
     };
 
     disengage = () => {
-        this.clearAggression();
         this.scene.combatEngaged(false);
-        this.inCombat = false;
-        this.attacking = undefined;
-        this.currentTarget = undefined;
         this.scene.clearNonAggressiveEnemy();
+        this.inCombat = false;
+        this.currentTarget = undefined;
         this.removeHighlight();
     };
 
@@ -290,15 +288,6 @@ export default class Player extends Entity {
         if (enemy) {
             this.currentTarget = enemy;
             this.highlightTarget(enemy);
-        };
-    };
-
-    clearAggression = () => {
-        const enemies = this.scene.enemies;
-        for (let i = 0; i < enemies.length; i++) {
-            if (enemies[i].inCombat === true) {
-                enemies[i].clearCombatWin();
-            };
         };
     };
 
@@ -340,6 +329,9 @@ export default class Player extends Entity {
             const enemy = this.scene.getEnemy(first);
             if (enemy === undefined) {
                 this.disengage();
+            } else if (!enemy.inCombat) {
+                console.log(`%c Going to find an enemy in combat cause apparently I should be!`, 'color:gold');
+                this.scene.quickCombat();
             } else {
                 this.quickTarget(enemy);
             };
@@ -360,13 +352,11 @@ export default class Player extends Entity {
         return false;
     };
 
-    getEnemyId = () => this.scene.state.enemyID || this.attacking?.enemyID || this.currentTarget?.enemyID;
+    getEnemyId = () => this.scene.state.enemyID || this.currentTarget?.enemyID;
 
     quickTarget = (enemy) => {
-        this.scene.setupEnemy(enemy);
         this.targetID = enemy.enemyID;
-        this.setAttacking(enemy);
-        this.setCurrentTarget(enemy);
+        this.currentTarget = enemy;
         this.highlightTarget(enemy);
     };
 
@@ -378,8 +368,7 @@ export default class Player extends Entity {
         this.inCombat = true;
         this.scene.combatEngaged(true);
         this.targetID = id;
-        this.setAttacking(enemy);
-        this.setCurrentTarget(enemy);
+        this.currentTarget = enemy;
         this.highlightTarget(enemy);
     };
 
@@ -407,7 +396,7 @@ export default class Player extends Entity {
             if (this.isFeared) {
                 const chance = Math.random() < 0.1 + this.fearCount;
                 if (chance) {
-                    this.statusCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect');
+                    this.statusCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x, this.currentTarget?.position?.y, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect');
                     this.isFeared = false;    
                 } else {
                     this.fearCount += 0.1;
@@ -425,7 +414,7 @@ export default class Player extends Entity {
         if (e.computerParrySuccess === true) {
             this.playerMachine.stateMachine.setState(States.STUN);
             this.scene.combatManager.combatMachine.input('computerParrySuccess', false);
-            this.resistCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Parry', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);    
+            this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x, this.currentTarget?.position?.y, 'Parry', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);    
         };
         if (e.rollSuccess === true) {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Roll', PLAYER.DURATIONS.TEXT, 'heal', true);
@@ -439,17 +428,119 @@ export default class Player extends Entity {
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'parry');
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
         };
-        if (e.computerRollSuccess === true) this.resistCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);
+        if (e.computerRollSuccess === true) this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x, this.currentTarget?.position?.y, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);
         if (e.newComputerHealth <= 0 && e.playerWin === true) this.defeatedEnemyCheck(e.enemyID);
         if (e.newPlayerHealth <= 0) this.disengage();    
         if (e.playerAttributes.stamina > this.maxStamina) this.maxStamina = e.playerAttributes.stamina;
         if (e.playerAttributes.grace > this.maxGrace) this.maxGrace = e.playerAttributes.grace;
         if (this.inCombat === false && this.scene.combat === true) this.scene.combatEngaged(false);
-        // if (this.targets.length > 0) this.checkTargets();
     };
 
     resist = () => {
         this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Resisted', PLAYER.DURATIONS.TEXT, 'effect');  
+    };
+
+    leap = () => {
+        this.isLeaping = true;
+        const target = this.scene.getWorldPointer();
+        const direction = target.subtract(this.position);
+        direction.normalize();
+        this.flipX = direction.x < 0;
+        this.isAttacking = true;
+        this.scene.tweens.add({
+            targets: this,
+            x: this.x + (direction.x * 200),
+            y: this.y + (direction.y * 200),
+            duration: 750,
+            ease: 'Elastic',
+            onStart: () => {
+                screenShake(this.scene);
+                this.scene.sound.play('leap', { volume: this.scene.settings.volume });
+                this.flickerCarenic(750); 
+            },
+            onComplete: () => { 
+                screenShake(this.scene, 120, 0.005);
+                this.scene.combatManager.useGrace(PLAYER.STAMINA.LEAP);
+                this.isLeaping = false; 
+                if (this.touching.length > 0) {
+                    this.touching.forEach((enemy) => {
+                        this.scene.combatManager.melee(enemy.enemyID, 'leap');
+                    });
+                };
+            },
+        });       
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You launch yourself through the air!`
+        });
+    };
+
+    rush = () => {
+        this.isRushing = true;
+        this.scene.sound.play('stealth', { volume: this.scene.settings.volume });        
+        const target = this.scene.getWorldPointer();
+        const direction = target.subtract(this.position);
+        direction.normalize();
+        this.flipX = direction.x < 0;
+        this.isParrying = true;
+        this.scene.tweens.add({
+            targets: this,
+            x: this.x + (direction.x * 300),
+            y: this.y + (direction.y * 300),
+            duration: 600,
+            ease: 'Circ.easeOut',
+            onStart: () => {
+                screenShake(this.scene);
+                this.flickerCarenic(600);  
+            },
+            onComplete: () => {
+                if (this.rushedEnemies.length > 0) {
+                    this.rushedEnemies.forEach((enemy) => {
+                        if (!enemy.enemyID) return;
+                        console.log(enemy.enemyID, 'Enemy ID in RUSHED?');
+                        this.scene.combatManager.melee(enemy.enemyID, 'rush');
+                    });
+                } else if (this.touching.length > 0) {
+                    this.touching.forEach((enemy) => {
+                        if (!enemy.enemyID) return;
+                        console.log(enemy.enemyID, 'Enemy ID in TOUCH?');
+                        this.scene.combatManager.melee(enemy.enemyID, 'rush');
+                    });
+                };
+                this.isRushing = false;
+            },
+        });         
+    };
+
+    storm = () => {
+        this.isStorming = true;
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'damage'); 
+        this.isAttacking = true;
+        this.scene.combatManager.useGrace(PLAYER.STAMINA.STORM);
+        this.scene.tweens.add({
+            targets: this,
+            angle: 360,
+            duration: 800,
+            onStart: () => this.flickerCarenic(3200),
+            onLoop: () => {
+                this.isAttacking = true;
+                screenShake(this.scene);
+                this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'damage');
+                if (this.touching.length > 0) {
+                    this.touching.forEach((enemy) => {
+                        if (enemy.health === 0) return;
+                        this.scene.combatManager.melee(enemy.enemyID, 'storm');
+                    });
+                };
+            },
+            onComplete: () => {
+                this.isStorming = false; 
+            },
+            loop: 3,
+        });  
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You begin storming with your ${this.scene.state.weapons[0]?.name}.`
+        });
+        screenShake(this.scene);
     };
 
     soundEffects(sfx) {
@@ -532,11 +623,7 @@ export default class Player extends Entity {
         const newTarget = this.targets.find(obj => obj.enemyID === enemy.id);
         this.targetIndex = this.targets.findIndex(obj => obj.enemyID === enemy.id);
         if (!newTarget) return;
-        if (newTarget.npcType) {
-            this.scene.setupNPC(newTarget);
-        } else {
-            this.attacking = newTarget;
-        };
+        if (newTarget.npcType) this.scene.setupNPC(newTarget);
         this.currentTarget = newTarget;
         this.targetID = newTarget.enemyID;
         if (this.currentTarget) {
@@ -554,7 +641,6 @@ export default class Player extends Entity {
 
     defeatedEnemyCheck = (id) => {
         this.currentTarget = undefined;
-        this.attacking = undefined;
         this.removeHighlight();
         const enemy = this.scene.enemies.find(e => e.enemyID === id && e.health <= 0);
         if (enemy) {
@@ -566,8 +652,7 @@ export default class Player extends Entity {
         const enemyInCombat = this.targets.find(obj => obj.inCombat && obj.health > 0);
         if (enemyInCombat) {
             this.scene.setupEnemy(enemyInCombat);
-            this.setAttacking(enemyInCombat);
-            this.setCurrentTarget(enemyInCombat);
+            this.currentTarget = enemyInCombat;
             this.targetID = enemyInCombat.enemyID;
             this.highlightTarget(enemyInCombat);
         } else {
@@ -580,8 +665,7 @@ export default class Player extends Entity {
     };
 
     shouldPlayerEnterCombat = (other) => {
-        const hasRemainingEnemies = this.scene.combat && this.scene.state.combatEngaged && this.inCombat;
-        if (!hasRemainingEnemies && !this.isStealthing && this.scene.state.newPlayerHealth > 0) {
+        if (!this.isPlayerInCombat() && !this.isStealthing && this.scene.state.newPlayerHealth > 0) {
             this.enterCombat(other);
         } else if (this.isStealthing) {
             this.prepareCombat(other);    
@@ -591,8 +675,7 @@ export default class Player extends Entity {
     enterCombat = (other) => {
         this.scene.setupEnemy(other.gameObjectB);
         this.actionTarget = other;
-        this.setAttacking(other.gameObjectB);
-        this.setCurrentTarget(other.gameObjectB);
+        this.currentTarget = other.gameObjectB;
         this.targetID = other.gameObjectB.enemyID;
         this.scene.combatEngaged(true);
         this.highlightTarget(other.gameObjectB);
@@ -602,8 +685,7 @@ export default class Player extends Entity {
     prepareCombat = (other) => {
         this.scene.setupEnemy(other.gameObjectB);
         this.actionTarget = other;
-        this.setAttacking(other.gameObjectB);
-        this.setCurrentTarget(other.gameObjectB);
+        this.currentTarget = other.gameObjectB;
         this.targetID = other.gameObjectB.enemyID;
         this.highlightTarget(other.gameObjectB);
     };
@@ -637,9 +719,9 @@ export default class Player extends Entity {
             objectA: [playerSensor],
             callback: (other) => {
                 if (this.isDeleting) return;
+                this.isValidRushEnemy(other.gameObjectB);
                 if (this.isValidEnemyCollision(other)) {
                     this.touching.push(other.gameObjectB);
-                    this.isValidRushEnemy(other.gameObjectB);
                     const isNewEnemy = this.isNewEnemy(other.gameObjectB);
                     if (!isNewEnemy) return;
                     this.targets.push(other.gameObjectB);
@@ -647,7 +729,6 @@ export default class Player extends Entity {
                     this.checkTargets();
                 } else if (this.isValidNeutralCollision(other)) {
                     this.touching.push(other.gameObjectB);
-                    this.isValidRushEnemy(other.gameObjectB);
                     other.gameObjectB.originPoint = new pMath.Vector2(other.gameObjectB.x, other.gameObjectB.y).clone();
                     const isNewNeutral = this.isNewEnemy(other.gameObjectB);
                     if (!isNewNeutral) return;
@@ -663,10 +744,9 @@ export default class Player extends Entity {
             objectA: [playerSensor],
             callback: (other) => {
                 if (this.isDeleting) return;
+                this.isValidRushEnemy(other.gameObjectB);
                 if (this.isValidEnemyCollision(other)) {
                     this.actionTarget = other;
-                    this.isValidRushEnemy(other.gameObjectB);
-                    if (!this.attacking) this.attacking = other.gameObjectB;
                     if (!this.currentTarget) this.currentTarget = other.gameObjectB;
                     if (!this.targetID) this.targetID = other.gameObjectB.enemyID;    
                 };
@@ -697,7 +777,7 @@ export default class Player extends Entity {
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === 'duel') {
                     EventBus.emit('alert', { 
                         header: "Dueling Ground", 
-                        body: `You have the option of summoning an enemy (${other.gameObjectB?.properties?.key}) to the dueling grounds. \n Would you like the challenge?`, 
+                        body: `You have the option of summoning an enemy (${other.gameObjectB?.properties?.key}) to random location in the dueling grounds. \n Would you like the challenge?`, 
                         delay: 3000, 
                         key: "Duel",
                         arg: other.gameObjectB?.properties?.key
@@ -816,13 +896,10 @@ export default class Player extends Entity {
             };
         };
     };
-
+    
     swingReset = (type, primary = false) => {
         this.canSwing = false;
-        const time = (type === 'dodge' || type === 'parry' || type === 'roll') ? 750 : 
-            this.isAttacking === true ? this.swingTimer : 
-            this.isPosturing === true ? this.swingTimer - 250 :
-            this.swingTimer;
+        const time = this.swingTime(type);
         const button = this.scene.actionBar.getButton(type);
         this.scene.actionBar.setCurrent(0, time, type);
         this.scene.time.delayedCall(time, () => {
@@ -830,6 +907,10 @@ export default class Player extends Entity {
             this.scene.actionBar.setCurrent(time, time, type);
             if (primary === true) this.scene.actionBar.animateButton(button);
         }, undefined, this);
+    };
+
+    swingTime = (type) => {
+        return (type === 'dodge' || type === 'parry' || type === 'roll') ? 750 : this.swingTimer;
     };
 
     checkCaerenic = (caerenic) => {
@@ -849,7 +930,6 @@ export default class Player extends Entity {
     };
 
     checkTargets = () => {
-        // console.log('CHECKING TARGETS');
         const playerCombat = this.isPlayerInCombat();
         this.targets = this.targets.filter(gameObject => {
             if (gameObject.npcType && playerCombat === true) {
@@ -867,17 +947,14 @@ export default class Player extends Entity {
         };
         this.sendEnemies(this.targets);
         if (this.targets.length === 0) {
-            // console.log('DISENGAGE checkTargets | target.length');
             this.disengage();
             return;
         };
         const someInCombat = this.targets.some(gameObject => gameObject.inCombat && gameObject.health > 0);
-        // console.log(`%c PLAYER COMBAT: ${playerCombat} | SOME IM IN COMBAT: ${someInCombat}`, 'color:red');
         if (!playerCombat && someInCombat) {
             this.scene.combatEngaged(true);
             this.inCombat = true;
         } else if (!someInCombat && playerCombat && !this.isStealthing) { // && this.currentTarget === undefined
-            // console.log('DISENGAGE checkTargets | !someInCombat && playerCombat && !this.isStealthing');
             this.disengage();
         };
     };
@@ -918,7 +995,6 @@ export default class Player extends Entity {
             this.scene.setupNPC(newTarget);
         } else {
             this.scene.setupEnemy(newTarget);
-            this.attacking = newTarget;
         };
         this.highlightTarget(this.currentTarget); 
     };
@@ -948,8 +1024,8 @@ export default class Player extends Entity {
         EventBus.emit('update-enemies', data);
     };
 
-    setAttacking = (enemy) => {
-        return this.attacking = enemy;
+    setCombat = (combat) => {
+        return this.inCombat = combat;
     };
 
     setCurrentTarget = (enemy) => {
@@ -992,10 +1068,8 @@ export default class Player extends Entity {
     playerActionSuccess = () => {
         if (this.particleEffect) {
             const action = this.particleEffect.action;
-
             this.scene.particleManager.removeEffect(this.particleEffect.id);
             this.particleEffect = undefined;
-            console.log('Attempting playerActionSuccess for: ', action);
             if (action === 'hook') {
                 this.hook(this.attackedTarget, 1500);
                 return;
@@ -1049,7 +1123,7 @@ export default class Player extends Entity {
             if (!action) return;
             if (!this.isAstrifying) {
                 if (this?.attackedTarget?.isShimmering && Phaser.Math.Between(1, 100) > 50) {
-                    this?.attackedTarget?.shimmer();
+                    this?.attackedTarget?.shimmerHit();
                     return;
                 };
                 if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
@@ -1344,7 +1418,7 @@ export default class Player extends Entity {
             this.playerMachine.stateMachine.setState(States.STUN);
             return;
         };
-        if (this.inCombat === true && this.scene.state.combatEngaged === true && this.currentTarget === undefined) this.findEnemy();
+        if (this.inCombat === true && this.scene.state.combatEngaged === true && (this.currentTarget === undefined || !this.currentTarget.inCombat)) this.findEnemy();
         if (this.inCombat && !this.healthbar.visible) this.healthbar.setVisible(true);
         if (this.healthbar) this.healthbar.update(this);
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
@@ -1357,44 +1431,82 @@ export default class Player extends Entity {
 
     handleMovement = () => {
         let speed = this.speed;
-        if (this.inputKeys.right.D.isDown || this.inputKeys.right.RIGHT.isDown || this.scene.joystickKeys.right.isDown) {
-            this.playerVelocity.x += this.acceleration;
-            this.flipX = false;
-        };
-        if (this.inputKeys.left.A.isDown || this.inputKeys.left.LEFT.isDown || this.scene.joystickKeys.left.isDown) {
-            this.playerVelocity.x -= this.acceleration;
-            this.flipX = true;
-        };
-        if ((this.inputKeys.up.W.isDown || this.inputKeys.up.UP.isDown) || this.scene.joystickKeys.up.isDown) {
-            this.playerVelocity.y -= this.acceleration;
-        }; 
-        if (this.inputKeys.down.S.isDown || this.inputKeys.down.DOWN.isDown || this.scene.joystickKeys.down.isDown) {
-            this.playerVelocity.y += this.acceleration;
-        };
-        if (this.inputKeys.strafe.E.isDown || this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0) {
-            speed += 0.1;
-            this.flipX = true;
-        };
-        if (this.inputKeys.strafe.Q.isDown || this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x < 0) {
-            speed -= 0.1;    
-            this.flipX = false;
-        };
-        if (!this.isSuffering() && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.left.A.isDown && !this.scene.joystickKeys.left.isDown && !this.scene.joystickKeys.right.isDown) {
-            this.playerVelocity.x = 0;
-        };
-        if (!this.isSuffering() && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && !this.scene.joystickKeys.right.isDown && !this.scene.joystickKeys.left.isDown) {
-            this.playerVelocity.x = 0;
-        };
-        if (!this.isSuffering() && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && !this.scene.joystickKeys.down.isDown && !this.scene.joystickKeys.up.isDown) {
-            this.playerVelocity.y = 0;
-        };
-        if (!this.isSuffering() && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && !this.scene.joystickKeys.up.isDown && !this.scene.joystickKeys.down.isDown) {
-            this.playerVelocity.y = 0;
+        if (this.scene.settings.desktop === true) {
+            if (this.inputKeys.right.D.isDown || this.inputKeys.right.RIGHT.isDown) {
+                this.playerVelocity.x += this.acceleration;
+                this.flipX = false;
+            };
+            if (this.inputKeys.left.A.isDown || this.inputKeys.left.LEFT.isDown) {
+                this.playerVelocity.x -= this.acceleration;
+                this.flipX = true;
+            };
+            if ((this.inputKeys.up.W.isDown || this.inputKeys.up.UP.isDown)) {
+                this.playerVelocity.y -= this.acceleration;
+            }; 
+            if (this.inputKeys.down.S.isDown || this.inputKeys.down.DOWN.isDown) {
+                this.playerVelocity.y += this.acceleration;
+            };
+            if (this.inputKeys.strafe.E.isDown || this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0) {
+                speed += 0.1;
+                this.flipX = true;
+            };
+            if (this.inputKeys.strafe.Q.isDown || this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x < 0) {
+                speed -= 0.1;    
+                this.flipX = false;
+            };
+            if (!this.isSuffering() && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.left.A.isDown) {
+                this.playerVelocity.x = 0;
+            };
+            if (!this.isSuffering() && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown) {
+                this.playerVelocity.x = 0;
+            };
+            if (!this.isSuffering() && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown) {
+                this.playerVelocity.y = 0;
+            };
+            if (!this.isSuffering() && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown) {
+                this.playerVelocity.y = 0;
+            };
+        } else {
+            if (this.scene.joystickKeys.right.isDown) {
+                this.playerVelocity.x += this.acceleration;
+                this.flipX = false;
+            };
+            if (this.scene.joystickKeys.left.isDown) {
+                this.playerVelocity.x -= this.acceleration;
+                this.flipX = true;
+            };
+            if (this.scene.joystickKeys.up.isDown) {
+                this.playerVelocity.y -= this.acceleration;
+            }; 
+            if (this.scene.joystickKeys.down.isDown) {
+                this.playerVelocity.y += this.acceleration;
+            };
+            if (this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0) {
+                speed += 0.1;
+                this.flipX = true;
+            };
+            if (this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x < 0) {
+                speed -= 0.1;    
+                this.flipX = false;
+            };
+            if (!this.isSuffering() && this.playerVelocity.x !== 0 && !this.scene.joystickKeys.left.isDown && !this.scene.joystickKeys.right.isDown) {
+                this.playerVelocity.x = 0;
+            };
+            if (!this.isSuffering() && this.playerVelocity.x !== 0 && !this.scene.joystickKeys.right.isDown && !this.scene.joystickKeys.left.isDown) {
+                this.playerVelocity.x = 0;
+            };
+            if (!this.isSuffering() && this.playerVelocity.y !== 0 && !this.scene.joystickKeys.down.isDown && !this.scene.joystickKeys.up.isDown) {
+                this.playerVelocity.y = 0;
+            };
+            if (!this.isSuffering() && this.playerVelocity.y !== 0 && !this.scene.joystickKeys.up.isDown && !this.scene.joystickKeys.down.isDown) {
+                this.playerVelocity.y = 0;
+            };
         };
         if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting) speed += 1;
         if (this.isClimbing || this.inWater) speed *= 0.65;
         this.playerVelocity.limit(speed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
+
     }; 
 
     update() {

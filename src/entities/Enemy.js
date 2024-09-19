@@ -308,10 +308,10 @@ export default class Enemy extends Entity {
                         this.fearCount += 0.1;
                     };
                 };
-                if (this.isPolymorphed) this.isPolymorphed = false;
-                if (this.isMalicing) this.maliceHit();
-                if (this.isMending) this.mendHit();
             };
+            if (this.isPolymorphed) this.isPolymorphed = false;
+            if (this.isMalicing) this.maliceHit();
+            if (this.isMending) this.mendHit();
             if (e.newComputerHealth <= 0) this.stateMachine.setState(States.DEFEATED);
             if (!this.inCombat && e.newComputerHealth > 0 && e.newPlayerHealth > 0) this.checkEnemyCombatEnter();
         } else if (this.health < e.newComputerHealth) { 

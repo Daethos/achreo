@@ -47,7 +47,7 @@ export class CombatManager extends Phaser.Scene {
     };
     astrave = (id: string, enemyID: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (enemy !== undefined && enemy.healthbar.getValue() > 0 && enemy.isDefeated !== true) {
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 1);
             const health = enemy.healthbar.getValue() - damage;
@@ -55,14 +55,14 @@ export class CombatManager extends Phaser.Scene {
             enemy.count.stunned += 1;    
             enemy.isStunned = true;
         } else if (id === this.context.player.playerID) {
-            let caster = this.context.enemies.find((e: any) => e.enemyID === enemyID);
+            let caster = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
             caster.chiomic(15);
             this.context.player.isStunned = true;
         };
     };
     blind = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
         if (enemy !== undefined && enemy.healthbar.getValue() > 0 && enemy.isDefeated !== true) {
             enemy.count.feared += 1;
             enemy.isFeared = true;
@@ -75,13 +75,13 @@ export class CombatManager extends Phaser.Scene {
     };
     caerenesis = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (enemy !== undefined && enemy.healthbar.getValue() > 0 && enemy.isDefeated !== true) {
             enemy.isParalyzed = true;
             if (this.context.player.currentTarget && this.context.player.currentTarget.enemyID === this.context.player.getEnemyId()) {
-                this.combatMachine.action({ type: 'Tshaeral', data: 10 });
+                this.combatMachine.action({ type: 'Tshaeral', data: 15 });
             } else {
-                const drained = Math.round(this.context.state.playerHealth * 0.1 * (this.context.player.isCaerenic ? 1.15 : 1) * ((this.context.state.player?.level as number + 9) / 10));
+                const drained = Math.round(this.context.state.playerHealth * 0.15 * (this.context.player.isCaerenic ? 1.15 : 1) * ((this.context.state.player?.level as number + 9) / 10));
                 const newPlayerHealth = drained / this.context.state.playerHealth * 100;
                 const newHealth = enemy.healthbar.getValue() - drained < 0 ? 0 : enemy.healthbar.getValue() - drained;
                 const tshaeralDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
@@ -93,7 +93,7 @@ export class CombatManager extends Phaser.Scene {
     };
     chiomic = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.useGrace(10);
             this.context.player.isConfused = true;
@@ -104,7 +104,7 @@ export class CombatManager extends Phaser.Scene {
     };
     confuse = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.useGrace(10);
             this.context.player.isConfused = true;
@@ -115,7 +115,7 @@ export class CombatManager extends Phaser.Scene {
     };
     fear = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.useGrace(10);
             this.context.player.isFeared = true;
@@ -126,7 +126,7 @@ export class CombatManager extends Phaser.Scene {
     };
     freeze = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.useGrace(10);
             this.context.player.isFrozen = true;
@@ -137,7 +137,7 @@ export class CombatManager extends Phaser.Scene {
     };
     fyerus = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (enemy !== undefined && enemy.healthbar.getValue() > 0 && enemy.isDefeated !== true) {
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.35) * (this.context.player.isCaerenic ? 1.15 : 1) * ((this.context.state.player?.level as number + 9) / 10);
             const health = enemy.healthbar.getValue() - damage;
@@ -150,7 +150,7 @@ export class CombatManager extends Phaser.Scene {
     howl = (id: string): void => {
         if (id === '') return;
         this.stunned(id);
-        let enemy = this.context.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (enemy !== undefined && enemy.healthbar.getValue() > 0 && enemy.isDefeated !== true) {
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.75);
             const health = enemy.healthbar.getValue() - damage;
@@ -159,7 +159,7 @@ export class CombatManager extends Phaser.Scene {
     };
     kynisos = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.context.player.isRooted = true;
         } else {
@@ -171,7 +171,7 @@ export class CombatManager extends Phaser.Scene {
     };
     paralyze = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.useGrace(15);
             this.context.player.isParalyzed = true;
@@ -182,7 +182,7 @@ export class CombatManager extends Phaser.Scene {
     };
     polymorph = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.context.player.isPolymorphed = true;
         } else {
@@ -195,14 +195,14 @@ export class CombatManager extends Phaser.Scene {
     };
     enemyRenewal = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) return;
         const heal = enemy.ascean.health.max * 0.1;
         const health = Math.min(enemy.healthbar.getValue() + heal, enemy.ascean.health.max);
         this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
     };
     root = (id: string): void => {
-        let enemy = this.context.enemies.find((enemy: any) => enemy.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) return;
         this.context.targetTarget = enemy;
         let x = enemy.x; // this.rightJoystick.pointer.x;
@@ -233,7 +233,7 @@ export class CombatManager extends Phaser.Scene {
     };
     scream = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.useGrace(15);
             this.context.player.isFeared = true;
@@ -244,7 +244,7 @@ export class CombatManager extends Phaser.Scene {
     };
     slow = (id: string, time: number = 3000): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.context.player.isSlowed = true;
             this.context.player.slowDuration = time;
@@ -256,7 +256,7 @@ export class CombatManager extends Phaser.Scene {
     };
     snare = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.context.player.isSnared = true;
         } else {
@@ -266,7 +266,7 @@ export class CombatManager extends Phaser.Scene {
     };
     stun = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.context.player.isStunned = true;
             this.useStamina(15);
@@ -277,7 +277,7 @@ export class CombatManager extends Phaser.Scene {
     };
     stunned = (id: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.context.player.isStunned = true;
             this.useStamina(15);
@@ -288,7 +288,7 @@ export class CombatManager extends Phaser.Scene {
     };
     tendril = (id: string, _enemyID: string): void => {
         if (id === '') return;
-        let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (enemy !== undefined && enemy.healthbar.getValue() > 0 && enemy.isDefeated !== true) {
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.3);
             const total = Math.max(0, enemy.healthbar.getValue() - damage);

@@ -303,34 +303,12 @@ export default class Player extends Entity {
         };
         const first = this.scene.state.enemyID;
         if (first === '') {
-            if (this.targets.length > 0) {
-                for (let i = 0; i < this.targets.length; i++) {
-                    if (this.targets[i].inCombat === true) {
-                        if (this.scene.state.newPlayerHealth <= 0) {
-                            this.clearEnemy(this.targets[i]);
-                            return;
-                        } else {
-                            this.quickTarget(this.targets[i]);
-                            return;
-                        };
-                    };
-                };
-                this.clearEnemies();
-                this.findEnemy();
-            } else if (this.touching.length > 0) {
-                for (let i = 0; i < this.touching.length; i++) {
-                    if (this.touching[i].inCombat === true) {
-                        this.quickTarget(this.touching[i]);
-                        return;
-                    };
-                };
-            };
+            this.scene.quickCombat();
         } else {
             const enemy = this.scene.getEnemy(first);
             if (enemy === undefined) {
                 this.disengage();
             } else if (!enemy.inCombat) {
-                console.log(`%c Going to find an enemy in combat cause apparently I should be!`, 'color:gold');
                 this.scene.quickCombat();
             } else {
                 this.quickTarget(enemy);
@@ -358,6 +336,7 @@ export default class Player extends Entity {
         this.targetID = enemy.enemyID;
         this.currentTarget = enemy;
         this.highlightTarget(enemy);
+        if (this.scene.state.enemyID !== enemy.enemyID) this.scene.setupEnemy(enemy);
     };
 
     targetEngagement = (id) => {
@@ -476,12 +455,12 @@ export default class Player extends Entity {
 
     rush = () => {
         this.isRushing = true;
+        this.isParrying = true;
         this.scene.sound.play('stealth', { volume: this.scene.settings.volume });        
         const target = this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
         direction.normalize();
         this.flipX = direction.x < 0;
-        this.isParrying = true;
         this.scene.tweens.add({
             targets: this,
             x: this.x + (direction.x * 300),
@@ -496,13 +475,11 @@ export default class Player extends Entity {
                 if (this.rushedEnemies.length > 0) {
                     this.rushedEnemies.forEach((enemy) => {
                         if (!enemy.enemyID) return;
-                        console.log(enemy.enemyID, 'Enemy ID in RUSHED?');
                         this.scene.combatManager.melee(enemy.enemyID, 'rush');
                     });
                 } else if (this.touching.length > 0) {
                     this.touching.forEach((enemy) => {
                         if (!enemy.enemyID) return;
-                        console.log(enemy.enemyID, 'Enemy ID in TOUCH?');
                         this.scene.combatManager.melee(enemy.enemyID, 'rush');
                     });
                 };
@@ -850,8 +827,8 @@ export default class Player extends Entity {
     };
 
     getEnemyDirection = (target) => {
-        if (!target) return false;
         if (this.scene.settings.difficulty.aim) return true;
+        if (!target) return false;
         const skills = this.scene.state.player.skills;
         const type = this.hasMagic ? this.scene.state.playerDamageType : this.scene.state.weapons[0].type;
         const skill = skills[type];
@@ -1064,12 +1041,14 @@ export default class Player extends Entity {
             !this.isStalwart
         );
     };
-
+    killParticle = () => {
+        this.scene.particleManager.removeEffect(this.particleEffect.id);
+        this.particleEffect = undefined;
+    };
     playerActionSuccess = () => {
         if (this.particleEffect) {
             const action = this.particleEffect.action;
-            this.scene.particleManager.removeEffect(this.particleEffect.id);
-            this.particleEffect = undefined;
+            this.killParticle();
             if (action === 'hook') {
                 this.hook(this.attackedTarget, 1500);
                 return;
@@ -1097,7 +1076,7 @@ export default class Player extends Entity {
                 if (this.attackedTarget.isMultifaring) this.attackedTarget.multifarious(); 
                 if (this.attackedTarget.isMystifying) this.attackedTarget.mystify(); 
             };
-            const match = this.scene.state?.enemyID === this.attackedTarget.enemyID;
+            const match = this.enemyIdMatch();
             if (match === true) {
                 this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: action }});
             } else {
@@ -1387,7 +1366,7 @@ export default class Player extends Entity {
                 this.scene.particleManager.removeEffect(this.particleEffect.id);
                 this.particleEffect = undefined;                
             } else {
-                this.scene.particleManager.update(this.particleEffect);
+                this.scene.particleManager.updateParticle(this.particleEffect);
             };
         };
         if (this.isConfused && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
@@ -1418,7 +1397,7 @@ export default class Player extends Entity {
             this.playerMachine.stateMachine.setState(States.STUN);
             return;
         };
-        if (this.inCombat === true && this.scene.state.combatEngaged === true && (this.currentTarget === undefined || !this.currentTarget.inCombat)) this.findEnemy();
+        if (this.scene.combat === true && (!this.currentTarget || !this.currentTarget.inCombat)) this.findEnemy(); // this.inCombat === true && state.combatEngaged
         if (this.inCombat && !this.healthbar.visible) this.healthbar.setVisible(true);
         if (this.healthbar) this.healthbar.update(this);
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);

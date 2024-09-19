@@ -20,14 +20,14 @@ import Enemy from '../../entities/Enemy';
 // @ts-ignore
 import NPC from '../../entities/NPC';
 // @ts-ignore
-import ParticleManager from '../../phaser/ParticleManager';
-// @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 import Tile from '../../phaser/Tile';
 import { CombatManager } from '../CombatManager';
 import MiniMap from '../../phaser/MiniMap';
 import ScrollingCombatText from '../../phaser/ScrollingCombatText';
 import Logger, { ConsoleLogger } from '../../utility/Logger';
+import ParticleManager from '../../phaser/ParticleManager';
+import { screenShake } from '../../phaser/ScreenShake';
 
 export class Underground extends Scene {
     animatedTiles: any[];
@@ -626,8 +626,12 @@ export class Underground extends Scene {
     };
     combatEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
-        EventBus.emit('combat-engaged', bool);
-        if (bool === true && this.combat !== bool) {
+        if (bool === true) {
+            screenShake(this, 64, 0.005);
+            this.cameras.main.flash(64, 156, 163, 168, false, undefined, this);
+        };
+        if (bool === true && this.combat === false) {
+            this.player.inCombat = true;
             this.musicCombat.play();
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
             if (this.musicStealth.isPlaying) this.musicStealth.stop();
@@ -646,6 +650,7 @@ export class Underground extends Scene {
             this.stopCombatTimer();    
         };
         this.combat = bool;
+        EventBus.emit('combat-engaged', bool);
     };
     stealthEngaged = (bool: boolean, scene: string) => {
         if (this.scene.key !== scene) return;

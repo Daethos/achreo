@@ -1,7 +1,7 @@
 import { Accessor } from 'solid-js';
 import { Combat } from '../stores/combat';
 export default function CombatText({ combat, combatHistory }: { combat: Accessor<Combat>, combatHistory: Accessor<string> }) {
-    return <div class='combatText' style={{ left: '20vw', top: '60vh', height: '30vh', width: '60vw' }}>
+    return <div class='combatText' style={{ left: '20vw', top: '40vh', height: '50vh', width: '60vw' }}>
         <div style={{ 'text-wrap': 'balance', margin: '3%' }}> 
             <div style={{ 'z-index': 1 }} innerHTML={combatHistory()} />
             <div class='center creature-heading'>

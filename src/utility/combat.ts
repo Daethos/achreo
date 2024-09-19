@@ -308,10 +308,10 @@ function damageTypeCompiler(damageType: string, enemy: Ascean, weapon: Equipment
     return { physicalDamage, magicalDamage };
 };
 
-function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, critClearance: number, weapon: Equipment, physicalDamage: number, magicalDamage: number, weather: string, glancingBlow: boolean, criticalSuccess: boolean, isSeering: boolean = false):{ criticalSuccess: boolean, glancingBlow: boolean, physicalDamage: number, magicalDamage: number, isSeering: boolean } {
-    if (weather === 'Alluring Isles') critChance -= 10;
-    if (weather === 'Astralands') critChance += 10;
-    if (weather === 'Kingdom') critChance += 5;
+function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, critClearance: number, weapon: Equipment, physicalDamage: number, magicalDamage: number, _weather: string, glancingBlow: boolean, criticalSuccess: boolean, isSeering: boolean = false):{ criticalSuccess: boolean, glancingBlow: boolean, physicalDamage: number, magicalDamage: number, isSeering: boolean } {
+    // if (weather === 'Alluring Isles') critChance -= 10;
+    // if (weather === 'Astralands') critChance += 10;
+    // if (weather === 'Kingdom') critChance += 5;
     if (player === true) {
         if (critChance >= critClearance || isSeering === true) {
             physicalDamage *= weapon.criticalDamage;
@@ -1837,16 +1837,16 @@ function weaponActionSplitter(combat: Combat): Combat {
         'prayerData': cleanData.prayerData,
         'skillData': cleanData.skillData,
 
-        'attackWeight': cleanData.attackWeight,
-        'parryWeight': cleanData.parryWeight,
-        'dodgeWeight': cleanData.dodgeWeight,
-        'postureWeight': cleanData.postureWeight,
-        'rollWeight': cleanData.rollWeight,
-        'parryAttackWeight': cleanData.parryAttackWeight,
-        'parryParryWeight': cleanData.parryParryWeight,
-        'parryDodgeWeight': cleanData.parryDodgeWeight,
-        'parryPostureWeight': cleanData.parryPostureWeight,
-        'parryRollWeight': cleanData.parryRollWeight,
+        // 'attackWeight': cleanData.attackWeight,
+        // 'parryWeight': cleanData.parryWeight,
+        // 'dodgeWeight': cleanData.dodgeWeight,
+        // 'postureWeight': cleanData.postureWeight,
+        // 'rollWeight': cleanData.rollWeight,
+        // 'parryAttackWeight': cleanData.parryAttackWeight,
+        // 'parryParryWeight': cleanData.parryParryWeight,
+        // 'parryDodgeWeight': cleanData.parryDodgeWeight,
+        // 'parryPostureWeight': cleanData.parryPostureWeight,
+        // 'parryRollWeight': cleanData.parryRollWeight,
 
         'playerDeathDescription': cleanData.playerDeathDescription,
         'computerDeathDescription': cleanData.computerDeathDescription,

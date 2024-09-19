@@ -297,18 +297,16 @@ export default class Enemy extends Entity {
             damage = e.criticalSuccess ? `${damage} (Critical)` : e.glancingBlow ? `${damage} (Glancing)` : damage;
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.criticalSuccess);
             if (!this.isSuffering() && !this.isCasting) this.stateMachine.setState(States.HURT); // !this.isHurt && 
-            if (this.currentRound !== e.combatRound || !this.inCombat) {
-                if (this.isConfused) this.isConfused = false;
-                if (this.isFeared) {
-                    const chance = Math.random() < 0.1 + this.fearCount;
-                    if (chance) {
-                        this.statusCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect');
-                        this.isFeared = false;
-                    } else {
-                        this.fearCount += 0.1;
-                    };
+            if (this.isFeared) {
+                const chance = Math.random() < 0.1 + this.fearCount;
+                if (chance) {
+                    this.statusCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect');
+                    this.isFeared = false;
+                } else {
+                    this.fearCount += 0.1;
                 };
             };
+            if (this.isConfused) this.isConfused = false;
             if (this.isPolymorphed) this.isPolymorphed = false;
             if (this.isMalicing) this.maliceHit();
             if (this.isMending) this.mendHit();

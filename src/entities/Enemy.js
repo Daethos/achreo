@@ -783,7 +783,7 @@ export default class Enemy extends Entity {
     onPatrolEnter = () => {
         this.enemyAnimation();
         const numberOfPatrolPoints = Phaser.Math.RND.between(1, 2);
-        this.patrolPath = this.generatePatrolPath(numberOfPatrolPoints); // Generate patrol points via navmesh
+        this.patrolPath = this.generatePatrolPath(); // Generate patrol points via navmesh
         if (!this.patrolPath || this.patrolPath.length < 2) {
             this.stateMachine.setState(States.IDLE);
             return;
@@ -824,26 +824,17 @@ export default class Enemy extends Entity {
         // this.scene.navMesh.debugDrawClear(); // Clear the path drawing when exiting patrol
     };
     
-    generatePatrolPath = (numberOfPoints) => {
-        let patrolPath = [];
-        let currentPosition = this.position;
-        for (let i = 0; i < numberOfPoints; i++) {
-            let pointFound = false;
-            let randomPoint;
-            while (pointFound === false) {
-                randomPoint = new Phaser.Math.Vector2(Phaser.Math.RND.between(this.x - 375, this.x + 375), Phaser.Math.RND.between(this.y - 375, this.y + 375));
-                if (this.scene.navMesh.isPointInMesh(randomPoint)) {
-                    pointFound = true;
-                };
-            };
-            const pathToPoint = this.scene.navMesh.findPath(currentPosition, randomPoint);
-            if (pathToPoint && pathToPoint.length > 1) {
-                patrolPath = patrolPath.concat(pathToPoint);
-                currentPosition = randomPoint;
+    generatePatrolPath = () => {
+        let pathPosition;
+        let pathFound = false;
+        while (pathFound === false) {
+            const point = new Phaser.Math.Vector2(Phaser.Math.RND.between(this.x - 375, this.x + 375), Phaser.Math.RND.between(this.y - 375, this.y + 375));
+            if (this.scene.navMesh.isPointInMesh(point)) {
+                pathPosition = point;
+                pathFound = true;
             };
         };
-        // this.scene.navMesh.enableDebug();
-        // this.scene.navMesh.debugDrawPath(patrolPath, 0x00ff00);
+        let patrolPath = this.scene.navMesh.findPath(this.position, pathPosition);
         return patrolPath;
     };
     

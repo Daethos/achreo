@@ -50,9 +50,6 @@ class Particle {
         this.player = player;
         this.sensorSize = this.sensorer(special, action);
         this.special = special;
-        // this.collided = false;
-        // this.success = false;
-        // this.triggered = false;
         this.target = this.setTarget(player, scene, special);
         this.timer = this.setTimer(action, id);
         this.velocity = this.setVelocity(action);

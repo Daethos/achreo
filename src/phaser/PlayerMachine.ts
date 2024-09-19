@@ -8,7 +8,7 @@ import { PLAYER } from "../utility/player";
 // @ts-ignore
 import { FRAME_COUNT } from '../entities/Entity';
 // @ts-ignore
-import AoE from '../phaser/AoE';
+import AoE from './AoE';
 import { EventBus } from "../game/EventBus";
 import { screenShake } from "./ScreenShake";
 import Bubble from "./Bubble";

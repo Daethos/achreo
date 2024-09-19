@@ -1,4 +1,12 @@
+import { Game } from "../game/scenes/Game";
+import { Underground } from "../game/scenes/Underground";
+// @ts-ignore
+import Player from '../entities/Player';
+// @ts-ignore
+import Enemy from '../entities/Enemy';
+// @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
+
 const COLORS = {
     'astrave': 0xFFFF00,
     'blind': 0xCC5500,
@@ -15,7 +23,14 @@ const COLORS = {
     'writhe': 0x080080,
 };
 export default class AoE extends Phaser.Physics.Matter.Sprite {
-    constructor(scene, type, count = 1, positive = false, enemy = undefined, manual = false, target = undefined) {
+    glowFilter: any;
+    count: number;
+    hit: any[];
+    bless: any[];
+    timer: any;
+    sensor: any;
+
+    constructor(scene: Game | Underground, type: string, count = 1, positive = false, enemy = undefined, manual = false, target = undefined) {
         super(scene.matter.world, scene.player.x, scene.player.y + 6, 'target');
         this.name = type;
         this.setAngle(0);
@@ -23,11 +38,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setScale(0.375);
         this.setOrigin(0.5, 0.5);
         scene.add.existing(this);
-        this.glowFilter = this.scene.plugins.get('rexGlowFilterPipeline');
+        this.glowFilter = scene.plugins.get('rexGlowFilterPipeline');
         this.glowFilter.add(this, {
             outerStrength: 1,
             innerStrength: 1,
-            glowColor: COLORS[type],
+            glowColor: COLORS[type as keyof typeof COLORS],
             intensity: 0.25,
             knockout: true,
         });
@@ -47,10 +62,10 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             this.setCount(scene, type, positive);
         };
     };
-    cleanAnimation = (scene) => {
+    cleanAnimation = (scene: Game | Underground) => {
         scene.rotateTween(this, 0, false);
     };
-    setCount = (scene, type, positive) => {
+    setCount = (scene: Game | Underground, type: string, positive: boolean) => {
         if (type === 'fyerus') {
             if (scene.player.isMoving) {
                 this.glowFilter.remove(this);
@@ -65,7 +80,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         if (positive === true) {
             scene.time.delayedCall(975, () => {
                 this.bless.forEach((_target) => {
-                    scene.combatManager[type]();
+                    (scene.combatManager as any)[type]();
                 });
                 this.count -= 1;
                 if (this.count === 0) {
@@ -82,7 +97,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         } else {
             scene.time.delayedCall(975, () => {
                 this.hit.forEach((target) => {
-                    scene.combatManager[type](target.enemyID);
+                    (scene.combatManager as any)[type](target.enemyID);
                 });
                 this.count -= 1;
                 if (this.count === 0) {
@@ -98,12 +113,12 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             });
         };
     };
-    setupEnemyCount = (scene, type, positive, enemy) => {
+    setupEnemyCount = (scene: Game | Underground, type: string, positive: boolean, enemy: Enemy) => {
         if (positive === true) {
             scene.time.delayedCall(975, () => {
                 this.hit.forEach((targ) => {
-                    if (this.scene.player.checkPlayerResist() === true && targ.playerID === this.scene.player.playerID) {
-                        scene.combatManager[type](targ.playerID, enemy.enemyID);
+                    if (scene.player.checkPlayerResist() === true && targ.playerID === scene.player.playerID) {
+                        (scene.combatManager as any)[type](targ.playerID, enemy.enemyID);
                     };
                 });
                 this.count -= 1;
@@ -121,7 +136,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         } else {
             scene.time.delayedCall(975, () => {
                 this.bless.forEach((targ) => {
-                    scene.combatManager[`enemy${type.charAt(0).toUpperCase() + type.slice(1)}`](targ.enemyID);
+                    (scene.combatManager as any)[`enemy${type.charAt(0).toUpperCase() + type.slice(1)}`](targ.enemyID);
                 });
                 this.count -= 1;
                 if (this.count === 0) {
@@ -137,7 +152,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             });
         };
     };
-    setEnemyTimer = (scene, enemy, target) => {
+    setEnemyTimer = (scene: Game | Underground, enemy: Enemy, target: Player | Enemy) => {
         let scale = 0;
         let count = 0;
         let targ = target !== undefined ? target : enemy;
@@ -154,10 +169,10 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 count++;
             },
             callbackScope: this,
-            loop: 20,
+            repeat: 20,
         });
     };
-    setTimer = (scene, manual, target) => {
+    setTimer = (scene: Game | Underground, manual: boolean, target: Player | Enemy) => {
         let scale = 0.01875;
         let count = 0;
         let targ = target !== undefined ? target : manual === true ? scene.getWorldPointer() : scene.player;
@@ -186,10 +201,10 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 count++;
             },
             callbackScope: this,
-            loop: 20,
+            repeat: 20,
         });
     };
-    setupEnemySensor = (enemy, target) => {
+    setupEnemySensor = (enemy: Enemy, target: Player | Enemy) => {
         let targ = target !== undefined ? target : enemy;
         const aoeSensor = Bodies.circle(targ.x, targ.y, 60, { 
             isSensor: true, label: 'aoeSensor' 
@@ -198,7 +213,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setStatic(true);
         this.sensor = aoeSensor;
     };
-    setupSensor = (scene, manual, target) => {
+    setupSensor = (scene: Game | Underground, manual: boolean, target: undefined) => {
         let targ;
         if (target !== undefined) {
             targ = target;
@@ -225,12 +240,12 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setOrigin(0.5, 0.5);
         this.sensor = aoeSensor;
     };
-    setupEnemyListener = (scene) => {
+    setupEnemyListener = (scene: Game | Underground) => {
         scene.matterCollision.addOnCollideStart({
             objectA: [this.sensor],
-            callback: (collision) => {
+            callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if (gameObjectB instanceof Phaser.Physics.Matter.Sprite) {
+                if (gameObjectB instanceof Player) {
                     if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
                         const hit = this.hit.find((h) => h.playerID === gameObjectB.playerID);
                         if (!hit) this.hit.push(gameObjectB);
@@ -243,9 +258,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         });
         scene.matterCollision.addOnCollideEnd({
             objectA: [this.sensor],
-            callback: (collision) => {
+            callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if (gameObjectB instanceof Phaser.Physics.Matter.Sprite) {
+                if (gameObjectB instanceof Player) {
                     if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
                         this.hit = this.hit.filter((target) => target !== gameObjectB);
                     } else if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
@@ -256,12 +271,12 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             context: scene
         });
     };
-    setupListener = (scene) => {
+    setupListener = (scene: Game | Underground) => {
         scene.matterCollision.addOnCollideStart({
             objectA: [this.sensor],
-            callback: (collision) => {
+            callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if (gameObjectB instanceof Phaser.Physics.Matter.Sprite) {
+                if (gameObjectB instanceof Enemy) {
                     if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
                         this.hit.push(gameObjectB);    
                     } else if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
@@ -273,9 +288,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         });
         scene.matterCollision.addOnCollideEnd({
             objectA: [this.sensor],
-            callback: (collision) => {
+            callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if (gameObjectB instanceof Phaser.Physics.Matter.Sprite) {
+                if (gameObjectB instanceof Enemy) {
                     if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
                         this.hit = this.hit.filter((target) => target.enemyID !== gameObjectB.enemyID);
                     } else if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {

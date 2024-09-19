@@ -75,19 +75,20 @@ export class Preloader extends Scene {
 
     createLoadingBar() {
         const masteries = ['#fdf6d8', 'red', 'green', 'blue', 'purple', 'gold'];
-        const index = Math.round(Math.random() * masteries.length);
+        const index = Math.floor(Math.random() * masteries.length);
         const shadow = masteries[index];
-        this.title = new NewText(this, this.centerX, this.centerY / 2, 'Loading Game', 'subtitle', 0.5, shadow);
-        this.txt_progress = new NewText(this, this.centerX, this.centerY / 0.975, 'Loading...', 'preload', { x: 0.5, y: 1 }, shadow);
-        this.txt_file = new NewText( this, this.centerX, this.centerY / 0.625, '', 'play', { x: 0.5, y: 1 }, shadow);
+        this.title = new NewText(this, this.centerX, this.centerY / 1.9, 'Loading Game', 'subtitle', 0.5, shadow);
+        this.txt_progress = new NewText(this, this.centerX, this.centerY / 0.925, 'Loading...', 'preload', { x: 0.5, y: 1 }, shadow);
+        this.txt_file = new NewText( this, this.centerX, this.centerY / 0.6, '', 'play', { x: 0.5, y: 1 }, shadow);
         let x = this.centerX - (this.width / 2);
-        let y = this.centerY / 0.9;
+        let y = this.centerY / 0.85;
         this.progress = this.add.graphics({ x: x, y: y });
         this.border = this.add.graphics({ x: x, y: y });
         this.borderBorder = this.add.graphics({ x: x, y: y });
         this.load.on('progress', this.onProgress, this);
         this.load.on('fileprogress', this.onFileProgress, this);
     };
+       
 
     onProgress(val: number) {
         this.progress.clear();

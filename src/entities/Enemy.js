@@ -227,13 +227,9 @@ export default class Enemy extends Entity {
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e?.critical);
             if (this.isMalicing) this.maliceHit();
             if (this.isMending) this.mendHit();
-            // This used to be outside of being 'damaged' -- seeing if this fixes things like leap/rush when not targeted and not in combat
             const isNewEnemy = this.isNewEnemy(this.scene.player);
             if (isNewEnemy === true && this.inCombat === false) { // || Before
                 this.jumpIntoCombat();
-                // this.checkEnemyCombatEnter();
-                // this.scene.player.inCombat = true;
-                // this.scene.player.targetEngagement(this.enemyID);
             };
         } else if (this.health < e.health) {
             let heal = Math.round(e.health - this.health);
@@ -296,7 +292,6 @@ export default class Enemy extends Entity {
             };
             return;
         };
-        // console.log(this.ascean?.name, this.health, e.newComputerHealth, 'Enemy');
         if (this.health > e.newComputerHealth) {
             let damage = Math.round(this.health - e.newComputerHealth);
             damage = e.criticalSuccess ? `${damage} (Critical)` : e.glancingBlow ? `${damage} (Glancing)` : damage;
@@ -316,7 +311,6 @@ export default class Enemy extends Entity {
                 if (this.isPolymorphed) this.isPolymorphed = false;
                 if (this.isMalicing) this.maliceHit();
                 if (this.isMending) this.mendHit();
-                // if (!this.inCombat && e.newComputerHealth > 0) this.checkEnemyCombatEnter();
             };
             if (e.newComputerHealth <= 0) this.stateMachine.setState(States.DEFEATED);
             if (!this.inCombat && e.newComputerHealth > 0 && e.newPlayerHealth > 0) this.checkEnemyCombatEnter();
@@ -325,9 +319,7 @@ export default class Enemy extends Entity {
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, 1500, 'heal');
         }; 
         this.health = e.newComputerHealth;
-        // this.healthbar.setValue(this.health);
         if (this.healthbar.getTotal() < e.computerHealth) this.healthbar.setTotal(e.computerHealth);
-        // if (this.healthbar.visible) 
         this.updateHealthBar(e.newComputerHealth);
         this.weapons = e.computerWeapons;
         this.setWeapon(e.computerWeapons[0]); 
@@ -999,16 +991,17 @@ export default class Enemy extends Entity {
 
     onParryEnter = () => {
         this.isParrying = true;
-        this.parry();
+        this.anims.play('player_attack_1', true);
     };
     onParryUpdate = (_dt) => {
         if (this.frameCount === FRAME_COUNT.PARRY_LIVE && !this.isRanged) this.scene.combatManager.combatMachine.input('computerAction', 'parry', this.enemyID);
-        if (this.frameCount === FRAME_COUNT.PARRY_KILL) this.isParrying = false;
+        if (this.frameCount >= FRAME_COUNT.PARRY_KILL) this.isParrying = false;
         if (!this.isRanged) this.swingMomentum(this.attacking);
         if (!this.isParrying) this.evaluateCombatDistance();
     };
     onParryExit = () => {
         this.isParrying = false;
+        this.currentAction = '';
         if (this.scene.state.computerAction !== '') this.scene.combatManager.combatMachine.input('computerAction', '', this.enemyID);
         if (this.scene.state.computerParryGuess !== '') this.scene.combatManager.combatMachine.input('computerParryGuess', '', this.enemyID);
         this.setTint(ENEMY_COLOR);
@@ -2960,30 +2953,17 @@ export default class Enemy extends Entity {
     };
 
     evaluateCombat = () => {  
-        let computerAction;
         let actionNumber = Math.floor(Math.random() * 101);
-        console.log(actionNumber, 'Action Number for evaluateCombat');
-        // const computerActions = {
-        //     attack: 50 + this.attackWeight,
-        //     parry: 10 + this.parryWeight,
-        //     thrust: 10 + this.thrustWeight,
-        //     posture: 15 + this.postureWeight,
-        //     roll: 15 + this.rollWeight,
-        //     rollRating: this.currentWeapon ? this.currentWeapon.roll : this.ascean.weaponOne.roll,
-        //     armorRating: (this.combatStats.defense.physicalPosture + this.combatStats.defense.magicalPosture)  /  4,
-        // };
-
         if (actionNumber > 50) { // 51-100 || (100 - computerActions.attack)
-            computerAction = 'attack';
+            return States.ATTACK;
         } else if (actionNumber > 40 && !this.isRanged) { // 41-50 || (100 - computerActions.attack - computerActions.parry)
-            computerAction = 'parry';
+            return States.PARRY;
         } else if (actionNumber > 25) { // 26-40 || (100 - computerActions.attack - computerActions.parry - computerActions.posture)
-            computerAction = 'posture';
+            return States.POSTURE;
         } else if (actionNumber > 10) { // 11-25 || (100 - computerActions.attack - computerActions.parry - computerActions.posture - computerActions.roll)
-            computerAction = 'roll';
+            return States.ROLL;
         } else { // 1-10
-            computerAction = 'thrust';
+            return States.THRUST;
         };
-        return computerAction;
     };
 };

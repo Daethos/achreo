@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Game } from '../game/scenes/Game';
 import { Underground } from '../game/scenes/Underground';
 export const PARTICLES = ['achire', 'arrow', 'earth',  'fire',  'frost', 'hook', 'lightning', 'righteous', 'quor', 'sorcery', 'spooky', 'wild', 'wind'];
-const TIME = { quor: 2500, achire: 1500, attack: 1250, hook: 1500, thrust: 900, posture: 1500, roll: 1250, special: 1500 };
+const TIME = { quor: 3000, achire: 2000, attack: 1500, hook: 1750, thrust: 1150, posture: 1750, roll: 1500, special: 2000 };
 const VELOCITY = { quor: 4.5, achire: 6, attack: 5, hook: 5.5, thrust: 6, posture: 4, roll: 4, special: 5 }; // 7.5 || 9 || 6 || 6
 // @ts-ignore
 import Player from '../entities/Player';

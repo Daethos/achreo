@@ -526,6 +526,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 if (this.isRanged === false) this.checkActionSuccess(entity, target);
             };
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
+
             if ((entity === 'player' && this.hasBow) || (entity === 'enemy' && this.hasBow)) {
                 this.spriteWeapon.setDepth(this.depth + 1);
                 if (this.flipX) {
@@ -673,6 +674,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 };
             };
             this.frameCount += 1;
+            if (this.frameCount >= FRAME_COUNT.PARRY_KILL) this.isParrying = false;
         } else if (this.isThrusting) { 
             if (this.frameCount === FRAME_COUNT.THRUST_LIVE) {
                 if (entity === 'player' && this.isRanged) { // && this.inCombat

@@ -116,6 +116,7 @@ export class Game extends Scene {
         let layer4 = map.createLayer('Tile Layer 4 - Primes', decorations as Tilemaps.Tileset, 0, 0);
         let layer5 = map.createLayer('Tile Layer 5 - Snags', decorations as Tilemaps.Tileset, 0, 0);
         let layerT = map.createLayer('Tile Layer - Tree Trunks', decorations as Tilemaps.Tileset, 0, 0);
+        let layerB = map.createLayer('Tile Layer - Camp Base', camps as Tilemaps.Tileset, 0, 0);
         let layer6 = map.createLayer('Tile Layer 6 - Camps', camps as Tilemaps.Tileset, 0, 0);
         this.baseLayer = layer0;
         this.climbingLayer = layer1;
@@ -125,10 +126,10 @@ export class Game extends Scene {
         this.plants = layer3;
         map.createLayer('Tile Layer - Campfire', campfire as Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer - Lights', light as Tilemaps.Tileset, 0, 0);
-        [layer0, layer1, layerC, layerT, layer4, layer5, layer6].forEach((layer, index) => {
+        [layer0, layer1, layerB, layerC, layerT, layer4, layer5, layer6].forEach((layer, index) => {
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
-            if (index < 4) return;
+            if (index < 5) return;
             layer?.setDepth(5);
         });
         [layer2, layer3].forEach((layer) => { // Flowers, Plants

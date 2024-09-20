@@ -178,7 +178,7 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
   
     return (
         <div class='wrap'> 
-            <Typewriter stringText={renderedText} styling={{ 'overflow-y': 'auto' }} performAction={handleOptionClick} />
+            <Typewriter stringText={renderedText} styling={{ 'overflow-y': 'auto', 'scrollbar-width':'none' }} performAction={handleOptionClick} />
             <br />
             {renderedOptions()?.map((option: DialogNodeOption) => (
                 <DialogOption currentIndex={currentIndex} dialogNodes={dialogNodes} option={option} onClick={handleOptionClick} actions={actions} setPlayerResponses={setPlayerResponses} setKeywordResponses={setKeywordResponses} setShowDialogOptions={setShowDialogOptions} showDialogOptions={showDialogOptions} />
@@ -961,7 +961,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
         <Show when={showBuy() && merchantTable()?.length > 0}>
             <div class='modal'>
-            <div class='creature-heading' style={{ position: 'absolute',left: '20%',top: '20%',height: '70%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center' }}>
+            <div class='creature-heading' style={{ position: 'absolute',left: '20%',top: '20%',height: '70%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' }}>
                 <Currency ascean={ascean} />
                 <MerchantTable table={merchantTable} ascean={ascean} steal={steal} thievery={thievery} />
             </div>
@@ -993,7 +993,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         </Show>
         <Show when={showSell()}>
             <div class='modal' style={{ background: 'rgba(0, 0, 0, 0.5)' }}>
-                <div class='creature-heading' style={{ position: 'absolute',left: '20%',top: '20%',height: '70%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll'}}>
+                <div class='creature-heading' style={{ position: 'absolute',left: '20%',top: '20%',height: '70%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll', 'scrollbar-width':'none'}}>
                     <h1 class='center' style={{ 'margin-bottom': '3%' }}>Sell Items</h1>
                 <div class='center'>
                 <Currency ascean={ascean} />

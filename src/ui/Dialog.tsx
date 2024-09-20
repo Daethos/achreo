@@ -251,7 +251,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [forgeSee, setForgeSee] = createSignal<boolean>(false);
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
     const [thievery, setThievery] = createSignal<boolean>(false);
-    const [lootType, setLootType] = createSignal<string>('');
     const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
@@ -580,7 +579,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     };
 
     const getLoot = async (type: string): Promise<void> => {
-        setLootType(type);
         if (game()?.merchantEquipment.length > 0) {
             EventBus.emit('delete-merchant-equipment', { equipment: game()?.merchantEquipment });
         };

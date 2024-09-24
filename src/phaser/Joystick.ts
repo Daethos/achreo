@@ -50,6 +50,7 @@ export default class Joystick extends Phaser.GameObjects.Container {
         this.scene.input.off('pointermove', this.updatePointerPosition, this);
     };
     updatePointerPosition(pointer: any) {
+        // console.log(pointer, 'Pointer!')
         this.pointer.x = pointer.x;
         this.pointer.y = pointer.y;
     };

@@ -265,12 +265,15 @@ export class Game extends Scene {
         EventBus.on('settings', (settings: Settings) => {
             this.settings = settings;
             if (settings.desktop === true) {
+                this.input.setDefaultCursor('url(assets/images/cursor.png), pointer');
+                this.rightJoystick?.pointer?.setVisible(false);
                 this.joystick?.joystick?.setVisible(false);
                 this.rightJoystick?.joystick?.setVisible(false);
                 if (this.actionBar) this.actionBar.draw();
             } else {
                 this.joystick?.joystick?.setVisible(true);
                 this.rightJoystick?.joystick?.setVisible(true);
+                this.rightJoystick?.pointer?.setVisible(true);
                 if (this.actionBar) this.actionBar.draw();
             };
         });    
@@ -332,7 +335,6 @@ export class Game extends Scene {
                 this.player.playerMachine.positiveMachine.setState(States.STEALTH);
                 this.stealthEngaged(true, this.scene.key);
             };
-            // if (this.state.isCaerenic) this.player.checkCaerenic();
             EventBus.emit('current-scene-ready', this);
         });
         EventBus.on('switch-scene', (data: { current: string, next: string }) => {
@@ -570,7 +572,7 @@ export class Game extends Scene {
     };
     getWorldPointer = () => {
         const pointer = this.rightJoystick.pointer;
-        const point = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+        let point = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
         return point;
     };
     rotateTween = (tween: any, count: number, active: boolean) => {

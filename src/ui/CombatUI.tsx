@@ -55,7 +55,7 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
     const size = (len: number) => {
         switch (true) {
             case len < 10: return '1.25em'; // 1.15em
-            case len < 20: return '1.1em'; // 1em
+            case len < 20: return '1.15em'; // 1em
             case len < 30: return '1em'; // 0.85em
             default:  return '0.85em'; // 0.6em
         };
@@ -87,7 +87,7 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
             <div class='healthbarPosition' style={{ width: `100%`, 'background': 'linear-gradient(#aa0000, red)' }}></div>
             <div class='healthbarPosition' style={{ width: `${healthPercentage()}%`, 'background': state()?.isStealth ? 'linear-gradient(#000, #444)' : 'linear-gradient(gold, #fdf6d8)', transition: 'width 0.5s ease-out' }}></div>
         </div>
-        <p class='playerName' style={{ position: 'absolute', 'left': '5vw', 'margin': '0 auto', top: top(state().player?.name.length as number), 'color': `${state().isStealth ? '#fdf6d8' : 'gold'}`, 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#444' : '#000'}`, 'z-index': 1, 'max-height': '40px', 'font-size': size(state().player?.name.length as number) }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
+        <p class='playerName' style={{ position: 'absolute', 'left': '4.5vw', 'margin': '0 auto', top: top(state().player?.name.length as number), 'color': `${state().isStealth ? '#fdf6d8' : 'gold'}`, 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#444' : '#000'}`, 'z-index': 1, 'max-height': '40px', 'font-size': size(state().player?.name.length as number) }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
         <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar" onClick={changeDisplay} style={{ 'max-height': '74px' }}/>
         <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} settings={settings} />
         <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} settings={settings} />

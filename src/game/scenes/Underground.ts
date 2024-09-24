@@ -213,21 +213,19 @@ export class Underground extends Scene {
         this.joystickKeys = this.joystick.createCursorKeys();
 
         if (this.settings.desktop === true) {
+            this.input.setDefaultCursor('url(assets/images/cursor.png), pointer');
+            this.rightJoystick?.pointer?.setVisible(false);
             this.joystick?.joystick?.setVisible(false);
             this.rightJoystick?.joystick?.setVisible(false);
             if (this.actionBar) this.actionBar.draw();
         } else {
             this.joystick?.joystick?.setVisible(true);
             this.rightJoystick?.joystick?.setVisible(true);
+            this.rightJoystick?.pointer?.setVisible(true);
             if (this.actionBar) this.actionBar.draw();
         };
         this.logger = new Logger();
         this.logger.add('console', new ConsoleLogger());
-        this.time.delayedCall(2000, () => {
-            this.logger.log('Console: Something concerning but potentially innocuous!');
-            this.logger.log('Warning: Some function did not work, but did not crash the game!');
-            this.logger.log('Error: Some portion if not all of the game has crashed!');
-        }, undefined, this);
         this.smallHud = new SmallHud(this);
         this.combatManager = new CombatManager(this);
         this.minimap = new MiniMap(this);

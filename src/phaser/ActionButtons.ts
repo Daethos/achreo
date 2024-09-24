@@ -808,19 +808,17 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     private setButtonText = (button: ActionButton, pointer: any) => {
         if (this.scene.combat) return;
-        const text = this.scene.add.text(pointer.worldX - 25, pointer.worldY - 50, button.name, {
+        const text = this.scene.add.text(pointer.worldX - (6 * button.name.length), pointer.worldY - 50, `${button.name.charAt(0) + button.name.slice(1).toLowerCase()} (${PLAYER.STAMINA[button.name as keyof typeof PLAYER.STAMINA]})`, {
             color: '#000',
-            fontFamily: 'Cinzel-Regular',
-            fontSize: '20px',
-            strokeThickness: 2
-        });
-        this.scene.tweens.add({
-            targets: text,
-            scale: 1.15,
-            duration: 750,
-            onComplete: () => {
-                text.destroy();
+            fontFamily: 'Cinzel',
+            fontSize: '24px',
+            strokeThickness: 1.5,
+            wordWrap: {
+                useAdvancedWrap: true
             }
-        });
+        }).setDepth(10);
+        this.scene.time.delayedCall(1000, () => {
+            text.destroy();
+        }, undefined, this);
     };
 };

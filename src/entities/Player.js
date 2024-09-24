@@ -1158,10 +1158,8 @@ export default class Player extends Entity {
             const dirY = this.velocity.y > 0 ? PLAYER.DODGE.MULTIPLIER : this.velocity.y < 0 ? -PLAYER.DODGE.MULTIPLIER : 0; //  -(PLAYER.ROLL.DISTANCE / PLAYER.ROLL.DURATION) : (PLAYER.ROLL.DISTANCE / PLAYER.ROLL.DURATION);
             if (moveX) this.setVelocityX(moveY ? dirX * 0.7 : dirX);
             if (moveY) this.setVelocityY(moveX ? dirY * 0.7 : dirY);
-            // if (this.velocity.y > 0) this.setVelocityY(PLAYER.DODGE.MULTIPLIER); // this.setVelocityY(PLAYER.DODGE.DISTANCE / PLAYER.DODGE.DURATION);
-            // if (this.velocity.y < 0) this.setVelocityY(-PLAYER.DODGE.MULTIPLIER); // this.setVelocityY(-PLAYER.DODGE.DISTANCE / PLAYER.DODGE.DURATION);
             currentDistance += Math.abs(PLAYER.DODGE.MULTIPLIER); // Math.abs(PLAYER.DODGE.DISTANCE / PLAYER.DODGE.DURATION);
-            console.log(`%c Current Distance: ${currentDistance}`, 'color:gold');
+            // console.log(`%c Current Distance: ${currentDistance}`, 'color:gold');
             requestAnimationFrame(dodgeLoop);
         };
         let startTime = undefined;
@@ -1186,10 +1184,8 @@ export default class Player extends Entity {
             const dirY = this.velocity.y > 0 ? PLAYER.ROLL.MULTIPLIER : this.velocity.y < 0 ? -PLAYER.ROLL.MULTIPLIER : 0; //  -(PLAYER.ROLL.DISTANCE / PLAYER.ROLL.DURATION) : (PLAYER.ROLL.DISTANCE / PLAYER.ROLL.DURATION);
             if (moveX) this.setVelocityX(moveY ? dirX * 0.7 : dirX);
             if (moveY) this.setVelocityY(moveX ? dirY * 0.7 : dirY);
-            // if (this.velocity.y > 0) this.setVelocityY(PLAYER.ROLL.MULTIPLIER); // this.setVelocityY(PLAYER.ROLL.DISTANCE / PLAYER.ROLL.DURATION);
-            // if (this.velocity.y < 0) this.setVelocityY(-PLAYER.ROLL.MULTIPLIER); // this.setVelocityY(-PLAYER.ROLL.DISTANCE / PLAYER.ROLL.DURATION);
             currentDistance += Math.abs(PLAYER.ROLL.MULTIPLIER); // Math.abs(PLAYER.ROLL.DISTANCE / PLAYER.ROLL.DURATION);
-            console.log(`%c Current Distance: ${currentDistance}`, 'color:gold');
+            // console.log(`%c Current Distance: ${currentDistance}`, 'color:gold');
             requestAnimationFrame(rollLoop);
         };
         let startTime = undefined;

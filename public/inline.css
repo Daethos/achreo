@@ -64,7 +64,7 @@
 .left {position: absolute; left: 1%;}
 .default {color: #000; background: #fdf6d8; border-radius: 0.25rem; padding: 0.25rem 1rem; margin: 0.5rem;}
 .dialog-window {position:absolute;height:70%;width:60%;left:20%;background:#000;top:20%;overflow:scroll;scrollbar-width:none;border:0.1em solid gold;border-radius:0.25em;box-shadow:0 0 0.5em #ffc700;display:inline-flex}
-.playerCombatUi {position: fixed;top: 0;left: 0;width: 50vw;}
+.playerCombatUi {position: fixed;top: 0;left: 0;width: 50%;}
 .combatUiShield {position: absolute;top: 2.5vh;left: 42.25vw; align-items: center;justify-content: center;background-color: #000;max-height: 10vh;border-radius: 50% 50% 50% 50% / 12% 12% 88% 88%;transform: scale(1.2);}
 .combatUiWeapon {position: absolute;top: 2.5vh;left: 37vw;align-items: center;justify-content: center;border-radius: 50%;transform: scale(1.2);max-height: 10vh;}
 .healthbar {display: flex;position: absolute;margin-left: 15%;width: 70%;overflow: hidden;border: 0.1em solid #fdf6d8;border-radius: 0.5em;}
@@ -73,10 +73,10 @@
 }
 .healthbarPosition {position: absolute; bottom: 0; left: 0; top: 0; z-index: -1;}
 .playerInventoryBag {height: 100%;width: 100%;z-index: 1;background-color: #000;display: grid;grid-template-columns: repeat(5, 1fr);}
-.playerName {left: 5vw;font-family: 'Cinzel Regular';font-weight: 600;}
+.playerName {left: 4.5%;font-family: 'Cinzel Regular';font-weight: 600;}
 .playerPortrait {font-family: 'Cinzel Regular';font-weight: 700;text-align: center;z-index: 1;justify-content: center;align-items: center;}
-.playerHealthBar {position: fixed;top: 7.5vh;left: 2vw;width: 20.5vw;height: 5vh;overflow: hidden;border: 0.1em solid purple;}
-#playerHealthbarBorder {position: fixed;top: 4vh;left: 0;height: 12.5vh;width: 25vw;z-index: 0;}
+.playerHealthBar {position: absolute;top: 7.5vh;left: 2vw;width: 20.5vw;height: 5vh;overflow: hidden;border: 0.1em solid purple;}
+#playerHealthbarBorder {position: absolute;top: 4vh;left: 0;height: 12.5vh;width: 25vw;z-index: 0;}
 .combatEffects {display: grid;position: fixed;grid-template-columns: repeat(5, 1fr);width: 100%;transform: scale(1);z-index: 1;}
 .combatSettings {position: fixed;background-color: transparent;}
 .disengage {position: absolute;left: 10vw;top: 5vh;}

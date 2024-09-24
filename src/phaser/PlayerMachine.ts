@@ -1213,6 +1213,7 @@ export default class PlayerMachine {
     };
 
     onReconstituteEnter = () => {
+        if (this.player.moving() === true) return;
         this.player.isCasting = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.RECONSTITUTE);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Reconstitute', PLAYER.DURATIONS.RECONSTITUTE / 2, 'heal');

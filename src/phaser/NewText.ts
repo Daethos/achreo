@@ -49,7 +49,7 @@ export default class NewText {
         };
         let style = {
             fontFamily: 'Cinzel',
-            fontSize: 28,
+            fontSize: 24,
             color: '#fdf6d8',
             backgroundColor: '#000',
             stroke: '#FFFFFF',

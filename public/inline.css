@@ -72,7 +72,7 @@
     transition: width 0.5 ease;
 }
 .healthbarPosition {position: absolute; bottom: 0; left: 0; top: 0; z-index: -1;}
-.playerInventoryBag {height: 100%;width: 100%;z-index: 1;background-color: #000;display: grid;grid-template-columns: repeat(5, 1fr);}
+.playerInventoryBag {height: 100%;width: 100%;z-index: 1;background-color: #000;display: grid;grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(7, 1fr);}
 .playerName {left: 4.5%;font-family: 'Cinzel Regular';font-weight: 600;}
 .playerPortrait {font-family: 'Cinzel Regular';font-weight: 700;text-align: center;z-index: 1;justify-content: center;align-items: center;}
 .playerHealthBar {position: absolute;top: 7.5vh;left: 2vw;width: 20.5vw;height: 5vh;overflow: hidden;border: 0.1em solid purple;}

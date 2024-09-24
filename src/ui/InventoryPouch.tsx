@@ -66,7 +66,7 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
         EventBus.emit('equip-sound');
     }; 
 
-    return <div class='playerInventoryBag'> 
+    return <div class='playerInventoryBag' style={{ 'grid-template-rows': 'repeat(7, 1fr)' }}> 
         <For each={dragAndDropInventory()}>{(item, index) => {
             if (item === undefined || item === null) return;
             return <div onClick={() => doubleTap(item, index)} class='sortable' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5.5%' } : { margin: '2.5%' }}>

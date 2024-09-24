@@ -97,7 +97,7 @@ class Particle {
                     this.collided = true;
                     return;
                 };
-                if (other.bodyB.label === 'enemyCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && other.gameObjectB.health > 0 && player.name === 'player') { // !other.gameObjectB.isDefeated
+                if (other.bodyB.label === 'enemyCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && player.name === 'player') { // !other.gameObjectB.isDefeated, && other.gameObjectB.health > 0 
                     player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
                 };

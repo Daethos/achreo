@@ -20,7 +20,7 @@ export default function ExperienceBar({ ascean, game }: {ascean: Accessor<Ascean
         setExperiencePercentage(newPercentage);
         setExperience(ascean().experience);
         if (display() === 'FULL') {
-            setExperienceDisplay(`${Math.round(experience())} / ${ascean().level * 1000} [${experiencePercentage()}%]`);
+            setExperienceDisplay(`${Math.round(experience())} / ${ascean().level * 1000} (${experiencePercentage()}%)`);
         } else if (display() === 'NONE') {
             setExperienceDisplay(`          `);
         } else if (display() === 'NUMBER') {

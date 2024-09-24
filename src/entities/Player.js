@@ -1053,6 +1053,7 @@ export default class Player extends Entity {
                 this.hook(this.attackedTarget, 1500);
                 return;
             };
+            if (this.attackedTarget?.health <= 0) return;
             if (!this.isAstrifying) {
                 if (this.attackedTarget?.isShimmering) {
                     const shimmer = Phaser.Math.Between(1, 100);

@@ -612,6 +612,7 @@ export class Game extends Scene {
         };
         if (bool === true && this.combat !== bool) {
             this.player.inCombat = true;
+            this.player.healthbar.setVisible(true);
             this.musicCombat.play();
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
             if (this.musicStealth.isPlaying) this.musicStealth.stop();

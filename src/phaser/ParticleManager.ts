@@ -116,13 +116,13 @@ class Particle {
             direction.normalize();
             return direction;
         } else {
-            if (scene.settings.difficulty.aim === true || !player.attacking || special === true) {
+            if (scene.settings.difficulty.aim === true || !player.currentTarget || special === true) {
                 const target = scene.getWorldPointer();
                 const direction = target.subtract(player.position);
                 direction.normalize();
                 return direction;
             } else {
-                const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y);
+                const target = new Phaser.Math.Vector2(player.currentTarget.body.position.x, player.currentTarget.body.position.y);
                 const direction = target.subtract(player.position);
                 direction.normalize();
                 return direction;

@@ -159,7 +159,7 @@ export default class Enemy extends Entity {
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
-                if (!this.scene.settings.difficulty.enemyCombatInteract && this.scene.combat && !this.inCombat) return;
+                if ((!this.scene.settings.difficulty.enemyCombatInteract && this.scene.combat && !this.inCombat) || this.isDeleting) return;
                 this.clearTint();
                 this.setTint(TARGET_COLOR);
                 if (this.enemyID !== this.scene.state.enemyID) this.scene.setupEnemy(this);
@@ -367,6 +367,7 @@ export default class Enemy extends Entity {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [enemySensor],
             callback: other => {
+                if (this.isDeleting) return;
                 if (other.gameObjectB && other.gameObjectB.name === 'player') {
                     this.isValidRushEnemy(other.gameObjectB);
                     this.touching.push(other.gameObjectB);
@@ -395,6 +396,7 @@ export default class Enemy extends Entity {
         this.scene.matterCollision.addOnCollideEnd({
             objectA: [enemySensor],
             callback: other => {
+                if (this.isDeleting) return;
                 if (other.gameObjectB && other.gameObjectB.name === 'player') {
                     this.touching = this.touching.filter((target) => target !== other.gameObjectB);
                     if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
@@ -982,7 +984,7 @@ export default class Enemy extends Entity {
         if (!this.isAttacking) this.evaluateCombatDistance(); 
     };
     onAttackExit = () => {
-        this.isAttacking = false;
+        // this.isAttacking = false;
         if (this.scene.state.computerAction !== '') this.scene.combatManager.combatMachine.input('computerAction', '', this.enemyID);
         this.setTint(ENEMY_COLOR);
     };
@@ -1015,7 +1017,7 @@ export default class Enemy extends Entity {
         if (!this.isThrusting) this.evaluateCombatDistance();
     };
     onThrustExit = () => {
-        this.isThrusting = false;
+        // this.isThrusting = false;
         if (this.scene.state.computerAction !== '') this.scene.combatManager.combatMachine.input('computerAction', '', this.enemyID);
         this.setTint(ENEMY_COLOR);
     };
@@ -1055,7 +1057,7 @@ export default class Enemy extends Entity {
         if (!this.isPosturing) this.evaluateCombatDistance();
     };
     onPostureExit = () => {
-        this.isPosturing = false;
+        // this.isPosturing = false;
         if (this.scene.state.computerAction !== '') this.scene.combatManager.combatMachine.input('computerAction', '', this.enemyID);
         this.setTint(ENEMY_COLOR);
     };

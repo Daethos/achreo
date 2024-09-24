@@ -632,11 +632,13 @@ export class Underground extends Scene {
         };
         if (bool === true && this.combat === false) {
             this.player.inCombat = true;
+            this.player.healthbar.setVisible(true);
             this.musicCombat.play();
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
             if (this.musicStealth.isPlaying) this.musicStealth.stop();
             this.startCombatTimer();
         } else if (bool === false) {
+            this.clearAggression();
             this.musicCombat.stop();
             if (this.player.isStealthing) {
                 if (this.musicStealth.isPaused) {

@@ -9,13 +9,15 @@ export const PLAYER = {
         HEIGHT: 32,
         WIDTH: 16,
     },
-    DODGE: {
-        DISTANCE: 2800, // 126 || 2304
+    DODGE: { // 8*
+        DISTANCE: 240, // 2800, // 126 || 2304
         DURATION: 350, // 18 || 288
+        MULTIPLIER: 11,
     },
-    ROLL: {
-        DISTANCE: 1920, // 140
-        DURATION: 320 // 20
+    ROLL: { // 6*
+        DISTANCE: 160, // 1920, // 140
+        DURATION: 320, // 20
+        MULTIPLIER: 8,
     },
     SPEED: {
         INITIAL: 1.5, // 1.75

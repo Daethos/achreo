@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { EventBus } from '../game/EventBus';
 import { PLAYER, STAMINA, staminaCheck } from '../utility/player';
+import { Game } from '../game/scenes/Game';
+import { Underground } from '../game/scenes/Underground';
 const ACTIONS = [
     { ATTACK: 0x800080 }, // 0xFA0000 
     { POSTURE: 0x800080 }, // 0x005100 
@@ -48,7 +50,7 @@ export type ActionButton = {
     on?: (event: string, fn: () => void, context?: any) => void;
 };
 export default class ActionButtons extends Phaser.GameObjects.Container {
-    public scene: any;
+    public scene: Game | Underground;
     public actionButtons: ActionButton[];
     public specialButtons: ActionButton[];
     private buttonWidth: number;
@@ -56,6 +58,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     private glowFilter: any;
     private borderTimer: any;
     private graphicTimer: any;
+
     constructor(scene: any) {
         super(scene);
         this.scene = scene;
@@ -169,13 +172,13 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             button.border.lineStyle(SETTINGS.BORDER_LINE, scene.settings.positions.actionButtons.border, scene.settings.positions.actionButtons.opacity);
             button.border.strokeCircle(buttonX, buttonY, button.width + SETTINGS.BORDER_OFFSET as number);
             this.scaleButton(button, scene.settings.positions.actionButtons.width, scene.settings.positions.actionButtons.opacity, scene.settings.positions.actionButtons.border);
-            button.graphic.setInteractive(new Phaser.Geom.Circle(
-                buttonX, buttonY, 
-                button.width), 
-                Phaser.Geom.Circle.Contains)
-                    .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
-                        this.pressButton(button, scene);
-                    }); 
+            button.graphic.setInteractive(new Phaser.Geom.Circle(buttonX, buttonY, button.width), Phaser.Geom.Circle.Contains)
+                .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
+                    this.pressButton(button, scene);
+                })
+                .on('pointerover', (pointer: any) => {
+                    this.setButtonText(button, pointer);
+                });
 
             button.graphic.setScrollFactor(0, 0);
             button.border.setScrollFactor(0, 0);
@@ -210,13 +213,13 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             button.border.lineStyle(SETTINGS.BORDER_LINE, scene.settings.positions.specialButtons.border, scene.settings.positions.specialButtons.opacity);
             button.border.strokeCircle(buttonX, buttonY, button.width + SETTINGS.BORDER_OFFSET as number);
             this.scaleButton(button, 0.75 * scene.settings.positions.specialButtons.width, scene.settings.positions.specialButtons.opacity, scene.settings.positions.specialButtons.border);
-            button.graphic.setInteractive(new Phaser.Geom.Circle(
-                buttonX, buttonY, 
-                button.width), 
-                Phaser.Geom.Circle.Contains)
-                    .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
-                        this.pressButton(button, scene);
-                    }); 
+            button.graphic.setInteractive(new Phaser.Geom.Circle(buttonX, buttonY, button.width), Phaser.Geom.Circle.Contains)
+                .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
+                    this.pressButton(button, scene);
+                })
+                .on('pointerover', (pointer: any) => {
+                    this.setButtonText(button, pointer);
+                });
             button.graphic.setScrollFactor(0, 0);
             button.border.setScrollFactor(0, 0);
             button.graphic.setDepth(3);
@@ -796,7 +799,28 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         button.graphic.setInteractive(new Phaser.Geom.Circle(button.x, button.y, button.width), Phaser.Geom.Circle.Contains)
             .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
                 this.pressButton(button, this.scene);
+            })
+            .on('pointerover', (pointer: any) => {
+                this.setButtonText(button, pointer);
             });
         return button;
+    };
+
+    private setButtonText = (button: ActionButton, pointer: any) => {
+        if (this.scene.combat) return;
+        const text = this.scene.add.text(pointer.worldX - 25, pointer.worldY - 50, button.name, {
+            color: '#000',
+            fontFamily: 'Cinzel-Regular',
+            fontSize: '20px',
+            strokeThickness: 2
+        });
+        this.scene.tweens.add({
+            targets: text,
+            scale: 1.15,
+            duration: 750,
+            onComplete: () => {
+                text.destroy();
+            }
+        });
     };
 };

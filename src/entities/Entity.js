@@ -459,6 +459,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         });
     };
 
+    bowDamageType = () => {
+        return this.currentDamageType === 'pierce' || this.currentDamageType === 'blunt' ? 'arrow' : this.currentDamageType;
+    };
+
     checkActionSuccess = (entity, target) => {
         if (entity === 'player' && !this.isStorming) {
             if (this.flipX) {
@@ -678,12 +682,18 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         } else if (this.isThrusting) { 
             if (this.frameCount === FRAME_COUNT.THRUST_LIVE) {
                 if (entity === 'player' && this.isRanged) { // && this.inCombat
-                    if (this.hasMagic) this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.currentDamageType);
-                    if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('thrust', this, 'arrow');
+                    if (this.hasMagic) {
+                        this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.currentDamageType);
+                    } else if (this.hasBow) {
+                        this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.bowDamageType());
+                    };
                 };
                 if (entity === 'enemy' && this.attacking && this.inCombat && this.isRanged) {
-                    if (this.hasMagic) this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.currentDamageType);
-                    if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('thrust', this, 'arrow');
+                    if (this.hasMagic) {
+                        this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.currentDamageType);
+                    } else if (this.hasBow) {
+                        this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.bowDamageType());
+                    };
                 };
             }; 
             if ((entity === 'player' && this.hasBow) || (entity === 'enemy' && this.hasBow)) {
@@ -711,8 +721,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         } else if (this.isRolling) {
             if (this.frameCount === FRAME_COUNT.ROLL_LIVE) {
                 if (entity === 'enemy' && this.attacking && this.inCombat && this.isRanged) {
-                    if (this.hasMagic) this.particleEffect = this.scene.particleManager.addEffect('roll', this, this.currentDamageType);
-                    if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('roll', this, 'arrow');
+                    if (this.hasMagic) {
+                        this.particleEffect = this.scene.particleManager.addEffect('roll', this, this.currentDamageType);
+                    } else if (this.hasBow) {
+                        this.particleEffect = this.scene.particleManager.addEffect('roll', this, this.bowDamageType());
+                    };
                 };
                 if (entity === 'enemy' && this.frameCount === 0) {
                     this.setTint(0x00FF00);
@@ -725,12 +738,18 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         } else if (this.isAttacking) {
             if (this.frameCount === FRAME_COUNT.ATTACK_LIVE) {
                 if (entity === 'player' && this.isRanged) {
-                    if (this.hasMagic) this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.currentDamageType);
-                    if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('attack', this, 'arrow');
+                    if (this.hasMagic) {
+                        this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.currentDamageType);
+                    } else if (this.hasBow) {
+                        this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.bowDamageType());
+                    };
                 };
                 if (entity === 'enemy' && this.attacking && this.inCombat && this.isRanged) {
-                    if (this.hasMagic) this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.currentDamageType);
-                    if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('attack', this, 'arrow');
+                    if (this.hasMagic) {
+                        this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.currentDamageType);
+                    } else if (this.hasBow) {
+                        this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.bowDamageType());
+                    };
                 };
             };
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
@@ -988,12 +1007,18 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         } else if (this.isPosturing) {
             if (this.frameCount === FRAME_COUNT.POSTURE_LIVE) {
                 if (entity === 'player' && this.isRanged) { // && this.inCombat
-                    if (this.hasMagic) this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.currentDamageType);
-                    if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('posture', this, 'arrow');
+                    if (this.hasMagic) {
+                        this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.currentDamageType);
+                    } else if (this.hasBow) {
+                        this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.bowDamageType());
+                    };
                 };
                 if (entity === 'enemy' && this.attacking && this.inCombat && this.isRanged) {
-                    if (this.hasMagic) this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.currentDamageType);
-                    if (this.hasBow) this.particleEffect = this.scene.particleManager.addEffect('posture', this, 'arrow');
+                    if (this.hasMagic) {
+                        this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.currentDamageType);
+                    } else if (this.hasBow) {
+                        this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.bowDamageType());
+                    };
                 };
             }; 
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);

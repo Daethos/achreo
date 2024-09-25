@@ -435,14 +435,14 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     hitBoxCheck = (enemy) => {
-        // if (!enemy || enemy.isDefeated === true) return;
+        if (!enemy || enemy.health <= 0) return; // enemy.isDefeated === true
         const xOffset = this.flipX ? 16 : -16;
-        let pointer = this.scene.add.graphics()
-            .lineStyle(1, 0xFF0000, 1)
-            .strokeRect(enemy.x + xOffset, enemy.y, 1, 1);
+        // let pointer = this.scene.add.graphics()
+        //     .lineStyle(1, 0xFF0000, 1)
+        //     .strokeRect(enemy.x + xOffset, enemy.y, 1, 1);
         for (let i = -32; i < 32; i++) {
-            pointer.clear();
-            pointer.strokeRect(enemy.x + xOffset, enemy.y + i, 1, 1);
+            // pointer.clear();
+            // pointer.strokeRect(enemy.x + xOffset, enemy.y + i, 1, 1);
             if (this.weaponHitbox.getBounds().contains(enemy.x + xOffset, enemy.y + i)) {
                 this.attackedTarget = enemy;
                 this.actionSuccess = true;
@@ -495,7 +495,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             // if (this.isThrusting || this.isParrying) 
             {
                 this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
-                this.weaponHitbox.y = this.y;
+                this.weaponHitbox.y = this.y - 8;
             };
             if (target === undefined) {
                 if (this.targets.length === 0) {

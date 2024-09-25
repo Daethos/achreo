@@ -180,7 +180,7 @@ export class Game extends Scene {
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 150, 0.06, 0.06); // 0xFFD700 || 0xFDF6D8 || 0xDAA520 || 0.0675
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-        this.musicBackground = this.sound.add('background', { volume: this?.settings?.volume / 2 ?? 0, loop: true });
+        this.musicBackground = this.sound.add(Math.random() > 0.5 ? 'background' : 'background2', { volume: this?.settings?.volume / 2 || 0.1, loop: true });
         this.musicCombat = this.sound.add('combat', { volume: this?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.settings?.volume, loop: true });
         if (this.settings?.music === true) this.musicBackground.play();

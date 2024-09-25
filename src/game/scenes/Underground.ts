@@ -187,7 +187,7 @@ export class Underground extends Scene {
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 100, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     // =========================== Music =========================== \\
-        this.musicBackground = this.sound.add('isolation', { volume: this?.settings?.volume ?? 0, loop: true });
+        this.musicBackground = this.sound.add('isolation', { volume: this?.settings?.volume || 0.1, loop: true });
         if (this.settings?.music === true) this.musicBackground.play();
         this.musicCombat = this.sound.add('industrial', { volume: this?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.settings?.volume, loop: true });

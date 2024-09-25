@@ -1,6 +1,7 @@
 export const audio: { key: string, value: string }[] = [
     {key: 'cymbal', value: '../assets/sounds/cymbal-long-2.wav'},
     {key: 'background', value: '../assets/sounds/background.mp3'},
+    {key: 'background2', value: '../assets/sounds/background2.wav'},
     {key: 'combat', value: '../assets/sounds/combat.mp3'},
     {key: 'death', value: '../assets/sounds/death-sound.mp3'},
     {key: 'blink', value: '../assets/sounds/blink.wav'},
@@ -51,6 +52,8 @@ export const audio: { key: string, value: string }[] = [
     {key: 'walk-crunch', value: '../assets/sounds/walk-crunch.mp3'},
     {key: 'walk-metallic', value: '../assets/sounds/walk-metallic.mp3'},
     {key: 'walk-swim', value: '../assets/sounds/walk-swim.mp3'},
+    {key: 'industrial', value: '../assets/sounds/industrial.wav'},
+    {key: 'isolation', value: '../assets/sounds/isolation.wav'},
 ];
 
 export const image: {key: string, value:string}[] = [

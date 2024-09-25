@@ -65,6 +65,7 @@ export default class Fov {
         };
         if (this.scene.enemies.length > 0) this.updateEnemies();
         if (this.scene.npcs.length > 0) this.updateNpcs();
+        if (this.scene.player.highlight) this.updateHighlight();
     };
 
     updateMRPAS(pos: Phaser.Math.Vector2) {
@@ -105,6 +106,17 @@ export default class Fov {
                 };
             }
         );
+    };
+
+    updateHighlight = () => {
+        const coords = new Phaser.Math.Vector2({
+            x: this.map.worldToTileX(this.scene.player.highlight.x) as number,
+            y: this.map.worldToTileY(this.scene.player.highlight.y) as number
+        });
+        const distance = Math.floor(new Phaser.Math.Vector2(coords.x, coords.y).distance(new Phaser.Math.Vector2(this.lastPos.x, this.lastPos.y)));
+        const rolloffIdx = distance <= this.radius ? this.radius - distance : 0;
+        const alpha = rolloffIdx < lightDropoff.length ? lightDropoff[rolloffIdx] : 1;
+        this.scene.player.highlight.setAlpha(alpha);
     };
 
     updateEnemies = () => {

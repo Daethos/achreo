@@ -3,6 +3,7 @@ import { EventBus } from '../game/EventBus';
 import { PLAYER, STAMINA, staminaCheck } from '../utility/player';
 import { Game } from '../game/scenes/Game';
 import { Underground } from '../game/scenes/Underground';
+import { vibrate } from './ScreenShake';
 const ACTIONS = [
     { ATTACK: 0x800080 }, // 0xFA0000 
     { POSTURE: 0x800080 }, // 0x005100 
@@ -695,6 +696,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         } else if (check.success === true && scene.player.playerMachine.positiveMachine.isState(input)) {
             scene.player.playerMachine.positiveMachine.setState(`${input}`);
         };
+        if (check.success) vibrate();
     };
 
     public setCurrent = (current: number, limit: number, name: string) => {

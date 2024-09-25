@@ -2,6 +2,7 @@ import Entity from "./Entity";
 import StateMachine, { States } from "../phaser/StateMachine";
 import { v4 as uuidv4 } from 'uuid';
 import { EventBus } from "../game/EventBus";
+import { vibrate } from "../phaser/ScreenShake";
 let idCount = 0;
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const colliderWidth = 20; 
@@ -63,6 +64,8 @@ export default class NPC extends Entity {
         ), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
                 if (this.scene.combat === true) return;
+                EventBus.emit('purchase-sound');
+                vibrate();
                 this.clearTint();
                 this.setTint(0x00FF00); 
                 this.scene.setupNPC(this);

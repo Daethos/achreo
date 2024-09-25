@@ -9,7 +9,7 @@ import CastingBar from "../phaser/CastingBar";
 import AoE from "../phaser/AoE";
 import Bubble from "../phaser/Bubble";
 import { DISTANCE, DURATION, ENEMY_SPECIAL, GRIP_SCALE, INSTINCTS, RANGE } from "../utility/enemy";
-import { screenShake } from "../phaser/ScreenShake";
+import { screenShake, vibrate } from "../phaser/ScreenShake";
 
 const ENEMY_COLOR = 0xFF0000;
 const TARGET_COLOR = 0x00FF00;
@@ -160,6 +160,14 @@ export default class Enemy extends Entity {
         ), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
                 if ((!this.scene.settings.difficulty.enemyCombatInteract && this.scene.combat && !this.inCombat) || this.isDeleting) return;
+                if (this.ascean?.level > this.scene.state.player.level) {
+                    this.scene.sound.play('religious', { volume: this.scene.settings.volume });
+                } else if (this.ascean?.level === this.scene.state.player.level) {
+                    this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });                    
+                } else {
+                    this.scene.sound.play('consume', { volume: this.scene.settings.volume });
+                };
+                vibrate();
                 this.clearTint();
                 this.setTint(TARGET_COLOR);
                 if (this.enemyID !== this.scene.state.enemyID) this.scene.setupEnemy(this);
@@ -194,8 +202,6 @@ export default class Enemy extends Entity {
         this.spriteWeapon = undefined;
         this.spriteShield.destroy();
         this.spriteShield = undefined;
-        this.glowFilter.destroy();
-        this.glowFilter = undefined;
         this.body.destroy();
     };
 
@@ -2354,7 +2360,7 @@ export default class Enemy extends Entity {
         this.clearAnimations();
         this.clearTint();
         this.isHurt = true;
-        this.scene.time.delayedCall(128, () => {
+        this.scene.time.delayedCall(256, () => {
             this.isHurt = false;
         }, undefined, this);
     };
@@ -2917,7 +2923,7 @@ export default class Enemy extends Entity {
         if (this.particleEffect) this.currentParticleCheck();
         this.getDirection();
         this.currentTargetCheck();
-        if (this.isSuffering() === true || this.isCasting === true) return;
+        if (this.isSuffering() === true || this.isCasting === true || this.isHurt === true) return;
         if (this.isUnderRangedAttack()) {
             this.stateMachine.setState(States.EVADE);
             return;

@@ -101,8 +101,10 @@ export default class Player extends Entity {
         });
         this.setExistingBody(compoundBody);                                    
         this.sensor = playerSensor;
-        this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 20, 0xfdf6d8, 0).setVisible(true);
+        this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 24, 0xfdf6d8, 0)
+        // .setVisible(true);
         this.scene.add.existing(this.weaponHitbox);
+
         this.fearCount = 0;
         this.knocking = false;
         this.castingSuccess = false;
@@ -1055,36 +1057,26 @@ export default class Player extends Entity {
             };
             if (this.attackedTarget?.health <= 0) return;
             if (!this.isAstrifying) {
-                if (this.attackedTarget?.isShimmering) {
-                    const shimmer = Phaser.Math.Between(1, 100);
-                    if (shimmer > 50) {
-                        this.attackedTarget?.shimmerHit();
-                        return;
-                    };
-                };
-
-                if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) {
-                        this.attackedTarget?.shieldHit();
-                    };
-                    if (this.attackedTarget?.isWarding) {
-                        this.attackedTarget?.wardHit();
-                    };
+                if (this?.attackedTarget?.isShimmering && Phaser.Math.Between(1, 100) > 50) {
+                    this?.attackedTarget?.shimmerHit();
                     return;
                 };
-
+                if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
+                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit();
+                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit();
+                    return;
+                };
                 if (this.attackedTarget.isMenacing) this.attackedTarget.menace(); 
                 if (this.attackedTarget.isMultifaring) this.attackedTarget.multifarious(); 
                 if (this.attackedTarget.isMystifying) this.attackedTarget.mystify(); 
             };
-            const match = this.enemyIdMatch();
-            if (match === true) {
+            if (this.enemyIdMatch()) {
                 this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: action }});
             } else {
                 this.scene.combatManager.combatMachine.action({ type: 'Player', data: { 
                     playerAction: { 
-                        action: action, 
-                        thrust: this.scene.state.parryGuess 
+                        action, 
+                        parry: this.scene.state.parryGuess 
                     },  
                     enemyID: this.attackedTarget.enemyID, 
                     ascean: this.attackedTarget.ascean, 
@@ -1094,7 +1086,7 @@ export default class Player extends Entity {
                     health: this.attackedTarget.health, 
                     actionData: { 
                         action: this.attackedTarget.currentAction, 
-                        thrust: this.attackedTarget.parryAction 
+                        parry: this.attackedTarget.parryAction 
                     },
                 }});
             };
@@ -1107,8 +1099,8 @@ export default class Player extends Entity {
                     return;
                 };
                 if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shield();
-                    if (this.attackedTarget?.isWarding) this.attackedTarget?.ward();
+                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit();
+                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit();
                     return;    
                 };
                 if (this.attackedTarget?.isMenacing) this.attackedTarget?.menace();
@@ -1119,7 +1111,7 @@ export default class Player extends Entity {
                 this.scene.combatManager.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: action } });
             } else {
                 this.scene.combatManager.combatMachine.action({ type: 'Player', data: { 
-                    playerAction: { action: action, parry: this.scene.state.parryGuess }, 
+                    playerAction: { action, parry: this.scene.state.parryGuess }, 
                     enemyID: this.attackedTarget.enemyID, 
                     ascean: this.attackedTarget.ascean, 
                     damageType: this.attackedTarget.currentDamageType, 
@@ -1129,8 +1121,8 @@ export default class Player extends Entity {
                     actionData: { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction },
                 }});
             };
-            this.knockback(this.attackedTarget.enemyID);
         };
+        this.knockback(this.attackedTarget.enemyID);
         if (this.isStealthing) {
             this.scene.combatManager.paralyze(this.attackedTarget.enemyID);
             this.isStealthing = false;

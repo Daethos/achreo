@@ -85,6 +85,7 @@ export class Underground extends Scene {
     west: any;
     markers: any;
     logger: Logger;
+    glowFilter: any;
 
     constructor () {
         super('Underground');
@@ -186,9 +187,9 @@ export class Underground extends Scene {
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 100, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     // =========================== Music =========================== \\
-        this.musicBackground = this.sound.add('background', { volume: this?.settings?.volume ?? 0 / 2, loop: true });
+        this.musicBackground = this.sound.add('isolation', { volume: this?.settings?.volume ?? 0, loop: true });
         if (this.settings?.music === true) this.musicBackground.play();
-        this.musicCombat = this.sound.add('combat', { volume: this?.settings?.volume, loop: true });
+        this.musicCombat = this.sound.add('industrial', { volume: this?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.settings?.volume, loop: true });
         this.postFxEvent();
     // =========================== Joystick =========================== \\
@@ -230,6 +231,7 @@ export class Underground extends Scene {
         this.combatManager = new CombatManager(this);
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
+        this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
         EventBus.emit('current-scene-ready', this);
     };
 

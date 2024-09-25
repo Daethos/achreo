@@ -1226,7 +1226,7 @@ export default class PlayerMachine {
             callbackScope: this,
             repeat: 5,
         });
-        this.player.setTimeEvent('reconstituteCooldown', PLAYER.COOLDOWNS.LONG);
+        this.player.setTimeEvent('reconstituteCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.LONG : PLAYER.COOLDOWNS.SHORT);
         this.scene.time.addEvent({
             delay: 5000,
             callback: () => this.player.isCasting = false,

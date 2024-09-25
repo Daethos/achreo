@@ -361,7 +361,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             } else if (affectsHealth === true) {
                 adjustTime(1000, res.combatEngaged, res.newPlayerHealth);
             };
-            screenShake(instance.game.scene.scenes[3], 64); // [250, 150, 250]
+            screenShake(instance.game.scene.scenes[3]); // [250, 150, 250]
         } catch (err: any) {
             console.warn(err, 'Error Initiating Combat');
         };

@@ -58,7 +58,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this._position = new Phaser.Math.Vector2(this.x, this.y);
         this.scene.add.existing(this);
         this.setVisible(false);
-        this.glowFilter = this.scene.plugins.get('rexGlowFilterPipeline');
         this.isAttacking = false;
         this.isParrying = false;
         this.isDodging = false;
@@ -239,7 +238,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     setGlow = (object, glow, type = undefined) => {
         this.glowColor = this.setColor(this.ascean?.mastery);
-        this.glowFilter.remove(object);
+        this.scene.glowFilter?.remove(object);
         if (!glow) {
             switch (type) {
                 case 'shield':
@@ -308,14 +307,14 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     updateGlow = (object) => {
-        this.glowFilter.remove(object);
+        this.scene.glowFilter?.remove(object);
         const outerStrength = 2 + Math.sin(this.scene.time.now * 0.005) * 2;
         const innerStrength = 2 + Math.cos(this.scene.time.now * 0.005) * 2;
-        this.glowFilter.add(object, {
+        this.scene.glowFilter?.add(object, {
             outerStrength,
             innerStrength,
             glowColor: this.glowColor,
-            intensity: GLOW_INTENSITY,
+            quality: GLOW_INTENSITY,
             knockout: true
         });
     }; 
@@ -401,7 +400,12 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.isRanged = weapon?.attackType === 'Magic' || weapon?.type === 'Bow' || weapon?.type === 'Greatbow';
         if (this.name === 'player') {
             this.swingTimer = SWING_TIME[weapon?.grip] || 1500;
-            this.weaponHitbox.width = weapon?.grip === 'One Hand' ? 40 : 45;
+            if (weapon?.grip === 'One Hand') {
+                this.weaponHitbox.setRadius(24);
+            } else {
+                this.weaponHitbox.setRadius(28);
+            };
+            // this.weaponHitbox.width = weapon?.grip === 'One Hand' ? 40 : 45;
         } else {
             this.swingTimer = ENEMY_SWING_TIME[weapon?.grip] || 1000;
         };
@@ -431,14 +435,14 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     hitBoxCheck = (enemy) => {
-        if (!enemy || enemy.isDefeated === true) return;
+        // if (!enemy || enemy.isDefeated === true) return;
         const xOffset = this.flipX ? 16 : -16;
-        // let pointer = this.scene.add.graphics()
-        //     .lineStyle(1, 0xFF0000, 1)
-        //     .strokeRect(enemy.x + xOffset, enemy.y, 1, 1);
+        let pointer = this.scene.add.graphics()
+            .lineStyle(1, 0xFF0000, 1)
+            .strokeRect(enemy.x + xOffset, enemy.y, 1, 1);
         for (let i = -32; i < 32; i++) {
-            // pointer.clear();
-            // pointer.strokeRect(enemy.x + xOffset, enemy.y + i, 1, 1);
+            pointer.clear();
+            pointer.strokeRect(enemy.x + xOffset, enemy.y + i, 1, 1);
             if (this.weaponHitbox.getBounds().contains(enemy.x + xOffset, enemy.y + i)) {
                 this.attackedTarget = enemy;
                 this.actionSuccess = true;
@@ -470,8 +474,29 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             } else {
                 this.weaponHitbox.setAngle(0);
             };
-            this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
-            this.weaponHitbox.y = this.y - 8;
+            // if (this.isAttacking || this.isPosturing) {
+            //     this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
+            //     this.weaponHitbox.y = this.y - 16;
+            // } else 
+            if (this.isRolling) {
+                this.weaponHitbox.x = this.x;
+                this.weaponHitbox.y = this.y + 8;
+                if (this.velocity.x > 0) {
+                    this.weaponHitbox.x += 16;
+                } else if (this.velocity.x < 0) {
+                    this.weaponHitbox.x -= 16;
+                };
+                if (this.velocity.y > 0) {
+                    this.weaponHitbox.y += 16;
+                } else if (this.velocity.y < 0) {
+                    this.weaponHitbox.y -= 16;
+                };
+            } else 
+            // if (this.isThrusting || this.isParrying) 
+            {
+                this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
+                this.weaponHitbox.y = this.y;
+            };
             if (target === undefined) {
                 if (this.targets.length === 0) {
                     if (this.touching.length === 0) {

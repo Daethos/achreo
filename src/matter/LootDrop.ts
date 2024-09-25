@@ -8,6 +8,8 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
     _id: string;
     drop: Equipment;
     scene: any;
+    tween: Phaser.Tweens.Tween;
+    // glowFilter: any;
 
     constructor(data: any) {
         let { scene, enemyID, drop } = data;
@@ -15,12 +17,27 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
         const enemy = scene.enemies?.find((e: any) => e.enemyID === enemyID);
         super (scene.matter.world, enemy.body.position.x - 16, enemy.body.position.y + 16, texture);
         this.scene = scene;
+        this.scene.plugins.get('rexGlowFilterPipeline').add(this, {
+            outerStrength: 2,
+            glowColor: this.scene.player.setColor(this.scene.player.ascean?.mastery),
+            quality: 0.25,
+            knockout: false,
+        });
         this.scene.add.existing(this);
         this.setScale(0.5);
         this._id = drop._id;
         this.drop = drop;
         this.setupCollider();
         this.setupListener();
+        this.tween = scene.tweens.add({
+            targets: this,
+            duration: 1000,
+            scale: 1,
+            y: this.y - 25,
+            repeat: -1,
+            yoyo: true
+        });
+
         this.setInteractive(new Phaser.Geom.Rectangle(
             0, 0,
             32, 32
@@ -32,6 +49,7 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
                 const interactingLoot = { loot: this._id, interacting: true };
                 EventBus.emit('interacting-loot', interactingLoot);
                 EventBus.emit('blend-game', { showLoot: true });
+                EventBus.emit('action-button-sound');
             })
             .on('pointerout', () => {
                 this.clearTint();
@@ -68,6 +86,9 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
     setupListener = () => EventBus.on('destroy-lootdrop', this.destroyLootDrop);
     destroyLootDrop = (e: string) => {
         if (e === this._id) {
+            EventBus.emit('equip-sound');
+            this.scene.plugins.get('rexGlowFilterPipeline').remove(this);
+            this.tween.stop();
             this.cleanUp();
             this.destroy();
         };

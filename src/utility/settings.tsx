@@ -568,9 +568,16 @@ const SpecialSettings = () => {
             <br />
             <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            {svg('SHIELD')} rein
+            </p>
+            A warped tendril wrapped round you that recovers grace from melee and ranged attacks. Instant. Moderate Cooldown. 0 Grace.
+            </div>
+            <br />
+            <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('AOE')} Renewal
             </p>
-            A hush that proliferates, healing you with grace every second. Instant. Moderate Cooldown. Moderate Grace.
+            A hush that proliferates, healing you every second. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div>
@@ -654,7 +661,7 @@ const SpecialSettings = () => {
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
             {svg('WEAPONS')} Storm
             </p>
-            A hush that proliferates, damaging enemies caught in your contortions with your weapon / 2 every second for several seconds. Instant. Moderate Cooldown. Moderate Grace.
+            A hush that proliferates, damaging enemies caught in your contortions with your weapon every second. Instant. Moderate Cooldown. Moderate Grace.
             </div>
             <br />
             <div> 

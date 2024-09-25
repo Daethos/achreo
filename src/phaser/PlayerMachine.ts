@@ -598,7 +598,7 @@ export default class PlayerMachine {
     onFearingExit = () => {
         if (this.player.castingSuccess === true) {
             this.scene.combatManager.fear(this.player.spellTarget);
-            this.player.setTimeEvent('fearCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+            this.player.setTimeEvent('fearCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.MODERATE : PLAYER.COOLDOWNS.MODERATE / 3);  
             this.player.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.FEAR);    
@@ -626,7 +626,7 @@ export default class PlayerMachine {
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);  
         this.player.aoe = new AoE(this.scene, 'fyerus', 6, false, undefined, true);    
         this.scene.combatManager.useGrace(PLAYER.STAMINA.FYERUS);    
-        this.player.setTimeEvent('fyerusCooldown', 2000);
+        this.player.setTimeEvent('fyerusCooldown', PLAYER.COOLDOWNS.SHORT);
         this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You unearth the fires and water from the land of hush and tendril.`
@@ -709,7 +709,6 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.scene.sound.play('fire', { volume: this.scene.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ILIRECH);    
-            screenShake(this.scene, 90);
         };
         this.player.isCasting = false;
         this.player.castbar.reset();
@@ -762,7 +761,7 @@ export default class PlayerMachine {
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You unearth the netting of the golden hunt.`
             });
-            this.player.setTimeEvent('kynisosCooldown', 4000);
+            this.player.setTimeEvent('kynisosCooldown', PLAYER.COOLDOWNS.SHORT);
             this.player.kynisosSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.KYNISOS);    
@@ -791,7 +790,7 @@ export default class PlayerMachine {
             callbackScope: this,
             repeat: 3,
         });
-        this.player.setTimeEvent('kyrnaicismCooldown', PLAYER.COOLDOWNS.LONG);
+        this.player.setTimeEvent('kyrnaicismCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.addEvent({
             delay: 3000,
             callback: () => {
@@ -957,7 +956,6 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.MAIERETH);    
-            screenShake(this.scene, 90);
         };
         this.player.isCasting = false;
         this.player.spellTarget = '';
@@ -2229,7 +2227,7 @@ export default class PlayerMachine {
         this.scene.sound.play('shield', { volume: this.scene.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Endurance', 750, 'heal');
         this.player.isEnduring = true;
-        this.player.flickerCarenic(PLAYER.DURATIONS.ASTRICATION); 
+        this.player.flickerCarenic(PLAYER.DURATIONS.ENDURANCE); 
         this.scene.time.addEvent({
             delay: 1000,
             callback: () => this.scene.combatManager.useStamina(-20),
@@ -2270,7 +2268,7 @@ export default class PlayerMachine {
         this.scene.combatManager.combatMachine.input('isSeering', true);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Seer', 750, 'damage');
         this.player.isSeering = true;
-        this.player.setTimeEvent('seerCooldown', PLAYER.COOLDOWNS.LONG);
+        this.player.setTimeEvent('seerCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.player.flickerCarenic(1500); 
         this.scene.time.delayedCall(PLAYER.DURATIONS.SEER, () => {
             this.player.isSeering = false;

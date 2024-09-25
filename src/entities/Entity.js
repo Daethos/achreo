@@ -474,28 +474,22 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             } else {
                 this.weaponHitbox.setAngle(0);
             };
-            // if (this.isAttacking || this.isPosturing) {
-            //     this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
-            //     this.weaponHitbox.y = this.y - 16;
-            // } else 
             if (this.isRolling) {
                 this.weaponHitbox.x = this.x;
                 this.weaponHitbox.y = this.y + 8;
-                if (this.velocity.x > 0) {
-                    this.weaponHitbox.x += 16;
-                } else if (this.velocity.x < 0) {
-                    this.weaponHitbox.x -= 16;
-                };
-                if (this.velocity.y > 0) {
-                    this.weaponHitbox.y += 16;
-                } else if (this.velocity.y < 0) {
-                    this.weaponHitbox.y -= 16;
-                };
-            } else 
-            // if (this.isThrusting || this.isParrying) 
-            {
+            } else {
                 this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
-                this.weaponHitbox.y = this.y - 8;
+                this.weaponHitbox.y = this.y;
+            };
+            if (this.velocity.x > 0) {
+                this.weaponHitbox.x += 16;
+            } else if (this.velocity.x < 0) {
+                this.weaponHitbox.x -= 16;
+            };
+            if (this.velocity.y > 0) {
+                this.weaponHitbox.y += 16;
+            } else if (this.velocity.y < 0) {
+                this.weaponHitbox.y -= 16;
             };
             if (target === undefined) {
                 if (this.targets.length === 0) {

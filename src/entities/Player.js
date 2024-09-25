@@ -102,7 +102,6 @@ export default class Player extends Entity {
         this.setExistingBody(compoundBody);                                    
         this.sensor = playerSensor;
         this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 24, 0xfdf6d8, 0)
-        // .setVisible(true);
         this.scene.add.existing(this.weaponHitbox);
 
         this.fearCount = 0;

@@ -252,21 +252,21 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
         EventBus.emit('redisplay-buttons', update);
     };
 
-    async function handleCamera(zoom: number) {
-        const newSettings = { 
-            ...settings(), 
-            positions: { 
-                ...settings().positions, 
-                camera: {
-                    ...settings().positions.camera,
-                    zoom
-                } 
-            } 
-        };
-        await updateSettings(newSettings);
-        EventBus.emit('save-settings', newSettings);
-        EventBus.emit('update-camera-zoom', zoom);
-    };
+    // async function handleCamera(zoom: number) {
+    //     const newSettings = { 
+    //         ...settings(), 
+    //         positions: { 
+    //             ...settings().positions, 
+    //             camera: {
+    //                 ...settings().positions.camera,
+    //                 zoom
+    //             } 
+    //         } 
+    //     };
+    //     await updateSettings(newSettings);
+    //     EventBus.emit('save-settings', newSettings);
+    //     EventBus.emit('update-camera-zoom', zoom);
+    // };
 
     // async function handleFPS(e: any, axis: string) {
     //     const change = Number(e.target.value);
@@ -472,18 +472,14 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
                     )
                 })}
             </Form.Select>
-            <div style={font('1em')}>Opacity: ({settings().positions.leftJoystick.opacity})</div>
+            <div style={font('1em')}>Opacity: ({roundToTwoDecimals(settings().positions.leftJoystick.opacity)})</div>
             <Form.Range 
-                min={0} max={1} step={0.05} 
+                min={0.001} max={1} step={0.05} 
                 onChange={(e) => handleJoystickOpacity(e, 'left')} 
                 value={settings().positions.leftJoystick.opacity} 
             />
             <div style={font('1em')}>Scale: ({settings().positions.leftJoystick.width})</div>
-            <Form.Range 
-                min={0.1} max={2} step={0.05} 
-                onChange={(e) => handleJoystickWidth(e, 'left')} 
-                value={settings().positions.leftJoystick.width} 
-            />
+            <Form.Range min={0.1} max={2} step={0.05} onChange={(e) => handleJoystickWidth(e, 'left')} value={settings().positions.leftJoystick.width} />
             <div style={font('1em')}>
                 <button class='highlight' onClick={() => handleJoystick(Math.max(-0.1, settings().positions.leftJoystick.x - 0.025), 'left', 'x')}>-</button>
                 X: ({settings().positions.leftJoystick.x})
@@ -514,9 +510,9 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
                     )
                 })}
             </Form.Select>
-            <div style={font('1em')}>Opacity: ({settings().positions.rightJoystick.opacity})</div>
+            <div style={font('1em')}>Opacity: ({roundToTwoDecimals(settings().positions.rightJoystick.opacity)})</div>
             <Form.Range 
-                min={0} max={1} step={0.05} 
+                min={0.001} max={1} step={0.05} 
                 onChange={(e) => handleJoystickOpacity(e, 'right')} 
                 value={settings().positions.rightJoystick.opacity} 
             />
@@ -561,9 +557,9 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
                 )
             })}
             </Form.Select>
-            <div style={font('1em')}>Opacity: ({settings().positions.actionButtons.opacity})</div>
+            <div style={font('1em')}>Opacity: ({roundToTwoDecimals(settings().positions.actionButtons.opacity)})</div>
             <Form.Range 
-                min={0} max={1} step={0.05} 
+                min={0.001} max={1} step={0.05} 
                 onChange={(e) => handleButtonOpacity(e, 'action')} 
                 value={settings().positions.actionButtons.opacity} 
             />
@@ -614,9 +610,9 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
                 )
             })}
             </Form.Select>
-            <div style={font('1em')}>Opacity: ({settings().positions.specialButtons.opacity})</div>
+            <div style={font('1em')}>Opacity: ({roundToTwoDecimals(settings().positions.specialButtons.opacity)})</div>
             <Form.Range 
-                min={0} max={1} step={0.05} 
+                min={0.001} max={1} step={0.05} 
                 onChange={(e) => handleButtonOpacity(e, 'special')} 
                 value={settings().positions.specialButtons.opacity} 
             />
@@ -660,9 +656,9 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
 
             <h1 style={font('1.25em')}>Left (Stance) HUD</h1>
             <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.max(25, settings().positions.leftHud.offset - 0.25)), 'left')}>-</button>
+                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.max(25, settings().positions.leftHud.offset - 0.125), 3), 'left')}>-</button>
                 Offset ({settings().positions.leftHud.offset})
-                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.min(60, settings().positions.leftHud.offset + 0.25)), 'left')}>+</button>
+                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.min(60, settings().positions.leftHud.offset + 0.125), 3), 'left')}>+</button>
             </div>
             <div style={font('1em')}>
                 <button class='highlight' onClick={() => handleHudScale(roundToTwoDecimals(Math.max(0.05, settings().positions.leftHud.scale - 0.0025), 4), 'left')}>-</button>
@@ -682,9 +678,9 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
 
             <h1 style={font('1.25em')}>Right (Settings) HUD</h1>
             <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.max(25, settings().positions.smallHud.offset - 0.25)), 'right')}>-</button>
+                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.max(25, settings().positions.smallHud.offset - 0.125), 3), 'right')}>-</button>
                 Offset ({settings().positions.smallHud.offset})
-                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.min(60, settings().positions.smallHud.offset + 0.25)), 'right')}>+</button>
+                <button class='highlight' onClick={() => handleHudOffset(roundToTwoDecimals(Math.min(60, settings().positions.smallHud.offset + 0.125), 3), 'right')}>+</button>
             </div>
             <div style={font('1em')}>
                 <button class='highlight' onClick={() => handleHudScale(roundToTwoDecimals(Math.max(0.05, settings().positions.smallHud.scale - 0.0025), 4), 'right')}>-</button>

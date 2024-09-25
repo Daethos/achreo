@@ -209,7 +209,7 @@ export const PLAYER = {
     },
 };
 
-export const STAMINA = ['attack', 'posture', 'roll', 'dodge', 'parry'];
+export const STAMINA = ['attack', 'posture', 'roll', 'dodge', 'parry', 'thrust'];
 export const staminaCheck = (stamina: number, cost: number): { success: boolean; cost: number } => {
     let success: boolean = stamina >= cost;
     return { success, cost };

@@ -4,6 +4,7 @@ import { PLAYER, STAMINA, staminaCheck } from '../utility/player';
 import { Game } from '../game/scenes/Game';
 import { Underground } from '../game/scenes/Underground';
 import { vibrate } from './ScreenShake';
+import { ACTION_ORIGIN } from '../utility/actions';
 const ACTIONS = [
     { ATTACK: 0x800080 }, // 0xFA0000 
     { POSTURE: 0x800080 }, // 0x005100 
@@ -810,17 +811,62 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     private setButtonText = (button: ActionButton, pointer: any) => {
         if (this.scene.combat) return;
-        const text = this.scene.add.text(pointer.worldX - (6 * button.name.length), pointer.worldY - 50, `${button.name.charAt(0) + button.name.slice(1).toLowerCase()} (${PLAYER.STAMINA[button.name as keyof typeof PLAYER.STAMINA]})`, {
-            color: '#000',
+        const background = this.scene.add.graphics();
+        const padding = 10;
+        const width = 300;
+        const action = ACTION_ORIGIN[button.name as keyof typeof ACTION_ORIGIN];
+        const textTitle = this.scene.add.text(0, 0, `${button.name.charAt(0) + button.name.slice(1).toLowerCase()}`, {
+            align: 'left',
+            color: '#ffd700',
             fontFamily: 'Cinzel',
             fontSize: '24px',
+            stroke: '#000',
+            strokeThickness: 2,
+            padding: { left: 10, right: 10, top: 10, bottom: 5 },
+            wordWrap: { useAdvancedWrap: true, width: width - padding * 2 },
+        });
+        const textDescription = this.scene.add.text(0, textTitle.height, `${action.description}`, {
+            align: 'left',
+            color: '#fdf6d8',
+            fontFamily: 'Cinzel',
+            fontSize: '18px',
+            stroke: '#000',
             strokeThickness: 1.5,
-            wordWrap: {
-                useAdvancedWrap: true
-            }
-        }).setDepth(10);
-        this.scene.time.delayedCall(1000, () => {
-            text.destroy();
+            padding: { left: 10, right: 10, top: 5, bottom: 5 },
+            wordWrap: { useAdvancedWrap: true, width: width - padding * 2 },
+        });
+        const textSuper = this.scene.add.text(0, textTitle?.height + textDescription?.height, `${action.cost} \n ${action.time} ${action.special} \n ${action.cooldown} Cooldown`, {
+            align: 'left',
+            color: STAMINA.includes(button.name.toLowerCase()) ? '#0f0' : '#0ff',
+            fontFamily: 'Cinzel',
+            fontSize: '18px',
+            stroke: '#000',
+            strokeThickness: 1.5,
+            padding: { left: 10, right: 10, top: 5, bottom: 5 },
+            wordWrap: { useAdvancedWrap: true, width: width - padding * 2 },
+        });
+
+        const totalHeight = textTitle?.height + textDescription?.height + textSuper?.height + 10;
+        background.fillStyle(0x000000, 1);
+        background.lineStyle(2, 0xFFFFFF, 1);
+        background.fillRoundedRect(0, 0, width, totalHeight, 5);
+        background.strokeRoundedRect(0, 0, width, totalHeight, 5);
+        const textX = pointer.worldX - 150;
+        const textY = pointer.worldY - (totalHeight + 25);
+        const tooltipContainer = this.scene.add.container(textX, textY).setDepth(10).setAlpha(0);
+        tooltipContainer.add([background, textTitle, textDescription, textSuper]);
+        
+        textTitle.setShadow(2, 2, '#333', 2, true, true);
+        
+        this.scene.time.addEvent({
+            delay: 50,
+            repeat: 10,
+            callback: () => tooltipContainer.setAlpha(tooltipContainer.alpha + 0.1),
+            callbackScope: tooltipContainer
+        });
+
+        this.scene.time.delayedCall(3000, () => {
+            tooltipContainer.destroy();
         }, undefined, this);
-    };
+    };    
 };

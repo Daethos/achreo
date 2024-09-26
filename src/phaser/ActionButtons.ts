@@ -71,23 +71,33 @@ class Tooltip {
     };
     createTimer(scene: Game | Underground) {
         this.timer = scene.time.addEvent({
-            delay: 3000,
+            delay: 1000,
             callback: () => {
                 if (this.refresh) {
                     this.refresh = false;
                     return;
                 };
-                this.hideTooltip();
+                this.hideTooltip(scene);
             },
             callbackScope: this.container,
             loop: true
         });
     };
-    hideTooltip() {
-        this.container?.setVisible(false);
-        this.timer?.remove();
-        this.timer = undefined;
-        this.refresh = false; 
+    hideTooltip(scene: Game | Underground) {
+        scene.time.addEvent({
+            delay: 50,
+            repeat: 10,
+            callback: () => {
+                this.container?.setAlpha(this.container.alpha - 0.1);
+                if (this.container?.alpha as number <= 0) {
+                    this.container?.setVisible(false);
+                    this.timer?.remove();
+                    this.timer = undefined;
+                    this.refresh = false; 
+                };
+            },
+            callbackScope: this.container
+        });
     };
     updateTooltip(map: Map<string, Tooltip>, pointer: any, scene: Game | Underground) {
         let depth = 0;
@@ -96,15 +106,25 @@ class Tooltip {
             depth = value.container?.depth as number > depth ? value.container?.depth as number : depth;
         });
         if (this.container) {
-            this.container.x = pointer.worldX - 150;
-            this.container.y = pointer.worldY - (this.height + 25);
+            if (scene.settings.desktop) {
+                this.container.x = pointer.worldX - 150;
+                this.container.y = pointer.worldY - (this.height + 25);
+            } else {
+                this.container.x = scene.cameras.main.centerX - 60;
+                this.container.y = scene.cameras.main.height - (this.height / 2);
+            };
             this.container.setDepth(depth + 1);
             this.container.setVisible(true);    
             this.container.setAlpha(0);
             scene.time.addEvent({
                 delay: 50,
                 repeat: 10,
-                callback: () => this.container?.setAlpha(this.container.alpha + 0.1),
+                callback: () => {
+                    this.container?.setAlpha(this.container.alpha + 0.1);
+                    if (this.container?.alpha as number >= 1) {
+                        this.container?.setVisible(true);
+                    };
+                },
                 callbackScope: this.container
             });
         };
@@ -900,13 +920,10 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     private setButtonText = (button: ActionButton, pointer: any) => {
         if (this.scene.combat) return;
         let tooltip = this.tooltipManager.get(button.name);
-        // const tooltip = this.tooltipManager[button.name];
         if (tooltip && tooltip.container) {
             tooltip.updateTooltip(this.tooltipManager, pointer, this.scene);
         } else {
             const background = this.scene.add.graphics();
-            // const background = this.scene.add.image(0, 0, 'tooltip').setOrigin(0, 0);  // Tooltip background image    
-
             const action = ACTION_ORIGIN[button.name as keyof typeof ACTION_ORIGIN];
             const textTitle = this.scene.add.text(0, 0, `${button.name.charAt(0) + button.name.slice(1).toLowerCase()}`, {
                 align: 'left',
@@ -944,8 +961,16 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             background.lineStyle(3, 0xFFFFFF, 1);
             background.fillRoundedRect(0, 0, WIDTH, totalHeight, 5);
             background.strokeRoundedRect(0, 0, WIDTH, totalHeight, 5);
-            const textX = pointer.worldX - 150;
-            const textY = pointer.worldY - (totalHeight + 25);
+            
+            let textX = 0;
+            let textY = 0;
+            if (this.scene.settings.desktop) {
+                textX = pointer.worldX - 150;
+                textY = pointer.worldY - (totalHeight + 25);
+            } else {
+                textX = this.scene.cameras.main.centerX - 60;
+                textY = this.scene.cameras.main.height - (totalHeight / 2);
+            };
             const tooltipContainer = this.scene.add.container(textX, textY).setDepth(10).setAlpha(0);
             tooltipContainer.add([background, textTitle, textDescription, textSuper]);
             textTitle.setShadow(2, 2, '#333', 2, true, true);            

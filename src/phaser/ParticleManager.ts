@@ -11,18 +11,18 @@ import Enemy from '../entities/Enemy';
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 
-function angleTarget(particle: Particle): number {
+function angleTarget(target: Phaser.Math.Vector2): number {
     let angle = 0;
-    if (particle.target.x > 0 && particle.target.y < 0) { // Up-Right
-        angle += 90 * particle.target.y;
-    } else if (particle.target.x < 0 && particle.target.y < 0) { // Up-Left
-        angle -= 90 * particle.target.y;
-    } else if (particle.target.x > 0 && particle.target.y > 0) { // Down-Right
-        angle += 90 * particle.target.y;
-    } else if (particle.target.x < 0 && particle.target.y > 0) { // Down-Left
-        angle -= 90 * particle.target.y;
+    if (target.x > 0 && target.y < 0) { // Up-Right
+        angle += 90 * target.y;
+    } else if (target.x < 0 && target.y < 0) { // Up-Left
+        angle -= 90 * target.y;
+    } else if (target.x > 0 && target.y > 0) { // Down-Right
+        angle += 90 * target.y;
+    } else if (target.x < 0 && target.y > 0) { // Down-Left
+        angle -= 90 * target.y;
     };
-    if (particle.target.x > 0) angle += 180;
+    if (target.x > 0) angle += 180;
     return angle;
     
 };
@@ -67,6 +67,7 @@ class Particle {
         scene.add.existing(this.effect);
         this.sensorListener(player, effectSensor);
         this.effect.setVisible(true);
+        this.effect.setAngle(angleTarget(this.target));
     };
 
     construct(particle: Particle, action: string, player: Player | Enemy, special: boolean, key: string) {
@@ -83,6 +84,7 @@ class Particle {
         this.velocity = this.setVelocity(action);
         this.effect.setScale(this.scaler(particle.isParticle, special, this.action));
         this.effect.setTexture(idKey);
+        this.effect.setAngle(angleTarget(this.target));
     };
     scaler = (particle: boolean, special: boolean, action: string) => {
         if (particle && !special) {
@@ -241,11 +243,7 @@ export default class ParticleManager extends Phaser.Scene {
 
     updateParticle(particle: Particle) { 
         if (particle == undefined || particle.effect == undefined || !this.particles.find((part) => part.id === particle.id)) return;
-        if (particle.isParticle === true) {
-            particle.effect.play(particle.key, true);
-        } else {
-            particle.effect.setAngle(angleTarget(particle));
-        };
+        if (particle.isParticle === true) particle.effect.play(particle.key, true);
         particle.effect.setVelocity(particle.velocity * particle.target.x, particle.target.y * particle.velocity);
     };
 };

@@ -1015,7 +1015,7 @@ export default class Enemy extends Entity {
 
     onThrustEnter = () => {
         this.isThrusting = true;
-        this.thrust();
+        this.thrustAttack();
     };
     onThrustUpdate = (_dt) => {
         if (this.frameCount === FRAME_COUNT.THRUST_LIVE && !this.isRanged) this.scene.combatManager.combatMachine.input('computerAction', 'thrust', this.enemyID);
@@ -2506,24 +2506,34 @@ export default class Enemy extends Entity {
         this.setTint(0x888888); // 0x888888
         this.setStatic(true);
 
-        this.stunTimer = this.scene.time.addEvent({
-            delay: this.stunDuration,
-            callback: () => {
-                this.count.stunned -= 1;
-                if (this.count.stunned <= 0) {
-                    this.count.stunned = 0;
-                    this.isStunned = false;
-                    if (this.stunTimer) {
-                        this.stunTimer.destroy();
-                        this.stunTimer = undefined;
-                    };
-                } else {
-                    this.stateMachine.setState(States.COMBAT);
-                };
-            },
-            callbackScope: this,
-            loop: false,
-        });
+        this.scene.time.delayedCall(this.stunDuration, () => {
+            this.count.stunned -= 1;
+            if (this.count.stunned <= 0) {
+                this.count.stunned = 0;
+                this.isStunned = false;
+            } else {
+                this.stateMachine.setState(States.COMBAT);
+            };
+        }, undefined, this);
+
+        // this.stunTimer = this.scene.time.addEvent({
+        //     delay: this.stunDuration,
+        //     callback: () => {
+        //         this.count.stunned -= 1;
+        //         if (this.count.stunned <= 0) {
+        //             this.count.stunned = 0;
+        //             this.isStunned = false;
+        //             if (this.stunTimer) {
+        //                 this.stunTimer.destroy();
+        //                 this.stunTimer = undefined;
+        //             };
+        //         } else {
+        //             this.stateMachine.setState(States.COMBAT);
+        //         };
+        //     },
+        //     callbackScope: this,
+        //     loop: false,
+        // });
     };
     onStunUpdate = (_dt) => {
         this.setVelocity(0);

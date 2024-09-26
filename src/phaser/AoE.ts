@@ -23,7 +23,6 @@ const COLORS = {
     'writhe': 0x080080,
 };
 export default class AoE extends Phaser.Physics.Matter.Sprite {
-    glowFilter: any;
     count: number;
     hit: any[];
     bless: any[];
@@ -38,8 +37,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setScale(0.375);
         this.setOrigin(0.5, 0.5);
         scene.add.existing(this);
-        this.glowFilter = scene.plugins.get('rexGlowFilterPipeline');
-        this.glowFilter.add(this, {
+        scene.glowFilter.add(this, {
             outerStrength: 1,
             innerStrength: 1,
             glowColor: COLORS[type as keyof typeof COLORS],
@@ -68,7 +66,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     setCount = (scene: Game | Underground, type: string, positive: boolean) => {
         if (type === 'fyerus') {
             if (scene.player.isMoving) {
-                this.glowFilter.remove(this);
+                scene.glowFilter.remove(this);
                 this.bless = [];
                 this.timer.destroy();
                 this.timer.remove(false);
@@ -84,7 +82,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 });
                 this.count -= 1;
                 if (this.count === 0) {
-                    this.glowFilter.remove(this);
+                    scene.glowFilter.remove(this);
                     this.bless = [];
                     this.timer.destroy();
                     this.timer.remove(false);
@@ -101,7 +99,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 });
                 this.count -= 1;
                 if (this.count === 0) {
-                    this.glowFilter.remove(this);
+                    scene.glowFilter.remove(this);
                     this.hit = [];
                     this.timer.destroy();
                     this.timer.remove(false);
@@ -123,7 +121,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 });
                 this.count -= 1;
                 if (this.count === 0) {
-                    this.glowFilter.remove(this);
+                    scene.glowFilter.remove(this);
                     this.hit = [];
                     this.timer.destroy();
                     this.timer.remove(false);
@@ -140,7 +138,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 });
                 this.count -= 1;
                 if (this.count === 0) {
-                    this.glowFilter.remove(this);
+                    scene.glowFilter.remove(this);
                     this.bless = [];
                     this.timer.destroy();
                     this.timer.remove(false);

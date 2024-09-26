@@ -1,5 +1,5 @@
-import { GameObjects, Input, Math as pMath, Physics } from "phaser";
 import Entity from "./Entity";  
+import { GameObjects, Input, Math as pMath, Physics } from "phaser";
 import { screenShake, sprint, walk } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";

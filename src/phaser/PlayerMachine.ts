@@ -5,7 +5,6 @@ import Player from '../entities/Player';
 import StateMachine, { States } from "./StateMachine";
 import ScrollingCombatText from "./ScrollingCombatText";
 import { PLAYER } from "../utility/player";
-// @ts-ignore
 import { FRAME_COUNT } from '../entities/Entity';
 // @ts-ignore
 import AoE from './AoE';

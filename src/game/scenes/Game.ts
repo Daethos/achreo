@@ -19,7 +19,6 @@ import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 import Player from '../../entities/Player';
 // @ts-ignore
 import Enemy from '../../entities/Enemy';
-// @ts-ignore
 import NPC from '../../entities/NPC';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';

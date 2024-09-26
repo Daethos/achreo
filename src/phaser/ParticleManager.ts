@@ -27,7 +27,7 @@ function angleTarget(target: Phaser.Math.Vector2): number {
     
 };
 
-class Particle {
+export class Particle {
     scene: Game | Underground;
     id: string;
     pID: string;

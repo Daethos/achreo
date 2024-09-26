@@ -35,6 +35,8 @@ const SETTINGS = {
     BORDER_LINE: 4,
     BORDER_OFFSET: 1,
 };
+const PADDING = 12;
+const WIDTH = 300;
 export type ActionButton = {
     key: string;
     name: string;
@@ -51,6 +53,63 @@ export type ActionButton = {
     isReady: boolean;
     on?: (event: string, fn: () => void, context?: any) => void;
 };
+class Tooltip {
+    name: string;
+    container: Phaser.GameObjects.Container | undefined;
+    height: number = 0;
+    refresh: boolean = false;
+    timer: Phaser.Time.TimerEvent | undefined = undefined;
+    constructor(name: string, container: Phaser.GameObjects.Container, height: number, map: Map<string, Tooltip>) {
+        let depth = 0;
+        this.name = name;
+        this.container = container;
+        this.height = height;
+        map.forEach((value) => {
+            depth = value.container?.depth as number > depth ? value.container?.depth as number : depth;
+        });
+        this.container.setDepth(depth + 1);
+    };
+    createTimer(scene: Game | Underground) {
+        this.timer = scene.time.addEvent({
+            delay: 3000,
+            callback: () => {
+                if (this.refresh) {
+                    this.refresh = false;
+                    return;
+                };
+                this.hideTooltip();
+            },
+            callbackScope: this.container,
+            loop: true
+        });
+    };
+    hideTooltip() {
+        this.container?.setVisible(false);
+        this.timer?.remove();
+        this.timer = undefined;
+        this.refresh = false; 
+    };
+    updateTooltip(map: Map<string, Tooltip>, pointer: any, scene: Game | Underground) {
+        let depth = 0;
+        this.refresh = true;
+        map.forEach((value) => {
+            depth = value.container?.depth as number > depth ? value.container?.depth as number : depth;
+        });
+        if (this.container) {
+            this.container.x = pointer.worldX - 150;
+            this.container.y = pointer.worldY - (this.height + 25);
+            this.container.setDepth(depth + 1);
+            this.container.setVisible(true);    
+            this.container.setAlpha(0);
+            scene.time.addEvent({
+                delay: 50,
+                repeat: 10,
+                callback: () => this.container?.setAlpha(this.container.alpha + 0.1),
+                callbackScope: this.container
+            });
+        };
+    };
+};
 export default class ActionButtons extends Phaser.GameObjects.Container {
     public scene: Game | Underground;
     public actionButtons: ActionButton[];
@@ -60,6 +119,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     private glowFilter: any;
     private borderTimer: any;
     private graphicTimer: any;
+    private tooltipManager: Map<string, Tooltip>;
 
     constructor(scene: any) {
         super(scene);
@@ -81,6 +141,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         EventBus.on('reorder-buttons', this.reorderButtons);
         this.reorder();
         this.positionListen();
+        this.tooltipManager = new Map();
     };
 
     setGlow = (object: any, glow: boolean, type: string, key: string, color: number) => {
@@ -180,6 +241,15 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 })
                 .on('pointerover', (pointer: any) => {
                     this.setButtonText(button, pointer);
+                })
+                .on('pointerout', () => {
+                    const tooltip = this.tooltipManager.get(button.name);
+                    if (tooltip && tooltip.timer) {
+                        tooltip?.timer.remove();
+                        tooltip.createTimer(this.scene);
+                    } else if (tooltip) {
+                        tooltip.createTimer(this.scene);
+                    };
                 });
 
             button.graphic.setScrollFactor(0, 0);
@@ -221,6 +291,15 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 })
                 .on('pointerover', (pointer: any) => {
                     this.setButtonText(button, pointer);
+                })
+                .on('pointerout', () => {
+                    const tooltip = this.tooltipManager.get(button.name);
+                    if (tooltip && tooltip.timer) {
+                        tooltip?.timer.remove();
+                        tooltip.createTimer(this.scene);
+                    } else if (tooltip) {
+                        tooltip.createTimer(this.scene);
+                    };
                 });
             button.graphic.setScrollFactor(0, 0);
             button.border.setScrollFactor(0, 0);
@@ -805,70 +884,80 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             })
             .on('pointerover', (pointer: any) => {
                 this.setButtonText(button, pointer);
+            })
+            .on('pointerout', () => {
+                const tooltip = this.tooltipManager.get(button.name);
+                if (tooltip && tooltip.timer) {
+                    tooltip?.timer.remove();
+                    tooltip.createTimer(this.scene);
+                } else if (tooltip) {
+                    tooltip.createTimer(this.scene);
+                };
             });
         return button;
     };
 
     private setButtonText = (button: ActionButton, pointer: any) => {
         if (this.scene.combat) return;
-        const background = this.scene.add.graphics();
-        // const background = this.scene.add.image(0, 0, 'tooltip').setOrigin(0, 0);  // Tooltip background image
+        let tooltip = this.tooltipManager.get(button.name);
+        // const tooltip = this.tooltipManager[button.name];
+        if (tooltip && tooltip.container) {
+            tooltip.updateTooltip(this.tooltipManager, pointer, this.scene);
+        } else {
+            const background = this.scene.add.graphics();
+            // const background = this.scene.add.image(0, 0, 'tooltip').setOrigin(0, 0);  // Tooltip background image    
 
-        const padding = 10;
-        const width = 300;
-        const action = ACTION_ORIGIN[button.name as keyof typeof ACTION_ORIGIN];
-        const textTitle = this.scene.add.text(0, 0, `${button.name.charAt(0) + button.name.slice(1).toLowerCase()}`, {
-            align: 'left',
-            color: '#ffd700',
-            fontFamily: 'Cinzel',
-            fontSize: '24px',
-            stroke: '#000',
-            strokeThickness: 2,
-            padding: { left: 10, right: 10, top: 10, bottom: 5 },
-            wordWrap: { useAdvancedWrap: true, width: width - padding * 2 },
-        });
-        const textDescription = this.scene.add.text(0, textTitle.height, `${action.description}`, {
-            align: 'left',
-            color: '#fdf6d8',
-            fontFamily: 'Cinzel',
-            fontSize: '18px',
-            stroke: '#000',
-            strokeThickness: 1.5,
-            padding: { left: 10, right: 10, top: 5, bottom: 5 },
-            wordWrap: { useAdvancedWrap: true, width: width - padding * 2 },
-        });
-        const textSuper = this.scene.add.text(0, textTitle?.height + textDescription?.height, `${action.cost} \n ${action.time} ${action.special} \n ${action.cooldown} Cooldown`, {
-            align: 'left',
-            color: STAMINA.includes(button.name.toLowerCase()) ? '#0f0' : '#0cf',
-            fontFamily: 'Cinzel',
-            fontSize: '18px',
-            stroke: '#000',
-            strokeThickness: 1.5,
-            padding: { left: 10, right: 10, top: 5, bottom: 5 },
-            wordWrap: { useAdvancedWrap: true, width: width - padding * 2 },
-        });
-
-        const totalHeight = textTitle?.height + textDescription?.height + textSuper?.height + 10;
-        background.fillStyle(0x000000, 1);
-        background.lineStyle(3, 0xFFFFFF, 1);
-        background.fillRoundedRect(0, 0, width, totalHeight, 5);
-        background.strokeRoundedRect(0, 0, width, totalHeight, 5);
-        const textX = pointer.worldX - 150;
-        const textY = pointer.worldY - (totalHeight + 25);
-        const tooltipContainer = this.scene.add.container(textX, textY).setDepth(10).setAlpha(0);
-        tooltipContainer.add([background, textTitle, textDescription, textSuper]);
-        
-        textTitle.setShadow(2, 2, '#333', 2, true, true);
-        
-        this.scene.time.addEvent({
-            delay: 50,
-            repeat: 10,
-            callback: () => tooltipContainer.setAlpha(tooltipContainer.alpha + 0.1),
-            callbackScope: tooltipContainer
-        });
-
-        this.scene.time.delayedCall(3000, () => {
-            tooltipContainer.destroy();
-        }, undefined, this);
+            const action = ACTION_ORIGIN[button.name as keyof typeof ACTION_ORIGIN];
+            const textTitle = this.scene.add.text(0, 0, `${button.name.charAt(0) + button.name.slice(1).toLowerCase()}`, {
+                align: 'left',
+                color: '#ffd700',
+                fontFamily: 'Cinzel-Regular',
+                fontSize: '24px',
+                stroke: '#000',
+                strokeThickness: 2,
+                padding: { left: PADDING, right: PADDING, top: PADDING, bottom: 5 },
+                wordWrap: { useAdvancedWrap: true, width: WIDTH - PADDING * 2 },
+            });
+            const textDescription = this.scene.add.text(0, textTitle.height, `${action.description}`, {
+                align: 'left',
+                color: '#fdf6d8',
+                fontFamily: 'Cinzel-Regular',
+                fontSize: '18px',
+                stroke: '#000',
+                strokeThickness: 1.5,
+                padding: { left: PADDING, right: PADDING, top: PADDING / 2, bottom: PADDING /2 },
+                wordWrap: { useAdvancedWrap: true, width: WIDTH - PADDING * 2 },
+            });
+            const textSuper = this.scene.add.text(0, textTitle?.height + textDescription?.height, `${action.cost} \n ${action.time} ${action.special} \n ${action.cooldown} Cooldown`, {
+                align: 'left',
+                color: STAMINA.includes(button.name.toLowerCase()) ? '#0f0' : '#0cf',
+                fontFamily: 'Cinzel-Regular',
+                fontSize: '18px',
+                stroke: '#000',
+                strokeThickness: 1.5,
+                padding: { left: PADDING, right: PADDING, top: PADDING / 2, bottom: PADDING /2 },
+                wordWrap: { useAdvancedWrap: true, width: WIDTH - PADDING * 2 },
+            });
+            
+            const totalHeight = textTitle?.height + textDescription?.height + textSuper?.height + 10;
+            background.fillStyle(0x000000, 1);
+            background.lineStyle(3, 0xFFFFFF, 1);
+            background.fillRoundedRect(0, 0, WIDTH, totalHeight, 5);
+            background.strokeRoundedRect(0, 0, WIDTH, totalHeight, 5);
+            const textX = pointer.worldX - 150;
+            const textY = pointer.worldY - (totalHeight + 25);
+            const tooltipContainer = this.scene.add.container(textX, textY).setDepth(10).setAlpha(0);
+            tooltipContainer.add([background, textTitle, textDescription, textSuper]);
+            textTitle.setShadow(2, 2, '#333', 2, true, true);            
+            
+            this.scene.time.addEvent({
+                delay: 50,
+                repeat: 10,
+                callback: () => tooltipContainer.setAlpha(tooltipContainer.alpha + 0.1),
+                callbackScope: tooltipContainer
+            });
+            
+            this.tooltipManager.set(button.name, new Tooltip(button.name, tooltipContainer, totalHeight, this.tooltipManager));
+        };
     };    
 };

@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { EventBus } from "../game/EventBus";
 import { vibrate } from "../phaser/ScreenShake";
 let idCount = 0;
+// @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const colliderWidth = 20; 
 const colliderHeight = 36; 
@@ -13,24 +14,32 @@ const x = colliderWidth + 2 * paddingWidth;
 const y = colliderHeight + 2 * paddingHeight;
 const types = ['Merchant-Alchemy', 'Merchant-Armor', 'Merchant-Smith', 'Merchant-Jewelry', 'Merchant-General', 'Merchant-Tailor', 'Merchant-Mystic', 'Merchant-Weapon', 'Merchant-Weapon-All', 'Merchant-Armor-All'];
 export default class NPC extends Entity { 
-    constructor(data) {
+    enemyID: string;
+    id: number;
+    npcType: string;
+    npcTarget: any;
+    isDefeated: boolean = true;
+    isEnemy: boolean = false;
+    isInteracting: boolean = false;
+    interactCount: number = 0;
+    stateMachine: StateMachine;
+    originalPosition: any;
+    originPoint: any;
+    npcSensor: any;
+
+    constructor(data: any) {
         let { scene, type } = data;
         super({ ...data, name: "npc", ascean: undefined, health: 0 }); 
         this.scene = scene;
         if (idCount >= 10) idCount = 0;
         this.id = type ? type === 'Merchant-All-Armor' ? 9 : 10 : idCount++;
-        this.scene.add.existing(this);
         this.enemyID = uuidv4();
-        this.isEnemy = false;
         this.npcType = type ? type : types[this.id];
         this.npcTarget = undefined;
-        this.interacting = false;
-        this.isDefeated = true;
-        this.interactCount = 0;
         this.createNPC();
         this.stateMachine = new StateMachine(this, 'npc');
         this.stateMachine
-            .addState(States.IDLE, {
+        .addState(States.IDLE, {
                 onEnter: this.onIdleEnter, 
             }) 
             .addState(States.AWARE, {
@@ -58,6 +67,7 @@ export default class NPC extends Entity {
         this.setStatic(true);
         this.setTint(0x0000FF);
         this.flipX = Math.random() >= 0.5;
+        this.scene.add.existing(this as any);
         this.setInteractive(new Phaser.Geom.Rectangle(
             48, 0,
             32, this.height
@@ -90,26 +100,26 @@ export default class NPC extends Entity {
         EventBus.emit('fetch-npc', { enemyID: this.enemyID, npcType: this.npcType });
     };
 
-    npcFetched = (e) => {
+    npcFetched = (e: any) => {
         if (this.enemyID !== e.enemyID) return;
         this.ascean = e.game;
         this.health = e.combat.attributes.healthTotal;
         this.combatStats = e.combat;
     };
 
-    npcCollision = (npcSensor) => {
+    npcCollision = (npcSensor: any) => {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [npcSensor],
-            callback: other => {
-                if (other.gameObjectB && other.gameObjectB.name === 'player' && !other.gameObjectB.inCombat && !this.interacting) {
-                    this.interacting = true;
+            callback: (other: any) => {
+                if (other.gameObjectB && other.gameObjectB.name === 'player' && !other.gameObjectB.inCombat && !this.isInteracting) {
+                    this.isInteracting = true;
                     this.interactCount++;
                     this.scene.setupNPC(this);
                     this.npcTarget = other.gameObjectB;
                     this.stateMachine.setState(States.AWARE);
                     other.gameObjectB.currentTarget = this;
                     other.gameObjectB.targetID = this.enemyID;
-                    const isNewNPC = !other.gameObjectB.targets.some(obj => obj.enemyID === this.enemyID);
+                    const isNewNPC = !other.gameObjectB.targets.some((obj: any) => obj.enemyID === this.enemyID);
                     if (isNewNPC) {
                         other.gameObjectB.targets.push(this);
                     };
@@ -119,11 +129,11 @@ export default class NPC extends Entity {
         });
         this.scene.matterCollision.addOnCollideEnd({
             objectA: [npcSensor],
-            callback: other => {
-                if (other.gameObjectB && other.gameObjectB.name === 'player' && this.interacting) {
-                    this.interacting = false;
+            callback: (other: any) => {
+                if (other.gameObjectB && other.gameObjectB.name === 'player' && this.isInteracting) {
+                    this.isInteracting = false;
                     this.stateMachine.setState(States.IDLE); 
-                    other.gameObjectB.targets = other.gameObjectB.targets.filter(obj => obj.enemyID !== this.enemyID);
+                    other.gameObjectB.targets = other.gameObjectB.targets.filter((obj: any) => obj.enemyID !== this.enemyID);
                     this.scene.clearNPC();
                     other.gameObjectB.checkTargets();
                 };
@@ -134,7 +144,7 @@ export default class NPC extends Entity {
 
     onIdleEnter = () => this.anims.play('player_idle', true);
     onAwarenessEnter = () => this.scene.showDialog(true);
-    onAwarenessUpdate = (_dt) => {
+    onAwarenessUpdate = (_dt: number) => {
         if (this.npcTarget) {
             const direction = this.npcTarget.position.subtract(this.position);
             if (direction.x < 0) { this.flipX = true } else { this.flipX = false };

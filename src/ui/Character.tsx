@@ -1,6 +1,6 @@
 import { Accessor, For, JSX, lazy, Match, Setter, Show, Suspense, Switch, createEffect, createSignal } from 'solid-js';
 import { Form } from 'solid-bootstrap';
-import AttributeModal, { AttributeCompiler } from '../components/Attributes';
+import AttributeModal, { AttributeCompiler, AttributeNumberModal } from '../components/Attributes';
 import Ascean from '../models/ascean';
 import Equipment from '../models/equipment';
 import Settings from '../models/settings';
@@ -106,6 +106,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
     const [inspectModalShow, setInspectModalShow] = createSignal<boolean>(false);
     const [inspectItems, setInspectItems] = createSignal<{ item: Equipment | undefined; type: string; } | any[]>([]);
     const [attrShow, setAttrShow] = createSignal<boolean>(false);
+    const [attributeDisplay, setAttributeDisplay] = createSignal<{ attribute: any; show: boolean; total: number, equip: number, base: number }>({ attribute: undefined, show: false, base: 0, equip: 0, total: 0 });
     const [asceanPic, setAsceanPic] = createSignal<string>('');
     const [ringCompared, setRingCompared] = createSignal<string>('');
     const [removeModalShow, setRemoveModalShow] = createSignal<boolean>(false);
@@ -594,7 +595,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                         <div>Physical Defense: <span class='gold'>{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</span>{'\n'}</div>
                     </div>
                     <div style={{ transform: 'scale(0.9)' }}>
-                    <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
+                    <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
                 </div>
                 </Match>
@@ -685,7 +686,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                         <div>Physical Defense: <span class='gold'>{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</span>{'\n'}</div>
                     </div>
                     <div style={{ transform: 'scale(0.9)' }}>
-                    <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
+                    <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
                 </div>
             ) : settings().asceanViews === VIEWS.INVENTORY ? (
@@ -748,6 +749,11 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                 <ItemModal item={equipment()} stalwart={combat().isStalwart} caerenic={combat().isCaerenic} /> 
             </Suspense>
             </div> 
+        </Show>
+        <Show when={attributeDisplay().show}>
+            <div class='modal' onClick={() => setAttributeDisplay({ ...attributeDisplay(), show: false })}>
+                <AttributeNumberModal attribute={attributeDisplay} />
+            </div>
         </Show>
         <Show when={attrShow()}>
             <div class='modal' onClick={() => setAttrShow(!attrShow())}>

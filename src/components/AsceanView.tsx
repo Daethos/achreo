@@ -1,5 +1,5 @@
 import { Accessor, createSignal, Show, lazy, Suspense } from 'solid-js';
-import { AttributeCompiler } from './Attributes';
+import { AttributeCompiler, AttributeNumberModal } from './Attributes';
 import { Attributes } from '../utility/attributes';
 import { useResizeListener } from '../utility/dimensions';
 import Ascean from '../models/ascean';
@@ -14,6 +14,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
     const [equipment, setEquipment] = createSignal<Equipment | undefined>(undefined);
     const [attribute, setAttribute] = createSignal(Attributes[0]);
     const [attrShow, setAttrShow] = createSignal(false);
+    const [attributeDisplay, setAttributeDisplay] = createSignal<{ attribute: any; show: boolean; total: number, equip: number, base: number }>({ attribute: undefined, show: false, base: 0, equip: 0, total: 0 });
     const dimensions = useResizeListener();
     const viewMargin = { margin: '4%' };
 
@@ -26,7 +27,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
             <p style={viewMargin}>Level: <span class='gold'>{ascean().level}</span> | Experience: <span class='gold'>{ascean().experience}</span></p>
             <p style={viewMargin}>Health: <span class='gold'>{Math.round(ascean().health.current)}</span> / <span class='gold'>{ascean().health.max}</span> | Wealth: <span class='gold'>{ascean().currency.gold}g {ascean().currency.silver}s</span></p>
             <p style={viewMargin}>Faith: <span class='gold'>{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> | Mastery: <span class='gold'>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span></p>
-            <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
+            <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
             <Suspense fallback={<Puff color="gold" />}>
                 <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
             </Suspense>
@@ -63,7 +64,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
 
             <div class='border right center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
                 <div class='superCenter' style={{ 'margin-top': '0' }}>
-                <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} />
+                <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                 <Suspense fallback={<Puff color="gold" />}>
                     <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
                 </Suspense>
@@ -79,11 +80,15 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
             </Suspense>
             </div>
         </Show>
-
         <Show when={attrShow()}>
         <div class='modal' onClick={() => setAttrShow(!attrShow())}>
             <AttributeModal attribute={attribute()}/>
         </div> 
+        </Show>
+        <Show when={attributeDisplay().show}>
+            <div class='modal' onClick={() => setAttributeDisplay({ ...attributeDisplay(), show: false })}>
+                <AttributeNumberModal attribute={attributeDisplay} />
+            </div>
         </Show>
         </div>
     </Show>;

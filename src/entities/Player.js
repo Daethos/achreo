@@ -553,7 +553,7 @@ export default class Player extends Entity {
             };
             if (sfx.computerDamaged === true) soundEffectMap(sfx.playerDamageType, sfx.computerWeapons[0]);                
             if (sfx.playerDamaged === true) soundEffectMap(sfx.computerDamageType, sfx.computerWeapons[0]);
-            if (sfx.religiousSuccess === true) this.scene.sound.play('religious', { volume: this.scene.settings.volume });            
+            if (sfx.religiousSuccess === true) this.scene.sound.play('righteous', { volume: this.scene.settings.volume });            
             if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.sound.play('roll', { volume: this.scene.settings.volume / 2 });
             if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) this.scene.sound.play('parry', { volume: this.scene.settings.volume });
             EventBus.emit('blend-combat', { 

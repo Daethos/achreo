@@ -243,13 +243,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             objectA: [this.sensor],
             callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if (gameObjectB instanceof Player) {
-                    if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
-                        const hit = this.hit.find((h) => h.playerID === gameObjectB.playerID);
-                        if (!hit) this.hit.push(gameObjectB);
-                    } else if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
-                        this.bless.push(gameObjectB);
-                    };
+                if (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') {
+                    const hit = this.hit.find((h) => h.playerID === gameObjectB.playerID);
+                    if (!hit) this.hit.push(gameObjectB);
+                } else if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
+                    this.bless.push(gameObjectB);
                 };
             },
             context: scene
@@ -258,12 +256,10 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             objectA: [this.sensor],
             callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if (gameObjectB instanceof Player) {
-                    if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
-                        this.hit = this.hit.filter((target) => target !== gameObjectB);
-                    } else if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
-                        this.bless = this.bless.filter((target) => target !== gameObjectB);
-                    };
+                if (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') {
+                    this.hit = this.hit.filter((target) => target !== gameObjectB);
+                } else if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
+                    this.bless = this.bless.filter((target) => target !== gameObjectB);
                 };
             },
             context: scene
@@ -274,12 +270,10 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             objectA: [this.sensor],
             callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if (gameObjectB instanceof Enemy) {
-                    if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
-                        this.hit.push(gameObjectB);    
-                    } else if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
-                        this.bless.push(gameObjectB);
-                    };
+                if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
+                    this.hit.push(gameObjectB);    
+                } else if (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') {
+                    this.bless.push(gameObjectB);
                 };
             },
             context: scene
@@ -288,12 +282,10 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             objectA: [this.sensor],
             callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if (gameObjectB instanceof Enemy) {
-                    if (gameObjectB.name === 'enemy' && bodyB.label === 'enemyCollider') {
-                        this.hit = this.hit.filter((target) => target.enemyID !== gameObjectB.enemyID);
-                    } else if (gameObjectB.name === 'player' && bodyB.label === 'playerCollider') {
-                        this.bless = this.bless.filter((target) => target !== gameObjectB);
-                    };
+                if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
+                    this.hit = this.hit.filter((target) => target.enemyID !== gameObjectB.enemyID);
+                } else if (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') {
+                    this.bless = this.bless.filter((target) => target !== gameObjectB);
                 };
             },
             context: scene

@@ -84,6 +84,9 @@ class Tooltip {
         });
     };
     hideTooltip(scene: Game | Underground) {
+        this.timer?.remove();
+        this.timer = undefined;
+        this.refresh = false; 
         scene.time.addEvent({
             delay: 50,
             repeat: 10,
@@ -91,9 +94,6 @@ class Tooltip {
                 this.container?.setAlpha(this.container.alpha - 0.1);
                 if (this.container?.alpha as number <= 0) {
                     this.container?.setVisible(false);
-                    this.timer?.remove();
-                    this.timer = undefined;
-                    this.refresh = false; 
                 };
             },
             callbackScope: this.container
@@ -111,7 +111,7 @@ class Tooltip {
                 this.container.y = pointer.worldY - (this.height + 25);
             } else {
                 this.container.x = scene.cameras.main.centerX - 60;
-                this.container.y = scene.cameras.main.height - (this.height / 2);
+                this.container.y = scene.cameras.main.height - (this.height * 0.6);
             };
             this.container.setDepth(depth + 1);
             this.container.setVisible(true);    
@@ -969,7 +969,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 textY = pointer.worldY - (totalHeight + 25);
             } else {
                 textX = this.scene.cameras.main.centerX - 60;
-                textY = this.scene.cameras.main.height - (totalHeight / 2);
+                textY = this.scene.cameras.main.height - (totalHeight * 0.6);
             };
             const tooltipContainer = this.scene.add.container(textX, textY).setDepth(10).setAlpha(0);
             tooltipContainer.add([background, textTitle, textDescription, textSuper]);

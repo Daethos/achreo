@@ -427,7 +427,8 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
         try {
             console.log(`Upgrading ${highlighted().item?.name} of ${highlighted().item?.rarity} quality.`);
             let match = JSON.parse(JSON.stringify(dragAndDropInventory()));
-            match = match.filter((item: Equipment) => item.name === highlighted().item?.name && item?.rarity === highlighted().item?.rarity);
+            match = match.filter((item: Equipment) => item && item.name === highlighted().item?.name && item?.rarity === highlighted().item?.rarity);
+            console.log(match, 'Match?');
             const data = {
                 asceanID: ascean()._id,
                 upgradeID: highlighted().item?._id,
@@ -443,7 +444,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
             setCanUpgrade(false);
             setInspectModalShow(false);
         } catch (err: any) {
-            console.log(err, '<- Error upgrading item');
+            console.warn(err, '<- Error upgrading item');
         };
     };
 

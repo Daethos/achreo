@@ -299,7 +299,7 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
             )}
         </> ) : ( <>
             <div class='' style={{ 'font-size': '0.75em', color: 'gold', 'bottom': '10%', position: 'absolute' }}>
-                Unforuntaely, {highlighted()?.item?.name} requires one to be level {equipLevel(highlighted()?.item?.rarity as string)} to equip.
+                Unfortunately, {highlighted()?.item?.name} requires one to be level {equipLevel(highlighted()?.item?.rarity as string)} to equip.
                 {'\n'}{'\n'}    
             </div>
             <button class='highlight cornerBL' style={{ transform: 'translateX(-50%)', left: '50%', bottom: dimensions().ORIENTATION === 'landscape' ? '0' : '0', 'font-size': '0.5em' }} onClick={() => setRemoveModalShow(!removeModalShow())}>

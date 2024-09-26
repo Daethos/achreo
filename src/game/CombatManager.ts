@@ -32,7 +32,7 @@ export class CombatManager extends Phaser.Scene {
         if (match) { // Target Player Attack
             this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: type } });
         } else { // Blind Player Attack
-            if (enemy.healthbar.getValue() === 0) return;
+            if (enemy.health === 0) return;
             this.combatMachine.action({ type: 'Player', data: { 
                 playerAction: { action: type, parry: this.context.state.parryGuess }, 
                 enemyID: enemy.enemyID, 
@@ -40,7 +40,7 @@ export class CombatManager extends Phaser.Scene {
                 damageType: enemy.currentDamageType, 
                 combatStats: enemy.combatStats, 
                 weapons: enemy.weapons, 
-                health: enemy.healthbar.getValue(), 
+                health: enemy.health, 
                 actionData: { action: enemy.currentAction, parry: enemy.parryAction }
             }});
         };
@@ -48,9 +48,9 @@ export class CombatManager extends Phaser.Scene {
     astrave = (id: string, enemyID: string): void => {
         if (id === '') return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy !== undefined && enemy.healthbar.getValue() > 0 && enemy.isDefeated !== true) {
+        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 1);
-            const health = enemy.healthbar.getValue() - damage;
+            const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
             enemy.count.stunned += 1;    
             enemy.isStunned = true;
@@ -63,11 +63,11 @@ export class CombatManager extends Phaser.Scene {
     blind = (id: string): void => {
         if (id === '') return;
         let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
-        if (enemy !== undefined && enemy.healthbar.getValue() > 0 && enemy.isDefeated !== true) {
+        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
             enemy.count.feared += 1;
             enemy.isFeared = true;
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 1);
-            const health = enemy.healthbar.getValue() - damage;
+            const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
         } else if (id === this.context.player.playerID) {
 
@@ -76,14 +76,14 @@ export class CombatManager extends Phaser.Scene {
     caerenesis = (id: string): void => {
         if (id === '') return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy !== undefined && enemy.healthbar.getValue() > 0 && enemy.isDefeated !== true) {
+        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
             enemy.isParalyzed = true;
             if (this.context.player.currentTarget && this.context.player.currentTarget.enemyID === this.context.player.getEnemyId()) {
                 this.combatMachine.action({ type: 'Tshaeral', data: 15 });
             } else {
                 const drained = Math.round(this.context.state.playerHealth * 0.15 * (this.context.player.isCaerenic ? 1.15 : 1) * ((this.context.state.player?.level as number + 9) / 10));
                 const newPlayerHealth = drained / this.context.state.playerHealth * 100;
-                const newHealth = enemy.healthbar.getValue() - drained < 0 ? 0 : enemy.healthbar.getValue() - drained;
+                const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
                 const tshaeralDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
                 EventBus.emit('add-combat-logs', { ...this.context.state, playerActionDescription: tshaeralDescription });
                 this.combatMachine.action({ type: 'Health', data: { key: 'player', value: newPlayerHealth, id: this.context.player.playerID } });
@@ -138,9 +138,9 @@ export class CombatManager extends Phaser.Scene {
     fyerus = (id: string): void => {
         if (id === '') return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy !== undefined && enemy.healthbar.getValue() > 0 && enemy.isDefeated !== true) {
+        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.35) * (this.context.player.isCaerenic ? 1.15 : 1) * ((this.context.state.player?.level as number + 9) / 10);
-            const health = enemy.healthbar.getValue() - damage;
+            const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
             enemy.slowDuration = 950;
             enemy.count.slowed += 1;
@@ -151,9 +151,9 @@ export class CombatManager extends Phaser.Scene {
         if (id === '') return;
         this.stunned(id);
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy !== undefined && enemy.healthbar.getValue() > 0 && enemy.isDefeated !== true) {
+        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.75);
-            const health = enemy.healthbar.getValue() - damage;
+            const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
         };
     };
@@ -165,7 +165,7 @@ export class CombatManager extends Phaser.Scene {
         } else {
             this.root(id);
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player]) * (this.context.player.isCaerenic ? 1.15 : 1) * ((this.context.state.player?.level as number + 9) / 10);
-            const health = enemy.healthbar.getValue() - damage;
+            const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
         };
     };
@@ -198,7 +198,7 @@ export class CombatManager extends Phaser.Scene {
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) return;
         const heal = enemy.ascean.health.max * 0.1;
-        const health = Math.min(enemy.healthbar.getValue() + heal, enemy.ascean.health.max);
+        const health = Math.min(enemy.health + heal, enemy.ascean.health.max);
         this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
     };
     root = (id: string): void => {
@@ -289,9 +289,9 @@ export class CombatManager extends Phaser.Scene {
     tendril = (id: string, _enemyID: string): void => {
         if (id === '') return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy !== undefined && enemy.healthbar.getValue() > 0 && enemy.isDefeated !== true) {
+        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.3);
-            const total = Math.max(0, enemy.healthbar.getValue() - damage);
+            const total = Math.max(0, enemy.health - damage);
             this.combatMachine.action({ data: { key: 'enemy', value: total, id }, type: 'Health' });
         } else if (id === this.context.player.playerID) {
             this.combatMachine.action({ data: 10, type: 'Enemy Chiomic' });
@@ -325,7 +325,7 @@ export class CombatManager extends Phaser.Scene {
                     damageType: enemy.currentDamageType, 
                     combatStats: enemy.combatStats, 
                     weapons: enemy.weapons, 
-                    health: enemy.healthbar.getValue(), 
+                    health: enemy.health, 
                     actionData: { action: enemy.currentAction, parry: enemy.parryAction }
                 }});
             };

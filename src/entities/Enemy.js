@@ -161,7 +161,7 @@ export default class Enemy extends Entity {
             .on('pointerdown', () => {
                 if ((!this.scene.settings.difficulty.enemyCombatInteract && this.scene.combat && !this.inCombat) || this.isDeleting) return;
                 if (this.ascean?.level > this.scene.state.player.level) {
-                    this.scene.sound.play('religious', { volume: this.scene.settings.volume });
+                    this.scene.sound.play('righteous', { volume: this.scene.settings.volume });
                 } else if (this.ascean?.level === this.scene.state.player.level) {
                     this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });                    
                 } else {
@@ -440,7 +440,6 @@ export default class Enemy extends Entity {
         if (this.healthbar) this.healthbar.setVisible(true);
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
         this.stateMachine.setState(States.CHASE);
-
         this.scene.combatEngaged(true);
     };
 
@@ -453,9 +452,7 @@ export default class Enemy extends Entity {
         if (this.healthbar) this.healthbar.setVisible(true);
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
         this.stateMachine.setState(States.CHASE); 
-        if (this.scene.player.inCombat === false) this.scene.player.targetEngagement(this.enemyID);
-
-        console.log('===== checkEnemyCombatEnter =====');
+        if (this.scene.combat === false) this.scene.player.targetEngagement(this.enemyID); // player.inCombat
         this.scene.combatEngaged(true);
     };
 
@@ -523,12 +520,12 @@ export default class Enemy extends Entity {
     }; 
 
     clearCombat = () => {
-        this.inCombat = false;
-        this.setSpecialCombat(false);
-        this.attacking = undefined;
-        this.isAggressive = false; // Added to see if that helps with post-combat losses for the player
         this.health = this.ascean.health.max;
         this.healthbar.setValue(this.ascean.health.max);    
+        this.setSpecialCombat(false);
+        this.inCombat = false;
+        this.attacking = undefined;
+        this.isAggressive = false; // Added to see if that helps with post-combat losses for the player
         this.stateMachine.setState(States.LEASH); 
     };
     
@@ -588,12 +585,12 @@ export default class Enemy extends Entity {
                 const special = ENEMY_SPECIAL[mastery][Math.floor(Math.random() * ENEMY_SPECIAL[mastery].length)].toLowerCase();
                 this.specialAction = special;
                 // this.currentAction = 'special';
-                // const specific = ['malice'];
-                // const test = specific[Math.floor(Math.random() * specific.length)];
-                if (this.stateMachine.isState(special)) {
-                    this.stateMachine.setState(special);
-                } else if (this.positiveMachine.isState(special)) {
-                    this.positiveMachine.setState(special);
+                const specific = ['renewal'];
+                const test = specific[Math.floor(Math.random() * specific.length)];
+                if (this.stateMachine.isState(test)) {
+                    this.stateMachine.setState(test);
+                } else if (this.positiveMachine.isState(test)) {
+                    this.positiveMachine.setState(test);
                 };
                 this.setSpecialCombat(true);
             }, undefined, this);
@@ -780,7 +777,6 @@ export default class Enemy extends Entity {
  
     onPatrolEnter = () => {
         this.enemyAnimation();
-        const numberOfPatrolPoints = Phaser.Math.RND.between(1, 2);
         this.patrolPath = this.generatePatrolPath(); // Generate patrol points via navmesh
         if (!this.patrolPath || this.patrolPath.length < 2) {
             this.stateMachine.setState(States.IDLE);
@@ -880,13 +876,13 @@ export default class Enemy extends Entity {
         this.chaseTimer = this.scene.time.addEvent({
             delay: 500,
             callback: () => {
-                this.scene.navMesh.debugDrawClear();
+                // this.scene.navMesh.debugDrawClear();
                 this.path = this.scene.navMesh.findPath(this.position, this.attacking.position);
                 if (this.path && this.path.length > 1) {
                     if (!this.isPathing) this.isPathing = true;
                     const nextPoint = this.path[1];
                     this.nextPoint = nextPoint;
-                    this.scene.navMesh.debugDrawPath(this.path, 0xffd900);
+                    // this.scene.navMesh.debugDrawPath(this.path, 0xffd900);
                     const pathDirection = new Phaser.Math.Vector2(this.nextPoint.x, this.nextPoint.y);
                     this.pathDirection = pathDirection;
                     this.pathDirection.subtract(this.position);
@@ -924,7 +920,7 @@ export default class Enemy extends Entity {
     }; 
     onChaseExit = () => {
         this.enemyAnimation();
-        this.scene.navMesh.debugDrawClear();
+        // this.scene.navMesh.debugDrawClear();
         this.setVelocity(0, 0);
         if (this.chaseTimer) {
             this.chaseTimer.destroy();
@@ -990,7 +986,6 @@ export default class Enemy extends Entity {
         if (!this.isAttacking) this.evaluateCombatDistance(); 
     };
     onAttackExit = () => {
-        // this.isAttacking = false;
         if (this.scene.state.computerAction !== '') this.scene.combatManager.combatMachine.input('computerAction', '', this.enemyID);
         this.setTint(ENEMY_COLOR);
     };
@@ -1006,8 +1001,6 @@ export default class Enemy extends Entity {
         if (!this.isParrying) this.evaluateCombatDistance();
     };
     onParryExit = () => {
-        this.isParrying = false;
-        this.currentAction = '';
         if (this.scene.state.computerAction !== '') this.scene.combatManager.combatMachine.input('computerAction', '', this.enemyID);
         if (this.scene.state.computerParryGuess !== '') this.scene.combatManager.combatMachine.input('computerParryGuess', '', this.enemyID);
         this.setTint(ENEMY_COLOR);
@@ -1023,7 +1016,6 @@ export default class Enemy extends Entity {
         if (!this.isThrusting) this.evaluateCombatDistance();
     };
     onThrustExit = () => {
-        // this.isThrusting = false;
         if (this.scene.state.computerAction !== '') this.scene.combatManager.combatMachine.input('computerAction', '', this.enemyID);
         this.setTint(ENEMY_COLOR);
     };
@@ -1063,7 +1055,6 @@ export default class Enemy extends Entity {
         if (!this.isPosturing) this.evaluateCombatDistance();
     };
     onPostureExit = () => {
-        // this.isPosturing = false;
         if (this.scene.state.computerAction !== '') this.scene.combatManager.combatMachine.input('computerAction', '', this.enemyID);
         this.setTint(ENEMY_COLOR);
     };
@@ -2882,7 +2873,7 @@ export default class Enemy extends Entity {
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.inCombat === false) return;
         this.evaluateEnemyAnimation();
-        if (this.isConfused && !this.stateMachine.isCurrentState(States.CONFUSED)) {
+        if (this.isConfused && !this.sansSuffering('isConfused') && !this.stateMachine.isCurrentState(States.CONFUSED)) {
             this.stateMachine.setState(States.CONFUSED);
             return;
         };
@@ -2894,19 +2885,19 @@ export default class Enemy extends Entity {
             this.stateMachine.setState(States.COUNTERSPELLED);
             return;
         };
-        if (this.isFeared && !this.stateMachine.isCurrentState(States.FEARED)) {
+        if (this.isFeared && !this.sansSuffering('isFeared') && !this.stateMachine.isCurrentState(States.FEARED)) {
             this.stateMachine.setState(States.FEARED);
             return;
         };
-        if (this.isParalyzed && !this.stateMachine.isCurrentState(States.PARALYZED)) {
+        if (this.isParalyzed && !this.sansSuffering('isParalyzed') && !this.stateMachine.isCurrentState(States.PARALYZED)) {
             this.stateMachine.setState(States.PARALYZED);
             return;
         };
-        if (this.isPolymorphed && !this.stateMachine.isCurrentState(States.POLYMORPHED)) {
+        if (this.isPolymorphed && !this.sansSuffering('isPolymorphed') && !this.stateMachine.isCurrentState(States.POLYMORPHED)) {
             this.stateMachine.setState(States.POLYMORPHED);
             return;
         };
-        if (this.isStunned && !this.stateMachine.isCurrentState(States.STUNNED)) {
+        if (this.isStunned && !this.sansSuffering('isStunned') && !this.stateMachine.isCurrentState(States.STUNNED)) {
             this.stateMachine.setState(States.STUNNED);
             return;
         };

@@ -655,10 +655,10 @@ export default function PhaserGame (props: IProps) {
                 itemsToRemove = itemsToRemove.slice(0, 3);
             };
             const itemsIdsToRemove = itemsToRemove.map((itr: Equipment) => itr._id);
-            let inventory = game().inventory.inventory.length > 0? JSON.parse(JSON.stringify(game().inventory.inventory)) : [];
+            let inventory = game().inventory.inventory.length > 0 ? JSON.parse(JSON.stringify(game().inventory.inventory)) : [];
             inventory.push(item[0]);
             itemsIdsToRemove.forEach(async (itemID: string) => {
-                const itemIndex = inventory.findIndex((item: Equipment) => item._id === itemID);
+                const itemIndex = inventory.findIndex((item: Equipment) => item && item._id === itemID);
                 inventory.splice(itemIndex, 1);
                 await deleteEquipment(itemID);
             });

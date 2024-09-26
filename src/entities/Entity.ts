@@ -250,7 +250,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     setGlow = (object: any, glow: boolean, type: string | undefined = undefined) => {
         this.glowColor = this.setColor(this.ascean?.mastery);
         this.scene.glowFilter?.remove(object);
-        // this.scene.glowFilter?.setActive(false);
         if (!glow) {
             switch (type) {
                 case 'shield':
@@ -318,19 +317,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
     };
 
-    // updateGlow = (object: any) => {
-    //     this.scene.glowFilter?.remove(object);
-    //     const outerStrength = 2 + Math.sin(this.scene.time.now * 0.005) * 2;
-    //     const innerStrength = 2 + Math.cos(this.scene.time.now * 0.005) * 2;
-    //     this.scene.glowFilter?.add(object, {
-    //         outerStrength,
-    //         innerStrength,
-    //         glowColor: this.glowColor,
-    //         quality: GLOW_INTENSITY,
-    //         knockout: true
-    //     });
-    // }; 
-
     updateGlow = (object: any) => {
         const glowFilter = this.scene.glowFilter;
         let instance = glowFilter.get(object)[0];
@@ -389,8 +375,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     knockback(id: string) {
         const enemy = this.scene.getEnemy(id);
         if (enemy === undefined) return;
-        const x = this.x > enemy.x ? -0.05 : 0.05;
-        const y = this.y > enemy.y ? -0.05 : 0.05;
+        const x = this.x > enemy.x ? -0.5 : 0.5;
+        const y = this.y > enemy.y ? -0.5 : 0.5;
         this.knockbackDirection = { x, y };
         const accelerationFrames = 10; 
         const accelerationStep = this.knockbackForce / accelerationFrames;
@@ -404,7 +390,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             if (currentForce < this.knockbackForce) currentForce += accelerationStep;
             const forceX = (this.knockbackDirection.x * currentForce);
             const forceY = (this.knockbackDirection.y * currentForce);
-            enemy.applyForce({ x: forceX, y: forceY });
+            if (enemy.moving()) enemy.applyForce({ x: forceX, y: forceY });
             currentForce *= dampeningFactor;
             requestAnimationFrame(knockbackLoop);
         };
@@ -412,13 +398,28 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         requestAnimationFrame(knockbackLoop);
         if ("vibrate" in navigator) navigator.vibrate(48);
     };
-    moving = () => this.body?.velocity.x !== 0 || this.body.velocity.y !== 0;
-    movingHorizontal = () => this.body?.velocity.x !== 0 && this.body?.velocity.y === 0;
-    movingVertical = () => this.body?.velocity.x === 0 && this.body?.velocity.y !== 0;
-    movingDown = () => this.body?.velocity.x === 0 && this.body?.velocity.y > 0;
-    movingUp = () => this.body?.velocity.x === 0 && this.body?.velocity.y < 0;
+    moving = (): boolean => this.body?.velocity.x !== 0 || this.body.velocity.y !== 0;
+    movingHorizontal = (): boolean => this.body?.velocity.x !== 0 && this.body?.velocity.y === 0;
+    movingVertical = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y !== 0;
+    movingDown = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y > 0;
+    movingUp = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y < 0;
 
-    isSuffering = () => this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed || this.isStunned;
+    isSuffering = (): boolean => this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed || this.isStunned;
+    sansSuffering = (ailment: string): boolean => {
+        switch (ailment) {
+            case 'isConfused':
+                return this.isFeared || this.isParalyzed || this.isPolymorphed || this.isStunned;
+            case 'isFeared':
+                return this.isConfused || this.isParalyzed || this.isPolymorphed || this.isStunned;
+            case 'isParalyzed':
+                return this.isConfused || this.isFeared || this.isPolymorphed || this.isStunned;
+            case 'isPolymorphed':
+                return this.isConfused || this.isParalyzed || this.isParalyzed || this.isStunned;                        
+            case 'isStunned':
+                return this.isConfused || this.isParalyzed || this.isParalyzed || this.isPolymorphed;    
+            default: return this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed || this.isStunned;
+        };
+    };
 
     checkBow = (type: string) => type === 'Bow' || type === 'Greatbow';
     checkDamageType = (type: string, concern: string) => DAMAGE_TYPES[concern as keyof typeof DAMAGE_TYPES].includes(type);

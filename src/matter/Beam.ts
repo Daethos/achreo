@@ -1,8 +1,6 @@
 import { Game } from "../game/scenes/Game";
 import { masteryNumber } from "../utility/styling";
 const CONVERSION = {
-    // X: 0.064697265625, // 265 || this.scene.map.widthInPixels * CONVERSION.X
-    // Y: 0.040283203125, // 165 || this.scene.map.heightInPixels * CONVERSION.Y
     Game: {
         X: 265,
         Y: 165
@@ -104,7 +102,7 @@ export default class Beam {
         this.enemyEmitters[enemy.enemyID].setConfig({ ...this.settings, ...dynamicConfig });
     };
     glow = (): number => Math.random() / 10;
-    randomize = (): number => Math.random() * 20 * (Math.random() > 0.5 ? 1 : -1); 
+    randomize = (): number => Math.random() * 25 * (Math.random() > 0.5 ? 1 : -1); 
     reset = () => {
         this.emitter.stop(); // Added
         this.emitter.setVisible(false);

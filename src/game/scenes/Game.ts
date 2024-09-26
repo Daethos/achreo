@@ -611,7 +611,7 @@ export class Game extends Scene {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (bool === true) {
             screenShake(this);
-            this.cameras.main.flash(64, 156, 163, 168, false, undefined, this);
+            this.cameras.main.flash(48, 156, 163, 168, false, undefined, this);
         };
         if (bool === true && this.combat !== bool) {
             this.player.inCombat = true;

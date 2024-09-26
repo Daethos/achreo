@@ -137,7 +137,7 @@ export const INSTINCTS = {
             key: 'stateMachine',
             value: States.DESPERATION
         },{ // 1 - Casual Heal
-            key: 'positiveMachine',
+            key: 'stateMachine',
             value: States.HEALING
         },{ // 2 - Desperate Damage
             key: 'stateMachine',
@@ -226,7 +226,7 @@ export const INSTINCTS = {
             value: States.MULTIFARIOUS
         },{ // 6
             key: 'stateMachine',
-            value: States.SNARE
+            value: States.SLOWING
     }],
     'caeren': [
         { // 0
@@ -257,7 +257,7 @@ export const INSTINCTS = {
             value: States.HEALING
         },{ // 1
             key: 'stateMachine',
-            value: States.DEVOUR
+            value: States.TSHAERAL
         },{ // 2
             key: 'stateMachine',
             value: States.MAIERETH

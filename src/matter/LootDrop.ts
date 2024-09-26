@@ -9,7 +9,6 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
     drop: Equipment;
     scene: any;
     tween: Phaser.Tweens.Tween;
-    // glowFilter: any;
 
     constructor(data: any) {
         let { scene, enemyID, drop } = data;
@@ -57,11 +56,11 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
     }; 
     cleanUp = () => EventBus.off('destroy-lootdrop', this.destroyLootDrop);
     setupCollider = () => {
-        const circleCollider = Bodies.circle(this.x, this.y, 12, { isSensor: false, label: "lootdropCollider" });
-        this.setExistingBody(circleCollider);
+        const lootSensor = Bodies.circle(this.x, this.y, 12, { isSensor: true, label: "lootSensor" });
+        this.setExistingBody(lootSensor);
         this.setStatic(true);
         this.scene.matterCollision.addOnCollideStart({
-            objectA: [circleCollider],
+            objectA: [lootSensor],
             callback: (other: any) => {
                 if (other.gameObjectB && other.bodyB.label === 'playerSensor') {
                     other.gameObjectB.interacting.push(this);
@@ -72,7 +71,7 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
             context: this.scene,
         }); 
         this.scene.matterCollision.addOnCollideEnd({
-            objectA: [circleCollider],
+            objectA: [lootSensor],
             callback: (other: any) => {
                 if (other.gameObjectB && other.bodyB.label === 'playerSensor') {
                     other.gameObjectB.interacting = other.gameObjectB.interacting.filter((obj: any) => obj._id !== this._id);

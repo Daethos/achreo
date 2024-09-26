@@ -1360,7 +1360,7 @@ export default class Player extends Entity {
                 this.particleEffect.success = false;
                 this.particleEffect.triggered = true;
                 this.playerActionSuccess();
-            } else if (this.particleEffect.collided) {
+            } else if (this.particleEffect.collided || !this.particleEffect.effect?.active) {
                 this.scene.particleManager.removeEffect(this.particleEffect.id);
                 this.particleEffect = undefined;                
             } else {

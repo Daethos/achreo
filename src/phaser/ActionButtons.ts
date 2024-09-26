@@ -812,6 +812,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     private setButtonText = (button: ActionButton, pointer: any) => {
         if (this.scene.combat) return;
         const background = this.scene.add.graphics();
+        // const background = this.scene.add.image(0, 0, 'tooltip').setOrigin(0, 0);  // Tooltip background image
+
         const padding = 10;
         const width = 300;
         const action = ACTION_ORIGIN[button.name as keyof typeof ACTION_ORIGIN];
@@ -837,7 +839,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         });
         const textSuper = this.scene.add.text(0, textTitle?.height + textDescription?.height, `${action.cost} \n ${action.time} ${action.special} \n ${action.cooldown} Cooldown`, {
             align: 'left',
-            color: STAMINA.includes(button.name.toLowerCase()) ? '#0f0' : '#0ff',
+            color: STAMINA.includes(button.name.toLowerCase()) ? '#0f0' : '#0cf',
             fontFamily: 'Cinzel',
             fontSize: '18px',
             stroke: '#000',
@@ -848,7 +850,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
         const totalHeight = textTitle?.height + textDescription?.height + textSuper?.height + 10;
         background.fillStyle(0x000000, 1);
-        background.lineStyle(2, 0xFFFFFF, 1);
+        background.lineStyle(3, 0xFFFFFF, 1);
         background.fillRoundedRect(0, 0, width, totalHeight, 5);
         background.strokeRoundedRect(0, 0, width, totalHeight, 5);
         const textX = pointer.worldX - 150;

@@ -12,12 +12,12 @@ export const PLAYER = {
     DODGE: { // 8*
         DISTANCE: 240, // 2800, // 126 || 2304
         DURATION: 350, // 18 || 288
-        MULTIPLIER: 11,
+        MULTIPLIER: 10,
     },
     ROLL: { // 6*
         DISTANCE: 160, // 1920, // 140
         DURATION: 320, // 20
-        MULTIPLIER: 8,
+        MULTIPLIER: 7.5,
     },
     SPEED: {
         INITIAL: 1.5, // 1.75

@@ -322,9 +322,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     adjustSpeed = (speed) => {
         return this.speed += speed;
     };
-    clearAnimations = () => {
-        if (this.anims.currentAnim) this.anims.stop(this.anims.currentAnim.key);
-    };
+    clearAnimations = () => {if (this.anims.currentAnim) this.anims.stop(this.anims.currentAnim.key);};
     checkIfAnimated = () => this.anims.currentAnim ? true : false;
 
     attack = () => { 
@@ -405,7 +403,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             } else {
                 this.weaponHitbox.setRadius(28);
             };
-            // this.weaponHitbox.width = weapon?.grip === 'One Hand' ? 40 : 45;
         } else {
             this.swingTimer = ENEMY_SWING_TIME[weapon?.grip] || 1000;
         };
@@ -435,19 +432,12 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     hitBoxCheck = (enemy) => {
-        if (!enemy || enemy.health <= 0) return; // enemy.isDefeated === true
-        const xOffset = this.flipX ? 16 : -16;
-        // let pointer = this.scene.add.graphics()
-        //     .lineStyle(1, 0xFF0000, 1)
-        //     .strokeRect(enemy.x + xOffset, enemy.y, 1, 1);
-        for (let i = -32; i < 32; i++) {
-            // pointer.clear();
-            // pointer.strokeRect(enemy.x + xOffset, enemy.y + i, 1, 1);
-            if (this.weaponHitbox.getBounds().contains(enemy.x + xOffset, enemy.y + i)) {
-                this.attackedTarget = enemy;
-                this.actionSuccess = true;
-                return;
-            };
+        if (!enemy) return; // enemy.isDefeated === true
+        const weaponBounds = this.weaponHitbox.getBounds();
+        const enemyBounds = enemy.getBounds();
+        if (Phaser.Geom.Intersects.CircleToRectangle(weaponBounds, enemyBounds)) {
+            this.attackedTarget = enemy;
+            this.actionSuccess = true;
         };
     };
 
@@ -491,23 +481,17 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             } else if (this.velocity.y < 0) {
                 this.weaponHitbox.y -= 16;
             };
-            if (target === undefined) {
-                if (this.targets.length === 0) {
-                    if (this.touching.length === 0) {
-                        return;
-                    } else {
-                        for (let i = 0; i < this.touching.length; i++) {
-                            this.hitBoxCheck(this.touching[i]);
-                        };
-                    };
-                } else {
-                    for (let i = 0; i < this.targets.length; i++) {
-                        this.hitBoxCheck(this.targets[i]);
-                    };
-                    return;
+            if (target) this.hitBoxCheck(target);
+            if (this.targets.length > 0) {
+                for (let i = 0; i < this.targets.length; i++) {
+                    if (this.targets[i] !== target) this.hitBoxCheck(this.targets[i]);
                 };
             };
-            this.hitBoxCheck(target);
+            if (this.touching.length > 0) {
+                for (let i = 0; i < this.touching.length; i++) {
+                    if (this.touching[i] !== target) this.hitBoxCheck(this.touching[i]);
+                };
+            };
         };
         if (entity === 'enemy' && target) {
             const direction = target.position.subtract(this.position);
@@ -519,7 +503,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     weaponRotation = (entity, target) => {  
         if (!this.isPosturing && !this.isStalwart && this.spriteShield) this.spriteShield.setVisible(false); // && !this.isStrafing
         if (this.isDodging || this.isRolling) this.spriteShield.setVisible(false);
-        if (!this.movingVertical()) {this.spriteWeapon.setVisible(true);this.spriteShield.setDepth(this.depth + 1);};
+        // if (!this.movingVertical()) {
+        this.spriteWeapon.setVisible(true);
+        this.spriteShield.setDepth(this.depth + 1);
+        // };
         if (this.isDodging || this.isRolling) this.spriteWeapon.setVisible(false);
         if (this.isStalwart && !this.isRolling && !this.isDodging) this.spriteShield.setVisible(true);
         if (this.isPraying || this.isCasting) {
@@ -1138,20 +1125,39 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.frameCount += 1;
         } else if (this.movingVertical()) {
             if (!this.flipX) {
+                if ((entity === 'player' && this.hasBow) || (entity === 'enemy' && this.hasBow)) {
+                    this.spriteWeapon.setDepth(1);
+                    this.spriteWeapon.setOrigin(0.25, 0.25);
+                    this.spriteWeapon.setAngle(107.5);
+                } else {
+                    this.spriteWeapon.setDepth(3);
+                    this.spriteWeapon.setOrigin(0, 0.5);
+                    this.spriteWeapon.setAngle(107.5);
+                };
                 if (this.isStalwart) {
                     this.spriteShield.setOrigin(-0.2, 0.25);
                 };    
             } else {
+                if ((entity === 'player' && this.hasBow) || (entity === 'enemy' && this.hasBow)) {
+                    this.spriteWeapon.setDepth(1);
+                    this.spriteWeapon.setOrigin(0, 0.5);
+                    this.spriteWeapon.setAngle(-7.5);
+                } else {
+                    this.spriteWeapon.setDepth(3);
+                    this.spriteWeapon.setOrigin(0.25, 1.2);
+                    this.spriteWeapon.setAngle(-194.5);
+                };
                 if (this.isStalwart) {
                     this.spriteShield.setOrigin(1.2, 0.25);
                 };
             }
             if (this.movingDown()) {
                 this.spriteShield.setDepth(this.depth + 1);
+                this.spriteWeapon.setDepth(this.depth + 1);
             } else {
                 this.spriteShield.setDepth(this.depth - 1);
+                this.spriteWeapon.setDepth(this.depth - 1);
             };
-            this.spriteWeapon.setVisible(false);
             this.frameCount = 0;
         } else if (((Math.abs(this.body.velocity.x) > 0.1 || Math.abs(this.body.velocity.y) > 0.1)) && !this.isRolling && !this.flipX) {
             if (this.isStalwart) {

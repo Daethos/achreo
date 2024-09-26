@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Game } from '../game/scenes/Game';
 import { Underground } from '../game/scenes/Underground';
-export const PARTICLES = ['achire', 'arrow', 'earth',  'fire',  'frost', 'hook', 'lightning', 'righteous', 'quor', 'sorcery', 'spooky', 'wild', 'wind'];
+export const PARTICLES = ['achire', 'earth',  'fire',  'frost', 'hook', 'lightning', 'righteous', 'quor', 'sorcery', 'spooky', 'wild', 'wind'];
 const TIME = { quor: 3000, achire: 2000, attack: 1500, hook: 1750, thrust: 1150, posture: 1750, roll: 1500, special: 2000 };
 const VELOCITY = { quor: 4.5, achire: 6, attack: 5, hook: 5.5, thrust: 6, posture: 4, roll: 4, special: 5 }; // 7.5 || 9 || 6 || 6
 // @ts-ignore
@@ -11,12 +11,20 @@ import Enemy from '../entities/Enemy';
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 
-function angleTarget(x: number, y: number) {
-    if (x > 0) {
-        if (y > 0) { return 90; } else { return 0; };
-    } else {
-        if (y > 0) { return 180; } else { return 270 };
+function angleTarget(particle: Particle): number {
+    let angle = 0;
+    if (particle.target.x > 0 && particle.target.y < 0) { // Up-Right
+        angle += 90 * particle.target.y;
+    } else if (particle.target.x < 0 && particle.target.y < 0) { // Up-Left
+        angle -= 90 * particle.target.y;
+    } else if (particle.target.x > 0 && particle.target.y > 0) { // Down-Right
+        angle += 90 * particle.target.y;
+    } else if (particle.target.x < 0 && particle.target.y > 0) { // Down-Left
+        angle -= 90 * particle.target.y;
     };
+    if (particle.target.x > 0) angle += 180;
+    return angle;
+    
 };
 
 class Particle {
@@ -40,13 +48,14 @@ class Particle {
     constructor(scene: Game | Underground, action: string, key: string, player: Player | Enemy, special: boolean) {
         const particle = PARTICLES.includes(key);
         const id = uuidv4();
+        const idKey = key + '_effect';
         this.scene = scene;
         this.id = id;
         this.pID = player.particleID;
         this.action = action;
-        this.effect = this.spriteMaker(this.scene, player, particle === true ? key + '_effect' : key, particle, special); 
+        this.effect = this.spriteMaker(this.scene, player, idKey, particle, special); 
         this.isParticle = particle === true;
-        this.key = particle === true ? key + '_effect' : key;
+        this.key = idKey; // particle === true ? idKey : key;
         this.player = player;
         this.sensorSize = this.sensorer(special, action);
         this.special = special;
@@ -58,11 +67,10 @@ class Particle {
         scene.add.existing(this.effect);
         this.sensorListener(player, effectSensor);
         this.effect.setVisible(true);
-        this.effect.flipX = !player.flipX && !this.effect.flipX;
     };
 
     construct(particle: Particle, action: string, player: Player | Enemy, special: boolean, key: string) {
-        const idKey = PARTICLES.includes(key) ? `${key}_effect` : key;
+        const idKey = `${key}_effect`;
         this.action = action
         this.isParticle = PARTICLES.includes(key);
         this.key = idKey;
@@ -75,7 +83,6 @@ class Particle {
         this.velocity = this.setVelocity(action);
         this.effect.setScale(this.scaler(particle.isParticle, special, this.action));
         this.effect.setTexture(idKey);
-        this.effect.flipX = !player.flipX && !this.effect.flipX;
     };
     scaler = (particle: boolean, special: boolean, action: string) => {
         if (particle && !special) {
@@ -152,8 +159,7 @@ export default class ParticleManager extends Phaser.Scene {
     particles: Particle[];
 
     static preload(scene: Phaser.Scene) {
-        scene.load.atlas('arrow_effect', '../assets/gui/arrow_effect.png', '../assets/gui/arrow_effect_atlas.json');
-        scene.load.animation('arrow_anim', '../assets/gui/arrow_anim.json');    
+        scene.load.image('arrow_effect', '../assets/gui/arrow_effect.png');
         scene.load.atlas('earth_effect', '../assets/gui/earth_effect.png', '../assets/gui/earth_json.json');
         scene.load.animation('earth_anim', '../assets/gui/earth_anim.json');
         scene.load.atlas('fire_effect', '../assets/gui/fire_effect.png', '../assets/gui/fire_json.json');
@@ -238,7 +244,7 @@ export default class ParticleManager extends Phaser.Scene {
         if (particle.isParticle === true) {
             particle.effect.play(particle.key, true);
         } else {
-            particle.effect.setAngle(angleTarget(particle.target.x, particle.target.y));
+            particle.effect.setAngle(angleTarget(particle));
         };
         particle.effect.setVelocity(particle.velocity * particle.target.x, particle.target.y * particle.velocity);
     };

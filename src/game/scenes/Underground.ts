@@ -279,10 +279,12 @@ export class Underground extends Scene {
             if (settings.desktop === true) {
                 this.joystick?.joystick?.setVisible(false);
                 this.rightJoystick?.joystick?.setVisible(false);
+                this.rightJoystick?.pointer?.setVisible(false);
                 if (this.actionBar) this.actionBar.draw();
             } else {
                 this.joystick?.joystick?.setVisible(true);
                 this.rightJoystick?.joystick?.setVisible(true);
+                this.rightJoystick?.pointer?.setVisible(true);
                 if (this.actionBar) this.actionBar.draw();
             };
         });    
@@ -764,14 +766,14 @@ export class Underground extends Scene {
     };
     setCameraOffset = () => {
         if (this.player.flipX === true) {
-            this.offsetX = Math.min(90, this.offsetX + 3);
+            this.offsetX = Math.min(75, this.offsetX + 3);
         } else {
-            this.offsetX = Math.max(this.offsetX - 3, -90);
+            this.offsetX = Math.max(this.offsetX - 3, -75);
         };
         if (this.player.velocity.y > 0) {
-            this.offsetY = Math.max(this.offsetY - 2, -60);
+            this.offsetY = Math.max(this.offsetY - 2, -50);
         } else if (this.player.velocity.y < 0) {
-            this.offsetY = Math.min(60, this.offsetY + 2);
+            this.offsetY = Math.min(50, this.offsetY + 2);
         };
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };

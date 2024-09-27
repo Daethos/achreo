@@ -775,14 +775,14 @@ export class Game extends Scene {
     };
     setCameraOffset = () => {
         if (this.player.flipX === true) {
-            this.offsetX = Math.min(105, this.offsetX + 3);
+            this.offsetX = Math.min(90, this.offsetX + 3);
         } else {
-            this.offsetX = Math.max(this.offsetX - 3, -105);
+            this.offsetX = Math.max(this.offsetX - 3, -90);
         };
         if (this.player.velocity.y > 0) {
-            this.offsetY = Math.max(this.offsetY - 2.5, -70);
+            this.offsetY = Math.max(this.offsetY - 2.5, -60);
         } else if (this.player.velocity.y < 0) {
-            this.offsetY = Math.min(70, this.offsetY + 2.5);
+            this.offsetY = Math.min(60, this.offsetY + 2.5);
         };
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };

@@ -30,6 +30,7 @@ export default class Settings {
         computer: boolean;
         special: number;
         tidbits: boolean; 
+        tooltips: boolean;
         playerSpeed: number;
         enemySpeed: number;
         enemyCombatInteract: boolean;
@@ -155,6 +156,7 @@ export default class Settings {
             computer: false,
             special: 0.5,
             tidbits: false,
+            tooltips: true,
             playerSpeed: 0,
             enemySpeed: 0,
             enemyCombatInteract: true,

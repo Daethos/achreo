@@ -15,7 +15,6 @@ import { useResizeListener } from '../../utility/dimensions';
 import { Reputation, initReputation } from '../../utility/player';
 // @ts-ignore
 import { PhaserNavMeshPlugin } from 'phaser-navmesh';
-// @ts-ignore
 import Player from '../entities/Player';
 // @ts-ignore
 import Enemy from '../entities/Enemy';
@@ -452,6 +451,17 @@ export class Game extends Scene {
                         this.enemies[i].adjustSpeed(data.speed);
                     };
                     break;
+            };
+        });
+        EventBus.on('update-enemy-aggression', (aggression: number) => {
+            for (let i = 0; i < this.enemies.length; i++) {
+                this.enemies[i].isAggressive = aggression >= Math.random();
+
+            };
+        });
+        EventBus.on('update-enemy-special', (special: number) => {
+            for (let i = 0; i < this.enemies.length; i++) {
+                this.enemies[i].isSpecial = special >= Math.random();
             };
         });
     };

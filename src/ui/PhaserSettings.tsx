@@ -105,6 +105,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
     async function handleAggression(e: any) {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, aggression: e.target.value } };
         await saveSettings(newSettings);
+        EventBus.emit('update-enemy-aggression', e.target.value);
     };
 
     // async function handleComputerCombat() {
@@ -115,6 +116,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
     async function handleSpecial(e: any) {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, special: e.target.value } };
         await saveSettings(newSettings);
+        EventBus.emit('update-enemy-special', e.target.value);
     };
 
     async function handleMusic() {
@@ -133,6 +135,10 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         };
         await saveSettings(newSettings);
         EventBus.emit('update-speed', {speed: change, type});
+    };
+    async function handleTooltips() {
+        const newSettings = { ...settings(), difficulty: { ...settings().difficulty, tooltips: !settings().difficulty.tooltips } };
+        await saveSettings(newSettings);
     };
 
     async function handleTidbits() {
@@ -258,21 +264,31 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                     </div>
                     <div style={font('0.5em')}>[Whether Computer Enemies Will Engage In Combat With Each Other (Not Yet Implemented)]</div> */}
 
+                    <h1 style={font('1.25em')}>Action Tooltip</h1>
+                        <button class='gold highlight' onClick={() => handleTooltips()}>{settings().difficulty.tooltips ? 'Enabled' : 'Disabled'}</button>
+                    <div style={font('0.5em')}>[Enabled = Click / Hover Actions to Provide an Info Popup, Disabled = No Info Popups]</div>
+                        
+                    <div style={font('1em', '#fdf6d8')}>
+                        <h1 style={font('1.25em')}>Combat Targeting</h1>
+                        <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'Manual' : 'Auto'} Aim</button>
+                    </div>
+                    <div style={font('0.5em')}>[Whether You Use the Second Joystick to Aim Ranged Attacks in Combat]</div>
+
                     <div style={font('1em', '#fdf6d8')}>
                         <h1 style={font('1.25em')}>Desktop</h1>
                         <button class='gold highlight' onClick={() => handleDesktop(!settings().desktop)}>{settings().desktop ? 'Enabled' : 'Disabled'}</button>
                     </div>
-                    <div style={font('0.5em')}>[Desktop allows you to hide the button and joystick UI, and enable keyboard and mouse for actions and movement.]</div>
+                    <div style={font('0.5em')}>[Desktop allows you to hide the joystick UI and reset the button UI, and enable keyboard and mouse for actions and movement.]</div>
 
                     <div style={font('1em', '#fdf6d8')}>
                         <h1 style={font('1.25em')}>Enemy Aggression</h1>
                         <span class='gold'>{settings().difficulty.aggression * 100}%</span> <br />
                         <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.aggression} onChange={(e) => handleAggression(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                     </div>
-                    <div style={font('0.5em')}>[Aggressive Enemy Occurrence: 0 - 100% <br /> Restart Game For This Change To Take Effect.]</div>
+                    <div style={font('0.5em')}>[Aggressive Enemy Occurrence: 0 - 100%]</div>
 
                     <div style={font('1em', '#fdf6d8')}>
-                        <h1 style={font('1.25em')}>Enemy Combat Interactive</h1>
+                        <h1 style={font('1.25em')}>Enemy Interactive (Combat)</h1>
                         <button class='gold highlight' onClick={() => handleEnemyCombatInteractive(!settings().difficulty.enemyCombatInteract)}>{settings().difficulty.enemyCombatInteract ? 'Enabled' : 'Disabled'}</button> <br />
                     </div>
                     <div style={font('0.5em')}>[Enabled: You can focus ANY enemy. <br /> Disabled: If in combat, you cannot focus enemies that are not in combat.]</div>
@@ -282,7 +298,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                         <span class='gold'>{settings().difficulty.special * 100}%</span> <br />
                         <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.special} onChange={(e) => handleSpecial(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                     </div>
-                    <div style={font('0.5em')}>[Special (Elite) Enemy Occurrence: 0 - 100% <br /> Restart Game For This Change To Take Effect.]</div>
+                    <div style={font('0.5em')}>[Special (Elite) Enemy Occurrence: 0 - 100%]</div>
 
                     <h1 style={font('1.25em')}>Speed</h1>
                     <div style={font('0.5em')}>[Adjusts the movement speed of the associated entity. This effect is immediate.]</div>
@@ -307,14 +323,9 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                     <div style={{...font('0.75em', '#fdf6d8'), 'margin': '3%' }}>Volume ({settings().volume})</div>
                     <Form.Range min={0} max={1} step={0.1} value={settings().volume} onChange={(e) => handleVolume(Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                     <br />
-                    <div style={font('1em', '#fdf6d8')}>
-                        <h1 style={font('1.25em')}>Targeting</h1>
-                        <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'Manual' : 'Auto'} Aim</button>
-                    </div>
-                    <div style={font('0.5em')}>[Whether You Use the Second Joystick to Aim Ranged Attacks in Combat]</div>
                     <h1 style={font('1.25em')}>Tidbit Popups</h1>
-                        <button class='gold highlight' onClick={() => handleTidbits()}>{settings().difficulty.tidbits ? 'On' : 'Off'}</button>
-                    <div style={font('0.5em')}>[On = Helpful Hints and Lore Popups, False = No Info Popups]</div>
+                        <button class='gold highlight' onClick={() => handleTidbits()}>{settings().difficulty.tidbits ? 'Enabled' : 'Disabled'}</button>
+                    <div style={font('0.5em')}>[Enabled = Helpful Hints and Lore Popups, Disabled = No Info Popups]</div>
                     <br />
                 </div>
             </Match>

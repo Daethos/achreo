@@ -24,6 +24,7 @@ export const States = {
     POSTURE: "posture",
     ROLL: "roll",
     THRUST: "thrust",
+    CONTEMPLATE: "contemplate",
     EVADE: "evade",
     HEAL: "heal",
     HURT: "hurt",
@@ -137,6 +138,10 @@ export default class StateMachine {
         this.id = id || this.id;
         this.context = context;
         this.states = new Map();
+    };
+
+    getCurrentState() {
+        return this.currentState?.name;
     };
 
     // if (!state) console.warn(`State ${name} does not exist`);

@@ -1,6 +1,5 @@
 import { Scene } from "phaser";
 import { EventBus } from "../EventBus";
-// @ts-ignore
 import Player from '../entities/Player';
 import NPC from '../entities/NPC';
 import Joystick from "../phaser/Joystick";

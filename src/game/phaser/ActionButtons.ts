@@ -922,7 +922,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 
     private setButtonText = (button: ActionButton, pointer: any) => {
-        if (this.scene.combat) return;
+        if (this.scene.combat || !this.scene.settings.difficulty.tooltips) return;
         let tooltip = this.tooltipManager.get(button.name);
         if (tooltip && tooltip.container) {
             tooltip.updateTooltip(this.tooltipManager, pointer, this.scene);

@@ -13,7 +13,6 @@ import Joystick from '../phaser/Joystick';
 import SmallHud from '../phaser/SmallHud';
 import Fov from '../phaser/Fov';
 import { Reputation, initReputation } from '../../utility/player';
-// @ts-ignore
 import Player from '../entities/Player';
 // @ts-ignore
 import Enemy from '../entities/Enemy';
@@ -468,6 +467,17 @@ export class Underground extends Scene {
                         this.enemies[i].adjustSpeed(data.speed);
                     };
                     break;
+            };
+        });
+        EventBus.on('update-enemy-aggression', (aggression: number) => {
+            for (let i = 0; i < this.enemies.length; i++) {
+                this.enemies[i].isAggressive = aggression >= Math.random();
+
+            };
+        });
+        EventBus.on('update-enemy-special', (special: number) => {
+            for (let i = 0; i < this.enemies.length; i++) {
+                this.enemies[i].isSpecial = special >= Math.random();
             };
         });
     };

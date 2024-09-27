@@ -1,6 +1,7 @@
 import { useResizeListener } from '../../utility/dimensions';
 import { EventBus } from '../EventBus';
 import { Game } from '../scenes/Game';
+import { Underground } from '../scenes/Underground';
 const COLORS = {
     CAST: 0x0000FF,
     DAMAGE: 0xFF0000,
@@ -24,7 +25,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     private timeText: Phaser.GameObjects.Text;
     private barY: number;
 
-    constructor(scene: Game, x: number, y: number, time: number, entity: any) {
+    constructor(scene: Game | Underground, x: number, y: number, time: number, entity: any) {
         super(scene, x, y);
         this.total = time;
         this.time = 0;
@@ -37,7 +38,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - this.barY);
     };
 
-    private create = (entity: any, scene: Game): void => {
+    private create = (entity: any, scene: Game | Underground): void => {
         if (entity.name === 'player') {
             this.barHeight = scene.settings.positions.castbar.barHeight;
             this.barWidth = scene.settings.positions.castbar.barWidth;

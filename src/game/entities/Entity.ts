@@ -1,7 +1,5 @@
 // @ts-ignore
 import Enemy from './Enemy';
-// @ts-ignore
-import Player from '.Player';
 import { v4 as uuidv4 } from 'uuid';
 import { CombatStats, roundToTwoDecimals } from '../../utility/combat';
 import Ascean from '../../models/ascean';
@@ -11,6 +9,11 @@ import { Game } from '../scenes/Game';
 import { Underground } from '../scenes/Underground';
 import Equipment from '../../models/equipment';
 import Beam from '../matter/Beam';
+import CastingBar from '../phaser/CastingBar';
+import HealthBar from '../phaser/HealthBar';
+import Bubble from '../phaser/Bubble';
+import AoE from '../phaser/AoE';
+import Player from './Player';
 export const FRAME_COUNT = {
     ATTACK_LIVE: 16,
     ATTACK_SUCCESS: 39,
@@ -44,9 +47,15 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     particleID: string;
     _position: Phaser.Math.Vector2;
     beam: Beam;
+    castbar: CastingBar;
+    healthbar: HealthBar;
+    negationBubble: Bubble;
+    reactiveBubble: Bubble;
+    aoe: AoE;
     
     hasMagic: boolean = false;
     hasBow: boolean = false;
+    inWater: boolean = false;
     isCasting: boolean = false;
     inCombat: boolean = false;
     isClimbing: boolean = false;
@@ -67,6 +76,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     isHurt: boolean = false;
     isPraying: boolean = false;
     isStrafing: boolean = false;
+    isAstrifying: boolean = false;
     isAbsorbing: boolean = false;
     isArcing: boolean = false;
     isChiomic: boolean = false;
@@ -82,6 +92,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     isMystifying: boolean = false;
     isProtecting: boolean = false;
     isPursuing: boolean = false;
+    isRecovering: boolean = false;
     isReining: boolean = false;
     isRushing: boolean = false;
     isShielding: boolean = false;
@@ -134,15 +145,17 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     knockbackForce: number = 0.1;
     knockbackDirection = { x: 0, y: 0 };
     knockbackDuration: number = 250;
-    spriteShield: Phaser.Physics.Matter.Sprite;
-    spriteWeapon: Phaser.Physics.Matter.Sprite;
+    spriteShield: Phaser.GameObjects.Sprite;
+    spriteWeapon: Phaser.GameObjects.Sprite;
     frameCount: number = 0;
     currentWeaponSprite: string = '';
-    particleEffect: Particle;
+    particleEffect: Particle | undefined;
     stunDuration: number = 3000;
     currentDamageType: string = '';
     currentRound: number = 0;
     currentAction: string = '';
+    polymorphDirection: string = '';
+    polymorphMovement: string = '';
     scrollingCombatText: ScrollingCombatText;
     specialCombatText: ScrollingCombatText;
     resistCombatText: ScrollingCombatText;
@@ -375,13 +388,13 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     knockback(id: string) {
         const enemy = this.scene.getEnemy(id);
         if (enemy === undefined) return;
-        const x = this.x > enemy.x ? -0.25 : 0.25;
-        const y = this.y > enemy.y ? -0.25 : 0.25;
+        const x = this.x > enemy.x ? -0.5 : 0.5;
+        const y = this.y > enemy.y ? -0.5 : 0.5;
         this.knockbackDirection = { x, y };
         const accelerationFrames = 10; 
         const accelerationStep = this.knockbackForce / accelerationFrames;
         const dampeningFactor = 0.9; 
-        const knockbackDuration = 500;
+        const knockbackDuration = 128;
         let currentForce = 0; 
         const knockbackLoop = (timestamp: number) => {
             if (!startTime) startTime = timestamp;

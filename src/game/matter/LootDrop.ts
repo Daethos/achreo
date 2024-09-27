@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import { EventBus } from "../game/EventBus";
-import Equipment from "../models/equipment";
+import { EventBus } from "../EventBus";
+import Equipment from "../../models/equipment";
 // @ts-ignore
 export const { Bodies } = Phaser.Physics.Matter.Matter;
 

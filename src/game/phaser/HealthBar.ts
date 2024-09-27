@@ -1,5 +1,3 @@
-import Phaser from 'phaser';
-
 export default class HealthBar extends Phaser.GameObjects.Container {
     private bar: Phaser.GameObjects.Graphics;
     private barWidth: number;

@@ -2,13 +2,13 @@ import Entity, { FRAME_COUNT } from "./Entity";
 import StateMachine, { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
-import { EventBus } from "../game/EventBus";
+import { EventBus } from "../EventBus";
 import { v4 as uuidv4 } from 'uuid';
-import { PLAYER } from "../utility/player";
+import { PLAYER } from "../../utility/player";
 import CastingBar from "../phaser/CastingBar";
 import AoE from "../phaser/AoE";
 import Bubble from "../phaser/Bubble";
-import { DISTANCE, DURATION, ENEMY_SPECIAL, GRIP_SCALE, INSTINCTS, RANGE } from "../utility/enemy";
+import { DISTANCE, DURATION, ENEMY_SPECIAL, GRIP_SCALE, INSTINCTS, RANGE } from "../../utility/enemy";
 import { screenShake, vibrate } from "../phaser/ScreenShake";
 
 const ENEMY_COLOR = 0xFF0000;

@@ -1,7 +1,7 @@
 import Entity from "./Entity"; 
 import StateMachine, { States } from "../phaser/StateMachine";
 import { v4 as uuidv4 } from 'uuid';
-import { EventBus } from "../game/EventBus";
+import { EventBus } from "../EventBus";
 import { vibrate } from "../phaser/ScreenShake";
 let idCount = 0;
 // @ts-ignore

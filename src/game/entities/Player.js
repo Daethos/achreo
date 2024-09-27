@@ -5,9 +5,9 @@ import { States } from "../phaser/StateMachine";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import HealthBar from "../phaser/HealthBar";
 import PlayerMachine from '../phaser/PlayerMachine';
-import { EventBus } from "../game/EventBus";
+import { EventBus } from "../EventBus";
 import CastingBar from "../phaser/CastingBar";
-import { PHYSICAL_ACTIONS, PHYSICAL_EVASIONS, PLAYER } from "../utility/player";
+import { PHYSICAL_ACTIONS, PHYSICAL_EVASIONS, PLAYER } from "../../utility/player";
 import Beam from "../matter/Beam";
 
 const DURATION = {
@@ -431,7 +431,7 @@ export default class Player extends Entity {
             x: this.x + (direction.x * 200),
             y: this.y + (direction.y * 200),
             duration: 900,
-            ease: Phaser.Math.Easing.Bounce.Out,
+            ease: Phaser.Math.Easing.Back.InOut,
             onStart: () => {
                 this.isAttacking = true;
                 screenShake(this.scene);
@@ -439,6 +439,7 @@ export default class Player extends Entity {
                 this.flickerCarenic(900); 
             },
             onComplete: () => { 
+                screenShake(this.scene);
                 this.scene.combatManager.useGrace(PLAYER.STAMINA.LEAP);
                 this.isLeaping = false; 
                 if (this.touching.length > 0) {
@@ -685,6 +686,7 @@ export default class Player extends Entity {
     );
 
     isValidRushEnemy = (enemy) => {
+        if (!enemy?.enemyID) return;
         if (this.isRushing) {
             const newEnemy = this.rushedEnemies.every(obj => obj.enemyID !== enemy.enemyID);
             if (newEnemy) this.rushedEnemies.push(enemy);

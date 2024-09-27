@@ -1,4 +1,4 @@
-import { EventBus } from "../game/EventBus";
+import { EventBus } from "../EventBus";
 
 function xModifier(x: number, index: number, offset = 43.75) {
     const mod = x * 1.35 + (index * offset);

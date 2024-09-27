@@ -1,14 +1,14 @@
-import { Game } from "../game/scenes/Game";
-import { Underground } from "../game/scenes/Underground";
+import { Game } from "../scenes/Game";
+import { Underground } from "../scenes/Underground";
 // @ts-ignore
-import Player from '../entities/Player';
+import Player from '../game/entities/Player';
 import StateMachine, { States } from "./StateMachine";
 import ScrollingCombatText from "./ScrollingCombatText";
-import { PLAYER } from "../utility/player";
+import { PLAYER } from "../../utility/player";
 import { FRAME_COUNT } from '../entities/Entity';
 // @ts-ignore
 import AoE from './AoE';
-import { EventBus } from "../game/EventBus";
+import { EventBus } from "../EventBus";
 import { screenShake } from "./ScreenShake";
 import Bubble from "./Bubble";
 import { BlendModes } from "phaser";

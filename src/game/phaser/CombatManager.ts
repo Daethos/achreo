@@ -1,9 +1,9 @@
 import CombatMachine from '../phaser/CombatMachine';
 // @ts-ignore
 import Enemy from '../entities/Enemy';
-import { Game } from './scenes/Game';
-import { Underground } from './scenes/Underground';
-import { EventBus } from './EventBus';
+import { Game } from '../scenes/Game';
+import { Underground } from '../scenes/Underground';
+import { EventBus } from '../EventBus';
 
 export class CombatManager extends Phaser.Scene {
     combatMachine: CombatMachine;

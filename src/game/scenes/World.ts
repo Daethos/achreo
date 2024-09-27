@@ -1,11 +1,11 @@
 import Settings from "../../models/settings";
 import { Game } from "./Game";
 // @ts-ignore
-import Player from '../../entities/Player';
+import Player from '../entities/Player';
 // @ts-ignore
-import Enemy from '../../entities/Enemy';
+import Enemy from '../entities/Enemy';
 // @ts-ignore
-import NPC from '../../entities/NPC';
+import NPC from '../entities/NPC';
 import { EventBus } from "../EventBus";
 
 export class World extends Phaser.Scene {

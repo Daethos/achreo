@@ -1,4 +1,4 @@
-import { EventBus } from '../game/EventBus';
+import { EventBus } from "../EventBus";
 const FORCE = 0.1;
 export default class Joystick extends Phaser.GameObjects.Container {
     public scene: any;

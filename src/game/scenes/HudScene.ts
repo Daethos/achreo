@@ -1,5 +1,5 @@
 import { Game } from "./Game";
-import SmallHud from "../../phaser/SmallHud";
+import SmallHud from "../phaser/SmallHud";
 
 export class HudScene extends Phaser.Scene {
     gameScene: Game;

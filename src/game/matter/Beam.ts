@@ -1,5 +1,5 @@
-import { Game } from "../game/scenes/Game";
-import { masteryNumber } from "../utility/styling";
+import { Game } from "../scenes/Game";
+import { masteryNumber } from "../../utility/styling";
 const CONVERSION = {
     Game: {
         X: 265,

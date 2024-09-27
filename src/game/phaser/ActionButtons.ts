@@ -1,10 +1,9 @@
-import Phaser from 'phaser';
-import { EventBus } from '../game/EventBus';
-import { PLAYER, STAMINA, staminaCheck } from '../utility/player';
-import { Game } from '../game/scenes/Game';
-import { Underground } from '../game/scenes/Underground';
+import { EventBus } from '../EventBus';
+import { PLAYER, STAMINA, staminaCheck } from '../../utility/player';
+import { Game } from '../scenes/Game';
+import { Underground } from '../scenes/Underground';
 import { vibrate } from './ScreenShake';
-import { ACTION_ORIGIN } from '../utility/actions';
+import { ACTION_ORIGIN } from '../../utility/actions';
 const ACTIONS = [
     { ATTACK: 0x800080 }, // 0xFA0000 
     { POSTURE: 0x800080 }, // 0x005100 

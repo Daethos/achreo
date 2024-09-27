@@ -1,6 +1,6 @@
 import { GameObjects, Scene } from 'phaser'; 
 import { EventBus } from '../EventBus'; 
-import NewText from '../../phaser/NewText';
+import NewText from '../phaser/NewText';
 
 export class MainMenu extends Scene {
     background: GameObjects.Image;

@@ -1,9 +1,9 @@
 import { Scene } from 'phaser';
 import { sanitize } from '../../stores/phaser';
-import NewText from '../../phaser/NewText' 
-import Entity from "../../entities/Entity";
+import NewText from '../phaser/NewText' 
+import Entity from "../entities/Entity";
 // @ts-ignore
-import ParticleManager from "../../phaser/ParticleManager";
+import ParticleManager from "../matter/ParticleManager";
 import { EventBus } from '../EventBus';
 import { audio, image } from '../../utility/scene';
 

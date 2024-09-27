@@ -8,7 +8,7 @@ import { GameState } from '../stores/game';
 import { LevelSheet } from '../utility/ascean';
 import { usePhaserEvent } from '../utility/hooks';
 import { consumePrayer, instantActionCompiler, prayerEffectTick, prayerRemoveTick, statusEffectCheck, weaponActionCompiler } from '../utility/combat';
-import { screenShake } from '../phaser/ScreenShake';
+import { screenShake } from '../game/phaser/ScreenShake';
 import { Reputation } from '../utility/player';
 import { Puff } from 'solid-spinner';
 import Statistics from '../utility/statistics';

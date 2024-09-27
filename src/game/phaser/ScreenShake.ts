@@ -1,4 +1,3 @@
-
 var totalTrauma = 0;
 export function screenShake(scene: Phaser.Scene, duration = 48, intensity = 0.004) {
     totalTrauma += 1.04;

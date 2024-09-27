@@ -1,6 +1,6 @@
-import { useResizeListener } from '../utility/dimensions';
-import { EventBus } from '../game/EventBus';
-import { Game } from '../game/scenes/Game';
+import { useResizeListener } from '../../utility/dimensions';
+import { EventBus } from '../EventBus';
+import { Game } from '../scenes/Game';
 const COLORS = {
     CAST: 0x0000FF,
     DAMAGE: 0xFF0000,

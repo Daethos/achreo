@@ -1,7 +1,7 @@
 import { populateEnemy, randomEnemy } from "../assets/db/db";
 import { EventBus } from "../game/EventBus";
 import Ascean from "../models/ascean";
-import { States } from "../phaser/StateMachine";
+import { States } from "../game/phaser/StateMachine";
 import { Compiler, asceanCompiler } from "./ascean";
 export const ENEMY_SPECIAL = {
     'constitution': [ // 14

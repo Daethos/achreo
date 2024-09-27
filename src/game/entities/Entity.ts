@@ -3,13 +3,13 @@ import Enemy from './Enemy';
 // @ts-ignore
 import Player from '.Player';
 import { v4 as uuidv4 } from 'uuid';
-import { CombatStats, roundToTwoDecimals } from '../utility/combat';
-import Ascean from '../models/ascean';
-import { Particle } from '../phaser/ParticleManager';
+import { CombatStats, roundToTwoDecimals } from '../../utility/combat';
+import Ascean from '../../models/ascean';
+import { Particle } from '../matter/ParticleManager';
 import ScrollingCombatText from '../phaser/ScrollingCombatText';
-import { Game } from '../game/scenes/Game';
-import { Underground } from '../game/scenes/Underground';
-import Equipment from '../models/equipment';
+import { Game } from '../scenes/Game';
+import { Underground } from '../scenes/Underground';
+import Equipment from '../../models/equipment';
 import Beam from '../matter/Beam';
 export const FRAME_COUNT = {
     ATTACK_LIVE: 16,

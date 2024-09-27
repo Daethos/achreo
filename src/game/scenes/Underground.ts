@@ -2,31 +2,31 @@ import Ascean from '../../models/ascean';
 import { Cameras, GameObjects, Scene, Tilemaps, Time } from 'phaser';
 import { Combat, initCombat } from '../../stores/combat';
 import { EventBus } from '../EventBus';
-import LootDrop from '../../matter/LootDrop';
-import ActionButtons from '../../phaser/ActionButtons';
+import LootDrop from '../matter/LootDrop';
+import ActionButtons from '../phaser/ActionButtons';
 import { GameState } from '../../stores/game';
 import Settings, { initSettings } from '../../models/settings';
 import Equipment from '../../models/equipment';
-import { States } from '../../phaser/StateMachine';
+import { States } from '../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
-import Joystick from '../../phaser/Joystick';
-import SmallHud from '../../phaser/SmallHud';
-import Fov from '../../phaser/Fov';
+import Joystick from '../phaser/Joystick';
+import SmallHud from '../phaser/SmallHud';
+import Fov from '../phaser/Fov';
 import { Reputation, initReputation } from '../../utility/player';
 // @ts-ignore
-import Player from '../../entities/Player';
+import Player from '../entities/Player';
 // @ts-ignore
-import Enemy from '../../entities/Enemy';
-import NPC from '../../entities/NPC';
+import Enemy from '../entities/Enemy';
+import NPC from '../entities/NPC';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
-import Tile from '../../phaser/Tile';
-import { CombatManager } from '../CombatManager';
-import MiniMap from '../../phaser/MiniMap';
-import ScrollingCombatText from '../../phaser/ScrollingCombatText';
+import Tile from '../phaser/Tile';
+import { CombatManager } from '../phaser/CombatManager';
+import MiniMap from '../phaser/MiniMap';
+import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import Logger, { ConsoleLogger } from '../../utility/Logger';
-import ParticleManager from '../../phaser/ParticleManager';
-import { screenShake } from '../../phaser/ScreenShake';
+import ParticleManager from '../matter/ParticleManager';
+import { screenShake } from '../phaser/ScreenShake';
 
 export class Underground extends Scene {
     animatedTiles: any[];

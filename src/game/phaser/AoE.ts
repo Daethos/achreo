@@ -1,9 +1,9 @@
-import { Game } from "../game/scenes/Game";
-import { Underground } from "../game/scenes/Underground";
+import { Game } from "../scenes/Game";
+import { Underground } from "../scenes/Underground";
 // @ts-ignore
-import Player from '../entities/Player';
+import Player from '../game/entities/Player';
 // @ts-ignore
-import Enemy from '../entities/Enemy';
+import Enemy from '../game/entities/Enemy';
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 

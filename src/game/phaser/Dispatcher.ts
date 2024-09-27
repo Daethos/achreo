@@ -1,5 +1,5 @@
 import { KVI } from "./CombatMachine";
-import { EventBus } from "../game/EventBus";
+import { EventBus } from "../EventBus";
 const ActionTypes = {
     WEAPON: 'Weapon',
     INSTANT: 'Instant',

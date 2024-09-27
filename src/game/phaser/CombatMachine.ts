@@ -1,6 +1,6 @@
-import { Combat } from "../stores/combat";
+import { Combat } from "../../stores/combat";
 import * as Dispatcher from "./Dispatcher";
-import { EventBus } from "../game/EventBus";
+import { EventBus } from "../EventBus";
 
 type ActionHandler = (data: any) => void;
 interface Action {

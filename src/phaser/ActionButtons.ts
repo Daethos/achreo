@@ -107,11 +107,12 @@ class Tooltip {
         });
         if (this.container) {
             if (scene.settings.desktop) {
-                this.container.x = pointer.worldX - 150;
+                this.container.x = pointer.worldX - (WIDTH / 2);
                 this.container.y = pointer.worldY - (this.height + 25);
             } else {
-                this.container.x = scene.cameras.main.centerX - 60;
-                this.container.y = scene.cameras.main.height - (this.height * 0.6);
+                const point = scene.cameras.main.getWorldPoint(scene.cameras.main.centerX - (WIDTH / 2), scene.cameras.main.height - (this.height));
+                this.container.x = point.x;
+                this.container.y = point.y;
             };
             this.container.setDepth(depth + 1);
             this.container.setVisible(true);    
@@ -141,7 +142,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     private graphicTimer: any;
     private tooltipManager: Map<string, Tooltip>;
 
-    constructor(scene: any) {
+    constructor(scene: Game | Underground) {
         super(scene);
         this.scene = scene;
         this.actionButtons = [];
@@ -224,7 +225,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         });
     }; 
 
-    private addButtons = (scene: any): void => {
+    private addButtons = (scene: Game | Underground): void => {
         const { width, height } = scene.cameras.main;
         const centerActionX = width * scene.settings.positions.actionButtons.x; // / 1.25
         const centerActionY = height * scene.settings.positions.actionButtons.y; // / 1.35
@@ -782,7 +783,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         };
     };
 
-    public pressButton = (button: ActionButton, scene: any): void => {
+    public pressButton = (button: ActionButton, scene: Game | Underground): void => {
         const input = button.name.toLowerCase();
         const type = STAMINA.includes(input);
         let check: {success: boolean; cost: number;} = {success: false, cost: 0};
@@ -796,7 +797,11 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         } else if (check.success === true && scene.player.playerMachine.positiveMachine.isState(input)) {
             scene.player.playerMachine.positiveMachine.setState(`${input}`);
         };
-        if (check.success) vibrate();
+        if (check.success) {
+            vibrate();
+            const tooltip = this.tooltipManager.get(button.name);
+            if (tooltip && !tooltip.timer) tooltip.createTimer(scene);
+        };
     };
 
     public setCurrent = (current: number, limit: number, name: string) => {
@@ -965,11 +970,12 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             let textX = 0;
             let textY = 0;
             if (this.scene.settings.desktop) {
-                textX = pointer.worldX - 150;
+                textX = pointer.worldX - (WIDTH / 2);
                 textY = pointer.worldY - (totalHeight + 25);
             } else {
-                textX = this.scene.cameras.main.centerX - 60;
-                textY = this.scene.cameras.main.height - (totalHeight * 0.6);
+                const point = this.scene.cameras.main.getWorldPoint(this.scene.cameras.main.centerX - (WIDTH / 2), this.scene.cameras.main.height - (totalHeight));
+                textX = point.x;
+                textY = point.y;
             };
             const tooltipContainer = this.scene.add.container(textX, textY).setDepth(10).setAlpha(0);
             tooltipContainer.add([background, textTitle, textDescription, textSuper]);

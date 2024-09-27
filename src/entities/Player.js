@@ -426,20 +426,19 @@ export default class Player extends Entity {
         const direction = target.subtract(this.position);
         direction.normalize();
         this.flipX = direction.x < 0;
-        this.isAttacking = true;
         this.scene.tweens.add({
             targets: this,
             x: this.x + (direction.x * 200),
             y: this.y + (direction.y * 200),
-            duration: 750,
-            ease: 'Elastic',
+            duration: 900,
+            ease: Phaser.Math.Easing.Bounce.Out,
             onStart: () => {
+                this.isAttacking = true;
                 screenShake(this.scene);
                 this.scene.sound.play('leap', { volume: this.scene.settings.volume });
-                this.flickerCarenic(750); 
+                this.flickerCarenic(900); 
             },
             onComplete: () => { 
-                screenShake(this.scene, 120, 0.005);
                 this.scene.combatManager.useGrace(PLAYER.STAMINA.LEAP);
                 this.isLeaping = false; 
                 if (this.touching.length > 0) {

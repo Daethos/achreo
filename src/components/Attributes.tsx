@@ -1,4 +1,4 @@
-import { Accessor, Setter, Show, createEffect, createSignal } from 'solid-js';
+import { Accessor, Setter, createEffect, createSignal } from 'solid-js';
 import { asceanCompiler } from '../utility/ascean';
 import { useResizeListener } from '../utility/dimensions';
 import { Attributes } from '../utility/attributes';

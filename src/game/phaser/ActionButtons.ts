@@ -59,7 +59,7 @@ class Tooltip {
     refresh: boolean = false;
     timer: Phaser.Time.TimerEvent | undefined = undefined;
     constructor(name: string, container: Phaser.GameObjects.Container, height: number, map: Map<string, Tooltip>) {
-        let depth = 0;
+        let depth = 6;
         this.name = name;
         this.container = container;
         this.height = height;
@@ -976,10 +976,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 textX = point.x;
                 textY = point.y;
             };
-            const tooltipContainer = this.scene.add.container(textX, textY).setDepth(10).setAlpha(0);
+            const tooltipContainer = this.scene.add.container(textX, textY).setAlpha(0);
             tooltipContainer.add([background, textTitle, textDescription, textSuper]);
-            textTitle.setShadow(2, 2, '#333', 2, true, true);            
-            
+            textTitle.setShadow(2, 2, '#333', 2, true, true);
             this.scene.time.addEvent({
                 delay: 50,
                 repeat: 10,

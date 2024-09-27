@@ -101,6 +101,7 @@ export class Game extends Scene {
         this.offsetX = 0;
         this.offsetY = 0;
         this.tweenManager = {};
+        this.actionBar = new ActionButtons(this);
         const map = this.make.tilemap({ key: 'ascean_test' });
         this.map = map;
         const tileSize = 32;
@@ -160,7 +161,7 @@ export class Game extends Scene {
         this.setPostFx(this.settings?.postFx, this.settings?.postFx.enable);
         this.particleManager = new ParticleManager(this);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
-        this.actionBar = new ActionButtons(this);
+
         this.player.inputKeys = {
             up: this?.input?.keyboard?.addKeys('W,UP'),
             down: this?.input?.keyboard?.addKeys('S,DOWN'),

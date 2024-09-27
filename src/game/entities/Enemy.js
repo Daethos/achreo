@@ -502,7 +502,7 @@ export default class Enemy extends Entity {
 
     createWeapon = (weapon) => {
         const weaponName = this.imgSprite(weapon); 
-        this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, weaponName);
+        this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, weaponName).setVisible(false);
         this.setWeapon(weapon);
         this.checkDamage(weapon.damageType[0].toLowerCase());
         this.checkMeleeOrRanged(weapon);
@@ -967,9 +967,10 @@ export default class Enemy extends Entity {
         if (!this.isContemplating) this.stateMachine.setState(States.CLEAN); 
     };
     onContemplateExit = () => {
+        this.isContemplating = false;
         this.currentAction = '';
         this.instincts();
-        // this.stateMachine.setState(States.CHASE);
+        this.stateMachine.setState(States.CHASE);
         // this.evaluateCombatDistance();
     };
 
@@ -3018,17 +3019,17 @@ export default class Enemy extends Entity {
 
     evaluateCombat = () => {  
         let actionNumber = Math.floor(Math.random() * 101);
-        if (actionNumber > 60) { // 51-100 || (100 - computerActions.attack)
+        if (actionNumber > 60) { // 61-100 (40%) || (100 - computerActions.attack)
             return States.ATTACK;
-        } else if (actionNumber > 50 && !this.isRanged) { // 41-50 || (100 - computerActions.attack - computerActions.parry)
+        } else if (actionNumber > 50 && !this.isRanged) { // 51-60 (10%) || (100 - computerActions.attack - computerActions.parry)
             return States.PARRY;
-        } else if (actionNumber > 35) { // 26-40 || (100 - computerActions.attack - computerActions.parry - computerActions.posture)
+        } else if (actionNumber > 35) { // 36-50 (15%) || (100 - computerActions.attack - computerActions.parry - computerActions.posture)
             return States.POSTURE;
-        } else if (actionNumber > 20) { // 11-25 || (100 - computerActions.attack - computerActions.parry - computerActions.posture - computerActions.roll)
+        } else if (actionNumber > 20) { // 21-35 (15%) || (100 - computerActions.attack - computerActions.parry - computerActions.posture - computerActions.roll)
             return States.ROLL;
-        } else if (actionNumber > 10) { // 1-10
+        } else if (actionNumber > 5) { // 6-20 (15%)
             return States.THRUST;
-        } else { // New State
+        } else { // New State 1-5 (5%)
             return States.CONTEMPLATE;
         };
     };

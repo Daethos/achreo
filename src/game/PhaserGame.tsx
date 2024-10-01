@@ -637,7 +637,7 @@ export default function PhaserGame (props: IProps) {
             playerAttributes: stats.attributes,
             playerDefense: stats.defense,
             playerDefenseDefault: stats.defense,
-            playerDamageType: stats.combatWeaponOne.damageType?.[0] as string,
+            // playerDamageType: stats.combatWeaponOne.damageType?.[0] as string,
             playerBlessing: props.settings().prayer,
         });
         setStamina(stats.attributes.stamina as number);

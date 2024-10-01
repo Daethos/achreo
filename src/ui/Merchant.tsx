@@ -1,11 +1,10 @@
 import { Accessor, createEffect, createSignal, JSX, Show } from "solid-js";
-import { GameState } from "../stores/game";
 import { font } from "../utility/styling";
 import { ThreeDots } from "solid-spinner";
 import { EventBus } from "../game/EventBus";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
-export default function Merchant({ ascean, game }: { ascean: Accessor<Ascean>; game: Accessor<GameState>; }) {
+export default function Merchant({ ascean }: { ascean: Accessor<Ascean>; }) {
     const [merchantAnimation, setMerchantAnimation] = createSignal<{ item: any, player: number, merchant: number, dialog: any, on: boolean, cancel: boolean, rolling: boolean, step: number }>({
         item: {imgUrl:'', name:''},
         player: 0,
@@ -42,10 +41,6 @@ export default function Merchant({ ascean, game }: { ascean: Accessor<Ascean>; g
                 rolling: false,
             });
         };
-        // if (stealing().stealing && stealing().item) {
-        //     merchant(stealing().item);
-        //     setStealing({ ...stealing(), stealing: false });
-        // };
     });
     function getFine(rarity: string): number | string {
         switch (rarity) {

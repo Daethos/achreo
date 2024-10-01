@@ -63,6 +63,7 @@ export class Game extends Scene {
     postFxPipeline: any;
     musicBackground: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicCombat: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+    musicCombat2: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicStealth: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     fpsText: GameObjects.Text;
     combatTimerText: GameObjects.Text;
@@ -181,6 +182,7 @@ export class Game extends Scene {
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
         this.musicBackground = this.sound.add(Math.random() > 0.5 ? 'background' : 'background2', { volume: this?.settings?.volume / 2 || 0.1, loop: true });
         this.musicCombat = this.sound.add('combat', { volume: this?.settings?.volume, loop: true });
+        this.musicCombat2 = this.sound.add('combat2', { volume: this?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.settings?.volume, loop: true });
         if (this.settings?.music === true) this.musicBackground.play();
         this.logger = new Logger();
@@ -361,7 +363,11 @@ export class Game extends Scene {
         EventBus.on('wake-up', (scene: string) => {
             this.scene.resume(scene);
             if (this.combat) {
-                this.musicCombat.resume();
+                if (this.musicCombat.isPaused) {
+                    this.musicCombat.resume();
+                } else {
+                    this.musicCombat2.resume();
+                };
                 this.startCombatTimer();    
             } else if (this.player.isStealthing) {
                 this.musicStealth.resume();
@@ -627,13 +633,18 @@ export class Game extends Scene {
         if (bool === true && this.combat !== bool) {
             this.player.inCombat = true;
             this.player.healthbar.setVisible(true);
-            this.musicCombat.play();
+            if (Math.random() > 0.5) {
+                this.musicCombat.play();
+            } else {
+                this.musicCombat2.play();
+            };
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
             if (this.musicStealth.isPlaying) this.musicStealth.stop();
             this.startCombatTimer();
         } else if (bool === false) {
             this.clearAggression();
             this.musicCombat.stop();
+            this.musicCombat2.stop();
             if (this.player.isStealthing) {
                 if (this.musicStealth.isPaused) {
                     this.musicStealth.resume();
@@ -654,6 +665,7 @@ export class Game extends Scene {
         if (bool) {
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
             if (this.musicCombat.isPlaying) this.musicCombat.pause();
+            if (this.musicCombat2.isPlaying) this.musicCombat2.pause();
             if (this.musicStealth.isPaused) {
                 this.musicStealth.resume();
             } else {
@@ -662,7 +674,11 @@ export class Game extends Scene {
         } else {
             this.musicStealth.stop();
             if (this.combat) {
-                this.musicCombat.play();
+                if (Math.random() > 0.5) {
+                    this.musicCombat.play();
+                } else {
+                    this.musicCombat2.play();
+                };
             } else {
                 this.musicBackground.resume();
             };
@@ -672,6 +688,7 @@ export class Game extends Scene {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (this.musicBackground.isPlaying) this.musicBackground.pause();
         if (this.musicCombat.isPlaying) this.musicCombat.pause();
+        if (this.musicCombat2.isPlaying) this.musicCombat2.pause();
         this.musicStealth.pause();
     };
     resumeMusic = (): void => {
@@ -689,7 +706,11 @@ export class Game extends Scene {
                 this.musicBackground.play();
             };
         } else {
-            this.musicCombat.resume();
+            if (this.musicCombat.isPaused) {
+                this.musicCombat.resume();
+            } else {
+                this.musicCombat2.resume();
+            };
         };
     };
     drinkFlask = (): boolean => EventBus.emit('drink-firewater');

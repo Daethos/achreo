@@ -30,7 +30,7 @@ const COLORS = {
     'righteous': 0xFFD700,
     'sorcery': 0xA700FF,
     'spooky': 0x080080,
-    'wild': 0x00FF00,
+    'wild': 0x50C878,
     'wind': 0x00FFFF
 };
 export default class AoE extends Phaser.Physics.Matter.Sprite {

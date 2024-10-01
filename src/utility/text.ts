@@ -1,11 +1,10 @@
 import { Combat } from "../stores/combat";
 const ATTACKS = ['Attack', 'Posture', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'rolls', 'postures', 'parries', 'parried', 'rolled', 'attacked', 'defend', 'postured', 
-    'tshaer', 'tshaers', 'tshaering', 'leap', 'leaps', 'rush', 'rushes', 'writhe', 'writhes', 'devour', 'devours', 'suture', 'sutures', 'sacrifice', 'sacrifices',
-    'flay', 'flays'];
+    'tshaer', 'tshaers', 'tshaering', 'leap', 'leaps', 'rush', 'rushes', 'writhe', 'writhes', 'devour', 'devours','thrust','thrusts'];
 const CAST = ['confuse', 'confusing', 'fear', 'fearing', 'paralyze', 'polymorph', 'polymorphs', 'polymorphing', 'slow', 'slowing', 'snare', 'snaring'];
 const COLORS = { BONE: '#fdf6d8', GREEN: 'green', HEAL: '#0BDA51', GOLD: 'gold', PURPLE: 'purple', TEAL: 'teal', RED: 'red', BLUE: 'blue', LIGHT_BLUE: 'lightblue', FUCHSIA: 'fuchsia' };
 const DAMAGE = ['Blunt', 'Pierce',  'Slash',  'Earth',  'Fire',  'Frost',  'Lightning', 'Righteous', 'Sorcery', 'Spooky',  'Wild', 'Wind' ];
-const HUSH = ['Invocation', 'Hush', 'hush', 'tendril', 'sacrifice', 'shimmer', 'shimmers', 'protect', 'protects', 'astrave', 'fyerus'];
+const HUSH = ['Invocation', 'Hush', 'hush', 'tendril', 'sacrifice', 'shimmer', 'shimmers', 'protect', 'protects', 'astrave', 'fyerus', 'suture', 'sutures', 'sacrifice', 'sacrifices'];
 const NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 const TENDRIL = ['Tendril', 'tendril', 'tendrils', 'suture', 'sutures', 'sutured', 'shield', 'shields', 'mend', 'achire', 'kynisos'];
 const CONSOLE = 'Console';
@@ -51,8 +50,8 @@ function checkAlignment(line: string[]) {
             return 'center';
         };
     };
-    if (count > 0) return 'right';
-    return 'left';
+    if (count > 0) return 'left';
+    return 'right';
 };
 function styleText(text: string) {
     var numberCheck: string[] = [];

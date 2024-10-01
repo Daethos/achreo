@@ -28,12 +28,8 @@ const PRAYERS = ['Buff', 'Heal', 'Debuff', 'Damage', 'Avarice', 'Denial', 'Dispe
 
 export default function CombatSettings({ combat, game }: { combat: Accessor<Combat>; game: Accessor<GameState>; }) {
     const dimensions = useResizeListener();
-    const prayer = (el: string) => {
-        return el === combat().playerBlessing ?  true : false;
-    };
-    onMount(() => {
-        EventBus.emit('selectPrayer', { index: PRAYERS.findIndex(prayer), highlight: game().selectedHighlight });
-    });
+    const prayer = (el: string) => el === combat().playerBlessing ?  true : false;
+    onMount(() => EventBus.emit('selectPrayer', { index: PRAYERS.findIndex(prayer), highlight: game().selectedHighlight }));
     const mapTypes = (types: any) => {
         let newTypes = []; 
         for (let i = 0; i < types.length; i++) {
@@ -45,13 +41,8 @@ export default function CombatSettings({ combat, game }: { combat: Accessor<Comb
         };
         return newTypes;
     };
-    const highlightStyle: JSX.CSSProperties = {
-        color: 'gold', 'font-size': '1.15em', 'font-weight': 700, 'text-align': 'center', margin: '3%'
-    };
-    const optionStyle: JSX.CSSProperties = {
-        color: '#fdf6d8', 'font-size': '0.9em', 'font-weight': 700, 'text-align': 'center'
-    };
-
+    const highlightStyle: JSX.CSSProperties = {color: 'gold', 'font-size': '1.15em', 'font-weight': 700, 'text-align': 'center', margin: '3%'};
+    const optionStyle: JSX.CSSProperties = {color: '#fdf6d8', 'font-size': '0.9em', 'font-weight': 700, 'text-align': 'center'};
     function handleButton(direction: string) {
         if (direction === 'up' || direction === 'down') {
             if (game().selectedHighlight === 'Prayer') {
@@ -61,7 +52,7 @@ export default function CombatSettings({ combat, game }: { combat: Accessor<Comb
                 EventBus.emit('changePrayer', PRAYERS[newIndex]);
             } else if (game().selectedHighlight === 'Damage') {
                 const index = direction === 'up' ? -1 : 1;
-                const newIndex = (game().selectedDamageTypeIndex + index + (combat()?.weapons?.[0]?.damageType?.length ?? 0)) % (combat()?.weapons?.[0]?.damageType?.length ?? 0) as number;
+                const newIndex = (game().selectedDamageTypeIndex + index + (combat()?.weapons?.[0]?.damageType?.length || 0)) % (combat()?.weapons?.[0]?.damageType?.length || 0) as number;
                 EventBus.emit('selectDamageType', { index: newIndex, highlight: 'Damage' });
                 EventBus.emit('changeDamageType', combat()?.weapons?.[0]?.damageType?.[newIndex]);
             } else if (game().selectedHighlight === 'Weapon') {    
@@ -78,12 +69,8 @@ export default function CombatSettings({ combat, game }: { combat: Accessor<Comb
             };
             EventBus.emit('weapon-order-sound');
         };
-        if (direction === 'left') {
-            EventBus.emit('useHighlight', highlightCycle[game().selectedHighlight as keyof typeof highlightCycle].prev);
-        };
-        if (direction === 'right') {
-            EventBus.emit('useHighlight', highlightCycle[game().selectedHighlight as keyof typeof highlightCycle].next);
-        };
+        if (direction === 'left') EventBus.emit('useHighlight', highlightCycle[game().selectedHighlight as keyof typeof highlightCycle].prev);
+        if (direction === 'right') EventBus.emit('useHighlight', highlightCycle[game().selectedHighlight as keyof typeof highlightCycle].next);
     };
 
     function buttonText(direction: string, highlight: string | undefined) {

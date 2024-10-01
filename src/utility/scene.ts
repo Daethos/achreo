@@ -3,6 +3,7 @@ export const audio: { key: string, value: string }[] = [
     {key: 'background', value: '../assets/sounds/background.mp3'},
     {key: 'background2', value: '../assets/sounds/background2.mp3'},
     {key: 'combat', value: '../assets/sounds/combat.mp3'},
+    {key: 'combat2', value: '../assets/sounds/combat2.mp3'},
     {key: 'death', value: '../assets/sounds/death-sound.mp3'},
     {key: 'blink', value: '../assets/sounds/blink.wav'},
     {key: 'caerenic', value: '../assets/sounds/caerenic.wav'},

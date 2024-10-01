@@ -259,8 +259,12 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     };
                     break;
                 case 'Set Health':
-                    computerWin = data.value === 0;
-                    res = { ...combat(), computerWin, newPlayerHealth: data.value, damagedID: data.id };
+                    computerWin = data.value <= 0;
+                    playerActionDescription =  
+                        data.value > newPlayerHealth ? `You heal for ${Math.round(data.value - newPlayerHealth)}, back to ${Math.round(data.value)}.` 
+                        : `You are damaged for ${Math.round(newPlayerHealth - data.value)}, down to ${Math.round(data.value)}`;
+                    newPlayerHealth = data.value;
+                    res = { ...combat(), computerWin, newPlayerHealth, damagedID: data.id };
                     EventBus.emit('blend-combat', { computerWin, newPlayerHealth: data.value, damagedID: data.id });
                     break;
                 case 'Enemy': // Blind Enemy Attack i.e. an enemy not targeted hitting the player

@@ -67,7 +67,7 @@ function health(data: KVI): void {
 };
 
 function setHealth(data: KVI): void {
-    EventBus.emit('initiate-combat', { data, type: ActionTypes.HEALTH });
+    EventBus.emit('initiate-combat', { data, type: ActionTypes.SET_HEALTH });
 };
 
 function removeEnemy(data: KVI) {

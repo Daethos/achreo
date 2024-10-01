@@ -10,6 +10,7 @@ import Player from '../entities/Player';
 import Enemy from '../entities/Enemy';
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
+const MAGIC = ['earth','fire','frost','lightning','righteous','sorcery','spooky','wild','wind'];
 
 function angleTarget(target: Phaser.Math.Vector2): number {
     let angle = 0;
@@ -35,6 +36,7 @@ export class Particle {
     effect: Phaser.Physics.Matter.Sprite;
     isParticle: boolean;
     key: string;
+    magic: boolean;
     player: Player | Enemy;
     sensorSize: number;
     special: boolean;
@@ -56,6 +58,7 @@ export class Particle {
         this.effect = this.spriteMaker(this.scene, player, idKey, particle, special); 
         this.isParticle = particle === true;
         this.key = idKey; // particle === true ? idKey : key;
+        this.magic = MAGIC.includes(key);
         this.player = player;
         this.sensorSize = this.sensorer(special, action);
         this.special = special;
@@ -70,11 +73,12 @@ export class Particle {
         this.effect.setAngle(angleTarget(this.target));
     };
 
-    construct(particle: Particle, action: string, player: Player | Enemy, special: boolean, key: string) {
+    reconstruct(particle: Particle, action: string, player: Player | Enemy, special: boolean, key: string) {
         const idKey = `${key}_effect`;
         this.action = action
         this.isParticle = PARTICLES.includes(key);
         this.key = idKey;
+        this.magic = MAGIC.includes(key);
         this.special = special;
         this.collided = false;
         this.success = false;
@@ -196,9 +200,13 @@ export default class ParticleManager extends Phaser.Scene {
 
     despawnEffect(particle: Particle) {
         particle.effect.setVelocity(0);
+        particle.effect.stop();
         particle.effect.setActive(false);
         particle.effect.setVisible(false);
         particle.effect.world.remove(particle.effect.body!);
+        if (!particle.triggered && particle.magic) {
+            particle.player.particleAoe(particle);
+        };
     };
 
     spawnEffect(particle: Particle) {
@@ -211,7 +219,7 @@ export default class ParticleManager extends Phaser.Scene {
     addEffect(action: string, player: Player | Enemy, key: string, special = false) {
         let particle = this.particles.find((particle) => particle.effect?.active === false && particle.pID === player.particleID && particle.key === key);
         if (particle) {
-            particle.construct(particle, action, player, special, key);
+            particle.reconstruct(particle, action, player, special, key);
             this.spawnEffect(particle);
         } else {
             particle = new Particle(this.context, action, key, player, special); 
@@ -225,7 +233,7 @@ export default class ParticleManager extends Phaser.Scene {
     };
 
     removeEffect(id: string) {
-        this.stopEffect(id);
+        // this.stopEffect(id);
         let particle = this.particles.find(particle => particle.id === id);
         if (particle) {
             this.despawnEffect(particle);

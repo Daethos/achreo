@@ -4,6 +4,7 @@ import Enemy from '../entities/Enemy';
 import { Game } from '../scenes/Game';
 import { Underground } from '../scenes/Underground';
 import { EventBus } from '../EventBus';
+import Player from '../entities/Player';
 
 export class CombatManager extends Phaser.Scene {
     combatMachine: CombatMachine;
@@ -22,6 +23,21 @@ export class CombatManager extends Phaser.Scene {
     ifPlayer = (concern: string) => {
         return this.context.player[concern];
     };
+
+    // ============================ Magic Impact ============================= \\
+    magic = (entity: Player | Enemy, target: Player | Enemy): void => {
+        if (target.health <= 0) return;
+        if (target.name === 'player') {
+            const damage = Math.round(entity.ascean?.[entity?.ascean?.mastery as keyof typeof this.context.state.player] * 0.2);
+            const health = target.health - damage;
+            this.combatMachine.action({ data: { key: 'player', value: health, id: entity.enemyID }, type: 'Set Health' });
+        } else {
+            const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.2);
+            const health = target.health - damage;
+            this.combatMachine.action({ data: { key: 'enemy', value: health, id: target.enemyID }, type: 'Health' });
+        };
+    };
+
 
     // ============================ Combat Specials ============================ \\ 
     melee = (id: string, type: string): void => {
@@ -48,7 +64,7 @@ export class CombatManager extends Phaser.Scene {
     astrave = (id: string, enemyID: string): void => {
         if (id === '') return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
+        if (enemy !== undefined && enemy.health > 0) {
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 1);
             const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
@@ -63,7 +79,7 @@ export class CombatManager extends Phaser.Scene {
     blind = (id: string): void => {
         if (id === '') return;
         let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
+        if (enemy !== undefined && enemy.health > 0) {
             enemy.count.feared += 1;
             enemy.isFeared = true;
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 1);
@@ -76,7 +92,7 @@ export class CombatManager extends Phaser.Scene {
     caerenesis = (id: string): void => {
         if (id === '') return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
+        if (enemy !== undefined && enemy.health > 0) {
             enemy.isParalyzed = true;
             if (this.context.player.currentTarget && this.context.player.currentTarget.enemyID === this.context.player.getEnemyId()) {
                 this.combatMachine.action({ type: 'Tshaeral', data: 15 });

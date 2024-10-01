@@ -2127,7 +2127,7 @@ export default class PlayerMachine {
     };
     onWritheUpdate = (_dt: number) => {if (!this.player.isWrithing) this.positiveMachine.setState(States.CLEAN);};
     onWritheExit = () => {
-        this.player.aoe.cleanAnimation(this.scene)
+        this.player.aoe.cleanAnimation(this.scene);
         this.player.setTimeEvent('writheCooldown', PLAYER.COOLDOWNS.SHORT);  
     };
 
@@ -2171,7 +2171,7 @@ export default class PlayerMachine {
 
     onBlindEnter = () => {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.BLIND);    
-        this.player.aoe = new AoE(this.scene, 'blind', 1);    
+        this.player.aoe = new AoE(this.scene, 'blind', 1);
         this.scene.sound.play('righteous', { volume: this.scene.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Brilliance', 750, 'effect');
         this.player.isBlinding = true;

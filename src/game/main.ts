@@ -31,7 +31,7 @@ const config: Phaser.Types.Core.GameConfig = {
     scene: [Boot,Preloader,MainMenu,MainGame,Intro,HudScene,Tent,Underground],
     physics: {
         default: 'matter',
-        matter: {gravity: {x: 0, y: 0}}, // debug: true,
+        matter: {debug:true,gravity: {x: 0, y: 0}}, // debug: true,
     },
     fps: {limit:90,target:60},
     fullscreenTarget: 'base-ui',

@@ -434,6 +434,52 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
     };
 
+    bowDamageType = () => {
+        return this.currentDamageType === 'pierce' || this.currentDamageType === 'blunt' ? 'arrow' : this.currentDamageType;
+    };
+
+    checkActionSuccess = (entity: string, target: Player | Enemy) => {
+        if (entity === 'player' && !this.isStorming) {
+            if (this.flipX) {
+                this.weaponHitbox.setAngle(270);
+            } else {
+                this.weaponHitbox.setAngle(0);
+            };
+            if (this.isRolling) {
+                this.weaponHitbox.x = this.x;
+                this.weaponHitbox.y = this.y + 8;
+            } else {
+                this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
+                this.weaponHitbox.y = this.y;
+            };
+            if (this.velocity?.x as number > 0) {
+                this.weaponHitbox.x += 16;
+            } else if (this.velocity?.x as number < 0) {
+                this.weaponHitbox.x -= 16;
+            };
+            if (this.velocity?.y as number > 0) {
+                this.weaponHitbox.y += 16;
+            } else if (this.velocity?.y as number < 0) {
+                this.weaponHitbox.y -= 16;
+            };
+            if (target) this.hitBoxCheck(target);
+            if (this.targets.length > 0) {
+                for (let i = 0; i < this.targets.length; i++) {
+                    if (this.targets[i] !== target) this.hitBoxCheck(this.targets[i]);
+                };
+            };
+            if (this.touching.length > 0) {
+                for (let i = 0; i < this.touching.length; i++) {
+                    if (this.touching[i] !== target) this.hitBoxCheck(this.touching[i]);
+                };
+            };
+        };
+        if (entity === 'enemy' && target) {
+            const direction = target.position.subtract(this.position);
+            const distance = direction.length();
+            if (distance < FRAME_COUNT.DISTANCE_CLEAR && !target.isProtecting) this.actionSuccess = true;
+        };
+    };
     checkBow = (type: string) => type === 'Bow' || type === 'Greatbow';
     checkDamageType = (type: string, concern: string) => DAMAGE_TYPES[concern as keyof typeof DAMAGE_TYPES].includes(type);
     checkMeleeOrRanged = (weapon: Equipment) => {
@@ -496,51 +542,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         });
     };
 
-    bowDamageType = () => {
-        return this.currentDamageType === 'pierce' || this.currentDamageType === 'blunt' ? 'arrow' : this.currentDamageType;
-    };
-
-    checkActionSuccess = (entity: string, target: Player | Enemy) => {
-        if (entity === 'player' && !this.isStorming) {
-            if (this.flipX) {
-                this.weaponHitbox.setAngle(270);
-            } else {
-                this.weaponHitbox.setAngle(0);
-            };
-            if (this.isRolling) {
-                this.weaponHitbox.x = this.x;
-                this.weaponHitbox.y = this.y + 8;
-            } else {
-                this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
-                this.weaponHitbox.y = this.y;
-            };
-            if (this.velocity?.x as number > 0) {
-                this.weaponHitbox.x += 16;
-            } else if (this.velocity?.x as number < 0) {
-                this.weaponHitbox.x -= 16;
-            };
-            if (this.velocity?.y as number > 0) {
-                this.weaponHitbox.y += 16;
-            } else if (this.velocity?.y as number < 0) {
-                this.weaponHitbox.y -= 16;
-            };
-            if (target) this.hitBoxCheck(target);
-            if (this.targets.length > 0) {
-                for (let i = 0; i < this.targets.length; i++) {
-                    if (this.targets[i] !== target) this.hitBoxCheck(this.targets[i]);
-                };
-            };
-            if (this.touching.length > 0) {
-                for (let i = 0; i < this.touching.length; i++) {
-                    if (this.touching[i] !== target) this.hitBoxCheck(this.touching[i]);
-                };
-            };
-        };
-        if (entity === 'enemy' && target) {
-            const direction = target.position.subtract(this.position);
-            const distance = direction.length();
-            if (distance < FRAME_COUNT.DISTANCE_CLEAR && !target.isProtecting) this.actionSuccess = true;
-        };
+    particleAoe = (effect: Particle) => {
+        new AoE(this.scene, effect.key.split('_effect')[0], 3, false, undefined, false, undefined, {effect,entity:this});
     };
 
     weaponRotation = (entity: string, target: Player | Enemy) => {  

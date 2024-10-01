@@ -480,6 +480,39 @@ function randomFloatFromInterval(min: number, max: number): number {
     return parseFloat((Math.random() * (max - min) + min).toFixed(2));
 }; 
 
+// async function getEquipmentSpecific(level: number, types: { type: string; }[]): Promise<Equipment[]> {
+//     try {
+//         const fetchItem = (rarity: string, type: string) => {
+//             switch (type) {
+//                 case 'Jewelry':
+//                     break;
+                    
+//                 case 'Magic Armor':
+//                     break;
+                    
+//                 case 'Physical Armor':
+//                     break;
+                    
+//                 case 'Magic Weapon':
+//                     break;
+//                 case 'Physical Weapon':
+//                     break;
+//                 default:
+//                     break;
+//             };
+//         };
+
+//         let merchantEquipment = [];
+//         for (let i = 0; i < 9; i++) {
+//             const rarity = determineRarityByLevel(level);
+//             fetchItem(rarity, types[i].type);
+//             // let item = shuffleArray([types[i]].filter((eq) => (eq.rarity === rarity)))
+//         };
+//     } catch (err) {
+//         console.warn(err, 'Error in Equipment Specific');
+//     };
+// };
+
 async function getPhysicalWeaponEquipment(level: number): Promise<Equipment[] | undefined> {
     try {
         let merchantEquipment = [];

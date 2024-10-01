@@ -251,6 +251,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [forgeSee, setForgeSee] = createSignal<boolean>(false);
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
     const [thievery, setThievery] = createSignal<boolean>(false);
+    const [specialMerchant, setSpecialMerchant] = createSignal<boolean>(false);
     const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
@@ -269,15 +270,15 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
 
     createEffect(() => setMerchantTable(game().merchantEquipment));
     
-    const keys = {
+    const KEYS = {
         'Traveling Senarian':'magical-weapon',
         'Traveling Sevasi':'physical-weapon',
         'Traveling Armorer':'armor',
         'Traveling Jeweler':'jewelry',
         'Traveling Tailor':'cloth',
         'Traveling General Merchant':'general',
-        'Traveling Sedyreal':'physical-weapon',
-        'Traveling Kyrisian':'armor',
+        'Traveling Sedyreal':'Sedyreal',
+        'Traveling Kyrisian':'Kyrisian',
     };
 
     const actions = {
@@ -608,7 +609,11 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     function refreshLoot() {
         try {
             const refresh = async () => {
-                const key = keys[combat().computer?.name as keyof typeof keys] || 'armor';
+                const key = KEYS[combat().computer?.name as keyof typeof KEYS];
+                if (key === 'Kyrisian' || key === 'Sedyreal') {
+                    setSpecialMerchant(true);
+                    return;
+                };
                 await getLoot(key);
             };
             refresh();
@@ -621,7 +626,13 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         setShowSell(false);
         setShowBuy(true);
         if (game()?.merchantEquipment.length > 0) return;
-        const key = keys[combat().computer?.name as keyof typeof keys] || 'armor';
+
+        const key = KEYS[combat().computer?.name as keyof typeof KEYS];
+        if (key === 'Kyrisian' || key === 'Sedyreal') {
+            setSpecialMerchant(true);
+            return;
+        };
+
         const switching = async () => await getLoot(key);
         switching();
     };
@@ -955,7 +966,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 <DialogButtons options={game().dialog} setIntent={handleIntent} />
             </div>}
         </div>
-        <Merchant ascean={ascean} game={game} />
+        <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
         <Show when={showBuy() && merchantTable()?.length > 0}>
             <div class='modal'>
@@ -966,6 +977,22 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             <button class='highlight cornerTR' style={{ 'background-color': 'green', color: '#000', 'font-weight': 700 }} onClick={() => refreshLoot()}>Refresh Loot Table</button>
             <button class='highlight cornerTL' style={{ 'background-color': 'gold', color: '#000', 'font-weight': 700 }} onClick={() => setShowSell(true)}>Sell Loot</button>
             <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setShowBuy(false)}>x</button>
+            </div>
+        </Show>
+        <Show when={specialMerchant()}>
+            <div class='modal'>
+            <div class='superCenter creature-heading' style={{ position: 'absolute',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' }}>
+                {combat().computer?.name === 'Traveling Kyrisian' && ( <> 
+                    <button class='highlight animate' style={{ 'color': 'silver', 'font-weight': 700 }} onClick={async () => {await getLoot('armor'); setSpecialMerchant(false);}}>Armor</button>
+                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('cloth'); setSpecialMerchant(false);}}>Cloth</button>
+                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('jewelry'); setSpecialMerchant(false);}}>Jewelry</button>
+                </>)}
+                {combat().computer?.name === 'Traveling Sedyreal' && ( <> 
+                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>
+                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
+                </>)}
+            </div>
+            <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setSpecialMerchant(false)}>x</button>
             </div>
         </Show>
         <Show when={forgeModalShow()}> 

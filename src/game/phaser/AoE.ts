@@ -205,7 +205,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         });
     };
     setParticleTimer = (scene: Game | Underground, target: Particle) => {
-        let scale = 0.01875;
+        let scale = 0.0075; // 0.1875 || .009375 tOTAL .25215 || .0106075
         this.setScale(scale);
         let count = 0;
         const y = target.effect.y;
@@ -216,7 +216,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             callback: () => {
                 if (count >= 20) return;
                 if (this && this.timer) {
-                    scale += 0.01875;
+                    scale += 0.0075;
                     this.setScale(scale);
                     this.setPosition(target.effect.x, y);
                 };

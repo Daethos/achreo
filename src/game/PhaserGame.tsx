@@ -155,7 +155,6 @@ export default function PhaserGame (props: IProps) {
 
     function purchaseItem(purchase: { item: Equipment; cost: { silver: number; gold: number; }; }) {
         try {
-            // let inventory = Array.from(game().inventory.inventory);
             let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
             inventory.push(purchase.item);
             const clean = { ...game().inventory, inventory };
@@ -164,7 +163,7 @@ export default function PhaserGame (props: IProps) {
                 gold: props.ascean().currency.gold - purchase.cost.gold
             };
             cost = rebalanceCurrency(cost);
-            const update = { ...props.ascean(), currency: cost };
+            const update = { ...props.ascean(), currency: cost, health: { current: combat().newPlayerHealth, max: combat().playerHealth } };
             let merchantEquipment = [ ...game().merchantEquipment ];
             merchantEquipment = merchantEquipment.filter((eqp) => eqp._id !== purchase.item._id);
             setGame({ ...game(), inventory: clean, merchantEquipment });
@@ -181,22 +180,9 @@ export default function PhaserGame (props: IProps) {
         console.log(success, item, value);
         try {
             if (success === true) {
-                // let inventory = Array.from(game().inventory.inventory);
                 let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
                 inventory.push(item);
                 const clean = { ...game().inventory, inventory };
-                // const update = { 
-                //     ...props.ascean(), 
-                //     statistics: { 
-                //         ...props.ascean().statistics, 
-                //         thievery: { 
-                //             ...props.ascean().statistics.thievery, 
-                //             successes: props.ascean().statistics.thievery.successes + 1, 
-                //             total: props.ascean().statistics.thievery.total + 1,
-                //             totalValue: props.ascean().statistics.thievery.totalValue + value 
-                //         } 
-                //     } 
-                // };
                 const newStats = {
                     ...props.statistics(),
                     thievery: {
@@ -209,23 +195,10 @@ export default function PhaserGame (props: IProps) {
                 let merchantEquipment = [ ...game().merchantEquipment ];
                 merchantEquipment = merchantEquipment.filter((eqp) => eqp._id !== item._id);
                 setGame({ ...game(), inventory: clean, merchantEquipment });
-                // EventBus.emit('update-ascean', update);
                 EventBus.emit('update-inventory', clean);
                 EventBus.emit('update-statistics', newStats);
                 EventBus.emit('stealth-sound');
             } else {
-                // const update = { 
-                //     ...props.ascean(), 
-                //     statistics: { 
-                //         ...props.ascean().statistics, 
-                //         thievery: { 
-                //             ...props.ascean().statistics.thievery, 
-                //             failures: props.ascean().statistics.thievery.failures + 1, 
-                //             total: props.ascean().statistics.thievery.total + 1,
-                //             totalValue: props.ascean().statistics.thievery.totalValue + value 
-                //         } 
-                //     } 
-                // };
                 const newStats = {
                     ...props.statistics(),
                     thievery: {
@@ -238,7 +211,6 @@ export default function PhaserGame (props: IProps) {
                 let merchantEquipment = [ ...game().merchantEquipment ];
                 merchantEquipment = merchantEquipment.filter((eqp) => eqp._id !== item._id);
                 setGame({ ...game(), merchantEquipment });
-                // EventBus.emit('update-ascean', update);
                 EventBus.emit('update-statistics', newStats);
                 EventBus.emit('death-sound');
             };

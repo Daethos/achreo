@@ -1,5 +1,6 @@
 export const Rings = [
     {
+        ego: 'Ring',
         _id: 'ers_001',
         name: "Empty Ring Slot",
         rarity: 'Default',
@@ -22,6 +23,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/GUI_Ring.png'
     },{
+        ego: 'Ring',
         _id: 'ers_002',
         name: "Empty Ring Slot Two",
         rarity: 'Default',
@@ -44,6 +46,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/GUI_Ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Choimic Ring",
         type: 'Magic',
@@ -66,6 +69,7 @@ export const Rings = [
         kyosir: 2,
         imgUrl: '../assets/images/chiomyr-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Choimic Ring",
         type: 'Magic',
@@ -88,6 +92,7 @@ export const Rings = [
         kyosir: 4,
         imgUrl: '../assets/images/chiomyr-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Choimic Ring",
         type: 'Magic',
@@ -110,6 +115,7 @@ export const Rings = [
         kyosir: 8,
         imgUrl: '../assets/images/chiomyr-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Choimic Ring",
         type: 'Magic',
@@ -132,6 +138,7 @@ export const Rings = [
         kyosir: 15,
         imgUrl: '../assets/images/chiomyr-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Shrieker's Ring",
         type: 'Magic',
@@ -154,6 +161,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/sevas-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Shrieker's Ring",
         type: 'Magic',
@@ -176,6 +184,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/sevas-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Shrieker's Ring",
         type: 'Magic',
@@ -198,6 +207,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/sevas-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Shrieker's Ring",
         type: 'Magic',
@@ -220,6 +230,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/sevas-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Kyrison Ring",
         type: 'Magic',
@@ -242,6 +253,7 @@ export const Rings = [
         kyosir: 2,
         imgUrl: '../assets/images/kyrisos-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Kyrison Ring",
         type: 'Magic',
@@ -264,6 +276,7 @@ export const Rings = [
         kyosir: 4,
         imgUrl: '../assets/images/kyrisos-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Kyrison Ring",
         type: 'Magic',
@@ -286,6 +299,7 @@ export const Rings = [
         kyosir: 8,
         imgUrl: '../assets/images/kyrisos-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Kyrison Ring",
         type: 'Magic',
@@ -308,6 +322,7 @@ export const Rings = [
         kyosir: 15,
         imgUrl: '../assets/images/kyrisos-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Sedyrus Ring",
         type: 'Magic',
@@ -330,6 +345,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/sedyro-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Sedyrus Ring",
         type: 'Magic',
@@ -352,6 +368,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/sedyro-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Sedyrus Ring",
         type: 'Magic',
@@ -374,6 +391,7 @@ export const Rings = [
         kyosir: 3,
         imgUrl: '../assets/images/sedyro-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Sedyrus Ring",
         type: 'Magic',
@@ -396,6 +414,7 @@ export const Rings = [
         kyosir: 7,
         imgUrl: '../assets/images/sedyro-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Knight's Ring",
         type: 'Magic',
@@ -418,6 +437,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/knight-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Knight's Ring",
         type: 'Magic',
@@ -440,6 +460,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/knight-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Knight's Ring",
         type: 'Magic',
@@ -462,6 +483,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/knight-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Ashtre Ring",
         type: 'Magic',
@@ -484,6 +506,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Ashtre Ring",
         type: 'Magic',
@@ -506,6 +529,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Ashtre Ring",
         type: 'Magic',
@@ -528,6 +552,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Soverain Ring',
         type: 'Magic',
@@ -550,6 +575,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/soverain-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Soverain Ring',
         type: 'Magic',
@@ -572,6 +598,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/soverain-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Soverain Ring',
         type: 'Magic',
@@ -594,6 +621,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/soverain-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Daethic Ring',
         type: 'Magic',
@@ -616,6 +644,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/daethic-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Daethic Ring',
         type: 'Magic',
@@ -638,6 +667,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/daethic-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Daethic Ring',
         type: 'Magic',
@@ -660,6 +690,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/daethic-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Achreon Ring',
         type: 'Magic',
@@ -682,6 +713,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/achre-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Achreon Ring',
         type: 'Magic',
@@ -704,6 +736,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/achre-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Achreon Ring',
         type: 'Magic',
@@ -726,6 +759,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/achre-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Cambiren Ring',
         type: 'Magic',
@@ -748,6 +782,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/caeren-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Cambiren Ring',
         type: 'Magic',
@@ -770,6 +805,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/caeren-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Cambiren Ring',
         type: 'Magic',
@@ -792,6 +828,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/caeren-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Sage Ring',
         type: 'Magic',
@@ -814,6 +851,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/sage-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Sage Ring',
         type: 'Magic',
@@ -836,6 +874,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/sage-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Sage Ring',
         type: 'Magic',
@@ -858,6 +897,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/sage-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Quor'eite Ring",
         type: 'Magic',
@@ -880,6 +920,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/earth-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Quor'eite Ring",
         type: 'Magic',
@@ -902,6 +943,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/earth-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Quor'eite Ring",
         type: 'Magic',
@@ -924,6 +966,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/earth-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Fang Ring',
         type: 'Physical',
@@ -946,6 +989,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/fang-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Fang Ring',
         type: 'Physical',
@@ -968,6 +1012,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/fang-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Fang Ring',
         type: 'Physical',
@@ -990,6 +1035,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/fang-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Fireland Ring',
         type: 'Physical',
@@ -1012,6 +1058,7 @@ export const Rings = [
         kyosir: 1,
         imgUrl: '../assets/images/fireland-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Fireland Ring',
         type: 'Physical',
@@ -1034,6 +1081,7 @@ export const Rings = [
         kyosir: 3,
         imgUrl: '../assets/images/fireland-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Fireland Ring',
         type: 'Physical',
@@ -1056,6 +1104,7 @@ export const Rings = [
         kyosir: 6,
         imgUrl: '../assets/images/fireland-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Marauder's Ring",
         type: 'Physical',
@@ -1078,6 +1127,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/marauder-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Marauder's Ring",
         type: 'Physical',
@@ -1100,6 +1150,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/marauder-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Marauder's Ring",
         type: 'Physical',
@@ -1122,6 +1173,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/marauder-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Occult Ring',
         type: 'Magic',
@@ -1144,6 +1196,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/occult-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Occult Ring',
         type: 'Magic',
@@ -1166,6 +1219,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/occult-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Occult Ring',
         type: 'Magic',
@@ -1188,6 +1242,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/occult-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Fyers Ring',
         type: 'Magic',
@@ -1210,6 +1265,7 @@ export const Rings = [
         kyosir: 2,
         imgUrl: '../assets/images/fyers-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Fyers Ring',
         type: 'Magic',
@@ -1232,6 +1288,7 @@ export const Rings = [
         kyosir: 4,
         imgUrl: '../assets/images/fyers-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Fyers Ring',
         type: 'Magic',
@@ -1254,6 +1311,7 @@ export const Rings = [
         kyosir: 8,
         imgUrl: '../assets/images/fyers-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Astral Ring',
         type: 'Magic',
@@ -1276,6 +1334,7 @@ export const Rings = [
         kyosir: 1,
         imgUrl: '../assets/images/astral-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Astral Ring',
         type: 'Magic',
@@ -1298,6 +1357,7 @@ export const Rings = [
         kyosir: 4,
         imgUrl: '../assets/images/astral-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Astral Ring',
         type: 'Magic',
@@ -1320,6 +1380,7 @@ export const Rings = [
         kyosir: 8,
         imgUrl: '../assets/images/astral-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Dae Ring',
         type: 'Magic',
@@ -1342,6 +1403,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/dae-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Dae Ring',
         type: 'Magic',
@@ -1364,6 +1426,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/dae-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Dae Ring',
         type: 'Magic',
@@ -1386,6 +1449,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/dae-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Knight's Ring",
         type: 'Magic',
@@ -1408,6 +1472,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/knight-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Ashtre Ring",
         type: 'Magic',
@@ -1430,6 +1495,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/ashtre-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Soverain Ring',
         type: 'Magic',
@@ -1452,6 +1518,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/soverain-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Daethic Ring',
         type: 'Magic',
@@ -1474,6 +1541,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/daethic-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Achreon Ring',
         type: 'Magic',
@@ -1496,6 +1564,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/achre-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Cambiren Ring',
         type: 'Magic',
@@ -1518,6 +1587,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/caeren-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Sage Ring',
         type: 'Magic',
@@ -1540,6 +1610,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/sage-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Quor'eite Ring",
         type: 'Magic',
@@ -1562,6 +1633,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/earth-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Fang Ring',
         type: 'Physical',
@@ -1584,6 +1656,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/fang-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Fireland Ring',
         type: 'Physical',
@@ -1606,6 +1679,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/fireland-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: "Marauder's Ring",
         type: 'Physical',
@@ -1628,6 +1702,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/marauder-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Occult Ring',
         type: 'Magic',
@@ -1650,6 +1725,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/occult-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Fyers Ring',
         type: 'Magic',
@@ -1672,6 +1748,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/fyers-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Astral Ring',
         type: 'Magic',
@@ -1694,6 +1771,7 @@ export const Rings = [
         kyosir: 0,
         imgUrl: '../assets/images/astral-ring.png'
     },{
+        ego: 'Ring',
         _id: '',
         name: 'Dae Ring',
         type: 'Magic',
@@ -1720,6 +1798,7 @@ export const Rings = [
 
 export const Amulets = [
     {
+        ego: 'Amulet',
         _id: '',
         name: "Ahn've's Amulet",
         type: 'Magic',
@@ -1743,6 +1822,7 @@ export const Amulets = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Ahn've's Amulet",
         type: 'Magic',
@@ -1766,6 +1846,7 @@ export const Amulets = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Ahn've's Amulet",
         type: 'Magic',
@@ -1789,6 +1870,7 @@ export const Amulets = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Ahn've's Amulet",
         type: 'Magic',
@@ -1812,6 +1894,7 @@ export const Amulets = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Shrieker's Necklace",
         type: 'Magic',
@@ -1835,6 +1918,7 @@ export const Amulets = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Shrieker's Necklace",
         type: 'Magic',
@@ -1858,6 +1942,7 @@ export const Amulets = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Shrieker's Necklace",
         type: 'Magic',
@@ -1881,6 +1966,7 @@ export const Amulets = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Shrieker's Necklace",
         type: 'Magic',
@@ -1904,6 +1990,7 @@ export const Amulets = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Se'narian Necklace",
         type: 'Magic',
@@ -1927,6 +2014,7 @@ export const Amulets = [
         influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Se'narian Necklace",
         type: 'Magic',
@@ -1950,6 +2038,7 @@ export const Amulets = [
         influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Se'narian Necklace",
         type: 'Magic',
@@ -1973,6 +2062,7 @@ export const Amulets = [
         influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Se'narian Necklace",
         type: 'Magic',
@@ -1996,6 +2086,7 @@ export const Amulets = [
         influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Chiomic Amulet",
         type: 'Magic',
@@ -2019,6 +2110,7 @@ export const Amulets = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/chiomyr-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Chiomic Amulet",
         type: 'Magic',
@@ -2042,6 +2134,7 @@ export const Amulets = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/chiomyr-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Chiomic Amulet",
         type: 'Magic',
@@ -2065,6 +2158,7 @@ export const Amulets = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/chiomyr-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Chiomic Amulet",
         type: 'Magic',
@@ -2088,6 +2182,7 @@ export const Amulets = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/chiomyr-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Kyrison Amulet",
         type: 'Magic',
@@ -2111,6 +2206,7 @@ export const Amulets = [
         influences: ["Kyrisos", "Chiomyr"],
         imgUrl: '../assets/images/kyrisos-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Kyrison Amulet",
         type: 'Magic',
@@ -2134,6 +2230,7 @@ export const Amulets = [
         influences: ["Kyrisos", "Chiomyr"],
         imgUrl: '../assets/images/kyrisos-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Kyrison Amulet",
         type: 'Magic',
@@ -2157,6 +2254,7 @@ export const Amulets = [
         influences: ["Kyrisos", "Chiomyr"],
         imgUrl: '../assets/images/kyrisos-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Kyrison Amulet",
         type: 'Magic',
@@ -2180,6 +2278,7 @@ export const Amulets = [
         influences: ["Kyrisos", "Chiomyr"],
         imgUrl: '../assets/images/kyrisos-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Rahvric Necklace',
         type: 'Magic',
@@ -2203,6 +2302,7 @@ export const Amulets = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvric-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Rahvric Necklace',
         type: 'Magic',
@@ -2226,6 +2326,7 @@ export const Amulets = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvric-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Rahvric Necklace',
         type: 'Magic',
@@ -2249,6 +2350,7 @@ export const Amulets = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvric-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Rahvric Necklace',
         type: 'Magic',
@@ -2272,6 +2374,7 @@ export const Amulets = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvric-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Lilosian Necklace',
         type: 'Magic',
@@ -2295,6 +2398,7 @@ export const Amulets = [
         influences: ["Lilos", "Kyr'na"],
         imgUrl: '../assets/images/lilos-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Lilosian Necklace',
         type: 'Magic',
@@ -2318,6 +2422,7 @@ export const Amulets = [
         influences: ["Lilos", "Kyr'na"],
         imgUrl: '../assets/images/lilos-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Lilosian Necklace',
         type: 'Magic',
@@ -2341,6 +2446,7 @@ export const Amulets = [
         influences: ["Lilos", "Kyr'na"],
         imgUrl: '../assets/images/lilos-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Lilosian Necklace',
         type: 'Magic',
@@ -2364,6 +2470,7 @@ export const Amulets = [
         influences: ["Lilos", "Kyr'na"],
         imgUrl: '../assets/images/lilos-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Ilian Amulet',
         type: 'Magic',
@@ -2387,6 +2494,7 @@ export const Amulets = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Ilian Amulet',
         type: 'Magic',
@@ -2410,6 +2518,7 @@ export const Amulets = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Ilian Amulet',
         type: 'Magic',
@@ -2433,6 +2542,7 @@ export const Amulets = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Ilian Amulet',
         type: 'Magic',
@@ -2456,6 +2566,7 @@ export const Amulets = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Kyrnaic Amulet',
         type: 'Magic',
@@ -2479,6 +2590,7 @@ export const Amulets = [
         influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/kyrna-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Kyrnaic Amulet',
         type: 'Magic',
@@ -2502,6 +2614,7 @@ export const Amulets = [
         influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/kyrna-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Kyrnaic Amulet',
         type: 'Magic',
@@ -2525,6 +2638,7 @@ export const Amulets = [
         influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/kyrna-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Kyrnaic Amulet',
         type: 'Magic',
@@ -2548,6 +2662,7 @@ export const Amulets = [
         influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/kyrna-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Shrygei's Amulet",
         type: 'Magic',
@@ -2571,6 +2686,7 @@ export const Amulets = [
         influences: ["Shrygei"],
         imgUrl: '../assets/images/shrygei-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Shrygei's Amulet",
         type: 'Magic',
@@ -2594,6 +2710,7 @@ export const Amulets = [
         influences: ["Shrygei"],
         imgUrl: '../assets/images/shrygei-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Shrygei's Amulet",
         type: 'Magic',
@@ -2617,6 +2734,7 @@ export const Amulets = [
         influences: ["Shrygei"],
         imgUrl: '../assets/images/shrygei-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Shrygei's Amulet",
         type: 'Magic',
@@ -2640,6 +2758,7 @@ export const Amulets = [
         influences: ["Shrygei"],
         imgUrl: '../assets/images/shrygei-amulet.png'
     },{
+        ego: 'Amulet',
         _id: 'eas_001',
         name: "Empty Amulet Slot",
         rarity: 'Default',
@@ -2663,6 +2782,7 @@ export const Amulets = [
         influences: [""],
         imgUrl: '../assets/images/GUI_Amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Knight's Amulet",
         type: 'Magic',
@@ -2686,6 +2806,7 @@ export const Amulets = [
         influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/knight-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Knight's Amulet",
         type: 'Magic',
@@ -2709,6 +2830,7 @@ export const Amulets = [
         influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/knight-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Knight's Amulet",
         type: 'Magic',
@@ -2732,6 +2854,7 @@ export const Amulets = [
         influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/knight-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Knight's Amulet",
         type: 'Magic',
@@ -2755,6 +2878,7 @@ export const Amulets = [
         influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/knight-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Ashtre Amulet",
         type: 'Magic',
@@ -2778,6 +2902,7 @@ export const Amulets = [
         influences: ["Astra", "Se'dyro", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Ashtre Amulet",
         type: 'Magic',
@@ -2801,6 +2926,7 @@ export const Amulets = [
         influences: ["Astra", "Se'dyro", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Ashtre Amulet",
         type: 'Magic',
@@ -2824,6 +2950,7 @@ export const Amulets = [
         influences: ["Astra", "Se'dyro", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Ashtre Amulet",
         type: 'Magic',
@@ -2847,6 +2974,7 @@ export const Amulets = [
         influences: ["Astra", "Se'dyro", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Soverain Amulet',
         type: 'Magic',
@@ -2870,6 +2998,7 @@ export const Amulets = [
         influences: ["Ilios", "Cambire"],
         imgUrl: '../assets/images/soverain-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Soverain Amulet',
         type: 'Magic',
@@ -2893,6 +3022,7 @@ export const Amulets = [
         influences: ["Ilios", "Cambire"],
         imgUrl: '../assets/images/soverain-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Soverain Amulet',
         type: 'Magic',
@@ -2916,6 +3046,7 @@ export const Amulets = [
         influences: ["Ilios", "Cambire"],
         imgUrl: '../assets/images/soverain-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Soverain Amulet',
         type: 'Magic',
@@ -2939,6 +3070,7 @@ export const Amulets = [
         influences: ["Ilios", "Cambire"],
         imgUrl: '../assets/images/soverain-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Daethic Amulet',
         type: 'Magic',
@@ -2962,6 +3094,7 @@ export const Amulets = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Daethic Amulet',
         type: 'Magic',
@@ -2985,6 +3118,7 @@ export const Amulets = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Daethic Amulet',
         type: 'Magic',
@@ -3008,6 +3142,7 @@ export const Amulets = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Daethic Amulet',
         type: 'Magic',
@@ -3031,6 +3166,7 @@ export const Amulets = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Achreon Amulet',
         type: 'Magic',
@@ -3054,6 +3190,7 @@ export const Amulets = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/achre-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Achreon Amulet',
         type: 'Magic',
@@ -3077,6 +3214,7 @@ export const Amulets = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/achre-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Achreon Amulet',
         type: 'Magic',
@@ -3100,6 +3238,7 @@ export const Amulets = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/achre-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Achreon Amulet',
         type: 'Magic',
@@ -3123,6 +3262,7 @@ export const Amulets = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/achre-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Cambiren Amulet',
         type: 'Magic',
@@ -3146,6 +3286,7 @@ export const Amulets = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/caeren-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Cambiren Amulet',
         type: 'Magic',
@@ -3169,6 +3310,7 @@ export const Amulets = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/caeren-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Cambiren Amulet',
         type: 'Magic',
@@ -3192,6 +3334,7 @@ export const Amulets = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/caeren-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Cambiren Amulet',
         type: 'Magic',
@@ -3215,6 +3358,7 @@ export const Amulets = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/caeren-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Sage Amulet',
         type: 'Magic',
@@ -3238,6 +3382,7 @@ export const Amulets = [
         influences: ["Senari", "Nyrolus"],
         imgUrl: '../assets/images/sage-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Sage Amulet',
         type: 'Magic',
@@ -3261,6 +3406,7 @@ export const Amulets = [
         influences: ["Senari", "Nyrolus"],
         imgUrl: '../assets/images/sage-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Sage Amulet',
         type: 'Magic',
@@ -3284,6 +3430,7 @@ export const Amulets = [
         influences: ["Senari", "Nyrolus"],
         imgUrl: '../assets/images/sage-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Sage Amulet',
         type: 'Magic',
@@ -3307,6 +3454,7 @@ export const Amulets = [
         influences: ["Senari", "Nyrolus"],
         imgUrl: '../assets/images/sage-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Quor'eite Amulet",
         type: 'Magic',
@@ -3330,6 +3478,7 @@ export const Amulets = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Quor'eite Amulet",
         type: 'Magic',
@@ -3353,6 +3502,7 @@ export const Amulets = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Quor'eite Amulet",
         type: 'Magic',
@@ -3376,6 +3526,7 @@ export const Amulets = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Quor'eite Amulet",
         type: 'Magic',
@@ -3399,6 +3550,7 @@ export const Amulets = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Fang Amulet',
         type: 'Physical',
@@ -3422,6 +3574,7 @@ export const Amulets = [
         influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Fang Amulet',
         type: 'Physical',
@@ -3445,6 +3598,7 @@ export const Amulets = [
         influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Fang Amulet',
         type: 'Physical',
@@ -3468,6 +3622,7 @@ export const Amulets = [
         influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Fang Amulet',
         type: 'Physical',
@@ -3491,6 +3646,7 @@ export const Amulets = [
         influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Fireland Amulet',
         type: 'Physical',
@@ -3514,6 +3670,7 @@ export const Amulets = [
         influences: ["Fyer", "Ilios", "Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/fireland-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Fireland Amulet',
         type: 'Physical',
@@ -3537,6 +3694,7 @@ export const Amulets = [
         influences: ["Fyer", "Ilios", "Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/fireland-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Fireland Amulet',
         type: 'Physical',
@@ -3560,6 +3718,7 @@ export const Amulets = [
         influences: ["Fyer", "Ilios", "Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/fireland-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Fireland Amulet',
         type: 'Physical',
@@ -3583,6 +3742,7 @@ export const Amulets = [
         influences: ["Fyer", "Ilios", "Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/fireland-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Marauder's Amulet",
         type: 'Physical',
@@ -3606,6 +3766,7 @@ export const Amulets = [
         influences: ["Se'dyro", "Kyn'gi", "Ma'anre"],
         imgUrl: '../assets/images/marauder-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Marauder's Amulet",
         type: 'Physical',
@@ -3629,6 +3790,7 @@ export const Amulets = [
         influences: ["Se'dyro", "Kyn'gi", "Ma'anre"],
         imgUrl: '../assets/images/marauder-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Marauder's Amulet",
         type: 'Physical',
@@ -3652,6 +3814,7 @@ export const Amulets = [
         influences: ["Se'dyro", "Kyn'gi", "Ma'anre"],
         imgUrl: '../assets/images/marauder-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: "Marauder's Amulet",
         type: 'Physical',
@@ -3675,6 +3838,7 @@ export const Amulets = [
         influences: ["Se'dyro", "Kyn'gi", "Ma'anre"],
         imgUrl: '../assets/images/marauder-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Occult Amulet',
         type: 'Magic',
@@ -3698,6 +3862,7 @@ export const Amulets = [
         influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Occult Amulet',
         type: 'Magic',
@@ -3721,6 +3886,7 @@ export const Amulets = [
         influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Occult Amulet',
         type: 'Magic',
@@ -3744,6 +3910,7 @@ export const Amulets = [
         influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Occult Amulet',
         type: 'Magic',
@@ -3767,6 +3934,7 @@ export const Amulets = [
         influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Fyers Amulet',
         type: 'Magic',
@@ -3790,6 +3958,7 @@ export const Amulets = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/fyers-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Fyers Amulet',
         type: 'Magic',
@@ -3813,6 +3982,7 @@ export const Amulets = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/fyers-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Fyers Amulet',
         type: 'Magic',
@@ -3836,6 +4006,7 @@ export const Amulets = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/fyers-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Fyers Amulet',
         type: 'Magic',
@@ -3859,6 +4030,7 @@ export const Amulets = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/fyers-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Astral Amulet',
         type: 'Magic',
@@ -3882,6 +4054,7 @@ export const Amulets = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Astral Amulet',
         type: 'Magic',
@@ -3905,6 +4078,7 @@ export const Amulets = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Astral Amulet',
         type: 'Magic',
@@ -3928,6 +4102,7 @@ export const Amulets = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Astral Amulet',
         type: 'Magic',
@@ -3951,6 +4126,7 @@ export const Amulets = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Dae Amulet',
         type: 'Magic',
@@ -3974,6 +4150,7 @@ export const Amulets = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/dae-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Dae Amulet',
         type: 'Magic',
@@ -3997,6 +4174,7 @@ export const Amulets = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/dae-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Dae Amulet',
         type: 'Magic',
@@ -4020,6 +4198,7 @@ export const Amulets = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/dae-amulet.png'
     },{
+        ego: 'Amulet',
         _id: '',
         name: 'Dae Amulet',
         type: 'Magic',
@@ -4047,6 +4226,7 @@ export const Amulets = [
 
 export const Trinkets = [
     {
+        ego: 'Trinket',
         _id: '',
         name: "Ahn've's Trinket",
         type: 'Magic',
@@ -4070,6 +4250,7 @@ export const Trinkets = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Ahn've's Trinket",
         type: 'Magic',
@@ -4093,6 +4274,7 @@ export const Trinkets = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Ahn've's Trinket",
         type: 'Magic',
@@ -4116,6 +4298,7 @@ export const Trinkets = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Ahn've's Trinket",
         type: 'Magic',
@@ -4139,6 +4322,7 @@ export const Trinkets = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Shrieker's Trinket",
         type: 'Magic',
@@ -4162,6 +4346,7 @@ export const Trinkets = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Shrieker's Trinket",
         type: 'Magic',
@@ -4185,6 +4370,7 @@ export const Trinkets = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Shrieker's Trinket",
         type: 'Magic',
@@ -4208,6 +4394,7 @@ export const Trinkets = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Shrieker's Trinket",
         type: 'Magic',
@@ -4231,6 +4418,7 @@ export const Trinkets = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Senarian Trinket",
         type: 'Magic',
@@ -4254,6 +4442,7 @@ export const Trinkets = [
         influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Senarian Trinket",
         type: 'Magic',
@@ -4277,6 +4466,7 @@ export const Trinkets = [
         influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Senarian Trinket",
         type: 'Magic',
@@ -4300,6 +4490,7 @@ export const Trinkets = [
         influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Senarian Trinket",
         type: 'Magic',
@@ -4323,6 +4514,7 @@ export const Trinkets = [
         influences: ["Senari", "Se'dyro"],
         imgUrl: '../assets/images/senari-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Chiomic Trinket",
         type: 'Magic',
@@ -4346,6 +4538,7 @@ export const Trinkets = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/chiomyr-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Chiomic Trinket",
         type: 'Magic',
@@ -4369,6 +4562,7 @@ export const Trinkets = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/chiomyr-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Chiomic Trinket",
         type: 'Magic',
@@ -4392,6 +4586,7 @@ export const Trinkets = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/chiomyr-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Chiomic Trinket",
         type: 'Magic',
@@ -4415,6 +4610,7 @@ export const Trinkets = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/chiomyr-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Kyrison Trinket",
         type: 'Magic',
@@ -4438,6 +4634,7 @@ export const Trinkets = [
         influences: ["Kyrisos", "Chiomyr"],
         imgUrl: '../assets/images/kyrisos-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Kyrison Trinket",
         type: 'Magic',
@@ -4461,6 +4658,7 @@ export const Trinkets = [
         influences: ["Kyrisos", "Chiomyr"],
         imgUrl: '../assets/images/kyrisos-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Kyrison Trinket",
         type: 'Magic',
@@ -4484,6 +4682,7 @@ export const Trinkets = [
         influences: ["Kyrisos", "Chiomyr"],
         imgUrl: '../assets/images/kyrisos-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Kyrison Trinket",
         type: 'Magic',
@@ -4507,6 +4706,7 @@ export const Trinkets = [
         influences: ["Kyrisos", "Chiomyr"],
         imgUrl: '../assets/images/kyrisos-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Rahvric Trinket",
         type: 'Magic',
@@ -4530,6 +4730,7 @@ export const Trinkets = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvric-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Rahvric Trinket",
         type: 'Magic',
@@ -4553,6 +4754,7 @@ export const Trinkets = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvric-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Rahvric Trinket",
         type: 'Magic',
@@ -4576,6 +4778,7 @@ export const Trinkets = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvric-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Rahvric Trinket",
         type: 'Magic',
@@ -4599,6 +4802,7 @@ export const Trinkets = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvric-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Lilosian Trinket",
         type: 'Magic',
@@ -4622,6 +4826,7 @@ export const Trinkets = [
         influences: ["Lilos", "Kyr'na"],
         imgUrl: '../assets/images/lilos-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Lilosian Trinket",
         type: 'Magic',
@@ -4645,6 +4850,7 @@ export const Trinkets = [
         influences: ["Lilos", "Kyr'na"],
         imgUrl: '../assets/images/lilos-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Lilosian Trinket",
         type: 'Magic',
@@ -4668,6 +4874,7 @@ export const Trinkets = [
         influences: ["Lilos", "Kyr'na"],
         imgUrl: '../assets/images/lilos-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Lilosian Trinket",
         type: 'Magic',
@@ -4691,6 +4898,7 @@ export const Trinkets = [
         influences: ["Lilos", "Kyr'na"],
         imgUrl: '../assets/images/lilos-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Ilian Trinket",
         type: 'Magic',
@@ -4714,6 +4922,7 @@ export const Trinkets = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Ilian Trinket",
         type: 'Magic',
@@ -4737,6 +4946,7 @@ export const Trinkets = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Ilian Trinket",
         type: 'Magic',
@@ -4760,6 +4970,7 @@ export const Trinkets = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Ilian Trinket",
         type: 'Magic',
@@ -4783,6 +4994,7 @@ export const Trinkets = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Kyrnaic Trinket",
         type: 'Magic',
@@ -4806,6 +5018,7 @@ export const Trinkets = [
         influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/kyrna-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Kyrnaic Trinket",
         type: 'Magic',
@@ -4829,6 +5042,7 @@ export const Trinkets = [
         influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/kyrna-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Kyrnaic Trinket",
         type: 'Magic',
@@ -4852,6 +5066,7 @@ export const Trinkets = [
         influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/kyrna-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Kyrnaic Trinket",
         type: 'Magic',
@@ -4875,6 +5090,7 @@ export const Trinkets = [
         influences: ["Kyr'na", "Lilos"],
         imgUrl: '../assets/images/kyrna-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Shrygei's Trinket",
         type: 'Magic',
@@ -4898,6 +5114,7 @@ export const Trinkets = [
         influences: ["Shrygei"],
         imgUrl: '../assets/images/shrygei-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Shrygei's Trinket",
         type: 'Magic',
@@ -4921,6 +5138,7 @@ export const Trinkets = [
         influences: ["Shrygei"],
         imgUrl: '../assets/images/shrygei-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Shrygei's Trinket",
         type: 'Magic',
@@ -4944,6 +5162,7 @@ export const Trinkets = [
         influences: ["Shrygei"],
         imgUrl: '../assets/images/shrygei-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         name: "Shrygei's Trinket",
         type: 'Magic',
@@ -4967,6 +5186,7 @@ export const Trinkets = [
         influences: ["Shrygei"],
         imgUrl: '../assets/images/shrygei-trinket.png'
     },{
+        ego: 'Trinket',
         _id: 'ets_001',
         name: "Empty Trinket Slot",
         rarity: 'Default',
@@ -4990,6 +5210,7 @@ export const Trinkets = [
         influences: [""],
         imgUrl: '../assets/images/GUI_Trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: "Knight's Trinket",
@@ -5013,6 +5234,7 @@ export const Trinkets = [
         influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/knight-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: "Knight's Trinket",
@@ -5036,6 +5258,7 @@ export const Trinkets = [
         influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/knight-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: "Knight's Trinket",
@@ -5059,6 +5282,7 @@ export const Trinkets = [
         influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/knight-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: "Knight's Trinket",
@@ -5082,6 +5306,7 @@ export const Trinkets = [
         influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/knight-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: "Ashtre Trinket",
@@ -5105,6 +5330,7 @@ export const Trinkets = [
         influences: ["Se'dyro", "Astra", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: "Ashtre Trinket",
@@ -5128,6 +5354,7 @@ export const Trinkets = [
         influences: ["Se'dyro", "Astra", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: "Ashtre Trinket",
@@ -5151,6 +5378,7 @@ export const Trinkets = [
         influences: ["Se'dyro", "Astra", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: "Ashtre Trinket",
@@ -5174,6 +5402,7 @@ export const Trinkets = [
         influences: ["Se'dyro", "Astra", "Se'vas", "Ahn've"],
         imgUrl: '../assets/images/ashtre-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: 'Soverain Trinket',
@@ -5197,6 +5426,7 @@ export const Trinkets = [
         influences: ["Ilios", "Cambire"],
         imgUrl: '../assets/images/soverain-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: 'Soverain Trinket',
@@ -5220,6 +5450,7 @@ export const Trinkets = [
         influences: ["Ilios", "Cambire"],
         imgUrl: '../assets/images/soverain-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: 'Soverain Trinket',
@@ -5243,6 +5474,7 @@ export const Trinkets = [
         influences: ["Ilios", "Cambire"],
         imgUrl: '../assets/images/soverain-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: 'Soverain Trinket',
@@ -5266,6 +5498,7 @@ export const Trinkets = [
         influences: ["Ilios", "Cambire"],
         imgUrl: '../assets/images/soverain-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: 'Daethic Trinket',
@@ -5289,6 +5522,7 @@ export const Trinkets = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: 'Daethic Trinket',
@@ -5312,6 +5546,7 @@ export const Trinkets = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: 'Daethic Trinket',
@@ -5335,6 +5570,7 @@ export const Trinkets = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: 'Daethic Trinket',
@@ -5358,6 +5594,7 @@ export const Trinkets = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: 'Achreon Trinket',
@@ -5381,6 +5618,7 @@ export const Trinkets = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/achre-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: 'Achreon Trinket',
@@ -5404,6 +5642,7 @@ export const Trinkets = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/achre-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: 'Achreon Trinket',
@@ -5427,6 +5666,7 @@ export const Trinkets = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/achre-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: 'Achreon Trinket',
@@ -5450,6 +5690,7 @@ export const Trinkets = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/achre-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: 'Cambiren Trinket',
@@ -5473,6 +5714,7 @@ export const Trinkets = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/caeren-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: 'Cambiren Trinket',
@@ -5496,6 +5738,7 @@ export const Trinkets = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/caeren-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: 'Cambiren Trinket',
@@ -5519,6 +5762,7 @@ export const Trinkets = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/caeren-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: 'Cambiren Trinket',
@@ -5542,6 +5786,7 @@ export const Trinkets = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/caeren-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: 'Sage Trinket',
@@ -5565,6 +5810,7 @@ export const Trinkets = [
         influences: ["Senari", "Nyrolus"],
         imgUrl: '../assets/images/sage-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: 'Sage Trinket',
@@ -5588,6 +5834,7 @@ export const Trinkets = [
         influences: ["Senari", "Nyrolus"],
         imgUrl: '../assets/images/sage-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: 'Sage Trinket',
@@ -5611,6 +5858,7 @@ export const Trinkets = [
         influences: ["Senari", "Nyrolus"],
         imgUrl: '../assets/images/sage-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: 'Sage Trinket',
@@ -5634,6 +5882,7 @@ export const Trinkets = [
         influences: ["Senari", "Nyrolus"],
         imgUrl: '../assets/images/sage-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: "Quor'eite Trinket",
@@ -5657,6 +5906,7 @@ export const Trinkets = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: "Quor'eite Trinket",
@@ -5680,6 +5930,7 @@ export const Trinkets = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: "Quor'eite Trinket",
@@ -5703,6 +5954,7 @@ export const Trinkets = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: "Quor'eite Trinket",
@@ -5726,6 +5978,7 @@ export const Trinkets = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: 'Fang Trinket',
@@ -5749,6 +6002,7 @@ export const Trinkets = [
         influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: 'Fang Trinket',
@@ -5772,6 +6026,7 @@ export const Trinkets = [
         influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: 'Fang Trinket',
@@ -5795,6 +6050,7 @@ export const Trinkets = [
         influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: 'Fang Trinket',
@@ -5818,6 +6074,7 @@ export const Trinkets = [
         influences: ["Se'vas", "Tshaer", "Ilios"],
         imgUrl: '../assets/images/fang-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: 'Fireland Trinket',
@@ -5841,6 +6098,7 @@ export const Trinkets = [
         influences: ["Fyer", "Ilios", "Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/fireland-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: 'Fireland Trinket',
@@ -5864,6 +6122,7 @@ export const Trinkets = [
         influences: ["Fyer", "Ilios", "Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/fireland-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: 'Fireland Trinket',
@@ -5887,6 +6146,7 @@ export const Trinkets = [
         influences: ["Fyer", "Ilios", "Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/fireland-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: 'Fireland Trinket',
@@ -5910,6 +6170,7 @@ export const Trinkets = [
         influences: ["Fyer", "Ilios", "Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/fireland-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: "Marauder's Trinket",
@@ -5933,6 +6194,7 @@ export const Trinkets = [
         influences: ["Se'dyro", "Kyn'gi", "Ma'anre"],
         imgUrl: '../assets/images/marauder-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: "Marauder's Trinket",
@@ -5956,6 +6218,7 @@ export const Trinkets = [
         influences: ["Se'dyro", "Kyn'gi", "Ma'anre"],
         imgUrl: '../assets/images/marauder-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: "Marauder's Trinket",
@@ -5979,6 +6242,7 @@ export const Trinkets = [
         influences: ["Se'dyro", "Kyn'gi", "Ma'anre"],
         imgUrl: '../assets/images/marauder-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: "Marauder's Trinket",
@@ -6002,6 +6266,7 @@ export const Trinkets = [
         influences: ["Se'dyro", "Kyn'gi", "Ma'anre"],
         imgUrl: '../assets/images/marauder-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: 'Occult Trinket',
@@ -6025,6 +6290,7 @@ export const Trinkets = [
         influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: 'Occult Trinket',
@@ -6048,6 +6314,7 @@ export const Trinkets = [
         influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: 'Occult Trinket',
@@ -6071,6 +6338,7 @@ export const Trinkets = [
         influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: 'Occult Trinket',
@@ -6094,6 +6362,7 @@ export const Trinkets = [
         influences: ["Ma'anre", "Rahvre", "Achreo"],
         imgUrl: '../assets/images/occult-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: 'Fyers Trinket',
@@ -6117,6 +6386,7 @@ export const Trinkets = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/fyers-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: 'Fyers Trinket',
@@ -6140,6 +6410,7 @@ export const Trinkets = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/fyers-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: 'Fyers Trinket',
@@ -6163,6 +6434,7 @@ export const Trinkets = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/fyers-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: 'Fyers Trinket',
@@ -6186,6 +6458,7 @@ export const Trinkets = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/fyers-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: 'Astral Trinket',
@@ -6209,6 +6482,7 @@ export const Trinkets = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: 'Astral Trinket',
@@ -6232,6 +6506,7 @@ export const Trinkets = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: 'Astral Trinket',
@@ -6255,6 +6530,7 @@ export const Trinkets = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: 'Astral Trinket',
@@ -6278,6 +6554,7 @@ export const Trinkets = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Uncommon',
         name: 'Dae Trinket',
@@ -6301,6 +6578,7 @@ export const Trinkets = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/dae-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Rare',
         name: 'Dae Trinket',
@@ -6324,6 +6602,7 @@ export const Trinkets = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/dae-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Epic',
         name: 'Dae Trinket',
@@ -6347,6 +6626,7 @@ export const Trinkets = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/dae-trinket.png'
     },{
+        ego: 'Trinket',
         _id: '',
         rarity: 'Legendary',
         name: 'Dae Trinket',

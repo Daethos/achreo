@@ -2,6 +2,7 @@ const FRACTION = { ONE_FIFTEEN: 1.15, ONE_TWENTY_FIVE: 1.25, ONE_THIRTY_FIVE: 1.
 const NUMBER = { ZERO: 0, ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5, SIX: 6, SEVEN: 7, EIGHT: 8, NINE: 9, TEN: 10, ELEVEN: 11, TWELVE: 12, THIRTEEN: 13, FOURTEEN: 14, FIFTEEN: 15, SIXTEEN: 16, SEVENTEEN: 17, EIGHTEEN: 18, NINETEEN: 19, TWENTY: 20, TWENTY_ONE: 21, TWENTY_TWO: 22, TWENTY_THREE: 23, TWENTY_FOUR: 24, TWENTY_FIVE: 25, TWENTY_SIX: 26, TWENTY_SEVEN: 27, TWENTY_EIGHT: 28, TWENTY_NINE: 29, THIRTY: 30 };
 export let Weapons = [
     {
+        ego: 'Weapon',
         _id: '',
         name: "Moontear",
         type: 'Dagger',
@@ -26,6 +27,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Moontear",
         type: 'Dagger',
@@ -50,6 +52,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Moontear",
         type: 'Dagger',
@@ -74,6 +77,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Moontear",
         type: 'Dagger',
@@ -98,6 +102,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Moontear",
         type: 'Dagger',
@@ -122,6 +127,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Se'narian Spear",
         type: 'Polearm',
@@ -146,6 +152,7 @@ export let Weapons = [
         influences: ["Senari", "Se'dyro", "Shrygei"],
         imgUrl: '../assets/images/senari-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Se'narian Spear",
         type: 'Polearm',
@@ -170,6 +177,7 @@ export let Weapons = [
         influences: ["Senari", "Se'dyro", "Shrygei"],
         imgUrl: '../assets/images/senari-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Se'narian Spear",
         type: 'Polearm',
@@ -194,6 +202,7 @@ export let Weapons = [
         influences: ["Senari", "Se'dyro", "Shrygei"],
         imgUrl: '../assets/images/senari-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Se'narian Spear",
         type: 'Polearm',
@@ -218,6 +227,7 @@ export let Weapons = [
         influences: ["Senari", "Se'dyro", "Shrygei"],
         imgUrl: '../assets/images/senari-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Se'narian Spear",
         type: 'Polearm',
@@ -242,6 +252,7 @@ export let Weapons = [
         influences: ["Senari", "Se'dyro", "Shrygei"],
         imgUrl: '../assets/images/senari-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Kynshear",
         type: 'Axe',
@@ -266,6 +277,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/kyngi-axe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Kynshear",
         type: 'Axe',
@@ -290,6 +302,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/kyngi-axe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Kynshear",
         type: 'Axe',
@@ -314,6 +327,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/kyngi-axe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Kynshear",
         type: 'Axe',
@@ -338,6 +352,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/kyngi-axe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Kynshear",
         type: 'Axe',
@@ -362,6 +377,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/kyngi-axe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Tshael",
         type: 'Greatmace',
@@ -386,6 +402,7 @@ export let Weapons = [
         influences: ["Tshaer"],
         imgUrl: '../assets/images/tshaer-hammer.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Tshael",
         type: 'Greatmace',
@@ -410,6 +427,7 @@ export let Weapons = [
         influences: ["Tshaer"],
         imgUrl: '../assets/images/tshaer-hammer.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Tshael",
         type: 'Greatmace',
@@ -434,6 +452,7 @@ export let Weapons = [
         influences: ["Tshaer"],
         imgUrl: '../assets/images/tshaer-hammer.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Tshael",
         type: 'Greatmace',
@@ -458,6 +477,7 @@ export let Weapons = [
         influences: ["Tshaer"],
         imgUrl: '../assets/images/tshaer-hammer.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Tshael",
         type: 'Greatmace',
@@ -482,6 +502,7 @@ export let Weapons = [
         influences: ["Tshaer"],
         imgUrl: '../assets/images/tshaer-hammer.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ashyro",
         type: 'Short Sword',
@@ -506,6 +527,7 @@ export let Weapons = [
         influences: ["Se'dyro", "Se'vas"],
         imgUrl: '../assets/images/kopis.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ashyro",
         type: 'Short Sword',
@@ -530,6 +552,7 @@ export let Weapons = [
         influences: ["Se'dyro", "Se'vas"],
         imgUrl: '../assets/images/kopis.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ashyro",
         type: 'Short Sword',
@@ -554,6 +577,7 @@ export let Weapons = [
         influences: ["Se'dyro", "Se'vas"],
         imgUrl: '../assets/images/kopis.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ashyro",
         type: 'Short Sword',
@@ -578,6 +602,7 @@ export let Weapons = [
         influences: ["Se'dyro", "Se'vas"],
         imgUrl: '../assets/images/kopis.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ashyro",
         type: 'Short Sword',
@@ -602,6 +627,7 @@ export let Weapons = [
         influences: ["Se'dyro", "Se'vas"],
         imgUrl: '../assets/images/kopis.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Falchion",
         type: 'Long Sword',
@@ -626,6 +652,7 @@ export let Weapons = [
         influences: ["Ilios", "Shrygei"],
         imgUrl: '../assets/images/falchion.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Falchion",
         type: 'Long Sword',
@@ -650,6 +677,7 @@ export let Weapons = [
         influences: ["Ilios", "Shrygei"],
         imgUrl: '../assets/images/falchion.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Falchion",
         type: 'Long Sword',
@@ -674,6 +702,7 @@ export let Weapons = [
         influences: ["Ilios", "Shrygei"],
         imgUrl: '../assets/images/falchion.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Falchion",
         type: 'Long Sword',
@@ -698,6 +727,7 @@ export let Weapons = [
         influences: ["Ilios", "Shrygei"],
         imgUrl: '../assets/images/falchion.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Falchion",
         type: 'Long Sword',
@@ -722,6 +752,7 @@ export let Weapons = [
         influences: ["Ilios", "Shrygei"],
         imgUrl: '../assets/images/falchion.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevashyr Greatbow",
         type: 'Greatbow',
@@ -746,6 +777,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/bow-great-strength.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevashyr Greatbow",
         type: 'Greatbow',
@@ -770,6 +802,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/bow-great-strength.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevashyr Greatbow",
         type: 'Greatbow',
@@ -794,6 +827,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/bow-great-strength.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevashyr Greatbow",
         type: 'Greatbow',
@@ -818,6 +852,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/bow-great-strength.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevashyr Greatbow",
         type: 'Greatbow',
@@ -842,6 +877,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/bow-great-strength.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ahn'vyer's Wing",
         type: 'Greatbow',
@@ -866,6 +902,7 @@ export let Weapons = [
         influences: ["Ahn've", "Fyer"],
         imgUrl: '../assets/images/bow-great-caeren.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ahn'vyer's Wing",
         type: 'Greatbow',
@@ -890,6 +927,7 @@ export let Weapons = [
         influences: ["Ahn've", "Fyer"],
         imgUrl: '../assets/images/bow-great-caeren.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ahn'vyer's Wing",
         type: 'Greatbow',
@@ -914,6 +952,7 @@ export let Weapons = [
         influences: ["Ahn've", "Fyer"],
         imgUrl: '../assets/images/bow-great-caeren.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ahn'vyer's Wing",
         type: 'Greatbow',
@@ -938,6 +977,7 @@ export let Weapons = [
         influences: ["Ahn've", "Fyer"],
         imgUrl: '../assets/images/bow-great-caeren.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ahn'vyer's Wing",
         type: 'Greatbow',
@@ -962,6 +1002,7 @@ export let Weapons = [
         influences: ["Ahn've", "Fyer"],
         imgUrl: '../assets/images/bow-great-caeren.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Achestra',
         type: 'Bow',
@@ -986,6 +1027,7 @@ export let Weapons = [
         influences: ["Achreo", "Astra"],
         imgUrl: '../assets/images/bow-achreon.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Achestra',
         type: 'Bow',
@@ -1010,6 +1052,7 @@ export let Weapons = [
         influences: ["Achreo", "Astra"],
         imgUrl: '../assets/images/bow-achreon.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Achestra',
         type: 'Bow',
@@ -1034,6 +1077,7 @@ export let Weapons = [
         influences: ["Achreo", "Astra"],
         imgUrl: '../assets/images/bow-achreon.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Achestra',
         type: 'Bow',
@@ -1058,6 +1102,7 @@ export let Weapons = [
         influences: ["Achreo", "Astra"],
         imgUrl: '../assets/images/bow-achreon.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Achestra',
         type: 'Bow',
@@ -1082,6 +1127,7 @@ export let Weapons = [
         influences: ["Achreo", "Astra"],
         imgUrl: '../assets/images/bow-achreon.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Chiomic Spear",
         type: 'Polearm',
@@ -1106,6 +1152,7 @@ export let Weapons = [
         influences: ["Chiomyr"],
         imgUrl: '../assets/images/chiomyr-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Chiomic Spear",
         type: 'Polearm',
@@ -1130,6 +1177,7 @@ export let Weapons = [
         influences: ["Chiomyr"],
         imgUrl: '../assets/images/chiomyr-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Chiomic Spear",
         type: 'Polearm',
@@ -1154,6 +1202,7 @@ export let Weapons = [
         influences: ["Chiomyr"],
         imgUrl: '../assets/images/chiomyr-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Chiomic Spear",
         type: 'Polearm',
@@ -1178,6 +1227,7 @@ export let Weapons = [
         influences: ["Chiomyr"],
         imgUrl: '../assets/images/chiomyr-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Chiomic Spear",
         type: 'Polearm',
@@ -1202,6 +1252,7 @@ export let Weapons = [
         influences: ["Chiomyr"],
         imgUrl: '../assets/images/chiomyr-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "War Scythe",
         type: 'Polearm',
@@ -1226,6 +1277,7 @@ export let Weapons = [
         influences: ["Kyrisos"],
         imgUrl: '../assets/images/kyrisos-scythe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "War Scythe",
         type: 'Polearm',
@@ -1250,6 +1302,7 @@ export let Weapons = [
         influences: ["Kyrisos"],
         imgUrl: '../assets/images/kyrisos-scythe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "War Scythe",
         type: 'Polearm',
@@ -1274,6 +1327,7 @@ export let Weapons = [
         influences: ["Kyrisos"],
         imgUrl: '../assets/images/kyrisos-scythe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "War Scythe",
         type: 'Polearm',
@@ -1298,6 +1352,7 @@ export let Weapons = [
         influences: ["Kyrisos"],
         imgUrl: '../assets/images/kyrisos-scythe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "War Scythe",
         type: 'Polearm',
@@ -1322,6 +1377,7 @@ export let Weapons = [
         influences: ["Kyrisos"],
         imgUrl: '../assets/images/kyrisos-scythe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sedyrus Shortbow",
         type: 'Bow',
@@ -1346,6 +1402,7 @@ export let Weapons = [
         influences: ["Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/bow-short.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sedyrus Shortbow",
         type: 'Bow',
@@ -1370,6 +1427,7 @@ export let Weapons = [
         influences: ["Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/bow-short.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sedyrus Shortbow",
         type: 'Bow',
@@ -1394,6 +1452,7 @@ export let Weapons = [
         influences: ["Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/bow-short.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sedyrus Shortbow",
         type: 'Bow',
@@ -1418,6 +1477,7 @@ export let Weapons = [
         influences: ["Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/bow-short.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sedyrus Shortbow",
         type: 'Bow',
@@ -1442,6 +1502,7 @@ export let Weapons = [
         influences: ["Se'dyro", "Ma'anre"],
         imgUrl: '../assets/images/bow-short.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sunshear",
         type: 'Greatsword',
@@ -1466,6 +1527,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-greatsword.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sunshear",
         type: 'Greatsword',
@@ -1490,6 +1552,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-greatsword.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sunshear",
         type: 'Greatsword',
@@ -1514,6 +1577,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-greatsword.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sunshear",
         type: 'Greatsword',
@@ -1538,6 +1602,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-greatsword.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sunshear",
         type: 'Greatsword',
@@ -1562,6 +1627,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/ilios-greatsword.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Slivermoon",
         type: 'Mace',
@@ -1586,6 +1652,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Slivermoon",
         type: 'Mace',
@@ -1610,6 +1677,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Slivermoon",
         type: 'Mace',
@@ -1634,6 +1702,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Slivermoon",
         type: 'Mace',
@@ -1658,6 +1727,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Slivermoon",
         type: 'Mace',
@@ -1682,6 +1752,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/maanre-mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevashyr",
         type: 'Mace',
@@ -1706,6 +1777,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevashyr",
         type: 'Mace',
@@ -1730,6 +1802,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevashyr",
         type: 'Mace',
@@ -1754,6 +1827,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevashyr",
         type: 'Mace',
@@ -1778,6 +1852,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevashyr",
         type: 'Mace',
@@ -1802,6 +1877,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/sevas-mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevaxe",
         type: 'Axe',
@@ -1826,6 +1902,7 @@ export let Weapons = [
         influences: ["Se'vas", "Se'dyro"],
         imgUrl: '../assets/images/sevas-axe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevaxe",
         type: 'Axe',
@@ -1850,6 +1927,7 @@ export let Weapons = [
         influences: ["Se'vas", "Se'dyro"],
         imgUrl: '../assets/images/sevas-axe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevaxe",
         type: 'Axe',
@@ -1874,6 +1952,7 @@ export let Weapons = [
         influences: ["Se'vas", "Se'dyro"],
         imgUrl: '../assets/images/sevas-axe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevaxe",
         type: 'Axe',
@@ -1898,6 +1977,7 @@ export let Weapons = [
         influences: ["Se'vas", "Se'dyro"],
         imgUrl: '../assets/images/sevas-axe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Sevaxe",
         type: 'Axe',
@@ -1922,6 +2002,7 @@ export let Weapons = [
         influences: ["Se'vas", "Se'dyro"],
         imgUrl: '../assets/images/sevas-axe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Blessed Dagger',
         type: 'Dagger',
@@ -1946,6 +2027,7 @@ export let Weapons = [
         influences: ["Lilos", "Kyr'na", "Daethos"],
         imgUrl: '../assets/images/blessed-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Blessed Dagger',
         type: 'Dagger',
@@ -1970,6 +2052,7 @@ export let Weapons = [
         influences: ["Lilos", "Kyr'na", "Daethos"],
         imgUrl: '../assets/images/blessed-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Blessed Dagger',
         type: 'Dagger',
@@ -1994,6 +2077,7 @@ export let Weapons = [
         influences: ["Lilos", "Kyr'na", "Daethos"],
         imgUrl: '../assets/images/blessed-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Blessed Dagger',
         type: 'Dagger',
@@ -2018,6 +2102,7 @@ export let Weapons = [
         influences: ["Lilos", "Kyr'na", "Daethos"],
         imgUrl: '../assets/images/blessed-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Blessed Dagger',
         type: 'Dagger',
@@ -2042,6 +2127,7 @@ export let Weapons = [
         influences: ["Lilos", "Kyr'na", "Daethos"],
         imgUrl: '../assets/images/blessed-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Sunshatter',
         type: 'Axe',
@@ -2066,6 +2152,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunshatter.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Sunshatter',
         type: 'Axe',
@@ -2090,6 +2177,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunshatter.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Sunshatter',
         type: 'Axe',
@@ -2114,6 +2202,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunshatter.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Sunshatter',
         type: 'Axe',
@@ -2138,6 +2227,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunshatter.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Sunshatter',
         type: 'Axe',
@@ -2162,6 +2252,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunshatter.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Sunspear',
         type: 'Polearm',
@@ -2186,6 +2277,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunspear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Sunspear',
         type: 'Polearm',
@@ -2210,6 +2302,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunspear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Sunspear',
         type: 'Polearm',
@@ -2234,6 +2327,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunspear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Sunspear',
         type: 'Polearm',
@@ -2258,6 +2352,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunspear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Sunspear',
         type: 'Polearm',
@@ -2282,6 +2377,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/sunspear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Caerenic Halberd',
         type: 'Polearm',
@@ -2306,6 +2402,7 @@ export let Weapons = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/halberdo.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Caerenic Halberd',
         type: 'Polearm',
@@ -2330,6 +2427,7 @@ export let Weapons = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/halberdo.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Caerenic Halberd',
         type: 'Polearm',
@@ -2354,6 +2452,7 @@ export let Weapons = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/halberdo.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Caerenic Halberd',
         type: 'Polearm',
@@ -2378,6 +2477,7 @@ export let Weapons = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/halberdo.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Caerenic Halberd',
         type: 'Polearm',
@@ -2402,6 +2502,7 @@ export let Weapons = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/halberdo.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nightmare',
         type: 'Spell',
@@ -2426,6 +2527,7 @@ export let Weapons = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre-one.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nightmare',
         type: 'Spell',
@@ -2450,6 +2552,7 @@ export let Weapons = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre-one.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nightmare',
         type: 'Spell',
@@ -2474,6 +2577,7 @@ export let Weapons = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre-one.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nightmare',
         type: 'Spell',
@@ -2498,6 +2602,7 @@ export let Weapons = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre-one.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nightmare',
         type: 'Spell',
@@ -2522,6 +2627,7 @@ export let Weapons = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre-one.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Rahvric Dreams',
         type: 'Spell',
@@ -2546,6 +2652,7 @@ export let Weapons = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Rahvric Dreams',
         type: 'Spell',
@@ -2570,6 +2677,7 @@ export let Weapons = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Rahvric Dreams',
         type: 'Spell',
@@ -2594,6 +2702,7 @@ export let Weapons = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Rahvric Dreams',
         type: 'Spell',
@@ -2618,6 +2727,7 @@ export let Weapons = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Rahvric Dreams',
         type: 'Spell',
@@ -2642,6 +2752,7 @@ export let Weapons = [
         influences: ["Rahvre"],
         imgUrl: '../assets/images/rahvre.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Halberd',
         type: 'Polearm',
@@ -2666,6 +2777,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-halberd.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Halberd',
         type: 'Polearm',
@@ -2690,6 +2802,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-halberd.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Halberd',
         type: 'Polearm',
@@ -2714,6 +2827,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-halberd.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Halberd',
         type: 'Polearm',
@@ -2738,6 +2852,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-halberd.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Halberd',
         type: 'Polearm',
@@ -2810,6 +2925,7 @@ export let Weapons = [
         influences: [""],
         imgUrl: '../assets/images/GUI_Weapon_3.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Halberd',
         type: 'Polearm',
@@ -2834,6 +2950,7 @@ export let Weapons = [
         influences: ["Se'vas", "Ilios"],
         imgUrl: '../assets/images/halberd.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Halberd',
         type: 'Polearm',
@@ -2858,6 +2975,7 @@ export let Weapons = [
         influences: ["Se'vas", "Ilios"],
         imgUrl: '../assets/images/halberd.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Halberd',
         type: 'Polearm',
@@ -2882,6 +3000,7 @@ export let Weapons = [
         influences: ["Se'vas", "Ilios"],
         imgUrl: '../assets/images/halberd.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Halberd',
         type: 'Polearm',
@@ -2906,6 +3025,7 @@ export let Weapons = [
         influences: ["Se'vas", "Ilios"],
         imgUrl: '../assets/images/halberd.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Halberd',
         type: 'Polearm',
@@ -2930,6 +3050,7 @@ export let Weapons = [
         influences: ["Se'vas", "Ilios"],
         imgUrl: '../assets/images/halberd.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Claymore',
         type: 'Greatsword',
@@ -2954,6 +3075,7 @@ export let Weapons = [
         influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/claymore.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Claymore',
         type: 'Greatsword',
@@ -2978,6 +3100,7 @@ export let Weapons = [
         influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/claymore.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Claymore',
         type: 'Greatsword',
@@ -3002,6 +3125,7 @@ export let Weapons = [
         influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/claymore.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Claymore',
         type: 'Greatsword',
@@ -3026,6 +3150,7 @@ export let Weapons = [
         influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/claymore.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Claymore',
         type: 'Greatsword',
@@ -3050,6 +3175,7 @@ export let Weapons = [
         influences: ["Se'vas", "Daethos"],
         imgUrl: '../assets/images/claymore.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Battle Axe',
         type: 'Greataxe',
@@ -3074,6 +3200,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/battleaxe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Battle Axe',
         type: 'Greataxe',
@@ -3098,6 +3225,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/battleaxe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Battle Axe',
         type: 'Greataxe',
@@ -3122,6 +3250,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/battleaxe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Battle Axe',
         type: 'Greataxe',
@@ -3146,6 +3275,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/battleaxe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Battle Axe',
         type: 'Greataxe',
@@ -3170,6 +3300,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/battleaxe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'War Hammer',
         type: 'Greatmace',
@@ -3194,6 +3325,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/warhammer.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'War Hammer',
         type: 'Greatmace',
@@ -3218,6 +3350,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/warhammer.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'War Hammer',
         type: 'Greatmace',
@@ -3242,6 +3375,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/warhammer.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'War Hammer',
         type: 'Greatmace',
@@ -3266,6 +3400,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/warhammer.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'War Hammer',
         type: 'Greatmace',
@@ -3290,6 +3425,7 @@ export let Weapons = [
         influences: ["Se'vas", "Tshaer"],
         imgUrl: '../assets/images/warhammer.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Caeren Barrage',
         type: 'Spell',
@@ -3314,6 +3450,7 @@ export let Weapons = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/sorcery.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Caeren Barrage',
         type: 'Spell',
@@ -3338,6 +3475,7 @@ export let Weapons = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/sorcery.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Caeren Barrage',
         type: 'Spell',
@@ -3362,6 +3500,7 @@ export let Weapons = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/sorcery.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Caeren Barrage',
         type: 'Spell',
@@ -3387,6 +3526,7 @@ export let Weapons = [
         imgUrl: '../assets/images/sorcery.png'
     },{
         
+        ego: 'Weapon',
         _id: '',
         name: 'Caeren Barrage',
         type: 'Spell',
@@ -3411,6 +3551,7 @@ export let Weapons = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/sorcery.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hush',
         type: 'Spell',
@@ -3435,6 +3576,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hush',
         type: 'Spell',
@@ -3459,6 +3601,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hush',
         type: 'Spell',
@@ -3483,6 +3626,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hush',
         type: 'Spell',
@@ -3507,6 +3651,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hush',
         type: 'Spell',
@@ -3531,6 +3676,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Lava Spit',
         type: 'Spell',
@@ -3555,6 +3701,7 @@ export let Weapons = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/fire.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Lava Spit',
         type: 'Spell',
@@ -3579,6 +3726,7 @@ export let Weapons = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/fire.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Lava Spit',
         type: 'Spell',
@@ -3603,6 +3751,7 @@ export let Weapons = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/fire.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Lava Spit',
         type: 'Spell',
@@ -3627,6 +3776,7 @@ export let Weapons = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/fire.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Lava Spit',
         type: 'Spell',
@@ -3651,6 +3801,7 @@ export let Weapons = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/fire.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Astral Spear',
         type: 'Spell',
@@ -3675,6 +3826,7 @@ export let Weapons = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Astral Spear',
         type: 'Spell',
@@ -3699,6 +3851,7 @@ export let Weapons = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Astral Spear',
         type: 'Spell',
@@ -3723,6 +3876,7 @@ export let Weapons = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Astral Spear',
         type: 'Spell',
@@ -3747,6 +3901,7 @@ export let Weapons = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Astral Spear',
         type: 'Spell',
@@ -3771,6 +3926,7 @@ export let Weapons = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astral-spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nyrolean Bolt',
         type: 'Spell',
@@ -3795,6 +3951,7 @@ export let Weapons = [
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/frost.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nyrolean Bolt',
         type: 'Spell',
@@ -3819,6 +3976,7 @@ export let Weapons = [
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/frost.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nyrolean Bolt',
         type: 'Spell',
@@ -3843,6 +4001,7 @@ export let Weapons = [
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/frost.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nyrolean Bolt',
         type: 'Spell',
@@ -3867,6 +4026,7 @@ export let Weapons = [
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/frost.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nyrolean Bolt',
         type: 'Spell',
@@ -3891,6 +4051,7 @@ export let Weapons = [
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/frost.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Quor'eite Crush",
         type: 'Spell',
@@ -3915,6 +4076,7 @@ export let Weapons = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Quor'eite Crush",
         type: 'Spell',
@@ -3939,6 +4101,7 @@ export let Weapons = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Quor'eite Crush",
         type: 'Spell',
@@ -3963,6 +4126,7 @@ export let Weapons = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Quor'eite Crush",
         type: 'Spell',
@@ -3987,6 +4151,7 @@ export let Weapons = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Quor'eite Crush",
         type: 'Spell',
@@ -4011,6 +4176,7 @@ export let Weapons = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/earth.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Wildstrike",
         type: 'Spell',
@@ -4035,6 +4201,7 @@ export let Weapons = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/wild.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Wildstrike",
         type: 'Spell',
@@ -4059,6 +4226,7 @@ export let Weapons = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/wild.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Wildstrike",
         type: 'Spell',
@@ -4083,6 +4251,7 @@ export let Weapons = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/wild.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Wildstrike",
         type: 'Spell',
@@ -4107,6 +4276,7 @@ export let Weapons = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/wild.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Wildstrike",
         type: 'Spell',
@@ -4131,6 +4301,7 @@ export let Weapons = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/wild.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Tendril',
         type: 'Spell',
@@ -4155,6 +4326,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendrils.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Tendril',
         type: 'Spell',
@@ -4179,6 +4351,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendrils.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Tendril',
         type: 'Spell',
@@ -4203,6 +4376,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendrils.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Tendril',
         type: 'Spell',
@@ -4227,6 +4401,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendrils.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Tendril',
         type: 'Spell',
@@ -4251,6 +4426,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendrils.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Windshear',
         type: 'Spell',
@@ -4275,6 +4451,7 @@ export let Weapons = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/windfury.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Windshear',
         type: 'Spell',
@@ -4299,6 +4476,7 @@ export let Weapons = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/windfury.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Windshear',
         type: 'Spell',
@@ -4323,6 +4501,7 @@ export let Weapons = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/windfury.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Longbow',
         type: 'Bow',
@@ -4347,6 +4526,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/bow-long.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Longbow',
         type: 'Bow',
@@ -4371,6 +4551,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/bow-long.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Longbow',
         type: 'Bow',
@@ -4395,6 +4576,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/bow-long.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Longbow',
         type: 'Bow',
@@ -4419,6 +4601,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/bow-long.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Longbow',
         type: 'Bow',
@@ -4443,6 +4626,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/bow-long.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Ashfyre',
         type: 'Spell',
@@ -4467,6 +4651,7 @@ export let Weapons = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/ashfyre.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Ashfyre',
         type: 'Spell',
@@ -4491,6 +4676,7 @@ export let Weapons = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/ashfyre.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Ashfyre',
         type: 'Spell',
@@ -4515,6 +4701,7 @@ export let Weapons = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/ashfyre.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Ashfyre',
         type: 'Spell',
@@ -4539,6 +4726,7 @@ export let Weapons = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/ashfyre.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Ashfyre',
         type: 'Spell',
@@ -4563,6 +4751,7 @@ export let Weapons = [
         influences: ["Fyer"],
         imgUrl: '../assets/images/ashfyre.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Astra's Lightning",
         type: 'Spell',
@@ -4587,6 +4776,7 @@ export let Weapons = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astra-lightning.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Astra's Lightning",
         type: 'Spell',
@@ -4611,6 +4801,7 @@ export let Weapons = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astra-lightning.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Astra's Lightning",
         type: 'Spell',
@@ -4635,6 +4826,7 @@ export let Weapons = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astra-lightning.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Astra's Lightning",
         type: 'Spell',
@@ -4659,6 +4851,7 @@ export let Weapons = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astra-lightning.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Astra's Lightning",
         type: 'Spell',
@@ -4683,6 +4876,7 @@ export let Weapons = [
         influences: ["Astra"],
         imgUrl: '../assets/images/astra-lightning.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Caerenic Shatter',
         type: 'Spell',
@@ -4707,6 +4901,7 @@ export let Weapons = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/caerenic-shatter.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Caerenic Shatter',
         type: 'Spell',
@@ -4731,6 +4926,7 @@ export let Weapons = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/caerenic-shatter.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Caerenic Shatter',
         type: 'Spell',
@@ -4755,6 +4951,7 @@ export let Weapons = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/caerenic-shatter.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Caerenic Shatter',
         type: 'Spell',
@@ -4779,6 +4976,7 @@ export let Weapons = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/caerenic-shatter.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Caerenic Shatter',
         type: 'Spell',
@@ -4803,6 +5001,7 @@ export let Weapons = [
         influences: ["Cambire"],
         imgUrl: '../assets/images/caerenic-shatter.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nyrolean Wave',
         type: 'Spell',
@@ -4827,6 +5026,7 @@ export let Weapons = [
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/nyrolean.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nyrolean Wave',
         type: 'Spell',
@@ -4851,6 +5051,7 @@ export let Weapons = [
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/nyrolean.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nyrolean Wave',
         type: 'Spell',
@@ -4875,6 +5076,7 @@ export let Weapons = [
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/nyrolean.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nyrolean Wave',
         type: 'Spell',
@@ -4899,6 +5101,7 @@ export let Weapons = [
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/nyrolean.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Nyrolean Wave',
         type: 'Spell',
@@ -4923,6 +5126,7 @@ export let Weapons = [
         influences: ["Nyrolus"],
         imgUrl: '../assets/images/nyrolean.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Quor'ei's Upheaval",
         type: 'Spell',
@@ -4947,6 +5151,7 @@ export let Weapons = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/quoreite.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Quor'ei's Upheaval",
         type: 'Spell',
@@ -4971,6 +5176,7 @@ export let Weapons = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/quoreite.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Quor'ei's Upheaval",
         type: 'Spell',
@@ -4995,6 +5201,7 @@ export let Weapons = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/quoreite.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Quor'ei's Upheaval",
         type: 'Spell',
@@ -5019,6 +5226,7 @@ export let Weapons = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/quoreite.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Quor'ei's Upheaval",
         type: 'Spell',
@@ -5043,6 +5251,7 @@ export let Weapons = [
         influences: ["Quor'ei"],
         imgUrl: '../assets/images/quoreite.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Achreon Rein",
         type: 'Spell',
@@ -5067,6 +5276,7 @@ export let Weapons = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/achreon-rein.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Achreon Rein",
         type: 'Spell',
@@ -5091,6 +5301,7 @@ export let Weapons = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/achreon-rein.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Achreon Rein",
         type: 'Spell',
@@ -5115,6 +5326,7 @@ export let Weapons = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/achreon-rein.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Achreon Rein",
         type: 'Spell',
@@ -5139,6 +5351,7 @@ export let Weapons = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/achreon-rein.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Achreon Rein",
         type: 'Spell',
@@ -5163,6 +5376,7 @@ export let Weapons = [
         influences: ["Achreo"],
         imgUrl: '../assets/images/achreon-rein.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hush of Daethos',
         type: 'Spell',
@@ -5187,6 +5401,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hush of Daethos',
         type: 'Spell',
@@ -5211,6 +5426,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hush of Daethos',
         type: 'Spell',
@@ -5235,6 +5451,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hush of Daethos',
         type: 'Spell',
@@ -5259,6 +5476,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hush of Daethos',
         type: 'Spell',
@@ -5283,6 +5501,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/faith.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Tendril of Daethos',
         type: 'Spell',
@@ -5307,6 +5526,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendril-of-daethos.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Tendril of Daethos',
         type: 'Spell',
@@ -5331,6 +5551,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendril-of-daethos.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Tendril of Daethos',
         type: 'Spell',
@@ -5355,6 +5576,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendril-of-daethos.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Tendril of Daethos',
         type: 'Spell',
@@ -5379,6 +5601,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendril-of-daethos.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Tendril of Daethos',
         type: 'Spell',
@@ -5403,6 +5626,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/tendril-of-daethos.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ahn've's Fury",
         type: 'Spell',
@@ -5427,6 +5651,7 @@ export let Weapons = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ahn've's Fury",
         type: 'Spell',
@@ -5451,6 +5676,7 @@ export let Weapons = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ahn've's Fury",
         type: 'Spell',
@@ -5475,6 +5701,7 @@ export let Weapons = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ahn've's Fury",
         type: 'Spell',
@@ -5499,6 +5726,7 @@ export let Weapons = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Ahn've's Fury",
         type: 'Spell',
@@ -5523,6 +5751,7 @@ export let Weapons = [
         influences: ["Ahn've"],
         imgUrl: '../assets/images/ahnve.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Gladius',
         type: 'Short Sword',
@@ -5547,6 +5776,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/gladius.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Gladius',
         type: 'Short Sword',
@@ -5571,6 +5801,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/gladius.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Gladius',
         type: 'Short Sword',
@@ -5595,6 +5826,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/gladius.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Gladius',
         type: 'Short Sword',
@@ -5619,6 +5851,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/gladius.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Gladius',
         type: 'Short Sword',
@@ -5643,6 +5876,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/gladius.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Longsword',
         type: 'Long Sword',
@@ -5667,6 +5901,7 @@ export let Weapons = [
         influences: ["Daethos", "Ilios", "Se'dyro"],
         imgUrl: '../assets/images/longsword.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Longsword',
         type: 'Long Sword',
@@ -5691,6 +5926,7 @@ export let Weapons = [
         influences: ["Daethos", "Ilios", "Se'dyro"],
         imgUrl: '../assets/images/longsword.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Longsword',
         type: 'Long Sword',
@@ -5715,6 +5951,7 @@ export let Weapons = [
         influences: ["Daethos", "Ilios", "Se'dyro"],
         imgUrl: '../assets/images/longsword.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Longsword',
         type: 'Long Sword',
@@ -5739,6 +5976,7 @@ export let Weapons = [
         influences: ["Daethos", "Ilios", "Se'dyro"],
         imgUrl: '../assets/images/longsword.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Longsword',
         type: 'Long Sword',
@@ -5763,6 +6001,7 @@ export let Weapons = [
         influences: ["Daethos", "Ilios", "Se'dyro"],
         imgUrl: '../assets/images/longsword.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hand Axe',
         type: 'Axe',
@@ -5787,6 +6026,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/handaxe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hand Axe',
         type: 'Axe',
@@ -5811,6 +6051,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/handaxe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hand Axe',
         type: 'Axe',
@@ -5835,6 +6076,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/handaxe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hand Axe',
         type: 'Axe',
@@ -5859,6 +6101,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/handaxe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Hand Axe',
         type: 'Axe',
@@ -5883,6 +6126,7 @@ export let Weapons = [
         influences: ["Kyn'gi", "Tshaer"],
         imgUrl: '../assets/images/handaxe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Scimitar',
         type: 'Curved Sword',
@@ -5907,6 +6151,7 @@ export let Weapons = [
         influences: ["Senari", "Shrygei"],
         imgUrl: '../assets/images/scimitar.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Scimitar',
         type: 'Curved Sword',
@@ -5931,6 +6176,7 @@ export let Weapons = [
         influences: ["Senari", "Shrygei"],
         imgUrl: '../assets/images/scimitar.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Scimitar',
         type: 'Curved Sword',
@@ -5955,6 +6201,7 @@ export let Weapons = [
         influences: ["Senari", "Shrygei"],
         imgUrl: '../assets/images/scimitar.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Scimitar',
         type: 'Curved Sword',
@@ -5979,6 +6226,7 @@ export let Weapons = [
         influences: ["Senari", "Shrygei"],
         imgUrl: '../assets/images/scimitar.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Scimitar',
         type: 'Curved Sword',
@@ -6003,6 +6251,7 @@ export let Weapons = [
         influences: ["Senari", "Shrygei"],
         imgUrl: '../assets/images/scimitar.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Pugio',
         type: 'Dagger',
@@ -6027,6 +6276,7 @@ export let Weapons = [
         influences: ["Daethos", "Kyr'na", "Lilos", "Shrygei"],
         imgUrl: '../assets/images/pugio.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Pugio',
         type: 'Dagger',
@@ -6051,6 +6301,7 @@ export let Weapons = [
         influences: ["Daethos", "Kyr'na", "Lilos", "Shrygei"],
         imgUrl: '../assets/images/pugio.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Pugio',
         type: 'Dagger',
@@ -6075,6 +6326,7 @@ export let Weapons = [
         influences: ["Daethos", "Kyr'na", "Lilos", "Shrygei"],
         imgUrl: '../assets/images/pugio.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Pugio',
         type: 'Dagger',
@@ -6099,6 +6351,7 @@ export let Weapons = [
         influences: ["Daethos", "Kyr'na", "Lilos", "Shrygei"],
         imgUrl: '../assets/images/pugio.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Pugio',
         type: 'Dagger',
@@ -6123,6 +6376,7 @@ export let Weapons = [
         influences: ["Daethos", "Kyr'na", "Lilos", "Shrygei"],
         imgUrl: '../assets/images/pugio.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Cursed Dagger',
         type: 'Dagger',
@@ -6147,6 +6401,7 @@ export let Weapons = [
         influences: ["Kyr'na", "Lilos", "Daethos"],
         imgUrl: '../assets/images/cursed-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Cursed Dagger',
         type: 'Dagger',
@@ -6171,6 +6426,7 @@ export let Weapons = [
         influences: ["Kyr'na", "Lilos", "Daethos"],
         imgUrl: '../assets/images/cursed-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Cursed Dagger',
         type: 'Dagger',
@@ -6195,6 +6451,7 @@ export let Weapons = [
         influences: ["Kyr'na", "Lilos", "Daethos"],
         imgUrl: '../assets/images/cursed-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Cursed Dagger',
         type: 'Dagger',
@@ -6219,6 +6476,7 @@ export let Weapons = [
         influences: ["Kyr'na", "Lilos", "Daethos"],
         imgUrl: '../assets/images/cursed-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Cursed Dagger',
         type: 'Dagger',
@@ -6243,6 +6501,7 @@ export let Weapons = [
         influences: ["Kyr'na", "Lilos", "Daethos"],
         imgUrl: '../assets/images/cursed-dagger.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Shotel',
         type: 'Scythe',
@@ -6267,6 +6526,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/scythe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Shotel',
         type: 'Scythe',
@@ -6291,6 +6551,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/scythe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Shotel',
         type: 'Scythe',
@@ -6315,6 +6576,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/scythe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Shotel',
         type: 'Scythe',
@@ -6339,6 +6601,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/scythe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Shotel',
         type: 'Scythe',
@@ -6363,6 +6626,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/scythe.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Spear',
         type: 'Polearm',
@@ -6387,6 +6651,7 @@ export let Weapons = [
         influences: ["Kyn'gi"],
         imgUrl: '../assets/images/spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Spear',
         type: 'Polearm',
@@ -6411,6 +6676,7 @@ export let Weapons = [
         influences: ["Kyn'gi"],
         imgUrl: '../assets/images/spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Spear',
         type: 'Polearm',
@@ -6435,6 +6701,7 @@ export let Weapons = [
         influences: ["Kyn'gi"],
         imgUrl: '../assets/images/spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Spear',
         type: 'Polearm',
@@ -6459,6 +6726,7 @@ export let Weapons = [
         influences: ["Kyn'gi"],
         imgUrl: '../assets/images/spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Spear',
         type: 'Polearm',
@@ -6483,6 +6751,7 @@ export let Weapons = [
         influences: ["Kyn'gi"],
         imgUrl: '../assets/images/spear.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Morningstar',
         type: 'Mace',
@@ -6507,6 +6776,7 @@ export let Weapons = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/morningstar.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Morningstar',
         type: 'Mace',
@@ -6531,6 +6801,7 @@ export let Weapons = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/morningstar.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Morningstar',
         type: 'Mace',
@@ -6555,6 +6826,7 @@ export let Weapons = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/morningstar.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Morningstar',
         type: 'Mace',
@@ -6579,6 +6851,7 @@ export let Weapons = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/morningstar.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Morningstar',
         type: 'Mace',
@@ -6603,6 +6876,7 @@ export let Weapons = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/morningstar.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Pernach',
         type: 'Mace',
@@ -6627,6 +6901,7 @@ export let Weapons = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Pernach',
         type: 'Mace',
@@ -6651,6 +6926,7 @@ export let Weapons = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Pernach',
         type: 'Mace',
@@ -6675,6 +6951,7 @@ export let Weapons = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Pernach',
         type: 'Mace',
@@ -6699,6 +6976,7 @@ export let Weapons = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Pernach',
         type: 'Mace',
@@ -6723,6 +7001,7 @@ export let Weapons = [
         influences: ["Chiomyr", "Kyrisos"],
         imgUrl: '../assets/images/mace.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Hand of Se'dyro",
         type: 'Mace',
@@ -6747,6 +7026,7 @@ export let Weapons = [
         influences: ["Se'dyro"],
         imgUrl: '../assets/images/godHand.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Hand of Se'dyro",
         type: 'Mace',
@@ -6771,6 +7051,7 @@ export let Weapons = [
         influences: ["Se'dyro"],
         imgUrl: '../assets/images/godHand.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Hand of Se'dyro",
         type: 'Mace',
@@ -6795,6 +7076,7 @@ export let Weapons = [
         influences: ["Se'dyro"],
         imgUrl: '../assets/images/godHand.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Hand of Se'dyro",
         type: 'Mace',
@@ -6819,6 +7101,7 @@ export let Weapons = [
         influences: ["Se'dyro"],
         imgUrl: '../assets/images/godHand.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Hand of Se'dyro",
         type: 'Mace',
@@ -6843,6 +7126,7 @@ export let Weapons = [
         influences: ["Se'dyro"],
         imgUrl: '../assets/images/godHand.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Whirlwind',
         type: 'Scythe',
@@ -6867,6 +7151,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/whirlwind.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Whirlwind',
         type: 'Scythe',
@@ -6891,6 +7176,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/whirlwind.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Whirlwind',
         type: 'Scythe',
@@ -6915,6 +7201,7 @@ export let Weapons = [
         influences: ["Ma'anre"],
         imgUrl: '../assets/images/whirlwind.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Whirlwind',
         type: 'Scythe',
@@ -6939,6 +7226,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/whirlwind.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Whirlwind',
         type: 'Scythe',
@@ -6963,6 +7251,7 @@ export let Weapons = [
         influences: ["Ilios"],
         imgUrl: '../assets/images/whirlwind.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Greatbow',
         type: 'Greatbow',
@@ -6987,6 +7276,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-greatbow.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Greatbow',
         type: 'Greatbow',
@@ -7011,6 +7301,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-greatbow.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Greatbow',
         type: 'Greatbow',
@@ -7035,6 +7326,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-greatbow.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Greatbow',
         type: 'Greatbow',
@@ -7059,6 +7351,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-greatbow.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Greatbow',
         type: 'Greatbow',
@@ -7083,6 +7376,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-greatbow.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Bow',
         type: 'Bow',
@@ -7107,6 +7401,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-bow.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Bow',
         type: 'Bow',
@@ -7131,6 +7426,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-bow.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Bow',
         type: 'Bow',
@@ -7155,6 +7451,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-bow.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Bow',
         type: 'Bow',
@@ -7179,6 +7476,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-bow.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: 'Daethic Bow',
         type: 'Bow',
@@ -7203,6 +7501,7 @@ export let Weapons = [
         influences: ["Daethos"],
         imgUrl: '../assets/images/daethic-bow.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Shrenari",
         type: 'Bow',
@@ -7227,6 +7526,7 @@ export let Weapons = [
         influences: ["Shrygei", "Senari"],
         imgUrl: '../assets/images/bow-recurve.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Shrenari",
         type: 'Bow',
@@ -7251,6 +7551,7 @@ export let Weapons = [
         influences: ["Shrygei", "Senari"],
         imgUrl: '../assets/images/bow-recurve.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Shrenari",
         type: 'Bow',
@@ -7275,6 +7576,7 @@ export let Weapons = [
         influences: ["Shrygei", "Senari"],
         imgUrl: '../assets/images/bow-recurve.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Shrenari",
         type: 'Bow',
@@ -7299,6 +7601,7 @@ export let Weapons = [
         influences: ["Shrygei", "Senari"],
         imgUrl: '../assets/images/bow-recurve.png'
     },{
+        ego: 'Weapon',
         _id: '',
         name: "Shrenari",
         type: 'Bow',

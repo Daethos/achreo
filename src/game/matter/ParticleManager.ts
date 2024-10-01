@@ -204,6 +204,7 @@ export default class ParticleManager extends Phaser.Scene {
         particle.effect.setVisible(false);
         particle.effect.world.remove(particle.effect.body!);
         if (!particle.triggered && particle.magic) {
+            particle.triggered = true;
             particle.player.particleAoe(particle);
         };
     };

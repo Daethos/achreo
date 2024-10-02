@@ -173,10 +173,9 @@ export default class Enemy extends Entity {
                 this.setTint(TARGET_COLOR);
                 if (this.enemyID !== this.scene.state.enemyID) this.scene.setupEnemy(this);
                 const newEnemy = this.isNewEnemy(this.scene.player);
-                if (newEnemy) {
-                    this.scene.player.addEnemy(this);
-                };
+                if (newEnemy) this.scene.player.addEnemy(this);
                 this.scene.player.setCurrentTarget(this);
+                this.scene.player.targetIndex = this.scene.player.targets.findIndex(obj => obj?.enemyID === this.enemyID);
                 this.scene.player.animateTarget();
             })
             .on('pointerout', () => {
@@ -520,6 +519,7 @@ export default class Enemy extends Entity {
     clearCombat = () => {
         this.health = this.ascean.health.max;
         this.healthbar.setValue(this.ascean.health.max);    
+        this.healthbar.setVisible(false);
         this.setSpecialCombat(false);
         this.inCombat = false;
         this.attacking = undefined;

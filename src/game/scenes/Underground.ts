@@ -180,7 +180,9 @@ export class Underground extends Scene {
             strafe: this?.input?.keyboard?.addKeys('E,Q'),
             shift: this?.input?.keyboard?.addKeys('SHIFT'),
             firewater: this?.input?.keyboard?.addKeys('T'),
-        }; 
+            tab: this?.input?.keyboard?.addKeys('TAB'),
+            escape: this?.input?.keyboard?.addKeys('ESC'),
+        };
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 100, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -642,8 +644,7 @@ export class Underground extends Scene {
             this.cameras.main.flash(48, 156, 163, 168, false, undefined, this);
         };
         if (bool === true && this.combat === false) {
-            this.player.inCombat = true;
-            this.player.healthbar.setVisible(true);
+            this.player.startCombat();
             this.musicCombat.play();
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
             if (this.musicStealth.isPlaying) this.musicStealth.stop();

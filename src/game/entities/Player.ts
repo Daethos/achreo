@@ -285,6 +285,11 @@ export default class Player extends Entity {
         this.ascean = stats.ascean;
     };
 
+    startCombat = () => {
+        this.inCombat = true;
+        this.healthbar.setVisible(true);
+    };
+
     disengage = () => {
         this.scene.combatEngaged(false);
         this.scene.clearNonAggressiveEnemy();
@@ -625,6 +630,24 @@ export default class Player extends Entity {
             if (this.highlight.visible) {
                 this.removeHighlight();
             };
+        };
+    };
+
+    tabEnemyNext = () => {
+        const index = this.targetIndex + 1 >= this.targets.length ? 0 : this.targetIndex + 1;
+        let newTarget = this.targets[index];
+        this.targetIndex = index;
+        if (this.inCombat) {
+            newTarget = newTarget?.inCombat ? newTarget : this.targets.find(obj => obj.enemyID !== this.currentTarget?.enemyID && obj.enemyID !== newTarget?.enemyID); 
+            this.targetIndex = this.targets.findIndex(obj => obj?.enemyID === newTarget?.enemyID);
+        };
+        if (!newTarget || newTarget === this.currentTarget) return;
+        this.currentTarget = newTarget;
+        this.targetID = newTarget.enemyID;
+        if (this.currentTarget) {
+            this.highlightTarget(this.currentTarget); 
+            this.animateTarget();
+            this.scene.setupEnemy(this.currentTarget);
         };
     };
 
@@ -1206,6 +1229,12 @@ export default class Player extends Entity {
             this.removeHighlight();
         };
         if (this.scene.settings.desktop === true && !this.isSuffering()) {
+            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.tab.TAB)) {
+                this.tabEnemyNext();
+            };
+            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.escape.ESC) && !this.inCombat) {
+                this.disengage();
+            };
             if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.attack.ONE)) {
                 const button = this.scene.actionBar.getButton(this.scene.settings.specials[0].toLowerCase());
                 if (button?.isReady === true) this.scene.actionBar.pressButton(button, this.scene);

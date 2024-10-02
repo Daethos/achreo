@@ -33,14 +33,13 @@ export default class HealthBar extends Phaser.GameObjects.Container {
 
         scene.add.existing(this);
         this.setDepth(10);
-        this.visible = true;
+        this.setVisible(false);
     };
     
     private draw = (): void => {
         this.border.clear();
         this.border.lineStyle(1, this.borderColor);
         this.border.strokeRect(-this.barWidth / 2, -this.barHeight / 2, this.barWidth, this.barHeight);
-
         this.bar.clear();
         this.bar.fillStyle(this.fillColor); 
         this.bar.fillRect(-this.barWidth / 2, -this.barHeight / 2, (this.value / this.total) * this.barWidth, this.barHeight);
@@ -65,13 +64,7 @@ export default class HealthBar extends Phaser.GameObjects.Container {
         this.setValue(value);
     };
 
-
     public update = (player: any): void => {
-        if (player.attacking && player.inCombat) {
-            if (!this.visible) this.setVisible(true);
-        } else {
-            if (this.visible) this.setVisible(false);
-        };
         this.setPosition(player.x, player.y - 25);
     };
 };

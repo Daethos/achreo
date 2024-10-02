@@ -3,8 +3,8 @@
         {
             "key": "impact",
             "type": "frames",
-            "repeat": -1,
-            "frameRate": 8,
+            "repeat": 0,
+            "frameRate": 12,
             "frames": [
                 {
                     "key": "impact",

@@ -75,7 +75,7 @@ export default class Player extends Entity {
 
     constructor(data: any) {
         const { scene } = data;
-        super({ ...data, name: 'player', ascean: scene.state.player, health: scene.state.player.health.current }); 
+        super({ ...data, name: 'player', ascean: scene.state.player, health: scene.state.player?.health?.current || scene.state.newPlayerHealth }); 
         this.ascean = this.getAscean();
         this.health = this.ascean.health.current;
         this.playerID = this.ascean._id;
@@ -293,6 +293,7 @@ export default class Player extends Entity {
     disengage = () => {
         this.scene.combatEngaged(false);
         this.scene.clearNonAggressiveEnemy();
+        this.healthbar.setVisible(false);
         this.inCombat = false;
         this.currentTarget = undefined;
         this.removeHighlight();
@@ -581,6 +582,7 @@ export default class Player extends Entity {
     };
 
     checkGear = (shield: Equipment, weapon: Equipment, damage: string) => {
+        if (!shield || !weapon) return;
         this.currentDamageType = damage;    
         this.hasMagic = this.checkDamageType(damage, 'magic');
         this.checkMeleeOrRanged(weapon);
@@ -1235,47 +1237,47 @@ export default class Player extends Entity {
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.escape.ESC) && !this.inCombat) {
                 this.disengage();
             };
-            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.attack.ONE)) {
+            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.ONE)) {
                 const button = this.scene.actionBar.getButton(this.scene.settings.specials[0].toLowerCase());
                 if (button?.isReady === true) this.scene.actionBar.pressButton(button, this.scene);
             };
-            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.posture.TWO)) {
+            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.TWO)) {
                 const button = this.scene.actionBar.getButton(this.scene.settings.specials[1].toLowerCase());
                 if (button?.isReady === true) this.scene.actionBar.pressButton(button, this.scene);
             };
-            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.roll.THREE)) {
+            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.THREE)) {
                 const button = this.scene.actionBar.getButton(this.scene.settings.specials[2].toLowerCase());
                 if (button?.isReady === true) this.scene.actionBar.pressButton(button, this.scene);
             };
-            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.dodge.FOUR)) {
+            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FOUR)) {
                 const button = this.scene.actionBar.getButton(this.scene.settings.specials[3].toLowerCase());
                 if (button?.isReady === true) this.scene.actionBar.pressButton(button, this.scene);
             };
-            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.parry.FIVE)) { 
+            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FIVE)) { 
                 const button = this.scene.actionBar.getButton(this.scene.settings.specials[4].toLowerCase());
                 if (button?.isReady === true) this.scene.actionBar.pressButton(button, this.scene);
             };
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.attack.ONE)) {
+            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.ONE)) {
                 const button = this.scene.actionBar.getButton(this.scene.settings.actions[0].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
                 if (button?.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);
             };
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.posture.TWO)) {
+            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.TWO)) {
                 const button = this.scene.actionBar.getButton(this.scene.settings.actions[1].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
                 if (button?.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);
             };
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.roll.THREE)) {
+            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.THREE)) {
                 const button = this.scene.actionBar.getButton(this.scene.settings.actions[2].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
                 if (button?.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);
             };
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.dodge.FOUR)) {
+            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FOUR)) {
                 const button = this.scene.actionBar.getButton(this.scene.settings.actions[3].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
                 if (button?.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);
             };
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.parry.FIVE)) {
+            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FIVE)) {
                 const button = this.scene.actionBar.getButton(this.scene.settings.actions[4].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
                 if (button?.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);

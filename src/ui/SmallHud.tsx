@@ -92,6 +92,9 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
                 computerDeathDescription: '',   
             });
         });
+        EventBus.on('set-show-player', () => {
+            showPlayer();
+        });
     });
     onCleanup(() => {
         EventBus.off('combat-engaged');

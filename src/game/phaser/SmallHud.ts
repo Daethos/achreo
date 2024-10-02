@@ -127,6 +127,22 @@ export default class SmallHud extends Phaser.GameObjects.Container {
 
     cleanUp = () => {
         EventBus.off('toggle-bar');
+        EventBus.off('update-hud-position');
+        EventBus.off('update-left-hud-position');
+        EventBus.off('update-small-hud-scale');
+        EventBus.off('update-left-hud-scale');
+        EventBus.off('update-small-hud-offset');
+        EventBus.off('update-left-hud-offset');
+        this.bar.forEach((button) => {
+            button.removeAllListeners();
+            button.removeInteractive();
+            button.destroy();
+        });
+        this.stances.forEach((button) => {
+            button.removeAllListeners();
+            button.removeInteractive();
+            button.destroy();
+        });
     };
 
     draw = () => {

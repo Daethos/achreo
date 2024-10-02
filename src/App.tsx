@@ -23,6 +23,7 @@ const GameToast = lazy(async () => await import('./ui/GameToast'));
 var click = new Audio("../assets/sounds/TV_Button_Press.wav");
 var creation = new Audio("../assets/sounds/freeze.wav");
 var load = new Audio("../assets/sounds/combat-round.mp3");
+var background = new Audio("../assets/sounds/background2.mp3");
 
 export default function App() {
     const [alert, setAlert] = createSignal({ header: '', body: '', delay: 0, key: '', arg: undefined });
@@ -41,6 +42,19 @@ export default function App() {
     var tips: string | number | NodeJS.Timeout | undefined =  undefined;
     onMount(() => fetchAsceans());
     const currentScene = (scene: Scene) => setScene(scene.scene.key);
+    function resetGame(): void {
+        setTips(false);
+        (phaserRef.scene as any)?.cleanUp();
+        if (phaserRef.scene?.scene.key === 'Game') {
+            const scene = phaserRef.scene?.scene.get('Underground');
+            if (scene.scene.isSleeping()) (scene as any)?.cleanUp();
+        } else { // Underground
+            const scene = phaserRef.scene?.scene.get('Game');
+            if (scene?.scene.isSleeping()) (scene as any)?.cleanUp();
+        };
+        phaserRef.game?.destroy(false);
+        setStartGame(false);
+    };
     function fetchAsceans(): void {
         const fetch = async () => {
             try {
@@ -52,6 +66,8 @@ export default function App() {
                 const pop = await Promise.all(res.map(async (asc: Ascean) => await populate(asc)));
                 const hyd = pop.map((asc: Ascean) => asceanCompiler(asc)).map((asc: Compiler) => { return { ...asc.ascean, weaponOne: asc.combatWeaponOne, weaponTwo: asc.combatWeaponTwo, weaponThree: asc.combatWeaponThree }});
                 setMenu({ ...menu(), asceans: hyd, loading: false }); // choosingCharacter: true
+                background.volume = 0.2;
+                background.play();
             } catch (err: any) {
                 console.warn('Error fetching Asceans:', err);
             };
@@ -59,6 +75,7 @@ export default function App() {
         fetch();
     };
     function menuOption(option: string): void {
+        background.pause()
         click.play();
         setMenu({ ...menu(), [option]: true });
     };
@@ -201,7 +218,6 @@ export default function App() {
     };
     async function saveThisSetting(data: any) {
         try {
-            // console.log(data, 'Data to Update Settings!');
             const update = { ...settings(), ...data };
             await saveSettings(update);
         } catch (err) {
@@ -293,6 +309,7 @@ export default function App() {
     usePhaserEvent('fetch-ascean', fetchAscean);
     usePhaserEvent('loading-ascean', loadingAscean);
     usePhaserEvent('quick-ascean', quickAscean);
+    usePhaserEvent('reset-game', resetGame);
     usePhaserEvent('save-ascean', saveAscean);
     usePhaserEvent('silent-save', silentSave);
     usePhaserEvent('update-ascean', updateAscean);
@@ -418,11 +435,11 @@ export default function App() {
             </>
         ) : ( 
             <Suspense fallback={<Puff color="gold"/>}>
-            <div class="cornerTL super">The Ascean v0.0.1</div>
+            <div class="cornerTL super" style={{ 'text-shadow': '0em 0em 0.1em #ffd700' }}>The Ascean v0.0.1</div>
             <Show when={menu().loading === false} fallback={<div class='superCenter'><Puff color="gold"/></div>}>
             <div class='superCenter cinzel' style={{ width: '100%' }}>
                 <div class='center'>
-                    <div class='title'>The Ascean</div>
+                    <div class='title long-animate'>The Ascean</div>
                     <button class='center highlight animate' style={{ 'font-size': '1.25em', 'font-family': 'Cinzel Regular' }} onClick={() => menuOption(menu().asceans.length > 0 ? 'choosingCharacter' : 'creatingCharacter')}>Enter Game</button>
                 </div>
             </div>

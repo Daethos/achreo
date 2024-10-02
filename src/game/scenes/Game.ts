@@ -168,11 +168,7 @@ export class Game extends Scene {
             down: this?.input?.keyboard?.addKeys('S,DOWN'),
             left: this?.input?.keyboard?.addKeys('A,LEFT'),
             right: this?.input?.keyboard?.addKeys('D,RIGHT'),
-            attack: this?.input?.keyboard?.addKeys('ONE'),
-            parry: this?.input?.keyboard?.addKeys('FIVE'),
-            dodge: this?.input?.keyboard?.addKeys('FOUR'),
-            posture: this?.input?.keyboard?.addKeys('TWO'),
-            roll: this?.input?.keyboard?.addKeys('THREE'), 
+            action: this?.input?.keyboard?.addKeys('ONE,TWO,THREE,FOUR,FIVE'),
             strafe: this?.input?.keyboard?.addKeys('E,Q'),
             shift: this?.input?.keyboard?.addKeys('SHIFT'),
             firewater: this?.input?.keyboard?.addKeys('T'),
@@ -245,6 +241,18 @@ export class Game extends Scene {
         EventBus.off('update-postfx');
         EventBus.off('music');
         EventBus.off('switch-scene');
+        EventBus.off('game-map-load');
+        EventBus.off('wake-up');
+        EventBus.off('update-fps');
+        EventBus.off('update-joystick-color');
+        EventBus.off('update-joystick-position');
+        EventBus.off('update-joystick-width');
+        EventBus.off('update-camera-zoom');
+        EventBus.off('update-joystick-opacity');
+        EventBus.off('update-speed');
+        EventBus.off('update-enemy-aggression');
+        EventBus.off('update-enemy-special');
+        EventBus.off('resetting-game');
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].cleanUp();
         };
@@ -260,6 +268,7 @@ export class Game extends Scene {
         this.rightJoystick.cleanUp();    
         this.joystick.destroy();
         this.rightJoystick.destroy();
+        // this.scene.start('GameOver')
     };
 
     gameEvent = (): void => {
@@ -473,6 +482,7 @@ export class Game extends Scene {
                 this.enemies[i].isSpecial = special >= Math.random();
             };
         });
+        EventBus.on('resetting-game', this.resetting);
     };
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
@@ -562,6 +572,16 @@ export class Game extends Scene {
         this.postFxPipeline.crtHeight = settings.crtHeight;
         this.postFxPipeline.crtWidth = settings.crtWidth;
 
+    };
+    resetting = (): void => {
+        this.sound.play('TV_Button_Press', { volume: this?.settings?.volume * 2 });
+        console.log('fading');
+        this.cameras.main.fadeOut();
+        this.pause();
+        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_came: any, _effect: any) => {
+            console.log('fadeout complete');
+            EventBus.emit('reset-game');
+        });
     };
     changeScene(): void {
         this.scene.start('GameOver');

@@ -113,9 +113,11 @@ export class Particle {
                 if (other.bodyB.label === 'enemyCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && player.name === 'player') { // !other.gameObjectB.isDefeated, && other.gameObjectB.health > 0 
                     player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
+                    this.scene.particleManager.impactEffect(this);
                 };
                 if (other.bodyB.label === 'playerCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy' && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
                     player.particleEffect.success = true;
+                    this.scene.particleManager.impactEffect(this);
                 };
             },
             context: this.scene,
@@ -163,7 +165,7 @@ export class Particle {
 export default class ParticleManager extends Phaser.Scene { 
     context: Game | Underground;
     particles: Particle[];
-    impacts: Phaser.Physics.Matter.Sprite[];
+    impacts: Phaser.GameObjects.Sprite[];
 
     static preload(scene: Phaser.Scene) {
         scene.load.image('arrow_effect', '../assets/gui/arrow_effect.png');
@@ -199,14 +201,13 @@ export default class ParticleManager extends Phaser.Scene {
         super('particle_effects'); // scene.matter.world, 0, 0, 
         this.context = scene; 
         this.particles = []; 
-        // this.impacts = this.createImpacts();
-        // console.log(this.impacts, 'Impacts?');    
+        this.impacts = this.createImpacts(scene);
     };
 
-    createImpacts() {
+    createImpacts(scene: Game | Underground) {
         let count = 0, collection = [];
         while (count < 10) {
-            const impact = new Phaser.Physics.Matter.Sprite(this.context.matter.world, 0, 0, 'impact').setActive(false).setOrigin(0.5).setVisible(false);
+            const impact = scene.add.sprite(0, 0, 'impact').setActive(false).setDepth(9).setOrigin(0.5).setScale(0.25); // Add it to the scene
             collection.push(impact);
             count++;
         };
@@ -216,39 +217,23 @@ export default class ParticleManager extends Phaser.Scene {
     impactEffect(particle: Particle) {
         const impact = this.impacts.find((imp) => !imp.active);
         if (impact) {
-            impact.setActive(true);
-            impact.setPosition(particle.effect.x, particle.effect.y);
-            impact.setCollisionCategory(9);
-            impact.setVisible(true);
-            console.log('playing impact!');
-            this.context.tweens.add({
-                targets: impact,
-                // scale: 0.01,
-                duration: 500,
-                onUpdate: () => {
-                    impact.play('impact')
-                        .on('animationcomplete', () => {
-                            console.log('%c complete complete complete', 'color:gold');
-                    });
-                },
-                onComplete: () => {
-                    console.log('completing impact!');
-                    impact.setActive(false);
-                    impact.setVisible(false);
-                },
+            impact.active = true;
+            impact.visible = true;
+            impact.x = particle.effect.x;
+            impact.y = particle.effect.y;
+            impact.play('impact', true).once('animationcomplete', () => {
+                impact.setActive(false).setVisible(false);
             });
-            // impact.play('impact').on('animationcomplete', () => {
-            // });
         };
     };
 
     despawnEffect(particle: Particle) {
-        // this.impactEffect(particle);
         particle.effect.setVelocity(0);
         particle.effect.stop();
         particle.effect.setActive(false);
         particle.effect.setVisible(false);
         particle.effect.world.remove(particle.effect.body!);
+        if (!particle.triggered) this.impactEffect(particle);
         if (!particle.triggered && particle.magic) {
             particle.triggered = true;
             particle.player.particleAoe(particle);

@@ -841,6 +841,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     public cleanUp = () => {
         this.actionButtons.forEach((button: ActionButton) => {
             button.graphic.removeListener('pointerdown');
+            button.graphic.removeListener('pointerover');
+            button.graphic.removeListener('pointerout');
             button.graphic.disableInteractive();
             button.graphic.removeInteractive();
             button.graphic.destroy();
@@ -848,6 +850,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         });
         this.specialButtons.forEach((button: ActionButton) => {
             button.graphic.removeListener('pointerdown');
+            button.graphic.removeListener('pointerover');
+            button.graphic.removeListener('pointerout');
             button.graphic.disableInteractive();
             button.graphic.removeInteractive();
             button.graphic.destroy();
@@ -855,7 +859,16 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         });
         this.actionButtons = [];
         this.specialButtons = [];
-        EventBus.off('reorder-buttons');
+        this.tooltipManager.clear()
+        EventBus.off('reorder-buttons', this.reorderButtons);
+        EventBus.off('reposition-buttons', this.repositionButtons);
+        EventBus.off('re-width-buttons', this.rewidthButtons);
+        EventBus.off('redisplay-buttons', this.redisplayButton);
+        EventBus.off('respacing-buttons', this.respaceButton);
+        EventBus.off('opacity-buttons', this.opacityButton);
+        EventBus.off('reborder-buttons', this.reborderButton);
+        EventBus.off('recolor-buttons', this.recolorButton);
+        EventBus.off('stalwart-buttons', this.stalwartButtons);
     };
 
     public reorder = () => {

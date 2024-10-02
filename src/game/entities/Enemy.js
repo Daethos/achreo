@@ -202,7 +202,6 @@ export default class Enemy extends Entity {
         this.spriteWeapon = undefined;
         this.spriteShield.destroy();
         this.spriteShield = undefined;
-        this.body.destroy();
     };
 
     enemyStateListener() {
@@ -956,7 +955,7 @@ export default class Enemy extends Entity {
         this.isContemplating = true;
         this.setVelocity(0);
         this.enemyAnimation();
-        this.contemplationTime = Phaser.Math.Between(500, 2000);
+        this.contemplationTime = Phaser.Math.Between(500, 1000);
         // console.log(`%c Contemplation Time: ${this.contemplationTime}`, 'color:gold');
     };
     onContemplateUpdate = (dt) => {
@@ -1113,6 +1112,7 @@ export default class Enemy extends Entity {
     onLeashEnter = () => {
         this.enemyAnimation();
         this.inCombat = false;
+        this.healthbar.setVisible(false);
         if (this.attacking !== undefined) {
             this.attacking.removeTarget(this.enemyID);
             this.attacking = undefined;
@@ -3016,18 +3016,17 @@ export default class Enemy extends Entity {
         this.stateMachine.update(this.scene.sys.game.loop.delta);
         this.negativeMachine.update(this.scene.sys.game.loop.delta);
     };
-
     evaluateCombat = () => {  
         let actionNumber = Math.floor(Math.random() * 101);
-        if (actionNumber > 60) { // 61-100 (40%) || (100 - computerActions.attack)
+        if (actionNumber > PLAYER.ACTION_WEIGHT.ATTACK) { // 61-100 (40%) || (100 - computerActions.attack)
             return States.ATTACK;
-        } else if (actionNumber > 50 && !this.isRanged) { // 51-60 (10%) || (100 - computerActions.attack - computerActions.parry)
-            return States.PARRY;
-        } else if (actionNumber > 35) { // 36-50 (15%) || (100 - computerActions.attack - computerActions.parry - computerActions.posture)
+        } else if (actionNumber > PLAYER.ACTION_WEIGHT.POSTURE) { // 46-60 (15%) || (100 - computerActions.attack - computerActions.parry - computerActions.posture)
             return States.POSTURE;
-        } else if (actionNumber > 20) { // 21-35 (15%) || (100 - computerActions.attack - computerActions.parry - computerActions.posture - computerActions.roll)
+        } else if (actionNumber > PLAYER.ACTION_WEIGHT.ROLL) { // 31-45 (15%) || (100 - computerActions.attack - computerActions.parry - computerActions.posture - computerActions.roll)
             return States.ROLL;
-        } else if (actionNumber > 5) { // 6-20 (15%)
+        } else if (actionNumber > PLAYER.ACTION_WEIGHT.PARRY && !this.isRanged) { // 21-30 (10%) || (100 - computerActions.attack - computerActions.parry)
+            return States.PARRY;
+        } else if (actionNumber > PLAYER.ACTION_WEIGHT.THRUST) { // 6-20 (15%) || 6-30 (this.isRanged) (25%)
             return States.THRUST;
         } else { // New State 1-5 (5%)
             return States.CONTEMPLATE;

@@ -222,7 +222,6 @@ export default function PhaserGame (props: IProps) {
     function sellItem(item: Equipment) {
         try {
             let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
-            // let inventory = Array.from(game().inventory.inventory);
             inventory = inventory.filter((eqp: any) => eqp._id !== item._id);
             const clean = { ...game().inventory, inventory };
             let gold: number = 0, silver: number = 0;
@@ -242,6 +241,10 @@ export default function PhaserGame (props: IProps) {
             const update = {
                 ...props.ascean(),
                 currency: currency,
+                health: {
+                    current: combat().newPlayerHealth,
+                    max: combat().playerHealth
+                }
             };
             setGame({
                 ...game(),
@@ -258,7 +261,6 @@ export default function PhaserGame (props: IProps) {
 
     function recordCombat(stats: any): Statistics {
         let { wins, losses, total, actionData, typeAttackData, typeDamageData, totalDamageData, prayerData, deityData } = stats;
-        // let statistic = props.ascean().statistics.combat;
         let statistic = props.statistics().combat;
         statistic.wins += wins;
         statistic.losses += losses;
@@ -487,14 +489,13 @@ export default function PhaserGame (props: IProps) {
         const update = { 
             ...props.ascean(), 
             skills: newSkills,
-            // statistics: newStats, 
             health: { ...props.ascean().health, current: health },
             experience: exp,
             currency: currency,
             firewater: firewater,
         };
         if (!update.tutorial.deity) {
-            if (update.experience >= 750 && update.level >= 1) { // 1000
+            if (update.experience >= 750 && update.level >= 1) {
                 setTutorial('deity');
                 setShowTutorial(true);  
                 if (game().pauseState === false) {
@@ -580,9 +581,8 @@ export default function PhaserGame (props: IProps) {
         const {type,item} = e;
         const oldEquipment = props.ascean()[type as keyof Ascean] as Equipment;
         const newEquipment = item;
-        let newAscean = {...props.ascean(), [type]: newEquipment};
+        let newAscean = {...props.ascean(), [type]: newEquipment, health: { current: combat().newPlayerHealth, max: combat().playerHealth }};
         let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
-        // let inventory = [...game().inventory.inventory];
         inventory = inventory.filter((inv: any) => inv._id !== newEquipment._id);
         if (!oldEquipment.name.includes('Empty') && !oldEquipment.name.includes('Starter')) {
             inventory.push(oldEquipment);
@@ -610,7 +610,6 @@ export default function PhaserGame (props: IProps) {
             playerAttributes: stats.attributes,
             playerDefense: stats.defense,
             playerDefenseDefault: stats.defense,
-            // playerDamageType: stats.combatWeaponOne.damageType?.[0] as string,
             playerBlessing: props.settings().prayer,
         });
         setStamina(stats.attributes.stamina as number);
@@ -645,7 +644,7 @@ export default function PhaserGame (props: IProps) {
             } else if (item?.[0].rarity === 'Legendary') {
                 gold = 60;
             };
-            const update = { ...props.ascean(), currency: { ...props.ascean().currency, gold: props.ascean().currency.gold - gold } };
+            const update = { ...props.ascean(), currency: { ...props.ascean().currency, gold: props.ascean().currency.gold - gold }, health: { current: combat().newPlayerHealth, max: combat().playerHealth } };
             const clean = { ...game().inventory, inventory };
             setGame({ ...game(), inventory: clean });
             setCombat({
@@ -856,7 +855,7 @@ export default function PhaserGame (props: IProps) {
         });
         EventBus.on('changeWeapon', (e: [Equipment, Equipment, Equipment]) => {
             setCombat({ ...combat(), weapons: e, weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2], playerDamageType: e[0].damageType?.[0] as string});
-            const update = { ...props.ascean(), weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2] };
+            const update = { ...props.ascean(), weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2], health: { current: combat().newPlayerHealth, max: combat().playerHealth } };
             EventBus.emit('update-ascean', update);
         });
         EventBus.on('combat-engaged', (e: boolean) => setCombat({ ...combat(), combatEngaged: e }));

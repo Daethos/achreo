@@ -22,6 +22,7 @@ export default class Joystick extends Phaser.GameObjects.Container {
     };
     cleanUp() {
         EventBus.off('update-cursor');
+        EventBus.off('update-desktop-cursor');
         this.joystick.off('update', this.update, this);
         this?.pointer?.destroy();
         this.joystick.destroy();
@@ -50,7 +51,6 @@ export default class Joystick extends Phaser.GameObjects.Container {
         this.scene.input.off('pointermove', this.updatePointerPosition, this);
     };
     updatePointerPosition(pointer: any) {
-        // console.log(pointer, 'Pointer!')
         this.pointer.x = pointer.x;
         this.pointer.y = pointer.y;
     };

@@ -152,6 +152,12 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         await saveSettings(newSettings);
         EventBus.emit('update-volume', e);
     };
+
+    // function resetGame() {
+    //     EventBus.emit('reset-game'); 
+    //     // setShowRestart(false); 
+    //     // EventBus.emit('set-show-player');
+    // };
     // <div style={{...font('0.5em', '#fdf6d8'), margin: '1% auto', display: 'block'}}>Number Mapping Reads Left to Right. <br /> Special Options are Restricted: Mastery; Traits.</div>
     return <>
         <div class='center' style={{ display: 'flex', 'flex-direction': 'row', height: '100%' }}>
@@ -359,6 +365,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
             <p class='center' style={{ 'margin-bottom': '15%' }}>Do you with to go back to the Main Menu?</p>
             <button class='cornerBL highlight' style={{ color: 'gold' }} onClick={() => setShowRestart(false)}>No</button>
             <button class='cornerBR highlight' style={{ color: 'red' }} onClick={() => document.location.reload()}>Yes</button>
+            {/* document.location.reload() */}
             </div>
             </div> 
         </Show>

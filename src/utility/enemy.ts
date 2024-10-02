@@ -128,6 +128,10 @@ export const DURATION = {
     ROLL: 320, // 320
     SPECIAL: 10000,
 };
+export const PADDING = {
+    HEIGHT: 10,
+    WIDTH: 10
+};
 export const RANGE = {
     LEASH: 750,
 }; 

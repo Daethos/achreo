@@ -19,7 +19,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     private border: Phaser.GameObjects.Graphics;
     private borderColor: number;
     private fillColor: number;
-    private time: number;
+    public time: number;
     private total: number;
     private castbar: Phaser.GameObjects.Sprite;
     private timeText: Phaser.GameObjects.Text;

@@ -1,19 +1,19 @@
-// @ts-ignore
-import Enemy from './Enemy';
-import { v4 as uuidv4 } from 'uuid';
-import { CombatStats, roundToTwoDecimals } from '../../utility/combat';
-import Ascean from '../../models/ascean';
-import { Particle } from '../matter/ParticleManager';
-import ScrollingCombatText from '../phaser/ScrollingCombatText';
-import { Game } from '../scenes/Game';
-import { Underground } from '../scenes/Underground';
-import Equipment from '../../models/equipment';
+import AoE from '../phaser/AoE';
 import Beam from '../matter/Beam';
+import Bubble from '../phaser/Bubble';
 import CastingBar from '../phaser/CastingBar';
 import HealthBar from '../phaser/HealthBar';
-import Bubble from '../phaser/Bubble';
-import AoE from '../phaser/AoE';
+// @ts-ignore
+import Enemy from './Enemy';
 import Player from './Player';
+import ScrollingCombatText from '../phaser/ScrollingCombatText';
+import Ascean from '../../models/ascean';
+import Equipment from '../../models/equipment';
+import { v4 as uuidv4 } from 'uuid';
+import { CombatStats, roundToTwoDecimals } from '../../utility/combat';
+import { Particle } from '../matter/ParticleManager';
+import { Game } from '../scenes/Game';
+import { Underground } from '../scenes/Underground';
 export const FRAME_COUNT = {
     ATTACK_LIVE: 16,
     ATTACK_SUCCESS: 39,
@@ -49,8 +49,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     beam: Beam;
     castbar: CastingBar;
     healthbar: HealthBar;
-    negationBubble: Bubble;
-    reactiveBubble: Bubble;
+    negationBubble: Bubble | undefined;
+    reactiveBubble: Bubble | undefined;
     aoe: AoE;
     
     hasMagic: boolean = false;
@@ -160,11 +160,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     specialCombatText: ScrollingCombatText;
     resistCombatText: ScrollingCombatText;
     path: any[] = [];
-    nextPoint: {};
-    pathDirection: {};
+    nextPoint: any;
     isPathing: boolean = false;
-    chaseTimer: Phaser.Time.TimerEvent;
-    leashTimer: Phaser.Time.TimerEvent;
     canSwing: boolean = true;
     swingTimer: number = 0;
     isGlowing: boolean = false;
@@ -388,8 +385,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     knockback(id: string) {
         const enemy = this.scene.getEnemy(id);
         if (enemy === undefined) return;
-        const x = this.x > enemy.x ? -0.5 : 0.5;
-        const y = this.y > enemy.y ? -0.5 : 0.5;
+        const x = this.x > enemy.x ? -0.25 : 0.25;
+        const y = this.y > enemy.y ? -0.25 : 0.25;
         this.knockbackDirection = { x, y };
         const accelerationFrames = 10; 
         const accelerationStep = this.knockbackForce / accelerationFrames;
@@ -403,7 +400,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             if (currentForce < this.knockbackForce) currentForce += accelerationStep;
             const forceX = (this.knockbackDirection.x * currentForce);
             const forceY = (this.knockbackDirection.y * currentForce);
-            if (enemy.moving()) enemy.applyForce({ x: forceX, y: forceY });
+            const force = new Phaser.Math.Vector2(forceX, forceY);
+            if (enemy.moving()) enemy.applyForce(force);
             currentForce *= dampeningFactor;
             requestAnimationFrame(knockbackLoop);
         };
@@ -462,15 +460,15 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             } else if (this.velocity?.y as number < 0) {
                 this.weaponHitbox.y -= 16;
             };
-            if (target) this.hitBoxCheck(target);
+            if (target) this.hitBoxCheck(target as Enemy);
             if (this.targets.length > 0) {
                 for (let i = 0; i < this.targets.length; i++) {
-                    if (this.targets[i] !== target) this.hitBoxCheck(this.targets[i]);
+                    if (this.targets[i] !== target && this.targets[i].health > 0) this.hitBoxCheck(this.targets[i]);
                 };
             };
             if (this.touching.length > 0) {
                 for (let i = 0; i < this.touching.length; i++) {
-                    if (this.touching[i] !== target) this.hitBoxCheck(this.touching[i]);
+                    if (this.touching[i] !== target && this.touching[i].health > 0) this.hitBoxCheck(this.touching[i]);
                 };
             };
         };

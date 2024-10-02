@@ -30,11 +30,11 @@ export class CombatManager extends Phaser.Scene {
         if (target.name === 'player') {
             const damage = Math.round(entity.ascean?.[entity?.ascean?.mastery as keyof typeof this.context.state.player] * 0.2);
             const health = target.health - damage;
-            this.combatMachine.action({ data: { key: 'player', value: health, id: entity.enemyID }, type: 'Set Health' });
+            this.combatMachine.action({ data: { key: 'player', value: health, id: (entity as Enemy).enemyID }, type: 'Set Health' });
         } else {
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.2);
             const health = target.health - damage;
-            this.combatMachine.action({ data: { key: 'enemy', value: health, id: target.enemyID }, type: 'Health' });
+            this.combatMachine.action({ data: { key: 'enemy', value: health, id: (target as Enemy).enemyID }, type: 'Health' });
         };
     };
 

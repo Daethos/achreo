@@ -334,7 +334,7 @@ export default class Player extends Entity {
         return true;
     };
     outOfRange = (range: number) => {
-        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget?.x as number, this.currentTarget?.y as number);
         if (distance > range) {
             this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: -${Math.round(distance - range)}`, 1000, 'damage');
             return true;    
@@ -387,7 +387,7 @@ export default class Player extends Entity {
             if (this.isFeared) {
                 const chance = Math.random() < 0.1 + this.fearCount;
                 if (chance) {
-                    this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x, this.currentTarget?.position?.y, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect');
+                    this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect');
                     this.isFeared = false;    
                 } else {
                     this.fearCount += 0.1;
@@ -405,7 +405,7 @@ export default class Player extends Entity {
         if (e.computerParrySuccess === true) {
             this.playerMachine.stateMachine.setState(States.STUN);
             this.scene.combatManager.combatMachine.input('computerParrySuccess', false);
-            this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x, this.currentTarget?.position?.y, 'Parry', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);    
+            this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Parry', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);    
         };
         if (e.rollSuccess === true) {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Roll', PLAYER.DURATIONS.TEXT, 'heal', true);
@@ -419,7 +419,7 @@ export default class Player extends Entity {
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'parry');
             this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
         };
-        if (e.computerRollSuccess === true) this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x, this.currentTarget?.position?.y, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);
+        if (e.computerRollSuccess === true) this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);
         if (e.newComputerHealth <= 0 && e.playerWin === true) this.defeatedEnemyCheck(e.enemyID);
         if (e.newPlayerHealth <= 0) this.disengage();    
         if (e.playerAttributes?.stamina as number > this.maxStamina) this.maxStamina = e.playerAttributes?.stamina as number;
@@ -603,14 +603,14 @@ export default class Player extends Entity {
             const newTarg = this.targets[index] || this.targets[0];
             if (!newTarg) return;
             this.currentTarget = newTarg;
-            this.highlightTarget(this.currentTarget);
+            this.highlightTarget(this.currentTarget as Enemy);
             this.scene.setupEnemy(this.currentTarget);
         };
     };
 
     tabUpdate = (enemy: Enemy) => {
-        const newTarget = this.targets.find(obj => obj.enemyID === enemy.id);
-        this.targetIndex = this.targets.findIndex(obj => obj.enemyID === enemy.id);
+        const newTarget = this.targets.find(obj => obj.enemyID === enemy.enemyID);
+        this.targetIndex = this.targets.findIndex(obj => obj.enemyID === enemy.enemyID);
         if (!newTarget) return;
         if (newTarget.npcType) this.scene.setupNPC(newTarget);
         this.currentTarget = newTarget;
@@ -986,7 +986,7 @@ export default class Player extends Entity {
         } else {
             this.scene.setupEnemy(newTarget);
         };
-        this.highlightTarget(this.currentTarget); 
+        this.highlightTarget(this.currentTarget as Enemy); 
     };
 
     clearEnemies = () => {
@@ -1133,7 +1133,7 @@ export default class Player extends Entity {
                 }});
             };
         };
-        // this.knockback(this.attackedTarget.enemyID);
+        this.knockback(this.attackedTarget.enemyID);
         if (this.isStealthing) {
             this.scene.combatManager.paralyze(this.attackedTarget.enemyID);
             this.isStealthing = false;
@@ -1417,7 +1417,7 @@ export default class Player extends Entity {
         if (this.resistCombatText) this.resistCombatText.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-        this.weaponRotation('player', this.currentTarget);
+        this.weaponRotation('player', this.currentTarget as Enemy);
     };
 
     handleMovement = () => {

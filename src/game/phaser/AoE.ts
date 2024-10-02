@@ -40,7 +40,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     timer: any;
     sensor: any;
 
-    constructor(scene: Game | Underground, type: string, count = 1, positive = false, enemy = undefined, manual = false, target = undefined, particle: any = undefined) {
+    constructor(scene: Game | Underground, type: string, count = 1, positive = false, enemy: undefined | Enemy = undefined, manual: boolean = false, target: undefined | any = undefined, particle: undefined | {effect: Particle; entity: Player | Enemy } = undefined) {
         super(scene.matter.world, scene.player.x, scene.player.y + 6, 'target');
         this.name = type;
         this.setAngle(0);

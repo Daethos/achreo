@@ -603,8 +603,8 @@ export default class Enemy extends Entity {
 
     chiomic = (power) => {
         if (this.scene.state.newPlayerHealth <= 0) return;
-            this.scene.combatManager.useGrace(power);
-            this.entropicMultiplier(power);
+        this.entropicMultiplier(power);
+        this.scene.combatManager.useGrace(power / 10);
         if (this.isCurrentTarget === true) {
             this.scene.combatManager.combatMachine.action({ type: 'Enemy Chiomic', data: power });
         } else {
@@ -1404,8 +1404,8 @@ export default class Enemy extends Entity {
                 if (this.touching.length > 0) {
                     this.touching.forEach(enemy => {
                         if (enemy.playerID !== this.scene.player.playerID) return;
-                        this.scene.writhe(enemy.playerID, 'leap', this.enemyID);
-                        this.scene.combatManager.useStamina(15);
+                        this.scene.combatManager.writhe(enemy.playerID, this.enemyID);
+                        this.scene.combatManager.useStamina(5);
                     });
                 };
                 this.stateMachine.setState(States.COMBAT);
@@ -1551,7 +1551,7 @@ export default class Enemy extends Entity {
             onComplete: () => {
                 if (this.rushedEnemies.length > 0) {
                     this.rushedEnemies.forEach(enemy => {
-                        this.scene.combatManager.useStamina(15);
+                        this.scene.combatManager.useStamina(5);
                         this.scene.combatManager.writhe(enemy.playerID, this.enemyID);
                     });
                 };

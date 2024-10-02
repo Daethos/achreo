@@ -7,6 +7,7 @@ const VELOCITY = { quor: 4.5, achire: 6, attack: 5, hook: 5.5, thrust: 6, postur
 import Player from '../entities/Player';
 // @ts-ignore
 import Enemy from '../entities/Enemy';
+import Entity from '../entities/Entity';
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 const MAGIC = ['earth','fire','frost','lightning','righteous','sorcery','spooky','wild','wind'];
@@ -36,7 +37,7 @@ export class Particle {
     isParticle: boolean;
     key: string;
     magic: boolean;
-    player: Player | Enemy;
+    player: Player | Enemy | Entity;
     sensorSize: number;
     special: boolean;
     collided: boolean = false;
@@ -46,7 +47,7 @@ export class Particle {
     triggered: boolean = false;
     velocity: number;
 
-    constructor(scene: Game | Underground, action: string, key: string, player: Player | Enemy, special: boolean) {
+    constructor(scene: Game | Underground, action: string, key: string, player: Player | Enemy | Entity, special: boolean) {
         const particle = PARTICLES.includes(key);
         const id = uuidv4();
         const idKey = key + '_effect';
@@ -72,7 +73,7 @@ export class Particle {
         this.effect.setAngle(angleTarget(this.target));
     };
 
-    reconstruct(particle: Particle, action: string, player: Player | Enemy, special: boolean, key: string) {
+    reconstruct(particle: Particle, action: string, player: Player | Enemy | Entity, special: boolean, key: string) {
         const idKey = `${key}_effect`;
         this.action = action
         this.isParticle = PARTICLES.includes(key);
@@ -101,7 +102,7 @@ export class Particle {
     sensorer = (special: boolean, action: string): number => {
         return !special ? 6 : action === 'achire' ? 9 : 16;
     };
-    sensorListener = (player: Player | Enemy, sensor: any) => {
+    sensorListener = (player: Player | Enemy | Entity, sensor: any) => {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [sensor],
             callback: (other: any) => {
@@ -121,20 +122,20 @@ export class Particle {
         });
     };
 
-    setTarget(player: Player | Enemy, scene: Game | Underground, special = false): Phaser.Math.Vector2 {
+    setTarget(player: Player | Enemy | Entity, scene: Game | Underground, special = false): Phaser.Math.Vector2 {
         if (player.name === 'enemy') {
             const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y);
             const direction = target.subtract(player.position);
             direction.normalize();
             return direction;
         } else {
-            if (scene.settings.difficulty.aim === true || !player.currentTarget || special === true) {
+            if (scene.settings.difficulty.aim === true || !(player as Player).currentTarget || special === true) {
                 const target = scene.getWorldPointer();
                 const direction = target.subtract(player.position);
                 direction.normalize();
                 return direction;
             } else {
-                const target = new Phaser.Math.Vector2(player.currentTarget.body.position.x, player.currentTarget.body.position.y);
+                const target = new Phaser.Math.Vector2((player as Player).currentTarget?.body?.position.x, (player as Player).currentTarget?.body?.position.y);
                 const direction = target.subtract(player.position);
                 direction.normalize();
                 return direction;
@@ -152,7 +153,7 @@ export class Particle {
         return VELOCITY[action as keyof typeof VELOCITY];
     };
 
-    spriteMaker(scene: Game | Underground, player: Player | Enemy, key: string, particle: boolean, special: boolean): Phaser.Physics.Matter.Sprite {
+    spriteMaker(scene: Game | Underground, player: Player | Enemy | Entity, key: string, particle: boolean, special: boolean): Phaser.Physics.Matter.Sprite {
         return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key)
             .setScale(this.scaler(particle, special, this.action))
             .setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
@@ -162,6 +163,7 @@ export class Particle {
 export default class ParticleManager extends Phaser.Scene { 
     context: Game | Underground;
     particles: Particle[];
+    impacts: Phaser.Physics.Matter.Sprite[];
 
     static preload(scene: Phaser.Scene) {
         scene.load.image('arrow_effect', '../assets/gui/arrow_effect.png');
@@ -189,15 +191,59 @@ export default class ParticleManager extends Phaser.Scene {
         scene.load.animation('achire_anim', '../assets/gui/achire_anim.json');
         scene.load.atlas('quor_effect', '../assets/gui/quor_effect.png', '../assets/gui/quor_atlas.json');
         scene.load.animation('quor_anim', '../assets/gui/quor_anim.json');
+        scene.load.atlas('impact', '../assets/gui/impact.png', '../assets/gui/impact_atlas.json');
+        scene.load.animation('impact_anim', '../assets/gui/impact_anim.json');
     };
 
     constructor(scene: Game | Underground) {
         super('particle_effects'); // scene.matter.world, 0, 0, 
         this.context = scene; 
         this.particles = []; 
-    };  
+        // this.impacts = this.createImpacts();
+        // console.log(this.impacts, 'Impacts?');    
+    };
+
+    createImpacts() {
+        let count = 0, collection = [];
+        while (count < 10) {
+            const impact = new Phaser.Physics.Matter.Sprite(this.context.matter.world, 0, 0, 'impact').setActive(false).setOrigin(0.5).setVisible(false);
+            collection.push(impact);
+            count++;
+        };
+        return collection;
+    };
+    
+    impactEffect(particle: Particle) {
+        const impact = this.impacts.find((imp) => !imp.active);
+        if (impact) {
+            impact.setActive(true);
+            impact.setPosition(particle.effect.x, particle.effect.y);
+            impact.setCollisionCategory(9);
+            impact.setVisible(true);
+            console.log('playing impact!');
+            this.context.tweens.add({
+                targets: impact,
+                // scale: 0.01,
+                duration: 500,
+                onUpdate: () => {
+                    impact.play('impact')
+                        .on('animationcomplete', () => {
+                            console.log('%c complete complete complete', 'color:gold');
+                    });
+                },
+                onComplete: () => {
+                    console.log('completing impact!');
+                    impact.setActive(false);
+                    impact.setVisible(false);
+                },
+            });
+            // impact.play('impact').on('animationcomplete', () => {
+            // });
+        };
+    };
 
     despawnEffect(particle: Particle) {
+        // this.impactEffect(particle);
         particle.effect.setVelocity(0);
         particle.effect.stop();
         particle.effect.setActive(false);
@@ -216,7 +262,7 @@ export default class ParticleManager extends Phaser.Scene {
         particle.effect.world.add(particle.effect.body!);
     };
 
-    addEffect(action: string, player: Player | Enemy, key: string, special = false) {
+    addEffect(action: string, player: Player | Enemy | Entity, key: string, special = false) {
         let particle = this.particles.find((particle) => particle.effect?.active === false && particle.pID === player.particleID && particle.key === key);
         if (particle) {
             particle.reconstruct(particle, action, player, special, key);
@@ -233,11 +279,8 @@ export default class ParticleManager extends Phaser.Scene {
     };
 
     removeEffect(id: string) {
-        // this.stopEffect(id);
         let particle = this.particles.find(particle => particle.id === id);
-        if (particle) {
-            this.despawnEffect(particle);
-        };
+        if (particle) this.despawnEffect(particle);
     };
 
     stopEffect(id: string) {

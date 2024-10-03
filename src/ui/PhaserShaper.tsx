@@ -252,21 +252,21 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
         EventBus.emit('redisplay-buttons', update);
     };
 
-    // async function handleCamera(zoom: number) {
-    //     const newSettings = { 
-    //         ...settings(), 
-    //         positions: { 
-    //             ...settings().positions, 
-    //             camera: {
-    //                 ...settings().positions.camera,
-    //                 zoom
-    //             } 
-    //         } 
-    //     };
-    //     await updateSettings(newSettings);
-    //     EventBus.emit('save-settings', newSettings);
-    //     EventBus.emit('update-camera-zoom', zoom);
-    // };
+    async function handleCamera(zoom: number) {
+        const newSettings = { 
+            ...settings(), 
+            positions: { 
+                ...settings().positions, 
+                camera: {
+                    ...settings().positions.camera,
+                    zoom
+                } 
+            } 
+        };
+        await updateSettings(newSettings);
+        EventBus.emit('save-settings', newSettings);
+        EventBus.emit('update-camera-zoom', zoom);
+    };
 
     // async function handleFPS(e: any, axis: string) {
     //     const change = Number(e.target.value);

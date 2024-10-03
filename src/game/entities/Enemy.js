@@ -145,6 +145,7 @@ export default class Enemy extends Entity {
         let enemySensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: 'enemySensor' }); // Sensor was 48
         const compoundBody = Body.create({
             parts: [enemyCollider, enemySensor],
+            density: 0.002,
             frictionAir: 0.1, 
             restitution: 0.3,
             friction: 0.15,
@@ -161,13 +162,7 @@ export default class Enemy extends Entity {
         ), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
                 if ((!this.scene.settings.difficulty.enemyCombatInteract && this.scene.combat && !this.inCombat) || this.isDeleting) return;
-                if (this.ascean?.level > this.scene.state.player.level) {
-                    this.scene.sound.play('righteous', { volume: this.scene.settings.volume });
-                } else if (this.ascean?.level === this.scene.state.player.level) {
-                    this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });                    
-                } else {
-                    this.scene.sound.play('consume', { volume: this.scene.settings.volume });
-                };
+                this.ping();
                 vibrate();
                 this.clearTint();
                 this.setTint(TARGET_COLOR);
@@ -211,6 +206,16 @@ export default class Enemy extends Entity {
         EventBus.on('enemy-persuasion', this.persuasionUpdate);
         EventBus.on('enemy-luckout', this.luckoutUpdate);
         EventBus.on('update-enemy-health', this.healthUpdate);
+    };
+
+    ping = () => {
+        if (this.ascean?.level > this.scene.state.player.level) {
+            this.scene.sound.play('righteous', { volume: this.scene.settings.volume });
+        } else if (this.ascean?.level === this.scene.state.player.level) {
+            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });                    
+        } else {
+            this.scene.sound.play('consume', { volume: this.scene.settings.volume });
+        };
     };
 
     personalUpdate = (e) => {
@@ -289,9 +294,7 @@ export default class Enemy extends Entity {
     combatUpdate = (e) => {
         if (this.enemyID !== e.enemyID) {
             if (this.inCombat) this.currentRound = e.combatRound;
-            if (this.inCombat && this.attacking && e.newPlayerHealth <= 0 && e.computerWin === true) {
-                this.clearCombatWin();
-            };
+            if (this.inCombat && this.attacking && e.newPlayerHealth <= 0 && e.computerWin === true) this.clearCombatWin();
             return;
         };
         if (this.health > e.newComputerHealth) {
@@ -381,9 +384,7 @@ export default class Enemy extends Entity {
                             other.gameObjectB.targets.push(this);
                             other.gameObjectB.checkTargets();
                         };
-                        if (this.isReasonable()) {
-                            this.scene.setupEnemy(this);
-                        } 
+                        if (this.isReasonable()) this.scene.setupEnemy(this);
                         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
                         if (this.stateMachine.isCurrentState(States.DEFEATED)) {
                             this.scene.showDialog(true);
@@ -437,6 +438,8 @@ export default class Enemy extends Entity {
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
         this.stateMachine.setState(States.CHASE);
         this.scene.combatEngaged(true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '!', 1000, 'effect', true, true);
+        this.ping();
     };
 
     checkEnemyCombatEnter = () => {
@@ -450,6 +453,8 @@ export default class Enemy extends Entity {
         this.stateMachine.setState(States.CHASE); 
         if (this.scene.combat === false) this.scene.player.targetEngagement(this.enemyID); // player.inCombat
         this.scene.combatEngaged(true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '!', 1000, 'effect', true, true);
+        this.ping();
     };
 
     setEnemyColor = () => {
@@ -564,6 +569,8 @@ export default class Enemy extends Entity {
             collision.gameObjectB.inCombat = true;
             this.scene.combatEngaged(true);
         };
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '!', 1000, 'effect', true, true);
+        this.ping();
     };
 
     setSpecialCombat = (bool, mult = 1) => {
@@ -1212,7 +1219,6 @@ export default class Enemy extends Entity {
         if (this.isSuccessful(PLAYER.DURATIONS.ASTRAVE)) {
             this.evaluateCombatDistance();
         };
-        // this.combatChecker(this.isCasting);
     };
     onAstraveExit = () => {
         if (this.castingSuccess === true && this.checkPlayerResist() === true) {
@@ -1247,7 +1253,6 @@ export default class Enemy extends Entity {
         if (this.isSuccessful(PLAYER.DURATIONS.CONFUSE)) {
             this.evaluateCombatDistance();
         };
-        // this.combatChecker(this.isCasting);
     };
     onConfuseExit = () => {
         if (this.castingSuccess === true && this.checkPlayerResist() === true) {
@@ -1285,7 +1290,6 @@ export default class Enemy extends Entity {
         if (this.isSuccessful(PLAYER.DURATIONS.FEAR)) {
             this.evaluateCombatDistance();
         };
-        // this.combatChecker(this.isCasting);
     };
     onFearingExit = () => {
         if (this.castingSuccess === true && this.checkPlayerResist() === true) {
@@ -1306,7 +1310,6 @@ export default class Enemy extends Entity {
         if (this.isSuccessful(PLAYER.DURATIONS.MAIERETH)) {
             this.evaluateCombatDistance();
         };
-        // this.combatChecker(this.isCasting);
     };
     onHealingExit = () => {
         if (this.castingSuccess === true) {
@@ -1326,7 +1329,6 @@ export default class Enemy extends Entity {
         if (this.isSuccessful(PLAYER.DURATIONS.ILIRECH)) {
             this.evaluateCombatDistance();
         };
-        // this.combatChecker(this.isCasting);
     };
     onIlirechExit = () => {
         if (this.castingSuccess === true && this.checkPlayerResist() === true) {
@@ -2335,12 +2337,6 @@ export default class Enemy extends Entity {
                 if (iteration === 4) {
                     iteration = 0;
                     this.isFeared = false;
-                    // this.count.feared -= 1;
-                    // if (this.count.feared <= 0) {
-                    //     this.count.feared = 0;
-                    // } else {
-                    //     this.stateMachine.setState(States.FEARED);
-                    // };
                 } else {   
                     randomDirection();
                     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, fears[Math.floor(Math.random() * 5)], 1000, 'effect');
@@ -2508,7 +2504,6 @@ export default class Enemy extends Entity {
                         };
                     } else if (this.health < this.ascean.health.max) {
                         this.health = this.health + (this.ascean.health.max * 0.15);
-                        // this.healthbar.setValue(this.health);
                         this.updateHealthBar(this.health);
                     };
                 };
@@ -2527,7 +2522,6 @@ export default class Enemy extends Entity {
         this.evaluateCombatDistance();
         this.clearAnimations();
         this.enemyAnimation();
-        // this.anims.play('player_running', true);
         this.setTint(ENEMY_COLOR);
         this.spriteWeapon.setVisible(true);
         if (this.polymorphTimer) {
@@ -2558,24 +2552,6 @@ export default class Enemy extends Entity {
             };
         }, undefined, this);
 
-        // this.stunTimer = this.scene.time.addEvent({
-        //     delay: this.stunDuration,
-        //     callback: () => {
-        //         this.count.stunned -= 1;
-        //         if (this.count.stunned <= 0) {
-        //             this.count.stunned = 0;
-        //             this.isStunned = false;
-        //             if (this.stunTimer) {
-        //                 this.stunTimer.destroy();
-        //                 this.stunTimer = undefined;
-        //             };
-        //         } else {
-        //             this.stateMachine.setState(States.COMBAT);
-        //         };
-        //     },
-        //     callbackScope: this,
-        //     loop: false,
-        // });
     };
     onStunUpdate = (_dt) => {
         this.setVelocity(0);

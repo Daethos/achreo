@@ -882,8 +882,8 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
     const weapTwoClearance: number = Math.floor(Math.random() * 101);
     let weapOneCrit: number = weapons[0].criticalChance;
     let weapTwoCrit: number = weapons[1].criticalChance;
-    weapOneCrit -= combat?.playerAttributes?.kyosirMod as number;
-    weapTwoCrit -= combat?.playerAttributes?.kyosirMod as number;
+    weapOneCrit -= (combat?.playerAttributes?.kyosirMod as number / 2);
+    weapTwoCrit -= (combat?.playerAttributes?.kyosirMod as number / 2);
 
     const resultOne = criticalCompiler(false, combat.computer as Ascean, weapOneCrit, weapOneClearance, weapons[0], computerWeaponOnePhysicalDamage, computerWeaponOneMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
     combat.computerGlancingBlow = resultOne.glancingBlow;
@@ -1102,7 +1102,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     };
     const criticalClearance = Math.floor(Math.random() * 101);
     let criticalChance = combat.computerWeapons[0].criticalChance;
-    criticalChance -= combat.playerAttributes?.kyosirMod as number;
+    criticalChance -= (combat.playerAttributes?.kyosirMod as number / 2);
     if (combat.weather === 'Astralands') criticalChance += 10;
     const criticalResult = criticalCompiler(false, combat.computer as Ascean, criticalChance, criticalClearance, combat.computerWeapons[0], computerPhysicalDamage, computerMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
     combat.computerGlancingBlow = criticalResult.glancingBlow;
@@ -1183,8 +1183,8 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: nu
     const weapTwoClearance = Math.floor(Math.random() * 10100) / 100;
     let weapOneCrit = weapons[0]?.criticalChance as number
     let weapTwoCrit = weapons[1]?.criticalChance as number;
-    weapOneCrit -= combat.computerAttributes?.kyosirMod as number;
-    weapTwoCrit -= combat.computerAttributes?.kyosirMod as number;
+    weapOneCrit -= (combat.computerAttributes?.kyosirMod as number / 2);
+    weapTwoCrit -= (combat.computerAttributes?.kyosirMod as number / 2);
     const resultOne = criticalCompiler(true, combat.player as Ascean, weapOneCrit, weapOneClearance, weapons[0] as Equipment, playerWeaponOnePhysicalDamage as number, playerWeaponOneMagicalDamage as number, combat.weather, combat.glancingBlow, combat.criticalSuccess, combat.isSeering);
     combat.criticalSuccess = resultOne.criticalSuccess;
     combat.glancingBlow = resultOne.glancingBlow;
@@ -1472,7 +1472,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     };
     const criticalClearance = Math.floor(Math.random() * 10100) / 100;
     let criticalChance = combat.weapons[0]?.criticalChance as number;
-    criticalChance -= combat.computerAttributes?.kyosirMod as number;
+    criticalChance -= (combat.computerAttributes?.kyosirMod as number / 2);
     const criticalResult = criticalCompiler(true, combat.player as Ascean, criticalChance, criticalClearance, combat.weapons[0] as Equipment, playerPhysicalDamage, playerMagicalDamage, combat.weather, combat.glancingBlow, combat.criticalSuccess, combat.isSeering);
     combat.criticalSuccess = criticalResult.criticalSuccess;
     combat.glancingBlow = criticalResult.glancingBlow;
@@ -1526,7 +1526,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
 
 function playerRollCompiler(combat: Combat, playerAction: string, computerAction: string): Combat { 
     let playerRoll = combat.weapons[0]?.roll as number;
-    let rollCatch = Math.floor(Math.random() * 101) + (combat.computerAttributes?.kyosirMod as number);
+    let rollCatch = Math.floor(Math.random() * 101) + (combat.computerAttributes?.kyosirMod as number / 2);
     if (combat.weather === 'Alluring Isles') {
         playerRoll -= 10;
     };
@@ -1553,7 +1553,7 @@ function playerRollCompiler(combat: Combat, playerAction: string, computerAction
 function doubleRollCompiler(combat: Combat, playerInitiative: number, computerInitiative: number, playerAction: string, computerAction: string): Combat {
     let playerRoll: number = combat.weapons[0]?.roll as number;
     let computerRoll: number = combat.computerWeapons[0].roll;
-    let rollCatch: number = Math.floor(Math.random() * 101) + (combat.computerAttributes?.kyosirMod as number);
+    let rollCatch: number = Math.floor(Math.random() * 101) + (combat.computerAttributes?.kyosirMod as number / 2);
     if (combat.weather === 'Alluring Isles') {
         playerRoll -= 10;
         computerRoll -= 10;

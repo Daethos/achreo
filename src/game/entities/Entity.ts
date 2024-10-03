@@ -385,8 +385,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     knockback(id: string) {
         const enemy = this.scene.getEnemy(id);
         if (enemy === undefined) return;
-        const x = this.x > enemy.x ? -0.25 : 0.25;
-        const y = this.y > enemy.y ? -0.25 : 0.25;
+        const x = this.x > enemy.x ? -0.5 : 0.5;
+        const y = this.y > enemy.y ? -0.5 : 0.5;
         this.knockbackDirection = { x, y };
         const accelerationFrames = 10; 
         const accelerationStep = this.knockbackForce / accelerationFrames;

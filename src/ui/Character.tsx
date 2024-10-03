@@ -265,6 +265,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                     </div>
                 </div>;
             case CHARACTERS.STATISTICS:
+                console.log(statistics(), 'Stats')
                 let highestDeity = Object.entries(statistics().combat?.deities).reduce((a, b) => a?.[1] > b?.[1] ? a : b) || combat().weapons?.[0]?.influences?.[0]; // || combat().weapons?.[0]?.influences?.[0]
                 const highestPrayer = Object.entries(statistics().combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
                 let highestMastery = Object.entries(statistics().mastery).reduce((a, b) => a[1] > b[1] ? a : b);

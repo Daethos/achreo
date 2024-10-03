@@ -17,9 +17,9 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
         super (scene.matter.world, enemy.body.position.x - 16, enemy.body.position.y + 16, texture);
         this.scene = scene;
         this.scene.plugins.get('rexGlowFilterPipeline').add(this, {
-            outerStrength: 2,
+            outerStrength: 3,
             glowColor: this.scene.player.setColor(this.scene.player.ascean?.mastery),
-            quality: 0.25,
+            quality: 0.5,
             knockout: false,
         });
         this.scene.add.existing(this);

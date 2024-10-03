@@ -1,5 +1,5 @@
 import { createSignal, createEffect, Accessor, Setter } from 'solid-js';
-import createStamina from './Stamina';
+import createStamina from '../utility/Stamina';
 import Settings from '../models/settings';
 export default function StaminaBubble({ stamina, show, setShow, settings }: {stamina:Accessor<number>; show:Accessor<boolean>; setShow:Setter<boolean>; settings:Accessor<Settings>;}) {
     const { staminaPercentage, usedStamina } = createStamina(stamina);

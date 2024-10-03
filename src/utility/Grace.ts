@@ -1,8 +1,8 @@
 import { Accessor, createSignal, onCleanup, onMount } from "solid-js";
 import { EventBus } from "../game/EventBus";
 const GRACE = { TICK: 100, UPDATE: 750 };
-export default function createGrace(grc: Accessor<number>) {
-    const [grace, setGrace] = createSignal(grc());
+export default function createGrace(startGrace: Accessor<number>) {
+    const [grace, setGrace] = createSignal(startGrace());
     const [gracePercentage, setGracePercentage] = createSignal(0);
     const [usedGrace, setUsedGrace] = createSignal(0);
     var interval: any | undefined = undefined;

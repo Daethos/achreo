@@ -497,12 +497,12 @@ export default class PlayerMachine {
 
     onConsumeEnter = () => {
         if (this.scene.state.playerEffects.length === 0) return;
-        this.player.isConsuming = true;
+        this.player.isPraying = true;
         this.scene.sound.play('consume', { volume: this.scene.settings.volume });
         this.player.setTimeEvent('consumeCooldown', PLAYER.COOLDOWNS.SHORT);
     };
     onConsumeUpdate = (_dt: number) => {
-        this.player.combatChecker(this.player.isConsuming);
+        this.player.combatChecker(this.player.isPraying);
     };
     onConsumeExit = () => {
         if (this.scene.state.playerEffects.length === 0) return;

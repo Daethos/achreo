@@ -32,10 +32,10 @@ const GLOW_INTENSITY = 0.25;
 const SPEED = 1.5
 export const SWING_TIME = { 'One Hand': 1250, 'Two Hand': 1500 }; // 750, 1250 [old]
 export const ENEMY_SWING_TIME = { 'One Hand': 1000, 'Two Hand': 1250 }; // 750, 1250 [old]
-const DAMAGE_TYPES = { 
-    'magic': ['earth', 'fire', 'frost', 'lightning', 'righteous', 'spooky', 'sorcery', 'wild', 'wind'], 
-    'physical': ['blunt', 'pierce', 'slash'] 
-};
+const DAMAGE_TYPES = { 'magic': ['earth', 'fire', 'frost', 'lightning', 'righteous', 'spooky', 'sorcery', 'wild', 'wind'], 'physical': ['blunt', 'pierce', 'slash'] };
+const ACCELERATION_FRAMES = 10; 
+const DAMPENING_FACTOR = 0.9; 
+const KNOCKBACK_DURATION = 128;
 export default class Entity extends Phaser.Physics.Matter.Sprite {
     declare scene: Game | Underground;
     ascean: Ascean;
@@ -142,7 +142,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     targets: any[] = [];
     touching: any[] = [];
     rushedEnemies: any[] = [];
-    knockbackForce: number = 0.1;
+    knockbackForce: number = 0.25;
     knockbackDirection = { x: 0, y: 0 };
     knockbackDuration: number = 250;
     spriteShield: Phaser.GameObjects.Sprite;
@@ -385,24 +385,21 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     knockback(id: string) {
         const enemy = this.scene.getEnemy(id);
         if (enemy === undefined) return;
-        const x = this.x > enemy.x ? -0.5 : 0.5;
-        const y = this.y > enemy.y ? -0.5 : 0.5;
+        const x = this.x > this.attackedTarget?.x ? -0.5 : 0.5;
+        const y = this.y > this.attackedTarget?.y ? -0.5 : 0.5;
         this.knockbackDirection = { x, y };
-        const accelerationFrames = 10; 
-        const accelerationStep = this.knockbackForce / accelerationFrames;
-        const dampeningFactor = 0.9; 
-        const knockbackDuration = 128;
+        const accelerationStep = this.knockbackForce / ACCELERATION_FRAMES;
         let currentForce = 0; 
         const knockbackLoop = (timestamp: number) => {
             if (!startTime) startTime = timestamp;
             const elapsed = timestamp - startTime;
-            if (elapsed >= knockbackDuration)  return;
+            if (elapsed >= KNOCKBACK_DURATION)  return;
             if (currentForce < this.knockbackForce) currentForce += accelerationStep;
             const forceX = (this.knockbackDirection.x * currentForce);
             const forceY = (this.knockbackDirection.y * currentForce);
             const force = new Phaser.Math.Vector2(forceX, forceY);
-            if (enemy.moving()) enemy.applyForce(force);
-            currentForce *= dampeningFactor;
+            if (this.attackedTarget?.moving()) this.attackedTarget?.applyForce(force);
+            currentForce *= DAMPENING_FACTOR;
             requestAnimationFrame(knockbackLoop);
         };
         let startTime: any = undefined;

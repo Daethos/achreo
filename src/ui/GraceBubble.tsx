@@ -1,5 +1,5 @@
 import { createSignal, createEffect, Accessor, Setter } from 'solid-js';
-import createGrace from './Grace';
+import createGrace from '../utility/Grace';
 import Settings from '../models/settings';
 export default function GraceBubble({ grace, show, setShow, settings }: {grace:Accessor<number>; show:Accessor<boolean>; setShow:Setter<boolean>; settings: Accessor<Settings>;}) {
     const { gracePercentage, usedGrace } = createGrace(grace);

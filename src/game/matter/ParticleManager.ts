@@ -12,6 +12,21 @@ import Entity from '../entities/Entity';
 const { Bodies } = Phaser.Physics.Matter.Matter;
 const MAGIC = ['earth','fire','frost','lightning','righteous','sorcery','spooky','wild','wind'];
 
+function angleImpact(target: Phaser.Math.Vector2): number {
+    let angle = -90;
+    if (target.x > 0 && target.y < 0) { // Up-Right
+        angle += 90 * target.y;
+    } else if (target.x < 0 && target.y < 0) { // Up-Left
+        angle -= 90 * target.y;
+    } else if (target.x > 0 && target.y > 0) { // Down-Right
+        angle += 90 * target.y;
+    } else if (target.x < 0 && target.y > 0) { // Down-Left
+        angle -= 90 * target.y;
+    };
+    if (target.x > 0) angle += 180;
+    return angle;
+};
+
 function angleTarget(target: Phaser.Math.Vector2): number {
     let angle = 0;
     if (target.x > 0 && target.y < 0) { // Up-Right
@@ -25,7 +40,6 @@ function angleTarget(target: Phaser.Math.Vector2): number {
     };
     if (target.x > 0) angle += 180;
     return angle;
-    
 };
 
 export class Particle {
@@ -207,7 +221,7 @@ export default class ParticleManager extends Phaser.Scene {
     createImpacts(scene: Game | Underground) {
         let count = 0, collection = [];
         while (count < 10) {
-            const impact = scene.add.sprite(0, 0, 'impact').setActive(false).setDepth(9).setOrigin(0.5).setScale(0.25); // Add it to the scene
+            const impact = scene.add.sprite(0, 0, 'impact').setActive(false).setDepth(9).setOrigin(0.5).setScale(0.25).setVisible(false); // Add it to the scene
             collection.push(impact);
             count++;
         };
@@ -221,6 +235,8 @@ export default class ParticleManager extends Phaser.Scene {
             impact.visible = true;
             impact.x = particle.effect.x;
             impact.y = particle.effect.y;
+            impact.angle = 0;
+            impact.angle = angleImpact(new Phaser.Math.Vector2(impact.x, impact.y));
             impact.play('impact', true).once('animationcomplete', () => {
                 impact.setActive(false).setVisible(false);
             });
@@ -256,6 +272,26 @@ export default class ParticleManager extends Phaser.Scene {
             particle = new Particle(this.context, action, key, player, special); 
             this.particles.push(particle);
         };
+
+        // const y = particle.target.y * particle.velocity * TIME[particle.action as keyof typeof TIME] / 16 + particle.effect.y;
+        // console.log(y, particle.effect.y, 'Y and Effect Y')
+        // // Tween Y-position with yoyo for the arc effect
+        // this.context.tweens.add({
+        //     targets: particle.effect,
+        //     y: y - 25, // Move upwards to simulate "depth"
+        //     duration: TIME[particle.action as keyof typeof TIME] / 2, // Duration for yoyo effect
+        //     ease: 'Quad.easeOut', // Easing for smooth arc
+        //     yoyo: true, // Only yoyo the Y movement
+        // });
+
+        // Tween for scale and alpha (without yoyo)
+        this.context.tweens.add({
+            targets: particle.effect,
+            scale: particle.effect.scale * 0.625, // Scale down to simulate depth
+            alpha: 0.5, // Fade out slightly
+            duration: TIME[particle.action as keyof typeof TIME], // Same or different duration based on your preference
+            ease: 'Quad.easeOut', // Easing for smooth effect
+        });
         return particle;
     };
 

@@ -1158,7 +1158,7 @@ export default class Player extends Entity {
                 }});
             };
         };
-        this.knockback(this.attackedTarget.enemyID);
+        // this.knockback(this.attackedTarget.enemyID);
         if (this.isStealthing) {
             this.scene.combatManager.paralyze(this.attackedTarget.enemyID);
             this.isStealthing = false;
@@ -1286,23 +1286,23 @@ export default class Player extends Entity {
     };
 
     handleAnimations = () => {
-        if (this.isHurt) {
-            this.anims.play('player_hurt', true).on('animationcomplete', () => this.isHurt = false);  
-        } else if (this.isPolymorphed) {
-            this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
-        } else if (this.isConfused || this.isFeared) {
-            if (this.moving()) {
-                if (!Math.abs(this.velocity?.x as number)) {
-                    if (this.velocity?.y as number > 0) {
-                        this.anims.play('run_down', true);
+        if (this.isPolymorphed || this.isConfused || this.isFeared) {
+            if (this.isPolymorphed) {
+                this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
+            } else {
+                if (this.moving()) {
+                    if (!Math.abs(this.velocity?.x as number)) {
+                        if (this.velocity?.y as number > 0) {
+                            this.anims.play('run_down', true);
+                        } else {
+                            this.anims.play('run_up', true);
+                        };
                     } else {
-                        this.anims.play('run_up', true);
+                        this.anims.play('player_running', true);
                     };
                 } else {
-                    this.anims.play('player_running', true);
+                    this.anims.play('player_idle', true);
                 };
-            } else {
-                this.anims.play('player_idle', true);
             };
         } else if (this.isParrying) {
             this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isParrying = false); 
@@ -1345,8 +1345,6 @@ export default class Player extends Entity {
                 };
             };
             if (!this.isMoving) this.isMoving = true;
-        } else if (this.isConsuming) { 
-            this.anims.play('player_health', true).on('animationcomplete', () => this.isConsuming = false);
         } else if (this.isCasting) { 
             walk(this.scene);
             this.anims.play('player_health', true);
@@ -1441,7 +1439,6 @@ export default class Player extends Entity {
             return;
         };
         if (this.scene.combat === true && (!this.currentTarget || !this.currentTarget.inCombat)) this.findEnemy(); // this.inCombat === true && state.combatEngaged
-        // if (this.inCombat && !this.healthbar.visible) this.healthbar.setVisible(true);
         if (this.healthbar) this.healthbar.update(this);
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this); 
@@ -1528,7 +1525,6 @@ export default class Player extends Entity {
         if (this.isClimbing || this.inWater) speed *= 0.65;
         this.playerVelocity.limit(speed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
-
     }; 
 
     update() {

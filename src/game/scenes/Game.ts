@@ -30,28 +30,26 @@ import ParticleManager from '../matter/ParticleManager';
 const dimensions = useResizeListener();
 export class Game extends Scene {
     animatedTiles: any[];
-    offsetX: number;
-    offsetY: number;
+    offsetX: number = 0;
+    offsetY: number = 0;
     gameState: GameState | undefined;
     ascean: Ascean  | undefined;
     state: Combat = initCombat;
     reputation: Reputation = initReputation;
     settings: Settings = initSettings;
-    player: any;
+    player: Player;
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
-    enemies: any = [];
-    focus: any;
-    target: any;
-    targetTarget: any;
-    playerLight: any;
-    npcs: any = [];
+    enemies: Enemy[] = [];
+    npcs: NPC[] = [];
     lootDrops: LootDrop[] = [];
+    target: Phaser.GameObjects.Sprite;
+    playerLight: Phaser.GameObjects.PointLight;
     combat: boolean = false;
     stealth: boolean = false;
     combatTime: number = 0;
     combatTimer: Time.TimerEvent;
-    tweenManager: any;
+    tweenManager: any = {};
     actionBar: ActionButtons;
     particleManager: ParticleManager;
     map: Tilemaps.Tilemap;
@@ -70,18 +68,18 @@ export class Game extends Scene {
     joystick: Joystick;
     rightJoystick: Joystick;
     joystickKeys: any;
-    volumeEvent: () => void;
     smallHud: SmallHud;
     combatManager: CombatManager;
-    baseLayer: any;
-    climbingLayer: any;
-    flowers: any;
-    plants: any;
+    baseLayer: Phaser.Tilemaps.TilemapLayer;
+    climbingLayer: Phaser.Tilemaps.TilemapLayer;
+    flowers: Phaser.Tilemaps.TilemapLayer;
+    plants: Phaser.Tilemaps.TilemapLayer;
     logger!: Logger;
     platform: MovingPlatform;
     platform2: MovingPlatform;
     matterCollision: any;
     glowFilter: any;
+    targetTarget: Enemy;
 
     constructor () {
         super('Game');
@@ -99,9 +97,6 @@ export class Game extends Scene {
         this.getGame();
         this.reputation = this.getReputation();
         this.settings = this.getSettings();
-        this.offsetX = 0;
-        this.offsetY = 0;
-        this.tweenManager = {};
         this.actionBar = new ActionButtons(this);
         const map = this.make.tilemap({ key: 'ascean_test' });
         this.map = map;
@@ -119,12 +114,12 @@ export class Game extends Scene {
         let layerT = map.createLayer('Tile Layer - Tree Trunks', decorations as Tilemaps.Tileset, 0, 0);
         let layerB = map.createLayer('Tile Layer - Camp Base', camps as Tilemaps.Tileset, 0, 0);
         let layer6 = map.createLayer('Tile Layer 6 - Camps', camps as Tilemaps.Tileset, 0, 0);
-        this.baseLayer = layer0;
-        this.climbingLayer = layer1;
+        this.baseLayer = layer0 as Phaser.Tilemaps.TilemapLayer;
+        this.climbingLayer = layer1 as Phaser.Tilemaps.TilemapLayer;
         const layer2 =  map.createLayer('Tile Layer 2 - Flowers', decorations as Tilemaps.Tileset, 0, 0);
         const layer3 =  map.createLayer('Tile Layer 3 - Plants', decorations as Tilemaps.Tileset, 0, 0);
-        this.flowers = layer2;
-        this.plants = layer3;
+        this.flowers = layer2 as Phaser.Tilemaps.TilemapLayer;
+        this.plants = layer3 as Phaser.Tilemaps.TilemapLayer;
         map.createLayer('Tile Layer - Campfire', campfire as Tilemaps.Tileset, 0, 0);
         map.createLayer('Tile Layer - Lights', light as Tilemaps.Tileset, 0, 0);
         [layer0, layer1, layerB, layerC, layerT, layer4, layer5, layer6].forEach((layer, index) => {
@@ -821,9 +816,9 @@ export class Game extends Scene {
         } else {
             this.offsetX = Math.max(this.offsetX - 3, -90);
         };
-        if (this.player.velocity.y > 0) {
+        if (this.player.velocity?.y as number > 0) {
             this.offsetY = Math.max(this.offsetY - 2.5, -60);
-        } else if (this.player.velocity.y < 0) {
+        } else if (this.player.velocity?.y as number < 0) {
             this.offsetY = Math.min(60, this.offsetY + 2.5);
         };
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);

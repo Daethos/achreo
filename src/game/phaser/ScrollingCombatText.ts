@@ -13,7 +13,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
             fontSize: critical ? '36px' : '24px',
             stroke: 'black',
             strokeThickness: 2 
-        }).setOrigin(0);
+        });
         this.visible = true;
         this.add(this.text);
         this.setDepth(100);
@@ -52,9 +52,9 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     public update(player: any) {
         this.timerTime += 1;
         if (this.constant === true) { 
-            this.setPosition(player.x - 10, player.y - 75);
+            this.setPosition(player.x - (this.text.width / 2), player.y - 70);
          } else { 
-            this.setPosition(player.x - 10, player.y - 25 - this.timerTime);
+            this.setPosition(player.x - (this.text.width / 2), player.y - 25 - this.timerTime);
         }; 
     };
 };

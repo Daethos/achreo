@@ -3,7 +3,7 @@ import { CharacterSheet } from "../utility/ascean";
 
 export default function Sex({ newAscean, setNewAscean }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet> }) {
     const sexes = [{name: 'Man', description: 'Men'}, {name: 'Woman', description: 'Women'}];
-    return <div class='center creature-heading' style={{ 'margin-bottom': '3%' }}>
+    return <div class='center creature-heading fadeIn' style={{ 'margin-bottom': '3%' }}>
         <For each={sexes}>
             {(sex) => (
                 <button class='highlight' onClick={() => setNewAscean({ ...newAscean(), sex: sex.name })} style={{ color: newAscean().sex === sex.name ? 'gold' : '#fdf6d8' }}>{sex.name}</button>

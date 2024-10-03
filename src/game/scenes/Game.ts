@@ -92,8 +92,8 @@ export class Game extends Scene {
     create () {
         this.cameras.main.fadeIn()
         this.gameEvent();
-        this.getAscean();
         this.state = this.getCombat();
+        this.getAscean();
         this.getGame();
         this.reputation = this.getReputation();
         this.settings = this.getSettings();
@@ -145,7 +145,7 @@ export class Game extends Scene {
             this.enemies.push(new Enemy({ scene: this, x: enemy.x, y: enemy.y, texture: 'player_actions', frame: 'player_idle_0' })));
         map?.getObjectLayer('Npcs')?.objects.forEach((npc: any) => 
             this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' })));
-
+        
         let camera = this.cameras.main;
         camera.zoom = this.settings.positions?.camera?.zoom || 0.8; // 0.8 
         camera.startFollow(this.player, false, 0.1, 0.1);

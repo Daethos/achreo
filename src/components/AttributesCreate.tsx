@@ -24,7 +24,7 @@ export default function AttributesCreate({ newAscean, setNewAscean, prevMastery,
         setNewAscean({ ...newAscean(), ...LOADOUT[mastery as keyof typeof LOADOUT] });
         setPool((newAscean().strength + newAscean().agility + newAscean().constitution + newAscean().achre + newAscean().caeren + newAscean().kyosir) - 48);    
     });
-    return <div class='center creature-heading' style={{ 'margin-bottom': '3%', width: '100%' }}>
+    return <div class='center creature-heading fadeIn' style={{ 'margin-bottom': '3%', width: '100%' }}>
         <h1 class='gold' style={{ 'margin-bottom' : '5%' }}>Attribute Pool: {pool()} / 25</h1>
         <For each={Attributes}>
             {(attribute) => (

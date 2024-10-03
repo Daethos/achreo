@@ -34,6 +34,47 @@
 .fade-in {opacity: 1; transition: opacity 2s ease-in;}
 .fade-out {opacity: 0; transition: opacity 2s ease-in;}
 .header {display: flex; justify-content: space-between; padding: 5; margin-bottom: 5; color: #fdf6d8; font-family: 'Cinzel-Regular'; font-size: 1.25em; border-bottom-color: #fdf6d8; border-bottom-width: 2;}
+
+.moisten {animation: moist 0.5s ease;} /* Keyframes for 'moist' and 'juicy' animations */
+/* Basic 'juice' effect */
+.juice {
+    animation: juicy 0.75s ease;
+    transition: transform 0.75s ease; /* Ensure smooth transitions */
+}
+.juice:hover, .juice:focus {
+    background-color: #27001d;
+    transform: scale(1.1); /* Focused/hovered element grows */
+    border-color: gold;
+    box-shadow:
+    inset #000 0 0 0 0.2em, 
+    inset gold 0 0 0 0.3em; 
+    /* animation: transform 0.5s ease; */
+}
+/* Shrink all other elements (both previous and next siblings) */
+.juice:not(:hover):not(:focus) {
+    transform: scale(1); /* Shrink all non-hovered/non-focused elements */
+    transition: transform 0.75s ease; /* Smooth transition for scaling */
+    border-color: #fdf6d8;
+    box-shadow:
+    inset #000 0 0 0 0.2em, 
+    inset #fdf6d8 0 0 0 0.3em; 
+}
+/* Shrink all siblings (both previous and next) */
+.menu:hover .juice:not(:hover),
+.menu:focus-within .juice:not(:focus) {
+    transform: scale(0.85); /* Shrink all non-hovered/non-focused elements */
+    transition: transform 0.5s ease; /* Smooth transition */
+}
+@keyframes moist {
+    0% { transform: scale(0.9); }
+    75% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+@keyframes juicy {
+    0% { transform: scale(0.85); }
+    100% { transform: scale(1); }
+}
+.fadeIn {animation: fadein 1s ease;}
 @keyframes visible {0% {opacity: 0;}100% {opacity: 1;}}
 @keyframes glowing {0% {opacity: 0;}50% {opacity: 1;}100% {opacity: 0;}}
 @keyframes invisible {0% {opacity: 1;}100% {opacity: 0;}}

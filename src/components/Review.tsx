@@ -20,7 +20,7 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
         return { color: newAscean()?.mastery === attr ? 'gold' : '#fdf6d8' };
     };
 
-    return <div class='center wrap'>
+    return <div class='center wrap fadeIn'>
         <div class='creature-heading'>
             <h1>Review Character</h1>
             <h2 class='p-3'>

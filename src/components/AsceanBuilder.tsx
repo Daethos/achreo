@@ -25,8 +25,6 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
     const font = { 'font-size': '1em', margin: '0' };
     const inline = { width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block' };
     function toggle(attr: string) {
-        const attribute = Attributes.find(a => a.name === attr);
-        console.log(attribute, 'Attribute?');
         setAttribute(Attributes.find(a => a.name === attr) as any);
         setAttrShow(!attrShow());
     };
@@ -97,20 +95,20 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
         {/* <<---------- LANDSCAPE ---------->> */}
             <Switch>
                 <Match when={menu().screen === SCREENS.PREMADE.KEY}>
-                    <div class='drop-25 left' style={{ height: '60%', width: '48%', display: 'inline-block', 'margin-top': '4%', overflow: 'scroll', 'scrollbar-width': 'none' }}>
+                    <div class='drop-25 left menu' style={{ height: '60%', width: '48%', display: 'inline-block', 'margin-top': '4%', overflow: 'scroll', 'scrollbar-width': 'none' }}>
                         <Suspense fallback={<Puff color="gold" />}>
                         <For each={STARTING_CHARACTERS}>
                             {(ascean, _index) => (
-                                <div class='border row' onClick={() => setNewAscean(ascean)} style={{ width: '70%', margin: '1em auto', 'border-color': masteryColor(ascean.mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(ascean.mastery)} 0 0 0 0.3em` }}>
-                                    <h4 class='highlight gold' style={{ 'font-family': 'Cinzel-Regular' }}>{ascean.name.split(' ')[0]}</h4>
+                                <div class='border row juice' onClick={() => setNewAscean(ascean)} style={{ width: '70%', margin: '1em auto', 'border-color': masteryColor(ascean.mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(ascean.mastery)} 0 0 0 0.3em` }}>
+                                    <h4 class='gold' style={{ 'font-family': 'Cinzel-Regular', width: '50%' }}>{ascean.name.split(' ')[0]}</h4>
                                     <img style={{...photo, 'border-color': masteryColor(ascean.mastery)}} src={`../assets/images/${ascean.origin}-${ascean.sex}.jpg`} /><br />
-                                    <h4 class='highlight gold' style={{ 'font-family': 'Cinzel-Regular' }}>{ascean.mastery.charAt(0).toUpperCase() + ascean.mastery.slice(1)}</h4>
+                                    <h4 class='gold' style={{ 'font-family': 'Cinzel-Regular', width: '50%' }}>{ascean.mastery.charAt(0).toUpperCase() + ascean.mastery.slice(1)}</h4>
                                 </div>
                             )}
                         </For>
                         </Suspense>
                     </div>
-                    <div class='drop-25 right' style={{ height: '82.5%', width: '48%', display: 'inline-block' }}>
+                    <div class='drop-25 right' style={{ height: '82.5%', width: '48%', display: 'inline-block', animation: 'fadein 1.5s ease' }}>
                         <Suspense fallback={<Puff color="gold" />}>
                         <div class='creature-heading center' style={{ width: '90%' }}>
                             <h1>{newAscean().name}</h1>
@@ -164,10 +162,8 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
                     <div class='drop-25 right' style={{ height: '82.5%', width: '48%', display: 'inline-block' }}>
                         <Suspense fallback={<Puff color="gold" />}>
                             <Origin newAscean={newAscean} setNewAscean={setNewAscean} />
-                        </Suspense>
-                        <br />
-                        <br />
-                        <Suspense fallback={<Puff color="gold" />}>
+                            <br />
+                            <br />
                             <Faith newAscean={newAscean} setNewAscean={setNewAscean} />
                         </Suspense>
                     </div>

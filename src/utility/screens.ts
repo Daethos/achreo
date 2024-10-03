@@ -78,6 +78,7 @@ export type Menu = {
     characterCreated: boolean,
     choosingCharacter: boolean,
     creatingCharacter: boolean,
+    loadingCharacter: boolean;
     gameRunning: boolean,
     loading: boolean,
     screen: string,
@@ -90,6 +91,7 @@ export const initMenu: Menu = {
     characterCreated: false, 
     choosingCharacter: false,   
     creatingCharacter: false,
+    loadingCharacter: false,
     gameRunning: false,
     loading: true, // true
     screen: SCREENS.CHARACTER.KEY,

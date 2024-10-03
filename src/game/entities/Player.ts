@@ -76,7 +76,9 @@ export default class Player extends Entity {
     constructor(data: any) {
         const { scene } = data;
         super({ ...data, name: 'player', ascean: scene.state.player, health: scene.state.player?.health?.current || scene.state.newPlayerHealth }); 
-        this.ascean = this.getAscean();
+        console.log(scene.state.player, 'Player?');
+        // this.ascean = this.getAscean();
+        this.ascean = scene.state.player;
         this.health = this.ascean.health.current;
         this.playerID = this.ascean._id;
         const weapon = this.ascean.weaponOne;
@@ -97,9 +99,9 @@ export default class Player extends Entity {
         this.spriteWeapon.setAngle(-195);
         this.currentDamageType = weapon?.damageType?.[0].toLowerCase() as string;
         this.currentTarget = undefined;
-        this.stamina = scene?.state?.playerAttributes?.stamina;
+        this.stamina = scene?.state?.playerAttributes?.stamina || 0;
         this.maxStamina = scene?.state?.playerAttributes?.stamina;
-        this.grace = scene?.state.playerAttributes?.grace;
+        this.grace = scene?.state.playerAttributes?.grace || 0;
         this.maxGrace = scene?.state?.playerAttributes?.grace;
         this.isMoving = false;
         this.currentShieldSprite = this.assetSprite(this.ascean?.shield);
@@ -160,8 +162,9 @@ export default class Player extends Entity {
     };   
 
     getAscean = () => {
-        EventBus.once('player-ascean-ready', (ascean: Ascean) => this.ascean = ascean);
+        EventBus.on('player-ascean-ready', (ascean: Ascean) => this.ascean = ascean);
         EventBus.emit('player-ascean');
+        console.log(this.ascean, 'Ascean?');
         return this.ascean;
     };
 

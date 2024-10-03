@@ -21,7 +21,7 @@ export default function Sex({ newAscean, setNewAscean }: { newAscean: Accessor<C
         { name: 'Leather-Cloth', description: 'Little physical value translates into greater mobility.' },
     ];
 
-    return <div class='center creature-heading' style={{ 'margin-bottom': '3%' }}>
+    return <div class='center creature-heading fadeIn' style={{ 'margin-bottom': '3%' }}>
         <h1 class='gold'>Armor</h1> 
         <For each={preferenceState}>
             {(preference) => (

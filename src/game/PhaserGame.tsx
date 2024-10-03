@@ -697,7 +697,7 @@ export default function PhaserGame (props: IProps) {
     };
 
     function enterGame(): void {
-        if (!props.ascean().tutorial.intro) EventBus.emit('intro');
+        if (!props.ascean()?.tutorial?.intro) EventBus.emit('intro');
         setLive(!live());
     };
 

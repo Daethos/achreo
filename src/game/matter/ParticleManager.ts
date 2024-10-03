@@ -221,6 +221,7 @@ export default class ParticleManager extends Phaser.Scene {
     createImpacts(scene: Game | Underground) {
         let count = 0, collection = [];
         while (count < 10) {
+            // const impact = new Phaser.Physics.Matter.Sprite(scene.matter.world, 0, 0, 'impact').setActive(false).setDepth(9).setOrigin(0.5).setScale(0.25).setVisible(false); // Add it to the scene
             const impact = scene.add.sprite(0, 0, 'impact').setActive(false).setDepth(9).setOrigin(0.5).setScale(0.25).setVisible(false); // Add it to the scene
             collection.push(impact);
             count++;
@@ -244,6 +245,7 @@ export default class ParticleManager extends Phaser.Scene {
     };
 
     despawnEffect(particle: Particle) {
+        // console.log(`%c End Y: ${particle.effect.y}`, 'color:red');
         particle.effect.setVelocity(0);
         particle.effect.stop();
         particle.effect.setActive(false);
@@ -273,8 +275,14 @@ export default class ParticleManager extends Phaser.Scene {
             this.particles.push(particle);
         };
 
-        // const y = particle.target.y * particle.velocity * TIME[particle.action as keyof typeof TIME] / 16 + particle.effect.y;
-        // console.log(y, particle.effect.y, 'Y and Effect Y')
+        // const y = 
+        //     particle.target.y // Start Direction 
+        //     * particle.velocity // Velocity Multiplier
+        //     * TIME[particle.action as keyof typeof TIME] // Duration of projectile 
+        //     / this.context.sys.game.loop.delta // Delta Estimate 
+        //     + particle.effect.y; // Current Y Coordinate
+        // console.log(`%c Estimated Y: ${y}, Starting Y: ${particle.effect.y} Delta: ${this.context.sys.game.loop.delta}`, 'color:gold');
+
         // // Tween Y-position with yoyo for the arc effect
         // this.context.tweens.add({
         //     targets: particle.effect,
@@ -287,7 +295,7 @@ export default class ParticleManager extends Phaser.Scene {
         // Tween for scale and alpha (without yoyo)
         this.context.tweens.add({
             targets: particle.effect,
-            scale: particle.effect.scale * 0.625, // Scale down to simulate depth
+            scale: particle.effect.scale * 0.675, // Scale down to simulate depth
             alpha: 0.5, // Fade out slightly
             duration: TIME[particle.action as keyof typeof TIME], // Same or different duration based on your preference
             ease: 'Quad.easeOut', // Easing for smooth effect

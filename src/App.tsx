@@ -15,6 +15,7 @@ import { Inventory, Reputation, initInventory, initReputation } from './utility/
 import { Puff } from 'solid-spinner';
 import type { IRefPhaserGame } from './game/PhaserGame';
 import Statistics, { initStatistics } from './utility/statistics';
+import LoadAscean from './components/LoadAscean';
 const AsceanBuilder = lazy(async () => await import('./components/AsceanBuilder'));
 const AsceanView = lazy(async () => await import('./components/AsceanView'));
 const MenuAscean = lazy(async () => await import('./components/MenuAscean'));
@@ -29,6 +30,7 @@ export default function App() {
     const [alert, setAlert] = createSignal({ header: '', body: '', delay: 0, key: '', arg: undefined });
     const [ascean, setAscean] = createSignal<Ascean>(undefined as unknown as Ascean);
     const [menu, setMenu] = createSignal<Menu>(initMenu);
+    const [loading, setLoading] = createSignal<boolean>(false);
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>(initCharacterSheet);
     const [inventory, setInventory] = createSignal<Inventory>(initInventory);
     const [reputation, setReputation] = createSignal<Reputation>(initReputation);
@@ -115,25 +117,33 @@ export default function App() {
             console.warn('Error fetching Ascean:', err);
         };
     };
+
+    async function setLoadAscean(id: string) {
+        load.play();
+        const asc: Ascean = menu()?.asceans?.find((asc: Ascean) => asc._id === id) as Ascean;
+        setAlert({ header: 'Loading Game', body: `Preparing ${asc.name}. Good luck.`, delay: 3000, key: '', arg: undefined });
+        setShow(true);
+        const full = { ...asc }; // , inventory: inv
+        setAscean(full);
+        setLoading(true);
+        await loadAscean(id);
+    };
     async function loadAscean(id: string): Promise<void> {
         try {
-            load.play();
-            setStartGame(true);
-            const asc: Ascean = menu()?.asceans?.find((asc: Ascean) => asc._id === id) as Ascean;
-            setAlert({ header: 'Loading Game', body: `Preparing ${asc.name}. Good luck.`, delay: 3000, key: '', arg: undefined });
-            setShow(true);
-            const inv = await getInventory(asc?._id as string);
-            const full = { ...asc }; // , inventory: inv
-            setAscean(full);
-            setInventory(inv);
-            setMenu({ ...menu(), choosingCharacter: false, gameRunning: true, playModal: false });
+            // setLoading(true);
+            const inv = await getInventory(id); // This will start lagging a tiny bit when the player's inventory is hueg
             const rep = await getReputation(id);
             const set = await getSettings(id);
             const stat = await getStatistics(id);
+            setInventory(inv);
             setReputation(rep);
             setSettings(set);
             setStatistics(stat);
             if (set.difficulty.tidbits === true) setTips(true);
+            
+            setMenu({ ...menu(), choosingCharacter: false, gameRunning: true, playModal: false });
+            setStartGame(true);
+            setLoading(false);
             EventBus.emit('preload-ascean', id);
         } catch (err: any) {
             console.warn('Error loading Ascean:', err);
@@ -404,10 +414,12 @@ export default function App() {
                 </>
             </Show>
             </div>
+        ) : loading() ? ( 
+            <LoadAscean ascean={ascean} />
         ) : menu()?.choosingCharacter ? ( // menu().asceans.length > 0
             <div id="overlay" class='superCenter'>
                 <Suspense fallback={<Puff color="gold"/>}>
-                    <MenuAscean menu={menu} viewAscean={viewAscean} loadAscean={loadAscean} />
+                    <MenuAscean menu={menu} viewAscean={viewAscean} loadAscean={setLoadAscean} />
                 </Suspense>
                 <Show when={menu()?.asceans?.length < 3}>
                     <button class='highlight cornerTR' onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: true });}} style={{ 'background-color': 'black' }}>Create Character</button>
@@ -431,7 +443,7 @@ export default function App() {
                     </div>
                 </Show> 
                 <button class="highlight cornerBL" style={{ 'background-color': 'black' }} onClick={() => setMenu({ ...menu(), deleteModal: true })}>Delete {ascean()?.name.split(' ')[0]}</button>
-                <button class='highlight cornerBR' style={{ 'background-color': 'black' }} onClick={() => loadAscean(ascean()?._id)}>Enter Game</button>
+                <button class='highlight cornerBR animate' style={{ 'background-color': 'black' }} onClick={() => setLoadAscean(ascean()?._id)}>Enter Game</button>
             </>
         ) : ( 
             <Suspense fallback={<Puff color="gold"/>}>
@@ -440,7 +452,7 @@ export default function App() {
             <div class='superCenter cinzel' style={{ width: '100%' }}>
                 <div class='center'>
                     <div class='title long-animate'>The Ascean</div>
-                    <button class='center highlight animate' style={{ 'font-size': '1.25em', 'font-family': 'Cinzel Regular' }} onClick={() => menuOption(menu().asceans.length > 0 ? 'choosingCharacter' : 'creatingCharacter')}>Enter Game</button>
+                    <button class='center highlight animate' style={{ 'font-size': '1.5em', 'font-family': 'Cinzel Regular' }} onClick={() => menuOption(menu().asceans.length > 0 ? 'choosingCharacter' : 'creatingCharacter')}>Enter Game</button>
                 </div>
             </div>
             </Show>

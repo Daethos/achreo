@@ -26,13 +26,10 @@ export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
         };
     };
     const shortName = (name: string): string => name.split(' ').slice(0, 2).join(' ');
-    return <div style={{ 
-            display: 'inline-flex', 'flex-direction': dimensions().ORIENTATION === 'landscape' ? 'row' : 'column', 
-            'align-items': 'center', 'gap': '1%', 'justify-content': 'center', 
-        }}>
+    return <div class='menu' style={{ display: 'inline-flex', 'flex-direction': dimensions().ORIENTATION === 'landscape' ? 'row' : 'column', 'align-items': 'center', 'gap': '1%', 'justify-content': 'center' }}>
         <For each={menu()?.asceans}> 
             {((asc, _idx) => (
-                <div class={dimensions().ORIENTATION === 'landscape' ? 'border center' : 'border center'} style={style(menu, dimensions)}>
+                <div class={dimensions().ORIENTATION === 'landscape' ? 'border center juice' : 'border center juice'} style={style(menu, dimensions)}>
                 <div class='center creature-heading' style={{ width: '100%', height: '100%' }}>
                     <h1>{shortName(asc.name)}</h1>
                     <h2>{shortDescription(asc.description)}</h2>

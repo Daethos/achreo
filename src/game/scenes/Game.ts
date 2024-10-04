@@ -95,10 +95,8 @@ export class Game extends Scene {
         this.cameras.main.fadeIn()
         this.gameEvent();
         this.state = this.registry.get("combat");
-        console.log(this.state, 'Combat and Game!');
         this.reputation = this.getReputation();
         this.settings = this.registry.get("settings");
-        console.log(this.settings, 'Settings!');
         this.actionBar = new ActionButtons(this);
         const map = this.make.tilemap({ key: 'ascean_test' });
         this.map = map;
@@ -574,11 +572,11 @@ export class Game extends Scene {
     };
     resetting = (): void => {
         this.sound.play('TV_Button_Press', { volume: this?.settings?.volume * 2 });
-        console.log('fading');
+        // console.log('fading');
         this.cameras.main.fadeOut();
         this.pause();
         this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_came: any, _effect: any) => {
-            console.log('fadeout complete');
+            // console.log('fadeout complete');
             EventBus.emit('reset-game');
         });
     };

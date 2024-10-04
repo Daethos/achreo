@@ -21,8 +21,6 @@ export default class Settings {
     public grace: string;
     public stamina: string;
     public control: string;
-    public creationLeft: string;
-    public creationRight: string;
     public desktop: boolean;
     public difficulty: { 
         aggression: number; 

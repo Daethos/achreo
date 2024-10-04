@@ -396,12 +396,12 @@ export const ACTION_ORIGIN = {
         svg: 'CONSUME'
     },
     QUOR: {
-        description: "Step into the land of hush and tendril, reentering this world at the foot of your foe.",
-        cooldown: `${PLAYER.COOLDOWNS.MODERATE / 1000}s`,
-        cost: `${PLAYER.STAMINA.PURSUIT} Grace`,
-        time: 'Instant',
-        special: 'Physical',
-        svg: 'CONSUME'
+        description: "Entwine your achre and caer through your weapon to release an immensely powerful projectile.",
+        cooldown: `${PLAYER.COOLDOWNS.SHORT / 1000}s`,
+        cost: `${PLAYER.STAMINA.QUOR} Grace`,
+        time: '3s',
+        special: 'Cast. Projectile',
+        svg: 'CAST'
     },
     RECALL: {
         description: "Say a little prayer to recall toward that sliver of tendril you left behind.",

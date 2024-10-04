@@ -2671,8 +2671,8 @@ export default class Enemy extends Entity {
             this.killParticle();
         } else {
             if (this.isCurrentTarget) {
-                if (this.scene.state.computerAction === '') return;
-                this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: this.scene.state.computerAction, id: this.enemyID } });
+                if (this.currentAction === '') return;
+                this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: this.currentAction, id: this.enemyID } });
             } else {
                 this.scene.combatManager.combatMachine.action({ type: 'Enemy', data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.currentAction, parry: this.parryAction, id: this.enemyID }}});
             };

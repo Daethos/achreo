@@ -614,6 +614,8 @@ export default function PhaserGame (props: IProps) {
         setStamina(stats.attributes.stamina as number);
         setGrace(stats.attributes.grace as number);
         setGame({ ...game(), inventory: props.inventory(), traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary, healthDisplay: props.settings().healthViews });
+        instance.game?.registry.set("ascean", stats.ascean);
+        instance.game?.registry.set("combat", combat());
         EventBus.emit('update-total-stamina', stats.attributes.stamina as number);    
         EventBus.emit('update-total-grace', stats.attributes.grace as number);    
     };

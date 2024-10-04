@@ -14,6 +14,8 @@ import { Puff } from 'solid-spinner';
 import Statistics from '../utility/statistics';
 import { validateHealth, validateLevel, validateMastery } from '../utility/validators';
 import { adjustTime } from './Timer';
+import { Store } from 'solid-js/store';
+import { IRefPhaserGame } from '../game/PhaserGame';
 const Character = lazy(async () => await import('./Character'));
 const CombatUI = lazy(async () => await import('./CombatUI'));
 const Deity = lazy(async () => await import('./Deity'));
@@ -23,7 +25,7 @@ const SmallHud = lazy(async () => await import('./SmallHud'));
 const TutorialOverlay = lazy(async () => await import('../utility/tutorial'));
 
 interface Props {
-    instance: any;
+    instance: Store<IRefPhaserGame>;
     ascean: Accessor<Ascean>;
     combat: Accessor<Combat>;
     game: Accessor<GameState>;
@@ -61,7 +63,10 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     });
     createEffect(() => EventBus.emit('combat', combat()));  
     createEffect(() => EventBus.emit('reputation', reputation()));
-    createEffect(() => EventBus.emit('settings', settings()));
+    createEffect(() => {
+        instance.game?.registry.set("settings", settings());
+        EventBus.emit('settings', settings());
+    });
     const sendEnemyData = () => EventBus.emit('get-enemy', combat().computer);
     const sendSettings = () => EventBus.emit('get-settings', settings);
     function initiateCombat(data: any, type: string) {
@@ -351,7 +356,8 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             } else if (affectsHealth === true) {
                 adjustTime(1000, res.combatEngaged, res.newPlayerHealth);
             };
-            screenShake(instance.game.scene.scenes[3]); // [250, 150, 250]
+            screenShake(instance.scene as Phaser.Scene); // [250, 150, 250]
+            // screenShake(instance.game?.scene.scenes[3] as Phaser.Scene); // [250, 150, 250]
         } catch (err: any) {
             console.warn(err, 'Error Initiating Combat');
         };

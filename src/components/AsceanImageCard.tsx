@@ -19,8 +19,8 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow }:
         };
     };
     const div = (eqp: Equipment) => {
-        return <div onClick={() => info(eqp)} style={item(eqp.rarity as string)}>
-            <img src={eqp.imgUrl} alt="item" style={image} />
+        return <div class='' onClick={() => info(eqp)} style={item(eqp.rarity as string)}>
+            <img src={eqp.imgUrl} alt="item" class='juiceNB' style={image} />
         </div>;
     };
     const image = { width: '100%', height: '100%' };
@@ -29,18 +29,18 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow }:
         setShow(!show());
     }; 
     return <div class='imageCardGrid' style={{ width: '80%', margin: 'auto' }}>
-        <div class='imageCardLeft'>
+        <div class='imageCardLeft menu'>
             {div(ascean().weaponOne)}
             {div(ascean().weaponTwo)}
             {div(ascean().weaponThree)}
             {div(ascean().shield)}
         </div>
-        <div class='imageCardMiddle'>
+        <div class='imageCardMiddle menu'>
             {div(ascean().helmet)}
             {div(ascean().chest)}
             {div(ascean().legs)}
         </div>
-        <div class='imageCardRight'>
+        <div class='imageCardRight menu'>
             {div(ascean().amulet)}
             {div(ascean().ringOne)}
             {div(ascean().ringTwo)}

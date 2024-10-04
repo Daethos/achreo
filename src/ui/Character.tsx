@@ -265,7 +265,6 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                     </div>
                 </div>;
             case CHARACTERS.STATISTICS:
-                console.log(statistics(), 'Stats')
                 let highestDeity = Object.entries(statistics().combat?.deities).reduce((a, b) => a?.[1] > b?.[1] ? a : b) || combat().weapons?.[0]?.influences?.[0]; // || combat().weapons?.[0]?.influences?.[0]
                 const highestPrayer = Object.entries(statistics().combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
                 let highestMastery = Object.entries(statistics().mastery).reduce((a, b) => a[1] > b[1] ? a : b);
@@ -427,10 +426,9 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
             return;
         };
         try {
-            console.log(`Upgrading ${highlighted().item?.name} of ${highlighted().item?.rarity} quality.`);
+            EventBus.emit('alert', { header: `Upgrading ${highlighted().item?.name}`, body: `You have upgraded several ${highlighted().item?.rarity} ${highlighted().item?.name} to one of ${GET_NEXT_RARITY[highlighted()?.item?.rarity as string as keyof typeof GET_NEXT_RARITY]} rarity.`});
             let match = JSON.parse(JSON.stringify(dragAndDropInventory()));
             match = match.filter((item: Equipment) => item && item.name === highlighted().item?.name && item?.rarity === highlighted().item?.rarity);
-            console.log(match, 'Match?');
             const data = {
                 asceanID: ascean()._id,
                 upgradeID: highlighted().item?._id,
@@ -446,7 +444,8 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
             setCanUpgrade(false);
             setInspectModalShow(false);
         } catch (err: any) {
-            console.warn(err, '<- Error upgrading item');
+            EventBus.emit('alert', { header: `ERROR: Upgrading ${highlighted().item?.name}`, body: `${err?.message}`});
+            EventBus.emit('special-combat-text', { playerSpecialDescription: `Warning: Upgrading ${highlighted().item?.name} \n ${err?.message}`});
         };
     };
 
@@ -458,8 +457,9 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                 setRingCompared(type);
             };
             setInspectModalShow(false);
-        } catch (err) {
-            console.warn(err, '<- This is the error in Inspecting Equipment');
+        } catch (err: any) {
+            EventBus.emit('alert', { header: `ERROR: Inspecting Equipment`, body: `${err?.message}`});
+            EventBus.emit('special-combat-text', { playerSpecialDescription: `Warning: Inspecting Equipment \n ${err?.message}`});
         };
     };
 
@@ -616,7 +616,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                                 <p class='animate' style={{ 'padding-left': '0.75em', 'padding-right': '0.75em' }}>Level++</p>
                             </button>
                         ) }
-                        <div class='gold' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5%', 'text-align': 'center' } : { margin: '5%', 'text-align': 'center' }}>
+                        <div class='gold' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5% auto 2.5%', 'text-align': 'center' } : { margin: '5% auto 2.5%', 'text-align': 'center' }}>
                             {combat()?.player?.name}
                         </div>
                         <Suspense fallback={<Puff color="gold"/>}>

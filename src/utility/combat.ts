@@ -12,6 +12,13 @@ export type CombatAttributes = {
     rawCaeren: number;
     rawKyosir: number;
 
+    rawConMod: number;
+    rawStrMod: number;
+    rawAgiMod: number;
+    rawAchMod: number;
+    rawCaerMod: number;
+    rawKyoMod: number;
+    
     totalConstitution: number;
     totalStrength: number;
     totalAgility: number;

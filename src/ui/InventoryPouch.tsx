@@ -69,7 +69,7 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
     return <div class='playerInventoryBag' style={{ 'grid-template-rows': 'repeat(7, 1fr)' }}> 
         <For each={dragAndDropInventory()}>{(item, index) => {
             if (item === undefined || item === null) return;
-            return <div onClick={() => doubleTap(item, index)} class='sortable' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5%' } : { margin: '2.5%' }}>
+            return <div onClick={() => doubleTap(item, index)} class='sortable juiceNB' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5%' } : { margin: '2.5%' }}>
                 <Inventory ascean={ascean} setRingCompared={setRingCompared} setWeaponCompared={setWeaponCompared} 
                     highlighted={highlighted} setHighlighted={setHighlighted} inventory={item} setInventoryType={setInventoryType} inventorySwap={inventorySwap}
                 />

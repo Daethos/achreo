@@ -9,13 +9,6 @@
     box-shadow:
     inset #000 0 0 0 0.2em, 
     inset #fdf6d8 0 0 0 0.3em; 
-    /* inset #d6cb83 0 0 0 1px, 
-    inset hsl(58, 44%, 67%) 0 0 0 1px,
-    inset #ffe68c 0 0 0 1px, 
-    inset #e4c248 0 0 0 1px,
-    inset #f9f6e5 0 0 0 1px, 
-    inset #f7efbf 0 0 0 1px; */
-    /* text-shadow: 1px 1px 1px #bfecf7; */
 }
 .compare-border {border: 0.1em solid #fdf6d8;border-left: 0.1em solid #fdf6d8;border-right: 0.1em solid #fdf6d8;padding:0.5%;}
 .borderless {border: none;}
@@ -35,34 +28,45 @@
 .fade-out {opacity: 0; transition: opacity 2s ease-in;}
 .header {display: flex; justify-content: space-between; padding: 5; margin-bottom: 5; color: #fdf6d8; font-family: 'Cinzel-Regular'; font-size: 1.25em; border-bottom-color: #fdf6d8; border-bottom-width: 2;}
 
-.moisten {animation: moist 0.5s ease;} /* Keyframes for 'moist' and 'juicy' animations */
-/* Basic 'juice' effect */
+.moisten {animation: moist 0.5s ease;}
 .juice {
     animation: juicy 0.75s ease;
     transition: transform 0.75s ease; /* Ensure smooth transitions */
 }
 .juice:hover, .juice:focus {
-    background-color: #27001d;
+    background: #27001d;
     transform: scale(1.1); /* Focused/hovered element grows */
     border-color: gold;
-    box-shadow:
-    inset #000 0 0 0 0.2em, 
-    inset gold 0 0 0 0.3em; 
-    /* animation: transform 0.5s ease; */
+    box-shadow: inset #000 0 0 0 0.2em, inset gold 0 0 0 0.3em; 
+    transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease;
 }
-/* Shrink all other elements (both previous and next siblings) */
 .juice:not(:hover):not(:focus) {
     transform: scale(1); /* Shrink all non-hovered/non-focused elements */
-    transition: transform 0.75s ease; /* Smooth transition for scaling */
+    transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease;
     border-color: #fdf6d8;
-    box-shadow:
-    inset #000 0 0 0 0.2em, 
-    inset #fdf6d8 0 0 0 0.3em; 
 }
-/* Shrink all siblings (both previous and next) */
 .menu:hover .juice:not(:hover),
 .menu:focus-within .juice:not(:focus) {
     transform: scale(0.85); /* Shrink all non-hovered/non-focused elements */
+    transition: transform 0.5s ease; /* Smooth transition */
+}
+
+.juiceNB {
+    animation: juicy 0.75s ease;
+    transition: transform 0.75s ease; /* Ensure smooth transitions */
+}
+.juiceNB:hover, .juiceNB:focus {
+    transform: scale(1.25); /* Focused/hovered element grows */
+    transition: transform 0.75s ease, background-color 0.75s ease;
+    filter: drop-shadow(0 0 2px #fdf6d8);
+}
+.juiceNB:not(:hover):not(:focus) {
+    transform: scale(1); /* Shrink all non-hovered/non-focused elements */
+    transition: transform 0.75s ease, background-color 0.75s ease;
+}
+.menu:hover .juiceNB:not(:hover),
+.menu:focus-within .juiceNB:not(:focus) {
+    transform: scale(0.8); /* Shrink all non-hovered/non-focused elements */
     transition: transform 0.5s ease; /* Smooth transition */
 }
 @keyframes moist {
@@ -72,6 +76,10 @@
 }
 @keyframes juicy {
     0% { transform: scale(0.85); }
+    100% { transform: scale(1); }
+}
+@keyframes juicyNB {
+    0% { transform: scale(0.8); }
     100% { transform: scale(1); }
 }
 .fadeIn {animation: fadein 1s ease;}
@@ -108,7 +116,7 @@
 .playerCombatUi {position: fixed;top: 0;left: 0;width: 50%;}
 .combatUiShield {position: absolute;top: 2.5vh;left: 42.25vw; align-items: center;justify-content: center;background-color: #000;max-height: 10vh;border-radius: 50% 50% 50% 50% / 12% 12% 88% 88%;transform: scale(1.2);}
 .combatUiWeapon {position: absolute;top: 2.5vh;left: 37vw;align-items: center;justify-content: center;border-radius: 50%;transform: scale(1.2);max-height: 10vh;}
-.healthbar {display: flex;position: absolute;margin-left: 15%;width: 70%;overflow: hidden;border: 0.1em solid #fdf6d8;border-radius: 0.5em;}
+.healthbar {display: flex;position: absolute;margin-left: 12.5%;width: 75%;overflow: hidden;border: 0.1em solid #fdf6d8;border-radius: 1em;}
 .healthbar > div {
     transition: width 0.5 ease;
 }

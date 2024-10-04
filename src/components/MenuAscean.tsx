@@ -12,10 +12,10 @@ export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
     const style = (m: Accessor<Menu>, d: Accessor<DIMS>) => {
         const length = m()?.asceans.length;
         return {
-            'height': length === 3 ?  '60vh' : '',
+            'height': length === 3 ?  '60%' : '',
             'padding-top': length === 3 ? '1%' : '',
             'padding-bottom': length === 3 ? '1%' : '',
-            'width': d().ORIENTATION === 'landscape' 
+            'width': d().ORIENTATION === 'landscape'
                 ? (length === 3 ? '32vw' : length === 2 ? '45vw' : '55vw') 
                 : length === 1 ? '100%' : '80vw',
             'margin-left': d()?.ORIENTATION === 'landscape' 
@@ -30,7 +30,7 @@ export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
         <For each={menu()?.asceans}> 
             {((asc, _idx) => (
                 <div class={dimensions().ORIENTATION === 'landscape' ? 'border center juice' : 'border center juice'} style={style(menu, dimensions)}>
-                <div class='center creature-heading' style={{ width: '100%', height: '100%' }}>
+                <div class='center creature-heading' style={{ width: '100%', height: '100%', margin: 'auto' }}>
                     <h1>{shortName(asc.name)}</h1>
                     <h2>{shortDescription(asc.description)}</h2>
                     <img src={`../assets/images/${asc.origin}-${asc.sex}.jpg`} id='origin-pic' style={{ transform: menu()?.asceans?.length === 3 ? 'scale(1.3)' : '', 'margin': menu()?.asceans?.length === 3 ? '7.5% auto' : '' }} />

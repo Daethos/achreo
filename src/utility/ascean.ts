@@ -535,7 +535,14 @@ const attributeCompiler = (ascean: Ascean,
     newAttributes.rawAchre =  Math.round(((ascean?.achre + (ascean?.origin === RACE.NOTHEO || ascean?.origin === RACE.FYERS || ascean?.origin === RACE.QUOREITE ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 1 : 0)) + (ascean?.sex === 'Man' ? 2 : 0)) * (ascean?.mastery === 'Achre' ? 1.15 : 1));
     newAttributes.rawCaeren =  Math.round(((ascean?.caeren + (ascean?.origin === RACE.NOTHOS || ascean?.origin === RACE.SEDYREAL ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 2 : 0)) + (ascean?.sex === 'Woman' ? 2 : 0)) * (ascean?.mastery === 'Caeren' ? 1.15 : 1));
     newAttributes.rawKyosir =  Math.round(((ascean?.kyosir + (ascean?.origin === "Fyers" || ascean?.origin === RACE.QUOREITE ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 1 : 0)) + (ascean?.sex === 'Woman' ? 2 : 0)) * (ascean.mastery === 'Kyosir' ? 1.15 : 1));
-
+    
+    newAttributes.rawConMod = (newAttributes.rawConstitution - 10) / 2;
+    newAttributes.rawStrMod = (newAttributes.rawStrength - 10) / 2;
+    newAttributes.rawAgiMod = (newAttributes.rawAgility - 10) / 2;
+    newAttributes.rawAchMod = (newAttributes.rawAchre - 10) / 2;
+    newAttributes.rawCaerMod = (newAttributes.rawCaeren - 10) / 2;
+    newAttributes.rawKyoMod = (newAttributes.rawKyosir - 10) / 2;
+    
     newAttributes.totalConstitution = newAttributes.rawConstitution + itemRarity.weaponCon + (newAttributes.rawConstitution > 50 ? itemRarity.weaponTwoCon : 0) + itemRarity.shieldCon + itemRarity.helmCon + itemRarity.chestCon + itemRarity.legsCon + itemRarity.ringOneCon + itemRarity.ringTwoCon + itemRarity.amuletCon + itemRarity.trinketCon;
     newAttributes.totalStrength = newAttributes.rawStrength + itemRarity.weaponStr + (newAttributes.rawStrength > 50 ? itemRarity.weaponTwoStr : 0) + itemRarity.shieldStr + itemRarity.helmStr + itemRarity.chestStr + itemRarity.legsStr + itemRarity.ringOneStr + itemRarity.ringTwoStr + itemRarity.amuletStr + itemRarity.trinketStr;
     newAttributes.totalAgility = newAttributes.rawAgility + itemRarity.weaponAgi + (newAttributes.rawAgility > 50 ? itemRarity.weaponTwoAgi : 0) + itemRarity.shieldAgi + itemRarity.helmAgi + itemRarity.chestAgi + itemRarity.legsAgi + itemRarity.ringOneAgi + itemRarity.ringTwoAgi + itemRarity.amuletAgi + itemRarity.trinketAgi;
@@ -566,8 +573,8 @@ const attributeCompiler = (ascean: Ascean,
 
     newAttributes.healthTotal = 50 + ((newAttributes.totalConstitution * ascean.level) + ((newAttributes.constitutionMod + Math.round((newAttributes.caerenMod + newAttributes.strengthMod) / 2)) * ascean.level));
     newAttributes.initiative = 10 + (newAttributes.agilityMod + newAttributes.achreMod);
-    newAttributes.stamina = 75 + (newAttributes.constitutionMod + newAttributes.strengthMod + newAttributes.agilityMod);
-    newAttributes.grace = 75 + (newAttributes.achreMod + newAttributes.caerenMod + newAttributes.kyosirMod); // Future Idea Maybe
+    newAttributes.stamina = 75 + (newAttributes.rawConMod + newAttributes.rawStrMod + newAttributes.rawAgiMod); // Use the raw and mod it (newAttributes.rawConstitution - 10) / 2
+    newAttributes.grace = 75 + (newAttributes.rawAchMod + newAttributes.rawCaerMod + newAttributes.rawKyoMod); // Use the raw and mod it
     newAttributes.stamina *= (ascean.origin === RACE.QUOREITE ? 1.1 : (ascean.origin === RACE.LIIVI || ascean.origin === RACE.NOTHEO) ? 1.05 : 1);
     newAttributes.grace *= (ascean.origin === RACE.FYERS ? 1.1 : (ascean.origin === RACE.LIIVI || ascean.origin === RACE.NOTHOS) ? 1.05 : 1);
     return newAttributes;

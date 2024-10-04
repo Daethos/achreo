@@ -1,6 +1,7 @@
-import { Combat } from "../../stores/combat";
 import * as Dispatcher from "./Dispatcher";
 import { EventBus } from "../EventBus";
+import { CombatManager } from "./CombatManager";
+import { Combat } from "../../stores/combat";
 
 type ActionHandler = (data: any) => void;
 interface Action {
@@ -33,20 +34,17 @@ const ACTIONS: { [key: string]: ActionHandler } = {
 };
 
 export default class CombatMachine {
-    private context: any;
+    private combat: Combat;
     private actionQueue: Action[];
     private clearQueue: string[];
     private inputQueue: KVI[];
 
-    constructor(context: any) { // dispatch: any
-        this.context = context;
+    constructor(manager: CombatManager) { // dispatch: any
+        this.combat = manager.context.state;
         this.actionQueue = [];
         this.clearQueue = [];
         this.inputQueue = [];
-        this.listener();
     };
-    public cleanUp = () => EventBus.off('combat', this.listener);
-    private listener = () => EventBus.on('combat', (e: Combat): Combat => (this.context = e));
     public process = (): void => {
         while (this.clearQueue.length > 0) {
             const clearId = this.clearQueue.shift()!;
@@ -55,7 +53,7 @@ export default class CombatMachine {
         };
         while (this.inputQueue.length > 0) {
             const { key, value, id } = this.inputQueue.shift()!;
-            if (!id || this.context.enemyID === id) {
+            if (!id || this.combat.enemyID === id) {
                 EventBus.emit('update-combat-state', { key, value });
             };
         };

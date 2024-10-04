@@ -27,6 +27,7 @@ import { CombatManager } from '../phaser/CombatManager';
 import MiniMap from '../phaser/MiniMap';
 import { screenShake } from '../phaser/ScreenShake';
 import ParticleManager from '../matter/ParticleManager';
+import { Hud } from '../phaser/Hud';
 const dimensions = useResizeListener();
 export class Game extends Scene {
     animatedTiles: any[];
@@ -80,6 +81,7 @@ export class Game extends Scene {
     matterCollision: any;
     glowFilter: any;
     targetTarget: Enemy;
+    hud: Hud;
 
     constructor () {
         super('Game');
@@ -92,11 +94,11 @@ export class Game extends Scene {
     create () {
         this.cameras.main.fadeIn()
         this.gameEvent();
-        this.state = this.getCombat();
-        this.getAscean();
-        this.getGame();
+        this.state = this.registry.get("combat");
+        console.log(this.state, 'Combat and Game!');
         this.reputation = this.getReputation();
-        this.settings = this.getSettings();
+        this.settings = this.registry.get("settings");
+        console.log(this.settings, 'Settings!');
         this.actionBar = new ActionButtons(this);
         const map = this.make.tilemap({ key: 'ascean_test' });
         this.map = map;
@@ -155,7 +157,6 @@ export class Game extends Scene {
         var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
         this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
         this.setPostFx(this.settings?.postFx, this.settings?.postFx.enable);
-        this.particleManager = new ParticleManager(this);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
 
         this.player.inputKeys = {
@@ -171,7 +172,7 @@ export class Game extends Scene {
             escape: this?.input?.keyboard?.addKeys('ESC'),
         }; 
         this.lights.enable();
-        this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 150, 0.06, 0.06); // 0xFFD700 || 0xFDF6D8 || 0xDAA520 || 0.0675
+        this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 150, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520 || 0.0675
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
         this.musicBackground = this.sound.add(Math.random() > 0.5 ? 'background' : 'background2', { volume: this?.settings?.volume / 2 || 0.1, loop: true });
         this.musicCombat = this.sound.add('combat', { volume: this?.settings?.volume, loop: true });
@@ -191,6 +192,8 @@ export class Game extends Scene {
         // this.platform2.setAngle(90);
         // this.platform2.horizontal(0, 3500, 14000);
         this.postFxEvent();
+
+        
         this.joystick = new Joystick(this, 
             camera.width * this.settings.positions.leftJoystick.x, 
             camera.height * this.settings.positions.leftJoystick.y,
@@ -209,7 +212,11 @@ export class Game extends Scene {
         this.rightJoystick.joystick.thumb.setAlpha(this.settings.positions.rightJoystick.opacity);
         this.rightJoystick.createPointer(this); 
         this.joystickKeys = this.joystick.createCursorKeys();
+        this.particleManager = new ParticleManager(this);
         this.smallHud = new SmallHud(this);
+
+        // this.hud = new Hud(this);
+
         this.combatManager = new CombatManager(this);
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
@@ -220,7 +227,6 @@ export class Game extends Scene {
     cleanUp = (): void => {
         EventBus.off('ascean');
         EventBus.off('combat');
-        EventBus.off('game');
         EventBus.off('reputation');
         EventBus.off('settings');
         EventBus.off('enemyLootDrop');
@@ -263,13 +269,11 @@ export class Game extends Scene {
         this.rightJoystick.cleanUp();    
         this.joystick.destroy();
         this.rightJoystick.destroy();
-        // this.scene.start('GameOver')
     };
 
     gameEvent = (): void => {
         EventBus.on('ascean', (ascean: Ascean) => this.ascean = ascean);
         EventBus.on('combat', (combat: any) => this.state = combat); 
-        EventBus.on('game', (game: GameState) => this.gameState = game);
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
         EventBus.on('settings', (settings: Settings) => {
             this.settings = settings;
@@ -581,27 +585,27 @@ export class Game extends Scene {
     changeScene(): void {
         this.scene.start('GameOver');
     };
-    getAscean(): void {
-        EventBus.emit('request-ascean');
-    };
-    getCombat = (): Combat => {
-        EventBus.once('request-combat-ready', (combat: Combat) => {
-            this.state = combat;
-        });
-        EventBus.emit('request-combat');
-        return this.state;
-    };
-    getGame(): void {
-        EventBus.emit('request-game');
-    };
+    // getAscean(): void {
+    //     EventBus.emit('request-ascean');
+    // };
+    // getCombat = (): Combat => {
+    //     EventBus.once('request-combat-ready', (combat: Combat) => {
+    //         this.state = combat;
+    //     });
+    //     EventBus.emit('request-combat');
+    //     return this.state;
+    // };
+    // getGame(): void {
+    //     EventBus.emit('request-game');
+    // };
     getReputation = (): Reputation => {
         EventBus.emit('request-reputation');
         return this.reputation;
     };
-    getSettings = (): Settings => {
-        EventBus.emit('request-settings');
-        return this.settings;
-    };
+    // getSettings = (): Settings => {
+    //     EventBus.emit('request-settings');
+    //     return this.settings;
+    // };
     getEnemy = (id: string): Enemy => {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };

@@ -75,10 +75,9 @@ export default class Player extends Entity {
 
     constructor(data: any) {
         const { scene } = data;
-        super({ ...data, name: 'player', ascean: scene.state.player, health: scene.state.player?.health?.current || scene.state.newPlayerHealth }); 
-        console.log(scene.state.player, 'Player?');
-        // this.ascean = this.getAscean();
-        this.ascean = scene.state.player;
+        const ascean = scene.registry.get("ascean");
+        super({ ...data, name: 'player', ascean: ascean, health: ascean?.health?.current || scene.state.newPlayerHealth }); 
+        this.ascean = ascean;
         this.health = this.ascean.health.current;
         this.playerID = this.ascean._id;
         const weapon = this.ascean.weaponOne;
@@ -106,8 +105,9 @@ export default class Player extends Entity {
         this.isMoving = false;
         this.currentShieldSprite = this.assetSprite(this.ascean?.shield);
         this.spriteShield = this.createSprite(this.currentShieldSprite, 0, 0, PLAYER.SCALE.SHIELD, ORIGIN.SHIELD.X, ORIGIN.SHIELD.Y);
+        this.spriteShield.setVisible(false);
         this.playerVelocity = new Phaser.Math.Vector2();
-        this.speed = this.startingSpeed(scene?.ascean);
+        this.speed = this.startingSpeed(ascean);
         this.acceleration = PLAYER.SPEED.ACCELERATION;
         this.deceleration = PLAYER.SPEED.DECELERATION;
         this.dt = this.scene.sys.game.loop.delta;
@@ -198,6 +198,7 @@ export default class Player extends Entity {
 
     stalwartUpdate = () => {
         this.isStalwart = this.isStalwart ? false : true;
+        this.spriteShield.setVisible(this.isStalwart);
         this.scene.sound.play('stalwart', { volume: this.scene.settings.volume });
         EventBus.emit('stalwart-buttons', this.isStalwart);
     };
@@ -207,7 +208,7 @@ export default class Player extends Entity {
         sprite.setScale(scale);
         sprite.setOrigin(originX, originY);
         this.scene.add.existing(sprite);
-        sprite.setDepth(this.depth);
+        sprite.setDepth(this.depth + 1);
         return sprite;
     }; 
     cleanUp() {
@@ -1175,6 +1176,7 @@ export default class Player extends Entity {
     playerDodge = () => {
         this.dodgeCooldown = 50; // Was a 6x Mult for Dodge Prev aka 1728
         let currentDistance = 0;
+        this.spriteWeapon.setVisible(false);
         const dodgeLoop = (timestamp: number) => {
             if (!startTime) startTime = timestamp;
             const progress = timestamp - startTime;
@@ -1201,6 +1203,7 @@ export default class Player extends Entity {
     playerRoll = () => {
         this.rollCooldown = 50; // Was a x7 Mult for Roll Prev aka 2240
         let currentDistance = 0;
+        this.spriteWeapon.setVisible(false);
         const rollLoop = (timestamp: number) => {
             if (!startTime) startTime = timestamp;
             const progress = timestamp - startTime;

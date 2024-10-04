@@ -140,7 +140,6 @@ export default function App() {
             setSettings(set);
             setStatistics(stat);
             if (set.difficulty.tidbits === true) setTips(true);
-            
             setMenu({ ...menu(), choosingCharacter: false, gameRunning: true, playModal: false });
             setStartGame(true);
             setLoading(false);

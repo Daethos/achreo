@@ -215,6 +215,7 @@ export default class PlayerMachine {
             };
         };
         this.player.isPosturing = true;
+        this.player.spriteShield.setVisible(true);
         this.player.swingReset(States.POSTURE, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.POSTURE);
     };
@@ -224,7 +225,7 @@ export default class PlayerMachine {
         };
         this.player.combatChecker(this.player.isPosturing);
     };
-    onPostureExit = () => {if (this.scene.state.action === 'posture') this.scene.combatManager.combatMachine.input('action', '');};
+    onPostureExit = () => {if (this.scene.state.action === 'posture') this.scene.combatManager.combatMachine.input('action', ''); this.player.spriteShield.setVisible(this.player.isStalwart)};
 
     onDodgeEnter = () => {
         if (this.player.isStalwart || this.player.isStorming || this.player.isRolling) return;

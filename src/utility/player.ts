@@ -63,11 +63,11 @@ export const PLAYER = {
         // Magical
         // Low Cost        
         INVOKE: -COST.LOW,
+        CONSUME: 0,
 
         ARC: COST.LOW,
         BLINK: COST.LOW,
         CONFUSE: COST.LOW,
-        CONSUME: COST.LOW,
         FEAR: COST.LOW,
         HEALING: COST.LOW,
         ILIRECH: COST.LOW,

@@ -238,13 +238,13 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     // modifier -= 0.02; // += 0.05;
                     break;
                 case 'Leather-Mail':
-                    modifier -= 0.0125; // += 0.025;
+                    modifier -= 0.01; // += 0.025;
                     break;
                 case 'Chain-Mail':
-                    modifier -= 0.025 // += 0.0;
+                    modifier -= 0.02; // += 0.0;
                     break;
                 case 'Plate-Mail':
-                    modifier -= 0.035 // -= 0.025;
+                    modifier -= 0.03; // -= 0.025;
                     break;
                 default:
                     break;
@@ -412,6 +412,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     movingDown = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y > 0;
     movingUp = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y < 0;
 
+    isTrying = (): boolean => this.isAttacking || this.isPosturing || this.isThrusting;
     isSuffering = (): boolean => this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed || this.isStunned;
     sansSuffering = (ailment: string): boolean => {
         switch (ailment) {
@@ -425,7 +426,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 return this.isConfused || this.isParalyzed || this.isParalyzed || this.isStunned;                        
             case 'isStunned':
                 return this.isConfused || this.isParalyzed || this.isParalyzed || this.isPolymorphed;    
-            default: return this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed || this.isStunned;
+            default: 
+                return this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed || this.isStunned;
         };
     };
 
@@ -542,14 +544,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     weaponRotation = (entity: string, target: Player | Enemy) => {  
-        if (!this.isPosturing && !this.isStalwart && this.spriteShield) this.spriteShield.setVisible(false); // && !this.isStrafing
-        if (this.isDodging || this.isRolling) this.spriteShield.setVisible(false);
-        // if (!this.movingVertical()) {
-        this.spriteWeapon.setVisible(true);
-        this.spriteShield.setDepth(this.depth + 1);
-        // };
-        if (this.isDodging || this.isRolling) this.spriteWeapon.setVisible(false);
-        if (this.isStalwart && !this.isRolling && !this.isDodging) this.spriteShield.setVisible(true);
         if (this.isPraying || this.isCasting) {
             if (this.spriteWeapon.depth < 3) this.spriteWeapon.setDepth(3);
             if (this.flipX) {
@@ -1069,7 +1063,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 };
             }; 
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
-            this.spriteShield.setVisible(true);
             if ((entity === 'player' && this.hasBow) || (entity === 'enemy' && this.hasBow)) {
                 this.spriteWeapon.setDepth(3);
                 this.spriteShield.setVisible(false);

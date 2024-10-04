@@ -96,9 +96,8 @@ export class Underground extends Scene {
     create () {
         this.cameras.main.fadeIn();
         this.gameEvent();
-        this.getAscean();
-        this.state = this.getCombat();
-        this.getGame();
+        this.state = this.registry.get("combat");
+        console.log(this.state, 'Combat and Game!');
         this.reputation = this.getReputation();
         this.settings = this.getSettings();
         this.rexUI = this.plugins.get('rexuiplugin');
@@ -234,7 +233,6 @@ export class Underground extends Scene {
     cleanUp = (): void => {
         EventBus.off('ascean');
         EventBus.off('combat');
-        EventBus.off('game');
         EventBus.off('reputation');
         EventBus.off('settings');
         EventBus.off('enemyLootDrop');
@@ -282,7 +280,6 @@ export class Underground extends Scene {
     gameEvent = (): void => {
         EventBus.on('ascean', (ascean: Ascean) => this.ascean = ascean);
         EventBus.on('combat', (combat: any) => this.state = combat); 
-        EventBus.on('game', (game: GameState) => this.gameState = game);
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
         EventBus.on('settings', (settings: Settings) => {
             this.settings = settings;
@@ -591,19 +588,19 @@ export class Underground extends Scene {
     changeScene(): void {
         this.scene.start('GameOver');
     };
-    getAscean(): void {
-        EventBus.emit('request-ascean');
-    };
-    getCombat = (): Combat => {
-        EventBus.once('request-combat-ready', (combat: Combat) => {
-            this.state = combat;
-        });
-        EventBus.emit('request-combat');
-        return this.state;
-    };
-    getGame(): void {
-        EventBus.emit('request-game');
-    };
+    // getAscean(): void {
+    //     EventBus.emit('request-ascean');
+    // };
+    // getCombat = (): Combat => {
+    //     EventBus.once('request-combat-ready', (combat: Combat) => {
+    //         this.state = combat;
+    //     });
+    //     EventBus.emit('request-combat');
+    //     return this.state;
+    // };
+    // getGame(): void {
+    //     EventBus.emit('request-game');
+    // };
     getReputation = (): Reputation => {
         EventBus.emit('request-reputation');
         return this.reputation;

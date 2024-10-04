@@ -1,5 +1,7 @@
-import { Accessor } from "solid-js";
+import { Accessor, For } from "solid-js";
 import Settings from "../models/settings"; 
+import { SPECIALS } from "./abilities";
+import { ACTION_ORIGIN } from "./actions";
 
 const svg = (type: string) => {
     switch (type) {
@@ -27,6 +29,10 @@ const svg = (type: string) => {
                 <path transform="translate(0.000000,511.000000) scale(0.100000,-0.100000)" d="M3124.4-2339.3c-6.2-20.7-91.2-451.8-188.6-957.5l-178.2-918.1l-163.7-184.4c-176.2-194.8-199-252.9-132.6-346.1c53.9-78.8,130.6-58,385.5,101.5c128.5,80.8,244.6,159.6,259.1,172c20.7,20.7,441.4,1566.8,447.7,1651.8c0,18.6-33.1,114-78.8,211.4c-60.1,134.7-89.1,180.3-118.1,180.3c-49.7,0-116.1,33.2-176.2,87.1C3138.9-2301.9,3136.8-2301.9,3124.4-2339.3z"></path>
                 <path transform="translate(0.000000,511.000000) scale(0.100000,-0.100000)" d="M6098.4-2343.4c-53.9-99.5-275.6-138.9-429-74.6c-74.6,31.1-74.6,31.1-62.2-18.6c39.4-157.5,555.4-1956.5,569.9-1991.7c10.4-22.8,140.9-116.1,290.2-205.2c246.6-147.1,277.7-161.7,323.3-140.9c66.3,31.1,103.6,109.8,85,182.4c-8.3,31.1-87,130.6-172,219.7l-157.5,161.7L6343-3265.7c-111.9,520.2-207.2,951.3-213.5,955.4C6125.4-2304,6110.9-2320.6,6098.4-2343.4z"></path>
             </svg>;
+        case 'DODGE':
+            return <svg xmlns="https://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32" fill="currentColor">
+                    <path d="M27.026 8.969c0.743-0.896 1.226-2.154 1.226-3.562 0-2.543-1.512-4.65-3.448-4.902-0.129-0.020-0.267 0-0.399 0-0.791 0-1.527 0.305-2.139 0.827l-21.218 1.536 19.521 1.414v0.744c-0.004 0.068-0.007 0.136-0.009 0.205l-19.512 1.413 19.515 1.413v0.949l-19.515 1.413 17.355 1.257v0.262c-0.127 0.324-0.237 0.667-0.333 1.023l-17.023 1.233 16.231 1.175v1.219l-16.231 1.175 16.26 1.177v1.42l-16.26 1.177 18.883 1.367v1.040l-18.883 1.367 19.358 1.402v0.971l-19.358 1.401 19.633 1.422 0.047 0.72h7.096l0.741-9.947h2.793c0-4.765-0.305-11.554-4.332-12.312zM21.202 8.102c0.001 0.002 0.002 0.005 0.004 0.007l-0.064-0.011 0.061 0.004z"></path>
+                </svg>
         case 'PARRY': 
             return <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 512 512">
                 <path d="M311.313 25.625l-23 10.656-29.532 123.032 60.814-111.968-8.28-21.72zM59.625 50.03c11.448 76.937 48.43 141.423 100.188 195.75 14.133-9.564 28.405-19.384 42.718-29.405-22.156-27.314-37.85-56.204-43.593-86.28-34.214-26.492-67.613-53.376-99.312-80.064zm390.47.032C419.178 76.1 386.64 102.33 353.31 128.22c-10.333 58.234-58.087 112.074-118.218 158.624-65.433 50.654-146.56 92.934-215.28 121.406l-.002 32.78c93.65-34.132 195.55-81.378 276.875-146.592C375.72 231.06 435.014 151.375 450.095 50.063zm-236.158 9.344l-8.5 27.813 40.688 73.06-6.875-85.31-25.313-15.564zm114.688 87.813C223.39 227.47 112.257 302.862 19.812 355.905V388c65.917-27.914 142.58-68.51 203.844-115.938 49.83-38.574 88.822-81.513 104.97-124.843zm-144.563 2.155c7.35 18.89 19.03 37.68 34 56.063 7.03-4.98 14.056-10.03 21.094-15.094-18.444-13.456-36.863-27.12-55.094-40.97zM352.656 269.72c-9.573 9.472-19.58 18.588-29.906 27.405 54.914 37.294 117.228 69.156 171.906 92.156V358.19c-43.86-24.988-92.103-55.13-142-88.47zm-44.906 39.81c-11.65 9.32-23.696 18.253-36.03 26.845C342.046 381.51 421.05 416.15 494.655 442.75v-33.22c-58.858-24.223-127.1-58.727-186.906-100zm-58.625 52.033l-46.188 78.25 7.813 23.593 27.75-11.344 10.625-90.5zm15.844.812L316.343 467l36.47 10.28-3.533-31.967-84.31-82.938z"></path>
@@ -183,509 +189,51 @@ const svg = (type: string) => {
 };
 
 const CombatSettings = () => {
-    return (
-        <div style={{ margin: 'auto', color: '#fdf6d8' }}>
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CHARACTER')} Combat
-            </p>
-            When you wish to attack, choose one of the actions* and hit initiate. You and your opponents actions are chosen anonymously and resolve simultaneously, from a set priority of actions coupled with initiative. Certain actions, if successful, may cancel out the opponents or otherwise.
-            <br />
-            *recorded for confirmation in the combat reader window </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('ATTACK')} Attack
-            </p>
-            A focused attack concentrating your offensive might into extraordinary potential, unleashing dual wield techniques if you are of the competence and orientation. 
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('PARRY')} Parry / Counter Spell
-            </p>
-            Your opponent, whether man or machine, will change its preference of attacks based on their own abilitiy and yours, in addition to your preference of actions. Successfully parrying the specific action of the enemy stuns them for several seconds.
-            <br />
-            [Counterspell interrupts any casted or channeled effect the enemy is performing. Available instead of parrying when you are using magical weapons.]
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('POSTURE')} Posture
-            </p>
-            This low priority attack focuses on leaning into your stalwart nature, accepting the fate of a strike while using your shield's defense as an additional bulwark. 
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('ROLL')} Roll
-            </p>
-            This gambles fate with your weapon's roll chance. It's risk/reward as your ability to do heightened damage and avoiding an attack is offset by performing reduced damage as a result of your stilted stunt. 
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('THRUST')} Thrust
-            </p>
-            This provides a lighter, quick attack as an alternative to the larger windup of the attack. It's hard to parry nature is offset by performing reduced damage. 
-            </div>
-        </div>
-    );
+    return <div>
+        <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>{svg('CHARACTER')} Combat</p>
+            When you wish to attack, choose one of the actions. Certain actions, if successful, may cancel out the opponents or otherwise.
+        </div><br />
+        <For each={['ATTACK', 'DODGE', 'PARRY', 'POSTURE', 'ROLL', 'THRUST']}>{(physical) => {
+            const phys = ACTION_ORIGIN[physical.toUpperCase() as keyof typeof ACTION_ORIGIN];
+            return <div>
+                <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                    {svg(phys?.svg)} {physical} <br />
+                </p>
+                <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>
+                    {phys?.description}
+                </p>
+                <p class='' style={{ color: 'green' }}>
+                    {phys?.time} {phys?.special} <br />
+                    {phys?.cost}. {phys?.cooldown} Cooldown <br />
+                </p>
+            </div>;
+        }}</For>
+    </div>;
 };
 
 const SpecialSettings = () => {
-    return (
-        <div style={{ margin: 'auto', color: '#Fdf6d8' }}>
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SPECIALS')} Specials
-            </p>
-            When you wish to alter the fight through othernatural means, choose one of the specials [black buttons].
-            </div>
-            <br />
-
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('INVOKE')} Invoke
-            </p>
-            Your mastery and <i>adherence</i> or <i>devotion</i> dictate what you can pray for in an instant, calling it from your weapon's influence regardless of given favor. Instant. Long Cooldown. Gain Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CONSUME')} Consume
-            </p>
-            Consume a prayer during combat to get receive steps into the land of hush and tendril tendril of its essence. Instant. Short Cooldown. Low Grace
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SHIELD')} Absorb
-            </p>
-            A warped tendril wrapped round you that protects the player from melee and ranged attacks at the cost of grace. Instant. Moderate Cooldown. No Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Achire
-            </p>
-            Entwine your achre and caer through your weapon to release a powerful projectile. Cast. Short Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('WEAPONS')} Arc
-            </p>
-            Power up into an attack, hitting with four times the potential. Channel. Short Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('AOE')} Astrave
-            </p>
-            Uproot tendrils, damaging all caught in its grasp. AoE. Short Cooldown. Moderate Grace. Manual Aim.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Astrication
-            </p>
-            Attacks cannot be evaded, i.e. protect, shield, shimmer, roll, parry. Instant. Long Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CONSUME')} Berserk
-            </p>
-            Attacks grow stronger the more you are attacked. Instant. Long Cooldown. Low Grace. Trait.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Blind
-            </p>
-            Your brilliance blinds all who are impure. Instant. Long Cooldown. Moderate Grace. Trait.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('INVOKE')} Blink
-            </p>
-            Use your caeren to teleport a short distance forward, if you are moving.  Instant. Short Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('AOE')} Caerenesis
-            </p>
-            You can fear and evoke your enemy's caer into yours. AoE. Short Cooldown. High Grace. Trait.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CONSUME')} Chiomic
-            </p>
-            A hush steps into the land of hush and tendril proliferates, confusing enemies caught in its mocking blast for several seconds. Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Confuse
-            </p>
-            Inspire confusion in your opponent, causing them to contemplate reality for several seconds, though damage may break them from their fugue. Cast. Short Cooldown. Low Grace
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Conviction
-            </p>
-            Your attacks grow stronger the more you realize them. Instant. Long Cooldown. Low Grace. Trait.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('INVOKE')} Desperation
-            </p>
-            Heals you for a dramatic amount. Instant. Long cooldown. High Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('VOICE')} Devour
-            </p>
-            Lifedrain your opponent of their caer, restoring your own. Channel. Long Cooldown. High Grace. Trait.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('AOE')} Disease
-            </p>
-            A hush that proliferates, damaging enemies caught in its malice every second. Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('BEAM')} Endurance
-            </p>
-            Pour your caeren back into your physical form, dramatically recovering stamina. Instant. Long Cooldown. Trait.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SHIELD')} Envelop
-            </p>
-            A warped tendril wrapped round you that protects the player from melee and ranged attacks at the cost of stamina. Instant. Moderate Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Fear
-            </p>
-            Inspire fear in your opponent, causing them to run in terror for several seconds, their hysteria causing them to experience pain without notice. Cast. Short Cooldown. Low Grace
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('AOE')} Freeze
-            </p>
-            A hush that proliferates, freezing enemies caught in its grasp for several seconds. Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('BEAM')} Fyerus
-            </p>
-            Uprooted tendrils, damaging enemies and snaring enemies caught in their grasp. Channeled. Moderate Cooldown. Moderate Grace. Manual Aim.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Healing
-            </p>
-            Heals for a moderate amount. Cast. Short Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Hook
-            </p>
-            You rip a tendril through this world, hungry for caer and the flesh. Cast. Moderate Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('VOICE')} Howl
-            </p>
-            A hush that proliferates, stunning enemies caught in its piercing blast for several seconds. Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Ilirech
-            </p>
-            You rip into this world with Ilian tendrils. Cast. Moderate Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('BEAM')} Impermanence
-            </p>
-            Your evasion becomes ethereal. Instant. Long Cooldown. Low Grace. Trait.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('AOE')} Kynisos
-            </p>
-            Uprooted tendrils, rooting enemies caught in their grasp for several seconds. Cast. Moderate Cooldown. Moderate Grace. Manual Aim
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('BEAM')} Kyrnaicism
-            </p>
-            Belittle and mock your opponent of their caer, damaging and slowing them. Channel. Short Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('ATTACK')} Leap
-            </p>
-            Use your strength to leap a short distance toward your cursor, if you are moving, damaging on landing.  Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Maiereth
-            </p>
-            You bleed and strike with tendrils of Ma'anre. Cast. Low Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SHIELD')} Malice
-            </p>
-            A warped tendril wrapped round you that damages the enemy through 6 successful attacks from them. Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Mark
-            </p>
-            A sliver of a tendril wraps round the ground at your feet, awaiting your return. Cast. Low Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SHIELD')} Menace
-            </p>
-            A warped tendril wrapped round you that protects the player through 3 melee and ranged attacks, fearing the enemy. Instant. Long Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SHIELD')} Mend
-            </p>
-            A warped tendril wrapped round you that heal through 6 successful attacks from the enemy. Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SHIELD')} Moderate
-            </p>
-            A warped tendril wrapped round you that protects through 6 successful melee and ranged attacks, slowing the enemy. Instant. Long Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SHIELD')} Multifarious
-            </p>
-            A warped tendril wrapped round you that protects through 3 successful melee and ranged attacks, polymorphing the enemy. Instant. Long Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SHIELD')} Mystify
-            </p>
-            A warped tendril wrapped round you that protects through 3 successful melee and ranged attacks, confusing the enemy. Instant. Long Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Netherswap
-            </p>
-            Say a little prayer to swap places with your target. Cast. Low Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Paralyze
-            </p>
-            Paralyze your opponent for several seconds, causing them to be disabled for the duration. Cast. Moderate Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Polymorph
-            </p>
-            Turn your opponent into a fluffy bunny for several seconds, causing them to be disabled for the duration. Cast. Short Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SHIELD')} Protect
-            </p>
-            A warped tendril wrapped round you that protects the player from melee and ranged attacks for several seconds. Instant. Long Cooldown. High Grace.
-            </div>
-            <br />
-            <div> 
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('INVOKE')} Pursuit
-            </p>
-            Step into the land of hush and tendril, reentering this world at the foot of your foe. Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Recall
-            </p>
-            Say a little prayer to recall toward that sliver of tendril you left behind. Cast. Low Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('BEAM')} Reconstitute
-            </p>
-            Heals for a light amount every tick. Channel. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SHIELD')} Recover
-            </p>
-            A warped tendril wrapped round you that recovers stamina from melee and ranged attacks. Instant. Moderate Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SHIELD')} rein
-            </p>
-            A warped tendril wrapped round you that recovers grace from melee and ranged attacks. Instant. Moderate Cooldown. 0 Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('AOE')} Renewal
-            </p>
-            A hush that proliferates, healing you every second. Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('AOE')} Root
-            </p>
-            Ensorcel your opponent in a magic root, preventing them from moving for several seconds. Cast. Short Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('ATTACK')} Rush
-            </p>
-            Use your agility to rush a short distance toward your cursor, if you are moving, damaging enemies in the path.  Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div> 
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SACRIFICE')} Sacrifice
-            </p>
-            Rip the caeren from yourself and blend it into your enemy, damaging them for twice the portion of damage done to you. Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('VOICE')} Scream
-            </p>
-            A hush that proliferates, fearing enemies caught in its piercing howl for several seconds. Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('INVOKE')} Seer
-            </p>
-            Your next strike is augured to be fyers. Instant. Long Cooldown Cooldown. Low Grace. Trait.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SHIELD')} Shield
-            </p>
-            A warped tendril wrapped round you that absorbs 6 successful attacks from the enemy. Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SHIELD')} Shimmer
-            </p>
-            You step into the land of hush and tendril, attemping to evade the enemy attacks. Instant. Moderate Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('INVOKE')} Slow
-            </p>
-            Weigh down your opponent's caer, slowing their movement speed moderately for several seconds. Instant. Short Cooldown. Low Grace.
-            </div>
-            <br />
-            <div> 
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('CAST')} Snare
-            </p>
-            Weigh down your opponent's caer, slowing their movement speed dramatically for several seconds. Cast. Short Cooldown. Low Grace.
-            </div>
-            <br />
-            <div> 
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('INVOKE')} Sprint
-            </p>
-            Step into the land of hush and tendril, dramatically increasing your movement for several seconds. Instant. Moderate Cooldown. Low Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('INVOKE')} Stimulate
-            </p>
-            Your caeren taps into your physical form, refreshing its ability to host its othernature. Instant. Long Cooldown Cooldown. Low Grace. Trait.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('WEAPONS')} Storm
-            </p>
-            A hush that proliferates, damaging enemies caught in your contortions with your weapon every second. Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div> 
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SACRIFICE')} Suture
-            </p>
-            Rip the caeren from the enemy and blend it into you, healing for a portion of damage done. Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('SHIELD')} Ward
-            </p>
-            A warped tendril wrapped round you that protects the player from melee and ranged attacks, stunning the enemy. Instant. Long Cooldown. Moderate Grace.
-            </div>
-            <br />
-            <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-            {svg('WEAPONS')} Writhe
-            </p>
-            A hush that proliferates, damaging enemies caught in your contortions with your weapon. Instant. Moderate Cooldown. Moderate Grace.
-            </div>
-        </div>
-    );
+    return <div>
+        <div>
+            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>{svg('SPECIALS')} Specials</p>
+            When you wish to alter the fight through othernatural means, choose one of the specials.
+        </div><br />
+        <For each={SPECIALS}>{(special) => {
+            const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
+            return <div>
+                <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                    {svg(spec?.svg)} {special} <br />
+                </p>
+                <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>
+                    {spec?.description}
+                </p>
+                <p class='' style={{ color: 'aqua' }}>
+                    {spec?.time} {spec?.special} <br />
+                    {spec?.cost}. {spec?.cooldown} Cooldown <br />
+                </p>
+            </div>;
+        }}</For>
+    </div>;
 };
 
 const GeneralSettings = () => {
@@ -809,14 +357,14 @@ const ControlSettings = () => {
                 <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
                 {svg('JOYSTICKS')} Joysticks
                 </p>
-                (Left) Character Movement. Omnidirectional;
-                (Right) Character Aim. Omnidirectional.
+                (Left) Character Movement. Omnidirectional. Omnidirectional.
+                (Right) Character Aim <br /> <span class='gold' style={{ 'font-size':'0.75em' }}>(Manual Projectile via Settings, Certain Specials)</span>
             </div><br />
             <div>
                 <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
                 {svg('UI')} Player / Enemy UI
                 </p>
-                Name, Weapon, Shield, Prayers. Clickable / Interactive.
+                Name, Health, Weapon, Shield, Prayers, Stamina, Grace. Clickable / Interactive.
             </div><br />
             <div>
                 {/*  Combat Logs,  */}
@@ -828,12 +376,13 @@ const ControlSettings = () => {
                 <img src={'../assets/images/caerenic.png'} style={{ width: '1.5em' }} /> [Caerenic] <br /> 
                 <img src={'../assets/images/stalwart.png'} style={{ width: '1.5em' }} /> [Stalwart] <br /> 
                 <img src={'../assets/images/stealth.png'} style={{ width: '1.5em' }} /> [Stealth] <br /> 
+                <img src={'../assets/images/strafe.png'} style={{ width: '1.5em' }} /> [Strafe] <br /> 
                 <img src={'../assets/images/cursor-reset.png'} style={{ width: '1.5em' }} /> [Aim Reset] <br /> 
                 <img src={'../assets/images/minimap.png'} style={{ width: '1.5em' }} /> [Mini-map] <br /> 
                 <img src={'../assets/images/pause.png'} style={{ width: '1.5em' }} /> [Pause] <br /> 
                 <img src={'../assets/images/open.png'} style={{ width: '1.5em' }} /> / <img src={'../assets/images/closed.png'} style={{ width: '1.5em' }} /> [Collapse / Expand] <br />
                 <br />
-                <span style={{ color: 'gold' }}>
+                <span class='gold' style={{ 'font-size':'0.75em' }}>
                 (When in contact with either Loot or an NPC) <br />
                 </span>
                 <img src={'../assets/images/loot.png'} style={{ width: '1.5em' }} /> [Loot] 
@@ -841,14 +390,16 @@ const ControlSettings = () => {
             </div><br />
             <div>
                 <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-                {svg('COMBAT')} Combat
+                {svg('ATTACK')} Physical Actions
                 </p>
-                Attack, Posture, Roll, Dodge, Parry
+                Attack, Posture, Roll, Dodge, Parry/Counterspell, Thrust <br />
+                <span class='gold' style={{ 'font-size':'0.75em' }}>(Primary (Larger) Button Chain Cascading Numerically from Bottom Left to Top Right. Governed by Stamina)</span>
             </div><br />
             <div>
                 <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-                {svg('SPECIALS')} Specials</p>
+                {svg('SPECIALS')} Special Actions</p>
                 Include Invoking and Consuming Prayers, Polymorphing, Life Drain, Roots, Snares, and more.
+                <br /> <span class='gold' style={{ 'font-size':'0.75em' }}>(Secondary (Smaller) Button Chain Cascading Numerically from Bottom Left to Top Right. Governed by Grace)</span>
             </div>
         </div>
     );

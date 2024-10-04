@@ -1,5 +1,5 @@
-import { Game } from "../game/scenes/Game";
-import { Underground } from "../game/scenes/Underground";
+import { Game } from "../scenes/Game";
+import { Underground } from "../scenes/Underground";
 
 const SCALE_FACTOR = 0.3;
 const X = 0.675;

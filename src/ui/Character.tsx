@@ -602,13 +602,13 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                 </Match>
                 <Match when={settings().asceanViews !== VIEWS.SETTINGS && settings().asceanViews !== VIEWS.FAITH && expandedCharacter() !== true}>
                     <div class='playerWindow' style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: '0.25vw', overflow: 'hidden' }}>
-                        {/* <button class='highlight cornerTR' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => getInventory()}>
+                        {/* <button class='highlight cornerTL' style={{ 'background-color': 'blue', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => getInventory()}>
                             <p>Get Eqp</p>
                         </button> */}
-                        {/* <button class='highlight cornerTR' style={{ 'background-color': 'green', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => getMoney()}>
+                        {/* <button class='highlight cornerBL' style={{ 'background-color': 'green', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => getMoney()}>
                             <p>Get Money</p>
                         </button> */}
-                        {/* <button class='highlight cornerTR' style={{ 'background-color': 'gold', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => getExperience()}>
+                        {/* <button class='highlight cornerBR' style={{ 'background-color': 'gold', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => getExperience()}>
                             <p>Get Exp</p>
                         </button> */}
                         { ascean().experience >= ascean().level * 1000 && (

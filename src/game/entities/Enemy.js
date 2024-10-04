@@ -301,7 +301,7 @@ export default class Enemy extends Entity {
             let damage = Math.round(this.health - e.newComputerHealth);
             damage = e.criticalSuccess ? `${damage} (Critical)` : e.glancingBlow ? `${damage} (Glancing)` : damage;
             this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.criticalSuccess);
-            if (!this.isSuffering() && !this.isCasting && !this.isContemplating) this.isHurt = true;
+            if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
             if (this.isFeared) {
                 const chance = Math.random() < 0.1 + this.fearCount;
                 if (chance) {
@@ -500,6 +500,7 @@ export default class Enemy extends Entity {
         this.spriteShield.setScale(0.6);
         this.spriteShield.setOrigin(0.5, 0.5);
         this.spriteShield.setVisible(false);
+        this.spriteShield.setDepth(this.depth + 1);
         this.scene.add.existing(this.spriteShield);
     };
 
@@ -1079,10 +1080,12 @@ export default class Enemy extends Entity {
         this.body.parts[1].vertices[1].x -= this.wasFlipped ? this.colliderDisp : -this.colliderDisp;
         this.body.parts[0].vertices[1].x -= this.wasFlipped ? this.colliderDisp : -this.colliderDisp;
         this.body.parts[1].vertices[0].x -= this.wasFlipped ? this.colliderDisp : -this.colliderDisp;
+        this.setTint(ENEMY_COLOR);
     };
 
     onPostureEnter = () => {
         this.isPosturing = true;
+        this.spriteShield.setVisible(true);
         this.posture();
     };
     onPostureUpdate = (_dt) => {
@@ -1092,6 +1095,7 @@ export default class Enemy extends Entity {
     };
     onPostureExit = () => {
         if (this.scene.state.computerAction !== '') this.scene.combatManager.combatMachine.input('computerAction', '', this.enemyID);
+        this.spriteShield.setVisible(false);
         this.setTint(ENEMY_COLOR);
     };
 
@@ -1196,14 +1200,14 @@ export default class Enemy extends Entity {
             const direction = this.attacking?.position.subtract(this.position);
             const distance = direction?.length();
             let instinct =
-                 health <= 0.33 ? 0 : // Heal
-                 health <= 0.66 ? 1 : // Heal
-                 player <= 0.33 ? 2 : // Damage
-                 player <= 0.66 ? 3 : // Damage
-                 distance <= 100 ? 4 : // AoE
-                 distance >= 250 && !this.isRanged ? 5 : // Melee at Distance
-                 distance >= 250 && this.isRanged ? 6 : // Ranged at Distance
-                 chance; // Range
+                health <= 0.33 ? 0 : // Heal
+                health <= 0.66 ? 1 : // Heal
+                player <= 0.33 ? 2 : // Damage
+                player <= 0.66 ? 3 : // Damage
+                distance <= 100 ? 4 : // AoE
+                distance >= 250 && !this.isRanged ? 5 : // Melee at Distance
+                distance >= 250 && this.isRanged ? 6 : // Ranged at Distance
+                chance; // Range
             // console.log(`Chance: ${chance} | Instinct: ${instinct} | Mastery: ${mastery}`);
             let key = INSTINCTS[mastery][instinct].key, value = INSTINCTS[mastery][instinct].value;
             this[key].setState(value);

@@ -177,7 +177,6 @@ export default function PhaserGame (props: IProps) {
 
     async function stealItem(data: {success: boolean, item: Equipment, value: any}) {
         const { success, item, value } = data;
-        console.log(success, item, value);
         try {
             if (success === true) {
                 let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
@@ -683,6 +682,9 @@ export default function PhaserGame (props: IProps) {
         };
         setCombat(cleanCombat);
         EventBus.emit('combat', cleanCombat);
+        instance.game?.registry.set("ascean", res?.ascean);
+        instance.game?.registry.set("combat", cleanCombat);
+        instance.game?.registry.set("settings", props.settings());
         setStamina(res?.attributes?.stamina as number);
         setGrace(res?.attributes?.grace as number);
         const inventory = await getInventory(id);

@@ -1,6 +1,6 @@
 import { Accessor, For, Setter, Show, Suspense, createEffect, createSignal, lazy } from 'solid-js'
 import ItemModal from '../components/ItemModal';
-import AttributeModal, { AttributeCompiler } from '../components/Attributes';
+import AttributeModal, { AttributeCompiler, AttributeNumberModal } from '../components/Attributes';
 import AsceanImageCard from '../components/AsceanImageCard';
 import { itemStyle } from '../utility/styling';
 import { EventBus } from '../game/EventBus';
@@ -24,6 +24,7 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
     const [equipment, setEquipment] = createSignal<Equipment | undefined>(state().computerWeapons[0]);
     const [attributeShow, setAttributeShow] = createSignal<boolean>(false);
     const [itemShow, setItemShow] = createSignal<boolean>(false);
+    const [attributeDisplay, setAttributeDisplay] = createSignal<{ attribute: any; show: boolean; total: number, equip: number, base: number }>({ attribute: undefined, show: false, base: 0, equip: 0, total: 0 });
     const dimensions = useResizeListener(); 
     createEffect(() => setEnemy(state().computer));
     const removeEnemy = (id: string) => {
@@ -63,7 +64,7 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
                     Level <span class='gold'>{state().computer?.level}</span> | Mastery <span class='gold'>{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
                 </div>
                 <div style={{ transform: 'scale(0.875)', 'margin-top': '0%', 'z-index': 1 }}>
-                    <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} />
+                    <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} setDisplay={setAttributeDisplay} />
                 </div>
                 <div style={{ 'margin-left': '0', 'margin-top': '-7.5%', transform: 'scale(0.8)', 'z-index': 1 }}>
                     <AsceanImageCard ascean={enemy as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
@@ -76,6 +77,11 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
                 <Show when={attributeShow()}>
                     <div class='modal' onClick={() => setAttributeShow(!attributeShow)}>
                         <AttributeModal attribute={attribute()} />
+                    </div>
+                </Show>        
+                <Show when={attributeDisplay().show}>
+                    <div class='modal' onClick={() => setAttributeDisplay({ ...attributeDisplay(), show: false })}>
+                        <AttributeNumberModal attribute={attributeDisplay} />
                     </div>
                 </Show>
             </div>

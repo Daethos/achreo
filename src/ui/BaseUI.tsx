@@ -62,6 +62,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         kyosir: 0,
     });
     createEffect(() => EventBus.emit('combat', combat()));  
+    createEffect(() => EventBus.emit('game', game()));  
     createEffect(() => EventBus.emit('reputation', reputation()));
     createEffect(() => {
         instance.game?.registry.set("settings", settings());
@@ -434,7 +435,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         </Suspense>
         <Show when={showTutorial()}>
         <Suspense fallback={<Puff color="gold" />}>
-            <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
+            <TutorialOverlay ascean={ascean} settings={settings} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
         </Suspense>
         </Show>
         <Show when={showDeity()}>

@@ -1,7 +1,6 @@
 import { useResizeListener } from '../../utility/dimensions';
 import { EventBus } from '../EventBus';
-import { Game } from '../scenes/Game';
-import { Underground } from '../scenes/Underground';
+import { Hud } from '../scenes/Hud';
 const COLORS = {
     CAST: 0x0000FF,
     DAMAGE: 0xFF0000,
@@ -25,7 +24,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     private timeText: Phaser.GameObjects.Text;
     private barY: number;
 
-    constructor(scene: Game | Underground, x: number, y: number, time: number, entity: any) {
+    constructor(scene: Hud, x: number, y: number, time: number, entity: any) {
         super(scene, x, y);
         this.total = time;
         this.time = 0;
@@ -35,10 +34,10 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.setScrollFactor(0);
         this.visible = false;
         this.barY = scene.settings.positions.castbar.barY;
-        this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - this.barY);
+        this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - 40 - this.barY);
     };
 
-    private create = (entity: any, scene: Game | Underground): void => {
+    private create = (entity: any, scene: Hud): void => {
         if (entity.name === 'player') {
             this.barHeight = scene.settings.positions.castbar.barHeight;
             this.barWidth = scene.settings.positions.castbar.barWidth;
@@ -118,7 +117,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     private castbarListener = () => {
         EventBus.on('castbar-y', (y: number) => {
             this.barY = y;
-            this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - y);
+            this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - 40 - y);
         });
         EventBus.on('update-castbar', (dims: { height: number, width: number }) => {
             const { height, width } = dims;
@@ -126,7 +125,9 @@ export default class CastingBar extends Phaser.GameObjects.Container {
             this.barHeight = height;
             this.castbar.setDisplaySize(this.barWidth * 1.2, this.barHeight * 2.3);
         });
-        EventBus.on('show-castbar', (show: boolean) => this.setVisible(show));
+        EventBus.on('show-castbar', (show: boolean) => {
+            this.setVisible(show);
+        });
     };
 
     public update = (dt: number, type: string, color: string = 'CAST'): void => {

@@ -16,7 +16,9 @@ export class Intro extends Scene {
     constructor() {super('Intro');};
     preload() {};
     create() {
-        EventBus.emit('sleep-scene', 'Game');
+        // EventBus.emit('sleep-scene', 'Game');
+        this.scene.sleep('Hud');
+        this.scene.sleep('Game');
         this.node = INTRO_NODES[0];
         this.background = new Phaser.GameObjects.Graphics(this, {
             x: 0,

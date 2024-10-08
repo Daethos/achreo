@@ -2,7 +2,6 @@ import { Shields, Helmets, Legs, Chests } from "../assets/db/equipment";
 import { Weapons } from "../assets/db/weaponry";
 import Equipment, { mutate } from "./equipment";
 import { Amulets, Rings, Trinkets } from "../assets/db/jewelry";
-import { Tutorial, initTutorial } from "../utility/tutorial";
 import { Skills, initCharacter, initSkills } from "../utility/ascean"; 
 import { v4 as uuidv4 } from 'uuid';
 import { addAscean } from "../assets/db/db";
@@ -39,7 +38,6 @@ export default class Ascean {
     ringOne: Equipment;
     ringTwo: Equipment;
     trinket: Equipment;
-    tutorial: Tutorial;
     journal: {
         entries: [{
             title: string,
@@ -91,7 +89,6 @@ export default class Ascean {
         this.ringOne = ascean.ringOne;
         this.ringTwo = ascean.ringTwo;
         this.trinket = ascean.trinket;
-        this.tutorial = initTutorial;
         this.journal = {
             entries: [],
             currentEntry: 0,

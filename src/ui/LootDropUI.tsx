@@ -6,7 +6,8 @@ import { For, Show } from 'solid-js';
 import ItemModal from '../components/ItemModal';
 import Ascean from '../models/ascean';
 import TutorialOverlay from '../utility/tutorial';
-export default function LootDropUI({ ascean, game }: { ascean: Accessor<Ascean>; game: Accessor<GameState>; }) {
+import Settings from '../models/settings';
+export default function LootDropUI({ ascean, game, settings }: { ascean: Accessor<Ascean>; game: Accessor<GameState>; settings: Accessor<Settings>; }) {
     const [visibleLoot, setVisibleLoot] = createSignal<any[]>([]);
     const [show, setShow] = createSignal<boolean>(false);
     const [lootDrop, setLootDrop] = createSignal<Equipment | undefined>(undefined);
@@ -17,7 +18,7 @@ export default function LootDropUI({ ascean, game }: { ascean: Accessor<Ascean>;
         setVisibleLoot(visible);
     });
     onMount(() => {
-        if (!ascean().tutorial.loot) {
+        if (!settings().tutorial.loot) {
             setShowTutorial(true);
             setTutorial('loot');
         };
@@ -39,7 +40,7 @@ export default function LootDropUI({ ascean, game }: { ascean: Accessor<Ascean>;
         </Show> 
         <Show when={showTutorial()}>
             <div class='modal'>
-                <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
+                <TutorialOverlay ascean={ascean} settings={settings} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
             </div>
         </Show> 
     </div>;

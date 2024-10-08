@@ -400,7 +400,7 @@ export default function PhaserGame (props: IProps) {
             skills: newSkills,
             health: { ...props.ascean().health, current: data.newPlayerHealth },
         };
-        if (!update.tutorial.death) {
+        if (!props.settings().tutorial.death) {
             setTutorial('death');
             setShowTutorial(true);
         };
@@ -493,7 +493,7 @@ export default function PhaserGame (props: IProps) {
             currency: currency,
             firewater: firewater,
         };
-        if (!update.tutorial.deity) {
+        if (!props.settings().tutorial.deity) {
             if (update.experience >= 750 && update.level >= 1) {
                 setTutorial('deity');
                 setShowTutorial(true);  
@@ -616,6 +616,7 @@ export default function PhaserGame (props: IProps) {
         setGame({ ...game(), inventory: props.inventory(), traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary, healthDisplay: props.settings().healthViews });
         instance.game?.registry.set("ascean", stats.ascean);
         instance.game?.registry.set("combat", combat());
+        instance.game?.registry.set("game", game());
         EventBus.emit('update-total-stamina', stats.attributes.stamina as number);    
         EventBus.emit('update-total-grace', stats.attributes.grace as number);    
     };
@@ -701,7 +702,7 @@ export default function PhaserGame (props: IProps) {
     };
 
     function enterGame(): void {
-        if (!props.ascean()?.tutorial?.intro) EventBus.emit('intro');
+        if (!props.settings()?.tutorial?.intro) EventBus.emit('intro');
         setLive(!live());
     };
 

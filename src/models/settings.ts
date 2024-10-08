@@ -1,4 +1,5 @@
 import { STARTING_MASTERY_UI, STARTING_SPECIALS } from "../utility/abilities";
+import { initTutorial, Tutorial } from "../utility/tutorial";
 
 export default class Settings {
     public _id: string;
@@ -112,8 +113,9 @@ export default class Settings {
             x: number; 
             y: number; 
         };
-        solidHud: { right: number; };
+        // solidHud: { right: number; };
     };
+    public tutorial: Tutorial;
 
     public constructor(id: string, mastery: string) {
         this._id = id;
@@ -193,16 +195,16 @@ export default class Settings {
                 base: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].leftJoystick.base,
                 thumb: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].leftJoystick.thumb,
                 opacity: 0.1,
-                x: 0.05, 
-                y: 0.8,
+                x: 0.15, 
+                y: 0.7,
                 width: 1, 
             },
             rightJoystick: { 
                 base: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].rightJoystick.base,
                 thumb: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].rightJoystick.thumb,
                 opacity: 0.1,
-                x: 0.95, 
-                y: 0.8,
+                x: 0.85,
+                y: 0.7,
                 width: 1, 
             },
             actionButtons: {
@@ -211,8 +213,8 @@ export default class Settings {
                 display: 'arc',
                 opacity: 0.75,
                 spacing: 3.57,
-                x: 0.825,
-                y: 0.75,
+                x: 0.7,
+                y: 0.7,
                 width: 1,
             },
             specialButtons: {
@@ -221,8 +223,8 @@ export default class Settings {
                 display: 'arc',
                 opacity: 0.75,
                 spacing: 3.57,
-                x: 0.7675,
-                y: 0.6125,
+                x: 0.6425,
+                y: 0.5625,
                 width: 1,
             },
             fpsText: {
@@ -230,21 +232,22 @@ export default class Settings {
                 y: -0.1,
             },
             leftHud: {
-                offset: 43.75,
-                scale: 0.095,
-                x: 0.15,
-                y: 1.025,
+                offset: 36,
+                scale: 0.08,
+                x: 0.365,
+                y: 0.9125,
             },
             smallHud: { 
-                offset: 43.75,
-                scale: 0.095,
-                x: 0.575, 
-                y: 1.025 
+                offset: 36,
+                scale: 0.08,
+                x: 0.5,
+                y: 0.9125
             },
-            solidHud: {
-                right: 0.5,
-            },
+            // solidHud: {
+            //     right: 0.5,
+            // },
         };
+        this.tutorial = initTutorial;
     };
     [key: string]: any;
 };

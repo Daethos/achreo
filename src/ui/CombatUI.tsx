@@ -34,9 +34,10 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
     const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, false);
     const disengage = () => EventBus.emit('disengage');
     const showPlayer = () => {
-        EventBus.emit('show-player');
+        // EventBus.emit('show-player');
         EventBus.emit('action-button-sound');
         EventBus.emit('update-small-hud');
+        EventBus.emit('outside-press', 'info');
     };
     function caerenic(caerenic: boolean, stealth: boolean) {
         return {

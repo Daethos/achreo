@@ -1,5 +1,5 @@
 import Entity from "./Entity";  
-import { screenShake, sprint, walk } from "../phaser/ScreenShake";
+import { screenShake, sprint, vibrate, walk } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import HealthBar from "../phaser/HealthBar";
@@ -122,7 +122,7 @@ export default class Player extends Entity {
         });
         this.setExistingBody(compoundBody);                                    
         this.sensor = playerSensor;
-        this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 24, 0xfdf6d8, 0)
+        this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 24, 0xfdf6d8, 0);
         this.scene.add.existing(this.weaponHitbox);
 
         this.highlight = this.scene.add.graphics()
@@ -144,7 +144,7 @@ export default class Player extends Entity {
         if (this.scene.state.isCaerenic) this.caerenicUpdate();
         if (this.scene.state.isStalwart) this.stalwartUpdate();
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health, 'player');
-        this.castbar = new CastingBar(this.scene, this.x, this.y, 0, this);
+        this.castbar = new CastingBar(this.scene.hud, this.x, this.y, 0, this);
         this.rushedEnemies = [];
         this.playerStateListener();
         this.setFixedRotation();   
@@ -156,9 +156,12 @@ export default class Player extends Entity {
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
-                const button = this.scene.smallHud.getButton('info');
-                this.scene.smallHud.pressButton(button as Phaser.GameObjects.Image);
+                const button = this.scene.hud.smallHud.getButton('info');
+                // const hud = this.scene.scene.get('Hud') as Hud;
+                this.scene.hud.smallHud.pressButton(button as Phaser.GameObjects.Image);
+                // this.scene.smallHud.pressButton(button as Phaser.GameObjects.Image);
             });
+        scene.registry.set('player', this);
     };   
 
     getAscean = () => {
@@ -182,7 +185,7 @@ export default class Player extends Entity {
 
     caerenicUpdate = () => {
         this.isCaerenic = this.isCaerenic ? false : true;
-        this.scene.sound.play('blink', { volume: this.scene.settings.volume / 3 });
+        this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume / 3 });
         if (this.isCaerenic) {
             this.setGlow(this, true);
             this.setGlow(this.spriteWeapon, true, 'weapon');
@@ -199,7 +202,7 @@ export default class Player extends Entity {
     stalwartUpdate = () => {
         this.isStalwart = this.isStalwart ? false : true;
         this.spriteShield.setVisible(this.isStalwart);
-        this.scene.sound.play('stalwart', { volume: this.scene.settings.volume });
+        this.scene.sound.play('stalwart', { volume: this.scene.hud.settings.volume });
         EventBus.emit('stalwart-buttons', this.isStalwart);
     };
 
@@ -249,6 +252,7 @@ export default class Player extends Entity {
         };
         this.highlight.setPosition(sprite.x, sprite.y);
         this.highlight.setVisible(true);
+        this.scene.targetTarget = sprite;
         if (this.scene.target.visible === true) this.scene.target.setPosition(this.scene.targetTarget.x, this.scene.targetTarget.y);
     };
 
@@ -419,15 +423,15 @@ export default class Player extends Entity {
         };
         if (e.rollSuccess === true) {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Roll', PLAYER.DURATIONS.TEXT, 'heal', true);
-            this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
-            this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
+            this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
+            this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
         };
         if (e.parrySuccess === true) {
             this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Parry', PLAYER.DURATIONS.TEXT, 'heal', true);
             this.scene.combatManager.stunned(e.enemyID);
-            this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
-            this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'parry');
-            this.scene.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
+            this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
+            this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'parry');
+            this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
         };
         if (e.computerRollSuccess === true) this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);
         if (e.newComputerHealth <= 0 && e.playerWin === true) this.defeatedEnemyCheck(e.enemyID);
@@ -456,7 +460,7 @@ export default class Player extends Entity {
             onStart: () => {
                 this.isAttacking = true;
                 screenShake(this.scene);
-                this.scene.sound.play('leap', { volume: this.scene.settings.volume });
+                this.scene.sound.play('leap', { volume: this.scene.hud.settings.volume });
                 this.flickerCarenic(900); 
             },
             onComplete: () => { 
@@ -478,7 +482,7 @@ export default class Player extends Entity {
     rush = () => {
         this.isRushing = true;
         this.isParrying = true;
-        this.scene.sound.play('stealth', { volume: this.scene.settings.volume });        
+        this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });        
         const target = this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
         direction.normalize();
@@ -547,36 +551,36 @@ export default class Player extends Entity {
             const soundEffectMap = (type: string, weapon: Equipment) => {
                 switch (type) {
                     case 'Spooky':
-                        return this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
+                        return this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
                     case 'Righteous':
-                        return this.scene.sound.play('righteous', { volume: this.scene.settings.volume });
+                        return this.scene.sound.play('righteous', { volume: this.scene.hud.settings.volume });
                     case 'Wild':
-                        return this.scene.sound.play('wild', { volume: this.scene.settings.volume });
+                        return this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
                     case 'Earth':
-                        return this.scene.sound.play('earth', { volume: this.scene.settings.volume });
+                        return this.scene.sound.play('earth', { volume: this.scene.hud.settings.volume });
                     case 'Fire':
-                        return this.scene.sound.play('fire', { volume: this.scene.settings.volume });
+                        return this.scene.sound.play('fire', { volume: this.scene.hud.settings.volume });
                     case 'Frost':
-                        return this.scene.sound.play('frost', { volume: this.scene.settings.volume });
+                        return this.scene.sound.play('frost', { volume: this.scene.hud.settings.volume });
                     case 'Lightning':
-                        return this.scene.sound.play('lightning', { volume: this.scene.settings.volume });
+                        return this.scene.sound.play('lightning', { volume: this.scene.hud.settings.volume });
                     case 'Sorcery':
-                        return this.scene.sound.play('sorcery', { volume: this.scene.settings.volume / 3 });
+                        return this.scene.sound.play('sorcery', { volume: this.scene.hud.settings.volume / 3 });
                     case 'Wind':
-                        return this.scene.sound.play('wind', { volume: this.scene.settings.volume });
+                        return this.scene.sound.play('wind', { volume: this.scene.hud.settings.volume });
                     case 'Pierce':
-                        return (weapon.type === 'Bow' || weapon.type === 'Greatbow') ? this.scene.sound.play('bow', { volume: this.scene.settings.volume }) : this.scene.sound.play('pierce', { volume: this.scene.settings.volume });
+                        return (weapon.type === 'Bow' || weapon.type === 'Greatbow') ? this.scene.sound.play('bow', { volume: this.scene.hud.settings.volume }) : this.scene.sound.play('pierce', { volume: this.scene.hud.settings.volume });
                     case 'Slash':
-                        return this.scene.sound.play('slash', { volume: this.scene.settings.volume });
+                        return this.scene.sound.play('slash', { volume: this.scene.hud.settings.volume });
                     case 'Blunt':
-                        return this.scene.sound.play('blunt', { volume: this.scene.settings.volume });
+                        return this.scene.sound.play('blunt', { volume: this.scene.hud.settings.volume });
                 };
             };
             if (sfx.computerDamaged === true) soundEffectMap(sfx.playerDamageType, sfx.weapons[0] as Equipment);                
             if (sfx.playerDamaged === true) soundEffectMap(sfx.computerDamageType, sfx.computerWeapons[0]);
-            if (sfx.religiousSuccess === true) this.scene.sound.play('righteous', { volume: this.scene.settings.volume });            
-            if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.sound.play('roll', { volume: this.scene.settings.volume / 2 });
-            if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) this.scene.sound.play('parry', { volume: this.scene.settings.volume });
+            if (sfx.religiousSuccess === true) this.scene.sound.play('righteous', { volume: this.scene.hud.settings.volume });            
+            if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.sound.play('roll', { volume: this.scene.hud.settings.volume / 2 });
+            if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) this.scene.sound.play('parry', { volume: this.scene.hud.settings.volume });
             EventBus.emit('blend-combat', { 
                 computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false, parrySuccess: false, computerParrySuccess: false, rollSuccess: false, computerRollSuccess: false, criticalSuccess: false, computerCriticalSuccess: false, religiousSuccess: false,
             });
@@ -619,24 +623,17 @@ export default class Player extends Entity {
         };
     };
 
-    tabUpdate = (enemy: Enemy) => {
-        const newTarget = this.targets.find(obj => obj.enemyID === enemy.enemyID);
+    tabUpdate = (tab: any) => {
+        const enemy = this.targets.find(e => e.enemyID === tab.id);
+        if (!enemy) return;
+        enemy.ping();
+        vibrate();
+        if (enemy.enemyID !== this.scene.state.enemyID) this.scene.setupEnemy(enemy);
+        this.currentTarget = enemy;
         this.targetIndex = this.targets.findIndex(obj => obj.enemyID === enemy.enemyID);
-        if (!newTarget) return;
-        if (newTarget.npcType) this.scene.setupNPC(newTarget);
-        this.currentTarget = newTarget;
-        this.targetID = newTarget.enemyID;
-        if (this.currentTarget) {
-            this.highlightTarget(this.currentTarget); 
-            this.animateTarget();
-            if (this.inCombat && !this.scene.state.computer) {
-                this.scene.setupEnemy(this.currentTarget);
-            }; 
-        } else {
-            if (this.highlight.visible) {
-                this.removeHighlight();
-            };
-        };
+        this.highlightTarget(enemy); 
+        this.animateTarget();
+        this.targetID = enemy.enemyID;
     };
 
     tabEnemyNext = () => {
@@ -869,7 +866,7 @@ export default class Player extends Entity {
     };
 
     getEnemyDirection = (target: Enemy | undefined) => {
-        if (this.scene.settings.difficulty.aim) return true;
+        if (this.scene.hud.settings.difficulty.aim) return true;
         if (!target) return false;
         const skills = this.scene.state.player?.skills;
         const type = this.hasMagic ? this.scene.state.playerDamageType : this.scene.state.weapons[0]?.type;
@@ -898,18 +895,18 @@ export default class Player extends Entity {
             (this as any)[cooldown] = limit;
         };
         const type = cooldown.split('Cooldown')[0];
-        this.scene.actionBar.setCurrent(0, limit, type);
-        const button = this.scene.actionBar.getButton(type); 
+        this.scene.hud.actionBar.setCurrent(0, limit, type);
+        const button = this.scene.hud.actionBar.getButton(type); 
         if (this.inCombat || type === 'blink' || type || 'desperation') {
-            this.scene.time.delayedCall(limit, () => {
-                this.scene.actionBar.setCurrent(limit, limit, type);
-                this.scene.actionBar.animateButton(button as ActionButton);
+            this.scene.hud.time.delayedCall(limit, () => {
+                this.scene.hud.actionBar.setCurrent(limit, limit, type);
+                this.scene.hud.actionBar.animateButton(button as ActionButton);
                 if (evasion === false) {
                     (this as any)[cooldown] = 0;
                 };
             }, undefined, this); 
         } else {
-            this.scene.actionBar.setCurrent(limit, limit, type);
+            this.scene.hud.actionBar.setCurrent(limit, limit, type);
             if (!evasion) {
                 (this as any)[cooldown] = 0;
             };
@@ -919,12 +916,12 @@ export default class Player extends Entity {
     swingReset = (type: string, primary = false) => {
         this.canSwing = false;
         const time = this.swingTime(type);
-        const button = this.scene.actionBar.getButton(type);
-        this.scene.actionBar.setCurrent(0, time, type);
+        const button = this.scene.hud.actionBar.getButton(type);
+        this.scene.hud.actionBar.setCurrent(0, time, type);
         this.scene.time.delayedCall(time, () => {
             this.canSwing = true;
-            this.scene.actionBar.setCurrent(time, time, type);
-            if (primary === true) this.scene.actionBar.animateButton(button as ActionButton);
+            this.scene.hud.actionBar.setCurrent(time, time, type);
+            if (primary === true) this.scene.hud.actionBar.animateButton(button as ActionButton);
         }, undefined, this);
     };
 
@@ -1236,7 +1233,7 @@ export default class Player extends Entity {
         } else if (this.highlight.visible) {
             this.removeHighlight();
         };
-        if (this.scene.settings.desktop === true && !this.isSuffering()) {
+        if (this.scene.hud.settings.desktop === true && !this.isSuffering()) {
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.tab.TAB)) {
                 this.tabEnemyNext();
             };
@@ -1244,49 +1241,49 @@ export default class Player extends Entity {
                 this.disengage();
             };
             if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.ONE)) {
-                const button = this.scene.actionBar.getButton(this.scene.settings.specials[0].toLowerCase());
-                if (button?.isReady === true) this.scene.actionBar.pressButton(button, this.scene);
+                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.specials[0].toLowerCase());
+                if (button?.isReady === true) this.scene.hud.actionBar.pressButton(button);
             };
             if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.TWO)) {
-                const button = this.scene.actionBar.getButton(this.scene.settings.specials[1].toLowerCase());
-                if (button?.isReady === true) this.scene.actionBar.pressButton(button, this.scene);
+                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.specials[1].toLowerCase());
+                if (button?.isReady === true) this.scene.hud.actionBar.pressButton(button);
             };
             if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.THREE)) {
-                const button = this.scene.actionBar.getButton(this.scene.settings.specials[2].toLowerCase());
-                if (button?.isReady === true) this.scene.actionBar.pressButton(button, this.scene);
+                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.specials[2].toLowerCase());
+                if (button?.isReady === true) this.scene.hud.actionBar.pressButton(button);
             };
             if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FOUR)) {
-                const button = this.scene.actionBar.getButton(this.scene.settings.specials[3].toLowerCase());
-                if (button?.isReady === true) this.scene.actionBar.pressButton(button, this.scene);
+                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.specials[3].toLowerCase());
+                if (button?.isReady === true) this.scene.hud.actionBar.pressButton(button);
             };
             if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FIVE)) { 
-                const button = this.scene.actionBar.getButton(this.scene.settings.specials[4].toLowerCase());
-                if (button?.isReady === true) this.scene.actionBar.pressButton(button, this.scene);
+                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.specials[4].toLowerCase());
+                if (button?.isReady === true) this.scene.hud.actionBar.pressButton(button);
             };
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.ONE)) {
-                const button = this.scene.actionBar.getButton(this.scene.settings.actions[0].toLowerCase());
+                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.actions[0].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);
+                if (button?.isReady === true && clear === true) this.scene.hud.actionBar.pressButton(button);
             };
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.TWO)) {
-                const button = this.scene.actionBar.getButton(this.scene.settings.actions[1].toLowerCase());
+                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.actions[1].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);
+                if (button?.isReady === true && clear === true) this.scene.hud.actionBar.pressButton(button);
             };
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.THREE)) {
-                const button = this.scene.actionBar.getButton(this.scene.settings.actions[2].toLowerCase());
+                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.actions[2].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);
+                if (button?.isReady === true && clear === true) this.scene.hud.actionBar.pressButton(button);
             };
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FOUR)) {
-                const button = this.scene.actionBar.getButton(this.scene.settings.actions[3].toLowerCase());
+                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.actions[3].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);
+                if (button?.isReady === true && clear === true) this.scene.hud.actionBar.pressButton(button);
             };
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FIVE)) {
-                const button = this.scene.actionBar.getButton(this.scene.settings.actions[4].toLowerCase());
+                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.actions[4].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady === true && clear === true) this.scene.actionBar.pressButton(button, this.scene);
+                if (button?.isReady === true && clear === true) this.scene.hud.actionBar.pressButton(button);
             };
         };
     };
@@ -1456,7 +1453,7 @@ export default class Player extends Entity {
 
     handleMovement = () => {
         let speed = this.speed;
-        if (this.scene.settings.desktop === true) {
+        if (this.scene.hud.settings.desktop === true) {
             if (this.inputKeys.right.D.isDown || this.inputKeys.right.RIGHT.isDown) {
                 this.playerVelocity.x += this.acceleration;
                 this.flipX = false;
@@ -1492,18 +1489,18 @@ export default class Player extends Entity {
                 this.playerVelocity.y = 0;
             };
         } else {
-            if (this.scene.joystickKeys.right.isDown) {
+            if (this.scene.hud.joystickKeys.right.isDown) {
                 this.playerVelocity.x += this.acceleration;
                 this.flipX = false;
             };
-            if (this.scene.joystickKeys.left.isDown) {
+            if (this.scene.hud.joystickKeys.left.isDown) {
                 this.playerVelocity.x -= this.acceleration;
                 this.flipX = true;
             };
-            if (this.scene.joystickKeys.up.isDown) {
+            if (this.scene.hud.joystickKeys.up.isDown) {
                 this.playerVelocity.y -= this.acceleration;
             }; 
-            if (this.scene.joystickKeys.down.isDown) {
+            if (this.scene.hud.joystickKeys.down.isDown) {
                 this.playerVelocity.y += this.acceleration;
             };
             if (this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0) {
@@ -1514,16 +1511,16 @@ export default class Player extends Entity {
                 speed -= 0.1;    
                 this.flipX = false;
             };
-            if (!this.isSuffering() && this.playerVelocity.x !== 0 && !this.scene.joystickKeys.left.isDown && !this.scene.joystickKeys.right.isDown) {
+            if (!this.isSuffering() && this.playerVelocity.x !== 0 && !this.scene.hud.joystickKeys.left.isDown && !this.scene.hud.joystickKeys.right.isDown) {
                 this.playerVelocity.x = 0;
             };
-            if (!this.isSuffering() && this.playerVelocity.x !== 0 && !this.scene.joystickKeys.right.isDown && !this.scene.joystickKeys.left.isDown) {
+            if (!this.isSuffering() && this.playerVelocity.x !== 0 && !this.scene.hud.joystickKeys.right.isDown && !this.scene.hud.joystickKeys.left.isDown) {
                 this.playerVelocity.x = 0;
             };
-            if (!this.isSuffering() && this.playerVelocity.y !== 0 && !this.scene.joystickKeys.down.isDown && !this.scene.joystickKeys.up.isDown) {
+            if (!this.isSuffering() && this.playerVelocity.y !== 0 && !this.scene.hud.joystickKeys.down.isDown && !this.scene.hud.joystickKeys.up.isDown) {
                 this.playerVelocity.y = 0;
             };
-            if (!this.isSuffering() && this.playerVelocity.y !== 0 && !this.scene.joystickKeys.up.isDown && !this.scene.joystickKeys.down.isDown) {
+            if (!this.isSuffering() && this.playerVelocity.y !== 0 && !this.scene.hud.joystickKeys.up.isDown && !this.scene.hud.joystickKeys.down.isDown) {
                 this.playerVelocity.y = 0;
             };
         };

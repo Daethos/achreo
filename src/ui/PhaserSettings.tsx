@@ -170,7 +170,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         </div>
         <Switch>
             <Match when={settings().control === CONTROLS.BUTTONS}>
-            <div class='' style={dimensions().ORIENTATION === 'landscape' ? { 'text-align': 'center', margin: 'auto', 'margin-bottom': '0' } : { 'margin-top': '50%' }}>
+            <div class='' style={dimensions().ORIENTATION === 'landscape' ? { margin: '25% auto 0' } : { 'margin-top': '50%' }}>
                 <div style={font('1em', '#fdf6d8')}>Physical Actions<br /></div>
                 {settings().actions?.map((action: string, index: number) =>
                     <button class='highlight' onClick={() => actionModal(action, index)} style={{display: 'block'}}>
@@ -178,7 +178,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                     </button>
                 )}
                 </div>
-                <div class='center' style={dimensions().ORIENTATION === 'landscape' ? { 'text-align': 'center', margin: 'auto', 'margin-bottom': '0' } : { 'margin-top': '50%' }}>
+                <div class='' style={dimensions().ORIENTATION === 'landscape' ? { margin: '25% auto 0' } : { 'margin-top': '50%' }}>
                     <div style={font('1em', '#fdf6d8')}>Special Actions<br /></div>
                     {settings().specials?.map((special: string, index: number) => 
                         <button  class='highlight' onClick={() => specialModal(special, index)} style={{display: 'block'}}>

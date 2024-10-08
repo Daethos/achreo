@@ -32,5 +32,8 @@ export default function LootDrop({ lootDrop, setShow, setLootDrop }: Props) {
                 <div class='gold'>Take the {lootDrop?.name}?</div>
             </button>
         </div>
+        <div class='highlight cornerBR' onClick={() => EventBus.emit('blend-game', { showLoot: false })} style={{ color: 'red' }}>
+            X
+        </div>
     </div>;
 };

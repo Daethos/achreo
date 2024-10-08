@@ -1,9 +1,8 @@
 import { EventBus } from '../EventBus';
 import { PLAYER, STAMINA, staminaCheck } from '../../utility/player';
-import { Game } from '../scenes/Game';
-import { Underground } from '../scenes/Underground';
 import { vibrate } from './ScreenShake';
 import { ACTION_ORIGIN } from '../../utility/actions';
+import { Hud } from '../scenes/Hud';
 const ACTIONS = [
     { ATTACK: 0x800080 }, // 0xFA0000 
     { POSTURE: 0x800080 }, // 0x005100 
@@ -35,7 +34,7 @@ const SETTINGS = {
     BORDER_OFFSET: 1,
 };
 const PADDING = 12;
-const WIDTH = 300;
+const WIDTH = 250;
 export type ActionButton = {
     key: string;
     name: string;
@@ -68,9 +67,9 @@ class Tooltip {
         });
         this.container.setDepth(depth + 1);
     };
-    createTimer(scene: Game | Underground) {
+    createTimer(scene: Hud) {
         this.timer = scene.time.addEvent({
-            delay: 1000,
+            delay: 500,
             callback: () => {
                 if (this.refresh) {
                     this.refresh = false;
@@ -82,7 +81,7 @@ class Tooltip {
             loop: true
         });
     };
-    hideTooltip(scene: Game | Underground) {
+    hideTooltip(scene: Hud) {
         this.timer?.remove();
         this.timer = undefined;
         this.refresh = false; 
@@ -98,7 +97,7 @@ class Tooltip {
             callbackScope: this.container
         });
     };
-    updateTooltip(map: Map<string, Tooltip>, pointer: any, scene: Game | Underground) {
+    updateTooltip(map: Map<string, Tooltip>, pointer: any, scene: Hud) {
         let depth = 0;
         this.refresh = true;
         map.forEach((value) => {
@@ -131,7 +130,7 @@ class Tooltip {
     };
 };
 export default class ActionButtons extends Phaser.GameObjects.Container {
-    public scene: Game | Underground;
+    public scene: Hud;
     public actionButtons: ActionButton[];
     public specialButtons: ActionButton[];
     private buttonWidth: number;
@@ -141,7 +140,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     private graphicTimer: any;
     private tooltipManager: Map<string, Tooltip>;
 
-    constructor(scene: Game | Underground) {
+    constructor(scene: Hud) {
         super(scene);
         this.scene = scene;
         this.actionButtons = [];
@@ -224,7 +223,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         });
     }; 
 
-    private addButtons = (scene: Game | Underground): void => {
+    private addButtons = (scene: Hud): void => {
         const { width, height } = scene.cameras.main;
         const centerActionX = width * scene.settings.positions.actionButtons.x; // / 1.25
         const centerActionY = height * scene.settings.positions.actionButtons.y; // / 1.35
@@ -257,7 +256,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             this.scaleButton(button, scene.settings.positions.actionButtons.width, scene.settings.positions.actionButtons.opacity, scene.settings.positions.actionButtons.border);
             button.graphic.setInteractive(new Phaser.Geom.Circle(buttonX, buttonY, button.width), Phaser.Geom.Circle.Contains)
                 .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
-                    this.pressButton(button, scene);
+                    this.pressButton(button);
                 })
                 .on('pointerover', (pointer: any) => {
                     this.setButtonText(button, pointer);
@@ -307,7 +306,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             this.scaleButton(button, 0.75 * scene.settings.positions.specialButtons.width, scene.settings.positions.specialButtons.opacity, scene.settings.positions.specialButtons.border);
             button.graphic.setInteractive(new Phaser.Geom.Circle(buttonX, buttonY, button.width), Phaser.Geom.Circle.Contains)
                 .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
-                    this.pressButton(button, scene);
+                    this.pressButton(button);
                 })
                 .on('pointerover', (pointer: any) => {
                     this.setButtonText(button, pointer);
@@ -413,8 +412,10 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const endAngle = Math.PI / 2; // End angle (90 degrees) for the quarter circle 
         let angle = 0, buttonX = 0, buttonY = 0; 
         if (this.scene.settings.desktop) {
-            const centerX = key === 'action' ? this.scene.cameras.main.width * 0.003 : this.scene.cameras.main.width / 3;
-            const bottomY = this.scene.cameras.main.height - (this.buttonHeight * 3);
+            const centerX = key === 'action' ? this.scene.gameWidth * 0.003 : this.scene.gameWidth / 3;
+            const bottomY = this.scene.gameHeight - (this.buttonHeight * 5);
+            // const centerX = key === 'action' ? this.scene.cameras.main.width * 0.003 : this.scene.cameras.main.width / 3;
+            // const bottomY = this.scene.cameras.main.height - (this.buttonHeight * 3);
             buttonX = centerX + index * (radius / spacing);
             // buttonX = centerX - (index + 1) * (radius / spacing); // Clean but backwards
             buttonY = bottomY;
@@ -493,7 +494,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     private redisplayButton = (data: { type: string, display: string }) => {
         const { type, display } = data;
-        const { width, height } = this.scene.cameras.main;
+        const height = this.scene.gameHeight, width = this.scene.gameWidth;
+        // const { width, height } = this.scene.cameras.main;
         const centerActionX = width * this.scene.settings.positions.actionButtons.x; // / 1.25
         const centerActionY = height * this.scene.settings.positions.actionButtons.y; // / 1.35
         const centerSpecialX = width * this.scene.settings.positions.specialButtons.x; // width * 0.725 || / 1.375
@@ -537,7 +539,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     private opacityButton = (data: { type: string, opacity: number }) => {
         const { type, opacity } = data;
-        const { width, height } = this.scene.cameras.main;
+        const height = this.scene.gameHeight, width = this.scene.gameWidth;
+        // const { width, height } = this.scene.cameras.main;
         const centerActionX = width * this.scene.settings.positions.actionButtons.x; // / 1.25
         const centerActionY = height * this.scene.settings.positions.actionButtons.y; // / 1.35
         const centerSpecialX = width * this.scene.settings.positions.specialButtons.x; // width * 0.725 || / 1.375
@@ -581,7 +584,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     private reborderButton = (data: { type: string, border: number }) => {
         const { type, border } = data;
-        const { width, height } = this.scene.cameras.main;
+        const height = this.scene.gameHeight, width = this.scene.gameWidth;
+        // const { width, height } = this.scene.cameras.main;
         const centerActionX = width * this.scene.settings.positions.actionButtons.x; // / 1.25
         const centerActionY = height * this.scene.settings.positions.actionButtons.y; // / 1.35
         const centerSpecialX = width * this.scene.settings.positions.specialButtons.x; // width * 0.725 || / 1.375
@@ -625,7 +629,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     private recolorButton = (data: { type: string, color: number }) => {
         const { type, color } = data;
-        const { width, height } = this.scene.cameras.main;
+        const height = this.scene.gameHeight, width = this.scene.gameWidth;
+        // const { width, height } = this.scene.cameras.main;
         const centerActionX = width * this.scene.settings.positions.actionButtons.x; // / 1.25
         const centerActionY = height * this.scene.settings.positions.actionButtons.y; // / 1.35
         const centerSpecialX = width * this.scene.settings.positions.specialButtons.x; // width * 0.725 || / 1.375
@@ -671,7 +676,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     private respaceButton = (data: { type: string, spacing: number }) => {
         const { type, spacing } = data;
-        const { width, height } = this.scene.cameras.main;
+        const height = this.scene.gameHeight, width = this.scene.gameWidth;
+        // const { width, height } = this.scene.cameras.main;
         const centerActionX = width * this.scene.settings.positions.actionButtons.x; // / 1.25
         const centerActionY = height * this.scene.settings.positions.actionButtons.y; // / 1.35
         const centerSpecialX = width * this.scene.settings.positions.specialButtons.x; // width * 0.725 || / 1.375
@@ -715,14 +721,15 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     private repositionButtons = (data: {type: string, x: number, y: number}): void => {
         const { type, x, y } = data;
-        const { width, height } = this.scene.cameras.main;
+        const height = this.scene.gameHeight, width = this.scene.gameWidth;
+        // const { width, height } = this.scene.cameras.main;
         
         switch (type) {
             case 'action': {
                 const centerActionX = width * x; // / 1.25
                 const centerActionY = height * y; // / 1.35
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
-                    if ((button.name === 'DODGE' || button.name === 'ROLL') && this.scene.player.isStalwart === true) return button;
+                    if ((button.name === 'DODGE' || button.name === 'ROLL') && this.scene.registry.get('player').isStalwart === true) return button; // this.scene.player
                     button.graphic.clear();
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(button.key, this.scene.settings.positions.actionButtons.display, this.scene.settings.positions.actionButtons.spacing, index, centerActionX, centerActionY, height);
@@ -782,30 +789,31 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         };
     };
 
-    public pressButton = (button: ActionButton, scene: Game | Underground): void => {
+    public pressButton = (button: ActionButton): void => {
         const input = button.name.toLowerCase();
         const type = STAMINA.includes(input);
         let check: {success: boolean; cost: number;} = {success: false, cost: 0};
+        const player = this.scene.registry.get('player');
         if (type === true) {
-            check = staminaCheck(this.scene.player.stamina, PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA]);
+            check = staminaCheck(player.stamina, PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA]);
         } else {
-            check = staminaCheck(this.scene.player.grace, PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA]);
+            check = staminaCheck(player.grace, PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA]);
         };
-        if (check.success === true && scene.player.playerMachine.stateMachine.isState(input)) {
-            scene.player.playerMachine.stateMachine.setState(`${input}`);
-        } else if (check.success === true && scene.player.playerMachine.positiveMachine.isState(input)) {
-            scene.player.playerMachine.positiveMachine.setState(`${input}`);
+        if (check.success === true && player.playerMachine.stateMachine.isState(input)) {
+            player.playerMachine.stateMachine.setState(`${input}`);
+        } else if (check.success === true && player.playerMachine.positiveMachine.isState(input)) {
+            player.playerMachine.positiveMachine.setState(`${input}`);
         };
         if (check.success) {
             vibrate();
             const tooltip = this.tooltipManager.get(button.name);
-            if (tooltip && !tooltip.timer) tooltip.createTimer(scene);
+            if (tooltip && !tooltip.timer) tooltip.createTimer(this.scene);
         };
     };
 
     public setCurrent = (current: number, limit: number, name: string) => {
         this.actionButtons = this.actionButtons.map((button) => {
-            if ((button.name === 'DODGE' || button.name === 'ROLL') && this.scene.player.isStalwart === true) return button;
+            if ((button.name === 'DODGE' || button.name === 'ROLL') && this.scene.registry.get('player').isStalwart === true) return button; // this.scene.player
             if (button.name === name.toUpperCase()) {
                 const progressPercentage = current / limit;
                 if (current / limit >= 1) {
@@ -902,7 +910,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 
     private scaleButton = (button: ActionButton, scale: number, opacity: number, border: number): ActionButton => {
-        if ((button.name === 'DODGE' || button.name === 'ROLL') && this.scene.player.isStalwart === true) return button;
+        if ((button.name === 'DODGE' || button.name === 'ROLL') && this.scene.registry.get('player').isStalwart === true) return button; // this.scene.player
         if (button.current / button.total >= 1) {
             button.graphic.clear();
             button.graphic.fillStyle(button.color, opacity);
@@ -916,8 +924,21 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     private setButtonInteractive = (button: ActionButton): ActionButton => {
         button.graphic.setInteractive(new Phaser.Geom.Circle(button.x, button.y, button.width), Phaser.Geom.Circle.Contains)
-            .on('pointerdown', (_pointer: any, _localX: any, _localY: any, _event: any) => {
-                this.pressButton(button, this.scene);
+            .on('pointerdown', (_pointer: Phaser.Input.Pointer, _localX: any, _localY: any, _event: any) => {
+                // console.log(pointer, 'Pointer!');
+                // const sceneG = pointer.manager.game.scene.isActive('Game');
+                // const sceneU = pointer.manager.game.scene.isActive('Underground');
+                // if (sceneG) {
+
+                //     console.log(`Game Active: ${sceneG}`, 'color:gold');
+                //     this.pressButton(button);
+
+                // } else if (sceneU) {
+                //     console.log(`Underground Active: ${sceneU}`, 'color:gold');
+                //     this.pressButton(button);
+                // }
+                // // console.log(`Game Active: ${sceneG}, Underground Active: ${sceneU}`, 'color:gold');
+                this.pressButton(button);
             })
             .on('pointerover', (pointer: any) => {
                 this.setButtonText(button, pointer);
@@ -935,7 +956,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 
     private setButtonText = (button: ActionButton, pointer: any) => {
-        if (this.scene.combat || !this.scene.settings.difficulty.tooltips) return;
+        if (this.scene.registry.get('player').inCombat || !this.scene.settings.difficulty.tooltips) return; // this.scene.combat ||
         let tooltip = this.tooltipManager.get(button.name);
         if (tooltip && tooltip.container) {
             tooltip.updateTooltip(this.tooltipManager, pointer, this.scene);
@@ -946,7 +967,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 align: 'left',
                 color: '#ffd700',
                 fontFamily: 'Cinzel-Regular',
-                fontSize: '24px',
+                fontSize: '20px',
                 stroke: '#000',
                 strokeThickness: 2,
                 padding: { left: PADDING, right: PADDING, top: PADDING, bottom: 5 },
@@ -956,7 +977,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 align: 'left',
                 color: '#fdf6d8',
                 fontFamily: 'Cinzel-Regular',
-                fontSize: '18px',
+                fontSize: '16px',
                 stroke: '#000',
                 strokeThickness: 1.5,
                 padding: { left: PADDING, right: PADDING, top: PADDING / 2, bottom: PADDING /2 },
@@ -966,7 +987,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 align: 'left',
                 color: STAMINA.includes(button.name.toLowerCase()) ? '#0f0' : '#0cf',
                 fontFamily: 'Cinzel-Regular',
-                fontSize: '18px',
+                fontSize: '16px',
                 stroke: '#000',
                 strokeThickness: 1.5,
                 padding: { left: PADDING, right: PADDING, top: PADDING / 2, bottom: PADDING /2 },

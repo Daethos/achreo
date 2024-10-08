@@ -232,7 +232,7 @@ export default class PlayerMachine {
         this.player.isDodging = true;
         this.scene.combatManager.useStamina(PLAYER.STAMINA.DODGE);
         this.player.swingReset(States.DODGE, true);
-        this.scene.sound.play('dodge', { volume: this.scene.settings.volume / 2 });
+        this.scene.sound.play('dodge', { volume: this.scene.hud.settings.volume / 2 });
         this.player.wasFlipped = this.player.flipX; 
         this.player.body.parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;
         this.player.body.parts[2].circleRadius = PLAYER.SENSOR.EVADE;
@@ -264,7 +264,7 @@ export default class PlayerMachine {
         this.player.isRolling = true;
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ROLL);
         this.player.swingReset(States.ROLL, true);
-        this.scene.sound.play('roll', { volume: this.scene.settings.volume / 2 });
+        this.scene.sound.play('roll', { volume: this.scene.hud.settings.volume / 2 });
         this.player.body.parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;
         this.player.body.parts[2].circleRadius = PLAYER.SENSOR.EVADE;
         this.player.body.parts[1].vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
@@ -344,7 +344,7 @@ export default class PlayerMachine {
             });
             this.player.setTimeEvent('achireCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
             this.player.castingSuccess = false;
-            this.scene.sound.play('wild', { volume: this.scene.settings.volume });
+            this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ACHIRE);
             screenShake(this.scene, 90);
         };
@@ -381,7 +381,7 @@ export default class PlayerMachine {
             });
             this.player.setTimeEvent('astraveCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
             this.player.castingSuccess = false;
-            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+            this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ASTRAVE);    
         };
         this.player.isCasting = false;
@@ -392,7 +392,7 @@ export default class PlayerMachine {
 
     onArcEnter = () => {
         this.player.isArcing = true;
-        this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+        this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Arcing', PLAYER.DURATIONS.ARCING / 2, 'damage');
         this.player.castbar.setTotal(PLAYER.DURATIONS.ARCING);
         this.player.castbar.setTime(PLAYER.DURATIONS.ARCING, 0xFF0000);
@@ -433,7 +433,7 @@ export default class PlayerMachine {
     };
 
     onBlinkEnter = () => {
-        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
+        this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
         if (this.player.velocity.x > 0) {
             // this.setVelocityX(PLAYER.SPEED.BLINK);
             this.player.setPosition(Math.min(this.player.x + PLAYER.SPEED.BLINK, this.scene.map.widthInPixels), this.player.y);
@@ -481,7 +481,7 @@ export default class PlayerMachine {
             this.scene.combatManager.confuse(this.player.spellTarget);
             this.player.setTimeEvent('confuseCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
             this.player.castingSuccess = false;
-            this.scene.sound.play('death', { volume: this.scene.settings.volume });
+            this.scene.sound.play('death', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.CONFUSE);    
             screenShake(this.scene);
             EventBus.emit('special-combat-text', {
@@ -499,7 +499,7 @@ export default class PlayerMachine {
     onConsumeEnter = () => {
         if (this.scene.state.playerEffects.length === 0) return;
         this.player.isPraying = true;
-        this.scene.sound.play('consume', { volume: this.scene.settings.volume });
+        this.scene.sound.play('consume', { volume: this.scene.hud.settings.volume });
         this.player.setTimeEvent('consumeCooldown', PLAYER.COOLDOWNS.SHORT);
     };
     onConsumeUpdate = (_dt: number) => {
@@ -524,7 +524,7 @@ export default class PlayerMachine {
         const desperationCooldown = this.player.inCombat ? PLAYER.COOLDOWNS.LONG : PLAYER.COOLDOWNS.SHORT;
         this.player.setTimeEvent('desperationCooldown', desperationCooldown);  
         this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 50, id: this.player.playerID }, type: 'Health' });
-        this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
+        this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
     };
 
     onDevourEnter = () => {
@@ -533,7 +533,7 @@ export default class PlayerMachine {
         this.player.isCasting = true;
         this.player.currentTarget.isConsumed = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.DEVOUR);
-        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
+        this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
         this.player.flickerCarenic(2000); 
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Devouring', PLAYER.DURATIONS.DEVOUR / 2, 'damage');
         this.player.castbar.setTotal(PLAYER.DURATIONS.DEVOUR);
@@ -600,7 +600,7 @@ export default class PlayerMachine {
             this.scene.combatManager.fear(this.player.spellTarget);
             this.player.setTimeEvent('fearCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.MODERATE : PLAYER.COOLDOWNS.MODERATE / 3);  
             this.player.castingSuccess = false;
-            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+            this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.FEAR);    
             screenShake(this.scene);
             EventBus.emit('special-combat-text', {
@@ -627,7 +627,7 @@ export default class PlayerMachine {
         this.player.aoe = new AoE(this.scene, 'fyerus', 6, false, undefined, true);    
         this.scene.combatManager.useGrace(PLAYER.STAMINA.FYERUS);    
         this.player.setTimeEvent('fyerusCooldown', PLAYER.COOLDOWNS.SHORT);
-        this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+        this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You unearth the fires and water from the land of hush and tendril.`
         });
@@ -672,7 +672,7 @@ export default class PlayerMachine {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.HEALING);
             this.player.castingSuccess = false;
             this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 25, id: this.player.playerID }, type: 'Health' });
-            this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
+            this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
         };
         this.player.isCasting = false;
         this.player.castbar.reset();
@@ -707,7 +707,7 @@ export default class PlayerMachine {
             this.chiomism(this.player.spellTarget, 100);
             this.player.setTimeEvent('ilirechCooldown', PLAYER.COOLDOWNS.MODERATE);
             this.player.castingSuccess = false;
-            this.scene.sound.play('fire', { volume: this.scene.settings.volume });
+            this.scene.sound.play('fire', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ILIRECH);    
         };
         this.player.isCasting = false;
@@ -733,7 +733,7 @@ export default class PlayerMachine {
         if (!this.player.currentTarget || this.player.currentTarget.isDefeated) return;
         this.player.setTimeEvent('invokeCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.combatManager.combatMachine.action({ type: 'Instant', data: this.scene.state.playerBlessing });
-        this.scene.sound.play('prayer', { volume: this.scene.settings.volume });
+        this.scene.sound.play('prayer', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.useGrace(PLAYER.STAMINA.INVOKE);
     };
 
@@ -763,7 +763,7 @@ export default class PlayerMachine {
             });
             this.player.setTimeEvent('kynisosCooldown', PLAYER.COOLDOWNS.SHORT);
             this.player.kynisosSuccess = false;
-            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+            this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.KYNISOS);    
         };
         this.player.castbar.reset();
@@ -776,7 +776,7 @@ export default class PlayerMachine {
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.isCasting = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.KYRNAICISM);
-        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
+        this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
         this.player.flickerCarenic(3000); 
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Kyrnaicism', PLAYER.DURATIONS.KYRNAICISM / 2, 'damage');
         this.player.castbar.setTotal(PLAYER.DURATIONS.KYRNAICISM);
@@ -875,7 +875,7 @@ export default class PlayerMachine {
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
             this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.player.spellTarget } });
         };
-        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
+        this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
     };
     sacrifice = (id: string, power: number) => {
         this.player.entropicMultiplier(power);
@@ -954,7 +954,7 @@ export default class PlayerMachine {
             });
             this.player.setTimeEvent('maierethCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
             this.player.castingSuccess = false;
-            this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
+            this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.MAIERETH);    
         };
         this.player.isCasting = false;
@@ -968,7 +968,7 @@ export default class PlayerMachine {
     onHookEnter = () => {
         this.player.particleEffect = this.scene.particleManager.addEffect('hook', this.player, 'hook', true);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Hook', DURATION.TEXT, 'damage', false, true);
-        this.scene.sound.play('dungeon', { volume: this.scene.settings.volume });
+        this.scene.sound.play('dungeon', { volume: this.scene.hud.settings.volume });
         this.player.flickerCarenic(750);
         this.player.setTimeEvent('hookCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
         this.scene.combatManager.useGrace(PLAYER.STAMINA.HOOK);
@@ -986,11 +986,11 @@ export default class PlayerMachine {
     };
 
     onMarkEnter = () => {
-        if (this.scene.settings.desktop === false) {
+        if (this.scene.hud.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(false);
             this.scene.rightJoystick.joystick.setVisible(false);
         };
-        this.scene.actionBar.setVisible(false);
+        this.scene.hud.actionBar.setVisible(false);
         this.player.setStatic(true);
         this.player.isPraying = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Marking', DURATION.TEXT, 'effect', false, true);
@@ -998,16 +998,16 @@ export default class PlayerMachine {
     };
     onMarkUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onMarkExit = () => {
-        if (this.scene.settings.desktop === false) {  
+        if (this.scene.hud.settings.desktop === false) {  
             this.scene.joystick.joystick.setVisible(true);
             this.scene.rightJoystick.joystick.setVisible(true);
         };
-        this.scene.actionBar.setVisible(true);
+        this.scene.hud.actionBar.setVisible(true);
         this.player.mark.setPosition(this.player.x, this.player.y + 24);
         this.player.mark.setVisible(true);
         this.player.animateMark();
         this.player.animateMark();
-        this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
+        this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
         this.player.setTimeEvent('markCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.combatManager.useGrace(PLAYER.STAMINA.MARK);
         this.player.setStatic(false);
@@ -1019,22 +1019,22 @@ export default class PlayerMachine {
         this.player.isPraying = true;
         this.player.isNetherswapping = true;
         this.player.netherswapTarget = this.player.currentTarget;
-        if (this.scene.settings.desktop === false) {
+        if (this.scene.hud.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(false);
             this.scene.rightJoystick.joystick.setVisible(false);
         };
-        this.scene.actionBar.setVisible(false);
+        this.scene.hud.actionBar.setVisible(false);
         this.player.flickerCarenic(1000);
     };
     onNetherswapUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onNetherswapExit = () => {
         if (this.player.isNetherswapping === false) return;
         this.player.isNetherswapping = false;
-        if (this.scene.settings.desktop === false) {  
+        if (this.scene.hud.settings.desktop === false) {  
             this.scene.joystick.joystick.setVisible(true);
             this.scene.rightJoystick.joystick.setVisible(true);
         };
-        this.scene.actionBar.setVisible(true);
+        this.scene.hud.actionBar.setVisible(true);
         this.player.setStatic(false);
         if (this.player.netherswapTarget === undefined) return; 
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Netherswap', DURATION.TEXT / 2, 'effect', false, true);
@@ -1043,7 +1043,7 @@ export default class PlayerMachine {
         this.player.setPosition(enemy.x, enemy.y);
         this.player.netherswapTarget.setPosition(player.x, player.y);
         this.player.netherswapTarget = undefined;
-        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
+        this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
         this.player.setTimeEvent('netherswapCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.combatManager.useGrace(PLAYER.STAMINA.NETHERSWAP);
     };
@@ -1053,23 +1053,23 @@ export default class PlayerMachine {
         this.player.isPraying = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Recalling', DURATION.TEXT, 'effect', false, true);
         this.player.flickerCarenic(1000);
-        if (this.scene.settings.desktop === false) {
+        if (this.scene.hud.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(false);
             this.scene.rightJoystick.joystick.setVisible(false);
         };
-        this.scene.actionBar.setVisible(false);
+        this.scene.hud.actionBar.setVisible(false);
         this.player.setTimeEvent('recallCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.combatManager.useGrace(PLAYER.STAMINA.RECALL);
     };
     onRecallUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onRecallExit = () => {
-        if (this.scene.settings.desktop === false) {  
+        if (this.scene.hud.settings.desktop === false) {  
             this.scene.joystick.joystick.setVisible(true);
             this.scene.rightJoystick.joystick.setVisible(true);
-            this.scene.actionBar.setVisible(true);
+            this.scene.hud.actionBar.setVisible(true);
         };
         this.player.setPosition(this.player.mark.x, this.player.mark.y - 24);
-        this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
+        this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
         this.player.animateMark();
         this.player.setStatic(false);
     };
@@ -1099,7 +1099,7 @@ export default class PlayerMachine {
             this.player.setTimeEvent('paralyzeCooldown', PLAYER.COOLDOWNS.MODERATE);  
             this.scene.combatManager.useGrace(PLAYER.STAMINA.PARALYZE);
             this.player.castingSuccess = false;
-            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });        
+            this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });        
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You paralyze ${this.scene.state.computer?.name} for several seconds!`
             });
@@ -1141,7 +1141,7 @@ export default class PlayerMachine {
             this.player.setTimeEvent('polymorphCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.scene.combatManager.useGrace(PLAYER.STAMINA.POLYMORPH);
             this.player.castingSuccess = false;
-            this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });        
+            this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });        
             screenShake(this.scene);
         };
         this.player.spellTarget = '';
@@ -1154,7 +1154,7 @@ export default class PlayerMachine {
 
     onPursuitEnter = () => {
         if (this.player.outOfRange(PLAYER.RANGE.LONG)) return; 
-        this.scene.sound.play('wild', { volume: this.scene.settings.volume });
+        this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
         if (this.player.currentTarget) {
             if (this.player.currentTarget.flipX) {
                 this.player.setPosition(this.player.currentTarget.x + 16, this.player.currentTarget.y);
@@ -1200,7 +1200,7 @@ export default class PlayerMachine {
             });
             this.player.setTimeEvent('quorCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
             this.player.castingSuccess = false;
-            this.scene.sound.play('freeze', { volume: this.scene.settings.volume });
+            this.scene.sound.play('freeze', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.QUOR);    
             screenShake(this.scene, 180, 0.006);
         };
@@ -1258,7 +1258,7 @@ export default class PlayerMachine {
             return;
         };
         this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 15, id: this.player.playerID }, type: 'Health' });
-        this.scene.sound.play('phenomena', { volume: this.scene.settings.volume });
+        this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
     };
 
     onRootingEnter = () => {
@@ -1318,7 +1318,7 @@ export default class PlayerMachine {
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.isSlowing = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Slow', 750, 'cast');
-        this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
+        this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.slow(this.player.spellTarget, 3000);
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SLOW);
         this.player.setTimeEvent('slowCooldown', PLAYER.COOLDOWNS.SHORT); 
@@ -1337,7 +1337,7 @@ export default class PlayerMachine {
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.isSacrificing = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Sacrifice', 750, 'effect');
-        this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+        this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SACRIFICE);
         this.sacrifice(this.player.spellTarget, 10);
         this.player.setTimeEvent('sacrificeCooldown', PLAYER.COOLDOWNS.MODERATE);
@@ -1373,7 +1373,7 @@ export default class PlayerMachine {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.SNARE);
             this.scene.combatManager.snare(this.player.spellTarget);
             this.player.castingSuccess = false;
-            this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
+            this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
             screenShake(this.scene);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You ensorcel ${this.player.spellName}, snaring them!`
@@ -1399,7 +1399,7 @@ export default class PlayerMachine {
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.isSuturing = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Suture', 750, 'effect');
-        this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
+        this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SUTURE);
         this.suture(this.player.spellTarget, 10);
         this.player.setTimeEvent('sutureCooldown', PLAYER.COOLDOWNS.MODERATE);
@@ -1419,7 +1419,7 @@ export default class PlayerMachine {
         this.player.isAbsorbing = true;
         this.player.negationName = States.ABSORB;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.ABSORB);    
-        this.scene.sound.play(States.ABSORB, { volume: this.scene.settings.volume });
+        this.scene.sound.play(States.ABSORB, { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Absorbing', 750, 'effect');
         this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'aqua', PLAYER.DURATIONS.ABSORB);
         this.player.setTimeEvent('absorbCooldown', PLAYER.COOLDOWNS.MODERATE);
@@ -1438,7 +1438,7 @@ export default class PlayerMachine {
     onAbsorbUpdate = (_dt: number) => {if (!this.player.isAbsorbing) this.positiveMachine.setState(States.CLEAN);};
 
     absorb = () => {
-        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
+        this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Abosrbed', 500, 'effect');
         this.scene.combatManager.useGrace(-25);
     };
@@ -1446,7 +1446,7 @@ export default class PlayerMachine {
     onChiomicEnter = () => {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.CHIOMIC);    
         this.player.aoe = new AoE(this.scene, 'chiomic', 1);    
-        this.scene.sound.play('death', { volume: this.scene.settings.volume });
+        this.scene.sound.play('death', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Hah! Hah!', PLAYER.DURATIONS.CHIOMIC, 'effect');
         this.player.isChiomic = true;
         this.player.setTimeEvent('chiomicCooldown', PLAYER.COOLDOWNS.SHORT);  
@@ -1463,7 +1463,7 @@ export default class PlayerMachine {
         this.player.isDiseasing = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.DISEASE);    
         this.player.aoe = new AoE(this.scene, 'tendril', 6);    
-        this.scene.sound.play('dungeon', { volume: this.scene.settings.volume });
+        this.scene.sound.play('dungeon', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Tendrils Swirl', 750, 'tendril');
         this.player.setTimeEvent('diseaseCooldown', PLAYER.COOLDOWNS.MODERATE);  
         this.scene.time.delayedCall(PLAYER.DURATIONS.DISEASE, () => {
@@ -1479,7 +1479,7 @@ export default class PlayerMachine {
     onHowlEnter = () => {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.HOWL);    
         this.player.aoe = new AoE(this.scene, 'howl', 1);    
-        this.scene.sound.play('howl', { volume: this.scene.settings.volume });
+        this.scene.sound.play('howl', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Howling', PLAYER.DURATIONS.HOWL, 'damage');
         this.player.isHowling = true;
         this.player.setTimeEvent('howlCooldown', PLAYER.COOLDOWNS.SHORT);  
@@ -1496,7 +1496,7 @@ export default class PlayerMachine {
     onEnvelopEnter = () => {
         this.player.isEnveloping = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.ENVELOP);    
-        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
+        this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Enveloping', 750, 'cast');
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'blue', PLAYER.DURATIONS.ENVELOP);
         this.player.reactiveName = States.ENVELOP;
@@ -1524,7 +1524,7 @@ export default class PlayerMachine {
             this.player.isEnveloping = false;
             return;
         };
-        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
+        this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Enveloped', 500, 'effect');
         if (this.player.grace - 40 <= 0) {
             this.player.isEnveloping = false;
@@ -1534,7 +1534,7 @@ export default class PlayerMachine {
 
     onFreezeEnter = () => {
         this.player.aoe = new AoE(this.scene, 'freeze', 1);
-        this.scene.sound.play('freeze', { volume: this.scene.settings.volume });
+        this.scene.sound.play('freeze', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.useGrace(PLAYER.STAMINA.FREEZE);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Freezing', PLAYER.DURATIONS.FREEZE, 'cast');
         this.player.isFreezing = true;
@@ -1555,7 +1555,7 @@ export default class PlayerMachine {
         };
         this.player.reactiveName = States.MALICE;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.MALICE);    
-        this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
+        this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.player.isMalicing = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Malice', 750, 'hush');
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'purple', PLAYER.DURATIONS.MALICE);
@@ -1583,7 +1583,7 @@ export default class PlayerMachine {
             this.player.isMalicing = false;
             return;
         };
-        this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
+        this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Malice', 750, 'hush');
         this.chiomism(id, 10);
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
@@ -1599,7 +1599,7 @@ export default class PlayerMachine {
         };
         this.player.reactiveName = States.MEND;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.MEND);    
-        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
+        this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
         this.player.isMending = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Mending', 750, 'tendril');
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'purple', PLAYER.DURATIONS.MEND);
@@ -1627,7 +1627,7 @@ export default class PlayerMachine {
             this.player.isMending = false;
             return;
         };
-        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
+        this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Mending', 500, 'tendril');
         this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 15, id: this.player.playerID }, type: 'Health' });
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
@@ -1643,7 +1643,7 @@ export default class PlayerMachine {
         };
         this.player.reactiveName = States.MENACE;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.MENACE);    
-        this.scene.sound.play('scream', { volume: this.scene.settings.volume });
+        this.scene.sound.play('scream', { volume: this.scene.hud.settings.volume });
         this.player.isMenacing = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Menacing', 750, 'tendril');
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'dread', PLAYER.DURATIONS.MENACE);
@@ -1673,7 +1673,7 @@ export default class PlayerMachine {
             return;
         };
         this.scene.combatManager.fear(id);
-        this.scene.sound.play('caerenic', { volume: this.scene.settings.volume });
+        this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Mending', 500, 'tendril');
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
         if (this.player.reactiveBubble.charges <= 3) {
@@ -1688,7 +1688,7 @@ export default class PlayerMachine {
         };
         this.player.reactiveName = States.MODERATE;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.MODERATE);    
-        this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
+        this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.player.isModerating = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Moderating', 750, 'cast');
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'sapphire', PLAYER.DURATIONS.MODERATE);
@@ -1718,7 +1718,7 @@ export default class PlayerMachine {
             return;
         };
         this.scene.combatManager.slow(id);
-        this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
+        this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Mending', 500, 'tendril');
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
         if (this.player.reactiveBubble.charges <= 0) {
@@ -1733,7 +1733,7 @@ export default class PlayerMachine {
         };
         this.player.reactiveName = States.MULTIFARIOUS;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.MULTIFARIOUS);    
-        this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+        this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
         this.player.isMultifaring = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Moderating', 750, 'cast');
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'ultramarine', PLAYER.DURATIONS.MULTIFARIOUS);
@@ -1763,7 +1763,7 @@ export default class PlayerMachine {
             return;
         };
         this.scene.combatManager.polymorph(id);
-        this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+        this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Multifarious', 500, 'cast');
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
         if (this.player.reactiveBubble.charges <= 3) {
@@ -1778,7 +1778,7 @@ export default class PlayerMachine {
         };
         this.player.reactiveName = States.MYSTIFY;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.MYSTIFY);    
-        this.scene.sound.play('debuff', { volume: this.scene.settings.volume });
+        this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.player.isMystifying = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Mystifying', 750, 'effect');
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'chartreuse', PLAYER.DURATIONS.MYSTIFY);
@@ -1808,7 +1808,7 @@ export default class PlayerMachine {
             return;
         };
         this.scene.combatManager.confuse(id);
-        this.scene.sound.play('death', { volume: this.scene.settings.volume });
+        this.scene.sound.play('death', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Mystifying', 500, 'effect');
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
         if (this.player.reactiveBubble.charges <= 3) {
@@ -1823,7 +1823,7 @@ export default class PlayerMachine {
         };
         this.player.isProtecting = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.PROTECT);    
-        this.scene.sound.play('shield', { volume: this.scene.settings.volume });
+        this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Protecting', 750, 'effect');
         this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'gold', PLAYER.DURATIONS.PROTECT);
         this.player.setTimeEvent('protectCooldown', PLAYER.COOLDOWNS.LONG);
@@ -1847,7 +1847,7 @@ export default class PlayerMachine {
         };
         this.player.isRecovering = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.RECOVER);    
-        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
+        this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Recovering', 750, 'effect');
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'green', PLAYER.DURATIONS.RECOVER);
         this.player.setTimeEvent('recoverCooldown', PLAYER.COOLDOWNS.MODERATE);
@@ -1865,7 +1865,7 @@ export default class PlayerMachine {
     onRecoverUpdate = (_dt: number) => {if (!this.player.isRecovering) this.positiveMachine.setState(States.CLEAN);};
 
     recover = () => {
-        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
+        this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Recovered', 500, 'effect');
         this.scene.combatManager.useStamina(-25);
     };
@@ -1878,7 +1878,7 @@ export default class PlayerMachine {
         this.player.isReining = true;
         this.player.reactiveName = States.REIN;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.REIN);    
-        this.scene.sound.play(States.ABSORB, { volume: this.scene.settings.volume });
+        this.scene.sound.play(States.ABSORB, { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Rein', 750, 'effect');
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'fuchsia', PLAYER.DURATIONS.REIN);
         this.player.setTimeEvent('reinCooldown', PLAYER.COOLDOWNS.MODERATE);
@@ -1897,7 +1897,7 @@ export default class PlayerMachine {
     onReinUpdate = (_dt: number) => {if (!this.player.isReining) this.positiveMachine.setState(States.CLEAN);};
 
     rein = () => {
-        this.scene.sound.play('absorb', { volume: this.scene.settings.volume });
+        this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Reining', 500, 'effect');
         this.scene.combatManager.useGrace(-25);
     };
@@ -1906,7 +1906,7 @@ export default class PlayerMachine {
         this.player.isRenewing = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.RENEWAL);    
         this.player.aoe = new AoE(this.scene, 'renewal', 6, true);    
-        this.scene.sound.play('shield', { volume: this.scene.settings.volume });
+        this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Hush Tears', 750, 'bone');
         this.player.setTimeEvent('renewalCooldown', PLAYER.COOLDOWNS.MODERATE);  
         this.scene.time.delayedCall(PLAYER.DURATIONS.RENEWAL, () => {
@@ -1921,7 +1921,7 @@ export default class PlayerMachine {
     onScreamEnter = () => {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SCREAM);    
         this.player.aoe = new AoE(this.scene, 'scream', 1);    
-        this.scene.sound.play('scream', { volume: this.scene.settings.volume });
+        this.scene.sound.play('scream', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Screaming', 750, 'hush');
         this.player.isScreaming = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.SCREAM, () => {
@@ -1940,7 +1940,7 @@ export default class PlayerMachine {
             this.player.negationBubble = undefined;
         };
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SHIELD);    
-        this.scene.sound.play('shield', { volume: this.scene.settings.volume });
+        this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
         this.player.isShielding = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Shielding', 750, 'bone');
         this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'bone', PLAYER.DURATIONS.SHIELD);
@@ -1969,7 +1969,7 @@ export default class PlayerMachine {
             this.player.isShielding = false;
             return;
         };
-        this.scene.sound.play('shield', { volume: this.scene.settings.volume });
+        this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Shield Hit', 500, 'effect');
         this.player.negationBubble.setCharges(this.player.negationBubble.charges - 1);
         if (this.player.negationBubble.charges <= 0) {
@@ -1980,7 +1980,7 @@ export default class PlayerMachine {
 
     onShimmerEnter = () => {
         this.player.isShimmering = true; 
-        this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
+        this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SHIMMER);
         this.player.setTimeEvent('shimmerCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.player.adjustSpeed(PLAYER.SPEED.STEALTH);
@@ -1999,13 +1999,13 @@ export default class PlayerMachine {
     shimmer = () => {
         const shimmers = ['It fades through you', "You simply weren't there", "Perhaps you never were", "They don't seem certain of you at all"];
         const shim = shimmers[Math.floor(Math.random() * shimmers.length)];
-        this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
+        this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, shim, 1500, 'effect');
     };
 
     onSprintEnter = () => {
         this.player.isSprinting = true;
-        this.scene.sound.play('blink', { volume: this.scene.settings.volume / 3 });
+        this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume / 3 });
         this.player.adjustSpeed(PLAYER.SPEED.SPRINT);
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SPRINT);
         this.player.setTimeEvent('sprintCooldown', PLAYER.COOLDOWNS.MODERATE);
@@ -2034,7 +2034,7 @@ export default class PlayerMachine {
     };
 
     stealthEffect = (stealth: boolean) => {
-        this.scene.stealthEngaged(stealth, this.scene.scene.key);
+        this.scene.stealthEngaged(stealth);
         if (stealth) {
             const getStealth = (object: any) => {
                 object.setAlpha(0.5); 
@@ -2064,7 +2064,7 @@ export default class PlayerMachine {
             clearStealth(this.player.spriteShield);
             this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
         };
-        this.scene.sound.play('stealth', { volume: this.scene.settings.volume });
+        this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });
     };
 
     onWardEnter = () => {
@@ -2074,7 +2074,7 @@ export default class PlayerMachine {
         };
         this.player.isWarding = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.WARD);    
-        this.scene.sound.play('combat-round', { volume: this.scene.settings.volume });
+        this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Warding', 750, 'damage');
         this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'red', PLAYER.DURATIONS.WARD);
         this.player.negationName = States.WARD;
@@ -2102,7 +2102,7 @@ export default class PlayerMachine {
             this.player.isWarding = false;
             return;
         };
-        this.scene.sound.play('parry', { volume: this.scene.settings.volume });
+        this.scene.sound.play('parry', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.stunned(id);
         this.player.negationBubble.setCharges(this.player.negationBubble.charges - 1);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Warded', 500, 'effect');
@@ -2116,7 +2116,7 @@ export default class PlayerMachine {
     onWritheEnter = () => {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.WRITHE);    
         this.player.aoe = new AoE(this.scene, 'writhe', 1);    
-        this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
+        this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Writhing', 750, 'tendril');
         this.player.isWrithing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.WRITHE, () => {
@@ -2138,7 +2138,7 @@ export default class PlayerMachine {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.ASTRICATION);    
         this.player.setTimeEvent('astricationCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.combatManager.combatMachine.input('astrication', {active:true,charges:0});
-        this.scene.sound.play('lightning', { volume: this.scene.settings.volume });
+        this.scene.sound.play('lightning', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Astrication', 750, 'effect');
         this.player.isAstrifying = true;
         this.player.flickerCarenic(PLAYER.DURATIONS.ASTRICATION); 
@@ -2156,7 +2156,7 @@ export default class PlayerMachine {
         if (this.player.isBerserking === true) return;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.BERSERK);    
         this.player.setTimeEvent('berserkCooldown', PLAYER.COOLDOWNS.LONG);  
-        this.scene.sound.play('howl', { volume: this.scene.settings.volume });
+        this.scene.sound.play('howl', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.combatMachine.input('berserk', {active:true,charges:1});
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Berserking', 750, 'damage');
         this.player.isBerserking = true;
@@ -2173,7 +2173,7 @@ export default class PlayerMachine {
     onBlindEnter = () => {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.BLIND);    
         this.player.aoe = new AoE(this.scene, 'blind', 1);
-        this.scene.sound.play('righteous', { volume: this.scene.settings.volume });
+        this.scene.sound.play('righteous', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Brilliance', 750, 'effect');
         this.player.isBlinding = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.BLIND, () => {
@@ -2190,7 +2190,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.CAERENESIS);    
         this.player.aoe = new AoE(this.scene, 'caerenesis', 1, false, undefined, false, this.player.currentTarget);    
-        this.scene.sound.play('blink', { volume: this.scene.settings.volume });
+        this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Caerenesis', 750, 'cast');
         this.player.isCaerenesis = true;
         this.player.setTimeEvent('caerenesisCooldown', PLAYER.COOLDOWNS.SHORT);  
@@ -2208,7 +2208,7 @@ export default class PlayerMachine {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.CONVICTION);    
         this.player.setTimeEvent('convictionCooldown', PLAYER.COOLDOWNS.LONG);  
         this.scene.combatManager.combatMachine.input('conviction', {active:true,charges:0});
-        this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
+        this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Conviction', 750, 'tendril');
         this.player.isConvicted = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.CONVICTION, () => {
@@ -2224,7 +2224,7 @@ export default class PlayerMachine {
     onEnduranceEnter = () => {
         if (this.player.isEnduring === true) return;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.ENDURANCE);    
-        this.scene.sound.play('shield', { volume: this.scene.settings.volume });
+        this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Endurance', 750, 'heal');
         this.player.isEnduring = true;
         this.player.flickerCarenic(PLAYER.DURATIONS.ENDURANCE); 
@@ -2247,7 +2247,7 @@ export default class PlayerMachine {
     onImpermanenceEnter = () => {
         if (this.player.isImpermanent === true) return;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.IMPERMANENCE);    
-        this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
+        this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Impermanence', 750, 'hush');
         this.player.isImpermanent = true;
         this.player.flickerCarenic(1500); 
@@ -2264,7 +2264,7 @@ export default class PlayerMachine {
     onSeerEnter = () => {
         if (this.player.isSeering === true) return;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SEER);    
-        this.scene.sound.play('fire', { volume: this.scene.settings.volume });
+        this.scene.sound.play('fire', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.combatMachine.input('isSeering', true);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Seer', 750, 'damage');
         this.player.isSeering = true;
@@ -2284,7 +2284,7 @@ export default class PlayerMachine {
 
     onStimulateEnter = () => {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.STIMULATE);    
-        this.scene.sound.play('spooky', { volume: this.scene.settings.volume });
+        this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Stimulate', 750, 'effect');
         this.player.isStimulating = true;
         this.player.flickerCarenic(1500); 
@@ -2295,8 +2295,8 @@ export default class PlayerMachine {
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `Your caeren's hush grants reprieve, refreshing you.`
         });
-        for (let i = 0; i < this.scene.actionBar.specialButtons.length; i++) {
-            const name = this.scene.settings.specials[i].toLowerCase();
+        for (let i = 0; i < this.scene.hud.actionBar.specialButtons.length; i++) {
+            const name = this.scene.hud.settings.specials[i].toLowerCase();
             if (name === "stimulate") continue;
             this.scene.logger.log(`Resetting the cooldown on ${name}`);
             this.player.setTimeEvent(`${name}Cooldown`, 20);
@@ -2306,11 +2306,11 @@ export default class PlayerMachine {
 
     // ================= NEGATIVE MACHINE STATES ================= \\
     onConfusedEnter = () => { 
-        if (this.scene.settings.desktop === false) {
+        if (this.scene.hud.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(false);
             this.scene.rightJoystick.joystick.setVisible(false);
         };
-        this.scene.actionBar.setVisible(false);
+        this.scene.hud.actionBar.setVisible(false);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, '?c .on-f-u`SeD~', DURATION.TEXT, 'effect', false, true);
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
@@ -2363,11 +2363,11 @@ export default class PlayerMachine {
     };
     onConfusedExit = () => { 
         if (this.player.isConfused) this.player.isConfused = false;
-        if (this.scene.settings.desktop === false) {  
+        if (this.scene.hud.settings.desktop === false) {  
             this.scene.joystick.joystick.setVisible(true);
             this.scene.rightJoystick.joystick.setVisible(true);
         };
-        this.scene.actionBar.setVisible(true);
+        this.scene.hud.actionBar.setVisible(true);
         this.player.spriteWeapon.setVisible(true);
         if (this.player.confuseTimer) {
             this.player.confuseTimer.destroy();
@@ -2377,11 +2377,11 @@ export default class PlayerMachine {
     };
 
     onFearedEnter = () => { 
-        if (this.scene.settings.desktop === false) {
+        if (this.scene.hud.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(false);
             this.scene.rightJoystick.joystick.setVisible(false);
         };
-        this.scene.actionBar.setVisible(false);
+        this.scene.hud.actionBar.setVisible(false);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'F̶e̷a̴r̷e̵d̴', DURATION.TEXT, 'damage', false, true);
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
@@ -2429,11 +2429,11 @@ export default class PlayerMachine {
         this.player.playerVelocity.y = this.player.fearVelocity.y;
     };
     onFearedExit = () => { 
-        if (this.scene.settings.desktop === false) {
+        if (this.scene.hud.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(true);
             this.scene.rightJoystick.joystick.setVisible(true);
         };
-        this.scene.actionBar.setVisible(true);
+        this.scene.hud.actionBar.setVisible(true);
         this.player.isFeared = false;
         this.player.fearCount = 0;
         this.player.spriteWeapon.setVisible(true);
@@ -2462,11 +2462,11 @@ export default class PlayerMachine {
     onFrozenExit = () => this.player.setStatic(false);
 
     onPolymorphedEnter = () => {
-        if (this.scene.settings.desktop === false) {
+        if (this.scene.hud.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(false);
             this.scene.rightJoystick.joystick.setVisible(false);
         };
-        this.scene.actionBar.setVisible(false);
+        this.scene.hud.actionBar.setVisible(false);
         this.player.isPolymorphed = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Polymorphed', DURATION.TEXT, 'effect', false, true);
         this.player.clearAnimations();
@@ -2525,11 +2525,11 @@ export default class PlayerMachine {
         this.player.playerVelocity.y = this.player.polymorphVelocity.y;
     };
     onPolymorphedExit = () => { 
-        if (this.scene.settings.desktop === false) {
+        if (this.scene.hud.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(true);
             this.scene.rightJoystick.joystick.setVisible(true);
         };
-        this.scene.actionBar.setVisible(true);
+        this.scene.hud.actionBar.setVisible(true);
         if (this.player.isPolymorphed) this.player.isPolymorphed = false;
         this.player.clearAnimations();
         this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
@@ -2573,11 +2573,11 @@ export default class PlayerMachine {
     };
 
     onStunnedEnter = () => {
-        if (this.scene.settings.desktop === false) {
+        if (this.scene.hud.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(false);
             this.scene.rightJoystick.joystick.setVisible(false);
         };
-        this.scene.actionBar.setVisible(false);
+        this.scene.hud.actionBar.setVisible(false);
         this.player.isStunned = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Stunned', PLAYER.DURATIONS.STUNNED, 'effect', false, true);
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;
@@ -2596,11 +2596,11 @@ export default class PlayerMachine {
         this.player.combatChecker(this.player.isStunned);
     };
     onStunnedExit = () => {
-        if (this.scene.settings.desktop === false) {
+        if (this.scene.hud.settings.desktop === false) {
             this.scene.joystick.joystick.setVisible(true);
             this.scene.rightJoystick.joystick.setVisible(true);
         };
-        this.scene.actionBar.setVisible(true);
+        this.scene.hud.actionBar.setVisible(true);
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
         this.player.setStatic(false);

@@ -37,10 +37,7 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
             yoyo: true
         });
 
-        this.setInteractive(new Phaser.Geom.Rectangle(
-            0, 0,
-            32, 32
-        ), Phaser.Geom.Rectangle.Contains)
+        this.setInteractive(new Phaser.Geom.Rectangle(0, 0, 32, 32), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
                 this.clearTint();
                 this.setTint(0x00FF00); 
@@ -66,6 +63,8 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
                     other.gameObjectB.interacting.push(this);
                     const interactingLoot = { loot: this._id, interacting: true };
                     EventBus.emit('interacting-loot', interactingLoot);
+                    // EventBus.emit('blend-game', { lootTag: true });
+                    EventBus.emit('blend-game', { showLoot: true });
                 };
             },
             context: this.scene,

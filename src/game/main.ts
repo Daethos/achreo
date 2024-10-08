@@ -7,7 +7,7 @@ import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 import { Boot } from './scenes/Boot';
 import { Game as MainGame } from './scenes/Game';
 import { MainMenu } from './scenes/MainMenu';
-import Phaser from 'phaser';
+import { Hud } from './scenes/Hud';
 import { Preloader } from './scenes/Preloader';
 import { useResizeListener } from '../utility/dimensions';
 import { Intro } from './scenes/Intro';
@@ -27,7 +27,7 @@ const config: Phaser.Types.Core.GameConfig = {
     backgroundColor: '#000',
     dom: {createContainer: true},
     input: {activePointers: 10, mouse:true, windowEvents:false},
-    scene: [Boot,Preloader,MainMenu,MainGame,Intro,Tent,Underground],
+    scene: [Boot,Preloader,MainMenu,MainGame,Hud,Intro,Tent,Underground],
     physics: {
         default: 'matter',
         matter: {gravity: {x: 0, y: 0}}, // debug: true,

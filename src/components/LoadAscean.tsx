@@ -17,7 +17,7 @@ export default function LoadAscean({ ascean }: { ascean: Accessor<Ascean>; }) {
     return (
         <div class='stat-block superCenter' style={{ width: '75%', overflow: 'scroll', 'scrollbar-width': 'none', animation: 'fadein 1.5s ease' }}>
         <Suspense fallback={<Puff color="gold" />}>
-        <div class='border left center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
+        <div class='border left center juice' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
             <div class='creature-heading superCenter' style={{ width: '100%' }}>
                 <h1>{ascean().name}</h1>
                 <h2>{ascean().description}</h2>
@@ -29,7 +29,7 @@ export default function LoadAscean({ ascean }: { ascean: Accessor<Ascean>; }) {
         </div>
         </Suspense>
         <Suspense fallback={<Puff color="gold" />}>
-        <div class='border right center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
+        <div class='border right center juice' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
             <div class='superCenter' style={{ 'margin-top': '0' }}>
             <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                 <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />

@@ -9,7 +9,7 @@ import Ascean, { createAscean } from './models/ascean';
 import { CharacterSheet, Compiler, asceanCompiler, initCharacterSheet } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
 import { EventBus } from './game/EventBus';
-import { deleteAscean, getAscean, getAsceans, getInventory, getReputation, getSettings, getStatistics, populate, saveTutorial, scrub, updateInventory, updateReputation, updateSettings, updateStatistics } from './assets/db/db'; 
+import { deleteAscean, getAscean, getAsceans, getInventory, getReputation, getSettings, getStatistics, populate, scrub, updateInventory, updateReputation, updateSettings, updateStatistics } from './assets/db/db'; 
 import { TIPS } from './utility/tips';
 import { Inventory, Reputation, initInventory, initReputation } from './utility/player';
 import { Puff } from 'solid-spinner';
@@ -289,6 +289,7 @@ export default function App() {
     function switchScene(next: string): void {
         setShow(false);
         const scene = phaserRef.scene as Scene;
+        console.log(scene, 'Scene?');
         EventBus.emit('switch-scene', { current: scene.scene.key, next });
     };
     function summonEnemy(val: number = 1) {
@@ -335,22 +336,34 @@ export default function App() {
     usePhaserEvent('update-settings', updateRep);
     usePhaserEvent('player-ascean', () => EventBus.emit('player-ascean-ready', ascean()));
     usePhaserEvent('save-intro', async () => {
-        await saveTutorial(ascean()?._id as string, 'intro');
+        const update = { ...settings(), tutorial: { ...settings().tutorial, intro: true} };
+        await saveSettings(update);
         await fetchAscean(ascean()?._id as string);
         const scene = phaserRef.scene as Scene; // 'intro'
         scene.scene.stop('Intro');
-        scene.scene.wake('Game');
+        scene.scene.wake('Hud');
         const game = scene.scene.get('Game') as Game;
-        game.musicBackground.resume();
+        if (scene.scene.isSleeping('Game')) {
+            scene.scene.wake('Game');
+            game.musicBackground.resume();
+        } else {
+            const hud = scene.scene.get('Hud');
+            scene.scene.launch('Game', hud);
+        };
         EventBus.emit('boot-tutorial');
         EventBus.emit('current-scene-ready', game);
     });
     usePhaserEvent('sleep-scene', (key: string) => {
+        console.log(key, 'key to sleep');
         const scene = phaserRef.scene as Scene;
-        const game = scene.scene.get(key) as any;
-        game.musicBackground.pause();
-        scene.scene.sleep(key);
-    })
+        scene.scene.sleep('Hud');
+        const game = scene.scene?.get(key) as any;
+        game.sleepScene();
+        // if (scene.scene.isActive(key)) {
+        //     game.musicBackground?.pause();
+        //     scene.scene.sleep(key);
+        // };
+    });
     usePhaserEvent('fetch-button-reorder', () => {
         EventBus.emit('reorder-buttons', { list: settings().actions, type: 'action' });
         EventBus.emit('reorder-buttons', { list: settings().specials, type: 'special' });

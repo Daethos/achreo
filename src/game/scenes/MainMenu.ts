@@ -56,7 +56,8 @@ export class MainMenu extends Phaser.Scene {
     
     changeScene () {
         this.sound.play('TV_Button_Press', { loop: false });
-        this.scene.start('Game');
+        // this.scene.start('Game');
+        this.scene.start('Hud');
         EventBus.emit('loading-ascean');
     };
 

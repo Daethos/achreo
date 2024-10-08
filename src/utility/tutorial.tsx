@@ -1,8 +1,9 @@
 import { Accessor, Setter, createEffect, createSignal } from "solid-js";
-import { blessAscean, curseAscean, saveTutorial } from "../assets/db/db";
+import { blessAscean, curseAscean } from "../assets/db/db";
 import { EventBus } from "../game/EventBus";
 import Typewriter from "./Typewriter";
 import Ascean from "../models/ascean";
+import Settings from "../models/settings";
 
 export type Tutorial = {
     boot: boolean,
@@ -45,7 +46,7 @@ const arrows = {
     right: '→',
 };
 
-export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }: { ascean: Accessor<Ascean>; id: string; tutorial: Accessor<string>; show: Accessor<boolean>; setShow: Setter<boolean>; }) {
+export default function TutorialOverlay({ ascean, settings, tutorial, show, setShow }: { ascean: Accessor<Ascean>; settings: Accessor<Settings>; tutorial: Accessor<string>; show: Accessor<boolean>; setShow: Setter<boolean>; }) {
     const [deity, setDeity] = createSignal<string>('');
     function performAction(actionName: string) {
         const actionFunction = actions[actionName as keyof typeof actions];
@@ -144,8 +145,13 @@ export default function TutorialOverlay({ ascean, id, tutorial, show, setShow }:
     };
     async function exitTutorial(): Promise<void> {
         try {
-            await saveTutorial(id, tutorial());
-            EventBus.emit('fetch-ascean', id);
+            const tut = tutorial();
+            console.log(tut, 'Tutorial type being saved');
+            const update = { ...settings(), tutorial: { ...settings().tutorial, [tut]: true} };
+            EventBus.emit('save-settings', update);
+            // const save = await saveTutorial(id, tutorial());
+            // console.log(save, 'Saved!');
+            // EventBus.emit('fetch-ascean', id);
             setShow(!show());
         } catch (err: any) {
             console.warn(err.message);

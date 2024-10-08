@@ -5,7 +5,7 @@ import { EventBus } from '../EventBus';
 import LootDrop from '../matter/LootDrop';
 import ActionButtons from '../phaser/ActionButtons';
 import { GameState } from '../../stores/game';
-import Settings, { initSettings } from '../../models/settings';
+// import Settings, { initSettings } from '../../models/settings';
 import Equipment from '../../models/equipment';
 import { States } from '../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
@@ -26,6 +26,7 @@ import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import Logger, { ConsoleLogger } from '../../utility/Logger';
 import ParticleManager from '../matter/ParticleManager';
 import { screenShake } from '../phaser/ScreenShake';
+import { Hud } from './Hud';
 
 export class Underground extends Scene {
     animatedTiles: any[];
@@ -35,7 +36,7 @@ export class Underground extends Scene {
     ascean: Ascean  | undefined;
     state: Combat = initCombat;
     reputation: Reputation = initReputation;
-    settings: Settings = initSettings;
+    // settings: Settings = initSettings;
     player: any;
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
@@ -84,6 +85,7 @@ export class Underground extends Scene {
     markers: any;
     logger: Logger;
     glowFilter: any;
+    hud: Hud;
 
     constructor () {
         super('Underground');
@@ -93,20 +95,20 @@ export class Underground extends Scene {
         this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
     };
 
-    create () {
+    create (hud: Hud) {
         this.cameras.main.fadeIn();
+        this.hud = hud;
         this.gameEvent();
         this.state = this.registry.get("combat");
-        console.log(this.state, 'Combat and Game!');
         this.reputation = this.getReputation();
-        this.settings = this.getSettings();
+        // this.hud.settings = this.registry.get("settings");
         this.rexUI = this.plugins.get('rexuiplugin');
         this.offsetX = 0;
         this.offsetY = 0;
         this.tweenManager = {};
         this.markers = [];
         let camera = this.cameras.main;
-        camera.zoom = this.settings.positions?.camera?.zoom || 0.8; // 0.8 
+        camera.zoom = this.hud.settings.positions?.camera?.zoom || 0.8; // 0.8 
         const map = this.make.tilemap({ key: 'underground' });
         this.map = map;
         this.add.rectangle(0, 0, 4096, 4096, 0x000000);
@@ -160,11 +162,9 @@ export class Underground extends Scene {
 
         var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
         this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
-        this.setPostFx(this.settings?.postFx, this.settings?.postFx.enable);
-        // this.combatMachine = new CombatMachine(this);
+        this.setPostFx(this.hud.settings?.postFx, this.hud.settings?.postFx.enable);
         this.particleManager = new ParticleManager(this);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
-        this.actionBar = new ActionButtons(this);
     // =========================== Input Keys =========================== \\
         this.player.inputKeys = {
             up: this?.input?.keyboard?.addKeys('W,UP'),
@@ -182,47 +182,17 @@ export class Underground extends Scene {
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 100, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     // =========================== Music =========================== \\
-        this.musicBackground = this.sound.add('isolation', { volume: this?.settings?.volume || 0.1, loop: true });
-        if (this.settings?.music === true) this.musicBackground.play();
-        this.musicCombat = this.sound.add('industrial', { volume: this?.settings?.volume, loop: true });
-        this.musicStealth = this.sound.add('stealthing', { volume: this?.settings?.volume, loop: true });
+        this.musicBackground = this.sound.add('isolation', { volume: this?.hud?.settings?.volume || 0.1, loop: true });
+        if (this.hud.settings?.music === true) this.musicBackground.play();
+        this.musicCombat = this.sound.add('industrial', { volume: this?.hud?.settings?.volume, loop: true });
+        this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
         this.postFxEvent();
-    // =========================== Joystick =========================== \\
-        this.joystick = new Joystick(this, 
-            camera.width * this.settings.positions.leftJoystick.x, 
-            camera.height * this.settings.positions.leftJoystick.y,
-            this.settings.positions.leftJoystick.base,
-            this.settings.positions.leftJoystick.thumb
-        );
-        this.joystick.joystick.base.setAlpha(this.settings.positions.leftJoystick.opacity);
-        this.joystick.joystick.thumb.setAlpha(this.settings.positions.leftJoystick.opacity);
-        
-        this.rightJoystick = new Joystick(this,
-            camera.width * this.settings.positions.rightJoystick.x, 
-            camera.height * this.settings.positions.rightJoystick.y,
-            this.settings.positions.rightJoystick.base,
-            this.settings.positions.rightJoystick.thumb
-        );
-        this.rightJoystick.joystick.base.setAlpha(this.settings.positions.rightJoystick.opacity);
-        this.rightJoystick.joystick.thumb.setAlpha(this.settings.positions.rightJoystick.opacity);
-        this.rightJoystick.createPointer(this); 
-        this.joystickKeys = this.joystick.createCursorKeys();
-
-        if (this.settings.desktop === true) {
+        if (this.hud.settings.desktop === true) {
             this.input.setDefaultCursor('url(assets/images/cursor.png), pointer');
-            this.rightJoystick?.pointer?.setVisible(false);
-            this.joystick?.joystick?.setVisible(false);
-            this.rightJoystick?.joystick?.setVisible(false);
-            if (this.actionBar) this.actionBar.draw();
-        } else {
-            this.joystick?.joystick?.setVisible(true);
-            this.rightJoystick?.joystick?.setVisible(true);
-            this.rightJoystick?.pointer?.setVisible(true);
-            if (this.actionBar) this.actionBar.draw();
         };
         this.logger = new Logger();
         this.logger.add('console', new ConsoleLogger());
-        this.smallHud = new SmallHud(this);
+        // this.smallHud = new SmallHud(this);
         this.combatManager = new CombatManager(this);
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
@@ -238,18 +208,9 @@ export class Underground extends Scene {
         EventBus.off('enemyLootDrop');
         EventBus.off('minimap');
         EventBus.off('aggressive-enemy');
-        EventBus.off('death-sound');
-        EventBus.off('equip-sound');
-        EventBus.off('unequip-sound');
-        EventBus.off('purchase-sound');
-        EventBus.off('stealth-sound');
-        EventBus.off('weapon-order-sound');
-        EventBus.off('action-button-sound');
         EventBus.off('update-postfx');
         EventBus.off('music');
-        EventBus.off('switch-scene');
         EventBus.off('game-map-load');
-        EventBus.off('wake-up');
         EventBus.off('update-fps');
         EventBus.off('update-joystick-color');
         EventBus.off('update-joystick-position');
@@ -267,34 +228,12 @@ export class Underground extends Scene {
             this.npcs[i].cleanUp();
         };
         this.player.cleanUp();
-        this.actionBar.cleanUp();
-        this.actionBar.destroy();
-        this.smallHud.cleanUp();
-        this.smallHud.destroy();
-        this.joystick.cleanUp();
-        this.rightJoystick.cleanUp();    
-        this.joystick.destroy();
-        this.rightJoystick.destroy();
     };
 
     gameEvent = (): void => {
         EventBus.on('ascean', (ascean: Ascean) => this.ascean = ascean);
         EventBus.on('combat', (combat: any) => this.state = combat); 
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
-        EventBus.on('settings', (settings: Settings) => {
-            this.settings = settings;
-            if (settings.desktop === true) {
-                this.joystick?.joystick?.setVisible(false);
-                this.rightJoystick?.joystick?.setVisible(false);
-                this.rightJoystick?.pointer?.setVisible(false);
-                if (this.actionBar) this.actionBar.draw();
-            } else {
-                this.joystick?.joystick?.setVisible(true);
-                this.rightJoystick?.joystick?.setVisible(true);
-                this.rightJoystick?.pointer?.setVisible(true);
-                if (this.actionBar) this.actionBar.draw();
-            };
-        });    
         EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
         EventBus.on('enemyLootDrop', (drops: any) => {
             if (drops.scene !== 'Underground') return;
@@ -322,13 +261,6 @@ export class Underground extends Scene {
                 enemy.stateMachine.setState(States.CHASE);
             };
         });
-        EventBus.on('equip-sound', () => this.sound.play('equip', { volume: this.settings.volume }));
-        EventBus.on('unequip-sound', () => this.sound.play('unequip', { volume: this.settings.volume }));
-        EventBus.on('purchase-sound', () => this.sound.play('purchase', { volume: this.settings.volume }));
-        EventBus.on('stealth-sound', () => this.sound.play('stealth', { volume: this.settings.volume }));
-        EventBus.on('death-sound', () => this.sound.play('death', { volume: this.settings.volume / 2 }));
-        EventBus.on('weapon-order-sound', () => this.sound.play('weaponOrder', { volume: this.settings.volume }));
-        EventBus.on('action-button-sound', () => this.sound.play('TV_Button_Press', { volume: this?.settings?.volume * 2 }));
         EventBus.on('music', (on: boolean) => {
             if (on === true && !this.scene.isPaused('Underground')) {
                 this.resumeMusic();
@@ -338,110 +270,6 @@ export class Underground extends Scene {
         });
         EventBus.on('check-stealth', (stealth: boolean) => {
             this.stealth = stealth;
-        });
-        EventBus.on('resume', (scene: string) => {
-            if (scene !== 'Underground') return;
-            this.cameras.main.fadeIn();
-            this.scene.wake(scene);
-            this.resumeMusic();
-            this.actionBar.setActive(true);
-            this.actionBar.setVisible(true);
-            this.smallHud.setActive(true);
-            this.smallHud.setVisible(true);
-            if (this.state.isStealth) {
-                this.player.playerMachine.positiveMachine.setState(States.STEALTH);
-                this.stealthEngaged(true, this.scene.key);
-            };
-            EventBus.emit('current-scene-ready', this);
-        });
-        EventBus.on('switch-scene', (data: { current: string, next: string }) => {
-            if (data.current !== 'Underground') return;
-            this.cameras.main.fadeOut();
-            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
-                this.showDialog(false);
-                this.actionBar.setActive(false);
-                this.actionBar.setVisible(false);
-                this.smallHud.setActive(false);
-                this.smallHud.setVisible(false);
-                this.player.disengage();
-                this.pauseMusic();
-                this.scene.sleep(data.current);
-                EventBus.emit('resume', data.next, this.player.isStealthing);
-            });
-        });
-        EventBus.on('wake-up', (scene: string) => {
-            this.scene.resume(scene);
-            if (this.combat) {
-                this.musicCombat.resume();
-                this.startCombatTimer();    
-            } else if (this.player.isStealthing) {
-                this.musicStealth.resume();
-            } else {
-                this.musicBackground.resume();
-            };
-            EventBus.emit('current-scene-ready', this);
-        });
-        EventBus.on('update-joystick-color', (data: { color: number, side: string, type: string }) => {
-            const { side, color, type } = data;
-            switch (side) {
-                case 'left':
-                    if (type === 'base') {
-                        this.joystick.joystick.base.setFillStyle();
-                        this.joystick.joystick.base.setFillStyle(color);
-                    } else {
-                        this.joystick.joystick.thumb.setFillStyle();
-                        this.joystick.joystick.thumb.setFillStyle(color);
-                    };
-                    break;
-                case 'right':
-                    if (type === 'base') {
-                        this.rightJoystick.joystick.base.setFillStyle();
-                        this.rightJoystick.joystick.base.setFillStyle(color);
-                    } else {
-                        this.rightJoystick.joystick.thumb.setFillStyle();
-                        this.rightJoystick.joystick.thumb.setFillStyle(color);
-                    };
-                    break;
-            };
-        });
-        EventBus.on('update-joystick-position', (data: {side : string, x: number, y: number}) => {
-            const { side, x, y } = data;
-            const newX = this.cameras.main.width * x;
-            const newY = this.cameras.main.height * y;
-            switch (side) {
-                case 'left':
-                    this.joystick.joystick.setPosition(newX, newY);
-                    break;
-                case 'right':
-                    this.rightJoystick.joystick.setPosition(newX, newY);
-                    break;
-            };
-        });
-        EventBus.on('update-joystick-opacity', (data: { side: string, opacity: number }) => {
-            const { side, opacity } = data;
-            switch (side) {
-                case 'left':
-                    this.joystick.joystick.base.setAlpha(opacity);
-                    this.joystick.joystick.thumb.setAlpha(opacity);
-                    break;
-                case 'right':
-                    this.rightJoystick.joystick.base.setAlpha(opacity);
-                    this.rightJoystick.joystick.thumb.setAlpha(opacity);
-                    break;
-            };
-        });
-        EventBus.on('update-joystick-width', (data: { side: string, width: number }) => {
-            const { side, width } = data;
-            switch (side) {
-                case 'left':
-                    this.joystick.joystick.base.setScale(width);
-                    this.joystick.joystick.thumb.setScale(width);
-                    break;
-                case 'right':
-                    this.rightJoystick.joystick.base.setScale(width);
-                    this.rightJoystick.joystick.thumb.setScale(width);
-                    break;
-            };
         });
         EventBus.on('update-camera-zoom', (zoom: number) => {
             let camera = this.cameras.main;
@@ -490,12 +318,49 @@ export class Underground extends Scene {
             };
         });
         EventBus.on('resetting-game', () => {
-            this.sound.play('TV_Button_Press', { volume: this?.settings?.volume * 2 });
+            this.sound.play('TV_Button_Press', { volume: this?.hud?.settings?.volume * 2 });
             this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_came: any, _effect: any) => {
                 EventBus.emit('reset-game');
             });
         });
     };
+
+    resumeScene = () => {
+        this.cameras.main.fadeIn();
+        this.scene.wake();
+        this.resumeMusic();
+        this.state = this.registry.get("combat");
+        this.registry.set("player", this.player);
+        if (this.state.isStealth) {
+            this.player.playerMachine.positiveMachine.setState(States.STEALTH);
+            this.stealthEngaged(true);
+        };
+        EventBus.emit('current-scene-ready', this);
+    };
+    switchScene = (current: string) => {
+        this.cameras.main.fadeOut();
+        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
+            this.registry.set("combat", this.state);
+            this.registry.set("settings", this.hud.settings);
+            this.registry.set("ascean", this.state.player);
+            this.player.disengage();
+            this.pauseMusic();
+            this.scene.sleep(current);
+        });
+    };
+    wakeUp = () => {
+        this.scene.resume();
+        if (this.combat) {
+            this.musicCombat.resume();
+            this.startCombatTimer();    
+        } else if (this.player.isStealthing) {
+            this.musicStealth.resume();
+        } else {
+            this.musicBackground.resume();
+        };
+        EventBus.emit('current-scene-ready', this);
+    };
+
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
         if (type === 'bloom') this.postFxPipeline.setBloomRadius(val);
@@ -553,7 +418,7 @@ export class Underground extends Scene {
         if (type === 'crtWidth') this.postFxPipeline.crtWidth = val;
         if (type === 'enable') {
             if (val === true) {
-                this.setPostFx(this.settings?.postFx, true);
+                this.setPostFx(this.hud.settings?.postFx, true);
             } else {
                 this.postFxPipeline.setEnable(false);
             };
@@ -585,35 +450,15 @@ export class Underground extends Scene {
         this.postFxPipeline.crtWidth = settings.crtWidth;
 
     };
-    changeScene(): void {
-        this.scene.start('GameOver');
-    };
-    // getAscean(): void {
-    //     EventBus.emit('request-ascean');
-    // };
-    // getCombat = (): Combat => {
-    //     EventBus.once('request-combat-ready', (combat: Combat) => {
-    //         this.state = combat;
-    //     });
-    //     EventBus.emit('request-combat');
-    //     return this.state;
-    // };
-    // getGame(): void {
-    //     EventBus.emit('request-game');
-    // };
     getReputation = (): Reputation => {
         EventBus.emit('request-reputation');
         return this.reputation;
-    };
-    getSettings = (): Settings => {
-        EventBus.emit('request-settings');
-        return this.settings;
     };
     getEnemy = (id: string): Enemy => {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };
     getWorldPointer = () => {
-        const pointer = this.rightJoystick.pointer;
+        const pointer = this.hud.rightJoystick.pointer;
         const point = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
         return point;
     };
@@ -677,8 +522,7 @@ export class Underground extends Scene {
         this.combat = bool;
         EventBus.emit('combat-engaged', bool);
     };
-    stealthEngaged = (bool: boolean, scene: string) => {
-        if (this.scene.key !== scene) return;
+    stealthEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (bool) {
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
@@ -742,7 +586,10 @@ export class Underground extends Scene {
         const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType, interactCount: npc.interactCount };
         EventBus.emit('setup-npc', data);    
     };
-    showDialog = (dialogTag: boolean): boolean => EventBus.emit('blend-game', { dialogTag });
+    showDialog = (dialogTag: boolean) => {
+        EventBus.emit('blend-game', { dialogTag });
+        this.hud.smallHud.activate('dialog', dialogTag);
+    }; // smallHud: dialog
     createEnemy = () => {
         const marker = this.markers[Math.floor(Math.random() * this.markers.length)];
         const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0' });
@@ -809,7 +656,7 @@ export class Underground extends Scene {
     };
     update(_time: number, delta: number): void {
         this.playerUpdate();
-        this.rightJoystick.update();
+        this.hud.rightJoystick.update();
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update();
             if (this.enemies[i].isDefeated && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
@@ -836,7 +683,7 @@ export class Underground extends Scene {
     };
     resume(): void {
         this.scene.resume();
-        if (this.settings?.music === false) return;
+        if (this.hud.settings?.music === false) return;
         this.resumeMusic();
     };
 };

@@ -1,4 +1,9 @@
 import { EventBus } from "../EventBus";
+import { Game } from "../scenes/Game";
+import { Hud } from "../scenes/Hud";
+import { Underground } from "../scenes/Underground";
+
+const MOBILE = ['cursor-reset', 'minimap'];
 
 function xModifier(x: number, index: number, offset = 43.75) {
     const mod = x * 1.35 + (index * offset);
@@ -11,16 +16,18 @@ function leftXModifier(x: number, index: number, offset = 43.75) {
 };
 
 export default class SmallHud extends Phaser.GameObjects.Container {
-    public scene: any;
-    public bar: Phaser.GameObjects.Image[];
-    public stances: Phaser.GameObjects.Image[];
+    public scene: Hud;
+    public bar: Phaser.GameObjects.Image[] = [];
+    public desktopBar: Phaser.GameObjects.Image[] = [];
+    public stances: Phaser.GameObjects.Image[] = [];
     public x: number;
     public y: number;
     public leftX: number;
     public leftY: number;
     public controls: Phaser.GameObjects.Container
-    public closed: boolean;
+    public closed: boolean = true;
     public switches: {
+        dialog: boolean;
         info: boolean;
         settings: boolean;
         logs: boolean;
@@ -33,35 +40,32 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         cursor: boolean;
         closed: boolean;
         open: boolean;
+    } = {
+        dialog: false,
+        info: false,
+        settings: false,
+        logs: false,
+        caerenic: false,
+        stalwart: false,
+        stealth: false,
+        strafe: false,
+        minimap: false,
+        pause: false,
+        cursor: false,
+        closed: false,
+        open: false,
     };
 
-    constructor(scene: any) {
-        const x = scene.cameras.main.width * scene.settings.positions.smallHud.x;
-        const y = scene.cameras.main.height * scene.settings.positions.smallHud.y;
+    constructor(scene: Hud) {
+        const x = scene.gameWidth * scene.settings.positions.smallHud.x;
+        const y = scene.gameHeight * scene.settings.positions.smallHud.y;
         super(scene, x, y);
         this.scene = scene;
         this.scene.add.existing(this);
         this.x = x;
         this.y = y;
-        this.leftX = scene.cameras.main.width * scene.settings.positions.leftHud.x;
-        this.leftY = scene.cameras.main.height * scene.settings.positions.leftHud.y;
-        this.bar = [];
-        this.stances = [];
-        this.closed = true;
-        this.switches = {
-            info: false,
-            settings: false,
-            logs: false,
-            caerenic: false,
-            stalwart: false,
-            stealth: false,
-            strafe: false,
-            minimap: false,
-            pause: false,
-            cursor: false,
-            closed: false,
-            open: false,
-        };
+        this.leftX = scene.gameWidth * scene.settings.positions.leftHud.x;
+        this.leftY = scene.gameHeight * scene.settings.positions.leftHud.y;
         this.setDepth(6);
         this.createBar();
         this.listener();
@@ -79,7 +83,10 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         let logs = this.scene.add.image(this.x, this.y, 'logs');
         let settings = this.scene.add.image(this.x, this.y, 'settings');
         let info = this.scene.add.image(this.x, this.y, 'info');
+        let dialog = this.scene.add.image(this.x, this.y, 'dialog');
+
         let strafe = this.scene.add.image(this.x, this.y, 'strafe');
+        this.bar.push(dialog);
         this.bar.push(info);
         this.bar.push(settings);
         this.bar.push(logs);
@@ -89,7 +96,25 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.bar.push(closed);
         this.bar.push(open);
 
-        this.bar.forEach((item, index) => {
+        let bar = [];
+        for (let i = 0; i < this.bar.length; i++) {
+            this.bar[i].setScrollFactor(0, 0);
+            this.bar[i].setDepth(6);
+            this.bar[i].setOrigin(0, 0);
+            this.bar[i].setInteractive();
+            this.bar[i].setScale(this.scene.settings.positions.smallHud.scale); // || 0.095
+            if (this.scene.settings.desktop) {
+                const key = this.bar[i].texture.key;
+                if (!MOBILE.includes(key)) {
+                    bar.push(this.bar[i])
+                } else {
+                    this.bar[i].setVisible(false);
+                };
+            } else {
+                bar.push(this.bar[i]);
+            };
+        };
+        bar.forEach((item, index) => {
             item.setScrollFactor(0, 0);
             item.setDepth(6);
             item.setOrigin(0, 0);
@@ -100,11 +125,18 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     item.setVisible(false);
                 };
             };
-            item.x = xModifier(this.x, Math.min(index, 9), this.scene.settings.positions.smallHud.offset); // || 43.75
+            item.x = xModifier(this.x, Math.min(index, bar.length - 2), this.scene.settings.positions.smallHud.offset); // || 43.75
+            if (item.texture.key === 'dialog') {
+                const dialog = this.scene.gameState?.dialogTag as boolean;
+                const num = this.closed ? bar.length - 3 : 0;
+                item.setVisible(dialog);
+                item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
+            };
             item.on('pointerdown', () => {
                 this.pressButton(item);
             });
         });
+
 
         this.stances.push(strafe);
         this.stances.push(caerenic);
@@ -126,7 +158,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
     };
 
     cleanUp = () => {
-        EventBus.off('toggle-bar');
+        EventBus.off('outside-press');
         EventBus.off('update-hud-position');
         EventBus.off('update-left-hud-position');
         EventBus.off('update-small-hud-scale');
@@ -146,8 +178,21 @@ export default class SmallHud extends Phaser.GameObjects.Container {
     };
 
     draw = () => {
-        this.bar.forEach((item, index) => {
-            item.x = xModifier(this.x, Math.min(index, 6), this.scene.settings.positions.smallHud.offset); // || 43.75
+        let bar = [];
+        for (let i = 0; i < this.bar.length; i++) {
+            if (this.scene.settings.desktop) {
+                const key = this.bar[i].texture.key;
+                if (!MOBILE.includes(key)) {
+                    bar.push(this.bar[i])
+                } else {
+                    this.bar[i].setVisible(false);
+                };
+            } else {
+                bar.push(this.bar[i]);
+            };
+        };
+        bar.forEach((item, index) => {
+            item.x = xModifier(this.x, Math.min(index, bar.length - 2), this.scene.settings.positions.smallHud.offset); // || 43.75
             item.y = this.y;
             if (this.closed === true) {
                 if (item.texture.key === 'closed') {
@@ -162,6 +207,12 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     item.setVisible(true); // false
                 };
             };
+            if (item.texture.key === 'dialog') {
+                const dialog = this.scene.gameState?.dialogTag as boolean;
+                const num = this.closed ? bar.length - 3 : 0;
+                item.setVisible(dialog);
+                item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
+            };
         });
 
         this.stances.forEach((item, index) => {
@@ -171,23 +222,17 @@ export default class SmallHud extends Phaser.GameObjects.Container {
     };
 
     listener = () => {
-        EventBus.on('toggle-bar', (e: boolean) => {
-            if (e === true) {
-                this.setVisible(true);
-            } else {
-                this.setVisible(false);
-            };
-        });
+        EventBus.on('outside-press', this.outsidePress);
         EventBus.on('update-hud-position', (data: {x: number, y: number}) => {
             const { x, y } = data;
-            this.x = this.scene.cameras.main.width * x;
-            this.y = this.scene.cameras.main.height * y;
+            this.x = this.scene.gameWidth * x;
+            this.y = this.scene.gameHeight * y;
             this.draw();
         });
         EventBus.on('update-left-hud-position', (data: {x: number, y: number}) => {
             const { x, y } = data;
-            this.leftX = this.scene.cameras.main.width * x;
-            this.leftY = this.scene.cameras.main.height * y;
+            this.leftX = this.scene.gameWidth * x;
+            this.leftY = this.scene.gameHeight * y;
             this.draw();
         });
         EventBus.on('update-small-hud-scale', (scale: number) => {
@@ -202,8 +247,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         });
         EventBus.on('update-small-hud-offset', (offset: number) => {
             this.bar.forEach((item, index) => {
-                item.x = xModifier(this.x, Math.min(index, 6), offset); // || 43.75
-
+                item.x = xModifier(this.x, Math.min(index, 7), offset); // || 43.75
             });
         });
         EventBus.on('update-left-hud-offset', (offset: number) => {
@@ -213,13 +257,24 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         });
     };
 
+    activate = (type: string, active: boolean) => {
+        const button = this.getButton(type);
+        button?.setVisible(active);
+    };
+
     getButton = (key: string) => {
         const bar = this.bar.find((b: any) => b.texture.key === key.toLowerCase());
         const stance = this.stances.find((b: any) => b.texture.key === key.toLowerCase());
-        return bar || stance;    
+        return bar || stance;
+    };
+
+    outsidePress = (type: string) => {
+        const button = this.getButton(type);
+        this.pressButton(button as Phaser.GameObjects.Image);
     };
 
     pressButton = (item: Phaser.GameObjects.Image) => {
+        // const bar = this.scene.settings.desktop ? this.desktopBar : this.bar;
         this.bar.forEach((button) => {
             if (button !== item) return;
             switch (button.texture.key) {
@@ -237,8 +292,8 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     break;
                 case 'pause':
                     EventBus.emit('action-button-sound');
-                    EventBus.emit('update-pause', true); // variable
-                    this.setVisible(false);
+                    EventBus.emit('update-pause', !this.switches.pause); // variable
+                    this.switches.pause = !this.switches.pause;
                     break;
                 case 'minimap':
                     EventBus.emit('action-button-sound');
@@ -252,16 +307,25 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                 case 'logs':
                     EventBus.emit('action-button-sound');
                     EventBus.emit('show-combat'); // variable
+                    this.switches.logs = !this.switches.logs;
                     break;
                 case 'settings':
                     EventBus.emit('action-button-sound');
                     EventBus.emit('useScroll');
-                    this.setVisible(false);
+                    this.switches.settings = !this.switches.settings;
                     break;
                 case 'info':
+                    this.switches.info = !this.switches.info;
+                    EventBus.emit('set-show-player');
+                    if (this.switches.info === true) {
+                        this.closed = false;
+                        this.draw();
+                    };
+                    break;
+                case 'dialog':
                     EventBus.emit('action-button-sound');
-                    EventBus.emit('show-player'); // variable
-                    this.setVisible(false);
+                    EventBus.emit('show-dialogue');
+                    this.switches.dialog = !this.switches.dialog;
                     break;
                 default:
                     break;
@@ -280,9 +344,16 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             if (button === stance) {
                 switch (button.texture.key) { 
                     case 'stealth':
-                        if (this.scene.combat === true) return;
+                        if (this.scene.registry.get("combat").combatEngaged === true) return;
+                        // if (this.scene.combat === true) return;
                         this.switches.stealth = !this.switches.stealth;
-                        this.scene.stealthEngaged(!this.switches.stealth, this.scene.scene.key);
+                        if (this.scene.scene.isActive('Game')) {
+                            const game = this.scene.scene.get('Game') as Game;
+                            game.stealthEngaged(!this.switches.stealth);
+                        } else {
+                            const game = this.scene.scene.get('Underground') as Underground;
+                            game.stealthEngaged(!this.switches.stealth);
+                        };
                         EventBus.emit('update-stealth');
                         break;
                     case 'stalwart':
@@ -295,7 +366,8 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                         break; 
                     case 'strafe':
                         this.switches.strafe = !this.switches.strafe;
-                        this.scene.player.isStrafing = this.switches.strafe;
+                        let player = this.scene.registry.get("player");
+                        player.isStrafing = this.switches.strafe;
                         break;
                     default:
                         break;

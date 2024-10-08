@@ -131,19 +131,19 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
     });
 
     createEffect(() => {
-        if (!ascean().tutorial.views) {
+        if (!settings().tutorial.views) {
             setShowTutorial(true);
             setTutorial('views');
-        } else if (!ascean().tutorial.inventory && dragAndDropInventory().length && settings().asceanViews === 'Inventory') {
+        } else if (!settings().tutorial.inventory && dragAndDropInventory().length && settings().asceanViews === 'Inventory') {
             setShowTutorial(true);
             setTutorial('inventory');
-        } else if (!ascean().tutorial.settings && settings().asceanViews === 'Settings') {
+        } else if (!settings().tutorial.settings && settings().asceanViews === 'Settings') {
             setShowTutorial(true);
             setTutorial('settings');
-        } else if (!ascean().tutorial.character && settings().asceanViews === 'Character') {
+        } else if (!settings().tutorial.character && settings().asceanViews === 'Character') {
             setShowTutorial(true);
             setTutorial('character');
-        } else if (!ascean().tutorial.faith && settings().asceanViews === 'Faith') {
+        } else if (!settings().tutorial.faith && settings().asceanViews === 'Faith') {
             setShowTutorial(true);
             setTutorial('faith');
         };
@@ -819,12 +819,12 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
         </Show>
         <Show when={showTutorial()}>
         <Suspense fallback={<Puff color="gold"/>}>
-            <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} /> 
+            <TutorialOverlay ascean={ascean} settings={settings} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} /> 
         </Suspense>
         </Show>
         <Show when={showInventory()}>
         <Suspense fallback={<Puff color="gold"/>}>
-            <TutorialOverlay ascean={ascean} id={ascean()._id} tutorial={tutorial} show={showInventory} setShow={setShowInventory} /> 
+            <TutorialOverlay ascean={ascean} settings={settings} tutorial={tutorial} show={showInventory} setShow={setShowInventory} /> 
         </Suspense>
         </Show>
         </div>

@@ -224,9 +224,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     startingSpeed = (entity: Ascean) => {
         let speed = SPEED; // PLAYER.SPEED.INITIAL
         if (this.name === 'player') {
-            speed += this.scene.settings.difficulty.playerSpeed || 0;
+            speed += this.scene.hud.settings.difficulty.playerSpeed || 0;
         } else {
-            speed += this.scene.settings.difficulty.enemySpeed || 0;
+            speed += this.scene.hud.settings.difficulty.enemySpeed || 0;
         };
         const helmet = entity.helmet.type;
         const chest = entity.chest.type;
@@ -460,11 +460,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.weaponHitbox.y -= 16;
             };
             if (target) this.hitBoxCheck(target as Enemy);
-            if (this.targets.length > 0) {
-                for (let i = 0; i < this.targets.length; i++) {
-                    if (this.targets[i] !== target && this.targets[i].health > 0) this.hitBoxCheck(this.targets[i]);
-                };
-            };
+            // if (this.targets.length > 0) {
+            //     for (let i = 0; i < this.targets.length; i++) {
+            //         if (this.targets[i] !== target && this.targets[i].health > 0) this.hitBoxCheck(this.targets[i]);
+            //     };
+            // };
             if (this.touching.length > 0) {
                 for (let i = 0; i < this.touching.length; i++) {
                     if (this.touching[i] !== target && this.touching[i].health > 0) this.hitBoxCheck(this.touching[i]);

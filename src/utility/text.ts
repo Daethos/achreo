@@ -4,6 +4,7 @@ const ATTACKS = ['Attack', 'Posture', 'Roll', 'Parry', 'attack', 'posture', 'rol
 const CAST = ['confuse', 'confusing', 'fear', 'fearing', 'paralyze', 'polymorph', 'polymorphs', 'polymorphing', 'slow', 'slowing', 'snare', 'snaring'];
 const COLORS = { BONE: '#fdf6d8', GREEN: 'green', HEAL: '#0BDA51', GOLD: 'gold', PURPLE: 'purple', TEAL: 'teal', RED: 'red', BLUE: 'blue', LIGHT_BLUE: 'lightblue', FUCHSIA: 'fuchsia' };
 const DAMAGE = ['Blunt', 'Pierce',  'Slash',  'Earth',  'Fire',  'Frost',  'Lightning', 'Righteous', 'Sorcery', 'Spooky',  'Wild', 'Wind' ];
+const HEALS = ['heal', 'heals'];
 const HUSH = ['Invocation', 'Hush', 'hush', 'tendril', 'sacrifice', 'shimmer', 'shimmers', 'protect', 'protects', 'astrave', 'fyerus', 'suture', 'sutures', 'sacrifice', 'sacrifices'];
 const NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 const TENDRIL = ['Tendril', 'tendril', 'tendrils', 'suture', 'sutures', 'sutured', 'shield', 'shields', 'mend', 'achire', 'kynisos'];
@@ -33,9 +34,9 @@ export const text = (prev: string, data: Combat) => {
 };
 function checkNumber(line: string[]) {
     for (let i = 0; i < line.length; i++) {
-        if (line[i].includes('heal')) { 
+        if (HEALS.includes(line[i])) { 
             return 'GREEN';
-        } else if (ATTACKS.includes(line[i])) { 
+        } else if (ATTACKS.includes(line[i]) || HUSH.includes(line[i])) { 
             return 'RED';
         };
     };
@@ -61,7 +62,7 @@ function styleText(text: string) {
         const isAttack = ATTACKS.includes(t);
         const isCast = CAST.includes(t);
         const isDamage = DAMAGE.includes(t);
-        const isHeal = t.includes('heal') && t !== 'health';
+        const isHeal = HEALS.includes(t);
         const isHush = HUSH.includes(t);
         const isTendril = TENDRIL.includes(t);
         const isCritical = t.includes('Critical');

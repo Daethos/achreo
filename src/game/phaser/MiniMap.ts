@@ -31,23 +31,23 @@ export default class MiniMap extends Phaser.Scene {
         .setOrigin(0.5)
         .setVisible(false)
         .setZoom(ZOOM)
-        .ignore(scene.actionBar)
-        .ignore(scene.smallHud.bar)
-        .ignore(scene.smallHud.stances)
+        .ignore(scene.hud.actionBar)
+        .ignore(scene.hud.smallHud.bar)
+        .ignore(scene.hud.smallHud.stances)
         .ignore(scene.target)
-        .ignore(scene.joystick.joystick.base)
-        .ignore(scene.joystick.joystick.thumb)
-        .ignore(scene.rightJoystick.joystick.base)
-        .ignore(scene.rightJoystick.joystick.thumb)
-        .ignore(scene.rightJoystick.pointer)
+        .ignore(scene.hud.joystick.joystick.base)
+        .ignore(scene.hud.joystick.joystick.thumb)
+        .ignore(scene.hud.rightJoystick.joystick.base)
+        .ignore(scene.hud.rightJoystick.joystick.thumb)
+        .ignore(scene.hud.rightJoystick.pointer)
         .on('pointerdown', (pointer: any) => {
             this.minimap.scrollX = pointer.worldX;
             this.minimap.scrollY = pointer.worldY;
         });
 
         this.reset = scene.add.rectangle(
-            scene.scale.width + 60,
-            y + height + 16,
+            scene.scale.width + 32,
+            y + height + 24,
             width / 6.5,
             height / 3,
             0xFF0000,
@@ -64,8 +64,8 @@ export default class MiniMap extends Phaser.Scene {
             this.reset.setVisible(false);
         });
         this.border = scene.add.rectangle(
-            x + 36,
-            y - 46,
+            x + 24,
+            y - 34,
             width + 4,
             height + 4,
             0x000000, 0.5
@@ -74,7 +74,7 @@ export default class MiniMap extends Phaser.Scene {
         .setDepth(6)
         .setInteractive()
         .setOrigin(0)
-        .setScale(1 / 0.8)
+        .setScale(1.175)
         .setScrollFactor(0)
         .setStrokeStyle(2, 0x000000)
         .setVisible(false)
@@ -86,5 +86,17 @@ export default class MiniMap extends Phaser.Scene {
         });
         this.minimap.ignore(this.reset);
         this.minimap.ignore(this.border);
+        // This Allows You To Toggle The UI Of Crafting With 'C'
+        scene.input.keyboard?.on('keydown-M', () => {
+            if (this.minimap.visible === true) {
+                this.minimap.setVisible(false);
+                this.border.setVisible(false);
+                this.reset.setVisible(false);
+            } else {
+                this.minimap.setVisible(true);
+                this.border.setVisible(true);
+                this.minimap.startFollow(scene.player);
+            };
+        });
     };
 };

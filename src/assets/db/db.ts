@@ -178,9 +178,13 @@ export const saveEntry = async (id: string, entry: any) => {
 };
 
 export const saveTutorial = async (id: string, type: string) => {
-    const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
-    const update = { ...ascean, tutorial: { ...ascean.tutorial, [type]: true} };
-    const save = await db.collection(ASCEANS).doc({ _id: id }).update(update);
+    const settings = await db.collection(SETTINGS).doc({ _id: id }).get();
+    const update = { ...settings, tutorial: { ...settings.tutorial, [type]: true} };
+    const save = await db.collection(SETTINGS).doc({ _id: id }).update(update);
+
+    // const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
+    // const update = { ...ascean, tutorial: { ...ascean.tutorial, [type]: true} };
+    // const save = await db.collection(ASCEANS).doc({ _id: id }).update(update);
     return save;
 };
 

@@ -52,7 +52,7 @@ export default class NewText {
             fontSize: 24,
             color: '#fdf6d8',
             backgroundColor: '#000',
-            stroke: '#FFFFFF',
+            stroke: '#000',
             strokeThickness: 2,
             shadow,
             align: 'center',
@@ -65,8 +65,8 @@ export default class NewText {
         switch (key.toLowerCase()) {
             case 'title':
                 style.fontSize = 112;
-                style.strokeThickness = 3;
-                style.shadow.blur = 3;
+                style.strokeThickness = 6;
+                style.shadow.blur = 15;
                 break;
             case 'subtitle':
                 style.fontSize = 72;

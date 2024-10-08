@@ -167,8 +167,9 @@ export default function App() {
     };
     function togglePause(pause: boolean): void {
         const scene = phaserRef.scene as Game;
+        const running = scene.scene.isActive(scene.scene.key);
         if (scene) {
-            if (pause === true) {
+            if (pause === true || running === true) {
                 scene.pause();
             } else {
                 scene.resume();

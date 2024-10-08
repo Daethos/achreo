@@ -4,7 +4,6 @@ import { Combat, initCombat } from '../../stores/combat';
 import { EventBus } from '../EventBus';
 import LootDrop from '../matter/LootDrop';
 import ActionButtons from '../phaser/ActionButtons';
-// import Settings, { initSettings } from '../../models/settings';
 import Equipment from '../../models/equipment';
 import { States } from '../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
@@ -27,7 +26,6 @@ import MiniMap from '../phaser/MiniMap';
 import { screenShake } from '../phaser/ScreenShake';
 import ParticleManager from '../matter/ParticleManager';
 import { Hud } from './Hud';
-// import { Hud } from './Hud';
 const dimensions = useResizeListener();
 export class Game extends Scene {
     animatedTiles: any[];
@@ -36,7 +34,6 @@ export class Game extends Scene {
     ascean: Ascean  | undefined;
     state: Combat = initCombat;
     reputation: Reputation = initReputation;
-    // settings: Settings = initSettings;
     player: Player;
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
@@ -96,7 +93,6 @@ export class Game extends Scene {
         this.gameEvent();
         this.state = this.registry.get("combat");
         this.reputation = this.getReputation();
-        // this.hud.settings = this.registry.get("settings");
         const map = this.make.tilemap({ key: 'ascean_test' });
         this.map = map;
         const tileSize = 32;
@@ -284,6 +280,7 @@ export class Game extends Scene {
                         this.enemies[i].adjustSpeed(data.speed);
                     };
                     break;
+                default: break;
             };
         });
         EventBus.on('update-enemy-aggression', (aggression: number) => {

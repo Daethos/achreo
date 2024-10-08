@@ -33,7 +33,7 @@ const SETTINGS = {
     BORDER_LINE: 4,
     BORDER_OFFSET: 1,
 };
-const PADDING = 12;
+const PADDING = 10;
 const WIDTH = 250;
 export type ActionButton = {
     key: string;
@@ -925,21 +925,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     private setButtonInteractive = (button: ActionButton): ActionButton => {
         button.graphic.setInteractive(new Phaser.Geom.Circle(button.x, button.y, button.width), Phaser.Geom.Circle.Contains)
             .on('pointerdown', (_pointer: Phaser.Input.Pointer, _localX: any, _localY: any, _event: any) => {
-                // console.log(pointer, 'Pointer!');
-                // const sceneG = pointer.manager.game.scene.isActive('Game');
-                // const sceneU = pointer.manager.game.scene.isActive('Underground');
-                // if (sceneG) {
-
-                //     console.log(`Game Active: ${sceneG}`, 'color:gold');
-                //     this.pressButton(button);
-
-                // } else if (sceneU) {
-                //     console.log(`Underground Active: ${sceneU}`, 'color:gold');
-                //     this.pressButton(button);
-                // }
-                // // console.log(`Game Active: ${sceneG}, Underground Active: ${sceneU}`, 'color:gold');
                 this.pressButton(button);
-            })
+        })
             .on('pointerover', (pointer: any) => {
                 this.setButtonText(button, pointer);
             })
@@ -967,7 +954,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 align: 'left',
                 color: '#ffd700',
                 fontFamily: 'Cinzel-Regular',
-                fontSize: '20px',
+                fontSize: '18px',
                 stroke: '#000',
                 strokeThickness: 2,
                 padding: { left: PADDING, right: PADDING, top: PADDING, bottom: 5 },
@@ -977,7 +964,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 align: 'left',
                 color: '#fdf6d8',
                 fontFamily: 'Cinzel-Regular',
-                fontSize: '16px',
+                fontSize: '14px',
                 stroke: '#000',
                 strokeThickness: 1.5,
                 padding: { left: PADDING, right: PADDING, top: PADDING / 2, bottom: PADDING /2 },
@@ -987,7 +974,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 align: 'left',
                 color: STAMINA.includes(button.name.toLowerCase()) ? '#0f0' : '#0cf',
                 fontFamily: 'Cinzel-Regular',
-                fontSize: '16px',
+                fontSize: '14px',
                 stroke: '#000',
                 strokeThickness: 1.5,
                 padding: { left: PADDING, right: PADDING, top: PADDING / 2, bottom: PADDING /2 },

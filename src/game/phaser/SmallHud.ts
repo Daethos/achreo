@@ -3,7 +3,7 @@ import { Game } from "../scenes/Game";
 import { Hud } from "../scenes/Hud";
 import { Underground } from "../scenes/Underground";
 
-const MOBILE = ['cursor-reset', 'minimap'];
+const MOBILE = ['cursor-reset', 'minimap', 'pause'];
 
 function xModifier(x: number, index: number, offset = 43.75) {
     const mod = x * 1.35 + (index * offset);
@@ -84,7 +84,6 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         let settings = this.scene.add.image(this.x, this.y, 'settings');
         let info = this.scene.add.image(this.x, this.y, 'info');
         let dialog = this.scene.add.image(this.x, this.y, 'dialog');
-
         let strafe = this.scene.add.image(this.x, this.y, 'strafe');
         this.bar.push(dialog);
         this.bar.push(info);
@@ -274,7 +273,6 @@ export default class SmallHud extends Phaser.GameObjects.Container {
     };
 
     pressButton = (item: Phaser.GameObjects.Image) => {
-        // const bar = this.scene.settings.desktop ? this.desktopBar : this.bar;
         this.bar.forEach((button) => {
             if (button !== item) return;
             switch (button.texture.key) {

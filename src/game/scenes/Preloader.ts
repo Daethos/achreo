@@ -6,7 +6,8 @@ import Entity from "../entities/Entity";
 import ParticleManager from "../matter/ParticleManager";
 import { EventBus } from '../EventBus';
 import { audio, image } from '../../utility/scene';
-
+const MASTERIES = ['#fdf6d8', 'red', 'green', 'blue', 'purple', 'gold'];
+// tile-extruder --tileWidth 32 --tileHeight 32 --input ./AncientForestMainLev.png --output ./AncientForestMainLev-extruded.png
 export class Preloader extends Scene {
     assets: any;
     bg: Phaser.GameObjects.Graphics;
@@ -20,7 +21,6 @@ export class Preloader extends Scene {
     title: NewText;
     width: number = window.innerWidth;
     height: number = window.innerHeight;
-
     constructor() {
         super('Preloader');
         this.centerX = window.innerWidth / 2;
@@ -28,10 +28,7 @@ export class Preloader extends Scene {
         this.height = 40;
         this.width = this.centerX * 1.5;
     };
-
     init() {};
-    
-    // tile-extruder --tileWidth 32 --tileHeight 32 --input ./AncientForestMainLev.png --output ./AncientForestMainLev-extruded.png
     preload() {
         ParticleManager.preload(this);
         Entity.preload(this);
@@ -55,13 +52,12 @@ export class Preloader extends Scene {
         };
         this.createLoadingBar();
     };
-
-    create () {
+    create() {
         this.introEvent();
         this.time.addEvent({
             delay: 500,
             callback: () => { 
-                this.scene.start('MainMenu'); 
+                this.scene.start('MainMenu');
                 this.progress.destroy();
                 this.border.destroy();
                 this.title.destroy();
@@ -71,11 +67,8 @@ export class Preloader extends Scene {
             callbackScope: this
         }); 
     }; 
-
     createLoadingBar() {
-        const masteries = ['#fdf6d8', 'red', 'green', 'blue', 'purple', 'gold'];
-        const index = Math.floor(Math.random() * masteries.length);
-        const shadow = masteries[index];
+        const shadow = MASTERIES[Math.floor(Math.random() * MASTERIES.length)];
         this.title = new NewText(this, this.centerX, this.centerY / 1.9, 'Loading Game', 'subtitle', 0.5, shadow);
         this.txt_progress = new NewText(this, this.centerX, this.centerY / 0.925, 'Loading...', 'preload', { x: 0.5, y: 1 }, shadow);
         this.txt_file = new NewText( this, this.centerX, this.centerY / 0.6, '', 'play', { x: 0.5, y: 1 }, shadow);
@@ -87,8 +80,6 @@ export class Preloader extends Scene {
         this.load.on('progress', this.onProgress, this);
         this.load.on('fileprogress', this.onFileProgress, this);
     };
-       
-
     onProgress(val: number) {
         this.progress.clear();
         this.progress.fillStyle(0xFDF6D8, 1);
@@ -101,11 +92,9 @@ export class Preloader extends Scene {
         this.borderBorder.strokeRect(0, 0, this.width, this.height + 2);
         this.txt_progress.setText(Math.round(val * 100) + '%');
     };
-
     onFileProgress(file: any) {
         this.txt_file.setText(`Loading: ${file.key}`);
     }; 
-
     introEvent = ():void => {
         EventBus.on('intro', () => {
             this.scene.start('Intro');

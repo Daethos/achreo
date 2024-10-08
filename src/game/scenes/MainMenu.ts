@@ -1,11 +1,13 @@
 import { EventBus } from '../EventBus'; 
 import NewText from '../phaser/NewText';
-
+const mastery = { constitution: '#fdf6d8', strength: 'red', agility: 'green', achre: 'blue', caeren: 'purple', kyosir: 'gold' };
+const masteries = ['#fdf6d8', 'red', 'green', 'blue', 'purple', 'gold'];
 export class MainMenu extends Phaser.Scene {
     background: Phaser.GameObjects.Image;
     logo: Phaser.GameObjects.Image;
     title: NewText;
     text: Phaser.GameObjects.Text;
+    tween: Phaser.Tweens.TweenChain;
     centerX: number;
     centerY: number;
 
@@ -16,9 +18,9 @@ export class MainMenu extends Phaser.Scene {
     };
 
     create () {
-        const masteries = ['#fdf6d8', 'red', 'green', 'blue', 'purple', 'gold'];
         const index = Math.round(Math.random() * masteries.length);
-        const shadow = masteries[index];
+        const ascean = this.registry.get("ascean")?.mastery || index;
+        const shadow = mastery[ascean as keyof typeof mastery];
         this.title = new NewText(
             this,
             this.centerX,
@@ -50,13 +52,28 @@ export class MainMenu extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(100);
         this.text.setInteractive();
         this.text.on('pointerup', this.mainMenu, this);
+        this.tween = this.tweens.chain({
+            targets: [this.text],
+            tweens: [
+                {
+                    alpha: 1,
+                    duration: 500,
+                    completeDelay: 500
+                },
+                {
+                    alpha: 0,
+                    duration: 500,
+                },
+            ],
+            repeat: -1,
+            callbackScope: this
+        });
         EventBus.emit('current-scene-ready', this);
         EventBus.once('enter-menu', this.changeScene, this);
     };
     
     changeScene () {
         this.sound.play('TV_Button_Press', { loop: false });
-        // this.scene.start('Game');
         this.scene.start('Hud');
         EventBus.emit('loading-ascean');
     };
@@ -65,6 +82,7 @@ export class MainMenu extends Phaser.Scene {
         this.sound.play('TV_Button_Press', { loop: false });
         this.title.obj.destroy();
         this.title.destroy();
+        this.tween.destroy();
         this.text.destroy();
         EventBus.emit('enter-menu');
     };

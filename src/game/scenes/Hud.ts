@@ -54,7 +54,14 @@ export class Hud extends Phaser.Scene {
         this.rightJoystick.joystick.thumb.setAlpha(this.settings.positions.rightJoystick.opacity);
         this.rightJoystick.createPointer(this); 
         this.joystickKeys = this.joystick.createCursorKeys();    
-
+        this.input.keyboard?.on('keydown-P', () => {
+            EventBus.emit('action-button-sound');
+            EventBus.emit('update-pause')
+        });
+        // window.addEventListener('resize', () => {
+        //     this.gameHeight = dimensions()?.HEIGHT;
+        //     this.gameWidth = dimensions()?.WIDTH;
+        // });
         this.startGameScene();
     };
     cleanUp() {

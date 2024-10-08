@@ -46,8 +46,6 @@ export class Intro extends Scene {
                 }
             });
         this.introText.setPosition(this.game.canvas.width * 0.15, this.game.canvas.height * 0.2).setOrigin(0, 0).setScrollFactor(0);
-        // this.introText.setWordWrapWidth(this.game.canvas.width * 0.7);
-        // this.introText.setOrigin(0);
 
         this.introTextBorder = new Phaser.GameObjects.Rectangle(this,
             0, // this.introText.x * 0.9,
@@ -57,14 +55,11 @@ export class Intro extends Scene {
         );
         this.introTextBorder.setStrokeStyle(2, 0xfdf6d8);
         this.introTextBorder.setOrigin(0);
-        // this.introTextBorder.setDepth(8);
 
         this.introContainer = new Phaser.GameObjects.Container(this, 0, 0, [this.introTextBorder, this.introText]);
         this.introContainer.width = this.game.canvas.width * 0.7;
         this.introContainer.height = this.game.canvas.height * 0.6;
         this.add.existing(this.introContainer);
-
-        // this.introText.setDepth(6);
 
         this.node = INTRO_NODES[0];
         var typing = new TextTyping(this.introText, {

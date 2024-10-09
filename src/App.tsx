@@ -198,9 +198,9 @@ export default function App() {
     async function saveInventory(save: Inventory) {
         try {
             setInventory(save);
-            const res = await updateInventory(save);
-            console.log(res, 'Result of Saving Inventory');
-            makeToast('Saved To Inventory', 'Saved', 1000, 'Close', undefined);
+            // const res =
+            await updateInventory(save);
+            // console.log(res, 'Result of Saving Inventory');
         } catch (err) { 
             console.warn(err, 'Error Saving Inventory'); 
         };
@@ -286,7 +286,6 @@ export default function App() {
     function switchScene(next: string): void {
         setShow(false);
         const scene = phaserRef.scene as Scene;
-        console.log(scene, 'Scene?');
         EventBus.emit('switch-scene', { current: scene.scene.key, next });
     };
     function summonEnemy(val: number = 1) {

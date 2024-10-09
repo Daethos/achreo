@@ -262,6 +262,7 @@ export class CombatManager extends Phaser.Scene {
         if (id === '') return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
+            if (this.context.player.isSnared) return;
             this.context.player.isSlowed = true;
             this.context.player.slowDuration = time;
         } else {
@@ -275,6 +276,7 @@ export class CombatManager extends Phaser.Scene {
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.context.player.isSnared = true;
+            if (this.context.player.isSlowed) this.context.player.isSlowed = false;
         } else {
             enemy.count.snared += 1;
             enemy.isSnared = true;

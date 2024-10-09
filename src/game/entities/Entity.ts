@@ -159,9 +159,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     currentAction: string = '';
     polymorphDirection: string = '';
     polymorphMovement: string = '';
-    scrollingCombatText: ScrollingCombatText;
-    specialCombatText: ScrollingCombatText;
-    resistCombatText: ScrollingCombatText;
+    scrollingCombatText: ScrollingCombatText | undefined;
+    specialCombatText: ScrollingCombatText | undefined;
+    resistCombatText: ScrollingCombatText | undefined;
     path: any[] = [];
     nextPoint: any;
     isPathing: boolean = false;
@@ -501,7 +501,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const chance = Math.random() * 101;
         const playerResist = this.scene.state.isStalwart ? this.scene.state.playerDefense?.magicalPosture as number / 4 : this.scene.state.playerDefense?.magicalDefenseModifier as number / 4;
         const enemyPenetration = this.combatStats?.attributes?.kyosirMod || 0;
-        this.scene.logger.log(`Initial Enemy Special Chance: ${roundToTwoDecimals(chance)} | Player Resist: ${playerResist} | Enemy Penetration: ${enemyPenetration}`);
+        this.scene.hud.logger.log(`Initial Enemy Special Chance: ${roundToTwoDecimals(chance)} | Player Resist: ${playerResist} | Enemy Penetration: ${enemyPenetration}`);
         const resist = playerResist - enemyPenetration; // 0 - 25% - 0 - 25%
         if (chance > resist) {
             return true;
@@ -548,7 +548,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     weaponRotation = (entity: string, target: Player | Enemy) => {  
         if (this.isPraying || this.isCasting) {
-            if (this.spriteWeapon.depth < 3) this.spriteWeapon.setDepth(3);
+            if (this.spriteWeapon.depth < this.depth) this.spriteWeapon.setDepth(this.depth + 1);
             if (this.flipX) {
                 if (this.frameCount === 0) {
                     this.spriteWeapon.setOrigin(0.65, 1.5);
@@ -1067,7 +1067,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             }; 
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
             if ((entity === 'player' && this.hasBow) || (entity === 'enemy' && this.hasBow)) {
-                this.spriteWeapon.setDepth(3);
+                this.spriteWeapon.setDepth(this.depth + 1);
                 this.spriteShield.setVisible(false);
                 if (this.flipX) {
                     if (this.frameCount === 0) {
@@ -1167,7 +1167,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteWeapon.setOrigin(0.25, 0.25);
                     this.spriteWeapon.setAngle(107.5);
                 } else {
-                    this.spriteWeapon.setDepth(3);
+                    this.spriteWeapon.setDepth(this.depth + 1);
                     this.spriteWeapon.setOrigin(0, 0.5);
                     this.spriteWeapon.setAngle(107.5);
                 };
@@ -1180,7 +1180,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteWeapon.setOrigin(0, 0.5);
                     this.spriteWeapon.setAngle(-7.5);
                 } else {
-                    this.spriteWeapon.setDepth(3);
+                    this.spriteWeapon.setDepth(this.depth + 1);
                     this.spriteWeapon.setOrigin(0.25, 1.2);
                     this.spriteWeapon.setAngle(-194.5);
                 };
@@ -1205,7 +1205,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.spriteWeapon.setOrigin(0.5, 0.25);
                 this.spriteWeapon.setAngle(107.5);
             } else {
-                this.spriteWeapon.setDepth(3);
+                this.spriteWeapon.setDepth(this.depth + 1);
                 this.spriteWeapon.setOrigin(-0.25, 0.5);
                 this.spriteWeapon.setAngle(107.5);
             };
@@ -1219,7 +1219,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.spriteWeapon.setOrigin(0.25, 0.5);
                 this.spriteWeapon.setAngle(-7.5);
             } else {
-                this.spriteWeapon.setDepth(3);
+                this.spriteWeapon.setDepth(this.depth + 1);
                 this.spriteWeapon.setOrigin(0.5, 1.2);
                 this.spriteWeapon.setAngle(-194.5);
             };

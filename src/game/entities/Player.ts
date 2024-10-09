@@ -343,13 +343,13 @@ export default class Player extends Entity {
     invalidTarget = (id: string) => {
         const enemy = this.scene.enemies.find((enemy: Enemy) => enemy.enemyID === id);
         if (enemy) return enemy.health === 0; // enemy.isDefeated;
-        this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Combat Issue: NPC Targeted`, 1000, 'damage');
+        this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Combat Issue: NPC Targeted`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
         return true;
     };
     outOfRange = (range: number) => {
         const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget?.x as number, this.currentTarget?.y as number);
         if (distance > range) {
-            this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: -${Math.round(distance - range)}`, 1000, 'damage');
+            this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: -${Math.round(distance - range)}`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
             return true;    
         };
         return false;
@@ -384,7 +384,7 @@ export default class Player extends Entity {
         if (this.health > e.newPlayerHealth) {
             let damage: number | string = Math.round(this.health - e.newPlayerHealth);
             damage = e.computerCriticalSuccess === true ? `${damage} (Critical)` : e.computerGlancingBlow === true ? `${damage} (Glancing)` : damage;
-            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `${damage}`, PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);
+            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `${damage}`, PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.scrollingCombatText = undefined);
             if (this.isConfused) this.isConfused = false;
             if (this.isPolymorphed) this.isPolymorphed = false;
             if (this.reactiveBubble) {
@@ -400,14 +400,14 @@ export default class Player extends Entity {
             if (this.isFeared) {
                 const chance = Math.random() < 0.1 + this.fearCount;
                 if (chance) {
-                    this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect');
+                    this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.resistCombatText = undefined);
                     this.isFeared = false;    
                 } else {
                     this.fearCount += 0.1;
                 };
             };
         };
-        if (this.health < e.newPlayerHealth) this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `${Math.round(e.newPlayerHealth - this.health)}`, PLAYER.DURATIONS.TEXT, 'heal');
+        if (this.health < e.newPlayerHealth) this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `${Math.round(e.newPlayerHealth - this.health)}`, PLAYER.DURATIONS.TEXT, 'heal', false, false, () => this.scrollingCombatText = undefined);
         this.health = e.newPlayerHealth;
         this.healthbar.setValue(this.health);
         if (this.healthbar.getTotal() < e.playerHealth) this.healthbar.setTotal(e.playerHealth);
@@ -419,21 +419,21 @@ export default class Player extends Entity {
             this.isStunned = true;
             // this.playerMachine.stateMachine.setState(States.STUN);
             this.scene.combatManager.combatMachine.input('computerParrySuccess', false);
-            this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Parry', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);    
+            this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Parry', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.resistCombatText = undefined);    
         };
         if (e.rollSuccess === true) {
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Roll', PLAYER.DURATIONS.TEXT, 'heal', true);
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Roll', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
         };
         if (e.parrySuccess === true) {
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Parry', PLAYER.DURATIONS.TEXT, 'heal', true);
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Parry', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
             this.scene.combatManager.stunned(e.enemyID);
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'parry');
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
         };
-        if (e.computerRollSuccess === true) this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);
+        if (e.computerRollSuccess === true) this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.resistCombatText = undefined);
         if (e.newComputerHealth <= 0 && e.playerWin === true) this.defeatedEnemyCheck(e.enemyID);
         if (e.newPlayerHealth <= 0) this.disengage();    
         if (e.playerAttributes?.stamina as number > this.maxStamina) this.maxStamina = e.playerAttributes?.stamina as number;
@@ -442,7 +442,7 @@ export default class Player extends Entity {
     };
 
     resist = () => {
-        this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Resisted', PLAYER.DURATIONS.TEXT, 'effect');  
+        this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Resisted', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.resistCombatText = undefined);  
     };
 
     leap = () => {
@@ -516,7 +516,7 @@ export default class Player extends Entity {
 
     storm = () => {
         this.isStorming = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'damage'); 
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined); 
         this.isAttacking = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.STORM);
         this.scene.tweens.add({
@@ -527,7 +527,7 @@ export default class Player extends Entity {
             onLoop: () => {
                 this.isAttacking = true;
                 screenShake(this.scene);
-                this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'damage');
+                this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined);
                 if (this.touching.length > 0) {
                     this.touching.forEach((enemy) => {
                         if (enemy.health === 0) return;
@@ -1448,9 +1448,9 @@ export default class Player extends Entity {
         };
         if (this.scene.combat === true && (!this.currentTarget || !this.currentTarget.inCombat)) this.findEnemy(); // this.inCombat === true && state.combatEngaged
         if (this.healthbar) this.healthbar.update(this);
-        if (this.scrollingCombatText) this.scrollingCombatText.update(this);
-        if (this.specialCombatText) this.specialCombatText.update(this); 
-        if (this.resistCombatText) this.resistCombatText.update(this);
+        if (this.scrollingCombatText !== undefined) this.scrollingCombatText.update(this);
+        if (this.specialCombatText !== undefined) this.specialCombatText.update(this); 
+        if (this.resistCombatText !== undefined) this.resistCombatText.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
         this.weaponRotation('player', this.currentTarget as Enemy);

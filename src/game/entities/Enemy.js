@@ -234,13 +234,13 @@ export default class Enemy extends Entity {
         if (this.health > e.health) {
             let damage = Math.round(this.health - e.health);
             damage = e?.glancing === true ? `${damage} (Glancing)` : damage;
-            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e?.critical);
+            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e?.critical, false, () => this.scrollingCombatText = undefined);
             if (this.isMalicing) this.maliceHit();
             if (this.isMending) this.mendHit();
             if (!this.inCombat && e.health > 0) this.jumpIntoCombat();
         } else if (this.health < e.health) {
             let heal = Math.round(e.health - this.health);
-            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, 1500, 'heal');
+            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, 1500, 'heal', false, false, () => this.scrollingCombatText = undefined);
         };
         this.health = e.health;
         this.updateHealthBar(e.health);
@@ -312,12 +312,12 @@ export default class Enemy extends Entity {
         if (this.health > e.newComputerHealth) {
             let damage = Math.round(this.health - e.newComputerHealth);
             damage = e.criticalSuccess ? `${damage} (Critical)` : e.glancingBlow ? `${damage} (Glancing)` : damage;
-            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.criticalSuccess);
+            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage, 1500, 'damage', e.criticalSuccess, false, () => this.scrollingCombatText = undefined);
             if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
             if (this.isFeared) {
                 const chance = Math.random() < 0.1 + this.fearCount;
                 if (chance) {
-                    this.statusCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect');
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.specialCombatText = undefined);
                     this.isFeared = false;
                 } else {
                     this.fearCount += 0.1;
@@ -331,7 +331,7 @@ export default class Enemy extends Entity {
             if (!this.inCombat && e.newComputerHealth > 0 && e.newPlayerHealth > 0) this.checkEnemyCombatEnter();
         } else if (this.health < e.newComputerHealth) { 
             let heal = Math.round(e.newComputerHealth - this.health);
-            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, 1500, 'heal');
+            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, heal, 1500, 'heal', false, false, () => this.scrollingCombatText = undefined);
         }; 
         this.health = e.newComputerHealth;
         if (this.healthbar.getTotal() < e.computerHealth) this.healthbar.setTotal(e.computerHealth);
@@ -452,7 +452,7 @@ export default class Enemy extends Entity {
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
         this.stateMachine.setState(States.CHASE);
         this.scene.combatEngaged(true);
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '!', 1000, 'effect', true, true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '!', 1000, 'effect', true, true, () => this.specialCombatText = undefined);
         this.ping();
     };
 
@@ -467,7 +467,7 @@ export default class Enemy extends Entity {
         this.stateMachine.setState(States.CHASE); 
         if (this.scene.combat === false) this.scene.player.targetEngagement(this.enemyID); // player.inCombat
         this.scene.combatEngaged(true);
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '!', 1000, 'effect', true, true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '!', 1000, 'effect', true, true, () => this.specialCombatText = undefined);
         this.ping();
     };
 
@@ -584,7 +584,7 @@ export default class Enemy extends Entity {
             collision.gameObjectB.inCombat = true;
             this.scene.combatEngaged(true);
         };
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '!', 1000, 'effect', true, true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '!', 1000, 'effect', true, true, () => this.specialCombatText = undefined);
         this.ping();
     };
 
@@ -706,7 +706,7 @@ export default class Enemy extends Entity {
     startCasting = (name, duration, style, channel = false) => {
         this.castbar.reset();
         this.isCasting = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, name, duration / 2, style);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, name, duration / 2, style, false, false, () => this.specialCombatText = undefined);
         this.castbar.setTotal(duration);
         if (channel === true) this.castbar.setTime(duration);
         if (this.isGlowing === false) this.checkCaerenic(true);
@@ -720,13 +720,13 @@ export default class Enemy extends Entity {
         this.castbar.reset();
         if (this.isGlowing === true) this.checkCaerenic(false);
         if (this.isCounterSpelled === true) {
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, counter, 750, 'damage', false, true);
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, counter, 750, 'damage', false, true, () => this.specialCombatText = undefined);
         };
         this.evaluateCombatDistance();        
     };
 
     setStun = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', 2500, 'effect', true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', 2500, 'effect', true, false, () => this.specialCombatText = undefined);
         this.isStunned = true;
         this.count.stunned += 1;
     };
@@ -1142,7 +1142,7 @@ export default class Enemy extends Entity {
             this.attacking.removeTarget(this.enemyID);
             this.attacking = undefined;
             this.setSpecialCombat(false);
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Leashing', 1500, 'effect');
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Leashing', 1500, 'effect', false, false, () => this.specialCombatText = undefined);
         };
         this.leashTimer = this.scene.time.addEvent({
             delay: 500,
@@ -1286,7 +1286,7 @@ export default class Enemy extends Entity {
 
     onDesperationEnter = () => {
         this.isCasting = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Desperation', PLAYER.DURATIONS.HEALING / 2, 'cast');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Desperation', PLAYER.DURATIONS.HEALING / 2, 'cast', false, false, () => this.specialCombatText = undefined);
         if (this.isGlowing === false) this.checkCaerenic(true);
         this.scene.time.delayedCall(PLAYER.DURATIONS.DESPERATION, () => {
             const heal = Math.round(this.ascean.health.max * 0.5);
@@ -1588,7 +1588,7 @@ export default class Enemy extends Entity {
     };
     
     onSacrificeEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Sacrifice', 750, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Sacrifice', 750, 'effect', false, false, () => this.specialCombatText = undefined);
         if (this.checkPlayerResist() === false) return;
         this.scene.combatManager.useGrace(10);
         this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume }); 
@@ -1599,7 +1599,7 @@ export default class Enemy extends Entity {
     onSacrificeExit = () => this.evaluateCombatDistance();
         
     onSlowingEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slow', 750, 'cast');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slow', 750, 'cast', false, false, () => this.specialCombatText = undefined);
         if (this.checkPlayerResist() === false) return;
         this.scene.combatManager.useGrace(10);
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
@@ -1636,7 +1636,7 @@ export default class Enemy extends Entity {
     };
 
     onSutureEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Suture', 750, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Suture', 750, 'effect', false, false, () => this.specialCombatText = undefined);
         if (this.checkPlayerResist() === false) return;    
         this.scene.combatManager.useGrace(10);
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume }); 
@@ -1691,7 +1691,7 @@ export default class Enemy extends Entity {
     onChiomicEnter = () => {
         this.aoe = new AoE(this.scene, 'chiomic', 1, true, this);    
         this.scene.sound.play('death', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Hah! Hah!', PLAYER.DURATIONS.CHIOMIC, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Hah! Hah!', PLAYER.DURATIONS.CHIOMIC, 'effect', false, false, () => this.specialCombatText = undefined);
         this.isChiomic = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.CHIOMIC, () => {
             this.isChiomic = false;
@@ -1707,7 +1707,7 @@ export default class Enemy extends Entity {
         this.isDiseasing = true;
         this.aoe = new AoE(this.scene, 'tendril', 6, true, this);    
         this.scene.sound.play('dungeon', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tendrils Swirl', 750, 'tendril');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Tendrils Swirl', 750, 'tendril', false, false, () => this.specialCombatText = undefined);
         this.scene.time.delayedCall(PLAYER.DURATIONS.DISEASE, () => {
             this.isDiseasing = false;
         }, undefined, this);
@@ -1720,7 +1720,7 @@ export default class Enemy extends Entity {
     onFreezeEnter = () => {
         this.aoe = new AoE(this.scene, 'freeze', 1, true, this);
         this.scene.sound.play('freeze', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Freezing', PLAYER.DURATIONS.FREEZE, 'cast');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Freezing', PLAYER.DURATIONS.FREEZE, 'cast', false, false, () => this.specialCombatText = undefined);
         this.isFreezing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.FREEZE, () => {
             this.isFreezing = false;
@@ -1734,7 +1734,7 @@ export default class Enemy extends Entity {
     onHowlEnter = () => {
         this.aoe = new AoE(this.scene, 'howl', 1, true, this);    
         this.scene.sound.play('howl', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Howling', PLAYER.DURATIONS.HOWL, 'damage');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Howling', PLAYER.DURATIONS.HOWL, 'damage', false, false, () => this.specialCombatText = undefined);
         this.isHowling = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.HOWL, () => {
             this.isHowling = false;
@@ -1754,7 +1754,7 @@ export default class Enemy extends Entity {
         this.reactiveName = States.MALICE;
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.isMalicing = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush', false, false, () => this.specialCombatText = undefined);
         this.reactiveBubble = new Bubble(this.scene, this.x, this.y, 'purple', PLAYER.DURATIONS.MALICE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MALICE, () => {
             this.isMalicing = false;    
@@ -1780,7 +1780,7 @@ export default class Enemy extends Entity {
             return;
         };
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Malice', 750, 'hush', false, false, () => this.specialCombatText = undefined);
         if (this.checkPlayerResist() === true) {
             this.chiomic(10);
         };
@@ -1798,7 +1798,7 @@ export default class Enemy extends Entity {
         this.reactiveName = States.MENACE;
         this.scene.sound.play('scream', { volume: this.scene.hud.settings.volume });
         this.isMenacing = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Menacing', 750, 'tendril');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Menacing', 750, 'tendril', false, false, () => this.specialCombatText = undefined);
         this.reactiveBubble = new Bubble(this.scene, this.x, this.y, 'dread', PLAYER.DURATIONS.MENACE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MENACE, () => {
             this.isMenacing = false;    
@@ -1825,7 +1825,7 @@ export default class Enemy extends Entity {
         };
         this.scene.combatManager.fear(this.scene.player.playerID);
         this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril', false, false, () => this.specialCombatText = undefined);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 3) {
             this.isMenacing = false;
@@ -1840,7 +1840,7 @@ export default class Enemy extends Entity {
         this.reactiveName = States.MEND;
         this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
         this.isMending = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 750, 'tendril');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 750, 'tendril', false, false, () => this.specialCombatText = undefined);
         this.reactiveBubble = new Bubble(this.scene, this.x, this.y, 'purple', PLAYER.DURATIONS.MEND);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MEND, () => {
             this.isMending = false;    
@@ -1866,7 +1866,7 @@ export default class Enemy extends Entity {
             return;
         };
         this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mending', 500, 'tendril', false, false, () => this.specialCombatText = undefined);
         const mend = Math.round(this.healthbar.getTotal() * 0.15);
         const heal = Math.min(this.healthbar.getTotal(), this.health + mend);
         this.scene.combatManager.combatMachine.action({ data: { key: 'enemy', value: heal, id: this.enemyID }, type: 'Health' });
@@ -1884,7 +1884,7 @@ export default class Enemy extends Entity {
         this.reactiveName = States.MULTIFARIOUS;
         this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
         this.isMultifaring = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Multifaring', 750, 'cast');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Multifaring', 750, 'cast', false, false, () => this.specialCombatText = undefined);
         this.reactiveBubble = new Bubble(this.scene, this.x, this.y, 'ultramarine', PLAYER.DURATIONS.MULTIFARIOUS);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MULTIFARIOUS, () => {
             this.isMultifaring = false;    
@@ -1911,7 +1911,7 @@ export default class Enemy extends Entity {
         };
         this.scene.combatManager.polymorph(this.scene.player.playerID);
         this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Multifarious', 500, 'cast');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Multifarious', 500, 'cast', false, false, () => this.specialCombatText = undefined);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 3) {
             this.isMultifaring = false;
@@ -1926,7 +1926,7 @@ export default class Enemy extends Entity {
         this.reactiveName = States.MYSTIFY;
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.isMystifying = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mystifying', 750, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mystifying', 750, 'effect', false, false, () => this.specialCombatText = undefined);
         this.reactiveBubble = new Bubble(this.scene, this.x, this.y, 'chartreuse', PLAYER.DURATIONS.MYSTIFY);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MYSTIFY, () => {
             this.isMystifying = false;    
@@ -1953,7 +1953,7 @@ export default class Enemy extends Entity {
         };
         this.scene.combatManager.confuse(this.scene.player.playerID);
         this.scene.sound.play('death', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mystifying', 500, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Mystifying', 500, 'effect', false, false, () => this.specialCombatText = undefined);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 3) {
             this.isMystifying = false;
@@ -1967,7 +1967,7 @@ export default class Enemy extends Entity {
         };
         this.isProtecting = true;
         this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Protecting', 750, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Protecting', 750, 'effect', false, false, () => this.specialCombatText = undefined);
         this.negationBubble = new Bubble(this.scene, this.x, this.y, 'gold', PLAYER.DURATIONS.PROTECT);
         this.scene.time.delayedCall(PLAYER.DURATIONS.PROTECT, () => {
             this.isProtecting = false;    
@@ -1986,7 +1986,7 @@ export default class Enemy extends Entity {
         this.isRenewing = true;
         this.aoe = new AoE(this.scene, 'renewal', 6, false, this);    
         this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Hush Tears', 750, 'bone');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Hush Tears', 750, 'bone', false, false, () => this.specialCombatText = undefined);
         this.scene.time.delayedCall(PLAYER.DURATIONS.RENEWAL, () => {
             this.isRenewing = false;
         });
@@ -2000,7 +2000,7 @@ export default class Enemy extends Entity {
         if (!this.inCombat) return;
         this.aoe = new AoE(this.scene, 'scream', 1, true, this);  
         this.scene.sound.play('scream', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Screaming', 750, 'hush');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Screaming', 750, 'hush', false, false, () => this.specialCombatText = undefined);
         this.isScreaming = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.SCREAM, () => {
             this.isScreaming = false;
@@ -2020,7 +2020,7 @@ export default class Enemy extends Entity {
         this.negationName = States.SHIELD;
         this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
         this.isShielding = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shielding', 750, 'bone');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shielding', 750, 'bone', false, false, () => this.specialCombatText = undefined);
         this.negationBubble = new Bubble(this.scene, this.x, this.y, 'bone', PLAYER.DURATIONS.SHIELD);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIELD, () => {
             this.isShielding = false;    
@@ -2046,10 +2046,10 @@ export default class Enemy extends Entity {
             return;
         };
         this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shield Hit', 500, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shield Hit', 500, 'effect', false, false, () => this.specialCombatText = undefined);
         this.negationBubble.setCharges(this.negationBubble.charges - 1);
         if (this.negationBubble.charges <= 0) {
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shield Broken', 500, 'damage');
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Shield Broken', 500, 'damage', false, false, () => this.specialCombatText = undefined);
             this.isShielding = false;
         };
     };
@@ -2070,7 +2070,7 @@ export default class Enemy extends Entity {
 
     shimmerHit = () => {
         this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `${this.ascean.name} simply wasn't there`, 500, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `${this.ascean.name} simply wasn't there`, 500, 'effect', false, false, () => this.specialCombatText = undefined);
     };
 
     onSprintEnter = () => {
@@ -2097,7 +2097,7 @@ export default class Enemy extends Entity {
         this.negationName = States.WARD;
         this.isWarding = true;
         this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Warding', 750, 'damage');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Warding', 750, 'damage', false, false, () => this.specialCombatText = undefined);
         this.negationBubble = new Bubble(this.scene, this.x, this.y, 'red', PLAYER.DURATIONS.WARD);
         this.scene.time.delayedCall(PLAYER.DURATIONS.WARD, () => {
             this.isWarding = false;    
@@ -2127,9 +2127,9 @@ export default class Enemy extends Entity {
             this.scene.combatManager.stunned(this.scene.player.ascean._id);
         };
         this.negationBubble.setCharges(this.negationBubble.charges - 1);
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Warded', 500, 'effect');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Warded', 500, 'effect', false, false, () => this.specialCombatText = undefined);
         if (this.negationBubble.charges <= 3) {
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Ward Broken', 500, 'damage');
+            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Ward Broken', 500, 'damage', false, false, () => this.specialCombatText = undefined);
             this.negationBubble.setCharges(0);
             this.isWarding = false;
         };
@@ -2138,7 +2138,7 @@ export default class Enemy extends Entity {
     onWritheEnter = () => {
         this.aoe = new AoE(this.scene, 'writhe', 1, true, this);    
         this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Writhing', 750, 'tendril');
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Writhing', 750, 'tendril', false, false, () => this.specialCombatText = undefined);
         this.isWrithing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.WRITHE, () => {
             this.isWrithing = false;
@@ -2186,7 +2186,7 @@ export default class Enemy extends Entity {
 
     onConfusedEnter = () => { 
         this.isConfused = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'c .OnFu`Se D~', DURATION.TEXT, 'effect', false, true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'c .OnFu`Se D~', DURATION.TEXT, 'effect', false, true, () => this.specialCombatText = undefined);
         this.spriteWeapon.setVisible(false);
         this.spriteShield.setVisible(false);
         this.confuseDirection = 'down';
@@ -2232,7 +2232,7 @@ export default class Enemy extends Entity {
                 } else {   
                     this.specialCombatText.destroy();
                     randomDirection();
-                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, confusions[Math.floor(Math.random() * 5)], 1000, 'effect');
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, confusions[Math.floor(Math.random() * 5)], 1000, 'effect', false, false, () => this.specialCombatText = undefined);
                 };
             },
             callbackScope: this,
@@ -2313,7 +2313,7 @@ export default class Enemy extends Entity {
     onCounterSpelledExit = () => this.setTint(ENEMY_COLOR);
 
     onFearedEnter = () => { 
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'F̶e̷a̴r̷e̵d̴', DURATION.TEXT, 'damage', false, true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'F̶e̷a̴r̷e̵d̴', DURATION.TEXT, 'damage', false, true, () => this.specialCombatText = undefined);
         this.spriteWeapon.setVisible(false);
         this.spriteShield.setVisible(false);
         this.fearDirection = 'down';
@@ -2357,7 +2357,7 @@ export default class Enemy extends Entity {
                     this.isFeared = false;
                 } else {   
                     randomDirection();
-                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, fears[Math.floor(Math.random() * 5)], 1000, 'effect');
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, fears[Math.floor(Math.random() * 5)], 1000, 'effect', false, false, () => this.specialCombatText = undefined);
                 };
             },
             callbackScope: this,
@@ -2386,7 +2386,7 @@ export default class Enemy extends Entity {
     };
 
     onFrozenEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Frozen', DURATION.TEXT, 'cast', false, true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Frozen', DURATION.TEXT, 'cast', false, true, () => this.specialCombatText = undefined);
         this.anims.play('player_idle', true);
         this.setTint(0x0000FF); // 0x888888
         this.setStatic(true);
@@ -2436,7 +2436,7 @@ export default class Enemy extends Entity {
     };
 
     onParalyzedEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Paralyzed', DURATION.TEXT, 'effect', false, true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Paralyzed', DURATION.TEXT, 'effect', false, true, () => this.specialCombatText = undefined);
         this.paralyzeDuration = DURATION.PARALYZED;
         this.isAttacking = false;
         this.isParrying = false;
@@ -2466,7 +2466,7 @@ export default class Enemy extends Entity {
 
     onPolymorphEnter = () => {
         this.isPolymorphed = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphed', DURATION.TEXT, 'effect', false, true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Polymorphed', DURATION.TEXT, 'effect', false, true, () => this.specialCombatText = undefined);
         this.clearAnimations();
         this.clearTint();
         this.anims.pause();
@@ -2514,7 +2514,7 @@ export default class Enemy extends Entity {
                     this.isPolymorphed = false;
                 } else {   
                     randomDirection();
-                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '...thump', 1000, 'effect');
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, '...thump', 1000, 'effect', false, false, () => this.specialCombatText = undefined);
                     if (this.isCurrentTarget && this.health < this.ascean.health.max) {
                         this.health = (this.health + (this.ascean.health.max * 0.15)) > this.ascean.health.max ? this.ascean.health.max : (this.health + (this.ascean.health.max * 0.15));
                         if (this.scene.state.enemyID === this.enemyID) {
@@ -2549,7 +2549,7 @@ export default class Enemy extends Entity {
     };
 
     onStunEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', 2500, 'effect', false, true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', 2500, 'effect', false, true, () => this.specialCombatText = undefined);
         this.stunDuration = DURATION.STUNNED;
         this.isAttacking = false;
         this.isParrying = false;
@@ -2585,7 +2585,7 @@ export default class Enemy extends Entity {
     onCleanExit = () => {};
 
     onRootEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Rooted', DURATION.TEXT, 'effect', false, true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Rooted', DURATION.TEXT, 'effect', false, true, () => this.specialCombatText = undefined);
         this.setTint(0x888888); // 0x888888
         this.setStatic(true);
         this.scene.time.delayedCall(DURATION.ROOTED, () => {
@@ -2615,7 +2615,7 @@ export default class Enemy extends Entity {
     };
 
     onSlowEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slowed', DURATION.TEXT, 'effect', false, true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Slowed', DURATION.TEXT, 'effect', false, true, () => this.specialCombatText = undefined);
         this.setTint(0xFFC700); // 0x888888
         this.adjustSpeed(-PLAYER.SPEED.SLOW);
         this.scene.time.delayedCall(this.slowDuration, () => {
@@ -2637,7 +2637,7 @@ export default class Enemy extends Entity {
     };
 
     onSnareEnter = () => {
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snared', DURATION.TEXT, 'effect', false, true);
+        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Snared', DURATION.TEXT, 'effect', false, true, () => this.specialCombatText = undefined);
         this.snareDuration = DURATION.SNARED;
         this.setTint(0x0000FF); // 0x888888
         this.adjustSpeed(-PLAYER.SPEED.SNARE);
@@ -2914,8 +2914,8 @@ export default class Enemy extends Entity {
     evaluateEnemyState = () => {
         this.currentWeaponCheck();
         if (this.healthbar) this.healthbar.update(this);
-        if (this.scrollingCombatText) this.scrollingCombatText.update(this);
-        if (this.specialCombatText) this.specialCombatText.update(this); 
+        if (this.scrollingCombatText !== undefined) this.scrollingCombatText.update(this);
+        if (this.specialCombatText !== undefined) this.specialCombatText.update(this); 
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.inCombat === false) return;

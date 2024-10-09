@@ -19,7 +19,6 @@ import Enemy from '../entities/Enemy';
 import NPC from '../entities/NPC';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
-import Logger, { ConsoleLogger } from '../../utility/Logger';
 import MovingPlatform from '../matter/MovingPlatform';
 import { CombatManager } from '../phaser/CombatManager';
 import MiniMap from '../phaser/MiniMap';
@@ -71,7 +70,6 @@ export class Game extends Scene {
     climbingLayer: Phaser.Tilemaps.TilemapLayer;
     flowers: Phaser.Tilemaps.TilemapLayer;
     plants: Phaser.Tilemaps.TilemapLayer;
-    logger!: Logger;
     platform: MovingPlatform;
     platform2: MovingPlatform;
     matterCollision: any;
@@ -172,13 +170,7 @@ export class Game extends Scene {
         this.musicCombat2 = this.sound.add('combat2', { volume: this?.hud?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
         if (this.hud.settings?.music === true) this.musicBackground.play();
-        this.logger = new Logger();
-        this.logger.add('console', new ConsoleLogger());
-        this.time.delayedCall(2000, () => {
-            this.logger.log('Console: Something concerning but potentially innocuous!');
-            this.logger.log('Warning: Some function did not work, but did not crash the game!');
-            this.logger.log('Error: Some portion if not all of the game has crashed!');
-        }, undefined, this);
+
         // this.platform = new MovingPlatform(this, 650, 3200, 'player-castbar', { isStatic: true });
         // this.platform.vertical(0, -3000, 12000);
         // this.platform2 = new MovingPlatform(this, 500, 3950, 'player-castbar', { isStatic: true });

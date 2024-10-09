@@ -22,7 +22,6 @@ import Tile from '../phaser/Tile';
 import { CombatManager } from '../phaser/CombatManager';
 import MiniMap from '../phaser/MiniMap';
 import ScrollingCombatText from '../phaser/ScrollingCombatText';
-import Logger, { ConsoleLogger } from '../../utility/Logger';
 import ParticleManager from '../matter/ParticleManager';
 import { screenShake } from '../phaser/ScreenShake';
 import { Hud } from './Hud';
@@ -81,7 +80,6 @@ export class Underground extends Scene {
     east: any;
     west: any;
     markers: any;
-    logger: Logger;
     glowFilter: any;
     hud: Hud;
 
@@ -188,8 +186,6 @@ export class Underground extends Scene {
         if (this.hud.settings.desktop === true) {
             this.input.setDefaultCursor('url(assets/images/cursor.png), pointer');
         };
-        this.logger = new Logger();
-        this.logger.add('console', new ConsoleLogger());
         this.combatManager = new CombatManager(this);
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
@@ -595,7 +591,7 @@ export class Underground extends Scene {
     };
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
-        enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, "Something is tearing into me. Please, help!", 1500, 'damage', false, true);
+        enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, "Something is tearing into me. Please, help!", 1500, 'damage', false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DEATH);
         this.time.delayedCall(3000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e !== enemy);

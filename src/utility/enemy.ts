@@ -149,9 +149,6 @@ export const INSTINCTS = {
         },{ // 3 - Casual Damage
             key: 'stateMachine',
             value: States.KYRNAICISM
-        // },{ // 4 - AoE
-        //     key: 'positiveMachine',
-        //     value: States.RENEWAL
         },{ // 4 - Within 100 Distance
             key: 'positiveMachine',
             value: States.DISEASE

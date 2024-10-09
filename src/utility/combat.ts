@@ -1546,11 +1546,11 @@ function playerRollCompiler(combat: Combat, playerAction: string, computerAction
     if (playerRoll > rollCatch) {
         combat.rollSuccess = true;
         combat.playerSpecialDescription = 
-            `You successfully roll against ${combat.computer?.name}, avoiding their ${ computerAction === ACTION_TYPES.ATTACK ? 'focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`;
+            `You successfully roll and evade ${combat.computer?.name}, avoiding their ${ computerAction === ACTION_TYPES.ATTACK ? 'focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`;
         attackCompiler(combat, playerAction);
     } else {
         combat.playerSpecialDescription =
-        `You failed to roll against ${combat.computer?.name}'s ${ computerAction === ACTION_TYPES.ATTACK ? 'focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`
+        `You failed to roll and evade against ${combat.computer?.name}'s ${ computerAction === ACTION_TYPES.ATTACK ? 'focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`
          
     };
     return combat;
@@ -1576,17 +1576,17 @@ function doubleRollCompiler(combat: Combat, playerInitiative: number, computerIn
     if (playerInitiative > computerInitiative) { // You have Higher Initiative
         if (playerRoll > rollCatch) { // The Player Succeeds the Roll
             combat.playerSpecialDescription = 
-                `You successfully roll against ${combat.computer?.name}, avoiding their ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
+                `You successfully roll and evade ${combat.computer?.name}, avoiding their ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
             attackCompiler(combat, playerAction);
         } else if (computerRoll > rollCatch && !combat.astrication.active) { // The Player Fails the Roll and the Computer Succeeds
             combat.playerSpecialDescription = 
-                `You failed to roll against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
+                `You failed to roll and evade against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
             combat.computerSpecialDescription = 
-                `${combat.computer?.name} successfully rolls against you, avoiding your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} attack`;
+                `${combat.computer?.name} successfully rolls and evades you, avoiding your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} attack`;
             computerAttackCompiler(combat, computerAction);
         } else { // Neither Player nor Computer Succeed
             combat.playerSpecialDescription = 
-                `You failed to roll against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
+                `You failed to roll and evade against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
             combat.computerSpecialDescription = 
                 `${combat.computer?.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} attack`;
             attackCompiler(combat, playerAction);
@@ -1595,19 +1595,19 @@ function doubleRollCompiler(combat: Combat, playerInitiative: number, computerIn
     } else { // The Computer has Higher Initiative
         if (computerRoll > rollCatch && !combat.astrication.active) { // The Computer Succeeds the Roll
             combat.computerSpecialDescription = 
-                `${combat.computer?.name} successfully rolls against you, avoiding your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} attack`;
+                `${combat.computer?.name} successfully rolls and evades you, avoiding your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} attack`;
             computerAttackCompiler(combat, computerAction);
         } else if (playerRoll > rollCatch) { // The Computer Fails the Roll and the Player Succeeds
             combat.computerSpecialDescription = 
                 `${combat.computer?.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} attack`;
             combat.playerSpecialDescription = 
-                `You successfully roll against ${combat.computer?.name}, avoiding their ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
+                `You successfully roll and evade ${combat.computer?.name}, avoiding their ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
             attackCompiler(combat, playerAction);
         } else { // Neither Computer nor Player Succeed
             combat.computerSpecialDescription = 
                 `${combat.computer?.name} fails to roll against your ${combat.playerAction.charAt(0).toUpperCase() + combat.playerAction.slice(1)} attack`;
             combat.playerSpecialDescription = 
-                `You failed to roll against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
+                `You failed to roll and evade against ${combat.computer?.name}'s ${combat.computerAction.charAt(0).toUpperCase() + combat.computerAction.slice(1)} attack`;
             computerAttackCompiler(combat, computerAction);
             attackCompiler(combat, playerAction);
         };

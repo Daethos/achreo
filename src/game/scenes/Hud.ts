@@ -9,6 +9,7 @@ import Settings, { initSettings } from "../../models/settings";
 import { EventBus } from "../EventBus";
 import { useResizeListener } from "../../utility/dimensions";
 import { Underground } from "./Underground";
+import Logger, { ConsoleLogger } from '../../utility/Logger';
 const dimensions = useResizeListener();
 
 export class Hud extends Phaser.Scene {
@@ -23,6 +24,7 @@ export class Hud extends Phaser.Scene {
     ascean: Ascean  | undefined;
     reputation: Reputation = initReputation;
     settings: Settings = initSettings;
+    logger!: Logger;
 
     constructor() {
         super('Hud');
@@ -54,14 +56,18 @@ export class Hud extends Phaser.Scene {
         this.rightJoystick.joystick.thumb.setAlpha(this.settings.positions.rightJoystick.opacity);
         this.rightJoystick.createPointer(this); 
         this.joystickKeys = this.joystick.createCursorKeys();    
+
+        this.logger = new Logger();
+        this.logger.add('console', new ConsoleLogger());
+        this.time.delayedCall(2000, () => {
+            this.logger.log('Console: Something concerning but potentially innocuous!');
+            this.logger.log('Warning: Some function did not work, but did not crash the game!');
+            this.logger.log('Error: Some portion if not all of the game has crashed!');
+        }, undefined, this);
         this.input.keyboard?.on('keydown-P', () => {
             EventBus.emit('action-button-sound');
             EventBus.emit('update-pause')
         });
-        // window.addEventListener('resize', () => {
-        //     this.gameHeight = dimensions()?.HEIGHT;
-        //     this.gameWidth = dimensions()?.WIDTH;
-        // });
         this.startGameScene();
     };
     cleanUp() {

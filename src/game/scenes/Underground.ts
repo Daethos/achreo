@@ -157,7 +157,7 @@ export class Underground extends Scene {
     // =========================== Camera =========================== \\
         camera.startFollow(this.player, false, 0.1, 0.1);
         camera.setLerp(0.1, 0.1);
-        camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+        // camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         camera.setRoundPixels(true);
 
         var postFxPlugin = this.plugins.get('rexHorrifiPipeline');

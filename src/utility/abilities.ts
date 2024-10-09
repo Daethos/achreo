@@ -11,7 +11,7 @@ export const SPECIALS = [
     'Confuse',
     'Desperation',
     'Disease',
-    'Dispel', // Dispel enemy shields
+    'Dispel',
     'Envelop',
     'Fear',
     'Freeze',
@@ -46,16 +46,16 @@ export const SPECIALS = [
     'Rush',
     'Sacrifice',
     'Scream',
-    'Shadow', // Agi pursuit on hit
+    'Shadow',
     'Shield',
     'Shimmer',
-    'Shirk', // Clear player statuses ... +3s immunity, or no?
+    'Shirk',
     'Slow',
     'Snare',
     'Sprint',
     'Storm',
     'Suture',
-    'Tether', //  Str hook on hit
+    'Tether',
     'Ward',
     'Writhe',
 ]; // 'Charm', 'Shroud'

@@ -5,7 +5,6 @@ import { EventBus } from '../EventBus';
 import LootDrop from '../matter/LootDrop';
 import ActionButtons from '../phaser/ActionButtons';
 import { GameState } from '../../stores/game';
-// import Settings, { initSettings } from '../../models/settings';
 import Equipment from '../../models/equipment';
 import { States } from '../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
@@ -36,7 +35,6 @@ export class Underground extends Scene {
     ascean: Ascean  | undefined;
     state: Combat = initCombat;
     reputation: Reputation = initReputation;
-    // settings: Settings = initSettings;
     player: any;
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
@@ -192,7 +190,6 @@ export class Underground extends Scene {
         };
         this.logger = new Logger();
         this.logger.add('console', new ConsoleLogger());
-        // this.smallHud = new SmallHud(this);
         this.combatManager = new CombatManager(this);
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();

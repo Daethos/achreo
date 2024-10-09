@@ -56,5 +56,6 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
          } else { 
             this.setPosition(player.x - (this.text.width / 2), player.y - 25 - this.timerTime);
         }; 
+        // this.setAlpha(this.alpha - 0.005);
     };
 };

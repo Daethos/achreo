@@ -416,7 +416,8 @@ export default class Player extends Entity {
             if (e.computerDamaged || e.playerDamaged || e.rollSuccess || e.parrySuccess || e.computerRollSuccess || e.computerParrySuccess) this.soundEffects(e);
         };
         if (e.computerParrySuccess === true) {
-            this.playerMachine.stateMachine.setState(States.STUN);
+            this.isStunned = true;
+            // this.playerMachine.stateMachine.setState(States.STUN);
             this.scene.combatManager.combatMachine.input('computerParrySuccess', false);
             this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Parry', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess);    
         };

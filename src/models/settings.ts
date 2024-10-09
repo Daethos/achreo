@@ -243,9 +243,6 @@ export default class Settings {
                 x: 0.5,
                 y: 0.9125
             },
-            // solidHud: {
-            //     right: 0.5,
-            // },
         };
         this.tutorial = initTutorial;
     };

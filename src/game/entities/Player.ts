@@ -167,7 +167,6 @@ export default class Player extends Entity {
     getAscean = () => {
         EventBus.on('player-ascean-ready', (ascean: Ascean) => this.ascean = ascean);
         EventBus.emit('player-ascean');
-        console.log(this.ascean, 'Ascean?');
         return this.ascean;
     };
 
@@ -481,7 +480,7 @@ export default class Player extends Entity {
 
     rush = () => {
         this.isRushing = true;
-        this.isParrying = true;
+        this.isThrusting = true;
         this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });        
         const target = this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
@@ -708,15 +707,14 @@ export default class Player extends Entity {
     isAttackTarget = (enemy: Enemy) => this.getEnemyId() === enemy.enemyID;
     isNewEnemy = (enemy: Enemy) => this.targets.every(obj => obj.enemyID !== enemy.enemyID);
 
-    isValidEnemyCollision = (other: any) =>  (
+    isValidEnemyCollision = (other: any): boolean =>  (
         other.gameObjectB &&
         other.bodyB.label === 'enemyCollider' &&
         other.gameObjectB.isAggressive &&
         other.gameObjectB.ascean
     );
-    
 
-    isValidNeutralCollision = (other: any) => (
+    isValidNeutralCollision = (other: any): boolean => (
         other.gameObjectB &&
         other.bodyB.label === 'enemyCollider' &&
         other.gameObjectB.ascean
@@ -729,22 +727,28 @@ export default class Player extends Entity {
             if (newEnemy) this.rushedEnemies.push(enemy);
         };
     };
+
+    isValidTouching = (other: any): boolean => 
+        other.gameObjectB &&
+        other.bodyB.label === 'enemyCollider' &&
+        other.gameObjectB.ascean;
  
     checkEnemyCollision(playerSensor: any) {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [playerSensor],
             callback: (other: any) => {
                 if (other.gameObjectB?.isDeleting) return;
+                // if (this.isValidTouching(other)) this.touching.push(other.gameObjectB);
                 this.isValidRushEnemy(other.gameObjectB);
                 if (this.isValidEnemyCollision(other)) {
-                    this.touching.push(other.gameObjectB);
+                    // this.touching.push(other.gameObjectB);
                     const isNewEnemy = this.isNewEnemy(other.gameObjectB);
                     if (!isNewEnemy) return;
                     this.targets.push(other.gameObjectB);
                     this.shouldPlayerEnterCombat(other);
                     this.checkTargets();
                 } else if (this.isValidNeutralCollision(other)) {
-                    this.touching.push(other.gameObjectB);
+                    // this.touching.push(other.gameObjectB);
                     other.gameObjectB.originPoint = new Phaser.Math.Vector2(other.gameObjectB.x, other.gameObjectB.y).clone();
                     const isNewNeutral = this.isNewEnemy(other.gameObjectB);
                     if (!isNewNeutral) return;
@@ -774,7 +778,7 @@ export default class Player extends Entity {
             objectA: [playerSensor],
             callback: (other: any) => {
                 if (other.gameObjectB?.isDeleting) return;
-                this.touching = this.touching.filter(obj => obj?.enemyID !== other?.gameObjectB?.enemyID);
+                // this.touching = this.touching.filter(obj => obj?.enemyID !== other?.gameObjectB?.enemyID);
                 if (this.isValidEnemyCollision(other) && !this.touching.length) {
                     this.actionAvailable = false;
                     this.triggeredActionAvailable = undefined;

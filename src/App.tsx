@@ -24,7 +24,7 @@ const GameToast = lazy(async () => await import('./ui/GameToast'));
 var click = new Audio("../assets/sounds/TV_Button_Press.wav");
 var creation = new Audio("../assets/sounds/freeze.wav");
 var load = new Audio("../assets/sounds/combat-round.mp3");
-var background = new Audio("../assets/sounds/background2.mp3");
+// var background = new Audio("../assets/sounds/background2.mp3");
 
 export default function App() {
     const [alert, setAlert] = createSignal({ header: '', body: '', delay: 0, key: '', arg: undefined });
@@ -68,8 +68,8 @@ export default function App() {
                 const pop = await Promise.all(res.map(async (asc: Ascean) => await populate(asc)));
                 const hyd = pop.map((asc: Ascean) => asceanCompiler(asc)).map((asc: Compiler) => { return { ...asc.ascean, weaponOne: asc.combatWeaponOne, weaponTwo: asc.combatWeaponTwo, weaponThree: asc.combatWeaponThree }});
                 setMenu({ ...menu(), asceans: hyd, loading: false }); // choosingCharacter: true
-                background.volume = 0.2;
-                background.play();
+                // background.volume = 0.2;
+                // background.play();
             } catch (err: any) {
                 console.warn('Error fetching Asceans:', err);
             };
@@ -77,7 +77,7 @@ export default function App() {
         fetch();
     };
     function menuOption(option: string): void {
-        background.pause()
+        // background.pause();
         click.play();
         setMenu({ ...menu(), [option]: true });
     };
@@ -360,15 +360,16 @@ export default function App() {
         scene.scene.sleep('Hud');
         const game = scene.scene?.get(key) as any;
         game.sleepScene();
-        // if (scene.scene.isActive(key)) {
-        //     game.musicBackground?.pause();
-        //     scene.scene.sleep(key);
-        // };
     });
     usePhaserEvent('fetch-button-reorder', () => {
         EventBus.emit('reorder-buttons', { list: settings().actions, type: 'action' });
         EventBus.emit('reorder-buttons', { list: settings().specials, type: 'special' });
     });
+    // useWindowEvent('blur', () => background.pause());
+    // useWindowEvent('focus', () => {
+    //     if (menu().gameRunning || menu().choosingCharacter || menu().creatingCharacter || menu().loadingCharacter) return;
+    //     background.play();
+    // });
     return <div id="app">
         <Show when={startGame()} fallback={<>
         {menu().creatingCharacter ? (

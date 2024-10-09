@@ -204,3 +204,6 @@
 .toastButton {font-size: 0.75em; margin-left: 50%; transform: translateX(-50%)}
 .toastHeader {color:gold; font-size:0.875em; font-weight:600; margin: 0.25em;}
 .deity-box {position:absolute;height:40%;width:60%;left:20%;background:rgba(0,0,0,0.95);top:50%;border:0.1em solid gold;border-radius:0.25em;box-shadow:0 0 0.5em #ffc700;display:inline-flex;overflow:scroll;scrollbar-width:none;}
+.my-transition {
+    transition: height 500ms cubic-bezier(0.65, 0, 0.35, 1);
+}

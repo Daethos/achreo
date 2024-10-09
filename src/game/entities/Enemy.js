@@ -265,6 +265,18 @@ export default class Enemy extends Entity {
             }, undefined, this);
         };
     };
+
+    clearBubbles = () => {
+        this.isMalicing = false;
+        this.isMending = false;
+        this.isMenacing = false;
+        this.isMultifaring = false;
+        this.isMystifying = false;
+        this.isProtecting = false;
+        this.isShielding = false;
+        this.isWarding = false;
+        this.clearShields();
+    };
     
     clearShields = () => {
         if (this.reactiveBubble) {
@@ -376,6 +388,7 @@ export default class Enemy extends Entity {
                 if (other.gameObjectB && other.gameObjectB.name === 'player') {
                     this.isValidRushEnemy(other.gameObjectB);
                     this.touching.push(other.gameObjectB);
+                    this.scene.player.touching.push(this);
                     if (this.ascean && !other.gameObjectB.isStealthing && this.enemyAggressionCheck()) {
                         this.createCombat(other, 'start');
                     } else if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
@@ -402,6 +415,7 @@ export default class Enemy extends Entity {
                 if (this.isDeleting) return;
                 if (other.gameObjectB && other.gameObjectB.name === 'player') {
                     this.touching = this.touching.filter((target) => target !== other.gameObjectB);
+                    this.scene.player.touching = this.scene.player.touching.filter((touch) => touch.enemyID !== this.enemyID);
                     if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive) {
                         if (this.healthbar) this.healthbar.setVisible(false);
                         if (this.isDefeated === true) {
@@ -2681,6 +2695,8 @@ export default class Enemy extends Entity {
         if (this.scene.player.isMenacing || this.scene.player.isModerating || this.scene.player.isMultifaring || this.scene.player.isMystifying) {
             this.scene.player.reactiveTarget = this.enemyID;
         };
+        if (this.scene.player.isShadowing === true) this.scene.player.playerMachine.pursue(this.enemyID);
+        if (this.scene.player.isTethering === true) this.scene.player.playerMachine.tether(this.enemyID);
     };
 
     enemyDodge = () => {

@@ -94,12 +94,15 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     isPursuing: boolean = false;
     isRecovering: boolean = false;
     isReining: boolean = false;
-    isRushing: boolean = false;
+    isRushing: boolean = false;    
+    isShadowing: boolean = false;
     isShielding: boolean = false;
     isShimmering: boolean = false;
+    isShirking: boolean = false;
     isSprinting: boolean = false;
     isStorming: boolean = false;
     isSuturing: boolean = false;
+    isTethering: boolean = false;
     isTshaering: boolean = false;
     isWarding: boolean = false;
     isWrithing: boolean = false;
@@ -174,7 +177,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     glowShield: Phaser.Time.TimerEvent | undefined;
     speed: number = 0;
     glowColor: number;
-    weaponHitbox: any;
+    weaponHitbox: Phaser.GameObjects.Arc;
 
     static preload(scene: Phaser.Scene) {
         scene.load.atlas(`player_actions`, '../assets/gui/player_actions.png', '../assets/gui/player_actions_atlas.json');
@@ -459,15 +462,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             } else if (this.velocity?.y as number < 0) {
                 this.weaponHitbox.y -= 16;
             };
-            if (target) this.hitBoxCheck(target as Enemy);
-            // if (this.targets.length > 0) {
-            //     for (let i = 0; i < this.targets.length; i++) {
-            //         if (this.targets[i] !== target && this.targets[i].health > 0) this.hitBoxCheck(this.targets[i]);
-            //     };
-            // };
+            // if (target) this.hitBoxCheck(target as Enemy);
             if (this.touching.length > 0) {
                 for (let i = 0; i < this.touching.length; i++) {
-                    if (this.touching[i] !== target && this.touching[i].health > 0) this.hitBoxCheck(this.touching[i]);
+                    if (this.touching[i].health > 0) this.hitBoxCheck(this.touching[i]); // this.touching[i] !== target &&
                 };
             };
         };
@@ -495,6 +493,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.hasBow = this.checkBow(weapon.type);
     };
     checkPlayerResist = () => {
+        if (this.scene.player.isShirking) {
+            this.isCasting = false;
+            this.scene.player.resist();
+            return false;
+        };
         const chance = Math.random() * 101;
         const playerResist = this.scene.state.isStalwart ? this.scene.state.playerDefense?.magicalPosture as number / 4 : this.scene.state.playerDefense?.magicalDefenseModifier as number / 4;
         const enemyPenetration = this.combatStats?.attributes?.kyosirMod || 0;
@@ -521,7 +524,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if (!enemy) return; // enemy.isDefeated === true
         const weaponBounds = this.weaponHitbox.getBounds();
         const enemyBounds = enemy.getBounds();
-        if (Phaser.Geom.Intersects.CircleToRectangle(weaponBounds, enemyBounds)) {
+        if (Phaser.Geom.Intersects.RectangleToRectangle(weaponBounds, enemyBounds)) {
             this.attackedTarget = enemy;
             this.actionSuccess = true;
         };

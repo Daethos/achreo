@@ -47,6 +47,11 @@ export const States = {
     RUSH: "rush",
     SACRIFICE: "sacrifice",
 
+    DISPEL: "dispel",
+    SHADOW: "shadow",
+    SHIRK: "shirk",
+    TETHER: "tether",
+
     HOOK: "hook",
     MARK: "mark",
     NETHERSWAP: "netherswap",

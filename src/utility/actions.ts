@@ -187,6 +187,14 @@ export const ACTION_ORIGIN = {
         special: 'AoE (Self)',
         svg: 'AOE'
     },
+    DISPEL: {
+        description: "Removes the enemies defensive shields.",
+        cooldown: `${PLAYER.COOLDOWNS.MODERATE / 1000}s`,
+        cost: `${PLAYER.STAMINA.DISPEL} Grace`,
+        time: 'Instant',
+        special: '(Targeted)',
+        svg: 'CAST'
+    },
     ENDURANCE: {
         description: "Pour your caeren back into your physical form, dramatically recovering stamina.",
         cooldown: `${PLAYER.COOLDOWNS.LONG / 1000}s`,
@@ -483,6 +491,14 @@ export const ACTION_ORIGIN = {
         special: '(Buff)',
         svg: 'INVOKE'
     },
+    SHADOW: {
+        description: "When hit with worldy devises, your caeren pursues the enemy.",
+        cooldown: `${PLAYER.COOLDOWNS.MODERATE / 1000}s`,
+        cost: `${PLAYER.STAMINA.SHADOW} Grace`,
+        time: 'Instant',
+        special: 'Physical',
+        svg: 'CONSUME'
+    },
     SHIELD: {
         description: "A warped tendril wrapped round you that absorbs 6 successful attacks from the enemy.",
         cooldown: `${PLAYER.COOLDOWNS.LONG / 1000}s`,
@@ -498,6 +514,14 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'SHIELD'
+    },
+    SHIRK: {
+        description: "Your caeren wraps round your physical body harmonize it from burdens.",
+        cooldown: `${PLAYER.COOLDOWNS.SHORT / 1000}s`,
+        cost: `${PLAYER.STAMINA.SHIRK} Grace`,
+        time: 'Instant',
+        special: 'Negation (Self)',
+        svg: 'INVOKE'
     },
     SLOW: {
         description: "Weigh down your opponent's caer, slowing their movement speed moderately for several seconds.",
@@ -546,6 +570,14 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Targeted)',
         svg: 'CONSUME'
+    },
+    TETHER: {
+        description: "When hit with worldly devises, your caeren rips and hooks the enemy.",
+        cooldown: `${PLAYER.COOLDOWNS.MODERATE / 1000}s`,
+        cost: `${PLAYER.STAMINA.TETHER} Grace`,
+        time: 'Instant',
+        special: 'Physical',
+        svg: 'CAST'
     },
     WARD: {
         description: "A warped tendril wrapped round you that protects the player from melee and ranged attacks, stunning the enemy.",

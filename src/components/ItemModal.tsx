@@ -2,6 +2,7 @@ import { getRarityColor } from "../utility/styling"
 import { Show } from "solid-js";
 import { useResizeListener } from "../utility/dimensions";
 import Equipment from "../models/equipment";
+import { roundToTwoDecimals } from "../utility/combat";
 
 function attrSplitter(string: string, value: number) {
     if (value <= 0) return '';
@@ -56,14 +57,14 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                 { attribute ? <br /> : '' }
                 Damage: <span class='gold'>{item?.physicalDamage}</span> Phys | <span class='gold'>{item?.magicalDamage}</span> Magi <br />
                 <Show when={item?.physicalResistance || item?.magicalResistance}>
-                    Defense: <span class='gold'>{item?.physicalResistance}</span> Phys | <span class='gold'>{item?.magicalResistance}</span> Magi <br />
+                    Defense: <span class='gold'>{roundToTwoDecimals(item?.physicalResistance as number)}</span> Phys | <span class='gold'>{roundToTwoDecimals(item?.magicalResistance as number)}</span> Magi <br />
                 </Show>
                 <Show when={item?.physicalPenetration || item?.magicalPenetration}>
-                    Penetration: <span class='gold'>{item?.physicalPenetration}</span> Phys | <span class='gold'>{item?.magicalPenetration}</span> Magi <br />
+                    Penetration: <span class='gold'>{roundToTwoDecimals(item?.physicalPenetration as number)}</span> Phys | <span class='gold'>{roundToTwoDecimals(item?.magicalPenetration as number)}</span> Magi <br />
                 </Show>
-                Crit Chance: <span class='gold'>{item?.criticalChance}%</span> <br />
-                Crit Damage: <span class='gold'>{item?.criticalDamage}x</span> <br />
-                Roll Chance: <span class='gold'>{item?.roll}%</span> <br />
+                Crit Chance: <span class='gold'>{roundToTwoDecimals(item?.criticalChance)}%</span> <br />
+                Crit Damage: <span class='gold'>{roundToTwoDecimals(item?.criticalDamage)}x</span> <br />
+                Roll Chance: <span class='gold'>{roundToTwoDecimals(item?.roll)}%</span> <br />
                 <Show when={item?.influences && item?.influences?.length > 0}>
                     Influence: <span class='gold'>{item?.influences?.[0]}</span>
                 </Show>

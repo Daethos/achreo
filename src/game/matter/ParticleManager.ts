@@ -221,7 +221,6 @@ export default class ParticleManager extends Phaser.Scene {
     createImpacts(scene: Game | Underground) {
         let count = 0, collection = [];
         while (count < 10) {
-            // const impact = new Phaser.Physics.Matter.Sprite(scene.matter.world, 0, 0, 'impact').setActive(false).setDepth(9).setOrigin(0.5).setScale(0.25).setVisible(false); // Add it to the scene
             const impact = scene.add.sprite(0, 0, 'impact').setActive(false).setDepth(9).setOrigin(0.5).setScale(0.25).setVisible(false); // Add it to the scene
             collection.push(impact);
             count++;

@@ -16,7 +16,6 @@ export class Intro extends Scene {
     constructor() {super('Intro');};
     preload() {};
     create() {
-        // EventBus.emit('sleep-scene', 'Game');
         this.scene.sleep('Hud');
         this.scene.sleep('Game');
         this.node = INTRO_NODES[0];
@@ -26,7 +25,6 @@ export class Intro extends Scene {
             fillStyle: { color: 0x000000 },
         });
         this.background.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height);
-        // this.background.setDepth(4);
         this.introText = this.add.text(
             0, // this.game.canvas.width * 0.15 
             0, // this.game.canvas.height * 0.2 

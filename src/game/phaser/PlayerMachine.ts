@@ -127,6 +127,10 @@ export default class PlayerMachine {
             .addState(States.IMPERMANENCE, { onEnter: this.onImpermanenceEnter, onUpdate: this.onImpermanenceUpdate })
             .addState(States.SEER, { onEnter: this.onSeerEnter, onUpdate: this.onSeerUpdate })
             .addState(States.STIMULATE, { onEnter: this.onStimulateEnter, onUpdate: this.onStimulateUpdate })
+            .addState(States.SHIRK, { onEnter: this.onShirkEnter, onExit: this.onShirkExit })
+            .addState(States.SHADOW, { onEnter: this.onShadowEnter, onExit: this.onShadowExit })
+            .addState(States.TETHER, { onEnter: this.onTetherEnter, onExit: this.onTetherExit })
+            .addState(States.DISPEL, { onEnter: this.onDispelEnter, onExit: this.onDispelExit })
             
         this.negativeMachine = new StateMachine(this, 'player');
         this.negativeMachine
@@ -2281,6 +2285,91 @@ export default class PlayerMachine {
         });
     };
     onSeerUpdate = (_dt: number) => {if (!this.player.isSeering) this.positiveMachine.setState(States.CLEAN);};
+
+    onDispelEnter = () => {
+        if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
+        this.scene.combatManager.useGrace(PLAYER.STAMINA.KYRNAICISM);
+        this.player.setTimeEvent('dispelCooldown', PLAYER.COOLDOWNS.MODERATE);
+        this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
+        this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Dispelling', 750, 'effect');
+        this.player.flickerCarenic(1000); 
+        this.player.currentTarget.clearBubbles();
+    };
+    onDispelExit = () => {};
+
+    onShirkEnter = () => {
+        this.player.isShirking = true;
+        this.scene.combatManager.useGrace(PLAYER.STAMINA.STIMULATE);    
+        this.player.setTimeEvent('shirkCooldown', PLAYER.COOLDOWNS.MODERATE);
+        this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume });
+        this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Shirking', 750, 'effect');
+        this.player.isConfused = false;
+        this.player.isFeared = false;
+        this.player.isParalyzed = false;
+        this.player.isPolymorphed = false;
+        this.player.isStunned = false;
+        this.player.isSlowed = false;
+        this.player.isSnared = false;
+        this.player.isFrozen = false;
+        this.player.isRooted = false;
+
+        this.stateMachine.setState(States.COMBAT);
+        this.negativeMachine.setState(States.CLEAN);
+
+        this.player.flickerCarenic(6000);
+        this.scene.time.delayedCall(6000, () => {
+            this.player.isShirking = false;
+        }, undefined, this); 
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `Your caeren's hush grants reprieve, freeing you.`
+        });
+    };
+    onShirkExit = () => {};
+
+
+    onShadowEnter = () => {
+        this.player.isShadowing = true;
+            this.player.setTimeEvent('shadowCooldown', PLAYER.COOLDOWNS.MODERATE);
+        this.scene.combatManager.useGrace(PLAYER.STAMINA.SHADOW);
+        this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
+        this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Shadowing', DURATION.TEXT, 'damage', false, true);
+        this.player.flickerCarenic(6000);
+        this.scene.time.delayedCall(6000, () => {
+            this.player.isShadowing = false;
+        }, undefined, this);
+    };
+    onShadowExit = () => {};
+
+    pursue = (id: string) => {
+        const enemy = this.scene.enemies.find(e => e.enemyID === id);
+        if (!enemy) return;
+        this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
+        if (enemy.flipX) {
+            this.player.setPosition(enemy.x + 16, enemy.y);
+        } else {
+            this.player.setPosition(enemy.x - 16, enemy.y);
+        };
+    };
+    
+    onTetherEnter = () => {
+        this.player.isTethering = true;
+        this.scene.combatManager.useGrace(PLAYER.STAMINA.TETHER);
+        this.player.setTimeEvent('tetherCooldown', PLAYER.COOLDOWNS.MODERATE);
+        this.scene.sound.play('dungeon', { volume: this.scene.hud.settings.volume });
+        this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Tethering', DURATION.TEXT, 'damage', false, true);
+        this.player.flickerCarenic(6000);
+        this.scene.time.delayedCall(6000, () => {
+            this.player.isTethering = false;
+        }, undefined, this);
+    };
+    onTetherExit = () => {};
+
+    tether = (id: string) => {
+        const enemy = this.scene.enemies.find(e => e.enemyID === id);
+        if (!enemy) return;
+        this.scene.sound.play('dungeon', { volume: this.scene.hud.settings.volume });
+        this.player.hook(enemy, 1000);
+    };
 
     onStimulateEnter = () => {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.STIMULATE);    

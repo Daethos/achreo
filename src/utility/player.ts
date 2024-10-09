@@ -19,12 +19,12 @@ export const PLAYER = {
     DODGE: { // 8*
         DISTANCE: 240, // 2800, // 126 || 2304
         DURATION: 350, // 18 || 288
-        MULTIPLIER: 10,
+        MULTIPLIER: 9,
     },
     ROLL: { // 6*
         DISTANCE: 160, // 1920, // 140
         DURATION: 320, // 20
-        MULTIPLIER: 7.5,
+        MULTIPLIER: 6,
     },
     SPEED: {
         INITIAL: 1.5, // 1.75
@@ -65,9 +65,11 @@ export const PLAYER = {
         INVOKE: -COST.LOW,
         CONSUME: 0,
 
+        ACHIRE: COST.LOW,
         ARC: COST.LOW,
         BLINK: COST.LOW,
         CONFUSE: COST.LOW,
+        DISPEL: COST.LOW,
         FEAR: COST.LOW,
         HEALING: COST.LOW,
         ILIRECH: COST.LOW,
@@ -78,10 +80,11 @@ export const PLAYER = {
         ROOT: COST.LOW,
         RUSH: COST.LOW,
         SHIMMER: COST.LOW,
+        SHIRK: COST.LOW,
         SLOW: COST.LOW,
         SPRINT: COST.LOW,
-        ACHIRE: COST.LOW,
         
+
         HOOK: COST.LOW,
         MARK: COST.LOW,
         NETHERSWAP: COST.LOW,
@@ -91,12 +94,14 @@ export const PLAYER = {
         KYNISOS: COST.MID,
         KYRNAICISM: COST.MID,
         PURSUIT: COST.MID,
+        SHADOW: COST.MID,
         QUOR: COST.MID,
         RECONSTITUTE: COST.MID,
         SACRIFICE: COST.MID,
         SNARE: COST.MID,
         STORM: COST.MID,
         SUTURE: COST.MID,
+        TETHER: COST.MID,
         // High Cost
         ASTRAVE: COST.HIGH,
         DESPERATION: COST.HIGH,

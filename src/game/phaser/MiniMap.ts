@@ -1,10 +1,7 @@
 import { Game } from "../scenes/Game";
 import { Underground } from "../scenes/Underground";
 
-const SCALE_FACTOR = 0.3;
-const X = 0.675;
-const Y = 0.05;
-const ZOOM = 0.2; // 125
+const SCALE_FACTOR = 0.3, X = 0.675, Y = 0.05, ZOOM = 0.2; // 125
 
 export default class MiniMap extends Phaser.Scene {
     minimap: Phaser.Cameras.Scene2D.Camera;
@@ -44,14 +41,13 @@ export default class MiniMap extends Phaser.Scene {
             this.minimap.scrollX = pointer.worldX;
             this.minimap.scrollY = pointer.worldY;
         });
-
-        this.reset = scene.add.rectangle(
-            scene.scale.width + 32,
-            y + height + 24,
-            width / 6.5,
-            height / 3,
-            0xFF0000,
-            1
+        console.log(this.minimap, 'minimap!!!!!!!!');
+        this.reset = scene.hud.add.rectangle(
+            this.minimap.x + this.minimap.width - 15,
+            this.minimap.y + this.minimap.height + 30,
+            30,
+            30,
+            0xFF0000, 1
         )
         .setDepth(6)
         .setOrigin(0.5)
@@ -63,18 +59,17 @@ export default class MiniMap extends Phaser.Scene {
             this.minimap.startFollow(scene.player);
             this.reset.setVisible(false);
         });
-        this.border = scene.add.rectangle(
-            x + 24,
-            y - 34,
-            width + 4,
-            height + 4,
-            0x000000, 0.5
+        this.border = scene.hud.add.rectangle(
+            this.minimap.x - 2, // x + 24,
+            this.minimap.y - 2, //y - 34,
+            this.minimap.width + 4,
+            this.minimap.height + 4,
+            0x000000, 0.15
         )
-        .setAlpha(0.75)
-        .setDepth(6)
+        .setDepth(0)
         .setInteractive()
         .setOrigin(0)
-        .setScale(1.175)
+        // .setScale(1/scene.cameras.main.zoom)
         .setScrollFactor(0)
         .setStrokeStyle(2, 0x000000)
         .setVisible(false)
@@ -84,9 +79,9 @@ export default class MiniMap extends Phaser.Scene {
             const mini = this.minimap.getWorldPoint(pointer.x, pointer.y);
             this.minimap.setScroll(mini.x, mini.y);
         });
-        this.minimap.ignore(this.reset);
         this.minimap.ignore(this.border);
-        // This Allows You To Toggle The UI Of Crafting With 'C'
+        this.minimap.ignore(this.reset);
+
         scene.input.keyboard?.on('keydown-M', () => {
             if (this.minimap.visible === true) {
                 this.minimap.setVisible(false);

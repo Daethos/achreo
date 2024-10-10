@@ -232,7 +232,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         ACTIONS.forEach((_element, index) => {
             const { buttonX, buttonY } = this.displayButton('action', 
                 this.scene.settings.positions.actionButtons.display, 
-                this.scene.settings.positions.specialButtons.spacing,
+                this.scene.settings.positions.actionButtons.spacing,
                 index, centerActionX, centerActionY, height
             );
             let button: ActionButton = {
@@ -412,8 +412,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const endAngle = Math.PI / 2; // End angle (90 degrees) for the quarter circle 
         let angle = 0, buttonX = 0, buttonY = 0; 
         if (this.scene.settings.desktop) {
-            const centerX = key === 'action' ? this.scene.gameWidth * 0.003 : this.scene.gameWidth / 3;
-            const bottomY = this.scene.gameHeight - (this.buttonHeight * 5);
+            const centerX = key === 'action' ? this.scene.gameWidth / 33 : this.scene.gameWidth / 3;
+            const bottomY = this.scene.gameHeight * this.scene.settings.positions.actionButtons.y; // - (this.buttonHeight * 5);
             // const centerX = key === 'action' ? this.scene.cameras.main.width * 0.003 : this.scene.cameras.main.width / 3;
             // const bottomY = this.scene.cameras.main.height - (this.buttonHeight * 3);
             buttonX = centerX + index * (radius / spacing);

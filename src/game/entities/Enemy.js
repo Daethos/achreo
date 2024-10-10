@@ -10,6 +10,7 @@ import AoE from "../phaser/AoE";
 import Bubble from "../phaser/Bubble";
 import { DISTANCE, DURATION, ENEMY_SPECIAL, GRIP_SCALE, INSTINCTS, RANGE } from "../../utility/enemy";
 import { screenShake, vibrate } from "../phaser/ScreenShake";
+import { roundToTwoDecimals } from "../../utility/combat";
 
 const ENEMY_COLOR = 0xFF0000;
 const TARGET_COLOR = 0x00FF00;
@@ -659,7 +660,7 @@ export default class Enemy extends Entity {
         } else {
             const sacrifice = Math.round(this.mastery() * this.playerCaerenic() * this.playerStalwart() * ((this.ascean?.level + 9) / 10));
             let newComputerHealth = this.health + (sacrifice / 2) > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + (sacrifice / 2);
-            const computerActionDescription = `${this.ascean?.name} sacrifices ${sacrifice / 2} health to rip ${sacrifice * (1 + power / 100)} from you.`;
+            const computerActionDescription = `${this.ascean?.name} sacrifices ${sacrifice / 2} health to rip ${roundToTwoDecimals(sacrifice * (1 + power / 100))} from you.`;
             const ratio = (sacrifice * (1 + power / 50)) / this.scene.state.playerHealth * 100;
             this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'player', value: -ratio, id: this.enemyID } });
             this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });

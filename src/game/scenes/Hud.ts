@@ -10,6 +10,7 @@ import { EventBus } from "../EventBus";
 import { useResizeListener } from "../../utility/dimensions";
 import { Underground } from "./Underground";
 import Logger, { ConsoleLogger } from '../../utility/Logger';
+import { roundToTwoDecimals } from "../../utility/combat";
 const dimensions = useResizeListener();
 
 export class Hud extends Phaser.Scene {
@@ -25,6 +26,7 @@ export class Hud extends Phaser.Scene {
     reputation: Reputation = initReputation;
     settings: Settings = initSettings;
     logger!: Logger;
+    currentZoom: number;
 
     constructor() {
         super('Hud');
@@ -36,6 +38,7 @@ export class Hud extends Phaser.Scene {
         this.gameEvents();
         this.gameState = this.registry.get('game');
         this.settings = this.registry.get('settings');
+        this.currentZoom = this.settings.positions.camera?.zoom;
         this.smallHud = new SmallHud(this);
         this.actionBar = new ActionButtons(this);
         this.joystick = new Joystick(this, 
@@ -68,6 +71,14 @@ export class Hud extends Phaser.Scene {
             EventBus.emit('action-button-sound');
             EventBus.emit('update-pause')
         });
+        this.input.on('wheel', (event: Phaser.Input.Pointer) => {
+            if (event.deltaY > 0) {
+                this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.05)), 0.5);
+            } else if (event.deltaY < 0) {
+                this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.05)), 1.5);
+            };
+            EventBus.emit('update-camera-zoom', this.currentZoom);
+        });
         this.startGameScene();
     };
     cleanUp() {
@@ -92,6 +103,7 @@ export class Hud extends Phaser.Scene {
         });
         EventBus.on('settings', (settings: Settings) => {
             this.settings = settings;
+            this.currentZoom = settings.positions.camera.zoom;
             if (settings.desktop === true) {
                 this.input.setDefaultCursor('url(assets/images/cursor.png), pointer');
                 this.rightJoystick?.pointer?.setVisible(false);
@@ -203,4 +215,5 @@ export class Hud extends Phaser.Scene {
         EventBus.emit('blend-game', { dialogTag });
         this.smallHud.activate('dialog', dialogTag);
     }; // smallHud: dialog
+
 };

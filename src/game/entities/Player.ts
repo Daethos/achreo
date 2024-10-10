@@ -1459,6 +1459,17 @@ export default class Player extends Entity {
     handleMovement = () => {
         let speed = this.speed;
         if (this.scene.hud.settings.desktop === true) {
+            if (this.scene.hud.input.activePointer.rightButtonDown()) {
+                const point = this.scene.getWorldPointer();
+                const direction = point.subtract(this.position);
+                direction.normalize();
+                this.playerVelocity.x = speed;
+                this.playerVelocity.y = speed;
+                this.playerVelocity.x *= direction.x;
+                this.playerVelocity.y *= direction.y;
+                this.flipX = this.playerVelocity.x < 0;
+                // console.log(direction, this.playerVelocity, 'final velocity?');
+            };
             if (this.inputKeys.right.D.isDown || this.inputKeys.right.RIGHT.isDown) {
                 this.playerVelocity.x += this.acceleration;
                 this.flipX = false;
@@ -1481,16 +1492,16 @@ export default class Player extends Entity {
                 speed -= 0.1;    
                 this.flipX = false;
             };
-            if (!this.isSuffering() && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.left.A.isDown) {
+            if (!this.isSuffering() && !this.scene.hud.input.activePointer.rightButtonDown() && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.left.A.isDown) {
                 this.playerVelocity.x = 0;
             };
-            if (!this.isSuffering() && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown) {
+            if (!this.isSuffering() && !this.scene.hud.input.activePointer.rightButtonDown() && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown) {
                 this.playerVelocity.x = 0;
             };
-            if (!this.isSuffering() && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown) {
+            if (!this.isSuffering() && !this.scene.hud.input.activePointer.rightButtonDown() && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown) {
                 this.playerVelocity.y = 0;
             };
-            if (!this.isSuffering() && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown) {
+            if (!this.isSuffering() && !this.scene.hud.input.activePointer.rightButtonDown() && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown) {
                 this.playerVelocity.y = 0;
             };
         } else {
@@ -1532,6 +1543,8 @@ export default class Player extends Entity {
         if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting) speed += 1;
         if (this.isClimbing || this.inWater) speed *= 0.65;
         this.playerVelocity.limit(speed);
+        // this.flipX = this.playerVelocity.x < 0;
+        // console.log(this.playerVelocity, 'final velocity?');
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
     }; 
 

@@ -176,6 +176,7 @@ export default class PlayerMachine {
         this.player.isAttacking = true;
         this.player.swingReset(States.ATTACK, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ATTACK);
+        this.player.frameCount = 0;
     }; 
     onAttackUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) {
@@ -197,6 +198,7 @@ export default class PlayerMachine {
                 this.player.isCounterSpelling = false;
             }, undefined, this);
         };
+        this.player.frameCount = 0;
     };
     onParryUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.PARRY_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input('action', 'parry');
@@ -222,6 +224,7 @@ export default class PlayerMachine {
         this.player.spriteShield.setVisible(true);
         this.player.swingReset(States.POSTURE, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.POSTURE);
+        this.player.frameCount = 0;
     };
     onPostureUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.POSTURE_LIVE && !this.player.isRanged) {
@@ -246,6 +249,7 @@ export default class PlayerMachine {
         this.player.body.parts[1].vertices[1].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT : -PLAYER.COLLIDER.DISPLACEMENT;
         this.player.body.parts[0].vertices[1].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT : -PLAYER.COLLIDER.DISPLACEMENT;
         this.player.body.parts[1].vertices[0].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT : -PLAYER.COLLIDER.DISPLACEMENT;
+        this.player.frameCount = 0;
     };
     onDodgeUpdate = (_dt: number) => this.player.combatChecker(this.player.isDodging);
     onDodgeExit = () => {
@@ -273,6 +277,7 @@ export default class PlayerMachine {
         this.player.body.parts[2].circleRadius = PLAYER.SENSOR.EVADE;
         this.player.body.parts[1].vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
         this.player.body.parts[1].vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT; 
+        this.player.frameCount = 0;
     };
     onRollUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.ROLL_LIVE && !this.player.isRanged) {
@@ -305,6 +310,7 @@ export default class PlayerMachine {
         this.player.isThrusting = true;
         this.player.swingReset(States.THRUST, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.THRUST);
+        this.player.frameCount = 0;
     };
     onThrustUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) {

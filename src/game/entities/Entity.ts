@@ -548,13 +548,12 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     weaponRotation = (entity: string, target: Player | Enemy) => {  
         if (this.isPraying || this.isCasting) {
-            if (this.spriteWeapon.depth < this.depth) this.spriteWeapon.setDepth(this.depth + 1);
+            if (this.spriteWeapon.depth < this.depth) this.spriteWeapon.setDepth(this.depth + 1); 
             if (this.flipX) {
                 if (this.frameCount === 0) {
                     this.spriteWeapon.setOrigin(0.65, 1.5);
                     this.spriteWeapon.setAngle(-175);
-                };
-                if (this.frameCount === 8) {
+                } else if (this.frameCount === 8) {
                     this.spriteWeapon.setOrigin(-0.3, 0.65);
                     this.spriteWeapon.setAngle(-225);
                 };
@@ -562,8 +561,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 if (this.frameCount === 0) {
                     this.spriteWeapon.setOrigin(-0.75, 0.65);
                     this.spriteWeapon.setAngle(-275);
-                };
-                if (this.frameCount === 8) {
+                } else if (this.frameCount === 8) {
                     this.spriteWeapon.setOrigin(0.35, 1.3);
                     this.spriteWeapon.setAngle(-225);
                 }; 
@@ -573,7 +571,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             if (this.frameCount === FRAME_COUNT.PARRY_SUCCESS) {
                 if (this.isRanged === false) this.checkActionSuccess(entity, target);
             };
-            if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
+            if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1); // Recomp
 
             if ((entity === 'player' && this.hasBow) || (entity === 'enemy' && this.hasBow)) {
                 this.spriteWeapon.setDepth(this.depth + 1);
@@ -1077,7 +1075,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.spriteShield.setDepth(this.depth - 1);
                 this.spriteWeapon.setDepth(this.depth - 1);
             };
-            this.frameCount = 0;
         } else if (((Math.abs(this.body?.velocity.x as number) > 0.1 || Math.abs(this.body?.velocity.y as number) > 0.1)) && !this.isRolling && !this.flipX) {
             if (this.isStalwart) {
                 this.spriteShield.setOrigin(-0.2, 0.25);
@@ -1091,7 +1088,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.spriteWeapon.setOrigin(-0.25, 0.5);
                 this.spriteWeapon.setAngle(107.5);
             };
-            this.frameCount = 0;
         } else if (((Math.abs(this.body?.velocity.x as number) > 0.1 || Math.abs(this.body?.velocity.y as number) > 0.1)) && !this.isRolling && this.flipX) { 
             if (this.isStalwart) {
                 this.spriteShield.setOrigin(1.2, 0.25);
@@ -1105,7 +1101,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.spriteWeapon.setOrigin(0.5, 1.2);
                 this.spriteWeapon.setAngle(-194.5);
             };
-            this.frameCount = 0;
         } else if (this.flipX) {
             if ((entity === 'player' && this.hasBow) || (entity === 'enemy' && this.hasBow)) {
                 this.spriteWeapon.setDepth(this.depth + 1);
@@ -1116,7 +1111,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.spriteWeapon.setOrigin(-0.25, 1.2);
                 this.spriteWeapon.setAngle(-250);
             };
-            this.frameCount = 0;
         } else {
             if ((entity === 'player' && this.hasBow) || (entity === 'enemy' && this.hasBow)) {
                 this.spriteWeapon.setDepth(this.depth + 1);
@@ -1127,7 +1121,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.spriteWeapon.setOrigin(-0.15, 1.3);
                 this.spriteWeapon.setAngle(-195);
             };
-            this.frameCount = 0;
         };
     };
 };

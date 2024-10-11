@@ -27,7 +27,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         scene.tweens.add({
             targets: this.text,
             duration: this.duration,
-            ease: Phaser.Math.Easing.Cubic.Out,
+            ease: critical ? Phaser.Math.Easing.Elastic.Out : Phaser.Math.Easing.Sine.Out,
             alpha: {from:0.65,to:1},
             scale: {from:0.65,to:1},
             onComplete: () => {  

@@ -279,6 +279,8 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         'Traveling General Merchant':'general',
         'Traveling Sedyreal':'Sedyreal',
         'Traveling Kyrisian':'Kyrisian',
+        'Kreceus': 'Kreceus',
+        "Ah'gani": "Ah'gani"    
     };
 
     const actions = {
@@ -600,7 +602,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             };
             setMerchantTable(merchantEquipment);
             setShowBuy(true);
-            EventBus.emit('blend-game', { merchantEquipment: merchantEquipment });
+            EventBus.emit('blend-game', { merchantEquipment });
         } catch (err) {
             console.warn(err, '--- Error Getting Loot! ---');
         };
@@ -610,7 +612,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         try {
             const refresh = async () => {
                 const key = KEYS[combat().computer?.name as keyof typeof KEYS];
-                if (key === 'Kyrisian' || key === 'Sedyreal') {
+                if (key === 'Kyrisian' || key === 'Sedyreal' || key === 'Kreceus' || "Ah'gani") {
                     setSpecialMerchant(true);
                     return;
                 };
@@ -628,7 +630,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         if (game()?.merchantEquipment.length > 0) return;
 
         const key = KEYS[combat().computer?.name as keyof typeof KEYS];
-        if (key === 'Kyrisian' || key === 'Sedyreal') {
+        if (key === 'Kyrisian' || key === 'Sedyreal' || 'Kreceus' || "Ah'gani") {
             setSpecialMerchant(true);
             return;
         };
@@ -983,13 +985,24 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             <div class='modal'>
             <div class='superCenter creature-heading' style={{ position: 'absolute',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' }}>
                 {combat().computer?.name === 'Traveling Kyrisian' && ( <> 
-                    <button class='highlight animate' style={{ 'color': 'silver', 'font-weight': 700 }} onClick={async () => {await getLoot('armor'); setSpecialMerchant(false);}}>Armor</button>
-                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('cloth'); setSpecialMerchant(false);}}>Cloth</button>
-                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('jewelry'); setSpecialMerchant(false);}}>Jewelry</button>
                 </>)}
                 {combat().computer?.name === 'Traveling Sedyreal' && ( <> 
                     <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>
                     <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
+                </>)}
+                {combat().computer?.name === "Ah'gani" && ( <> 
+                    <button class='highlight animate' style={{ 'color': 'silver', 'font-weight': 700 }} onClick={async () => {await getLoot('armor'); setSpecialMerchant(false);}}>Armor</button>
+                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('cloth'); setSpecialMerchant(false);}}>Cloth</button>
+                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>
+                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
+                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('jewelry'); setSpecialMerchant(false);}}>Jewelry</button>
+                </>)}
+                {combat().computer?.name === 'Kreceus' && ( <> 
+                    <button class='highlight animate' style={{ 'color': 'silver', 'font-weight': 700 }} onClick={async () => {await getLoot('armor'); setSpecialMerchant(false);}}>Armor</button>
+                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('cloth'); setSpecialMerchant(false);}}>Cloth</button>
+                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>
+                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
+                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('jewelry'); setSpecialMerchant(false);}}>Jewelry</button>
                 </>)}
             </div>
             <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setSpecialMerchant(false)}>x</button>

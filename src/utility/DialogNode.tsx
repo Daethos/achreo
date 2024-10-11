@@ -4,6 +4,8 @@ import { GameState } from "../stores/game";
 import DialogNodes from "./DialogNodes.json";
 import EnemyDialogNodes from './EnemyDialogNodes.json';
 import { EventBus } from "../game/EventBus";
+import { populateEnemy } from "../assets/db/db";
+import { asceanCompiler, Compiler } from "./ascean";
 
 export interface DialogNodeOption {
     text: string;
@@ -48,6 +50,8 @@ const REVERSE_KEY = {
     'Traveling Sevasi': 'Merchant-Weapon',
     'Traveling Kyrisian': 'Merchant-All-Armor',
     'Traveling Sedyreal': 'Merchant-All-Weapon',
+    'Kreceus': 'Merchant-All',
+    "Ah'gani": 'Merchant-All',
 };
 
 export const npcIds: NpcIds = {
@@ -62,6 +66,128 @@ export const npcIds: NpcIds = {
     "Merchant-Tailor": 8,
     "Merchant-All-Armor": 9,
     "Merchant-All-Weapon": 10,
+    "Merchant-All": 11,
+};
+const KRECEUS = {
+    "_id":"kreceus_12",
+    "origin":"Ashtre",
+    "sex":"Man",
+    "mastery":"achre",
+    "level":16,
+    "experience":0,
+    "inventory":[],
+    "name":"Kreceus",
+    "description":"Apostle of Astra",
+    "constitution":40,
+    "strength":22,
+    "agility":37,
+    "achre":64,
+    "caeren":22,
+    "kyosir":39,
+    "weaponOne":{
+        name: 'Astral Spear',
+        rarity: 'Epic',
+    },"weaponTwo":{
+        name: 'Astral Spear',
+        rarity: 'Epic',
+    },"weaponThree":{
+        name: 'Achestra',
+        rarity: 'Epic',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Epic',
+    },"helmet":{
+        name: 'Astral Hood',
+        rarity: 'Epic',
+    },"chest":{
+        name: 'Astral Robes',
+        rarity: 'Epic',
+    },"legs":{
+        name: 'Astral Pants',
+        rarity: 'Epic',
+    },"ringOne":{
+        name: 'Astral Ring',
+        rarity: 'Epic',
+    },"ringTwo":{
+        name: 'Astral Ring',
+        rarity: 'Epic',
+    },"amulet":{
+        name: 'Astral Amulet',
+        rarity: 'Epic',
+    },"trinket":    {
+        name: 'Astral Trinket',
+        rarity: 'Epic',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":1000,"max":1000}
+};
+const AHGANI = {
+    "_id":"ahgani_12",
+    "origin":"Ashtre",
+    "sex":"Man",
+    "mastery":"strength",
+    "level":16,
+    "experience":0,
+    "inventory":[],
+    "name":"Ah'gani",
+    "description":"Soldier of the Astral Wastes. Anashtre. Exile",
+    "constitution":44,
+    "strength":68,
+    "agility":34,
+    "achre":22,
+    "caeren":34,
+    "kyosir":22,
+    "weaponOne":{
+        name: 'War Hammer',
+        rarity: 'Epic',
+    },"weaponTwo":{
+        name: 'Claymore',
+        rarity: 'Epic',
+    },"weaponThree":{
+        name: 'Battle Axe',
+        rarity: 'Epic',
+    },"shield":{
+        name: 'Shaorahi',
+        rarity: 'Epic',
+    },"helmet":{
+        name: 'Ashtre Helm',
+        rarity: 'Epic',
+    },"chest":{
+        name: 'Ashtre Armor',
+        rarity: 'Epic',
+    },"legs":{
+        name: 'Ashtre Greaves',
+        rarity: 'Epic',
+    },"ringOne":{
+        name: 'Ashtre Ring',
+        rarity: 'Epic',
+    },"ringTwo":{
+        name: 'Ashtre Ring',
+        rarity: 'Epic',
+    },"amulet":{
+        name: 'Ashtre Amulet',
+        rarity: 'Epic',
+    },"trinket":    {
+        name: 'Ashtre Trinket',
+        rarity: 'Epic',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":1000,"max":1000}
+};
+
+export function fetchDm(_data: { enemy: string; npcType: string; }) {
+    try {
+        let dm: any = Math.random() > 1 ? KRECEUS : AHGANI;
+        dm = populateEnemy(dm);
+        const res: Compiler = asceanCompiler(dm) as Compiler;
+        EventBus.emit('dm-fetched', res); 
+    } catch (err: any) {
+        console.log("Error Getting an NPC");
+    };
 };
 
 export function getNodesForEnemy(enemy: Ascean): DialogNode[] {

@@ -590,7 +590,7 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
                 </div>
                 <div style={font('1em')}>Spacing: ({settings().positions.actionButtons.spacing})</div>
                 <Form.Range 
-                    min={1} max={5} step={0.5} 
+                    min={1} max={5} step={0.25} 
                     onChange={(e) => handleButtonSpacing(e, 'action')} 
                     value={settings().positions.actionButtons.spacing} 
                     />
@@ -647,7 +647,7 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
 
                 <div style={font('1em')}>Spacing: ({settings().positions.specialButtons.spacing})</div>
                 <Form.Range 
-                    min={1} max={5} step={0.5} 
+                    min={1} max={5} step={0.25} 
                     onChange={(e) => handleButtonSpacing(e, 'special')} 
                     value={settings().positions.specialButtons.spacing} 
                     />

@@ -521,7 +521,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     hitBoxCheck = (enemy: Enemy) => {
-        if (!enemy) return; // enemy.isDefeated === true
+        if (!enemy || enemy?.health <= 0) return; // enemy.isDefeated === true
         const weaponBounds = this.weaponHitbox.getBounds();
         const enemyBounds = enemy.getBounds();
         if (Phaser.Geom.Intersects.RectangleToRectangle(weaponBounds, enemyBounds)) {
@@ -581,33 +581,24 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.frameCount === 0) { 
                         this.spriteWeapon.setOrigin(0.15, 0.85);
                         this.spriteWeapon.setAngle(90);
-                    };
-                    if (this.frameCount === 4) {
+                    } else if (this.frameCount === 4) {
                         this.spriteWeapon.setAngle(72.5);
-                    };
-                    if (this.frameCount === 12) {
+                    } else if (this.frameCount === 12) {
                         this.spriteWeapon.setAngle(90);
-                    };
-                    if (this.frameCount === 13) {
+                    } else if (this.frameCount === 13) {
                         this.spriteWeapon.setAngle(130);
-                    };
-                    if (this.frameCount === 14) {
+                    } else if (this.frameCount === 14) {
                         this.spriteWeapon.setAngle(170);
-                    };
-                    if (this.frameCount === 15) {
+                    } else if (this.frameCount === 15) {
                         this.spriteWeapon.setAngle(210);
-                    };
-                    if (this.frameCount === 16) {
+                    } else if (this.frameCount === 16) {
                         this.spriteWeapon.setAngle(250);
-                    };
-                    if (this.frameCount === 18) {
+                    } else if (this.frameCount === 18) {
                         this.spriteWeapon.setOrigin(0.5, 0.5);
                         this.spriteWeapon.setAngle(340);
-                    };
-                    if (this.frameCount === 20) {
+                    } else if (this.frameCount === 20) {
                         this.spriteWeapon.setAngle(290);
-                    };
-                    if (this.frameCount === 22) {
+                    } else if (this.frameCount === 22) {
                         this.spriteWeapon.setOrigin(0.25, 0.5);
                         this.spriteWeapon.setAngle(250);
                     };
@@ -618,30 +609,22 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     }
                     if (this.frameCount === 4) {
                         this.spriteWeapon.setAngle(17.5);
-                    };
-                    if (this.frameCount === 12) {
+                    } else if (this.frameCount === 12) {
                         this.spriteWeapon.setAngle(0);
-                    };
-                    if (this.frameCount === 13) {
+                    } else if (this.frameCount === 13) {
                         this.spriteWeapon.setAngle(-30);
-                    };
-                    if (this.frameCount === 14) {
+                    } else if (this.frameCount === 14) {
                         this.spriteWeapon.setAngle(-60);
-                    };
-                    if (this.frameCount === 15) {
+                    } else if (this.frameCount === 15) {
                         this.spriteWeapon.setAngle(-90);
-                    };
-                    if (this.frameCount === 16) {
+                    } else if (this.frameCount === 16) {
                         this.spriteWeapon.setAngle(-120);
-                    };
-                    if (this.frameCount === 18) {
+                    } else if (this.frameCount === 18) {
                         this.spriteWeapon.setOrigin(0, 0.5);
                         this.spriteWeapon.setAngle(-75);
-                    };
-                    if (this.frameCount === 20) {
+                    } else if (this.frameCount === 20) {
                         this.spriteWeapon.setAngle(-10);
-                    };
-                    if (this.frameCount === 22) {
+                    } else if (this.frameCount === 22) {
                         this.spriteWeapon.setOrigin(0.25, 0.5);
                         this.spriteWeapon.setAngle(-125);
                     };
@@ -651,34 +634,24 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.frameCount === 0) { 
                         this.spriteWeapon.setOrigin(-0.25, 1.2);
                         this.spriteWeapon.setAngle(-250);
-                        if (entity === 'enemy') this.setTint(0x00FF00);
-                    };
-                    if (this.frameCount === 4) {
+                    } else if (this.frameCount === 4) {
                         this.spriteWeapon.setAngle(-267.5);
-                    };
-                    if (this.frameCount === 12) {
+                    } else if (this.frameCount === 12) {
                         this.spriteWeapon.setAngle(-250);
-                    };
-                    if (this.frameCount === 13) {
+                    } else if (this.frameCount === 13) {
                         this.spriteWeapon.setAngle(-210);
-                    };
-                    if (this.frameCount === 14) {
+                    } else if (this.frameCount === 14) {
                         this.spriteWeapon.setAngle(-170);
-                    };
-                    if (this.frameCount === 15) {
+                    } else if (this.frameCount === 15) {
                         this.spriteWeapon.setAngle(-130);
-                    };
-                    if (this.frameCount === 16) {
+                    } else if (this.frameCount === 16) {
                         this.spriteWeapon.setAngle(-90);
-                    };
-                    if (this.frameCount === 18) {
+                    } else if (this.frameCount === 18) {
                         this.spriteWeapon.setOrigin(0.5, 0.75);
                         this.spriteWeapon.setAngle(0);
-                    };
-                    if (this.frameCount === 20) {
+                    } else if (this.frameCount === 20) {
                         this.spriteWeapon.setAngle(30);
-                    };
-                    if (this.frameCount === 22) {
+                    } else if (this.frameCount === 22) {
                         this.spriteWeapon.setOrigin(0.25, 1.1);
                         this.spriteWeapon.setAngle(55);
                         if (this.isRanged === false) this.checkActionSuccess(entity, target);
@@ -687,34 +660,24 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.frameCount === 0) { 
                         this.spriteWeapon.setOrigin(-0.15, 1.25);
                         this.spriteWeapon.setAngle(-185);
-                        if (entity === 'enemy') this.setTint(0x00FF00);
-                    };
-                    if (this.frameCount === 4) {
+                    } else if (this.frameCount === 4) {
                         this.spriteWeapon.setAngle(-182.5);
-                    };
-                    if (this.frameCount === 12) {
+                    } else if (this.frameCount === 12) {
                         this.spriteWeapon.setAngle(150);
-                    };
-                    if (this.frameCount === 13) {
+                    } else if (this.frameCount === 13) {
                         this.spriteWeapon.setAngle(120);
-                    };
-                    if (this.frameCount === 14) {
+                    } else if (this.frameCount === 14) {
                         this.spriteWeapon.setAngle(90);
-                    };
-                    if (this.frameCount === 15) {
+                    } else if (this.frameCount === 15) {
                         this.spriteWeapon.setAngle(60);
-                    };
-                    if (this.frameCount === 16) {
+                    } else if (this.frameCount === 16) {
                         this.spriteWeapon.setAngle(30);
-                    };
-                    if (this.frameCount === 18) {
+                    } else if (this.frameCount === 18) {
                         this.spriteWeapon.setOrigin(-0.25, 0.75);
                         this.spriteWeapon.setAngle(-75);
-                    };
-                    if (this.frameCount === 20) {
+                    } else if (this.frameCount === 20) {
                         this.spriteWeapon.setAngle(-90);
-                    };
-                    if (this.frameCount === 22) {
+                    } else if (this.frameCount === 22) {
                         this.spriteWeapon.setOrigin(0, 0.5);
                         this.spriteWeapon.setAngle(-150);
                         if (this.isRanged === false) this.checkActionSuccess(entity, target);
@@ -757,7 +720,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteWeapon.setAngle(45);
                 }; 
             };
-            if (entity === 'enemy' && this.frameCount === 0) this.setTint(0x00FF00);
             if (this.frameCount === FRAME_COUNT.THRUST_SUCCESS) {
                 if (this.isRanged === false) this.checkActionSuccess(entity, target);
             };
@@ -770,9 +732,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     } else if (this.hasBow) {
                         this.particleEffect = this.scene.particleManager.addEffect('roll', this, this.bowDamageType());
                     };
-                };
-                if (entity === 'enemy' && this.frameCount === 0) {
-                    this.setTint(0x00FF00);
                 };
             };
             if (this.frameCount === (FRAME_COUNT.ROLL_SUCCESS - 2) && !this.isRanged) { // && entity === 'enemy'
@@ -803,60 +762,45 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.frameCount === 0) { 
                         this.spriteWeapon.setOrigin(0.15, 0.85);
                         this.spriteWeapon.setAngle(90);
-                    };
-                    if (this.frameCount === 4) {
+                    } else if (this.frameCount === 4) {
                         this.spriteWeapon.setAngle(72.5);
-                    };
-                    if (this.frameCount === 12) {
+                    } else if (this.frameCount === 12) {
                         this.spriteWeapon.setAngle(90);
-                    };
-                    if (this.frameCount === 13) {
+                    } else if (this.frameCount === 13) {
                         this.spriteWeapon.setAngle(130);
-                    };
-                    if (this.frameCount === 14) {
+                    } else if (this.frameCount === 14) {
                         this.spriteWeapon.setAngle(170);
-                    };
-                    if (this.frameCount === 15) {
+                    } else if (this.frameCount === 15) {
                         this.spriteWeapon.setAngle(210);
-                    };
-                    if (this.frameCount === 16) {
+                    } else if (this.frameCount === 16) {
                         this.spriteWeapon.setAngle(250);
-                    };
-                    if (this.frameCount === 18) {
+                    } else if (this.frameCount === 18) {
                         this.spriteWeapon.setOrigin(0.5, 0.5);
                         this.spriteWeapon.setAngle(340);
-                    };
-                    if (this.frameCount === 20) {
+                    } else if (this.frameCount === 20) {
                         this.spriteWeapon.setAngle(290);
-                    };
-                    if (this.frameCount === 22) {
+                    } else if (this.frameCount === 22) {
                         this.spriteWeapon.setOrigin(0.25, 0.5);
                         this.spriteWeapon.setAngle(250);
-                    };
-                    if (this.frameCount === 32) {
+                    } else if (this.frameCount === 32) {
                         this.spriteWeapon.setOrigin(0.25, 0.25);
                         this.spriteWeapon.setAngle(-45);
-                    };
-                    if (this.frameCount === 33) {
+                    } else if (this.frameCount === 33) {
                         this.spriteWeapon.setAngle(-30);
                     }
                     if (this.frameCount === 34) {
                         this.spriteWeapon.setAngle(-15);
-                    };
-                    if (this.frameCount === 35) {
+                    } else if (this.frameCount === 35) {
                         this.spriteWeapon.setAngle(0);
-                    };
-                    if (this.frameCount === 36) {
+                    } else if (this.frameCount === 36) {
                         this.spriteWeapon.setAngle(15);
-                    };
-                    if (this.frameCount === 37) {
+                    } else if (this.frameCount === 37) {
                         this.spriteWeapon.setOrigin(0.15, 0.85);
                         this.spriteWeapon.setAngle(30);
                     }; 
                     if (this.frameCount === 38) {
                         this.spriteWeapon.setAngle(45);
-                    };
-                    if (this.frameCount === 39) {
+                    } else if (this.frameCount === 39) {
                         this.spriteWeapon.setAngle(60);
                     }; 
                 } else { 
@@ -866,57 +810,43 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     }
                     if (this.frameCount === 4) {
                         this.spriteWeapon.setAngle(17.5);
-                    };
-                    if (this.frameCount === 12) {
+                    } else if (this.frameCount === 12) {
                         this.spriteWeapon.setAngle(0);
-                    };
-                    if (this.frameCount === 13) {
+                    } else if (this.frameCount === 13) {
                         this.spriteWeapon.setAngle(-30);
-                    };
-                    if (this.frameCount === 14) {
+                    } else if (this.frameCount === 14) {
                         this.spriteWeapon.setAngle(-60);
-                    };
-                    if (this.frameCount === 15) {
+                    } else if (this.frameCount === 15) {
                         this.spriteWeapon.setAngle(-90);
-                    };
-                    if (this.frameCount === 16) {
+                    } else if (this.frameCount === 16) {
                         this.spriteWeapon.setAngle(-120);
-                    };
-                    if (this.frameCount === 18) {
+                    } else if (this.frameCount === 18) {
                         this.spriteWeapon.setOrigin(0, 0.5);
                         this.spriteWeapon.setAngle(-75);
-                    };
-                    if (this.frameCount === 20) {
+                    } else if (this.frameCount === 20) {
                         this.spriteWeapon.setAngle(-10);
-                    };
-                    if (this.frameCount === 22) {
+                    } else if (this.frameCount === 22) {
                         this.spriteWeapon.setOrigin(0.25, 0.5);
                         this.spriteWeapon.setAngle(-125);
-                    };
-                    if (this.frameCount === 32) {
+                    } else if (this.frameCount === 32) {
                         this.spriteWeapon.setOrigin(0.25, 0.25);
                         this.spriteWeapon.setAngle(45);
-                    };
-                    if (this.frameCount === 33) {
+                    } else if (this.frameCount === 33) {
                         this.spriteWeapon.setAngle(60);
                     }
                     if (this.frameCount === 34) {
                         this.spriteWeapon.setAngle(75);
-                    };
-                    if (this.frameCount === 35) {
+                    } else if (this.frameCount === 35) {
                         this.spriteWeapon.setAngle(90);
-                    };
-                    if (this.frameCount === 36) {
+                    } else if (this.frameCount === 36) {
                         this.spriteWeapon.setAngle(75);
-                    };
-                    if (this.frameCount === 37) {
+                    } else if (this.frameCount === 37) {
                         this.spriteWeapon.setOrigin(0.85, 0.1);
                         this.spriteWeapon.setAngle(60);
                     }; 
                     if (this.frameCount === 38) {
                         this.spriteWeapon.setAngle(45);
-                    };
-                    if (this.frameCount === 39) {
+                    } else if (this.frameCount === 39) {
                         this.spriteWeapon.setAngle(30);
                     }; 
                 };
@@ -925,124 +855,90 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.frameCount === 0) { 
                         this.spriteWeapon.setOrigin(-0.25, 1.2);
                         this.spriteWeapon.setAngle(-250);
-                        if (entity === 'enemy') this.setTint(0x00FF00);
-                    };
-                    if (this.frameCount === 4) {
+                    } else if (this.frameCount === 4) {
                         this.spriteWeapon.setAngle(-267.5);
-                    };
-                    if (this.frameCount === 12) {
+                    } else if (this.frameCount === 12) {
                         this.spriteWeapon.setAngle(-250);
-                    };
-                    if (this.frameCount === 13) {
+                    } else if (this.frameCount === 13) {
                         this.spriteWeapon.setAngle(-210);
-                    };
-                    if (this.frameCount === 14) {
+                    } else if (this.frameCount === 14) {
                         this.spriteWeapon.setAngle(-170);
-                    };
-                    if (this.frameCount === 15) {
+                    } else if (this.frameCount === 15) {
                         this.spriteWeapon.setAngle(-130);
-                    };
-                    if (this.frameCount === 16) {
+                    } else if (this.frameCount === 16) {
                         this.spriteWeapon.setAngle(-90);
-                    };
-                    if (this.frameCount === 18) {
+                    } else if (this.frameCount === 18) {
                         this.spriteWeapon.setOrigin(0.5, 0.75);
                         this.spriteWeapon.setAngle(0);
-                    };
-                    if (this.frameCount === 20) {
+                    } else if (this.frameCount === 20) {
                         this.spriteWeapon.setAngle(30);
-                    };
-                    if (this.frameCount === 22) {
+                    } else if (this.frameCount === 22) {
                         this.spriteWeapon.setOrigin(0.25, 1.1);
                         this.spriteWeapon.setAngle(55);
-                    };
-                    if (this.frameCount === 35) {
+                    } else if (this.frameCount === 35) {
                         this.spriteWeapon.setOrigin(0.5, 0.75);
                         this.spriteWeapon.setAngle(30);
-                    };
-                    if (this.frameCount === 36) {
+                    } else if (this.frameCount === 36) {
                         this.spriteWeapon.setAngle(0);
-                    };
-                    if (this.frameCount === 37) {
+                    } else if (this.frameCount === 37) {
                         this.spriteWeapon.setOrigin(-0.25, 1.2);
                         this.spriteWeapon.setAngle(-90);
                     }; 
                     if (this.frameCount === 38) {
                         this.spriteWeapon.setAngle(-130);
-                    };
-                    if (this.frameCount === 39) {
+                    } else if (this.frameCount === 39) {
                         this.spriteWeapon.setAngle(-170);
                         if (this.isRanged === false) this.checkActionSuccess(entity, target);
-                    };
-                    if (this.frameCount === 40) {
+                    } else if (this.frameCount === 40) {
                         this.spriteWeapon.setAngle(-210);
-                    };
-                    if (this.frameCount === 41) {
+                    } else if (this.frameCount === 41) {
                         this.spriteWeapon.setAngle(-250);
-                    };
-                    if (this.frameCount === 42) {
+                    } else if (this.frameCount === 42) {
                         this.spriteWeapon.setAngle(-267.5);
                     };
                 } else { 
                     if (this.frameCount === 0) { 
                         this.spriteWeapon.setOrigin(-0.15, 1.25);
                         this.spriteWeapon.setAngle(-185);
-                        if (entity === 'enemy') this.setTint(0x00FF00);
-                    };
-                    if (this.frameCount === 4) {
+                    } else if (this.frameCount === 4) {
                         this.spriteWeapon.setAngle(-182.5);
-                    };
-                    if (this.frameCount === 12) {
+                    } else if (this.frameCount === 12) {
                         this.spriteWeapon.setAngle(150);
-                    };
-                    if (this.frameCount === 13) {
+                    } else if (this.frameCount === 13) {
                         this.spriteWeapon.setAngle(120);
-                    };
-                    if (this.frameCount === 14) {
+                    } else if (this.frameCount === 14) {
                         this.spriteWeapon.setAngle(90);
-                    };
-                    if (this.frameCount === 15) {
+                    } else if (this.frameCount === 15) {
                         this.spriteWeapon.setAngle(60);
-                    };
-                    if (this.frameCount === 16) {
+                    } else if (this.frameCount === 16) {
                         this.spriteWeapon.setAngle(30);
-                    };
-                    if (this.frameCount === 18) {
+                    } else if (this.frameCount === 18) {
                         this.spriteWeapon.setOrigin(-0.25, 0.75);
                         this.spriteWeapon.setAngle(-75);
-                    };
-                    if (this.frameCount === 20) {
+                    } else if (this.frameCount === 20) {
                         this.spriteWeapon.setAngle(-90);
-                    };
-                    if (this.frameCount === 22) {
+                    } else if (this.frameCount === 22) {
                         this.spriteWeapon.setOrigin(0, 0.5);
                         this.spriteWeapon.setAngle(-150);
-                    };
-                    if (this.frameCount === 35) {
+                    } else if (this.frameCount === 35) {
                         this.spriteWeapon.setOrigin(-0.25, 0.75);
                         this.spriteWeapon.setAngle(-90);
-                    };
-                    if (this.frameCount === 36) {
+                    } else if (this.frameCount === 36) {
                         this.spriteWeapon.setAngle(-75);
-                    };
-                    if (this.frameCount === 37) {
+                    } else if (this.frameCount === 37) {
                         this.spriteWeapon.setOrigin(-0.15, 1.25);
                         this.spriteWeapon.setAngle(30);
                     }; 
                     if (this.frameCount === 38) {
                         this.spriteWeapon.setAngle(60);
-                    };
-                    if (this.frameCount === 39) {
+                    } else if (this.frameCount === 39) {
                         this.spriteWeapon.setAngle(90);
                         if (this.isRanged === false) this.checkActionSuccess(entity, target);
-                    };
-                    if (this.frameCount === 40) {
+                    } else if (this.frameCount === 40) {
                         this.spriteWeapon.setAngle(120);
-                    };
-                    if (this.frameCount === 41) {
+                    } else if (this.frameCount === 41) {
                         this.spriteWeapon.setAngle(150);
-                    };
-                    if (this.frameCount === 42) {
+                    } else if (this.frameCount === 42) {
                         this.spriteWeapon.setAngle(-180);
                     };
                 };
@@ -1073,11 +969,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.frameCount === 0) {
                         this.spriteWeapon.setOrigin(0.75, 0);
                         this.spriteWeapon.setAngle(235);
-                    };
-                    if (this.frameCount === 5) {
+                    } else if (this.frameCount === 5) {
                         this.spriteWeapon.setAngle(155);
-                    };
-                    if (this.frameCount === 8) {
+                    } else if (this.frameCount === 8) {
                         this.spriteWeapon.setOrigin(0, 0.25);
                         this.spriteWeapon.setAngle(135);
                     };  
@@ -1085,11 +979,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if (this.frameCount === 0) {
                         this.spriteWeapon.setOrigin(0, 0.5);
                         this.spriteWeapon.setAngle(-165);
-                    };
-                    if (this.frameCount === 5) {
+                    } else if (this.frameCount === 5) {
                         this.spriteWeapon.setAngle(-90);
-                    };
-                    if (this.frameCount === 8) {
+                    } else if (this.frameCount === 8) {
                         this.spriteWeapon.setOrigin(0.25, 0);
                         this.spriteWeapon.setAngle(-45);
                     };  
@@ -1100,14 +992,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.spriteWeapon.setOrigin(0.25, 1.1);
                         this.spriteWeapon.setAngle(55);
                         this.spriteShield.setOrigin(1, 0.15);
-                        if (entity === 'enemy') this.setTint(0x00FF00);
-                    };
-                    if (this.frameCount === 5) {
+                    } else if (this.frameCount === 5) {
                         this.spriteWeapon.setOrigin(0.5, 0.75);
                         this.spriteWeapon.setAngle(40);
                         this.spriteShield.setOrigin(1.05, 0.15)
-                    };
-                    if (this.frameCount === 8) {
+                    } else if (this.frameCount === 8) {
                         this.spriteWeapon.setAngle(25);
                         this.spriteShield.setOrigin(1.1, 0.15);
                     }; 
@@ -1115,13 +1004,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.spriteWeapon.setOrigin(0, 1.2);
                         this.spriteWeapon.setAngle(-220);
                         this.spriteShield.setOrigin(1.15, 0.15);
-                    };
-                    if (this.frameCount === 14) {
+                    } else if (this.frameCount === 14) {
                         this.spriteWeapon.setOrigin(0, 1.4);
                         this.spriteWeapon.setAngle(-235);
                         this.spriteShield.setOrigin(1.2, 0.15);
-                    };
-                    if (this.frameCount === 17) {
+                    } else if (this.frameCount === 17) {
                         this.spriteWeapon.setAngle(-250);
                         this.spriteShield.setOrigin(1, 0.15);
                         if (this.isRanged === false) this.checkActionSuccess(entity, target);
@@ -1131,14 +1018,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.spriteWeapon.setOrigin(0, 0.5);
                         this.spriteWeapon.setAngle(-165);
                         this.spriteShield.setOrigin(0, 0.25);
-                        if (entity === 'enemy') this.setTint(0x00FF00);
-                    };
-                    if (this.frameCount === 5) {
+                    } else if (this.frameCount === 5) {
                         this.spriteWeapon.setOrigin(0, 1);
                         this.spriteWeapon.setAngle(-45);
                         this.spriteShield.setOrigin(-0.05, 0.15);
-                    };
-                    if (this.frameCount === 8) {
+                    } else if (this.frameCount === 8) {
                         this.spriteWeapon.setOrigin(-0.25, 1.1);
                         this.spriteWeapon.setAngle(15);
                         this.spriteShield.setOrigin(-0.1, 0.15);
@@ -1147,12 +1031,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.spriteWeapon.setOrigin(-0.1, 1.2);
                         this.spriteWeapon.setAngle(-205);
                         this.spriteShield.setOrigin(-0.15, 0.15);
-                    };
-                    if (this.frameCount === 14) {
+                    } else if (this.frameCount === 14) {
                         this.spriteWeapon.setAngle(-190);
                         this.spriteShield.setOrigin(-0.2, 0.15);
-                    };
-                    if (this.frameCount === 17) { 
+                    } else if (this.frameCount === 17) { 
                         this.spriteWeapon.setAngle(-175);
                         this.spriteShield.setOrigin(0, 0.15);
                         if (this.isRanged === false) this.checkActionSuccess(entity, target);

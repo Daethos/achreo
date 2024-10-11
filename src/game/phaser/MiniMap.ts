@@ -41,7 +41,6 @@ export default class MiniMap extends Phaser.Scene {
             this.minimap.scrollX = pointer.worldX;
             this.minimap.scrollY = pointer.worldY;
         });
-        console.log(this.minimap, 'minimap!!!!!!!!');
         this.reset = scene.hud.add.rectangle(
             this.minimap.x + this.minimap.width - 15,
             this.minimap.y + this.minimap.height + 30,
@@ -69,7 +68,6 @@ export default class MiniMap extends Phaser.Scene {
         .setDepth(0)
         .setInteractive()
         .setOrigin(0)
-        // .setScale(1/scene.cameras.main.zoom)
         .setScrollFactor(0)
         .setStrokeStyle(2, 0x000000)
         .setVisible(false)

@@ -37,6 +37,14 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - 40 - this.barY);
     };
 
+    public cleanUp = () => {
+        EventBus.off('castbar-y', this.yCastbar);
+        EventBus.off('update-castbar', this.updateCastbar);
+        EventBus.off('show-castbar', this.showCastbar);
+        this.reset();
+        this.destroy();
+    };
+
     private create = (entity: any, scene: Hud): void => {
         if (entity.name === 'player') {
             this.barHeight = scene.settings.positions.castbar.barHeight;
@@ -115,19 +123,25 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     };
 
     private castbarListener = () => {
-        EventBus.on('castbar-y', (y: number) => {
-            this.barY = y;
-            this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - 40 - y);
-        });
-        EventBus.on('update-castbar', (dims: { height: number, width: number }) => {
-            const { height, width } = dims;
-            this.barWidth = width;
-            this.barHeight = height;
-            this.castbar.setDisplaySize(this.barWidth * 1.2, this.barHeight * 2.3);
-        });
-        EventBus.on('show-castbar', (show: boolean) => {
-            this.setVisible(show);
-        });
+        EventBus.on('castbar-y', this.yCastbar);
+        EventBus.on('update-castbar', this.updateCastbar);
+        EventBus.on('show-castbar', this.showCastbar);
+    };
+
+    private yCastbar = (y: number) => {
+        this.barY = y;
+        this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - 40 - y);
+    };
+
+    private showCastbar = (show: boolean) => {
+        this.setVisible(show);
+    };
+
+    private updateCastbar = (dims: { height: number, width: number }) => {
+        const { height, width } = dims;
+        this.barWidth = width;
+        this.barHeight = height;
+        this.castbar.setDisplaySize(this.barWidth * 1.2, this.barHeight * 2.3);
     };
 
     public update = (dt: number, type: string, color: string = 'CAST'): void => {

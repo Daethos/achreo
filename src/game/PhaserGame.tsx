@@ -14,7 +14,7 @@ import { Compiler, LevelSheet, asceanCompiler } from '../utility/ascean';
 import { deleteEquipment, getAscean, getInventory, populate, updateSettings } from '../assets/db/db';
 import { getNpcDialog } from '../utility/dialog';
 import { getAsceanTraits } from '../utility/traits';
-import { getNodesForNPC, npcIds } from '../utility/DialogNode';
+import { fetchDm, getNodesForNPC, npcIds } from '../utility/DialogNode';
 import { fetchNpc } from '../utility/npc';
 import { checkDeificConcerns } from '../utility/deities';
 import { STARTING_SPECIALS } from '../utility/abilities';
@@ -64,8 +64,9 @@ export default function PhaserGame (props: IProps) {
 
     async function deleteMerchantEquipment() {
         try {
-            if (game().merchantEquipment.length === 0) return;
+            if (game().merchantEquipment?.length === 0) return;
             game().merchantEquipment.forEach(async (eqp) => await deleteEquipment(eqp._id));
+            setGame({ ...game(), merchantEquipment: [] });
         } catch (err: any) {
             console.warn(err, 'Error Deleting Merchant Equipment');
         };
@@ -164,8 +165,9 @@ export default function PhaserGame (props: IProps) {
             };
             cost = rebalanceCurrency(cost);
             const update = { ...props.ascean(), currency: cost, health: { current: combat().newPlayerHealth, max: combat().playerHealth } };
-            let merchantEquipment = [ ...game().merchantEquipment ];
-            merchantEquipment = merchantEquipment.filter((eqp) => eqp._id !== purchase.item._id);
+            let merchantEquipment = Array.isArray(game().merchantEquipment) ? JSON.parse(JSON.stringify(game().merchantEquipment)) : [];
+            // let merchantEquipment = [ ...game().merchantEquipment ];
+            merchantEquipment = merchantEquipment.filter((eqp: any) => eqp._id !== purchase.item._id);
             setGame({ ...game(), inventory: clean, merchantEquipment });
             EventBus.emit('update-ascean', update);
             EventBus.emit('update-inventory', clean);
@@ -191,8 +193,9 @@ export default function PhaserGame (props: IProps) {
                         totalValue: props.statistics().thievery.totalValue + value
                     },
                 };
-                let merchantEquipment = [ ...game().merchantEquipment ];
-                merchantEquipment = merchantEquipment.filter((eqp) => eqp._id !== item._id);
+                // let merchantEquipment = [ ...game().merchantEquipment ];
+                let merchantEquipment = Array.isArray(game().merchantEquipment) ? JSON.parse(JSON.stringify(game().merchantEquipment)) : [];
+                merchantEquipment = merchantEquipment.filter((eqp: any) => eqp._id !== item._id);
                 setGame({ ...game(), inventory: clean, merchantEquipment });
                 EventBus.emit('update-inventory', clean);
                 EventBus.emit('update-statistics', newStats);
@@ -207,8 +210,9 @@ export default function PhaserGame (props: IProps) {
                     },
                 };
                 await deleteEquipment(item._id as string);
-                let merchantEquipment = [ ...game().merchantEquipment ];
-                merchantEquipment = merchantEquipment.filter((eqp) => eqp._id !== item._id);
+                let merchantEquipment = Array.isArray(game().merchantEquipment) ? JSON.parse(JSON.stringify(game().merchantEquipment)) : [];
+                // let merchantEquipment = [ ...game().merchantEquipment ];
+                merchantEquipment = merchantEquipment.filter((eqp: any) => eqp._id !== item._id);
                 setGame({ ...game(), merchantEquipment });
                 EventBus.emit('update-statistics', newStats);
                 EventBus.emit('death-sound');
@@ -245,10 +249,12 @@ export default function PhaserGame (props: IProps) {
                     max: combat().playerHealth
                 }
             };
+            let merchantEquipment = Array.isArray(game().merchantEquipment) ? JSON.parse(JSON.stringify(game().merchantEquipment)) : [];
+            merchantEquipment.push(item);
             setGame({
                 ...game(),
                 inventory: clean,
-                merchantEquipment: [ ...game().merchantEquipment, item ]
+                merchantEquipment // : [ ...game().merchantEquipment, item ]
             });
             EventBus.emit('update-ascean', update);
             EventBus.emit('update-inventory', clean);
@@ -789,6 +795,7 @@ export default function PhaserGame (props: IProps) {
         });
         EventBus.on('fetch-enemy', fetchEnemy);
         EventBus.on('fetch-npc', fetchNpc);
+        EventBus.on('fetch-dm', fetchDm);
         EventBus.on('request-ascean', () => EventBus.emit('ascean', props.ascean()));
         EventBus.on('request-combat', () => EventBus.emit('request-combat-ready', combat()));
         EventBus.on('request-game', () => EventBus.emit('game', game()));

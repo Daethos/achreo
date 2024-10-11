@@ -53,11 +53,11 @@ export const PLAYER = {
     },
     STAMINA: {
         // Physical
-        ATTACK: 30,
+        ATTACK: 25,
         DODGE: 10, // 25
         PARRY: 10,
         POSTURE: 20,
-        ROLL: 10, // 25
+        ROLL: 15, // 25
         THRUST: 15,
 
         // Magical

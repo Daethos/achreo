@@ -24,6 +24,20 @@
                         9,
                         10
                     ]
+                },
+                {
+                    "text": "Welcome to the Ancient Eulex. You may call me Kreceus.",
+                    "next": "0030",
+                    "npcIds": [
+                        11
+                    ],
+                    "conditions": [
+                        {
+                            "key": "interactCount",
+                            "operator": "===",
+                            "value": "0"
+                        }
+                    ]
                 }
             ],
             "options": [
@@ -76,6 +90,62 @@
                             "value": "0"
                         }
                     ]
+                },
+                {
+                    "text": "Pleased to meet you, Kreceus. I am ${ascean.name} \n ... \n Where exactly am I?",
+                    "next": "0030",
+                    "npcIds": [
+                        11
+                    ],
+                    "conditions": [
+                        {
+                            "key": "interactCount",
+                            "operator": ">=",
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "text": "Pleased to meet you, Kreceus. I am ${ascean.name} \n ... \n ... \n Ancient Eulex?",
+                    "next": "0030",
+                    "npcIds": [
+                        11
+                    ],
+                    "conditions": [
+                        {
+                            "key": "interactCount",
+                            "operator": ">=",
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "text": "I'm here to outfit myself. May I see your wares?",
+                    "next": "0020",
+                    "npcIds": [
+                        11
+                    ],
+                    "conditions": [
+                        {
+                            "key": "interactCount",
+                            "operator": ">",
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "text": "I'm here to duel. Show me your roster.",
+                    "next": "0031",
+                    "npcIds": [
+                        11
+                    ],
+                    "conditions": [
+                        {
+                            "key": "interactCount",
+                            "operator": ">",
+                            "value": "0"
+                        }
+                    ]
                 }
             ],
             "npcIds": [
@@ -88,7 +158,8 @@
                 7,
                 8,
                 9,
-                10
+                10,
+                11
             ]
         },
         {
@@ -618,10 +689,18 @@
             "text": "Of course, ${ascean.name}, it is why I am here.",
             "options": [
                 {
+                    "text": "I'm interested in talking about the Ancient Eulex.",
+                    "next": "0030",
+                    "npcIds": [
+                        11
+                    ]
+                },
+                {
                     "text": "See the martial weapons available for purchase.",
                     "next": "0020",
                     "npcIds": [
-                        10
+                        10,
+                        11
                     ],
                     "action": "getWeapon"
                 },
@@ -629,7 +708,8 @@
                     "text": "Sift through the soft cloths and silks.",
                     "next": "0020",
                     "npcIds": [
-                        9
+                        9,
+                        11
                     ],
                     "action": "getTailor"
                 },
@@ -637,7 +717,8 @@
                     "text": "See what armors the ${enemy.name} has on hand.",
                     "next": "0020",
                     "npcIds": [
-                        9
+                        9,
+                        11
                     ],
                     "action": "getArmor"
                 },
@@ -645,7 +726,8 @@
                     "text": "See such bejeweled enchantments on offer.",
                     "next": "0020",
                     "npcIds": [
-                        9
+                        9,
+                        11
                     ],
                     "conditions": [
                         {
@@ -660,7 +742,8 @@
                     "text": "Oh dear, you don't seem quite ready to harness such jewelry, come back in time and perchance I'll have something enchanting for you.",
                     "next": "0020",
                     "npcIds": [
-                        9
+                        9,
+                        11
                     ],
                     "conditions": [
                         {
@@ -674,7 +757,8 @@
                     "text": "See such weapons of an other nature.",
                     "next": "0020",
                     "npcIds": [
-                        10
+                        10,
+                        11
                     ],
                     "action": "getMystic"
                 },
@@ -683,14 +767,152 @@
                     "next": "0020",
                     "npcIds": [
                         9,
-                        10
+                        10,
+                        11
                     ],
                     "action": "getSell"
                 }
             ],
             "npcIds": [
                 9,
-                10
+                10,
+                11
+            ]
+        },
+        {
+            "id": "0030",
+            "text": "The Ancient Eulex is the old form of justice. Before the Sundering, this was the way to dispute mortal charges and sin. One would enter a trial by combat, allow the favor of their Ancient to serve as arbiter.",
+            "options": [
+                {
+                    "text": "How does this reconcile with Daethos proclaiming providence?",
+                    "next": "0031",
+                    "npcIds": [
+                        11
+                    ]
+                },
+                {
+                    "text": "How come this isn't in practice anymore?",
+                    "next": "0032",
+                    "npcIds": [
+                        11
+                    ]
+                },
+                {
+                    "text": "Not to cut this short, but could I actually trouble you for your wares?",
+                    "next": "0020",
+                    "npcIds": [
+                        11
+                    ]
+                },
+                {
+                    "text": "I'm intrigued. How does this work, exactly?",
+                    "next": "0033",
+                    "npcIds": [
+                        11
+                    ]
+                },
+                {
+                    "text": "Show me the roster.",
+                    "next": "0034",
+                    "npcIds": [
+                        11
+                    ]
+                }
+            ],
+            "npcIds": [
+                11
+            ]
+        },
+        {
+            "id": "0031",
+            "text": "One issue this brings up is the worship adhering to the Ancients as opposed to Daethos. Trial by combat was seen as a legitimate form of exculpation due to many of the trials taking place between worshippers of different ancients, and one could proclaim Daethos as exceptional and before all being, thereby not seeming contradictory.",
+            "options": [
+                {
+                    "text": "What is the Ancient Eulex, again?.",
+                    "next": "0030",
+                    "npcIds": [
+                        11
+                    ]
+                },
+                {
+                    "text": "If this is true, how come it is no longer in practice?",
+                    "next": "0032",
+                    "npcIds": [
+                        11
+                    ]
+                }
+            ],
+            "npcIds": [
+                11
+            ]
+        },
+        {
+            "id": "0032",
+            "text": "With the advent and spreading of Daethos in addition to a higher concern, the practice of trial by combat had waned in favor since its use to show favor of a single deity was seen as a perversion to the teachings espoused by Daethos. Not to mention the Ancients role in the Sundering, with some regions--even within majoirty adherent provinces, seeing it as heretical.",
+            "options": [
+                {
+                    "text": "What is the Ancient Eulex, again?.",
+                    "next": "0030",
+                    "npcIds": [
+                        11
+                    ]
+                },
+                {
+                    "text": "Would this not be accepted by the Seyr, or followers of Daethos?",
+                    "next": "0031",
+                    "npcIds": [
+                        11
+                    ]
+                }
+            ],
+            "npcIds": [
+                11
+            ]
+        },
+        {
+            "id": "0033",
+            "text": "You let me know how confident you're feeling: the amount of enemies you wish to face; how well trained they are; their specialty in combat. If you are interested, we can find your perfect opponent(s).",
+            "options": [
+                {
+                    "text": "What is the origin of this practice, again?.",
+                    "next": "0030",
+                    "npcIds": [
+                        11
+                    ]
+                },
+                {
+                    "text": "Sounds good. Show me the roster.",
+                    "next": "0034",
+                    "npcIds": [
+                        11
+                    ]
+                }
+            ],
+            "npcIds": [
+                11
+            ]
+        },
+        {
+            "id": "0034",
+            "text": "[This is a work in progress at the moment]",
+            "options": [
+                {
+                    "text": "What is the origin of this practice, again?",
+                    "next": "0030",
+                    "npcIds": [
+                        11
+                    ]
+                },
+                {
+                    "text": "Before I decide, may I see your wares?",
+                    "next": "0020",
+                    "npcIds": [
+                        11
+                    ]
+                }
+            ],
+            "npcIds": [
+                11
             ]
         }
     ]

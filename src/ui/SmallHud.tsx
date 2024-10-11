@@ -85,7 +85,7 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
         EventBus.emit('action-button-sound');
         const setShow = !clicked().showPlayer;
         
-        EventBus.emit('show-castbar', setShow);
+        if (!combat().combatEngaged) EventBus.emit('show-castbar', setShow);
         setClicked({ ...clicked(), showPlayer: setShow });
     };
 

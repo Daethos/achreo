@@ -25,6 +25,7 @@ import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import ParticleManager from '../matter/ParticleManager';
 import { screenShake } from '../phaser/ScreenShake';
 import { Hud } from './Hud';
+import DM from '../entities/DM';
 
 export class Underground extends Scene {
     animatedTiles: any[];
@@ -43,6 +44,7 @@ export class Underground extends Scene {
     target: any;
     targetTarget: any;
     playerLight: any;
+    dms: DM[] = [];
     npcs: NPC[] | [] = [];
     lootDrops: LootDrop[] = [];
     combat: boolean = false;
@@ -146,9 +148,12 @@ export class Underground extends Scene {
         (this.sys as any).animatedTiles.init(this.map);
         this.player = new Player({ scene: this, x: this.centerX, y: 64, texture: 'player_actions', frame: 'player_idle_0' });
         map?.getObjectLayer('summons')?.objects.forEach((summon: any) => this.markers.push(summon));
-        map?.getObjectLayer('npcs')?.objects.forEach((npc: any) => {
-            (this.npcs as any).push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0', type: npc.properties[0].value }));
+        map?.getObjectLayer('dms')?.objects.forEach((_dm: any) => {
+            (this.dms as any).push(new DM({ scene: this, x: 912, y: 78, texture: 'player_actions', frame: 'player_idle_0' }));
         });
+        // map?.getObjectLayer('npcs')?.objects.forEach((npc: any) => {
+        //     (this.npcs as any).push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' }));
+        // });
 
     // =========================== Camera =========================== \\
         camera.startFollow(this.player, false, 0.1, 0.1);
@@ -584,14 +589,22 @@ export class Underground extends Scene {
         this.hud.smallHud.activate('dialog', dialogTag);
     }; // smallHud: dialog
     createEnemy = () => {
-        const marker = this.markers[Math.floor(Math.random() * this.markers.length)];
+        let marker: any, markers: any[] = [];
+        for (let i = 0; i < this.markers.length; i++) {
+            const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
+            const direction = position.subtract(this.player.position);
+            if (direction.length() < 600) {
+                markers.push(this.markers[i]);
+            };
+        };
+        marker = markers[Math.floor(Math.random() * markers.length)];
         const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0' });
         this.enemies.push(enemy);
         return enemy;
     };
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
-        enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, "Something is tearing into me. Please, help!", 1500, 'damage', false, true, () => enemy.specialCombatText = undefined);
+        enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, "Something is tearing into me. Please, help!", 2000, 'damage', false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DEATH);
         this.time.delayedCall(3000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e !== enemy);
@@ -654,9 +667,8 @@ export class Underground extends Scene {
             this.enemies[i].update();
             if (this.enemies[i].isDefeated && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
         };
-        for (let i = 0; i < this.npcs.length; i++) {
-            this.npcs[i].update();
-        };
+        for (let i = 0; i < this.dms.length; i++) {this.dms[i].update();};
+        // for (let i = 0; i < this.npcs.length; i++) {this.npcs[i].update();};
         const camera = this.cameras.main;
         const bounds = new Phaser.Geom.Rectangle(
             this.map.worldToTileX(camera.worldView.x) as number - 2,

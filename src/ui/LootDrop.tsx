@@ -24,7 +24,7 @@ export default function LootDrop({ lootDrop, setShow, setLootDrop }: Props) {
     };
     return <div style={{ width: '75%', display: 'inline-block', margin: '3%' }}>
         <div style={{ color: getRarityColor(lootDrop.rarity as string) }}>This appears to be {article} {lootDrop?.type}</div>
-        <button class='center' onClick={handleLootDrop} style={{ border: `0.15em solid ${getRarityColor(lootDrop.rarity as string)}`, 'margin-top': '1em', 'background-color': '#000' }}>
+        <button class='center' onClick={handleLootDrop} style={{ border: `0.15em solid ${getRarityColor(lootDrop.rarity as string)}`, 'margin': '1em 0 0.5em', 'background-color': '#000' }}>
             <img src={lootDrop.imgUrl} alt={lootDrop.name} />
         </button>
         <div>

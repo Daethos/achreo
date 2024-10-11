@@ -64,7 +64,8 @@ export default class Fov {
             };
         };
         if (this.scene.enemies.length > 0) this.updateEnemies();
-        if (this.scene.npcs.length > 0) this.updateNpcs();
+        if (this.scene.dms.length > 0) this.updateDms();
+        // if (this.scene.npcs.length > 0) this.updateNpcs();
         if (this.scene.player.highlight) this.updateHighlight();
     };
 
@@ -135,6 +136,20 @@ export default class Fov {
             enemy.healthbar.setAlpha(alpha);
             enemy.reactiveBubble?.setAlpha(alpha);
             enemy.negationBubble?.setAlpha(alpha);
+        };
+    };
+
+    updateDms = () => {
+        for (let i = 0; i < this.scene.dms.length; i++) {
+            const npc = this.scene.dms[i];
+            const coords = new Phaser.Math.Vector2({
+                x: this.map.worldToTileX(npc.x) as number,
+                y: this.map.worldToTileY(npc.y) as number
+            });
+            const distance = Math.floor(new Phaser.Math.Vector2(coords.x, coords.y).distance(new Phaser.Math.Vector2(this.lastPos.x, this.lastPos.y)));
+            const rolloffIdx = distance <= this.radius ? this.radius - distance : 0;
+            const alpha = rolloffIdx < lightDropoff.length ? lightDropoff[rolloffIdx] : 1;
+            npc.setAlpha(alpha);
         };
     };
 

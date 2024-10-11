@@ -1468,7 +1468,6 @@ export default class Player extends Entity {
                 this.playerVelocity.x *= direction.x;
                 this.playerVelocity.y *= direction.y;
                 this.flipX = this.playerVelocity.x < 0;
-                // console.log(direction, this.playerVelocity, 'final velocity?');
             };
             if (this.inputKeys.right.D.isDown || this.inputKeys.right.RIGHT.isDown) {
                 this.playerVelocity.x += this.acceleration;
@@ -1543,8 +1542,6 @@ export default class Player extends Entity {
         if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting) speed += 1;
         if (this.isClimbing || this.inWater) speed *= 0.65;
         this.playerVelocity.limit(speed);
-        // this.flipX = this.playerVelocity.x < 0;
-        // console.log(this.playerVelocity, 'final velocity?');
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
     }; 
 

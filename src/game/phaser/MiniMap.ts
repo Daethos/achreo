@@ -79,6 +79,7 @@ export default class MiniMap extends Phaser.Scene {
         });
         this.minimap.ignore(this.border);
         this.minimap.ignore(this.reset);
+        scene.scene.bringToTop(this);
 
         scene.input.keyboard?.on('keydown-M', () => {
             if (this.minimap.visible === true) {

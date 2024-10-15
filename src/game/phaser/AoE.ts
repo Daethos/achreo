@@ -148,9 +148,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     setupEnemyCount = (scene: Game | Underground, type: string, positive: boolean, enemy: Enemy) => {
         if (positive === true) {
             scene.time.delayedCall(975, () => {
-                this.hit.forEach((targ) => {
-                    if (scene.player.checkPlayerResist() === true && targ.playerID === scene.player.playerID) {
-                        (scene.combatManager as any)[type](targ.playerID, enemy.enemyID);
+                this.hit.forEach((hit) => {
+                    if (scene.player.checkPlayerResist() === true && hit.playerID === scene.player.playerID) {
+                        (scene.combatManager as any)[type](hit.playerID, enemy.enemyID);
                     };
                 });
                 this.count -= 1;
@@ -167,8 +167,8 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             });
         } else {
             scene.time.delayedCall(975, () => {
-                this.bless.forEach((targ) => {
-                    (scene.combatManager as any)[`enemy${type.charAt(0).toUpperCase() + type.slice(1)}`](targ.enemyID);
+                this.bless.forEach((blessed) => {
+                    (scene.combatManager as any)[`enemy${type.charAt(0).toUpperCase() + type.slice(1)}`](blessed.enemyID);
                 });
                 this.count -= 1;
                 if (this.count === 0) {

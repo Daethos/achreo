@@ -325,7 +325,7 @@ export default class Enemy extends Entity {
             if (this.isFeared) {
                 const chance = Math.random() < 0.1 + this.fearCount;
                 if (chance) {
-                    this.specialCombatText = new ScrollingCombatText(this.scene, this.attacking?.position?.x, this.attacking?.position?.y, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.specialCombatText = undefined);
+                    this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.specialCombatText = undefined);
                     this.isFeared = false;
                 } else {
                     this.fearCount += 0.1;
@@ -1256,7 +1256,7 @@ export default class Enemy extends Entity {
             let key = INSTINCTS[mastery][instinct].key, value = INSTINCTS[mastery][instinct].value;
             this[key].setState(value);
             if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
-            this.scene.hud.logger.log(`${this.ascean.name}'s instinct leads them to ${instinct}`);
+            this.scene.hud.logger.log(`${this.ascean.name}'s instinct leads them to ${value}`);
         }, undefined, this);
     };
 
@@ -2259,8 +2259,7 @@ export default class Enemy extends Entity {
                 if (iteration === 5) {
                     iteration = 0;
                     this.isConfused = false;
-                } else {   
-                    this.specialCombatText.destroy();
+                } else {
                     randomDirection();
                     this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, confusions[Math.floor(Math.random() * 5)], 1000, 'effect', false, false, () => this.specialCombatText = undefined);
                 };
@@ -3043,6 +3042,7 @@ export default class Enemy extends Entity {
         this.negativeMachine.update(this.scene.sys.game.loop.delta);
     };
     evaluateCombat = () => {  
+        // return States.PARRY;
         let actionNumber = Math.floor(Math.random() * 101);
         if (actionNumber > PLAYER.ACTION_WEIGHT.ATTACK) { // 61-100 (40%) || (100 - computerActions.attack)
             return States.ATTACK;

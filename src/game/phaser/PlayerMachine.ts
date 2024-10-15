@@ -2440,7 +2440,7 @@ export default class PlayerMachine {
                     iteration = 0;
                     this.player.isConfused = false;
                 } else {   
-                    this.player.specialCombatText.destroy();
+                    // this.player.specialCombatText.destroy();
                     randomDirection();
                     this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, confusions[Math.floor(Math.random() * 5)], 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
                 };

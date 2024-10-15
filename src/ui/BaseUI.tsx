@@ -434,14 +434,14 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} settings={settings} /> 
         </Suspense>
         <Show when={showTutorial()}>
-        <Suspense fallback={<Puff color="gold" />}>
-            <TutorialOverlay ascean={ascean} settings={settings} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
-        </Suspense>
+            <Suspense fallback={<Puff color="gold" />}>
+                <TutorialOverlay ascean={ascean} settings={settings} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
+            </Suspense>
         </Show>
         <Show when={showDeity()}>
-        <Suspense fallback={<Puff color="gold" />}>
-            <Deity ascean={ascean} combat={combat} game={game} statistics={statistics} />
-        </Suspense>
+            <Suspense fallback={<Puff color="gold" />}>
+                <Deity ascean={ascean} combat={combat} game={game} statistics={statistics} />
+            </Suspense>
         </Show>
     </div>;
 };

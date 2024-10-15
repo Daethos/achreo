@@ -995,8 +995,8 @@ export default class PlayerMachine {
 
     onMarkEnter = () => {
         if (this.scene.hud.settings.desktop === false) {
-            this.scene.joystick.joystick.setVisible(false);
-            this.scene.rightJoystick.joystick.setVisible(false);
+            this.scene.hud.joystick.joystick.setVisible(false);
+            this.scene.hud.rightJoystick.joystick.setVisible(false);
         };
         this.scene.hud.actionBar.setVisible(false);
         this.player.setStatic(true);
@@ -1007,8 +1007,8 @@ export default class PlayerMachine {
     onMarkUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onMarkExit = () => {
         if (this.scene.hud.settings.desktop === false) {  
-            this.scene.joystick.joystick.setVisible(true);
-            this.scene.rightJoystick.joystick.setVisible(true);
+            this.scene.hud.joystick.joystick.setVisible(true);
+            this.scene.hud.rightJoystick.joystick.setVisible(true);
         };
         this.scene.hud.actionBar.setVisible(true);
         this.player.mark.setPosition(this.player.x, this.player.y + 24);
@@ -1028,8 +1028,8 @@ export default class PlayerMachine {
         this.player.isNetherswapping = true;
         this.player.netherswapTarget = this.player.currentTarget;
         if (this.scene.hud.settings.desktop === false) {
-            this.scene.joystick.joystick.setVisible(false);
-            this.scene.rightJoystick.joystick.setVisible(false);
+            this.scene.hud.joystick.joystick.setVisible(false);
+            this.scene.hud.rightJoystick.joystick.setVisible(false);
         };
         this.scene.hud.actionBar.setVisible(false);
         this.player.flickerCarenic(1000);
@@ -1039,8 +1039,8 @@ export default class PlayerMachine {
         if (this.player.isNetherswapping === false) return;
         this.player.isNetherswapping = false;
         if (this.scene.hud.settings.desktop === false) {  
-            this.scene.joystick.joystick.setVisible(true);
-            this.scene.rightJoystick.joystick.setVisible(true);
+            this.scene.hud.joystick.joystick.setVisible(true);
+            this.scene.hud.rightJoystick.joystick.setVisible(true);
         };
         this.scene.hud.actionBar.setVisible(true);
         this.player.setStatic(false);
@@ -1062,8 +1062,8 @@ export default class PlayerMachine {
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Recalling', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.flickerCarenic(1000);
         if (this.scene.hud.settings.desktop === false) {
-            this.scene.joystick.joystick.setVisible(false);
-            this.scene.rightJoystick.joystick.setVisible(false);
+            this.scene.hud.joystick.joystick.setVisible(false);
+            this.scene.hud.rightJoystick.joystick.setVisible(false);
         };
         this.scene.hud.actionBar.setVisible(false);
         this.player.setTimeEvent('recallCooldown', PLAYER.COOLDOWNS.SHORT);  
@@ -1072,8 +1072,8 @@ export default class PlayerMachine {
     onRecallUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onRecallExit = () => {
         if (this.scene.hud.settings.desktop === false) {  
-            this.scene.joystick.joystick.setVisible(true);
-            this.scene.rightJoystick.joystick.setVisible(true);
+            this.scene.hud.joystick.joystick.setVisible(true);
+            this.scene.hud.rightJoystick.joystick.setVisible(true);
             this.scene.hud.actionBar.setVisible(true);
         };
         this.player.setPosition(this.player.mark.x, this.player.mark.y - 24);
@@ -2400,8 +2400,8 @@ export default class PlayerMachine {
     // ================= NEGATIVE MACHINE STATES ================= \\
     onConfusedEnter = () => { 
         if (this.scene.hud.settings.desktop === false) {
-            this.scene.joystick.joystick.setVisible(false);
-            this.scene.rightJoystick.joystick.setVisible(false);
+            this.scene.hud.joystick.joystick.setVisible(false);
+            this.scene.hud.rightJoystick.joystick.setVisible(false);
         };
         this.scene.hud.actionBar.setVisible(false);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, '?c .on-f-u`SeD~', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
@@ -2440,7 +2440,6 @@ export default class PlayerMachine {
                     iteration = 0;
                     this.player.isConfused = false;
                 } else {   
-                    // this.player.specialCombatText.destroy();
                     randomDirection();
                     this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, confusions[Math.floor(Math.random() * 5)], 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
                 };
@@ -2457,8 +2456,8 @@ export default class PlayerMachine {
     onConfusedExit = () => { 
         if (this.player.isConfused) this.player.isConfused = false;
         if (this.scene.hud.settings.desktop === false) {  
-            this.scene.joystick.joystick.setVisible(true);
-            this.scene.rightJoystick.joystick.setVisible(true);
+            this.scene.hud.joystick.joystick.setVisible(true);
+            this.scene.hud.rightJoystick.joystick.setVisible(true);
         };
         this.scene.hud.actionBar.setVisible(true);
         this.player.spriteWeapon.setVisible(true);
@@ -2471,8 +2470,8 @@ export default class PlayerMachine {
 
     onFearedEnter = () => { 
         if (this.scene.hud.settings.desktop === false) {
-            this.scene.joystick.joystick.setVisible(false);
-            this.scene.rightJoystick.joystick.setVisible(false);
+            this.scene.hud.joystick.joystick.setVisible(false);
+            this.scene.hud.rightJoystick.joystick.setVisible(false);
         };
         this.scene.hud.actionBar.setVisible(false);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'F̶e̷a̴r̷e̵d̴', DURATION.TEXT, 'damage', false, false, () => this.player.specialCombatText = undefined);
@@ -2523,8 +2522,8 @@ export default class PlayerMachine {
     };
     onFearedExit = () => { 
         if (this.scene.hud.settings.desktop === false) {
-            this.scene.joystick.joystick.setVisible(true);
-            this.scene.rightJoystick.joystick.setVisible(true);
+            this.scene.hud.joystick.joystick.setVisible(true);
+            this.scene.hud.rightJoystick.joystick.setVisible(true);
         };
         this.scene.hud.actionBar.setVisible(true);
         this.player.isFeared = false;
@@ -2556,8 +2555,8 @@ export default class PlayerMachine {
 
     onPolymorphedEnter = () => {
         if (this.scene.hud.settings.desktop === false) {
-            this.scene.joystick.joystick.setVisible(false);
-            this.scene.rightJoystick.joystick.setVisible(false);
+            this.scene.hud.joystick.joystick.setVisible(false);
+            this.scene.hud.rightJoystick.joystick.setVisible(false);
         };
         this.scene.hud.actionBar.setVisible(false);
         this.player.isPolymorphed = true;
@@ -2619,8 +2618,8 @@ export default class PlayerMachine {
     };
     onPolymorphedExit = () => { 
         if (this.scene.hud.settings.desktop === false) {
-            this.scene.joystick.joystick.setVisible(true);
-            this.scene.rightJoystick.joystick.setVisible(true);
+            this.scene.hud.joystick.joystick.setVisible(true);
+            this.scene.hud.rightJoystick.joystick.setVisible(true);
         };
         this.scene.hud.actionBar.setVisible(true);
         if (this.player.isPolymorphed) this.player.isPolymorphed = false;
@@ -2667,8 +2666,8 @@ export default class PlayerMachine {
 
     onStunnedEnter = () => {
         if (this.scene.hud.settings.desktop === false) {
-            this.scene.joystick.joystick.setVisible(false);
-            this.scene.rightJoystick.joystick.setVisible(false);
+            this.scene.hud.joystick.joystick.setVisible(false);
+            this.scene.hud.rightJoystick.joystick.setVisible(false);
         };
         this.scene.hud.actionBar.setVisible(false);
         this.player.isStunned = true;
@@ -2690,8 +2689,8 @@ export default class PlayerMachine {
     };
     onStunnedExit = () => {
         if (this.scene.hud.settings.desktop === false) {
-            this.scene.joystick.joystick.setVisible(true);
-            this.scene.rightJoystick.joystick.setVisible(true);
+            this.scene.hud.joystick.joystick.setVisible(true);
+            this.scene.hud.rightJoystick.joystick.setVisible(true);
         };
         this.scene.hud.actionBar.setVisible(true);
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;

@@ -3,7 +3,6 @@ import Beam from '../matter/Beam';
 import Bubble from '../phaser/Bubble';
 import CastingBar from '../phaser/CastingBar';
 import HealthBar from '../phaser/HealthBar';
-// @ts-ignore
 import Enemy from './Enemy';
 import Player from './Player';
 import ScrollingCombatText from '../phaser/ScrollingCombatText';

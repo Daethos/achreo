@@ -8,12 +8,10 @@ import { GameState } from '../../stores/game';
 import Equipment from '../../models/equipment';
 import { States } from '../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
-import Joystick from '../phaser/Joystick';
 import SmallHud from '../phaser/SmallHud';
 import Fov from '../phaser/Fov';
 import { Reputation, initReputation } from '../../utility/player';
 import Player from '../entities/Player';
-// @ts-ignore
 import Enemy from '../entities/Enemy';
 import NPC from '../entities/NPC';
 // @ts-ignore
@@ -38,7 +36,6 @@ export class Underground extends Scene {
     player: any;
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
-    enemy: any;
     enemies: Enemy[] | any[] = [];
     focus: any;
     target: any;
@@ -58,16 +55,12 @@ export class Underground extends Scene {
     background: GameObjects.Image;
     camera: Cameras.Scene2D.Camera;
     minimap: MiniMap;
-    rexUI: any;
     navMesh: any;
     navMeshPlugin: any;
     postFxPipeline: any;
     musicBackground: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicCombat: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicStealth: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
-    joystick: Joystick;
-    rightJoystick: Joystick;
-    joystickKeys: any;
     volumeEvent: () => void;
     matterCollision: any;
     smallHud: SmallHud;
@@ -100,7 +93,6 @@ export class Underground extends Scene {
         this.state = this.registry.get("combat");
         this.reputation = this.getReputation();
         // this.hud.settings = this.registry.get("settings");
-        this.rexUI = this.plugins.get('rexuiplugin');
         this.offsetX = 0;
         this.offsetY = 0;
         this.tweenManager = {};

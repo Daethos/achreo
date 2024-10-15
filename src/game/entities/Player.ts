@@ -8,7 +8,6 @@ import { EventBus } from "../EventBus";
 import CastingBar from "../phaser/CastingBar";
 import { PHYSICAL_ACTIONS, PHYSICAL_EVASIONS, PLAYER } from "../../utility/player";
 import Beam from "../matter/Beam";
-// @ts-ignore
 import Enemy from './Enemy';
 import Ascean from "../../models/ascean";
 import NPC from "./NPC";

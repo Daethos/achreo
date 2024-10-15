@@ -7,14 +7,12 @@ import ActionButtons from '../phaser/ActionButtons';
 import Equipment from '../../models/equipment';
 import { States } from '../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
-import Joystick from '../phaser/Joystick';
 import SmallHud from '../phaser/SmallHud';
 import { useResizeListener } from '../../utility/dimensions';
 import { Reputation, initReputation } from '../../utility/player';
 // @ts-ignore
 import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 import Player from '../entities/Player';
-// @ts-ignore
 import Enemy from '../entities/Enemy';
 import NPC from '../entities/NPC';
 // @ts-ignore
@@ -60,10 +58,6 @@ export class Game extends Scene {
     musicCombat2: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicStealth: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     fpsText: GameObjects.Text;
-    combatTimerText: GameObjects.Text;
-    joystick: Joystick;
-    rightJoystick: Joystick;
-    joystickKeys: any;
     smallHud: SmallHud;
     combatManager: CombatManager;
     baseLayer: Phaser.Tilemaps.TilemapLayer;
@@ -233,6 +227,7 @@ export class Game extends Scene {
         });
         EventBus.on('aggressive-enemy', (e: {id: string, isAggressive: boolean}) => {
             let enemy = this.enemies.find((enemy: any) => enemy.enemyID === e.id);
+            if (!enemy) return;
             enemy.isAggressive = e.isAggressive;
             if (e.isAggressive === true) {
                 enemy.setSpecialCombat(true);
@@ -434,7 +429,7 @@ export class Game extends Scene {
         EventBus.emit('request-reputation');
         return this.reputation;
     };
-    getEnemy = (id: string): Enemy => {
+    getEnemy = (id: string): Enemy | undefined => {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };
     getWorldPointer = () => {
@@ -603,7 +598,7 @@ export class Game extends Scene {
         };
     };
     // ============================ Player ============================ \\
-    checkEnvironment = (player: Player) => {
+    checkEnvironment = (player: Player | Enemy) => {
         const x = this.map.worldToTileX(player.x || 0);
         const y = this.map.worldToTileY(player.y || 0);
         if (!this.climbingLayer) return;

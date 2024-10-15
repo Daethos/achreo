@@ -181,10 +181,6 @@ export const saveTutorial = async (id: string, type: string) => {
     const settings = await db.collection(SETTINGS).doc({ _id: id }).get();
     const update = { ...settings, tutorial: { ...settings.tutorial, [type]: true} };
     const save = await db.collection(SETTINGS).doc({ _id: id }).update(update);
-
-    // const ascean = await db.collection(ASCEANS).doc({ _id: id }).get();
-    // const update = { ...ascean, tutorial: { ...ascean.tutorial, [type]: true} };
-    // const save = await db.collection(ASCEANS).doc({ _id: id }).update(update);
     return save;
 };
 
@@ -386,23 +382,6 @@ export const equipmentSwap = async (inventoryId: string, editState: any, id: str
         console.error(error);
     };
 };
-
-// export const equipmentRemove = async (data: any) => {
-//     try {
-//         let ascean = await db.collection(ASCEANS).doc({ _id: data.id }).get();
-//         let inventory = ascean.inventory;
-//         const itemId = data.inventory._id;
-//         const itemIndex = ascean.inventory.indexOf(itemId);
-//         inventory.splice(itemIndex, 1);
-//         ascean.inventory = inventory;
-        
-//         await db.collection(ASCEANS).doc({ _id: data.id }).update(ascean);
-//         await db.collection(EQUIPMENT).doc({ _id: itemId }).delete();
-//         return ascean.inventory;
-//     } catch (error) {
-//         console.error(error);
-//     };
-// };
 
 export const equipmentRemove = async (data: any) => {
     try {

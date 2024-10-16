@@ -26,7 +26,7 @@
                     ]
                 },
                 {
-                    "text": "Welcome to the Ancient Eulex. You may call me Kreceus.",
+                    "text": "Welcome to the Ancient Eulex. You may call me ${enemy.name}.",
                     "next": "0030",
                     "npcIds": [
                         11
@@ -92,7 +92,7 @@
                     ]
                 },
                 {
-                    "text": "Pleased to meet you, Kreceus. I am ${ascean.name} \n ... \n Where exactly am I?",
+                    "text": "Pleased to meet you, ${enemy.name}. I am ${ascean.name} \n ... \n Where exactly am I?",
                     "next": "0030",
                     "npcIds": [
                         11
@@ -106,7 +106,7 @@
                     ]
                 },
                 {
-                    "text": "Pleased to meet you, Kreceus. I am ${ascean.name} \n ... \n ... \n Ancient Eulex?",
+                    "text": "Pleased to meet you, ${enemy.name}. I am ${ascean.name} \n ... \n ... \n Ancient Eulex?",
                     "next": "0030",
                     "npcIds": [
                         11
@@ -781,8 +781,15 @@
         },
         {
             "id": "0030",
-            "text": "The Ancient Eulex is the old form of justice. Before the Sundering, this was the way to dispute mortal charges and sin. One would enter a trial by combat, allow the favor of their Ancient to serve as arbiter.",
+            "text": "This is the place that exhibited the old form of justice. Before the Sundering, the Ancient Eulex disputed mortal charges and sin. One would enter a trial by combat, allowing the favor of their Ancient to serve as arbiter, against the accuser. This could even be invoked for petty charges.",
             "options": [
+                {
+                    "text": "Goodness.",
+                    "next": "0035",
+                    "npcIds": [
+                        11
+                    ]
+                },
                 {
                     "text": "How does this reconcile with Daethos proclaiming providence?",
                     "next": "0031",
@@ -825,7 +832,7 @@
         },
         {
             "id": "0031",
-            "text": "One issue this brings up is the worship adhering to the Ancients as opposed to Daethos. Trial by combat was seen as a legitimate form of exculpation due to many of the trials taking place between worshippers of different ancients, and one could proclaim Daethos as exceptional and before all being, thereby not seeming contradictory.",
+            "text": "It does seem that it would be cross, and it brings up the worship adhering to the Ancients as opposed to Daethos. However, trial by combat was seen as a legitimate form of exculpation due to many of the trials taking place between worshippers of different ancients, and one could proclaim Daethos as exceptional and before all being. The Eulex meant to poise your belief against your adversary's, and retains this honor with the advent of Daethos.",
             "options": [
                 {
                     "text": "What is the Ancient Eulex, again?.",
@@ -848,7 +855,7 @@
         },
         {
             "id": "0032",
-            "text": "With the advent and spreading of Daethos in addition to a higher concern, the practice of trial by combat had waned in favor since its use to show favor of a single deity was seen as a perversion to the teachings espoused by Daethos. Not to mention the Ancients role in the Sundering, with some regions--even within majoirty adherent provinces, seeing it as heretical.",
+            "text": "With the proliferation of Daethos, the practice of trial by combat had waned since its use to show favor of a single Ancient was seen as a perversion to the blessing of Daethos and our providence. Not to mention the Ancients role in the Sundering, with some regions--even within majoirty adherent provinces, seeing it as heretical.",
             "options": [
                 {
                     "text": "What is the Ancient Eulex, again?.",
@@ -894,7 +901,7 @@
         },
         {
             "id": "0034",
-            "text": "[This is a work in progress at the moment]",
+            "text": "[This is a work in progress at the moment. It will allow you to set the amount of enemies, their level, and masteries to duel against. Eventually, there will be options for computer spectating.]",
             "options": [
                 {
                     "text": "What is the origin of this practice, again?",
@@ -906,6 +913,50 @@
                 {
                     "text": "Before I decide, may I see your wares?",
                     "next": "0020",
+                    "npcIds": [
+                        11
+                    ]
+                }
+            ],
+            "npcIds": [
+                11
+            ]
+        },
+        {
+            "id": "0034",
+            "text": "Indeed.",
+            "options": [
+                {
+                    "text": "How does this reconcile with Daethos proclaiming providence?",
+                    "next": "0031",
+                    "npcIds": [
+                        11
+                    ]
+                },
+                {
+                    "text": "How come this isn't in practice anymore?",
+                    "next": "0032",
+                    "npcIds": [
+                        11
+                    ]
+                },
+                {
+                    "text": "Not to cut this short, but could I actually trouble you for your wares?",
+                    "next": "0020",
+                    "npcIds": [
+                        11
+                    ]
+                },
+                {
+                    "text": "I'm intrigued. How does this work, exactly?",
+                    "next": "0033",
+                    "npcIds": [
+                        11
+                    ]
+                },
+                {
+                    "text": "Show me the roster.",
+                    "next": "0034",
                     "npcIds": [
                         11
                     ]

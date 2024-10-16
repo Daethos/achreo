@@ -1262,6 +1262,11 @@ export default class Enemy extends Entity {
         this.leashTimer = this.scene.time.addEvent({
             delay: 500,
             callback: () => {
+                if (this.isDeleting) {
+                    this.leashTimer?.remove(false);
+                    this.leashTimer?.destroy();
+                    this.leashTimer = undefined;
+                };
                 let originPoint = new Phaser.Math.Vector2(this.originalPosition.x, this.originalPosition.y);
                 this.scene.navMesh.debugDrawClear();
                 this.path = this.scene.navMesh.findPath(this.position, originPoint);

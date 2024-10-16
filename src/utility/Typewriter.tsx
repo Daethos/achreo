@@ -199,7 +199,7 @@ export default function Typewriter({ stringText, styling, performAction }: Typew
         const clean = styleHTML(check);
         const typedContent = {
             strings: [clean],
-            typeSpeed: 20,
+            typeSpeed: 30,
             backSpeed: 0,
             showCursor: false,
         };

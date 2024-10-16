@@ -612,7 +612,8 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         try {
             const refresh = async () => {
                 const key = KEYS[combat().computer?.name as keyof typeof KEYS];
-                if (key === 'Kyrisian' || key === 'Sedyreal' || key === 'Kreceus' || "Ah'gani") {
+                console.log(key, 'Key!')
+                if (key === 'Kyrisian' || key === 'Sedyreal' || key === 'Kreceus' || key === "Ah'gani") {
                     setSpecialMerchant(true);
                     return;
                 };
@@ -630,7 +631,8 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         if (game()?.merchantEquipment.length > 0) return;
 
         const key = KEYS[combat().computer?.name as keyof typeof KEYS];
-        if (key === 'Kyrisian' || key === 'Sedyreal' || 'Kreceus' || "Ah'gani") {
+        if (key === 'Kyrisian' || key === 'Sedyreal' || key === 'Kreceus' || key === "Ah'gani") {
+            console.log('special merchant!');
             setSpecialMerchant(true);
             return;
         };

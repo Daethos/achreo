@@ -7,8 +7,7 @@ interface Props {
 };
 
 export default function EnemyPreview ({ enemies, fetchEnemy }: Props) {
-    return (
-        <>
+    return <>
         {enemies()?.length > 0 && enemies()?.map((enemy, index) => {
             if (enemies().length < 2 || index !== 0) return;
             const prevIdx = Number(index) - 1 === -1 ? enemies().length - 1 : Number(index) - 1;
@@ -39,6 +38,5 @@ export default function EnemyPreview ({ enemies, fetchEnemy }: Props) {
                 </div>
                 </Show> 
         )})}
-        </>
-    );
+    </>
 };

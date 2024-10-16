@@ -284,7 +284,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         'Traveling Sedyreal':'Sedyreal',
         'Traveling Kyrisian':'Kyrisian',
         'Kreceus': 'Kreceus',
-        "Ah'gani": "Ah'gani"    
+        "Ashreu'ul": "Ashreu'ul"    
     };
 
     const actions = {
@@ -621,7 +621,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             const refresh = async () => {
                 const key = KEYS[combat().computer?.name as keyof typeof KEYS];
                 console.log(key, 'Key!')
-                if (key === 'Kyrisian' || key === 'Sedyreal' || key === 'Kreceus' || key === "Ah'gani") {
+                if (key === 'Kyrisian' || key === 'Sedyreal' || key === 'Kreceus' || key === "Ashreu'ul") {
                     setSpecialMerchant(true);
                     return;
                 };
@@ -639,7 +639,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         if (game()?.merchantEquipment.length > 0) return;
 
         const key = KEYS[combat().computer?.name as keyof typeof KEYS];
-        if (key === 'Kyrisian' || key === 'Sedyreal' || key === 'Kreceus' || key === "Ah'gani") {
+        if (key === 'Kyrisian' || key === 'Sedyreal' || key === 'Kreceus' || key === "Ashreu'ul") {
             console.log('special merchant!');
             setSpecialMerchant(true);
             return;
@@ -1004,7 +1004,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                     <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 1.5s ease infinite' }} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>
                     <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 2s ease infinite' }} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
                 </>)}
-                {combat().computer?.name === "Ah'gani" && ( <> 
+                {combat().computer?.name === "Ashreu'ul" && ( <> 
                     <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 1.5s ease infinite' }} onClick={async () => {await getLoot('armor'); setSpecialMerchant(false);}}>Armor + Shields</button>
                     <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 2s ease infinite' }} onClick={async () => {await getLoot('cloth'); setSpecialMerchant(false);}}>Soft Cloth</button>
                     <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 1.5s ease infinite' }} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>

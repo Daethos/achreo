@@ -51,7 +51,7 @@ const REVERSE_KEY = {
     'Traveling Kyrisian': 'Merchant-All-Armor',
     'Traveling Sedyreal': 'Merchant-All-Weapon',
     'Kreceus': 'Merchant-All',
-    "Ah'gani": 'Merchant-All',
+    "Ashreu'ul": 'Merchant-All',
 };
 
 export const npcIds: NpcIds = {
@@ -69,7 +69,7 @@ export const npcIds: NpcIds = {
     "Merchant-All": 11,
 };
 const KRECEUS = {
-    "_id":"kreceus_12",
+    "_id":"kreceus_16",
     "origin":"Ashtre",
     "sex":"Man",
     "mastery":"achre",
@@ -123,16 +123,16 @@ const KRECEUS = {
     "firewater":{"current":5,"max":5},
     "health":{"current":1000,"max":1000}
 };
-const AHGANI = {
-    "_id":"ahgani_12",
+const ASHREUUL = {
+    "_id":"ashreuul_16",
     "origin":"Ashtre",
     "sex":"Man",
     "mastery":"strength",
     "level":16,
     "experience":0,
     "inventory":[],
-    "name":"Ah'gani",
-    "description":"Soldier of the Astral Wastes. Anashtre. Exile",
+    "name":"Ashreu'ul",
+    "description":"Anashtre Incarnate",
     "constitution":44,
     "strength":68,
     "agility":34,
@@ -181,7 +181,7 @@ const AHGANI = {
 
 export function fetchDm(_data: { enemy: string; npcType: string; }) {
     try {
-        let dm: any = Math.random() > 1 ? KRECEUS : AHGANI;
+        let dm: any = Math.random() > 1 ? KRECEUS : ASHREUUL;
         dm = populateEnemy(dm);
         const res: Compiler = asceanCompiler(dm) as Compiler;
         EventBus.emit('dm-fetched', res); 

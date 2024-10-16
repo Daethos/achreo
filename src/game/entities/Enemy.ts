@@ -700,7 +700,7 @@ export default class Enemy extends Entity {
         const mastery = this.ascean.mastery;
         if (bool === true) {
             this.specialCombat = this.scene.time.delayedCall(DURATION.SPECIAL * mult, () => {
-                if (this.inCombat === false) {
+                if (this.inCombat === false || this.isDeleting === true) {
                     this.specialCombat?.remove();
                     return;
                 };

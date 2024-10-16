@@ -45,7 +45,7 @@ export const Rings = [
         imgUrl: '../assets/images/GUI_Ring.png'
     },{
         _id: '',
-        name: "Choimic Ring",
+        name: "Chiomic Ring",
         type: 'Magic',
         rarity: 'Uncommon',
         physicalDamage: 1,
@@ -67,7 +67,7 @@ export const Rings = [
         imgUrl: '../assets/images/chiomyr-ring.png'
     },{
         _id: '',
-        name: "Choimic Ring",
+        name: "Chiomic Ring",
         type: 'Magic',
         rarity: 'Rare',
         physicalDamage: 1,
@@ -89,7 +89,7 @@ export const Rings = [
         imgUrl: '../assets/images/chiomyr-ring.png'
     },{
         _id: '',
-        name: "Choimic Ring",
+        name: "Chiomic Ring",
         type: 'Magic',
         rarity: 'Epic',
         physicalDamage: 1,
@@ -111,7 +111,7 @@ export const Rings = [
         imgUrl: '../assets/images/chiomyr-ring.png'
     },{
         _id: '',
-        name: "Choimic Ring",
+        name: "Chiomic Ring",
         type: 'Magic',
         rarity: 'Legendary',
         physicalDamage: 1,

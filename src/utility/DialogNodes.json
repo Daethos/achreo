@@ -135,7 +135,7 @@
                 },
                 {
                     "text": "I'm here to duel. Show me your roster.",
-                    "next": "0031",
+                    "next": "0034",
                     "npcIds": [
                         11
                     ],
@@ -145,7 +145,8 @@
                             "operator": ">",
                             "value": "0"
                         }
-                    ]
+                    ],
+                    "action": "setRoster"
                 }
             ],
             "npcIds": [
@@ -823,7 +824,8 @@
                     "next": "0034",
                     "npcIds": [
                         11
-                    ]
+                    ],
+                    "action": "setRoster"
                 }
             ],
             "npcIds": [
@@ -892,7 +894,8 @@
                     "next": "0034",
                     "npcIds": [
                         11
-                    ]
+                    ],
+                    "action": "setRoster"
                 }
             ],
             "npcIds": [
@@ -901,7 +904,7 @@
         },
         {
             "id": "0034",
-            "text": "[This is a work in progress at the moment. It will allow you to set the amount of enemies, their level, and masteries to duel against. Eventually, there will be options for computer spectating.]",
+            "text": "[This is a work in progress. You can set the amount of enemies, their level, and masteries to duel against. Eventually, there will be options for computer spectating and wagering.]",
             "options": [
                 {
                     "text": "What is the origin of this practice, again?",
@@ -916,6 +919,14 @@
                     "npcIds": [
                         11
                     ]
+                },
+                {
+                    "text": "Show me the roster.",
+                    "next": "0034",
+                    "npcIds": [
+                        11
+                    ],
+                    "action": "setRoster"
                 }
             ],
             "npcIds": [
@@ -923,7 +934,7 @@
             ]
         },
         {
-            "id": "0034",
+            "id": "0035",
             "text": "Indeed.",
             "options": [
                 {
@@ -959,7 +970,8 @@
                     "next": "0034",
                     "npcIds": [
                         11
-                    ]
+                    ],
+                    "action": "setRoster"
                 }
             ],
             "npcIds": [

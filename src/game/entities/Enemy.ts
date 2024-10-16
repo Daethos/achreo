@@ -17,6 +17,7 @@ import { Combat } from "../../stores/combat";
 import Player from "./Player";
 import Equipment from "../../models/equipment";
 import { Particle } from "../matter/ParticleManager";
+import { Compiler } from "../../utility/ascean";
 
 const ENEMY_COLOR = 0xFF0000;
 const TARGET_COLOR = 0x00FF00;
@@ -105,11 +106,24 @@ export default class Enemy extends Entity {
     isPosted: boolean = false;
 
 
-    constructor(data: { scene: Game | Underground, x: number, y: number, texture: string, frame: string }) {
+    constructor(data: { scene: Game | Underground, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: "enemy", ascean: undefined, health: 1 }); 
         this.scene.add.existing(this);
         this.enemyID = uuidv4();
-        this.createEnemy();
+        if (data.data === undefined) {
+            this.createEnemy();
+        } else {
+            this.ascean = data.data.ascean;
+            this.health = data.data.attributes?.healthTotal;
+            this.combatStats = data.data;
+            this.weapons = [data.data.combatWeaponOne, data.data.combatWeaponTwo, data.data.combatWeaponThree];
+            this.speed = this.startingSpeed(data.data.ascean);
+            this.heldSpeed = this.speed;
+            this.createWeapon(data.data.ascean.weaponOne); 
+            this.createShield(data.data.ascean.shield);
+            this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health);
+            this.castbar = new CastingBar(this.scene.hud, this.x, this.y, 0, this);
+        };
         this.setTint(ENEMY_COLOR);
         this.stateMachine = new StateMachine(this, 'enemy');
         this.stateMachine

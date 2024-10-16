@@ -17,6 +17,9 @@ import { getQuests } from '../utility/quests';
 import { namedNameCheck } from '../utility/player';
 import Thievery from './Thievery';
 import Merchant from './Merchant';
+import { ARENA_ENEMY } from '../utility/enemy';
+import Arena from './Arena';
+
 const GET_FORGE_COST = {
     Common: 1,
     Uncommon: 3,
@@ -136,14 +139,14 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
         const { text, options } = currentNode as DialogNode;
         if (typeof text === 'string') {
             newText = (text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
-            delay = text?.split('').reduce((a: number, s: string | any[]) => a + s.length * 35, 0);
+            delay = text?.split('').reduce((a: number, s: string | any[]) => a + s.length * 50, 0);
         } else if (Array.isArray(text)) {
             const npcOptions = text.filter((option: any) => {
                 const id = getNpcId(enemy.name);
                 const included = (option as DialogNodeOption)?.npcIds?.includes(id);
                 return included;
             });
-            delay = npcOptions[0].text?.split('').reduce((a: number, s: string | any[]) => a + s.length * 35, 0);
+            delay = npcOptions[0].text?.split('').reduce((a: number, s: string | any[]) => a + s.length * 50, 0);
             newText = (npcOptions[0]?.text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
         };
         newText = processText(newText, { ascean, enemy, combat });
@@ -252,6 +255,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
     const [thievery, setThievery] = createSignal<boolean>(false);
     const [specialMerchant, setSpecialMerchant] = createSignal<boolean>(false);
+    const [arena, setArena] = createSignal<{ show: boolean; enemies: ARENA_ENEMY[] | [] }>({ show: false, enemies: [] });
     const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
@@ -295,10 +299,13 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         getSell: () => setShowSell(!showSell()),
         setBlacksmithSell: () => setBlacksmithSell(!blacksmithSell()),
         setForgeSee: () => setForgeSee(!forgeSee()),
-    }; 
+        setRoster: () => setArena({ ...arena(), show: true }),
+    };
+    
     function steal(item: Equipment): void {
         setStealing({ stealing: true, item });
     };
+    
     function checkUpgrades() {
         if (game().inventory.inventory.length < 3) return;
         const matchedItem = canUpgrade(game()?.inventory.inventory);
@@ -317,6 +324,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     };
 
     const checkInfluence = (a: Accessor<Ascean>) => setInfluence(a()?.weaponOne?.influences?.[0]);
+    
     const checkQuests = (enemy: Ascean) => {
         const enemyQuests = getQuests(enemy.name);
         const prospectiveQuests = [];
@@ -650,6 +658,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         EventBus.emit('alert', { header: 'Selling Item In Inventory', body: `You have sold your ${sellItem()?.name} for ${sellRarity(sellItem()?.rarity as string)}` })
         EventBus.emit('sell-item', sellItem());    
     };
+
     async function handleUpgradeItem() {
         let type = '';
         if (forge()?.grip) type = 'weaponOne';
@@ -972,6 +981,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         </div>
         <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
+        <Arena arena={arena} ascean={ascean} setArena={setArena} base={false} />
         <Show when={showBuy() && merchantTable()?.length > 0}>
             <div class='modal'>
             <div class='creature-heading' style={{ position: 'absolute',left: '20%',top: '20%',height: '70%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' }}>
@@ -985,26 +995,28 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         </Show>
         <Show when={specialMerchant()}>
             <div class='modal'>
-            <div class='superCenter creature-heading' style={{ position: 'absolute',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' }}>
+            <div class='superCenter creature-heading' style={{ position: 'absolute',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none', width: '25%' }}>
                 {combat().computer?.name === 'Traveling Kyrisian' && ( <> 
-                </>)}
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 1.5s ease infinite' }} onClick={async () => {await getLoot('cloth'); setSpecialMerchant(false);}}>Soft Cloth</button>
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 2s ease infinite' }} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 1.5s ease infinite' }} onClick={async () => {await getLoot('jewelry'); setSpecialMerchant(false);}}>Jewelry</button></>)}
                 {combat().computer?.name === 'Traveling Sedyreal' && ( <> 
-                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>
-                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 1.5s ease infinite' }} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 2s ease infinite' }} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
                 </>)}
                 {combat().computer?.name === "Ah'gani" && ( <> 
-                    <button class='highlight animate' style={{ 'color': 'silver', 'font-weight': 700 }} onClick={async () => {await getLoot('armor'); setSpecialMerchant(false);}}>Armor</button>
-                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('cloth'); setSpecialMerchant(false);}}>Cloth</button>
-                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>
-                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
-                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('jewelry'); setSpecialMerchant(false);}}>Jewelry</button>
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 1.5s ease infinite' }} onClick={async () => {await getLoot('armor'); setSpecialMerchant(false);}}>Armor + Shields</button>
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 2s ease infinite' }} onClick={async () => {await getLoot('cloth'); setSpecialMerchant(false);}}>Soft Cloth</button>
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 1.5s ease infinite' }} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 2s ease infinite' }} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 1.5s ease infinite' }} onClick={async () => {await getLoot('jewelry'); setSpecialMerchant(false);}}>Jewelry</button>
                 </>)}
                 {combat().computer?.name === 'Kreceus' && ( <> 
-                    <button class='highlight animate' style={{ 'color': 'silver', 'font-weight': 700 }} onClick={async () => {await getLoot('armor'); setSpecialMerchant(false);}}>Armor</button>
-                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('cloth'); setSpecialMerchant(false);}}>Cloth</button>
-                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>
-                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
-                    <button class='highlight animate' style={{ 'color': 'green', 'font-weight': 700 }} onClick={async () => {await getLoot('jewelry'); setSpecialMerchant(false);}}>Jewelry</button>
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 1.5s ease infinite' }} onClick={async () => {await getLoot('armor'); setSpecialMerchant(false);}}>Armor + Shields</button>
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 2s ease infinite' }} onClick={async () => {await getLoot('cloth'); setSpecialMerchant(false);}}>Soft Cloth</button>
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 1.5s ease infinite' }} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 2s ease infinite' }} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
+                    <button class='highlight animate center' style={{ 'font-weight': 700, display: 'block', margin: '5% auto', padding: '5%', animation: 'gradient 1.5s ease infinite' }} onClick={async () => {await getLoot('jewelry'); setSpecialMerchant(false);}}>Jewelry</button>
                 </>)}
             </div>
             <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setSpecialMerchant(false)}>x</button>

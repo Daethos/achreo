@@ -2,7 +2,7 @@ import { Accessor, Setter, Show, createEffect, createSignal, lazy, Suspense } fr
 import Ascean from '../models/ascean';
 import Settings from '../models/settings';
 import { Combat } from "../stores/combat";
-import { EnemySheet } from '../utility/enemy';
+import { ARENA_ENEMY, EnemySheet } from '../utility/enemy';
 import { EventBus } from "../game/EventBus";
 import { GameState } from '../stores/game';
 import { LevelSheet } from '../utility/ascean';
@@ -16,6 +16,7 @@ import { validateHealth, validateLevel, validateMastery } from '../utility/valid
 import { adjustTime } from './Timer';
 import { Store } from 'solid-js/store';
 import { IRefPhaserGame } from '../game/PhaserGame';
+import Arena from './Arena';
 const Character = lazy(async () => await import('./Character'));
 const CombatUI = lazy(async () => await import('./CombatUI'));
 const Deity = lazy(async () => await import('./Deity'));
@@ -61,6 +62,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         caeren: 0,
         kyosir: 0,
     });
+    const [arena, setArena] = createSignal<{ show: boolean; enemies: ARENA_ENEMY[] | [] }>({ show: false, enemies: [] });
     createEffect(() => EventBus.emit('combat', combat()));  
     createEffect(() => EventBus.emit('game', game()));  
     createEffect(() => EventBus.emit('reputation', reputation()));
@@ -415,6 +417,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     usePhaserEvent('enemy-combat-text', (e: { computerSpecialDescription: string }) => EventBus.emit('add-combat-logs', { ...combat(), computerActionDescription: e.computerSpecialDescription }));
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
+    usePhaserEvent('show-roster', () => setArena({ ...arena(), show: true }));
     return <div id='base-ui'>
         <Show when={game().showPlayer} fallback={<div style={{ position: "absolute", 'z-index': 1 }}>
             <Suspense fallback={<Puff color="gold" />}>
@@ -443,5 +446,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 <Deity ascean={ascean} combat={combat} game={game} statistics={statistics} />
             </Suspense>
         </Show>
+        <Arena arena={arena} ascean={ascean} setArena={setArena} base={true} />
     </div>;
 };

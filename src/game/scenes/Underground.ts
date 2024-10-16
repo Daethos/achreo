@@ -24,6 +24,7 @@ import ParticleManager from '../matter/ParticleManager';
 import { screenShake } from '../phaser/ScreenShake';
 import { Hud } from './Hud';
 import DM from '../entities/DM';
+import { Compiler } from '../../utility/ascean';
 
 export class Underground extends Scene {
     animatedTiles: any[];
@@ -224,6 +225,7 @@ export class Underground extends Scene {
         EventBus.on('ascean', (ascean: Ascean) => this.ascean = ascean);
         EventBus.on('combat', (combat: any) => this.state = combat); 
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
+        EventBus.on('create-arena', this.createArenaEnemy);
         EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
         EventBus.on('enemyLootDrop', (drops: any) => {
             if (drops.scene !== 'Underground') return;
@@ -590,9 +592,29 @@ export class Underground extends Scene {
             };
         };
         marker = markers[Math.floor(Math.random() * markers.length)];
-        const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0' });
+        const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0', data: undefined  });
         this.enemies.push(enemy);
         return enemy;
+    };
+    createArenaEnemy = (data: Compiler[]) => {
+        let marker: any, markers: any[] = [];
+        for (let i = 0; i < this.markers.length; i++) {
+            const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
+            const direction = position.subtract(this.player.position);
+            if (direction.length() < 600) {
+                markers.push(this.markers[i]);
+            };
+        };
+        for (let j = 0; j < data.length; j++) {
+            marker = markers[Math.floor(Math.random() * markers.length)];
+            const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0', data: data[j] });
+            this.enemies.push(enemy);
+            this.time.delayedCall(3000, () => {
+                enemy.checkEnemyCombatEnter();
+                this.player.targets.push(enemy);
+                this.player.targetEngagement(enemy.enemyID);
+            }, undefined, this);
+        };
     };
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;

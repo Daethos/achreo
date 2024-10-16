@@ -140,10 +140,12 @@ export default class Player extends Entity {
             .strokeCircle(0, 0, 12); // 10 
         this.mark.setVisible(false);
         this.markAnimation = false;
-        if (this.scene.state.isCaerenic) this.caerenicUpdate();
-        if (this.scene.state.isStalwart) this.stalwartUpdate();
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health, 'player');
         this.castbar = new CastingBar(this.scene.hud, this.x, this.y, 0, this);
+        scene.time.delayedCall(1000, () => {
+            if (this.scene.state.isCaerenic) this.caerenicUpdate();
+            if (this.scene.state.isStalwart) this.stalwartUpdate();
+        }, undefined, this);
         this.rushedEnemies = [];
         this.playerStateListener();
         this.setFixedRotation();   
@@ -796,10 +798,11 @@ export default class Player extends Entity {
             callback: (other: any) => {
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === 'duel') {
                     EventBus.emit('alert', { 
-                        header: "Dueling Ground", 
-                        body: `You have the option of summoning an enemy (${other.gameObjectB?.properties?.key}) to random location in the dueling grounds. \n Would you like the challenge?`, 
+                        header: "Ancient Eulex", 
+                        body: `You have the option of summoning enemies to the dueling grounds. \n Would you like to see the roster?`, 
+                        // body: `You have the option of summoning an enemy (${other.gameObjectB?.properties?.key}) to random location in the dueling grounds. \n Would you like the challenge?`, 
                         delay: 3000, 
-                        key: "Duel",
+                        key: "Roster",
                         arg: other.gameObjectB?.properties?.key
                     });
                 };

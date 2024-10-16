@@ -342,6 +342,11 @@ export function populateEnemy(enemy: Ascean): Ascean {
     };
 };
 
+export function nonRandomEnemy(level: number, mastery: string): Ascean {
+    const random = Asceans.filter(ascean => ascean.level === level && ascean.mastery <= mastery);
+    const enemy = random[Math.floor(Math.random() * random.length)];
+    return enemy;
+};
 export function randomEnemy(min: number, max: number): Ascean {
     const random = Asceans.filter(ascean => ascean.level >= min && ascean.level <= max);
     const enemy = random[Math.floor(Math.random() * random.length)];

@@ -1,4 +1,4 @@
-import { populateEnemy, randomEnemy } from "../assets/db/db";
+import { nonRandomEnemy, populateEnemy, randomEnemy } from "../assets/db/db";
 import { EventBus } from "../game/EventBus";
 import Ascean from "../models/ascean";
 import { States } from "../game/phaser/StateMachine";
@@ -276,6 +276,11 @@ export const INSTINCTS = {
             value: States.KYRNAICISM
     }]
 };
+export type ARENA_ENEMY = {
+    level: number;
+    mastery: string;
+    id: string;
+};
 export const GRIP_SCALE = { 'One Hand': 0.5, 'Two Hand': 0.65 };
 export type EnemySheet = {
     id: string;
@@ -322,5 +327,19 @@ export function fetchEnemy(e: { enemyID: string; level: number; }): void {
         EventBus.emit('enemy-fetched', { enemy: res?.ascean, combat: res, enemyID: e.enemyID });
     } catch (err) {
         console.warn(err, 'Error retrieving Enemies');
+    };
+};
+export function fetchArena(enemies: ARENA_ENEMY[]) {
+    try {
+        let complete: any[] = [];
+        for (let i = 0; i < enemies.length; i++) {
+            let enemy = nonRandomEnemy(enemies[i].level, enemies[i].mastery);
+            enemy = populateEnemy(enemy);
+            const res = asceanCompiler(enemy);
+            complete.push(res);
+        };
+        return complete;
+    } catch (err) {
+        console.warn(err, 'Error Retrieving Enemies');
     };
 };

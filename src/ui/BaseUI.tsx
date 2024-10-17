@@ -62,7 +62,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         caeren: 0,
         kyosir: 0,
     });
-    const [arena, setArena] = createSignal<{ show: boolean; enemies: ARENA_ENEMY[] | [] }>({ show: false, enemies: [] });
+    const [arena, setArena] = createSignal<{ show: boolean; enemies: ARENA_ENEMY[] | []; wager: { silver: number; gold: number; } }>({ show: false, enemies: [], wager: { silver: 0, gold: 0 } });
     createEffect(() => EventBus.emit('combat', combat()));  
     createEffect(() => EventBus.emit('game', game()));  
     createEffect(() => EventBus.emit('reputation', reputation()));
@@ -381,14 +381,15 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     opponent: res.computer?.level,
                     opponentExp: Math.min(experience, res?.player?.level! * 1000),
                 };
-                EventBus.emit('record-win', { record: res, experience: newState });
+                EventBus.emit('record-win', { record: res, experience: newState, enemies: arena().enemies, wager: arena().wager });
                 const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
                 EventBus.emit('enemy-loot', loot);
                 setAsceanState({ ...asceanState(), avarice: false });
             } else {
-                EventBus.emit('record-loss', res);
+                EventBus.emit('record-loss', {combat:res, wager:arena().wager});
             };
             res = statusEffectCheck(res);
+            setArena({ ...arena(), enemies: [], wager: { silver: 0, gold: 0 } });
         } catch (err: any) {
             console.warn(err, 'Error Resolving Combat');
         };
@@ -418,6 +419,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
     usePhaserEvent('show-roster', () => setArena({ ...arena(), show: true }));
+    usePhaserEvent('set-wager', (wager: { silver: number; gold: number; }) => setArena({ ...arena(), wager }));
     return <div id='base-ui'>
         <Show when={game().showPlayer} fallback={<div style={{ position: "absolute", 'z-index': 1 }}>
             <Suspense fallback={<Puff color="gold" />}>

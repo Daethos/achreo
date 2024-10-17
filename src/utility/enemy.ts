@@ -334,7 +334,6 @@ export function fetchArena(enemies: ARENA_ENEMY[]) {
         let complete: any[] = [];
         for (let i = 0; i < enemies.length; i++) {
             let enemy = nonRandomEnemy(enemies[i].level, enemies[i].mastery);
-            console.log(enemy, 'Enemy fetched?')
             enemy = populateEnemy(enemy);
             const res = asceanCompiler(enemy);
             complete.push(res);

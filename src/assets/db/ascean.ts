@@ -2575,7 +2575,7 @@ export const Asceans: any[] = [
         name: "Li'kyr Pants",
         rarity: 'Uncommon',
     },"ringOne":{
-        name: "Choimic Ring",
+        name: "Chiomic Ring",
         rarity: 'Rare',
     },"ringTwo":{
         name: "Kyrison Ring",
@@ -3655,7 +3655,7 @@ export const Asceans: any[] = [
         name: "Li'kyr Pants",
         rarity: 'Rare',
     },"ringOne":{
-        name: "Choimic Ring",
+        name: "Chiomic Ring",
         rarity: 'Rare',
     },"ringTwo":{
         name: "Kyrison Ring",

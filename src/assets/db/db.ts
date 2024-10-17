@@ -343,14 +343,8 @@ export function populateEnemy(enemy: Ascean): Ascean {
 };
 
 export function nonRandomEnemy(level: number, mastery: string): Ascean {
-    console.log(level, mastery, 'Level and Mastery');
     const roster = Asceans.filter(ascean => ascean.level === level && ascean.mastery === mastery);
-    console.log(roster, 'Random assortment of ')
     const enemy = roster[Math.floor(Math.random() * roster.length)];
-    console.log(enemy, 'Does the enemy exist?');
-    if (!enemy) {
-        console.log('`````````````````````````````````````` ALERT ```````````````````````````````````````````');
-    };
     return enemy;
 };
 export function randomEnemy(min: number, max: number): Ascean {

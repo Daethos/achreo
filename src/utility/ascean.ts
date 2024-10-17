@@ -798,6 +798,7 @@ const defenseCompiler = (ascean: any, attributes: CombatAttributes, combatStats:
 
 const coefficientCompiler = (ascean: Ascean, item: Equipment): number => {
     let coefficient = 0;
+    // console.log(item, 'Item!');
     switch (item.rarity) {
         case 'Common':
             // coefficient = 1;

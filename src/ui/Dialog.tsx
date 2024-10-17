@@ -255,7 +255,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
     const [thievery, setThievery] = createSignal<boolean>(false);
     const [specialMerchant, setSpecialMerchant] = createSignal<boolean>(false);
-    const [arena, setArena] = createSignal<{ show: boolean; enemies: ARENA_ENEMY[] | [] }>({ show: false, enemies: [] });
+    const [arena, setArena] = createSignal<{ show: boolean; enemies: ARENA_ENEMY[] | []; wager: { silver: number; gold: number; }; }>({ show: false, enemies: [], wager: { silver: 0, gold: 0 } });
     const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
@@ -620,7 +620,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         try {
             const refresh = async () => {
                 const key = KEYS[combat().computer?.name as keyof typeof KEYS];
-                console.log(key, 'Key!')
                 if (key === 'Kyrisian' || key === 'Sedyreal' || key === 'Kreceus' || key === "Ashreu'ul") {
                     setSpecialMerchant(true);
                     return;
@@ -640,7 +639,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
 
         const key = KEYS[combat().computer?.name as keyof typeof KEYS];
         if (key === 'Kyrisian' || key === 'Sedyreal' || key === 'Kreceus' || key === "Ashreu'ul") {
-            console.log('special merchant!');
             setSpecialMerchant(true);
             return;
         };
@@ -690,7 +688,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
             return;
         };
         try {
-            console.log(`Upgrading ${forge()?.name} of ${forge()?.rarity} quality.`);
+            // console.log(`Upgrading ${forge()?.name} of ${forge()?.rarity} quality.`);
             let match = JSON.parse(JSON.stringify(game().inventory.inventory));
             match = match.filter((item: Equipment) => item.name === forge()?.name && item?.rarity === forge()?.rarity);
             const data = {
@@ -715,7 +713,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     };
 
     function itemForge(item: Equipment) {
-        console.log(item, 'Item to Prospectively Forge');
         setForge(item);
         setForgeModalShow(true);
     };
@@ -749,7 +746,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 <br />
                 {forgeSee() && upgradeItems() ? ( <div class='playerInventoryBag center' style={{ width: '65%', 'margin-bottom': '5%' }}> 
                     {upgradeItems().map((item: any) => {
-                        console.log(item, 'Item!');
                         if (item === undefined || item === undefined) return;
                         return (
                             <div class='center' onClick={() => itemForge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: '5%',padding: '0.25em',width: 'auto' }}>

@@ -92,7 +92,7 @@
                     ]
                 },
                 {
-                    "text": "Pleased to meet you, ${enemy.name}. I am ${ascean.name} \n ... \n Where exactly am I?",
+                    "text": "Pleased to meet you, ${enemy.name}. I am ${ascean.name} ^500 ... ^500 Where exactly am I?",
                     "next": "0030",
                     "npcIds": [
                         11
@@ -106,7 +106,7 @@
                     ]
                 },
                 {
-                    "text": "Pleased to meet you, ${enemy.name}. I am ${ascean.name} \n ... \n ... \n Ancient Eulex?",
+                    "text": "Pleased to meet you, ${enemy.name}. I am ${ascean.name} ^500 ... ^500 ... ^500 Ancient Eulex?",
                     "next": "0030",
                     "npcIds": [
                         11
@@ -820,7 +820,7 @@
                     ]
                 },
                 {
-                    "text": "Show me the roster.",
+                    "text": "Oh my. Show me the roster.",
                     "next": "0034",
                     "npcIds": [
                         11
@@ -849,6 +849,14 @@
                     "npcIds": [
                         11
                     ]
+                },
+                {
+                    "text": "Wonderful. Show me the roster.",
+                    "next": "0034",
+                    "npcIds": [
+                        11
+                    ],
+                    "action": "setRoster"
                 }
             ],
             "npcIds": [
@@ -872,6 +880,14 @@
                     "npcIds": [
                         11
                     ]
+                },
+                {
+                    "text": "I love what I'm hearing. Show me the roster.",
+                    "next": "0034",
+                    "npcIds": [
+                        11
+                    ],
+                    "action": "setRoster"
                 }
             ],
             "npcIds": [
@@ -904,7 +920,7 @@
         },
         {
             "id": "0034",
-            "text": "[This is a work in progress. You can set the amount of enemies, their level, and masteries to duel against. Eventually, there will be options for computer spectating and wagering.]",
+            "text": "[This is a work in progress. Eventually, there will be options for computer spectating and wagering.]",
             "options": [
                 {
                     "text": "What is the origin of this practice, again?",
@@ -966,7 +982,7 @@
                     ]
                 },
                 {
-                    "text": "Show me the roster.",
+                    "text": "Well, I am here. Show me the roster.",
                     "next": "0034",
                     "npcIds": [
                         11

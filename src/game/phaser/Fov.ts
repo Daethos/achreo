@@ -123,6 +123,7 @@ export default class Fov {
     updateEnemies = () => {
         for (let i = 0; i < this.scene.enemies.length; i++) {
             const enemy = this.scene.enemies[i];
+            if (!enemy || !enemy.body) continue;
             const coords = new Phaser.Math.Vector2({
                 x: this.map.worldToTileX(enemy.x) as number,
                 y: this.map.worldToTileY(enemy.y) as number
@@ -141,24 +142,26 @@ export default class Fov {
 
     updateDms = () => {
         for (let i = 0; i < this.scene.dms.length; i++) {
-            const npc = this.scene.dms[i];
+            const dm = this.scene.dms[i];
+            if (!dm || !dm.body) continue;
             const coords = new Phaser.Math.Vector2({
-                x: this.map.worldToTileX(npc.x) as number,
-                y: this.map.worldToTileY(npc.y) as number
+                x: this.map.worldToTileX(dm?.x) as number,
+                y: this.map.worldToTileY(dm?.y) as number
             });
             const distance = Math.floor(new Phaser.Math.Vector2(coords.x, coords.y).distance(new Phaser.Math.Vector2(this.lastPos.x, this.lastPos.y)));
             const rolloffIdx = distance <= this.radius ? this.radius - distance : 0;
             const alpha = rolloffIdx < lightDropoff.length ? lightDropoff[rolloffIdx] : 1;
-            npc.setAlpha(alpha);
+            dm.setAlpha(alpha);
         };
     };
 
     updateNpcs = () => {
         for (let i = 0; i < this.scene.npcs.length; i++) {
             const npc = this.scene.npcs[i];
+            if (!npc || !npc.body) continue;
             const coords = new Phaser.Math.Vector2({
-                x: this.map.worldToTileX(npc.x) as number,
-                y: this.map.worldToTileY(npc.y) as number
+                x: this.map.worldToTileX(npc?.x) as number,
+                y: this.map.worldToTileY(npc?.y) as number
             });
             const distance = Math.floor(new Phaser.Math.Vector2(coords.x, coords.y).distance(new Phaser.Math.Vector2(this.lastPos.x, this.lastPos.y)));
             const rolloffIdx = distance <= this.radius ? this.radius - distance : 0;

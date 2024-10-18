@@ -319,15 +319,19 @@ export class Underground extends Scene {
 
     resumeScene = () => {
         this.cameras.main.fadeIn();
-        this.scene.wake();
-        this.resumeMusic();
-        this.state = this.registry.get("combat");
-        this.registry.set("player", this.player);
-        if (this.state.isStealth) {
-            this.player.playerMachine.positiveMachine.setState(States.STEALTH);
-            this.stealthEngaged(true);
-        };
-        EventBus.emit('current-scene-ready', this);
+        // this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, (_cam: any, _effect: any) => {
+            this.resumeMusic();
+            this.state = this.registry.get("combat");
+            this.player.health = this.state.newPlayerHealth;
+            this.player.healthbar.setValue(this.state.newPlayerHealth);
+            this.registry.set("player", this.player);
+            if (this.state.isStealth) {
+                this.player.playerMachine.positiveMachine.setState(States.STEALTH);
+                this.stealthEngaged(true);
+            };
+            this.scene.wake();
+            EventBus.emit('current-scene-ready', this);
+        // });
     };
     switchScene = (current: string) => {
         this.cameras.main.fadeOut();
@@ -336,6 +340,7 @@ export class Underground extends Scene {
             this.registry.set("settings", this.hud.settings);
             this.registry.set("ascean", this.state.player);
             this.player.disengage();
+            this.player.currentTarget = undefined
             this.pauseMusic();
             this.scene.sleep(current);
         });
@@ -681,8 +686,9 @@ export class Underground extends Scene {
             this.enemies[i].update();
             if (this.enemies[i].isDefeated && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
         };
-        for (let i = 0; i < this.dms.length; i++) {this.dms[i].update();};
-        // for (let i = 0; i < this.npcs.length; i++) {this.npcs[i].update();};
+        for (let i = 0; i < this.dms.length; i++) {
+            this.dms[i].update(delta);
+        };
         const camera = this.cameras.main;
         const bounds = new Phaser.Geom.Rectangle(
             this.map.worldToTileX(camera.worldView.x) as number - 2,
@@ -694,7 +700,7 @@ export class Underground extends Scene {
             x: this.map.worldToTileX(this.player.x) as number,
             y: this.map.worldToTileY(this.player.y) as number
         });
-        this.fov!.update(player, bounds, delta);
+        this.fov?.update(player, bounds, delta);
     };
     pause(): void {
         this.scene.pause();

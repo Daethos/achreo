@@ -170,11 +170,11 @@ export class Arena extends Scene {
         this.musicCombat = this.sound.add('industrial', { volume: this?.hud?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
         
-        this.platform = new MovingPlatform(this, 400, 1750, 'player-castbar', { isStatic: true });
-        this.platform.vertical(0, -1750, 17500);
-        this.platform2 = new MovingPlatform(this, 400, 1750, 'player-castbar', { isStatic: true });
-        this.platform2.setAngle(90);
-        this.platform2.horizontal(0, 1750, 17500);
+        // this.platform = new MovingPlatform(this, 400, 1500, 'player-castbar', { isStatic: true });
+        // this.platform.vertical(0, -1500, 15000);
+        // this.platform2 = new MovingPlatform(this, 400, 1500, 'player-castbar', { isStatic: true });
+        // this.platform2.setAngle(90);
+        // this.platform2.horizontal(0, 1500, 15000);
 
         this.postFxEvent();
         if (this.hud.settings.desktop === true) {
@@ -326,18 +326,22 @@ export class Arena extends Scene {
 
     resumeScene = () => {
         this.cameras.main.fadeIn();
-        this.scene.wake();
-        this.resumeMusic();
-        this.state = this.registry.get("combat");
-        this.registry.set("player", this.player);
-        if (this.state.isStealth) {
-            this.player.playerMachine.positiveMachine.setState(States.STEALTH);
-            this.stealthEngaged(true);
-        };
-        const random = this.markers[Math.floor(Math.random() * this.markers.length)];
-        this.player.setPosition(random.x, random.y);
-        this.createArenaEnemy();
-        EventBus.emit('current-scene-ready', this);
+        // this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, (_cam: any, _effect: any) => {
+            this.resumeMusic();
+            this.state = this.registry.get("combat");
+            this.registry.set("player", this.player);
+            this.player.health = this.state.newPlayerHealth;
+            this.player.healthbar.setValue(this.state.newPlayerHealth);
+            if (this.state.isStealth) {
+                this.player.playerMachine.positiveMachine.setState(States.STEALTH);
+                this.stealthEngaged(true);
+            };
+            const random = this.markers[Math.floor(Math.random() * this.markers.length)];
+            this.player.setPosition(random.x, random.y);
+            this.createArenaEnemy();
+            this.scene.wake();
+            EventBus.emit('current-scene-ready', this);
+        // });
     };
     switchScene = (current: string) => {
         this.cameras.main.fadeOut();
@@ -637,6 +641,7 @@ export class Arena extends Scene {
                 enemy.checkEnemyCombatEnter();
                 this.player.targets.push(enemy);
                 this.player.targetEngagement(enemy.enemyID);
+                if (this.player.isComputer || !this.hud.settings.difficulty.arena) this.player.playerMachine.stateMachine.setState(States.CHASE);
             }, undefined, this);
         };
     };

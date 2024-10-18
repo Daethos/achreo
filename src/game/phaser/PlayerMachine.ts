@@ -154,14 +154,24 @@ export default class PlayerMachine {
     };
 
     onChaseEnter = () => {
-        if (!this.player.currentTarget || !this.player.currentTarget.position || !this.player.currentTarget.position.body) return;
+        if (!this.player.currentTarget || !this.player.currentTarget.body || !this.player.currentTarget.position) return;
         this.player.frameCount = 0;
-        // this.enemyAnimation();
+        // this.scene.navMesh.enableDebug();
+        if (this.player.chaseTimer) {
+            this.player.chaseTimer?.remove(false);
+            this.player.chaseTimer.destroy();
+            this.player.chaseTimer = undefined;
+        };
+        if (this.player.leashTimer) {
+            this.player.leashTimer.remove(false);
+            this.player.leashTimer?.destroy();
+            this.player.leashTimer = undefined;
+        };
         this.player.chaseTimer = this.scene.time.addEvent({
             delay: 500,
             callback: () => {
                 // this.scene.navMesh.debugDrawClear();
-                if (!this.player.currentTarget || !this.player.currentTarget.position || !this.player.currentTarget.position.body) {
+                if (!this.player.currentTarget || !this.player.currentTarget.body || !this.player.currentTarget.position) {
                     this.player.chaseTimer?.remove(false);
                     this.player.chaseTimer?.destroy();
                     this.player.chaseTimer = undefined;
@@ -185,14 +195,16 @@ export default class PlayerMachine {
             },
             callbackScope: this,
             loop: true
-        }); 
+        });
     }; 
     onChaseUpdate = (_dt: number) => {
-        if (!this.player.currentTarget) return;
+        if (!this.player.currentTarget || !this.player.currentTarget.body || !this.player.currentTarget.position) return;
         const rangeMultiplier = this.player.rangedDistanceMultiplier(3);
         const direction = this.player.currentTarget.position.subtract(this.player.position);
         const distance = direction.length();
-        if (Math.abs(this.player.originPoint.x - this.player.position.x) > RANGE.LEASH * rangeMultiplier || Math.abs(this.player.originPoint.y - this.player.position.y) > RANGE.LEASH * rangeMultiplier || !this.player.inCombat || distance > RANGE.LEASH * rangeMultiplier) {
+        if (Math.abs(this.player.originPoint.x - this.player.position.x) > RANGE.LEASH * rangeMultiplier || 
+            Math.abs(this.player.originPoint.y - this.player.position.y) > RANGE.LEASH * rangeMultiplier || 
+            !this.player.inCombat || distance > RANGE.LEASH * rangeMultiplier) {
             this.stateMachine.setState(States.LEASH);
             return;
         };  
@@ -220,20 +232,29 @@ export default class PlayerMachine {
 
     onLeashEnter = () => {
         this.player.inCombat = false;
-        // this.player.setVelocity(0);
         this.player.healthbar.setVisible(false);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Leashing', 1500, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        if (this.player.chaseTimer) {
+            this.player.chaseTimer?.remove(false);
+            this.player.chaseTimer.destroy();
+            this.player.chaseTimer = undefined;
+        };
+        if (this.player.leashTimer) {
+            this.player.leashTimer.remove(false);
+            this.player.leashTimer?.destroy();
+            this.player.leashTimer = undefined;
+        };
         this.player.leashTimer = this.scene.time.addEvent({
             delay: 500,
             callback: () => {
                 let originPoint = new Phaser.Math.Vector2(this.player.originalPosition.x, this.player.originalPosition.y);
-                this.scene.navMesh.debugDrawClear();
+                // this.scene.navMesh.debugDrawClear();
                 this.player.path = this.scene.navMesh.findPath(this.player.position, originPoint);
                 if (this.player.path && this.player.path.length > 1) {
                     if (!this.player.isPathing) this.player.isPathing = true;
                     const nextPoint = this.player.path[1];
                     this.player.nextPoint = nextPoint;
-                    this.scene.navMesh.debugDrawPath(this.player.path, 0xffd900);
+                    // this.scene.navMesh.debugDrawPath(this.player.path, 0xffd900);
                     const pathDirection = new Phaser.Math.Vector2(this.player.nextPoint.x, this.player.nextPoint.y);
                     this.player.pathDirection = pathDirection;
                     this.player.pathDirection.subtract(this.player.position);
@@ -267,9 +288,12 @@ export default class PlayerMachine {
     };
     onLeashExit = () => {
         this.player.setVelocity(0);
-        this.player.leashTimer?.destroy();
-        this.player.leashTimer = undefined;
-        this.scene.navMesh.debugDrawClear(); 
+        if (this.player.leashTimer) {
+            this.player.leashTimer.remove(false);
+            this.player.leashTimer?.destroy();
+            this.player.leashTimer = undefined;
+        };
+        // this.scene.navMesh.debugDrawClear(); 
         (this.scene as Arena).computerDisengage();
     };
 
@@ -281,13 +305,13 @@ export default class PlayerMachine {
         this.player.evadeRight = x === 1;
         this.player.evadeUp = y === 1;
         this.player.evadeType = evade;
-    };
-    onEvasionUpdate = (_dt: number) => {
         if (this.player.evadeType === 1) {
             this.player.anims.play('player_slide', true);
         } else {
             this.player.anims.play('player_roll', true);        
         };
+    };
+    onEvasionUpdate = (_dt: number) => {
         if (this.player.evadeRight) {
             this.player.setVelocityX(this.player.speed);
         } else {
@@ -300,7 +324,8 @@ export default class PlayerMachine {
         };
         if (!this.player.isDodging && !this.player.isRolling) this.player.evaluateCombatDistance();
     }; 
-    onEvasionExit = () => {};
+    onEvasionExit = () => this.stateMachine.setState(States.COMPUTER_COMBAT);
+    
 
     onContemplateEnter = () => {
         if (this.player.inCombat === false || this.scene.state.newPlayerHealth <= 0) {

@@ -65,7 +65,6 @@ export default class Enemy extends Entity {
     castingSuccess: boolean = false;
     patrolPath: any;
     nextPatrolPoint: any;
-    pathDirection: Phaser.Math.Vector2;
     patrolDelay: number;
     wasFlipped: boolean = false;
     channelCount: number = 0;
@@ -982,6 +981,7 @@ export default class Enemy extends Entity {
         if (!this.attacking) return;
         this.frameCount = 0;
         this.enemyAnimation();
+        // this.scene.navMesh.enableDebug();
         this.chaseTimer = this.scene.time.addEvent({
             delay: 500,
             callback: () => {
@@ -1260,13 +1260,13 @@ export default class Enemy extends Entity {
                     this.leashTimer = undefined;
                 };
                 let originPoint = new Phaser.Math.Vector2(this.originalPosition.x, this.originalPosition.y);
-                this.scene.navMesh.debugDrawClear();
+                // this.scene.navMesh.debugDrawClear();
                 this.path = this.scene.navMesh.findPath(this.position, originPoint);
                 if (this.path && this.path.length > 1) {
                     if (!this.isPathing) this.isPathing = true;
                     const nextPoint = this.path[1];
                     this.nextPoint = nextPoint;
-                    this.scene.navMesh.debugDrawPath(this.path, 0xffd900);
+                    // this.scene.navMesh.debugDrawPath(this.path, 0xffd900);
                     const pathDirection = new Phaser.Math.Vector2(this.nextPoint.x, this.nextPoint.y);
                     this.pathDirection = pathDirection;
                     this.pathDirection.subtract(this.position);

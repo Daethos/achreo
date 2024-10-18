@@ -21,8 +21,8 @@ export const PLAYER = {
         MIN: 0,
         ATTACK: 40,
         MOMENTUM: 2,
-        THRESHOLD: 80,
-        CHASE: 80,
+        THRESHOLD: 75,
+        CHASE: 75,
         RANGED_ALIGNMENT: 20,
         RANGED_MULTIPLIER: 3,
         DODGE: 1152, // 2304

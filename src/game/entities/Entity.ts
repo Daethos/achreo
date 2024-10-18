@@ -182,6 +182,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     speed: number = 0;
     glowColor: number;
     weaponHitbox: Phaser.GameObjects.Arc;
+    pathDirection: Phaser.Math.Vector2;
     chaseTimer: Phaser.Time.TimerEvent | undefined;
     leashTimer: Phaser.Time.TimerEvent | undefined;
     specialCombat: Phaser.Time.TimerEvent | undefined;

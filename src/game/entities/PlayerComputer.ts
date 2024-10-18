@@ -113,15 +113,19 @@ export default class PlayerComputer extends Player {
     };
 
     evaluateCombatDistance = () => {
-        if (this.isCasting === true || this.isSuffering() === true || this.isContemplating === true || this.currentTarget === undefined || this.scene.state.newPlayerHealth <= 0 || !this.inCombat || this.playerMachine.stateMachine.isCurrentState(States.CHASE)) return;
+        this.getDirection();
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
             if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
                 this.scene.setupEnemy(this.currentTarget);
             };
         };
-        if (!this.currentTarget.position) return;
-        this.getDirection();
+        if (this.isCasting === true || this.isSuffering() === true || this.isContemplating === true || this.currentTarget === undefined || this.scene.state.newPlayerHealth <= 0 || this.playerMachine.stateMachine.isCurrentState(States.LEASH) || this.playerMachine.stateMachine.isCurrentState(States.CHASE) || this.playerMachine.stateMachine.isCurrentState(States.EVADE)) return;
+        if (!this.inCombat) {
+            this.setVelocity(0);
+            return;    
+        };
+        if (!this.currentTarget.body || !this.currentTarget.position || !this.currentTarget.x || !this.currentTarget.y) return;
         let direction = this.currentTarget.position.subtract(this.position);
         const distanceY = Math.abs(direction.y);
         const multiplier = this.rangedDistanceMultiplier(PLAYER.DISTANCE.RANGED_MULTIPLIER);
@@ -139,9 +143,14 @@ export default class PlayerComputer extends Player {
                 this.setVelocityX(direction.x * this.speed + 0.25); // 2.25
                 this.setVelocityY(direction.y * this.speed + 0.25); // 2.25          
             } else if (this.currentTarget.position.subtract(this.position).length() < PLAYER.DISTANCE.THRESHOLD && !this.currentTarget.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
-                direction.normalize();
-                this.setVelocityX(direction.x * -this.speed + 0.5); // -2.25 | -2 | -1.75
-                this.setVelocityY(direction.y * -this.speed + 0.5); // -1.5 | -1.25
+                if (Phaser.Math.Between(1, 300) === 1) {
+                    this.playerMachine.stateMachine.setState(States.EVADE);
+                    return;
+                } else {
+                    direction.normalize();
+                    this.setVelocityX(direction.x * -this.speed + 0.5); // -2.25 | -2 | -1.75
+                    this.setVelocityY(direction.y * -this.speed + 0.5); // -1.5 | -1.25
+                };
             } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.
                 this.setVelocity(0);
                 this.anims.play('player_idle', true);

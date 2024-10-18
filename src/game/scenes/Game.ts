@@ -290,17 +290,19 @@ export class Game extends Scene {
     };
     resumeScene = () => {
         this.cameras.main.fadeIn();
-        this.scene.wake();
-        this.resumeMusic();
-        this.state = this.registry.get("combat");
-        this.player.health = this.state.newPlayerHealth;
-        this.player.healthbar.setValue(this.state.newPlayerHealth);
-        this.registry.set("player", this.player);
-        if (this.state.isStealth) {
-            this.player.playerMachine.positiveMachine.setState(States.STEALTH);
-            this.stealthEngaged(true);
-        };
-        EventBus.emit('current-scene-ready', this);
+        // this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, (_cam: any, _effect: any) => {
+            this.scene.wake();
+            this.resumeMusic();
+            this.state = this.registry.get("combat");
+            this.player.health = this.state.newPlayerHealth;
+            this.player.healthbar.setValue(this.state.newPlayerHealth);
+            this.registry.set("player", this.player);
+            if (this.state.isStealth) {
+                this.player.playerMachine.positiveMachine.setState(States.STEALTH);
+                this.stealthEngaged(true);
+            };
+            EventBus.emit('current-scene-ready', this);
+        // });
     };
     switchScene = (current: string) => {
         this.cameras.main.fadeOut();
@@ -310,6 +312,7 @@ export class Game extends Scene {
             this.registry.set("ascean", this.state.player);
             // this.registry.set("health", this.player.health);
             this.player.disengage();
+            this.scene.pause();
             this.pauseMusic();
             this.scene.sleep(current);
         });

@@ -149,5 +149,5 @@ export default class DM extends Entity {
     };
     onAwarenessExit = () => this.scene.showDialog(false);
 
-    update = () => this.stateMachine.update(this.scene.sys.game.loop.delta);
+    update = (delta: number) => this.stateMachine.update(delta || 16);
 };

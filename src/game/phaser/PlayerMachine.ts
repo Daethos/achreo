@@ -198,11 +198,11 @@ export default class PlayerMachine {
         };  
         if (distance >= 50 * rangeMultiplier) { // was 75 || 100
             if (this.player.path && this.player.path.length > 1) {
-                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed) * (this.player.isClimbing ? 0.65 : 1), this.player.pathDirection.y * (this.player.speed) * (this.player.isClimbing ? 0.65 : 1)); // 2.5
+                this.player.setVelocity(this.player.pathDirection.x * this.player.speed, this.player.pathDirection.y * this.player.speed); // 2.5
             } else {
                 if (this.player.isPathing) this.player.isPathing = false;
                 direction.normalize();
-                this.player.setVelocity(direction.x * (this.player.speed) * (this.player.isClimbing ? 0.65 : 1), direction.y * (this.player.speed) * (this.player.isClimbing ? 0.65 : 1)); // 2.5
+                this.player.setVelocity(direction.x * this.player.speed, direction.y * this.player.speed); // 2.5
             };
         } else {
             this.stateMachine.setState(States.COMPUTER_COMBAT);
@@ -373,23 +373,24 @@ export default class PlayerMachine {
     onIdleExit = () => {};
     
     onNonCombatEnter = () => {
-        this.player.setVelocity(0);
-        this.player.anims.play('player_idle', true);
-        if (this.scene.combatTimer) this.scene.stopCombatTimer();
-        if (this.player.currentRound !== 0) this.player.currentRound = 0;
+        // this.player.setVelocity(0);
+        // this.player.anims.play('player_idle', true);
+        // if (this.scene.combatTimer) this.scene.stopCombatTimer();
+        // if (this.player.currentRound !== 0) this.player.currentRound = 0;
     };
     onNonCombatUpdate = (_dt: number) => {
         if (this.player.isMoving) this.player.isMoving = false;
         if (this.player.inCombat) this.stateMachine.setState(States.COMBAT);
     };
     onNonCombatExit = () => {
-        this.player.anims.stop('player_idle');
+        // this.player.anims.stop('player_idle');
     };
 
     onCombatEnter = () => {
         if (this.player.isComputer) this.stateMachine.setState(States.COMPUTER_COMBAT);
     };
     onCombatUpdate = (_dt: number) => { 
+        // if (this.player.isComputer) this.player.evaluateCombatDistance();
         // if (!this.player.inCombat) this.stateMachine.setState(States.NONCOMBAT);
     };
 
@@ -401,7 +402,7 @@ export default class PlayerMachine {
             return;
         };
         this.player.frameCount = 0;
-        if (!this.player.specials) {
+        if (this.player.specials === false) {
             this.player.specials = true;
             this.player.setSpecialCombat();
         };
@@ -415,11 +416,12 @@ export default class PlayerMachine {
     };
     onComputerCombatUpdate = (_dt: number) => { 
         if (!this.player.computerAction) this.stateMachine.setState(States.CHASE);  
+        // this.player.evaluateCombatDistance();
     };
 
     onAttackEnter = () => {
         if (this.player.isPosturing || this.player.isParrying || this.player.isThrusting) {return};
-        if (this.player.isRanged === true && this.player.inCombat === true) {
+        if (this.player.isRanged === true && this.player.inCombat === true && !this.player.isComputer) {
             const correct = this.player.getEnemyDirection(this.player.currentTarget);
             if (!correct) {
                 this.player.resistCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Skill Issue: Look at the Enemy!', 1000, 'damage', false, true, () => this.player.resistCombatText = undefined);
@@ -462,7 +464,7 @@ export default class PlayerMachine {
 
     onPostureEnter = () => {
         if (this.player.isAttacking || this.player.isParrying || this.player.isThrusting) return;
-        if (this.player.isRanged === true) {
+        if (this.player.isRanged === true && !this.player.isComputer) {
             if (this.player.isMoving === true) {
                 this.player.resistCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Posture Issue: You are Moving', 1000, 'damage', false, true, () => this.player.resistCombatText = undefined);
                 return;
@@ -555,7 +557,7 @@ export default class PlayerMachine {
 
     onThrustEnter = () => {
         if (this.player.isAttacking || this.player.isParrying || this.player.isPosturing) return;
-        if (this.player.isRanged === true) {
+        if (this.player.isRanged === true && !this.player.isComputer) {
             const correct = this.player.getEnemyDirection(this.player.currentTarget);
             if (!correct && this.player.inCombat === true) {
                 this.player.resistCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Skill Issue: Look at the Enemy!', 1000, 'damage', false, true, () => this.player.resistCombatText = undefined);

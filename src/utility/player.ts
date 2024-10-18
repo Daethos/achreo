@@ -23,7 +23,7 @@ export const PLAYER = {
         MOMENTUM: 2,
         THRESHOLD: 80,
         CHASE: 80,
-        RANGED_ALIGNMENT: 10,
+        RANGED_ALIGNMENT: 20,
         RANGED_MULTIPLIER: 3,
         DODGE: 1152, // 2304
         ROLL: 960, // 1920

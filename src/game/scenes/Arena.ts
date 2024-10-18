@@ -334,6 +334,8 @@ export class Arena extends Scene {
             this.player.playerMachine.positiveMachine.setState(States.STEALTH);
             this.stealthEngaged(true);
         };
+        const random = this.markers[Math.floor(Math.random() * this.markers.length)];
+        this.player.setPosition(random.x, random.y);
         this.createArenaEnemy();
         EventBus.emit('current-scene-ready', this);
     };

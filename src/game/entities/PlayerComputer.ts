@@ -11,7 +11,7 @@ export default class PlayerComputer extends Player {
     combatConcerns: Phaser.Time.TimerEvent | undefined;
     combatSpecials: any[];
     computerAction: boolean = false;
-    specials: boolean = false;
+    specials: boolean;
     constructor(data: any) {
         const { scene } = data;
         const ascean = scene.registry.get("ascean");
@@ -20,6 +20,7 @@ export default class PlayerComputer extends Player {
         this.originPoint = {}; // For Leashing
         this.isComputer = true;
         this.combatConcerns = undefined;
+        this.specials = false;
         this.checkSpecials(ascean);
     };
     checkSpecials(ascean: Ascean) {
@@ -29,7 +30,10 @@ export default class PlayerComputer extends Player {
             tertiary: fetchTrait(this.scene.hud.gameState?.traits.tertiary.name),
         };
         const potential = [traits.primary.name, traits.secondary.name, traits.tertiary.name];
-        const mastery = SPECIAL[ascean.mastery as keyof typeof SPECIAL];
+        let mastery = SPECIAL[ascean.mastery as keyof typeof SPECIAL];
+        mastery = mastery.filter((m) => {
+            return m !== 'Mark' && m !== 'Recall' && m !== 'Consume';
+        })
         let extra: any[] = [];
         for (let i = 0; i < 3; i++) {
             const trait = TRAIT_SPECIALS[potential[i] as keyof typeof TRAIT_SPECIALS];
@@ -109,7 +113,7 @@ export default class PlayerComputer extends Player {
     };
 
     evaluateCombatDistance = () => {
-        if (this.isCasting === true || this.isSuffering() === true || this.isContemplating === true || this.currentTarget === undefined || this.scene.state.newPlayerHealth <= 0 || !this.inCombat) return;
+        if (this.isCasting === true || this.isSuffering() === true || this.isContemplating === true || this.currentTarget === undefined || this.scene.state.newPlayerHealth <= 0 || !this.inCombat || this.playerMachine.stateMachine.isCurrentState(States.CHASE)) return;
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
             if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
@@ -125,31 +129,33 @@ export default class PlayerComputer extends Player {
             this.playerMachine.stateMachine.setState(States.CHASE);
         } else if (this.isRanged) { // Contiually Checking Distance for RANGED ENEMIES.
             if (!this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
+
             if (distanceY > PLAYER.DISTANCE.RANGED_ALIGNMENT) {
                 direction.normalize();
                 this.setVelocityY(direction.y * this.speed + 0.5); // 2 || 4
             };
             if (this.currentTarget.position.subtract(this.position).length() > PLAYER.DISTANCE.THRESHOLD * multiplier) { // 225-525 
                 direction.normalize();
-                this.setVelocityX(direction.x * this.speed); // 2.25
-                this.setVelocityY(direction.y * this.speed); // 2.25          
+                this.setVelocityX(direction.x * this.speed + 0.25); // 2.25
+                this.setVelocityY(direction.y * this.speed + 0.25); // 2.25          
             } else if (this.currentTarget.position.subtract(this.position).length() < PLAYER.DISTANCE.THRESHOLD && !this.currentTarget.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
                 direction.normalize();
-                this.setVelocityX(direction.x * -this.speed); // -2.25 | -2 | -1.75
-                this.setVelocityY(direction.y * -this.speed); // -1.5 | -1.25
+                this.setVelocityX(direction.x * -this.speed + 0.5); // -2.25 | -2 | -1.75
+                this.setVelocityY(direction.y * -this.speed + 0.5); // -1.5 | -1.25
             } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.
                 this.setVelocity(0);
                 this.anims.play('player_idle', true);
             } else { // Between 75 and 225 and outside y-distance
                 direction.normalize();
-                this.setVelocityY(direction.y * this.speed); // 2.25
+                this.setVelocityY(direction.y * this.speed + 0.5); // 2.25
             };
         } else { // Melee || Contiually Maintaining Reach for MELEE ENEMIES.
             if (!this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
+            
             if (direction.length() > PLAYER.DISTANCE.ATTACK) { 
                 direction.normalize();
-                this.setVelocityX(direction.x * this.speed); // 2.5
-                this.setVelocityY(direction.y * this.speed); // 2.5
+                this.setVelocityX(direction.x * this.speed + 0.25); // 2.5
+                this.setVelocityY(direction.y * this.speed + 0.25); // 2.5
                 this.isPosted = false;
             } else { // Inside melee range
                 this.setVelocity(0);

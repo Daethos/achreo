@@ -288,7 +288,7 @@ export default class Enemy extends Entity {
         // this.removeInteractive();
         this.setActive(false);
         this.clearBubbles();
-        this.checkCaerenic(false);
+        if (this.isGlowing) this.checkCaerenic(false);
         if (this.isShimmering) this.stealthEffect(false);
         this.scrollingCombatText = undefined;
         this.specialCombatText = undefined;

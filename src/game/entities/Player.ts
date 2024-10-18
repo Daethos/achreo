@@ -382,6 +382,7 @@ export default class Player extends Entity {
     };
     
     eventUpdate = (e: Combat) => {
+        if (this.scene.scene.isSleeping(this.scene.scene.key)) return;
         if (this.health > e.newPlayerHealth) {
             let damage: number | string = Math.round(this.health - e.newPlayerHealth);
             damage = e.computerCriticalSuccess === true ? `${damage} (Critical)` : e.computerGlancingBlow === true ? `${damage} (Glancing)` : damage;
@@ -808,10 +809,10 @@ export default class Player extends Entity {
                 };
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === 'cave') {
                     EventBus.emit('alert', { 
-                        header: 'Cave', 
+                        header: 'Underground', 
                         body: `You have encountered a cave! \n Would you like to enter?`, 
                         delay: 3000, 
-                        key: 'Enter Cave'
+                        key: 'Enter Underground'
                     });
                 };
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === 'teleport') {
@@ -856,7 +857,7 @@ export default class Player extends Entity {
                         header: 'Exit', 
                         body: `You are at the stairs that lead back to the surface. \n Would you like to exit the cave and head up to the world?`, 
                         delay: 3000, 
-                        key: 'Exit Cave'
+                        key: 'Exit Underground'
                     });
                 };
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === 'worldExit') {
@@ -1057,6 +1058,21 @@ export default class Player extends Entity {
 
     enemyIdMatch = () => this?.attackedTarget?.enemyID === this.scene.state?.enemyID;
 
+    getDirection = () => {
+        if (this.velocity?.x as number < 0) {
+            this.setFlipX(true);
+        } else if (this.velocity?.x as number > 0) {
+            this.setFlipX(false);
+        } else if (this.currentTarget) {
+            const direction = this.currentTarget.position.subtract(this.position);
+            if (direction.x < 0 && !this.flipX) {
+                this.setFlipX(true);
+            } else if (direction.x > 0 && this.flipX) {
+                this.setFlipX(false);
+            };
+        };
+    };
+
     checkPlayerAction = () => {
         if (this.scene.state.action) return this.scene.state.action;    
         if (this.isAttacking) return States.ATTACK;
@@ -1087,10 +1103,12 @@ export default class Player extends Entity {
             !this.isStalwart
         );
     };
+
     killParticle = () => {
         this.scene.particleManager.removeEffect(this.particleEffect?.id as string);
         this.particleEffect = undefined;
     };
+
     playerActionSuccess = () => {
         if (this.particleEffect) {
             const action = this.particleEffect.action;

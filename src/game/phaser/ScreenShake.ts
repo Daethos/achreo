@@ -1,6 +1,6 @@
 var totalTrauma = 0;
-export function screenShake(scene: Phaser.Scene, duration = 48, intensity = 0.004) {
-    totalTrauma += 1.04;
+export function screenShake(scene: Phaser.Scene, duration = 60, intensity = 0.0035) {
+    totalTrauma += 1.035;
     intensity *= Math.pow(totalTrauma, 2);
     if ("vibrate" in navigator) navigator.vibrate(duration);
     const decayInterval = setInterval(() => {

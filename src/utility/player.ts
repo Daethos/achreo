@@ -1,3 +1,4 @@
+import { States } from "../game/phaser/StateMachine";
 import Equipment from "../models/equipment";
 export const PHYSICAL_ACTIONS = ['attack', 'posture', 'thrust'];
 export const PHYSICAL_EVASIONS = ['dodge', 'roll'];
@@ -15,6 +16,17 @@ export const PLAYER = {
         DISPLACEMENT: 16,
         HEIGHT: 32,
         WIDTH: 16,
+    },
+    DISTANCE: {
+        MIN: 0,
+        ATTACK: 40,
+        MOMENTUM: 2,
+        THRESHOLD: 80,
+        CHASE: 80,
+        RANGED_ALIGNMENT: 10,
+        RANGED_MULTIPLIER: 3,
+        DODGE: 1152, // 2304
+        ROLL: 960, // 1920
     },
     DODGE: { // 8*
         DISTANCE: 240, // 2800, // 126 || 2304
@@ -220,6 +232,220 @@ export const PLAYER = {
         MODERATE: 350,
         LONG: 500,
     },
+};
+
+
+// ELEMENT IN ARRAY 
+// [0]: Critical Heal
+// [1]: Casual Heal
+// [2]: Critical Damage
+// [3]: Casual Damage
+// [4]: Melee < 100 Distance
+// [5]: Ranged < 100 Distance
+// [6]: Melee > 100 && < 250 Distance
+// [7]: Ranged > 100 && < 250 Distance
+// [8]: Melee > 250 Distance
+// [9]: Ranged > 250 Distance
+
+export const PLAYER_INSTINCTS = {
+    'constitution': [
+        { // 0 - Desperate Heal
+            key: 'stateMachine',
+            value: States.DESPERATION
+        },{ // 1 - Casual Heal
+            key: 'stateMachine',
+            value: States.HEALING
+        },{ // 2 - Desperate Damage
+            key: 'stateMachine',
+            value: States.MAIERETH
+        },{ // 3 - Casual Damage
+            key: 'stateMachine',
+            value: States.KYRNAICISM
+        },{ // 4 - Melee < 100 Distance
+            key: 'positiveMachine',
+            value: States.DISEASE
+        },{ // 5 - Ranged < 100 Distance
+            key: 'positiveMachine',
+            value: States.SHIELD
+        },{ // 6 - Melee > 100 && < 250 Distance
+            key: 'stateMachine',
+            value: States.ILIRECH
+        },{ // 7 - Ranged > 100 && < 250 Distance
+            key: 'stateMachine',
+            value: States.KYRNAICISM
+        },{ // 8 - Melee > 250 Distance
+            key: 'positiveMachine',
+            value: States.WARD
+        },{ // 9 - Ranged > 250 Distance
+            key: 'stateMachine',
+            value: States.PARALYZE
+        }
+    ],
+    'strength': [
+        { // 0
+            key: 'stateMachine',
+            value: States.DESPERATION
+        },{ // 1
+            key: 'stateMachine',
+            value: States.DEVOUR
+        },{ // 2
+            key: 'stateMachine',
+            value: States.RUSH
+        },{ // 3
+            key: 'stateMachine',
+            value: States.STORM
+        },{ // 4
+            key: 'positiveMachine',
+            value: States.WRITHE
+        },{ // 5
+            key: 'positiveMachine',
+            value: States.HOWL
+        },{ // 6 - Melee > 100 && < 250 Distance
+            key: 'positiveMachine',
+            value: States.RECOVER
+        },{ // 7 - Ranged > 100 && < 250 Distance
+            key: 'positiveMachine',
+            value: States.WARD
+        },{ // 8 - Ranged at Distance
+            key: 'stateMachine',
+            value: States.LEAP
+        },{ // 9 - Ranged > 250 Distance
+            key: 'stateMachine',
+            value: States.QUOR
+        }
+    ],
+    'agility': [
+        { // 0
+            key: 'stateMachine',
+            value: States.DESPERATION
+        },{ // 1
+            key: 'positiveMachine',
+            value: States.ENVELOP
+        },{ // 2
+            key: 'stateMachine',
+            value: States.RUSH
+        },{ // 3
+            key: 'stateMachine',
+            value: States.STORM
+        },{ // 4
+            key: 'positiveMachine',
+            value: States.WRITHE
+        },{ // 5
+            key: 'stateMachine',
+            value: States.PURSUIT
+        },{ // 6 - Melee > 100 && < 250 Distance
+            key: 'positiveMachine',
+            value: States.RECOVER
+        },{ // 7 - Ranged > 100 && < 250 Distance
+            key: 'positiveMachine',
+            value: States.RECOVER
+        },{ // 8 - Melee > 250 Distance
+            key: 'positiveMachine',
+            value: States.SHADOW
+        },{ // 9 - Ranged > 250 Distance
+            key: 'stateMachine',
+            value: States.ACHIRE
+        }
+    ],
+    'achre': [
+        { // 0
+            key: 'stateMachine',
+            value: States.HEALING
+        },{ // 1
+            key: 'stateMachine',
+            value: States.RECONSTITUTE
+        },{ // 2
+            key: 'stateMachine',
+            value: States.ASTRAVE
+        },{ // 3
+            key: 'stateMachine',
+            value: States.ACHIRE
+        },{ // 4
+            key: 'positiveMachine',
+            value: States.FREEZE
+        },{ // 5
+            key: 'positiveMachine',
+            value: States.FREEZE
+        },{ // 6 - Melee > 100 && < 250 Distance
+            key: 'stateMachine',
+            value: States.SLOW
+        },{ // 7 - Ranged > 100 && < 250 Distance
+            key: 'positiveMachine',
+            value: States.MULTIFARIOUS
+        },{ // 8 - Melee > 250 Distance
+            key: 'positiveMachine',
+            value: States.ABSORB
+        },{ // 9 - Ranged > 250 Distance
+            key: 'positiveMachine',
+            value: States.QUOR
+        }
+    ],
+    'caeren': [
+        { // 0
+            key: 'stateMachine',
+            value: States.HEALING
+        },{ // 1
+            key: 'positiveMachine',
+            value: States.MEND
+        },{ // 2
+            key: 'stateMachine',
+            value: States.SACRIFICE
+        },{ // 3
+            key: 'stateMachine',
+            value: States.MAIERETH
+        },{ // 4
+            key: 'positiveMachine',
+            value: States.SCREAM
+        },{ // 5
+            key: 'stateMachine',
+            value: States.FEAR
+        },{ // 6 - Melee > 100 && < 250 Distance
+            key: 'positiveMachine',
+            value: States.MALICE
+        },{ // 7 - Ranged > 100 && < 250 Distance
+            key: 'stateMachine',
+            value: States.KYRNAICISM
+        },{ // 8 - Melee > 250 Distance
+            key: 'stateMachine',
+            value: States.SHIRK
+        },{ // 9 - Ranged > 250 Distance
+            key: 'positiveMachine',
+            value: States.MENACE
+        }
+    ],
+    'kyosir': [
+        { // 0
+            key: 'stateMachine',
+            value: States.HEALING
+        },{ // 1
+            key: 'stateMachine',
+            value: States.DEVOUR
+        },{ // 2
+            key: 'stateMachine',
+            value: States.SACRIFICE
+        },{ // 3
+            key: 'stateMachine',
+            value: States.MAIERETH
+        },{ // 4
+            key: 'positiveMachine',
+            value: States.CHIOMIC
+        },{ // 5
+            key: 'positiveMachine',
+            value: States.PROTECT
+        },{ // 6 - Melee > 100 && < 250 Distance
+            key: 'stateMachine',
+            value: States.CONFUSE
+        },{ // 7 - Ranged > 100 && < 250 Distance
+            key: 'stateMachine',
+            value: States.KYRNAICISM
+        },{ // 8 - Melee > 250 Distance
+            key: 'stateMachine',
+            value: States.HOOK
+        },{ // 9 - Ranged > 250 Distance
+            key: 'stateMachine',
+            value: States.ILIRECH
+        }
+    ]
 };
 
 export const STAMINA = ['attack', 'posture', 'roll', 'dodge', 'parry', 'thrust'];

@@ -26,7 +26,7 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
     return <div class="border superCenter" style={{ width: dimensions()?.ORIENTATION === 'landscape' ? '50%' : '75%' }}> 
         <div class='wrap' style={{ height: '100%' }}>
             <div class='creature-heading' style={{ width: '100%'}}>
-                <h1 style={ empty ? { 'text-align': 'center' } : { 'justify-content': 'space-evenly' }}>{name} 
+                <h1 style={ empty ? { 'text-align': 'center', margin: '24px 0' } : { 'justify-content': 'space-evenly', margin: '24px 0 16px' }}>{name} 
                 <Show when={!empty}>
                 <span style={{ transform: 'scale(1.2)', float: 'right', 'margin-right': centerImage }}>
                     <img src={item.imgUrl} alt={item.name} />

@@ -13,6 +13,8 @@ import { CombatStats, roundToTwoDecimals } from '../../utility/combat';
 import { Particle } from '../matter/ParticleManager';
 import { Game } from '../scenes/Game';
 import { Underground } from '../scenes/Underground';
+import { States } from '../phaser/StateMachine';
+import { Arena } from '../scenes/Arena';
 export const FRAME_COUNT = {
     ATTACK_LIVE: 16,
     ATTACK_SUCCESS: 39,
@@ -36,7 +38,7 @@ const ACCELERATION_FRAMES = 10;
 const DAMPENING_FACTOR = 0.9; 
 const KNOCKBACK_DURATION = 128;
 export default class Entity extends Phaser.Physics.Matter.Sprite {
-    declare scene: Game | Underground;
+    declare scene: Game | Underground | Arena;
     ascean: Ascean;
     attacking: any = undefined;
     health: number;
@@ -51,13 +53,16 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     negationBubble: Bubble | undefined;
     reactiveBubble: Bubble | undefined;
     aoe: AoE;
+    floor: boolean = true;
     
     hasMagic: boolean = false;
     hasBow: boolean = false;
     inWater: boolean = false;
     isCasting: boolean = false;
-    inCombat: boolean = false;
     isClimbing: boolean = false;
+    inCombat: boolean = false;
+    isContemplating: boolean = false;
+    isPosted: boolean = false;
     isRanged: boolean = false;
 
     isAttacking: boolean = false;
@@ -177,6 +182,14 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     speed: number = 0;
     glowColor: number;
     weaponHitbox: Phaser.GameObjects.Arc;
+    chaseTimer: Phaser.Time.TimerEvent | undefined;
+    leashTimer: Phaser.Time.TimerEvent | undefined;
+    specialCombat: Phaser.Time.TimerEvent | undefined;
+    originPoint: any = {}; // For Leashing
+    originalPosition: Phaser.Math.Vector2;
+    specialAction: string = '';
+    isComputer: boolean = false;
+    evadeType: number = 1;
 
     static preload(scene: Phaser.Scene) {
         scene.load.atlas(`player_actions`, '../assets/gui/player_actions.png', '../assets/gui/player_actions_atlas.json');
@@ -237,7 +250,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const addModifier = (item: string) => {
             switch (item) {
                 case 'Leather-Cloth':
-                    // modifier -= 0.02; // += 0.05;
                     break;
                 case 'Leather-Mail':
                     modifier -= 0.01; // += 0.025;
@@ -511,8 +523,24 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
     };
 
+    rangedDistanceMultiplier = (num: number) => this.isRanged ? num : 1;
+
     entropicMultiplier = (power: number) => {
         return Phaser.Math.Between(power * 0.5, power * 1.5);
+    };
+
+    currentNegativeState = (type: string) => {
+        switch (type) {
+            case States.FROZEN:
+                return this.isRooted || this.isSlowed || this.isSnared; 
+            case States.ROOTED:
+                return this.isFrozen || this.isSlowed || this.isSnared; 
+            case States.SLOWED:
+                return this.isFrozen || this.isRooted || this.isSnared; 
+            case States.SNARED:
+                return this.isFrozen || this.isRooted || this.isSlowed; 
+            default: return false;
+        };
     };
 
     imgSprite = (item: Equipment) => {
@@ -520,7 +548,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     hitBoxCheck = (enemy: Enemy) => {
-        if (!enemy || enemy?.health <= 0) return; // enemy.isDefeated === true
+        if (!enemy || !enemy.body || !enemy.body.position || enemy?.health <= 0) return; // enemy.isDefeated === true
         const weaponBounds = this.weaponHitbox.getBounds();
         const enemyBounds = enemy.getBounds();
         if (Phaser.Geom.Intersects.RectangleToRectangle(weaponBounds, enemyBounds)) {

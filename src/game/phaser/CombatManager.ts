@@ -4,12 +4,13 @@ import { Game } from '../scenes/Game';
 import { Underground } from '../scenes/Underground';
 import { EventBus } from '../EventBus';
 import Player from '../entities/Player';
+import { Arena } from '../scenes/Arena';
 
 export class CombatManager extends Phaser.Scene {
     combatMachine: CombatMachine;
-    context: Game | Underground;
+    context: Game | Underground | Arena;
 
-    constructor(scene: Game | Underground) {
+    constructor(scene: Game | Underground | Arena) {
         super('Combat');
         this.context = scene;
         this.combatMachine = new CombatMachine(this);
@@ -227,7 +228,7 @@ export class CombatManager extends Phaser.Scene {
         const worldX = (x > x2 ? x : -x) + this.context.player.x;
         const worldY = (y > y2 ? y : -y) + this.context.player.y;
         const duration = Phaser.Math.Distance.Between(this.context.player.x, this.context.player.y, worldX, worldY);
-        const rootTween = this.add.tween({
+        const rootTween = this.context.add.tween({
             targets: this.context.target,
             x: { from: this.context.player.x, to: worldX, duration: 1000 },
             y: { from: this.context.player.y, to: worldY, duration: 1000 }, 
@@ -239,7 +240,7 @@ export class CombatManager extends Phaser.Scene {
                 enemy.count.rooted += 1;
             },    
             onComplete: () => {
-                this.time.delayedCall(3000 - duration, () => {
+                this.context.time.delayedCall(3000 - duration, () => {
                     this.context.target.setVisible(false);
                     rootTween.destroy();
                 }, undefined, this);

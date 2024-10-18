@@ -18,6 +18,7 @@ import Player from "./Player";
 import Equipment from "../../models/equipment";
 import { Particle } from "../matter/ParticleManager";
 import { Compiler } from "../../utility/ascean";
+import { Arena } from "../scenes/Arena";
 
 const ENEMY_COLOR = 0xFF0000;
 const TARGET_COLOR = 0x00FF00;
@@ -54,16 +55,12 @@ export default class Enemy extends Entity {
     currentWeapon: any = undefined;
     isCurrentTarget: boolean = false;
     parryAction: string = '';
-    originalPosition: Phaser.Math.Vector2;
-    originPoint: any = {}; // For Leashing
     isDeleting: boolean = false;
     sensorDisp: number = 12;
     colliderDisp: number = 16;
     fearCount: number = 0;
-    isContemplating: boolean = false;
     weapons: any[] = [];
     heldSpeed: number;
-    specialAction: string = '';
     isCounterSpelled: boolean = false;
     castingSuccess: boolean = false;
     patrolPath: any;
@@ -76,17 +73,14 @@ export default class Enemy extends Entity {
     evadeRight: boolean = false;
     evadeUp: boolean = false;
     isSwinging: boolean = false;
-    chaseTimer: Phaser.Time.TimerEvent | undefined;
     chiomicTimer: Phaser.Time.TimerEvent | undefined;
     confuseTimer: Phaser.Time.TimerEvent | undefined;
     consumedTimer: Phaser.Time.TimerEvent | undefined;
     devourTimer: Phaser.Time.TimerEvent | undefined;
     fearTimer: Phaser.Time.TimerEvent | undefined;
-    leashTimer: Phaser.Time.TimerEvent | undefined;
     patrolTimer: Phaser.Time.TimerEvent | undefined;
     polymorphTimer: Phaser.Time.TimerEvent | undefined;
     reconTimer: Phaser.Time.TimerEvent | undefined;
-    specialCombat: Phaser.Time.TimerEvent | undefined;
     isDiseasing: boolean = false;
     reactiveName: string = '';
     isHowling: boolean = false;
@@ -103,10 +97,8 @@ export default class Enemy extends Entity {
     hurtTime: number = 0;
     paralyzeDuration: number;
     snareDuration: number;
-    isPosted: boolean = false;
 
-
-    constructor(data: { scene: Game | Underground, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
+    constructor(data: { scene: Game | Underground | Arena, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: "enemy", ascean: undefined, health: 1 }); 
         this.scene.add.existing(this);
         this.enemyID = uuidv4();
@@ -293,8 +285,8 @@ export default class Enemy extends Entity {
         EventBus.off('enemy-persuasion', this.persuasionUpdate);
         EventBus.off('enemy-luckout', this.luckoutUpdate);
         EventBus.off('update-enemy-health', this.healthUpdate);
+        // this.removeInteractive();
         this.setActive(false);
-        this.removeInteractive();
         this.clearBubbles();
         this.checkCaerenic(false);
         if (this.isShimmering) this.stealthEffect(false);
@@ -393,20 +385,6 @@ export default class Enemy extends Entity {
         if (this.negationBubble) {
             this.negationBubble.cleanUp();
             this.negationBubble = undefined;
-        };
-    };
-
-    currentNegativeState = (type: string) => {
-        switch (type) {
-            case States.FROZEN:
-                return this.isRooted || this.isSlowed || this.isSnared; 
-            case States.ROOTED:
-                return this.isFrozen || this.isSlowed || this.isSnared; 
-            case States.SLOWED:
-                return this.isFrozen || this.isRooted || this.isSnared; 
-            case States.SNARED:
-                return this.isFrozen || this.isRooted || this.isSlowed; 
-            default: return false;
         };
     };
     
@@ -2884,6 +2862,21 @@ export default class Enemy extends Entity {
         requestAnimationFrame(rollLoop);
     };
 
+    getDirection = () => {
+        if (this.velocity?.x as number < 0) {
+            this.setFlipX(true);
+        } else if (this.velocity?.x as number > 0) {
+            this.setFlipX(false);
+        } else if (this.attacking) {
+            const direction = this.attacking.position.subtract(this.position);
+            if (direction.x < 0 && !this.flipX) {
+                this.setFlipX(true);
+            } else if (direction.x > 0 && this.flipX) {
+                this.setFlipX(false);
+            };
+        };
+    };
+
     handleAnimations = () => {
         if (this.isDodging) {
             this.anims.play('player_slide', true);
@@ -2903,8 +2896,6 @@ export default class Enemy extends Entity {
         direction.normalize();
         this.setVelocity(direction.x * DISTANCE.MOMENTUM, direction.y * DISTANCE.MOMENTUM);
     };
-
-    rangedDistanceMultiplier = (num: number) => this.isRanged ? num : 1;
 
     evaluateCombatDistance = () => {
         if (this.isCasting === true || this.isSuffering() === true || this.isHurt === true || this.isContemplating === true) return;
@@ -2934,7 +2925,7 @@ export default class Enemy extends Entity {
                 direction.normalize();
                 this.setVelocityX(direction.x * -this.speed * (this.isClimbing ? 0.65 : 1)); // -2.25 | -2 | -1.75
                 this.setVelocityY(direction.y * -this.speed * (this.isClimbing ? 0.65 : 1)); // -1.5 | -1.25
-            } else if (distanceY < 7) { // The Sweet Spot for RANGED ENEMIES.
+            } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.
                 this.setVelocity(0);
                 this.anims.play('player_idle', true);
             } else { // Between 75 and 225 and outside y-distance
@@ -2961,7 +2952,7 @@ export default class Enemy extends Entity {
         const particleVector = new Phaser.Math.Vector2(particle.effect.x, particle.effect.y);
         const enemyVector = new Phaser.Math.Vector2(this.x, this.y);
         const particleDistance = particleVector.subtract(enemyVector);
-        if (particleDistance.length() < (DISTANCE.THRESHOLD - 25) && !this.isPosted) { // 50 || 100
+        if (particleDistance.length() < (DISTANCE.THRESHOLD - 25) && !this.isPosted && !this.isCasting) { // 50 || 100
             return true;
         };
         return false;
@@ -2977,7 +2968,7 @@ export default class Enemy extends Entity {
         const player = this.getEnemyParticle();
         if (!player) return false;
         return (this.attacking.isRanged && this.checkEvasion(player) && !this.stateMachine.isCurrentState(States.EVADE));
-    }; 
+    };
 
     currentTargetCheck = () => {
         this.isCurrentTarget = this.enemyID === this.scene.state.enemyID;
@@ -3006,21 +2997,6 @@ export default class Enemy extends Entity {
             this.particleEffect = undefined;              
         };
     };
-
-    getDirection = () => {
-        if (this.velocity?.x as number < 0) {
-            this.setFlipX(true);
-        } else if (this.velocity?.x as number > 0) {
-            this.setFlipX(false);
-        } else if (this.attacking) {
-            const direction = this.attacking.position.subtract(this.position);
-            if (direction.x < 0 && !this.flipX) {
-                this.setFlipX(true);
-            } else if (direction.x > 0 && this.flipX) {
-                this.setFlipX(false);
-            };
-        };
-    }; 
 
     evaluateEnemyAnimation = () => {
         if (!this.cleanCombatAnimation()) return;

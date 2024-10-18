@@ -939,140 +939,140 @@ const asceanCompiler = (ascean: any): Compiler | undefined => {
         console.log(err, 'Ascean Compiler Error');
     };
 };
+export const fetchTrait = (trait:  string): { name: string; traitOneName: string; traitOneDescription: string; traitTwoName: string; traitTwoDescription: string; } => {
+    switch (trait) {
+        case "Arbituous": // Con / Ach
+            return {
+                name: "Arbituous",
+                traitOneName: "Luckout",
+                traitOneDescription: "Convince the enemy through rhetoric to cease hostility.",
+                traitTwoName: "Persuasion",
+                traitTwoDescription: "Use knowledge of Ley Law to deter enemies from aggression."
+            };
+        case "Astral": // Ach / Kyo
+            return {
+                name: "Astral",
+                traitOneName: "Astrication",
+                traitOneDescription: "Perform combat maneuvers that are impossible to follow, and thus impossible to counter.",
+                traitTwoName: "Devour",
+                traitTwoDescription: "Your achre is imbued with an astral desire, an avarice to devour the world."
+            };
+        case "Cambiren": // Agi / Caer
+            return {
+                name: "Cambiren",
+                traitOneName: "Caerenicism",
+                traitOneDescription: "Your caer explodes and engulfs you.",
+                traitTwoName: "Caerenesis",
+                traitTwoDescription: "You can fear and evoke your enemy's caer into yours."
+            };
+        case "Chiomic":
+            return {
+                name: "Chiomic",
+                traitOneName: "Luckout",
+                traitOneDescription: "Invoke the Ancient Chiomyr, reducing the enemy to a broken mind of mockery.",
+                traitTwoName: "Persuasion",
+                traitTwoDescription: "Cause bouts of confusion and disorientation in the enemy."
+            };
+        case "Fyeran": // Ach / Caer
+            return {
+                name: "Fyeran",
+                traitOneName: "Persuasion",
+                traitOneDescription: "You can convince those who see this world with peculiarity.",
+                traitTwoName: "Seer",
+                traitTwoDescription: "Your next attack is Fyers."
+            };
+        case "Kyn'gian": // Con / Agi
+            return {
+                name: "Kyn'gian",
+                traitOneName: "Avoidance",
+                traitOneDescription: "You can avoid most encounters.",
+                traitTwoName: "Endurance",
+                traitTwoDescription: "You are able to dramatically recover your stamina."
+            };
+        case "Kyr'naic": // Con / Kyo
+            return {
+                name: "Kyr'naic",
+                traitOneName: "Luckout",
+                traitOneDescription: "Convince the enemy to acquiesce, giving their life to the Aenservaesai.",
+                traitTwoName: "Persuasion",
+                traitTwoDescription: "Cause the enemy to embrace the hush and tendril."
+            };
+        case "Ilian": // Con / Str
+            return {
+                name: "Ilian",
+                traitOneName: "Blind",
+                traitOneDescription: "Your brilliance enraptures all enemies.",
+                traitTwoName: "Persuasion",
+                traitTwoDescription: "The weight of your words can sway the minds of others."
+            };
+        case "Lilosian": // Con / Caer
+            return {
+                name: "Lilosian",
+                traitOneName: "Luckout",
+                traitOneDescription: "Convince the enemy to profess their follies and willow.",
+                traitTwoName: "Persuasion",
+                traitTwoDescription: "Speak to your enemy's faith and stay their hand."
+            };
+        case "Ma'anreic": // Agi / Ach
+            return {
+                name: "Ma'anreic",
+                traitOneName: "Stealth",
+                traitOneDescription: "You can use your caeren to shimmer and stealth.",
+                traitTwoName: "Thievery",
+                traitTwoDescription: "You can steal items from anyone and anywhere."
+            };
+        case "Sedyrist": // Str / Ach
+            return {
+                name: "Sedyrist",
+                traitOneName: "Stimulate",
+                traitOneDescription: "You can refresh your ability to tap into your caeren.",
+                traitTwoName: "Tinkerer",
+                traitTwoDescription: "You can deconstruct and reconstruct armor and weapons."
+            };
+        case "Se'van": // Str / Agi
+            return {
+                name: "Se'van",
+                traitOneName: "Berserk",
+                traitOneDescription: "Your attacks grow stronger for each successive form of damage received.",
+                traitTwoName: "Seer", 
+                traitTwoDescription: "Pin-point your next strike."
+            };
+        case "Shaorahi": // Str / Caer
+            return {
+                name: "Shaorahi",
+                traitOneName: "Conviction",
+                traitOneDescription: "Your attacks grow stronger the more you realize them.",
+                traitTwoName: "Persuasion",
+                traitTwoDescription: "You can put the enemy in awe of your power, and have them cease their assault."
+            };
+        case "Shrygeian": // Agi / Kyo
+            return {
+                name: "Shrygeian",
+                traitOneName: "Devour",
+                traitOneDescription: "Your kyosir is imbued with curiosity, a fervor to devour this world.",
+                traitTwoName: "Impermanence",
+                traitTwoDescription: "You may avoid attacks."
+            };
+        case "Tshaeral": // Str / Kyo
+            return {
+                name: "Tshaeral",
+                traitOneName: "Devour",
+                traitOneDescription: "Your caer is imbued with tshaeral desire, a hunger to devour the world.",
+                traitTwoName: "Persuasion",
+                traitTwoDescription: "Your nature has a way of wilting the caer of your enemies."
+            };
+        default: 
+            return {
+                name: "Arbituous",
+                traitOneName: "Luckout",
+                traitOneDescription: "Convince the enemy through rhetoric to cease hostility.",
+                traitTwoName: "Persuasion",
+                traitTwoDescription: "Use knowledge of Ley Law to deter enemies from aggression."
+            };
+    };
+};
 
 function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
-    const fetchTrait = (trait:  string): { name: string; traitOneName: string; traitOneDescription: string; traitTwoName: string; traitTwoDescription: string; } => {
-        switch (trait) {
-            case "Arbituous": // Con / Ach
-                return {
-                    name: "Arbituous",
-                    traitOneName: "Luckout",
-                    traitOneDescription: "Convince the enemy through rhetoric to cease hostility.",
-                    traitTwoName: "Persuasion",
-                    traitTwoDescription: "Use knowledge of Ley Law to deter enemies from aggression."
-                };
-            case "Astral": // Ach / Kyo
-                return {
-                    name: "Astral",
-                    traitOneName: "Astrication",
-                    traitOneDescription: "Perform combat maneuvers that are impossible to follow, and thus impossible to counter.",
-                    traitTwoName: "Devour",
-                    traitTwoDescription: "Your achre is imbued with an astral desire, an avarice to devour the world."
-                };
-            case "Cambiren": // Agi / Caer
-                return {
-                    name: "Cambiren",
-                    traitOneName: "Caerenicism",
-                    traitOneDescription: "Your caer explodes and engulfs you.",
-                    traitTwoName: "Caerenesis",
-                    traitTwoDescription: "You can fear and evoke your enemy's caer into yours."
-                };
-            case "Chiomic":
-                return {
-                    name: "Chiomic",
-                    traitOneName: "Luckout",
-                    traitOneDescription: "Invoke the Ancient Chiomyr, reducing the enemy to a broken mind of mockery.",
-                    traitTwoName: "Persuasion",
-                    traitTwoDescription: "Cause bouts of confusion and disorientation in the enemy."
-                };
-            case "Fyeran": // Ach / Caer
-                return {
-                    name: "Fyeran",
-                    traitOneName: "Persuasion",
-                    traitOneDescription: "You can convince those who see this world with peculiarity.",
-                    traitTwoName: "Seer",
-                    traitTwoDescription: "Your next attack is Fyers."
-                };
-            case "Kyn'gian": // Con / Agi
-                return {
-                    name: "Kyn'gian",
-                    traitOneName: "Avoidance",
-                    traitOneDescription: "You can avoid most encounters.",
-                    traitTwoName: "Endurance",
-                    traitTwoDescription: "You are able to dramatically recover your stamina."
-                };
-            case "Kyr'naic": // Con / Kyo
-                return {
-                    name: "Kyr'naic",
-                    traitOneName: "Luckout",
-                    traitOneDescription: "Convince the enemy to acquiesce, giving their life to the Aenservaesai.",
-                    traitTwoName: "Persuasion",
-                    traitTwoDescription: "Cause the enemy to embrace the hush and tendril."
-                };
-            case "Ilian": // Con / Str
-                return {
-                    name: "Ilian",
-                    traitOneName: "Blind",
-                    traitOneDescription: "Your brilliance enraptures all enemies.",
-                    traitTwoName: "Persuasion",
-                    traitTwoDescription: "The weight of your words can sway the minds of others."
-                };
-            case "Lilosian": // Con / Caer
-                return {
-                    name: "Lilosian",
-                    traitOneName: "Luckout",
-                    traitOneDescription: "Convince the enemy to profess their follies and willow.",
-                    traitTwoName: "Persuasion",
-                    traitTwoDescription: "Speak to your enemy's faith and stay their hand."
-                };
-            case "Ma'anreic": // Agi / Ach
-                return {
-                    name: "Ma'anreic",
-                    traitOneName: "Stealth",
-                    traitOneDescription: "You can use your caeren to shimmer and stealth.",
-                    traitTwoName: "Thievery",
-                    traitTwoDescription: "You can steal items from anyone and anywhere."
-                };
-            case "Sedyrist": // Str / Ach
-                return {
-                    name: "Sedyrist",
-                    traitOneName: "Stimulate",
-                    traitOneDescription: "You can refresh your ability to tap into your caeren.",
-                    traitTwoName: "Tinkerer",
-                    traitTwoDescription: "You can deconstruct and reconstruct armor and weapons."
-                };
-            case "Se'van": // Str / Agi
-                return {
-                    name: "Se'van",
-                    traitOneName: "Berserk",
-                    traitOneDescription: "Your attacks grow stronger for each successive form of damage received.",
-                    traitTwoName: "Seer", 
-                    traitTwoDescription: "Pin-point your next strike."
-                };
-            case "Shaorahi": // Str / Caer
-                return {
-                    name: "Shaorahi",
-                    traitOneName: "Conviction",
-                    traitOneDescription: "Your attacks grow stronger the more you realize them.",
-                    traitTwoName: "Persuasion",
-                    traitTwoDescription: "You can put the enemy in awe of your power, and have them cease their assault."
-                };
-            case "Shrygeian": // Agi / Kyo
-                return {
-                    name: "Shrygeian",
-                    traitOneName: "Devour",
-                    traitOneDescription: "Your kyosir is imbued with curiosity, a fervor to devour this world.",
-                    traitTwoName: "Impermanence",
-                    traitTwoDescription: "You may avoid attacks."
-                };
-            case "Tshaeral": // Str / Kyo
-                return {
-                    name: "Tshaeral",
-                    traitOneName: "Devour",
-                    traitOneDescription: "Your caer is imbued with tshaeral desire, a hunger to devour the world.",
-                    traitTwoName: "Persuasion",
-                    traitTwoDescription: "Your nature has a way of wilting the caer of your enemies."
-                };
-            default: 
-                return {
-                    name: "Arbituous",
-                    traitOneName: "Luckout",
-                    traitOneDescription: "Convince the enemy through rhetoric to cease hostility.",
-                    traitTwoName: "Persuasion",
-                    traitTwoDescription: "Use knowledge of Ley Law to deter enemies from aggression."
-                };
-        };
-    };
     setPlayerTraitWrapper({
         'primary': fetchTrait(game().traits.primary.name),
         'secondary': fetchTrait(game().traits.secondary.name),

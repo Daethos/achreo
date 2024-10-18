@@ -17,7 +17,8 @@ export const States = {
     
     COMBAT: "combat",
     NONCOMBAT: "noncombat",
-    
+    COMPUTER_COMBAT: "computer_combat",
+
     ATTACK: "attack",
     PARRY: "parry",
     DODGE: "dodge",

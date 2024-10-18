@@ -24,11 +24,32 @@ const BaseUI = lazy(async () => await import('../ui/BaseUI'));
 
 function rebalanceCurrency(currency: { silver: number; gold: number; }): { silver: number; gold: number; } {
     let { silver, gold } = currency;
-    gold = Math.round(gold);
+    // console.log(silver, gold, 'Starting rebalanceCurrency');
+    if (isFloat(gold)) {
+        let extraSilver = Number(`0.${String(gold).split('.')[1]}`);
+        // console.log(extraSilver, 'Extra Silver?');
+        extraSilver *= 100;
+        // console.log(extraSilver, 'Adjusted for Inflation ~_^');
+        silver += extraSilver;
+    };
     silver = Math.round(silver);
-    if (silver > 99) { gold += Math.floor(silver / 100); silver = silver % 100; };
-    if (silver < 0) { gold -= 1; silver += 100; };
+    gold = Math.floor(gold);
+    if (silver > 99) { 
+        gold += Math.floor(silver / 100); 
+        silver = silver % 100; 
+    };
+    if (silver < 0) { 
+        gold -= 1; 
+        silver += 100; 
+    };
+    // console.log(silver, gold, 'Ending rebalanceCurrency');
     return { silver, gold };
+};
+
+function isFloat(num: number) {
+    const float = /[\.]/.test(String(num));
+    // console.log(float, 'Is this a float?');
+    return float;
 };
 
 export interface IRefPhaserGame {
@@ -685,7 +706,7 @@ export default function PhaserGame (props: IProps) {
     };
 
     function checkUi(): boolean {
-        return props.scene() === 'Game' || props.scene() === 'Underground';
+        return props.scene() === 'Game' || props.scene() === 'Underground' || props.scene() === 'Arena';
     };
     
     async function createUi(id: string): Promise<void> {

@@ -4,7 +4,7 @@ import { Underground } from "../scenes/Underground";
 import Player from '../game/entities/Player';
 import StateMachine, { States } from "./StateMachine";
 import ScrollingCombatText from "./ScrollingCombatText";
-import { PLAYER } from "../../utility/player";
+import { PLAYER, PLAYER_INSTINCTS } from "../../utility/player";
 import { FRAME_COUNT } from '../entities/Entity';
 // @ts-ignore
 import AoE from './AoE';
@@ -12,6 +12,8 @@ import { EventBus } from "../EventBus";
 import { screenShake } from "./ScreenShake";
 import Bubble from "./Bubble";
 import { BlendModes } from "phaser";
+import { RANGE } from "../../utility/enemy";
+import { Arena } from "../scenes/Arena";
 const DURATION = {
     CONSUMED: 2000,
     CONFUSED: 6000,
@@ -34,19 +36,25 @@ const MOVEMENT = {
     'right': { x: 5, y: 0 },
 };
 export default class PlayerMachine {
-    scene: Game | Underground;
+    scene: Game | Underground | Arena;
     player: Player;
     stateMachine: StateMachine;
     positiveMachine: StateMachine;
     negativeMachine: StateMachine;
 
-    constructor(scene: Game | Underground, player: Player) {
+    constructor(scene: Game | Underground | Arena, player: Player) {
         this.scene = scene;
         this.player = player;
         this.stateMachine = new StateMachine(this, 'player');
         this.stateMachine
+            .addState(States.IDLE, { onEnter: this.onIdleEnter, onUpdate: this.onIdleUpdate, onExit: this.onIdleExit })
             .addState(States.NONCOMBAT, { onEnter: this.onNonCombatEnter, onUpdate: this.onNonCombatUpdate, onExit: this.onNonCombatExit })
-            .addState(States.COMBAT, { onEnter: this.onCombatEnter, onUpdate: this.onCombatUpdate })
+            .addState(States.COMBAT, { onEnter: this.onCombatEnter }) // , onUpdate: this.onCombatUpdate
+            .addState(States.COMPUTER_COMBAT, { onEnter: this.onComputerCombatEnter }) // , onUpdate: this.onComputerCombatUpdate
+            .addState(States.CHASE, { onEnter: this.onChaseEnter, onUpdate: this.onChaseUpdate, onExit: this.onChaseExit })
+            .addState(States.LEASH, { onEnter: this.onLeashEnter, onUpdate: this.onLeashUpdate, onExit: this.onLeashExit })
+            .addState(States.EVADE, { onEnter: this.onEvasionEnter, onUpdate: this.onEvasionUpdate, onExit: this.onEvasionExit })
+            .addState(States.CONTEMPLATE, { onEnter: this.onContemplateEnter, onUpdate: this.onContemplateUpdate, onExit: this.onContemplateExit })
             .addState(States.ATTACK, { onEnter: this.onAttackEnter, onUpdate: this.onAttackUpdate, onExit: this.onAttackExit })
             .addState(States.PARRY, { onEnter: this.onParryEnter, onUpdate: this.onParryUpdate, onExit: this.onParryExit })
             .addState(States.DODGE, { onEnter: this.onDodgeEnter, onUpdate: this.onDodgeUpdate, onExit: this.onDodgeExit })
@@ -145,8 +153,227 @@ export default class PlayerMachine {
         };
     };
 
+    onChaseEnter = () => {
+        if (!this.player.currentTarget || !this.player.currentTarget.position || !this.player.currentTarget.position.body) return;
+        this.player.frameCount = 0;
+        // this.enemyAnimation();
+        this.player.chaseTimer = this.scene.time.addEvent({
+            delay: 500,
+            callback: () => {
+                // this.scene.navMesh.debugDrawClear();
+                if (!this.player.currentTarget || !this.player.currentTarget.position || !this.player.currentTarget.position.body) {
+                    this.player.chaseTimer?.remove(false);
+                    this.player.chaseTimer?.destroy();
+                    this.player.chaseTimer = undefined;
+                    return;
+                };
+                this.player.path = this.scene.navMesh.findPath(this.player.position, this.player.currentTarget.position);
+                if (this.player.path && this.player.path.length > 1) {
+                    if (!this.player.isPathing) this.player.isPathing = true;
+                    const nextPoint = this.player.path[1];
+                    this.player.nextPoint = nextPoint;
+                    // this.scene.navMesh.debugDrawPath(this.player.path, 0xffd900);
+                    const pathDirection = new Phaser.Math.Vector2(this.player.nextPoint.x, this.player.nextPoint.y);
+                    this.player.pathDirection = pathDirection;
+                    this.player.pathDirection.subtract(this.player.position);
+                    this.player.pathDirection.normalize();
+                    const distanceToNextPoint = Math.sqrt((this.player.nextPoint.x - this.player.position.x) ** 2 + (this.player.nextPoint.y - this.player.position.y) ** 2);
+                    if (distanceToNextPoint < 10) {
+                        this.player.path.shift();
+                    };
+                };
+            },
+            callbackScope: this,
+            loop: true
+        }); 
+    }; 
+    onChaseUpdate = (_dt: number) => {
+        if (!this.player.currentTarget) return;
+        const rangeMultiplier = this.player.rangedDistanceMultiplier(3);
+        const direction = this.player.currentTarget.position.subtract(this.player.position);
+        const distance = direction.length();
+        if (Math.abs(this.player.originPoint.x - this.player.position.x) > RANGE.LEASH * rangeMultiplier || Math.abs(this.player.originPoint.y - this.player.position.y) > RANGE.LEASH * rangeMultiplier || !this.player.inCombat || distance > RANGE.LEASH * rangeMultiplier) {
+            this.stateMachine.setState(States.LEASH);
+            return;
+        };  
+        if (distance >= 50 * rangeMultiplier) { // was 75 || 100
+            if (this.player.path && this.player.path.length > 1) {
+                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed) * (this.player.isClimbing ? 0.65 : 1), this.player.pathDirection.y * (this.player.speed) * (this.player.isClimbing ? 0.65 : 1)); // 2.5
+            } else {
+                if (this.player.isPathing) this.player.isPathing = false;
+                direction.normalize();
+                this.player.setVelocity(direction.x * (this.player.speed) * (this.player.isClimbing ? 0.65 : 1), direction.y * (this.player.speed) * (this.player.isClimbing ? 0.65 : 1)); // 2.5
+            };
+        } else {
+            this.stateMachine.setState(States.COMPUTER_COMBAT);
+        };
+    }; 
+    onChaseExit = () => {
+        // this.scene.navMesh.debugDrawClear();
+        this.player.setVelocity(0, 0);
+        if (this.player.chaseTimer) {
+            this.player.chaseTimer?.remove(false);
+            this.player.chaseTimer.destroy();
+            this.player.chaseTimer = undefined;
+        };
+    };
+
+    onLeashEnter = () => {
+        this.player.inCombat = false;
+        // this.player.setVelocity(0);
+        this.player.healthbar.setVisible(false);
+        this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Leashing', 1500, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.leashTimer = this.scene.time.addEvent({
+            delay: 500,
+            callback: () => {
+                let originPoint = new Phaser.Math.Vector2(this.player.originalPosition.x, this.player.originalPosition.y);
+                this.scene.navMesh.debugDrawClear();
+                this.player.path = this.scene.navMesh.findPath(this.player.position, originPoint);
+                if (this.player.path && this.player.path.length > 1) {
+                    if (!this.player.isPathing) this.player.isPathing = true;
+                    const nextPoint = this.player.path[1];
+                    this.player.nextPoint = nextPoint;
+                    this.scene.navMesh.debugDrawPath(this.player.path, 0xffd900);
+                    const pathDirection = new Phaser.Math.Vector2(this.player.nextPoint.x, this.player.nextPoint.y);
+                    this.player.pathDirection = pathDirection;
+                    this.player.pathDirection.subtract(this.player.position);
+                    this.player.pathDirection.normalize();
+                    this.player.setVelocity(this.player.pathDirection.x * this.player.speed, this.player.pathDirection.y * this.player.speed);
+                    const distanceToNextPoint = Math.sqrt((this.player.nextPoint.x - this.player.position.x) ** 2 + (this.player.nextPoint.y - this.player.position.y) ** 2);
+                    if (distanceToNextPoint < 10) {
+                        this.player.path.shift();
+                    };
+                };
+            },
+            callbackScope: this,
+            loop: true
+        }); 
+    };
+    onLeashUpdate = (_dt: number) => {
+        let originPoint = new Phaser.Math.Vector2(this.player.originalPosition.x, this.player.originalPosition.y);
+        let direction = originPoint.subtract(this.player.position);
+        
+        if (direction.length() >= 10) {
+            if (this.player.path && this.player.path.length > 1) {
+                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed), this.player.pathDirection.y * (this.player.speed)); // 2.5
+            } else {
+                if (this.player.isPathing) this.player.isPathing = false;
+                direction.normalize();
+                this.player.setVelocity(direction.x * (this.player.speed), direction.y * (this.player.speed)); // 2.5
+            };
+        } else {
+            this.stateMachine.setState(States.IDLE);
+        };
+    };
+    onLeashExit = () => {
+        this.player.setVelocity(0);
+        this.player.leashTimer?.destroy();
+        this.player.leashTimer = undefined;
+        this.scene.navMesh.debugDrawClear(); 
+        (this.scene as Arena).computerDisengage();
+    };
+
+    onEvasionEnter = () => {
+        const x = Phaser.Math.Between(1, 2);
+        const y = Phaser.Math.Between(1, 2);
+        const evade = Phaser.Math.Between(1, 2);
+        this.player.frameCount = 0;
+        this.player.evadeRight = x === 1;
+        this.player.evadeUp = y === 1;
+        this.player.evadeType = evade;
+    };
+    onEvasionUpdate = (_dt: number) => {
+        if (this.player.evadeType === 1) {
+            this.player.anims.play('player_slide', true);
+        } else {
+            this.player.anims.play('player_roll', true);        
+        };
+        if (this.player.evadeRight) {
+            this.player.setVelocityX(this.player.speed);
+        } else {
+            this.player.setVelocityX(-this.player.speed);
+        };
+        if (this.player.evadeUp) {
+            this.player.setVelocityY(this.player.speed);
+        } else {
+            this.player.setVelocityY(-this.player.speed);
+        };
+        if (!this.player.isDodging && !this.player.isRolling) this.player.evaluateCombatDistance();
+    }; 
+    onEvasionExit = () => {};
+
+    onContemplateEnter = () => {
+        if (this.player.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
+            this.player.inCombat = false;
+            this.stateMachine.setState(States.LEASH);
+            return;
+        };
+        this.player.isContemplating = true;
+        this.player.frameCount = 0;
+        this.player.setVelocity(0);
+        this.player.contemplationTime = Phaser.Math.Between(500, 1000);
+    };
+    onContemplateUpdate = (dt: number) => {
+        this.player.contemplationTime -= dt;
+        if (this.player.contemplationTime <= 0) {
+            this.player.isContemplating = false;
+        };
+        if (!this.player.isContemplating) this.stateMachine.setState(States.CLEAN); 
+    };
+    onContemplateExit = () => {
+        this.player.isContemplating = false;
+        this.player.currentAction = '';
+        this.instincts();
+        this.stateMachine.setState(States.CHASE);
+    };
+
+    instincts = () => {
+        if (this.player.inCombat === false) {
+            this.stateMachine.setState(States.LEASH);
+            return;
+        };
+        this.scene.time.delayedCall(500, () => {
+            let chance = [1, 2, 3, (!this.player.isRanged ? 6 : 7), (!this.player.isRanged ? 8 : 9)][Math.floor(Math.random() * 5)];
+            let mastery = this.player.ascean.mastery;
+            let health = this.player.health / this.player.ascean.health.max;
+            let player = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
+            const direction = this.player.currentTarget?.position.subtract(this.player.position);
+            const distance = direction?.length();
+            let instinct =
+                health <= 0.33 ? 0 : // Critical Heal
+                health <= 0.66 ? 1 : // Casual Heal
+                
+                player <= 0.33 ? 2 : // Critical Damage
+                player <= 0.66 ? 3 : // Casual Damage
+                
+                (distance <= 100 && !this.player.isRanged) ? 4 : // AoE + Melee at Short Range
+                (distance <= 100 && this.player.isRanged) ? 4 : // AoE + Ranged at Short Range
+                
+                (distance > 100 && distance < 250 && !this.player.isRanged) ? 5 : // Melee at Mid Range
+                (distance > 100 && distance < 250 && this.player.isRanged) ? 6 : // Ranged at Mid Range
+                
+                (distance >= 250 && !this.player.isRanged) ? 5 : // Melee at Long Range
+                (distance >= 250 && this.player.isRanged) ? 6 : // Ranged at Long Range
+                chance; // Range
+            // console.log(`Chance: ${chance} | Instinct: ${instinct} | Mastery: ${mastery}`);
+            let key = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].key, value = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].value;
+            (this as any)[key].setState(value);
+            if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
+            this.scene.hud.logger.log(`Your instinct leads you to ${value}`);
+        }, undefined, this);
+    };
+
+    
+    onIdleEnter = () => {
+        this.player.setVelocity(0);
+        this.player.currentRound = 0;
+
+    };
+    onIdleUpdate = (_dt: number) => {};
+    onIdleExit = () => {};
     
     onNonCombatEnter = () => {
+        this.player.setVelocity(0);
         this.player.anims.play('player_idle', true);
         if (this.scene.combatTimer) this.scene.stopCombatTimer();
         if (this.player.currentRound !== 0) this.player.currentRound = 0;
@@ -159,10 +386,36 @@ export default class PlayerMachine {
         this.player.anims.stop('player_idle');
     };
 
-    onCombatEnter = () => {};
+    onCombatEnter = () => {
+        if (this.player.isComputer) this.stateMachine.setState(States.COMPUTER_COMBAT);
+    };
     onCombatUpdate = (_dt: number) => { 
-        if (!this.player.inCombat) this.stateMachine.setState(States.NONCOMBAT);  
-    }; 
+        // if (!this.player.inCombat) this.stateMachine.setState(States.NONCOMBAT);
+    };
+
+    
+    onComputerCombatEnter = () => {        
+        if (this.player.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
+            this.player.inCombat = false;
+            this.stateMachine.setState(States.LEASH);
+            return;
+        };
+        this.player.frameCount = 0;
+        if (!this.player.specials) {
+            this.player.specials = true;
+            this.player.setSpecialCombat();
+        };
+        if (!this.player.computerAction && !this.player.isSuffering() && !this.player.isCasting) {
+            this.player.computerAction = true;
+            this.scene.time.delayedCall(Phaser.Math.Between(1250, 1750), () => {
+                this.player.computerAction = false;
+                this.player.evaluateCombat();
+            }, undefined, this);
+        };
+    };
+    onComputerCombatUpdate = (_dt: number) => { 
+        if (!this.player.computerAction) this.stateMachine.setState(States.CHASE);  
+    };
 
     onAttackEnter = () => {
         if (this.player.isPosturing || this.player.isParrying || this.player.isThrusting) {return};
@@ -174,7 +427,7 @@ export default class PlayerMachine {
             };
         };
         this.player.isAttacking = true;
-        this.player.swingReset(States.ATTACK, true);
+        if (!this.player.isComputer) this.player.swingReset(States.ATTACK, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ATTACK);
         this.player.frameCount = 0;
     }; 
@@ -184,11 +437,11 @@ export default class PlayerMachine {
         };
         this.player.combatChecker(this.player.isAttacking);
     }; 
-    onAttackExit = () => {if (this.scene.state.action === 'attack') this.scene.combatManager.combatMachine.input('action', '');};
+    onAttackExit = () => {if (this.scene.state.action === 'attack') this.scene.combatManager.combatMachine.input('action', '');  this.player.computerAction = false;};
 
     onParryEnter = () => {
         this.player.isParrying = true;    
-        this.player.swingReset(States.PARRY, true);
+        if (!this.player.isComputer) this.player.swingReset(States.PARRY, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.PARRY);
         if (this.player.hasMagic === true) {
             this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Counter Spell', 1000, 'hush', false, true, () => this.player.specialCombatText = undefined);
@@ -205,7 +458,7 @@ export default class PlayerMachine {
         if (this.player.frameCount >= FRAME_COUNT.PARRY_KILL) this.player.isParrying = false;
         this.player.combatChecker(this.player.isParrying);
     };
-    onParryExit = () => {if (this.scene.state.action === 'parry') this.scene.combatManager.combatMachine.input('action', '');};
+    onParryExit = () => {if (this.scene.state.action === 'parry') this.scene.combatManager.combatMachine.input('action', '');this.player.computerAction = false;};
 
     onPostureEnter = () => {
         if (this.player.isAttacking || this.player.isParrying || this.player.isThrusting) return;
@@ -222,7 +475,7 @@ export default class PlayerMachine {
         };
         this.player.isPosturing = true;
         this.player.spriteShield.setVisible(true);
-        this.player.swingReset(States.POSTURE, true);
+        if (!this.player.isComputer) this.player.swingReset(States.POSTURE, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.POSTURE);
         this.player.frameCount = 0;
     };
@@ -232,13 +485,13 @@ export default class PlayerMachine {
         };
         this.player.combatChecker(this.player.isPosturing);
     };
-    onPostureExit = () => {if (this.scene.state.action === 'posture') this.scene.combatManager.combatMachine.input('action', ''); this.player.spriteShield.setVisible(this.player.isStalwart)};
+    onPostureExit = () => {if (this.scene.state.action === 'posture') this.scene.combatManager.combatMachine.input('action', ''); this.player.spriteShield.setVisible(this.player.isStalwart); this.player.computerAction = false;};
 
     onDodgeEnter = () => {
         if (this.player.isStalwart || this.player.isStorming || this.player.isRolling) return;
         this.player.isDodging = true;
         this.scene.combatManager.useStamina(PLAYER.STAMINA.DODGE);
-        this.player.swingReset(States.DODGE, true);
+        if (!this.player.isComputer) this.player.swingReset(States.DODGE, true);
         this.scene.sound.play('dodge', { volume: this.scene.hud.settings.volume / 2 });
         this.player.wasFlipped = this.player.flipX; 
         this.player.body.parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;
@@ -255,6 +508,7 @@ export default class PlayerMachine {
     onDodgeExit = () => {
         if (this.player.isStalwart || this.player.isStorming) return;
         this.player.spriteWeapon.setVisible(true);
+        this.player.computerAction = false;
         this.player.dodgeCooldown = 0;
         this.player.isDodging = false;
         this.player.body.parts[2].position.y -= PLAYER.SENSOR.DISPLACEMENT;
@@ -271,7 +525,7 @@ export default class PlayerMachine {
         if (this.player.isStalwart || this.player.isStorming || this.player.isDodging) return;
         this.player.isRolling = true;
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ROLL);
-        this.player.swingReset(States.ROLL, true);
+        if (!this.player.isComputer) this.player.swingReset(States.ROLL, true);
         this.scene.sound.play('roll', { volume: this.scene.hud.settings.volume / 2 });
         this.player.body.parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;
         this.player.body.parts[2].circleRadius = PLAYER.SENSOR.EVADE;
@@ -292,6 +546,7 @@ export default class PlayerMachine {
         if (this.scene.state.action !== '') {
             this.scene.combatManager.combatMachine.input('action', '');
         };
+        this.player.computerAction = false;
         this.player.body.parts[2].position.y -= PLAYER.SENSOR.DISPLACEMENT;
         this.player.body.parts[2].circleRadius = PLAYER.SENSOR.DEFAULT;
         this.player.body.parts[1].vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;
@@ -308,7 +563,7 @@ export default class PlayerMachine {
             };
         };
         this.player.isThrusting = true;
-        this.player.swingReset(States.THRUST, true);
+        if (!this.player.isComputer) this.player.swingReset(States.THRUST, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.THRUST);
         this.player.frameCount = 0;
     };
@@ -318,7 +573,7 @@ export default class PlayerMachine {
         };
         this.player.combatChecker(this.player.isThrusting);
     };
-    onThrustExit = () => {if (this.scene.state.action === 'thrust') this.scene.combatManager.combatMachine.input('action', '');};
+    onThrustExit = () => {if (this.scene.state.action === 'thrust') this.scene.combatManager.combatMachine.input('action', ''); this.player.computerAction = false;};
 
     onFlaskEnter = () => {
         this.player.isHealing = true;
@@ -352,7 +607,7 @@ export default class PlayerMachine {
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `Your Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0]?.name}.`
             });
-            this.player.setTimeEvent('achireCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
+            if (!this.player.isComputer) this.player.setTimeEvent('achireCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
             this.player.castingSuccess = false;
             this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ACHIRE);
@@ -389,7 +644,7 @@ export default class PlayerMachine {
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You unearth the winds and lightning from the land of hush and tendril.`
             });
-            this.player.setTimeEvent('astraveCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
+            if (!this.player.isComputer) this.player.setTimeEvent('astraveCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
             this.player.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ASTRAVE);    
@@ -427,7 +682,7 @@ export default class PlayerMachine {
     onArcExit = () => {
         if (this.player.castingSuccess === true) {
             screenShake(this.scene, 120, 0.005);
-            this.player.setTimeEvent('arcCooldown', PLAYER.COOLDOWNS.SHORT);  
+            if (!this.player.isComputer) this.player.setTimeEvent('arcCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.player.castingSuccess = false;
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ARC);
             if (this.player.touching.length > 0) {
@@ -445,24 +700,24 @@ export default class PlayerMachine {
     onBlinkEnter = () => {
         this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
         if (this.player.velocity.x > 0) {
-            // this.setVelocityX(PLAYER.SPEED.BLINK);
+            // this.player.setVelocityX(PLAYER.SPEED.BLINK);
             this.player.setPosition(Math.min(this.player.x + PLAYER.SPEED.BLINK, this.scene.map.widthInPixels), this.player.y);
         } else if (this.player.velocity.x < 0) {
-            // this.setVelocityX(-PLAYER.SPEED.BLINK);
+            // this.player.setVelocityX(-PLAYER.SPEED.BLINK);
             this.player.setPosition(Math.max(this.player.x - PLAYER.SPEED.BLINK, 0), this.player.y);
         };
         if (this.player.velocity.y > 0) {
-            // this.setVelocityY(PLAYER.SPEED.BLINK);
+            // this.player.setVelocityY(PLAYER.SPEED.BLINK);
             this.player.setPosition(this.player.x, Math.min(this.player.y + PLAYER.SPEED.BLINK, this.scene.map.heightInPixels));
         } else if (this.player.velocity.y < 0) {
-            // this.setVelocityY(-PLAYER.SPEED.BLINK);
+            // this.player.setVelocityY(-PLAYER.SPEED.BLINK);
             this.player.setPosition(this.player.x, Math.max(this.player.y - PLAYER.SPEED.BLINK, 0));
         };
         if (this.player.moving()) {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.BLINK);
             screenShake(this.scene);
         };
-        this.player.setTimeEvent('blinkCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);
+        if (!this.player.isComputer) this.player.setTimeEvent('blinkCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);
         this.player.flickerCarenic(750); 
     };
     onBlinkUpdate = (_dt: number) => this.player.combatChecker(false);
@@ -489,7 +744,7 @@ export default class PlayerMachine {
     onConfuseExit = () => {
         if (this.player.castingSuccess === true) {
             this.scene.combatManager.confuse(this.player.spellTarget);
-            this.player.setTimeEvent('confuseCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+            if (!this.player.isComputer) this.player.setTimeEvent('confuseCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
             this.player.castingSuccess = false;
             this.scene.sound.play('death', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.CONFUSE);    
@@ -510,7 +765,7 @@ export default class PlayerMachine {
         if (this.scene.state.playerEffects.length === 0) return;
         this.player.isPraying = true;
         this.scene.sound.play('consume', { volume: this.scene.hud.settings.volume });
-        this.player.setTimeEvent('consumeCooldown', PLAYER.COOLDOWNS.SHORT);
+        if (!this.player.isComputer) this.player.setTimeEvent('consumeCooldown', PLAYER.COOLDOWNS.SHORT);
     };
     onConsumeUpdate = (_dt: number) => {
         this.player.combatChecker(this.player.isPraying);
@@ -532,7 +787,7 @@ export default class PlayerMachine {
     onDesperationUpdate = (_dt: number) => this.player.combatChecker(false);
     onDesperationExit = () => {
         const desperationCooldown = this.player.inCombat ? PLAYER.COOLDOWNS.LONG : PLAYER.COOLDOWNS.SHORT;
-        this.player.setTimeEvent('desperationCooldown', desperationCooldown);  
+        if (!this.player.isComputer) this.player.setTimeEvent('desperationCooldown', desperationCooldown);  
         this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 50, id: this.player.playerID }, type: 'Health' });
         this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
     };
@@ -555,7 +810,7 @@ export default class PlayerMachine {
             callbackScope: this,
             repeat: 5,
         });
-        this.player.setTimeEvent('devourCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.setTimeEvent('devourCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.addEvent({
             delay: 2000,
             callback: () => {
@@ -608,7 +863,7 @@ export default class PlayerMachine {
     onFearingExit = () => {
         if (this.player.castingSuccess === true) {
             this.scene.combatManager.fear(this.player.spellTarget);
-            this.player.setTimeEvent('fearCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.MODERATE : PLAYER.COOLDOWNS.MODERATE / 3);  
+            if (!this.player.isComputer) this.player.setTimeEvent('fearCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.MODERATE : PLAYER.COOLDOWNS.MODERATE / 3);  
             this.player.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.FEAR);    
@@ -636,7 +891,7 @@ export default class PlayerMachine {
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);  
         this.player.aoe = new AoE(this.scene, 'fyerus', 6, false, undefined, true);    
         this.scene.combatManager.useGrace(PLAYER.STAMINA.FYERUS);    
-        this.player.setTimeEvent('fyerusCooldown', PLAYER.COOLDOWNS.SHORT);
+        if (!this.player.isComputer) this.player.setTimeEvent('fyerusCooldown', PLAYER.COOLDOWNS.SHORT);
         this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You unearth the fires and water from the land of hush and tendril.`
@@ -678,7 +933,7 @@ export default class PlayerMachine {
     };
     onHealingExit = () => {
         if (this.player.castingSuccess === true) {
-            this.player.setTimeEvent('healingCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+            if (!this.player.isComputer) this.player.setTimeEvent('healingCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
             this.scene.combatManager.useGrace(PLAYER.STAMINA.HEALING);
             this.player.castingSuccess = false;
             this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 25, id: this.player.playerID }, type: 'Health' });
@@ -715,7 +970,7 @@ export default class PlayerMachine {
                 playerSpecialDescription: `You rip into this world with Ilian tendrils entwining.`
             });
             this.chiomism(this.player.spellTarget, 100);
-            this.player.setTimeEvent('ilirechCooldown', PLAYER.COOLDOWNS.MODERATE);
+            if (!this.player.isComputer) this.player.setTimeEvent('ilirechCooldown', PLAYER.COOLDOWNS.MODERATE);
             this.player.castingSuccess = false;
             this.scene.sound.play('fire', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ILIRECH);    
@@ -741,7 +996,7 @@ export default class PlayerMachine {
     onInvokeExit = () => {
         this.player.setStatic(false);
         if (!this.player.currentTarget || this.player.currentTarget.health <= 0) return;
-        this.player.setTimeEvent('invokeCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.setTimeEvent('invokeCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.combatManager.combatMachine.action({ type: 'Instant', data: this.scene.state.playerBlessing });
         this.scene.sound.play('prayer', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.useGrace(PLAYER.STAMINA.INVOKE);
@@ -771,7 +1026,7 @@ export default class PlayerMachine {
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You unearth the netting of the golden hunt.`
             });
-            this.player.setTimeEvent('kynisosCooldown', PLAYER.COOLDOWNS.SHORT);
+            if (!this.player.isComputer) this.player.setTimeEvent('kynisosCooldown', PLAYER.COOLDOWNS.SHORT);
             this.player.kynisosSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.KYNISOS);    
@@ -800,7 +1055,7 @@ export default class PlayerMachine {
             callbackScope: this,
             repeat: 3,
         });
-        this.player.setTimeEvent('kyrnaicismCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.setTimeEvent('kyrnaicismCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.addEvent({
             delay: 3000,
             callback: () => {
@@ -928,7 +1183,7 @@ export default class PlayerMachine {
     onLeapUpdate = (_dt: number) => this.player.combatChecker(this.player.isLeaping);
     onLeapExit = () => {
         const leapCooldown = this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
-        this.player.setTimeEvent('leapCooldown', leapCooldown);
+        if (!this.player.isComputer) this.player.setTimeEvent('leapCooldown', leapCooldown);
     };
 
     onMaierethEnter = () => {
@@ -960,7 +1215,7 @@ export default class PlayerMachine {
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You bleed and strike ${this.scene.state.computer?.name} with tendrils of Ma'anre.`
             });
-            this.player.setTimeEvent('maierethCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+            if (!this.player.isComputer) this.player.setTimeEvent('maierethCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
             this.player.castingSuccess = false;
             this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.MAIERETH);    
@@ -978,7 +1233,7 @@ export default class PlayerMachine {
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Hook', DURATION.TEXT, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.scene.sound.play('dungeon', { volume: this.scene.hud.settings.volume });
         this.player.flickerCarenic(750);
-        this.player.setTimeEvent('hookCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+        if (!this.player.isComputer) this.player.setTimeEvent('hookCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
         this.scene.combatManager.useGrace(PLAYER.STAMINA.HOOK);
         this.player.beam.startEmitter(this.player.particleEffect.effect, 1500);
         this.player.hookTime = 0;
@@ -994,11 +1249,13 @@ export default class PlayerMachine {
     };
 
     onMarkEnter = () => {
-        if (this.scene.hud.settings.desktop === false) {
-            this.scene.hud.joystick.joystick.setVisible(false);
-            this.scene.hud.rightJoystick.joystick.setVisible(false);
+        if (!this.player.isComputer) {
+            if (this.scene.hud.settings.desktop === false) {
+                this.scene.hud.joystick.joystick.setVisible(false);
+                this.scene.hud.rightJoystick.joystick.setVisible(false);
+            };
+            this.scene.hud.actionBar.setVisible(false);
         };
-        this.scene.hud.actionBar.setVisible(false);
         this.player.setStatic(true);
         this.player.isPraying = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Marking', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
@@ -1006,17 +1263,19 @@ export default class PlayerMachine {
     };
     onMarkUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onMarkExit = () => {
-        if (this.scene.hud.settings.desktop === false) {  
-            this.scene.hud.joystick.joystick.setVisible(true);
-            this.scene.hud.rightJoystick.joystick.setVisible(true);
+        if (!this.player.isComputer) {
+            if (this.scene.hud.settings.desktop === false) {  
+                this.scene.hud.joystick.joystick.setVisible(true);
+                this.scene.hud.rightJoystick.joystick.setVisible(true);
+            };
+            this.scene.hud.actionBar.setVisible(true);
         };
-        this.scene.hud.actionBar.setVisible(true);
         this.player.mark.setPosition(this.player.x, this.player.y + 24);
         this.player.mark.setVisible(true);
         this.player.animateMark();
         this.player.animateMark();
         this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
-        this.player.setTimeEvent('markCooldown', PLAYER.COOLDOWNS.SHORT);  
+        if (!this.player.isComputer) this.player.setTimeEvent('markCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.combatManager.useGrace(PLAYER.STAMINA.MARK);
         this.player.setStatic(false);
     };
@@ -1027,22 +1286,26 @@ export default class PlayerMachine {
         this.player.isPraying = true;
         this.player.isNetherswapping = true;
         this.player.netherswapTarget = this.player.currentTarget;
-        if (this.scene.hud.settings.desktop === false) {
-            this.scene.hud.joystick.joystick.setVisible(false);
-            this.scene.hud.rightJoystick.joystick.setVisible(false);
+        if (!this.player.isComputer) {
+            if (this.scene.hud.settings.desktop === false) {
+                this.scene.hud.joystick.joystick.setVisible(false);
+                this.scene.hud.rightJoystick.joystick.setVisible(false);
+            };
+            this.scene.hud.actionBar.setVisible(false);
         };
-        this.scene.hud.actionBar.setVisible(false);
         this.player.flickerCarenic(1000);
     };
     onNetherswapUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onNetherswapExit = () => {
         if (this.player.isNetherswapping === false) return;
         this.player.isNetherswapping = false;
-        if (this.scene.hud.settings.desktop === false) {  
-            this.scene.hud.joystick.joystick.setVisible(true);
-            this.scene.hud.rightJoystick.joystick.setVisible(true);
+        if (!this.player.isComputer) {
+            if (this.scene.hud.settings.desktop === false) {  
+                this.scene.hud.joystick.joystick.setVisible(true);
+                this.scene.hud.rightJoystick.joystick.setVisible(true);
+            };
+            this.scene.hud.actionBar.setVisible(true);
         };
-        this.scene.hud.actionBar.setVisible(true);
         this.player.setStatic(false);
         if (this.player.netherswapTarget === undefined) return; 
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Netherswap', DURATION.TEXT / 2, 'effect', false, true, () => this.player.specialCombatText = undefined);
@@ -1052,7 +1315,7 @@ export default class PlayerMachine {
         this.player.netherswapTarget.setPosition(player.x, player.y);
         this.player.netherswapTarget = undefined;
         this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
-        this.player.setTimeEvent('netherswapCooldown', PLAYER.COOLDOWNS.SHORT);  
+        if (!this.player.isComputer) this.player.setTimeEvent('netherswapCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.combatManager.useGrace(PLAYER.STAMINA.NETHERSWAP);
     };
 
@@ -1061,12 +1324,14 @@ export default class PlayerMachine {
         this.player.isPraying = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Recalling', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.flickerCarenic(1000);
-        if (this.scene.hud.settings.desktop === false) {
-            this.scene.hud.joystick.joystick.setVisible(false);
-            this.scene.hud.rightJoystick.joystick.setVisible(false);
+        if (!this.player.isComputer) {
+            if (this.scene.hud.settings.desktop === false) {
+                this.scene.hud.joystick.joystick.setVisible(false);
+                this.scene.hud.rightJoystick.joystick.setVisible(false);
+            };
+            this.scene.hud.actionBar.setVisible(false);
         };
-        this.scene.hud.actionBar.setVisible(false);
-        this.player.setTimeEvent('recallCooldown', PLAYER.COOLDOWNS.SHORT);  
+        if (!this.player.isComputer) this.player.setTimeEvent('recallCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.combatManager.useGrace(PLAYER.STAMINA.RECALL);
     };
     onRecallUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
@@ -1104,7 +1369,7 @@ export default class PlayerMachine {
     onParalyzeExit = () => {
         if (this.player.castingSuccess === true) {
             this.scene.combatManager.paralyze(this.player.spellTarget);
-            this.player.setTimeEvent('paralyzeCooldown', PLAYER.COOLDOWNS.MODERATE);  
+            if (!this.player.isComputer) this.player.setTimeEvent('paralyzeCooldown', PLAYER.COOLDOWNS.MODERATE);  
             this.scene.combatManager.useGrace(PLAYER.STAMINA.PARALYZE);
             this.player.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });        
@@ -1146,7 +1411,7 @@ export default class PlayerMachine {
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You ensorcel ${this.player.spellName}, polymorphing them!`
             });
-            this.player.setTimeEvent('polymorphCooldown', PLAYER.COOLDOWNS.SHORT);  
+            if (!this.player.isComputer) this.player.setTimeEvent('polymorphCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.scene.combatManager.useGrace(PLAYER.STAMINA.POLYMORPH);
             this.player.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });        
@@ -1173,7 +1438,7 @@ export default class PlayerMachine {
 
         this.scene.combatManager.useGrace(PLAYER.STAMINA.PURSUIT);
         const pursuitCooldown = this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
-        this.player.setTimeEvent('pursuitCooldown', pursuitCooldown);
+        if (!this.player.isComputer) this.player.setTimeEvent('pursuitCooldown', pursuitCooldown);
         this.player.flickerCarenic(750); 
     };
     onPursuitUpdate = (_dt: number) => this.player.combatChecker(this.player.isPursuing);
@@ -1206,7 +1471,7 @@ export default class PlayerMachine {
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `Your Achre is imbued with instantiation, its Quor auguring it through the ${this.scene.state.weapons[0]?.name}.`
             });
-            this.player.setTimeEvent('quorCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
+            if (!this.player.isComputer) this.player.setTimeEvent('quorCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
             this.player.castingSuccess = false;
             this.scene.sound.play('freeze', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.QUOR);    
@@ -1232,7 +1497,7 @@ export default class PlayerMachine {
             callbackScope: this,
             repeat: 5,
         });
-        this.player.setTimeEvent('reconstituteCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.LONG : PLAYER.COOLDOWNS.SHORT);
+        if (!this.player.isComputer) this.player.setTimeEvent('reconstituteCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.LONG : PLAYER.COOLDOWNS.SHORT);
         this.scene.time.addEvent({
             delay: 5000,
             callback: () => this.player.isCasting = false,
@@ -1293,7 +1558,7 @@ export default class PlayerMachine {
         if (this.player.castingSuccess === true) {
             this.player.castingSuccess = false;
             this.scene.combatManager.root(this.player.spellTarget);
-            this.player.setTimeEvent('rootCooldown', PLAYER.COOLDOWNS.SHORT); 
+            if (!this.player.isComputer) this.player.setTimeEvent('rootCooldown', PLAYER.COOLDOWNS.SHORT); 
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ROOT);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You ensorcel ${this.player.spellName}, rooting them!`
@@ -1317,7 +1582,7 @@ export default class PlayerMachine {
     onRushExit = () => {
         this.player.rushedEnemies = [];
         const rushCooldown = this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
-        this.player.setTimeEvent('rushCooldown', rushCooldown);
+        if (!this.player.isComputer) this.player.setTimeEvent('rushCooldown', rushCooldown);
         this.scene.combatManager.useGrace(PLAYER.STAMINA.RUSH);
     };
 
@@ -1329,7 +1594,7 @@ export default class PlayerMachine {
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.slow(this.player.spellTarget, 3000);
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SLOW);
-        this.player.setTimeEvent('slowCooldown', PLAYER.COOLDOWNS.SHORT); 
+        if (!this.player.isComputer) this.player.setTimeEvent('slowCooldown', PLAYER.COOLDOWNS.SHORT); 
         this.player.flickerCarenic(500); 
         this.scene.time.delayedCall(500, () => this.player.isSlowing = false, undefined, this);
         EventBus.emit('special-combat-text', {
@@ -1348,7 +1613,7 @@ export default class PlayerMachine {
         this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SACRIFICE);
         this.sacrifice(this.player.spellTarget, 10);
-        this.player.setTimeEvent('sacrificeCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.setTimeEvent('sacrificeCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.player.flickerCarenic(500);  
         this.scene.time.delayedCall(500, () => this.player.isSacrificing = false, undefined, this);
     };
@@ -1377,7 +1642,7 @@ export default class PlayerMachine {
     };
     onSnaringExit = () => {
         if (this.player.castingSuccess === true) {
-            this.player.setTimeEvent('snareCooldown', PLAYER.COOLDOWNS.SHORT);
+            if (!this.player.isComputer) this.player.setTimeEvent('snareCooldown', PLAYER.COOLDOWNS.SHORT);
             this.scene.combatManager.useGrace(PLAYER.STAMINA.SNARE);
             this.scene.combatManager.snare(this.player.spellTarget);
             this.player.castingSuccess = false;
@@ -1400,7 +1665,7 @@ export default class PlayerMachine {
         this.player.storm();
     };
     onStormUpdate = (_dt: number) => this.player.combatChecker(this.player.isStorming);
-    onStormExit = () => this.player.setTimeEvent('stormCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);
+    onStormExit = () => {if (!this.player.isComputer) this.player.setTimeEvent('stormCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3)};
 
     onSutureEnter = () => {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
@@ -1410,7 +1675,7 @@ export default class PlayerMachine {
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SUTURE);
         this.suture(this.player.spellTarget, 10);
-        this.player.setTimeEvent('sutureCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.setTimeEvent('sutureCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.player.flickerCarenic(500); 
         this.scene.time.delayedCall(500, () => {
             this.player.isSuturing = false;
@@ -1430,7 +1695,7 @@ export default class PlayerMachine {
         this.scene.sound.play(States.ABSORB, { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Absorbing', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'aqua', PLAYER.DURATIONS.ABSORB);
-        this.player.setTimeEvent('absorbCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.setTimeEvent('absorbCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.ABSORB, () => {
             this.player.isAbsorbing = false;    
             if (this.player.negationBubble) {
@@ -1457,7 +1722,7 @@ export default class PlayerMachine {
         this.scene.sound.play('death', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Hah! Hah!', PLAYER.DURATIONS.CHIOMIC, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.isChiomic = true;
-        this.player.setTimeEvent('chiomicCooldown', PLAYER.COOLDOWNS.SHORT);  
+        if (!this.player.isComputer) this.player.setTimeEvent('chiomicCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.time.delayedCall(PLAYER.DURATIONS.CHIOMIC, () => {
             this.player.isChiomic = false;
         }, undefined, this);
@@ -1473,7 +1738,7 @@ export default class PlayerMachine {
         this.player.aoe = new AoE(this.scene, 'tendril', 6);    
         this.scene.sound.play('dungeon', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Tendrils Swirl', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
-        this.player.setTimeEvent('diseaseCooldown', PLAYER.COOLDOWNS.MODERATE);  
+        if (!this.player.isComputer) this.player.setTimeEvent('diseaseCooldown', PLAYER.COOLDOWNS.MODERATE);  
         this.scene.time.delayedCall(PLAYER.DURATIONS.DISEASE, () => {
             this.player.isDiseasing = false;
         }, undefined, this);
@@ -1490,7 +1755,7 @@ export default class PlayerMachine {
         this.scene.sound.play('howl', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Howling', PLAYER.DURATIONS.HOWL, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.player.isHowling = true;
-        this.player.setTimeEvent('howlCooldown', PLAYER.COOLDOWNS.SHORT);  
+        if (!this.player.isComputer) this.player.setTimeEvent('howlCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.time.delayedCall(PLAYER.DURATIONS.HOWL, () => {
             this.player.isHowling = false;
         }, undefined, this);
@@ -1508,7 +1773,7 @@ export default class PlayerMachine {
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Enveloping', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'blue', PLAYER.DURATIONS.ENVELOP);
         this.player.reactiveName = States.ENVELOP;
-        this.player.setTimeEvent('envelopCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.setTimeEvent('envelopCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.ENVELOP, () => {
             this.player.isEnveloping = false;    
             if (this.player.reactiveBubble !== undefined && this.player.reactiveName === States.ENVELOP) {
@@ -1554,7 +1819,7 @@ export default class PlayerMachine {
         });
     };
     onFreezeUpdate = (_dt: number) => {if (!this.player.isFreezing) this.positiveMachine.setState(States.CLEAN);};
-    onFreezeExit = () => this.player.setTimeEvent('freezeCooldown', PLAYER.COOLDOWNS.SHORT);
+    onFreezeExit = () => {if (!this.player.isComputer) this.player.setTimeEvent('freezeCooldown', PLAYER.COOLDOWNS.SHORT)};
 
     onMaliceEnter = () => {
         if (this.player.reactiveBubble) {
@@ -1567,7 +1832,7 @@ export default class PlayerMachine {
         this.player.isMalicing = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Malice', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'purple', PLAYER.DURATIONS.MALICE);
-        this.player.setTimeEvent('maliceCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.setTimeEvent('maliceCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MALICE, () => {
             this.player.isMalicing = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MALICE) {
@@ -1611,7 +1876,7 @@ export default class PlayerMachine {
         this.player.isMending = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Mending', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'purple', PLAYER.DURATIONS.MEND);
-        this.player.setTimeEvent('mendCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.setTimeEvent('mendCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MEND, () => {
             this.player.isMending = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MEND) {
@@ -1655,7 +1920,7 @@ export default class PlayerMachine {
         this.player.isMenacing = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Menacing', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'dread', PLAYER.DURATIONS.MENACE);
-        this.player.setTimeEvent('menaceCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.setTimeEvent('menaceCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MENACE, () => {
             this.player.isMenacing = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MENACE) {
@@ -1700,7 +1965,7 @@ export default class PlayerMachine {
         this.player.isModerating = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Moderating', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'sapphire', PLAYER.DURATIONS.MODERATE);
-        this.player.setTimeEvent('moderateCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.setTimeEvent('moderateCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MODERATE, () => {
             this.player.isModerating = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MODERATE) {
@@ -1745,7 +2010,7 @@ export default class PlayerMachine {
         this.player.isMultifaring = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Moderating', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'ultramarine', PLAYER.DURATIONS.MULTIFARIOUS);
-        this.player.setTimeEvent('multifariousCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.setTimeEvent('multifariousCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MULTIFARIOUS, () => {
             this.player.isMultifaring = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MULTIFARIOUS) {
@@ -1790,7 +2055,7 @@ export default class PlayerMachine {
         this.player.isMystifying = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Mystifying', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'chartreuse', PLAYER.DURATIONS.MYSTIFY);
-        this.player.setTimeEvent('mystifyCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.setTimeEvent('mystifyCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MYSTIFY, () => {
             this.player.isMystifying = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MYSTIFY) {
@@ -1834,7 +2099,7 @@ export default class PlayerMachine {
         this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Protecting', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'gold', PLAYER.DURATIONS.PROTECT);
-        this.player.setTimeEvent('protectCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.setTimeEvent('protectCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.PROTECT, () => {
             this.player.isProtecting = false;    
             if (this.player.negationBubble) {
@@ -1858,7 +2123,7 @@ export default class PlayerMachine {
         this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Recovering', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'green', PLAYER.DURATIONS.RECOVER);
-        this.player.setTimeEvent('recoverCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.setTimeEvent('recoverCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.RECOVER, () => {
             this.player.isRecovering = false;    
             if (this.player.reactiveBubble) {
@@ -1889,7 +2154,7 @@ export default class PlayerMachine {
         this.scene.sound.play(States.ABSORB, { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Rein', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'fuchsia', PLAYER.DURATIONS.REIN);
-        this.player.setTimeEvent('reinCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.setTimeEvent('reinCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.REIN, () => {
             this.player.isReining = false;    
             if (this.player.reactiveBubble) {
@@ -1916,7 +2181,7 @@ export default class PlayerMachine {
         this.player.aoe = new AoE(this.scene, 'renewal', 6, true);    
         this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Hush Tears', 750, 'bone', false, true, () => this.player.specialCombatText = undefined);
-        this.player.setTimeEvent('renewalCooldown', PLAYER.COOLDOWNS.MODERATE);  
+        if (!this.player.isComputer) this.player.setTimeEvent('renewalCooldown', PLAYER.COOLDOWNS.MODERATE);  
         this.scene.time.delayedCall(PLAYER.DURATIONS.RENEWAL, () => {
             this.player.isRenewing = false;
         }, undefined, this);
@@ -1940,7 +2205,7 @@ export default class PlayerMachine {
         });
     };
     onScreamUpdate = (_dt: number) => {if (!this.player.isScreaming) this.positiveMachine.setState(States.CLEAN);};
-    onScreamExit = () => this.player.setTimeEvent('screamCooldown', PLAYER.COOLDOWNS.SHORT);
+    onScreamExit = () => {if (!this.player.isComputer) this.player.setTimeEvent('screamCooldown', PLAYER.COOLDOWNS.SHORT)};
 
     onShieldEnter = () => {
         if (this.player.negationBubble) {
@@ -1953,7 +2218,7 @@ export default class PlayerMachine {
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Shielding', 750, 'bone', false, true, () => this.player.specialCombatText = undefined);
         this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'bone', PLAYER.DURATIONS.SHIELD);
         this.player.negationName = States.SHIELD;
-        this.player.setTimeEvent('shieldCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.setTimeEvent('shieldCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIELD, () => {
             this.player.isShielding = false;    
             if (this.player.negationBubble && this.player.negationName === States.SHIELD) {
@@ -1990,7 +2255,7 @@ export default class PlayerMachine {
         this.player.isShimmering = true; 
         this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SHIMMER);
-        this.player.setTimeEvent('shimmerCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.setTimeEvent('shimmerCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.player.adjustSpeed(PLAYER.SPEED.STEALTH);
         if (!this.player.isStealthing) this.stealthEffect(true);    
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIMMER, () => {
@@ -2016,7 +2281,7 @@ export default class PlayerMachine {
         this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume / 3 });
         this.player.adjustSpeed(PLAYER.SPEED.SPRINT);
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SPRINT);
-        this.player.setTimeEvent('sprintCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.setTimeEvent('sprintCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.player.flickerCarenic(PLAYER.DURATIONS.SPRINT);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT, () => {
             this.player.isSprinting = false;
@@ -2086,7 +2351,7 @@ export default class PlayerMachine {
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Warding', 750, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'red', PLAYER.DURATIONS.WARD);
         this.player.negationName = States.WARD;
-        this.player.setTimeEvent('wardCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.setTimeEvent('wardCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.WARD, () => {
             this.player.isWarding = false;    
             if (this.player.negationBubble && this.player.negationName === States.WARD) {
@@ -2137,14 +2402,14 @@ export default class PlayerMachine {
     onWritheUpdate = (_dt: number) => {if (!this.player.isWrithing) this.positiveMachine.setState(States.CLEAN);};
     onWritheExit = () => {
         this.player.aoe.cleanAnimation(this.scene);
-        this.player.setTimeEvent('writheCooldown', PLAYER.COOLDOWNS.SHORT);  
+        if (!this.player.isComputer) this.player.setTimeEvent('writheCooldown', PLAYER.COOLDOWNS.SHORT);  
     };
 
     // ==================== TRAITS ==================== \\
     onAstricationEnter = () => {
         if (this.player.isAstrifying === true) return;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.ASTRICATION);    
-        this.player.setTimeEvent('astricationCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.setTimeEvent('astricationCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.combatManager.combatMachine.input('astrication', {active:true,charges:0});
         this.scene.sound.play('lightning', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Astrication', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
@@ -2163,7 +2428,7 @@ export default class PlayerMachine {
     onBerserkEnter = () => {
         if (this.player.isBerserking === true) return;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.BERSERK);    
-        this.player.setTimeEvent('berserkCooldown', PLAYER.COOLDOWNS.LONG);  
+        if (!this.player.isComputer) this.player.setTimeEvent('berserkCooldown', PLAYER.COOLDOWNS.LONG);  
         this.scene.sound.play('howl', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.combatMachine.input('berserk', {active:true,charges:1});
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Berserking', 750, 'damage', false, true, () => this.player.specialCombatText = undefined);
@@ -2192,7 +2457,7 @@ export default class PlayerMachine {
         });
     };
     onBlindUpdate = (_dt: number) => {if (!this.player.isBlinding) this.positiveMachine.setState(States.CLEAN);};
-    onBlindExit = () => this.player.setTimeEvent('blindCooldown', PLAYER.COOLDOWNS.SHORT);
+    onBlindExit = () => {if (!this.player.isComputer) this.player.setTimeEvent('blindCooldown', PLAYER.COOLDOWNS.SHORT)};
 
     onCaerenesisEnter = () => {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
@@ -2201,7 +2466,7 @@ export default class PlayerMachine {
         this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Caerenesis', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.isCaerenesis = true;
-        this.player.setTimeEvent('caerenesisCooldown', PLAYER.COOLDOWNS.SHORT);  
+        if (!this.player.isComputer) this.player.setTimeEvent('caerenesisCooldown', PLAYER.COOLDOWNS.SHORT);  
         this.scene.time.delayedCall(PLAYER.DURATIONS.CAERENESIS, () => {
             this.player.isCaerenesis = false;
         }, undefined, this);
@@ -2214,7 +2479,7 @@ export default class PlayerMachine {
     onConvictionEnter = () => {
         if (this.player.isConvicted === true) return;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.CONVICTION);    
-        this.player.setTimeEvent('convictionCooldown', PLAYER.COOLDOWNS.LONG);  
+        if (!this.player.isComputer) this.player.setTimeEvent('convictionCooldown', PLAYER.COOLDOWNS.LONG);  
         this.scene.combatManager.combatMachine.input('conviction', {active:true,charges:0});
         this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Conviction', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
@@ -2250,7 +2515,7 @@ export default class PlayerMachine {
         });
     };
     onEnduranceUpdate = (_dt: number) => {if (!this.player.isEnduring) this.positiveMachine.setState(States.CLEAN);};
-    onEnduranceExit = () => this.player.setTimeEvent('enduranceCooldown', PLAYER.COOLDOWNS.LONG);  
+    onEnduranceExit = () => {if (!this.player.isComputer) this.player.setTimeEvent('enduranceCooldown', PLAYER.COOLDOWNS.LONG)};  
 
     onImpermanenceEnter = () => {
         if (this.player.isImpermanent === true) return;
@@ -2259,7 +2524,7 @@ export default class PlayerMachine {
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Impermanence', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
         this.player.isImpermanent = true;
         this.player.flickerCarenic(1500); 
-        this.player.setTimeEvent('impermanenceCooldown', PLAYER.COOLDOWNS.MODERATE);  
+        if (!this.player.isComputer) this.player.setTimeEvent('impermanenceCooldown', PLAYER.COOLDOWNS.MODERATE);  
         this.scene.time.delayedCall(PLAYER.DURATIONS.IMPERMANENCE, () => {
             this.player.isImpermanent = false;
         }, undefined, this);
@@ -2276,7 +2541,7 @@ export default class PlayerMachine {
         this.scene.combatManager.combatMachine.input('isSeering', true);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Seer', 750, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.player.isSeering = true;
-        this.player.setTimeEvent('seerCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.setTimeEvent('seerCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.player.flickerCarenic(1500); 
         this.scene.time.delayedCall(PLAYER.DURATIONS.SEER, () => {
             this.player.isSeering = false;
@@ -2293,7 +2558,7 @@ export default class PlayerMachine {
     onDispelEnter = () => {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.KYRNAICISM);
-        this.player.setTimeEvent('dispelCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.setTimeEvent('dispelCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Dispelling', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.flickerCarenic(1000); 
@@ -2304,7 +2569,7 @@ export default class PlayerMachine {
     onShirkEnter = () => {
         this.player.isShirking = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.STIMULATE);    
-        this.player.setTimeEvent('shirkCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.setTimeEvent('shirkCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Shirking', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.isConfused = false;
@@ -2333,7 +2598,7 @@ export default class PlayerMachine {
 
     onShadowEnter = () => {
         this.player.isShadowing = true;
-            this.player.setTimeEvent('shadowCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.setTimeEvent('shadowCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SHADOW);
         this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Shadowing', DURATION.TEXT, 'damage', false, true, () => this.player.specialCombatText = undefined);
@@ -2358,7 +2623,7 @@ export default class PlayerMachine {
     onTetherEnter = () => {
         this.player.isTethering = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.TETHER);
-        this.player.setTimeEvent('tetherCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.setTimeEvent('tetherCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.sound.play('dungeon', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Tethering', DURATION.TEXT, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.player.flickerCarenic(6000);
@@ -2384,7 +2649,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(PLAYER.DURATIONS.STIMULATE, () => {
             this.player.isStimulating = false;
         }, undefined, this);
-        this.player.setTimeEvent('stimulateCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.setTimeEvent('stimulateCooldown', PLAYER.COOLDOWNS.LONG);
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `Your caeren's hush grants reprieve, refreshing you.`
         });
@@ -2392,18 +2657,20 @@ export default class PlayerMachine {
             const name = this.scene.hud.settings.specials[i].toLowerCase();
             if (name === "stimulate") continue;
             this.scene.hud.logger.log(`Resetting the cooldown on ${name}`);
-            this.player.setTimeEvent(`${name}Cooldown`, 20);
+            if (!this.player.isComputer) this.player.setTimeEvent(`${name}Cooldown`, 20);
         };
     };
     onStimulateUpdate = (_dt: number) => {if (!this.player.isStimulating) this.positiveMachine.setState(States.CLEAN);};
 
     // ================= NEGATIVE MACHINE STATES ================= \\
     onConfusedEnter = () => { 
-        if (this.scene.hud.settings.desktop === false) {
-            this.scene.hud.joystick.joystick.setVisible(false);
-            this.scene.hud.rightJoystick.joystick.setVisible(false);
+        if (!this.player.isComputer) {
+            if (this.scene.hud.settings.desktop === false) {
+                this.scene.hud.joystick.joystick.setVisible(false);
+                this.scene.hud.rightJoystick.joystick.setVisible(false);
+            };
+            this.scene.hud.actionBar.setVisible(false);
         };
-        this.scene.hud.actionBar.setVisible(false);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, '?c .on-f-u`SeD~', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
@@ -2455,11 +2722,13 @@ export default class PlayerMachine {
     };
     onConfusedExit = () => { 
         if (this.player.isConfused) this.player.isConfused = false;
-        if (this.scene.hud.settings.desktop === false) {  
-            this.scene.hud.joystick.joystick.setVisible(true);
-            this.scene.hud.rightJoystick.joystick.setVisible(true);
+        if (!this.player.isComputer) {
+            if (this.scene.hud.settings.desktop === false) {  
+                this.scene.hud.joystick.joystick.setVisible(true);
+                this.scene.hud.rightJoystick.joystick.setVisible(true);
+            };
+            this.scene.hud.actionBar.setVisible(true);
         };
-        this.scene.hud.actionBar.setVisible(true);
         this.player.spriteWeapon.setVisible(true);
         if (this.player.confuseTimer) {
             this.player.confuseTimer.destroy();
@@ -2469,11 +2738,13 @@ export default class PlayerMachine {
     };
 
     onFearedEnter = () => { 
-        if (this.scene.hud.settings.desktop === false) {
-            this.scene.hud.joystick.joystick.setVisible(false);
-            this.scene.hud.rightJoystick.joystick.setVisible(false);
+        if (!this.player.isComputer) {
+            if (this.scene.hud.settings.desktop === false) {
+                this.scene.hud.joystick.joystick.setVisible(false);
+                this.scene.hud.rightJoystick.joystick.setVisible(false);
+            };
+            this.scene.hud.actionBar.setVisible(false);
         };
-        this.scene.hud.actionBar.setVisible(false);
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'F̶e̷a̴r̷e̵d̴', DURATION.TEXT, 'damage', false, false, () => this.player.specialCombatText = undefined);
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
@@ -2521,11 +2792,13 @@ export default class PlayerMachine {
         this.player.playerVelocity.y = this.player.fearVelocity.y;
     };
     onFearedExit = () => { 
-        if (this.scene.hud.settings.desktop === false) {
-            this.scene.hud.joystick.joystick.setVisible(true);
-            this.scene.hud.rightJoystick.joystick.setVisible(true);
+        if (!this.player.isComputer) {        
+            if (this.scene.hud.settings.desktop === false) {
+                this.scene.hud.joystick.joystick.setVisible(true);
+                this.scene.hud.rightJoystick.joystick.setVisible(true);
+            };
+            this.scene.hud.actionBar.setVisible(true);
         };
-        this.scene.hud.actionBar.setVisible(true);
         this.player.isFeared = false;
         this.player.fearCount = 0;
         this.player.spriteWeapon.setVisible(true);
@@ -2554,11 +2827,13 @@ export default class PlayerMachine {
     onFrozenExit = () => this.player.setStatic(false);
 
     onPolymorphedEnter = () => {
-        if (this.scene.hud.settings.desktop === false) {
-            this.scene.hud.joystick.joystick.setVisible(false);
-            this.scene.hud.rightJoystick.joystick.setVisible(false);
+        if (!this.player.isComputer) {
+            if (this.scene.hud.settings.desktop === false) {
+                this.scene.hud.joystick.joystick.setVisible(false);
+                this.scene.hud.rightJoystick.joystick.setVisible(false);
+            };
+            this.scene.hud.actionBar.setVisible(false);
         };
-        this.scene.hud.actionBar.setVisible(false);
         this.player.isPolymorphed = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Polymorphed', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.clearAnimations();
@@ -2617,11 +2892,13 @@ export default class PlayerMachine {
         this.player.playerVelocity.y = this.player.polymorphVelocity.y;
     };
     onPolymorphedExit = () => { 
-        if (this.scene.hud.settings.desktop === false) {
-            this.scene.hud.joystick.joystick.setVisible(true);
-            this.scene.hud.rightJoystick.joystick.setVisible(true);
+        if (!this.player.isComputer) {        
+            if (this.scene.hud.settings.desktop === false) {
+                this.scene.hud.joystick.joystick.setVisible(true);
+                this.scene.hud.rightJoystick.joystick.setVisible(true);
+            };
+            this.scene.hud.actionBar.setVisible(true);
         };
-        this.scene.hud.actionBar.setVisible(true);
         if (this.player.isPolymorphed) this.player.isPolymorphed = false;
         this.player.clearAnimations();
         this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
@@ -2665,11 +2942,13 @@ export default class PlayerMachine {
     };
 
     onStunnedEnter = () => {
-        if (this.scene.hud.settings.desktop === false) {
-            this.scene.hud.joystick.joystick.setVisible(false);
-            this.scene.hud.rightJoystick.joystick.setVisible(false);
+        if (!this.player.isComputer) {
+            if (this.scene.hud.settings.desktop === false) {
+                this.scene.hud.joystick.joystick.setVisible(false);
+                this.scene.hud.rightJoystick.joystick.setVisible(false);
+            };
+            this.scene.hud.actionBar.setVisible(false);
         };
-        this.scene.hud.actionBar.setVisible(false);
         this.player.isStunned = true;
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Stunned', PLAYER.DURATIONS.STUNNED, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;
@@ -2688,11 +2967,13 @@ export default class PlayerMachine {
         this.player.combatChecker(this.player.isStunned);
     };
     onStunnedExit = () => {
-        if (this.scene.hud.settings.desktop === false) {
-            this.scene.hud.joystick.joystick.setVisible(true);
-            this.scene.hud.rightJoystick.joystick.setVisible(true);
+        if (!this.player.isComputer) {        
+            if (this.scene.hud.settings.desktop === false) {
+                this.scene.hud.joystick.joystick.setVisible(true);
+                this.scene.hud.rightJoystick.joystick.setVisible(true);
+            };
+            this.scene.hud.actionBar.setVisible(true);
         };
-        this.scene.hud.actionBar.setVisible(true);
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
         this.player.setStatic(false);

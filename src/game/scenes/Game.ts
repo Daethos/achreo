@@ -293,6 +293,8 @@ export class Game extends Scene {
         this.scene.wake();
         this.resumeMusic();
         this.state = this.registry.get("combat");
+        this.player.health = this.state.newPlayerHealth;
+        this.player.healthbar.setValue(this.state.newPlayerHealth);
         this.registry.set("player", this.player);
         if (this.state.isStealth) {
             this.player.playerMachine.positiveMachine.setState(States.STEALTH);
@@ -306,6 +308,7 @@ export class Game extends Scene {
             this.registry.set("combat", this.state);
             this.registry.set("settings", this.hud.settings);
             this.registry.set("ascean", this.state.player);
+            // this.registry.set("health", this.player.health);
             this.player.disengage();
             this.pauseMusic();
             this.scene.sleep(current);
@@ -472,7 +475,7 @@ export class Game extends Scene {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (bool === true) {
             screenShake(this);
-            this.cameras.main.flash(48, 156, 163, 168, false, undefined, this);
+            this.cameras.main.flash(60, 156, 163, 168, false, undefined, this);
         };
         if (bool === true && this.combat !== bool) {
             this.player.startCombat();

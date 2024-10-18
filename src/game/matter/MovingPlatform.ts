@@ -7,6 +7,7 @@ export default class MovingPlatform extends Phaser.Physics.Matter.Image {
         this.startX = x;
         this.startY = y;
         this.setTint(0x000000);
+        this.setTintFill(0x00000);
         this.setScale(0.5);
     };
     horizontal(from: number, to: number, duration: number) {

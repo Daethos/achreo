@@ -1,3 +1,4 @@
+import { Arena } from "../scenes/Arena";
 import { Game } from "../scenes/Game";
 import { Underground } from "../scenes/Underground";
 
@@ -7,7 +8,7 @@ export default class MiniMap extends Phaser.Scene {
     minimap: Phaser.Cameras.Scene2D.Camera;
     border: Phaser.GameObjects.Rectangle;
     reset: Phaser.GameObjects.Rectangle;
-    constructor(scene: Game | Underground) {
+    constructor(scene: Game | Underground | Arena) {
         super('Mini');
         const x = scene.scale.width * X;
         const y = scene.scale.height * Y;

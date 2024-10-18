@@ -8,7 +8,7 @@ interface IProps {
 };
 export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
     const dimensions = useResizeListener();
-    const shortDescription = (desc: string): string => desc.split(' ').slice(0, 3).join(' ') + (desc.length > 4 ? '...' : '');
+    const shortDescription = (desc: string): string => desc.split(' ').slice(0, 3).join(' ') + (desc.split(' ').length > 3 ? '...' : '');
     const style = (m: Accessor<Menu>, d: Accessor<DIMS>) => {
         const length = m()?.asceans.length;
         return {
@@ -25,7 +25,7 @@ export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
             'margin-top': length === 3 ? '0%' : '0%',
         };
     };
-    const shortName = (name: string): string => name.split(' ').slice(0, 2).join(' ');
+    const shortName = (name: string): string => name.split(' ').slice(0, 2).join(' ') + (name.split(' ').length > 2 ? '...' : '');
     return <div class='menu' style={{ display: 'inline-flex', 'flex-direction': dimensions().ORIENTATION === 'landscape' ? 'row' : 'column', 'align-items': 'center', 'gap': '1%', 'justify-content': 'center' }}>
         <For each={menu()?.asceans}> 
             {((asc, _idx) => (

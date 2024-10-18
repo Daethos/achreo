@@ -13,6 +13,7 @@ import { Collapse } from "solid-collapse";
 const PhaserShaper = lazy(async () => await import('./PhaserShaper'));
 const cleanSettings = {
     actionTooltip: false,
+    computerArena: false,
     combatTargeting: false,
     desktop: false,
     enemyAggression: false,
@@ -148,6 +149,11 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
     //     const newSettings = { ...settings(), difficulty: { ...settings().difficulty, computer: !settings().difficulty.computer } };
     //     await saveSettings(newSettings);
     // };
+
+    async function handleArenaCombat() {
+        const newSettings = { ...settings(), difficulty: { ...settings().difficulty, arena: !settings().difficulty.arena } };        
+        await saveSettings(newSettings);
+    };
  
     async function handleSpecial(e: any) {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, special: e.target.value } };
@@ -328,7 +334,13 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                         <button class='gold highlight' onClick={() => handleTooltips()}>{settings().difficulty.tooltips ? 'Enabled' : 'Disabled'}</button>
                         <div style={font('0.5em')}>[Enabled = Click / Hover Actions to Provide an Info Popup, Disabled = No Info Popups]</div>
                     </Collapse>
-                        
+                        <h1 onClick={() => resetDifficulty('computerArena', !difficulty().computerArena)} style={font('1.25em')}>Arena Combat</h1>
+                    <Collapse value={difficulty().computerArena} class='my-transition'> 
+                        <div style={font('1em', '#fdf6d8')}>
+                            <button class='gold highlight' onClick={() => handleArenaCombat()}>{settings().difficulty.arena ? 'Manual' : 'Computer'}</button>
+                            <div style={font('0.5em')}>[Whether you control your character in the Arena. If the Arena has been loaded, you must reload the game for this change to take effect.]</div>
+                        </div>
+                    </Collapse>
                     <h1 onClick={() => resetDifficulty('combatTargeting', !difficulty().combatTargeting)} style={font('1.25em')}>Combat Targeting</h1>
                     <Collapse value={difficulty().combatTargeting} class='my-transition'>
                         <div style={font('1em', '#fdf6d8')}>

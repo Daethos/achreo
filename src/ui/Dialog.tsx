@@ -18,7 +18,7 @@ import { namedNameCheck } from '../utility/player';
 import Thievery from './Thievery';
 import Merchant from './Merchant';
 import { ARENA_ENEMY } from '../utility/enemy';
-import Arena from './Arena';
+import Roster from './Roster';
 
 const GET_FORGE_COST = {
     Common: 1,
@@ -977,7 +977,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         </div>
         <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
-        <Arena arena={arena} ascean={ascean} setArena={setArena} base={false} />
+        <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} />
         <Show when={showBuy() && merchantTable()?.length > 0}>
             <div class='modal'>
             <div class='creature-heading' style={{ position: 'absolute',left: '20%',top: '20%',height: '70%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' }}>

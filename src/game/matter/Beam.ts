@@ -1,6 +1,10 @@
 import { Game } from "../scenes/Game";
 import { masteryNumber } from "../../utility/styling";
 const CONVERSION = {
+    Arena: {
+        X: 500,
+        Y: 35
+    },
     Game: {
         X: 265,
         Y: 165

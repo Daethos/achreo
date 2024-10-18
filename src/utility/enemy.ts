@@ -133,8 +133,21 @@ export const PADDING = {
     WIDTH: 10
 };
 export const RANGE = {
-    LEASH: 750,
+    LEASH: 1000,
 }; 
+
+// ELEMENT IN ARRAY 
+// [0]: Critical Heal
+// [1]: Casual Heal
+// [2]: Critical Damage
+// [3]: Casual Damage
+// [4]: Melee < 100 Distance
+// [5]: Ranged < 100 Distance
+// [6]: Melee > 100 && < 250 Distance
+// [7]: Ranged > 100 && < 250 Distance
+// [8]: Melee > 250 Distance
+// [9]: Ranged > 250 Distance
+
 export const INSTINCTS = {
     'constitution': [
         { // 0 - Desperate Heal
@@ -182,7 +195,8 @@ export const INSTINCTS = {
         },{ // 6
             key: 'stateMachine',
             value: States.ILIRECH
-    }],
+        }
+    ],
     'agility': [
         { // 0
             key: 'stateMachine',
@@ -205,7 +219,8 @@ export const INSTINCTS = {
         },{ // 6
             key: 'positiveMachine',
             value: States.SHIMMER
-    }],
+        }
+    ],
     'achre': [
         { // 0
             key: 'stateMachine',
@@ -228,7 +243,8 @@ export const INSTINCTS = {
         },{ // 6
             key: 'stateMachine',
             value: States.SLOWING
-    }],
+        }
+    ],
     'caeren': [
         { // 0
             key: 'stateMachine',
@@ -251,7 +267,8 @@ export const INSTINCTS = {
         },{ // 6
             key: 'stateMachine',
             value: States.ILIRECH
-    }],
+        }
+    ],
     'kyosir': [
         { // 0
             key: 'stateMachine',
@@ -274,7 +291,8 @@ export const INSTINCTS = {
         },{ // 6
             key: 'stateMachine',
             value: States.KYRNAICISM
-    }]
+        }
+    ]
 };
 export type ARENA_ENEMY = {
     level: number;

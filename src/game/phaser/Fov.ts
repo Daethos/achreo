@@ -64,7 +64,7 @@ export default class Fov {
             };
         };
         if (this.scene.enemies.length > 0) this.updateEnemies();
-        if (this.scene.dms.length > 0) this.updateDms();
+        if (this.scene.dms?.length > 0) this.updateDms();
         // if (this.scene.npcs.length > 0) this.updateNpcs();
         if (this.scene.player.highlight) this.updateHighlight();
     };

@@ -13,7 +13,6 @@ import Fov from '../phaser/Fov';
 import { Reputation, initReputation } from '../../utility/player';
 import Player from '../entities/Player';
 import Enemy from '../entities/Enemy';
-import NPC from '../entities/NPC';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 import Tile from '../phaser/Tile';
@@ -23,10 +22,11 @@ import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import ParticleManager from '../matter/ParticleManager';
 import { screenShake } from '../phaser/ScreenShake';
 import { Hud } from './Hud';
-import DM from '../entities/DM';
 import { Compiler } from '../../utility/ascean';
+import PlayerComputer from '../entities/PlayerComputer';
+import MovingPlatform from '../matter/MovingPlatform';
 
-export class Underground extends Scene {
+export class Arena extends Scene {
     animatedTiles: any[];
     offsetX: number;
     offsetY: number;
@@ -42,8 +42,6 @@ export class Underground extends Scene {
     target: any;
     targetTarget: any;
     playerLight: any;
-    dms: DM[] = [];
-    npcs: NPC[] | [] = [];
     lootDrops: LootDrop[] = [];
     combat: boolean = false;
     stealth: boolean = false;
@@ -78,9 +76,11 @@ export class Underground extends Scene {
     markers: any;
     glowFilter: any;
     hud: Hud;
+    platform: MovingPlatform;
+    platform2: MovingPlatform;
 
     constructor () {
-        super('Underground');
+        super('Arena');
     };
 
     preload() {
@@ -99,54 +99,43 @@ export class Underground extends Scene {
         this.tweenManager = {};
         this.markers = [];
         let camera = this.cameras.main;
-        camera.zoom = this.hud.settings.positions?.camera?.zoom || 0.8; // 0.8 
-        const map = this.make.tilemap({ key: 'underground' });
+        camera.zoom = this.hud.settings.positions?.camera?.zoom || 1;
+        const map = this.make.tilemap({ key: 'arena' });
         this.map = map;
         this.add.rectangle(0, 0, 4096, 4096, 0x000000);
         const tileSize = 32;
         const castleInterior = map.addTilesetImage('Castle Interior', 'Castle Interior', tileSize, tileSize, 0, 0);
         const castleDecorations = map.addTilesetImage('Castle Decoratives', 'Castle Decoratives', tileSize, tileSize, 0, 0);
         let layer1 = map.createLayer('Floors', castleInterior as Tilemaps.Tileset, 0, 0);
-        let layer2 = map.createLayer('Stairs', castleInterior as Tilemaps.Tileset, 0, 0);
-        let layer3 = map.createLayer('Decorations', castleDecorations as Tilemaps.Tileset, 0, 0);
+        let layer2 = map.createLayer('Decorations', castleDecorations as Tilemaps.Tileset, 0, 0);
+        let layer3 = map.createLayer('Top Layer', castleInterior as Tilemaps.Tileset, 0, 0);
         layer1?.setCollisionByProperty({ collides: true });
         [layer1, layer2, layer3].forEach((layer) => {
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
             layer?.forEachTile((tile) => {tile = new Tile(tile);});
         });
-        layer2?.setDepth(6);
+        layer3?.setDepth(6);
         this.groundLayer = layer1;
         this.layer2 = layer2;
         this.layer3 = layer3;
-        this.layer3.forEachTile((tile: any) => {
-            if (tile?.properties && tile.properties?.key === 'north') {
-                this.north = new Phaser.Math.Vector2(tile.pixelX, tile.pixelY);
-            };
-            if (tile?.properties && tile.properties?.key === 'south') {
-                this.south = new Phaser.Math.Vector2(tile.pixelX, tile.pixelY + 16);
-            };
-            if (tile?.properties && tile.properties?.key === 'east') {
-                this.east = new Phaser.Math.Vector2(tile.pixelX + 32, tile.pixelY);
-            };
-            if (tile?.properties && tile.properties?.key === 'west') {
-                this.west = new Phaser.Math.Vector2(tile.pixelX, tile.pixelY);
-            };
-        });
         this.fov = new Fov(this, this.map, [this.groundLayer, this.layer2, this.layer3]);
         const objectLayer = map.getObjectLayer('navmesh');
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
         (this.sys as any).animatedTiles.init(this.map);
-        this.player = new Player({ scene: this, x: this.centerX, y: 64, texture: 'player_actions', frame: 'player_idle_0' });
         map?.getObjectLayer('summons')?.objects.forEach((summon: any) => this.markers.push(summon));
-        map?.getObjectLayer('dms')?.objects.forEach((_dm: any) => {
-            (this.dms as any).push(new DM({ scene: this, x: 912, y: 78, texture: 'player_actions', frame: 'player_idle_0' }));
-        });
-        // map?.getObjectLayer('npcs')?.objects.forEach((npc: any) => {
-        //     (this.npcs as any).push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' }));
-        // });
+        const random = this.markers[Math.floor(Math.random() * this.markers.length)];        
+        if (this.hud.settings.difficulty.arena) {
+            this.player = new Player({ scene: this, x: random.x, y: random.y, texture: 'player_actions', frame: 'player_idle_0' });
+        } else {
+            this.player = new PlayerComputer({ scene: this, x: random.x, y: random.y, texture: 'player_actions', frame: 'player_idle_0' });
+            this.hud.actionBar.setVisible(false);
+            this.hud.joystick.setVisible(false);
+            this.hud.rightJoystick.setVisible(false);
+        };
+
 
     // =========================== Camera =========================== \\
         camera.startFollow(this.player, false, 0.1, 0.1);
@@ -180,6 +169,13 @@ export class Underground extends Scene {
         if (this.hud.settings?.music === true) this.musicBackground.play();
         this.musicCombat = this.sound.add('industrial', { volume: this?.hud?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
+        
+        this.platform = new MovingPlatform(this, 400, 1750, 'player-castbar', { isStatic: true });
+        this.platform.vertical(0, -1750, 17500);
+        this.platform2 = new MovingPlatform(this, 400, 1750, 'player-castbar', { isStatic: true });
+        this.platform2.setAngle(90);
+        this.platform2.horizontal(0, 1750, 17500);
+
         this.postFxEvent();
         if (this.hud.settings.desktop === true) {
             this.input.setDefaultCursor('url(assets/images/cursor.png), pointer');
@@ -188,8 +184,23 @@ export class Underground extends Scene {
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
+        
+        this.createArenaEnemy();
         EventBus.emit('current-scene-ready', this);
     };
+
+    handleFloorChange(entity: any, floorLayer: any) {
+        if (floorLayer === 'base_layer') {
+            // Enable collisions with the base layer and disable with the top layer
+            entity.setCollisionCategory(this.groundLayer);
+            entity.setCollidesWith(this.groundLayer);
+        } else if (floorLayer === 'top_layer') {
+            // Enable collisions with the top layer and disable with the base layer
+            entity.setCollisionCategory(this.layer3);
+            entity.setCollidesWith(this.layer3);
+        };
+    };
+    
 
     cleanUp = (): void => {
         EventBus.off('ascean');
@@ -215,9 +226,6 @@ export class Underground extends Scene {
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].cleanUp();
         };
-        for (let i = 0; i < this.npcs.length; i++) {
-            this.npcs[i].cleanUp();
-        };
         this.player.cleanUp();
     };
 
@@ -225,10 +233,9 @@ export class Underground extends Scene {
         EventBus.on('ascean', (ascean: Ascean) => this.ascean = ascean);
         EventBus.on('combat', (combat: any) => this.state = combat); 
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
-        EventBus.on('create-arena', this.createArenaEnemy);
         EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
         EventBus.on('enemyLootDrop', (drops: any) => {
-            if (drops.scene !== 'Underground') return;
+            if (drops.scene !== 'Arena') return;
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
         });    
         EventBus.on('minimap', () => {
@@ -254,7 +261,7 @@ export class Underground extends Scene {
             };
         });
         EventBus.on('music', (on: boolean) => {
-            if (on === true && !this.scene.isPaused('Underground')) {
+            if (on === true && !this.scene.isPaused('Arena')) {
                 this.resumeMusic();
             } else {
                 this.pauseMusic();
@@ -327,6 +334,7 @@ export class Underground extends Scene {
             this.player.playerMachine.positiveMachine.setState(States.STEALTH);
             this.stealthEngaged(true);
         };
+        this.createArenaEnemy();
         EventBus.emit('current-scene-ready', this);
     };
     switchScene = (current: string) => {
@@ -350,6 +358,7 @@ export class Underground extends Scene {
         } else {
             this.musicBackground.resume();
         };
+        this.createArenaEnemy();
         EventBus.emit('current-scene-ready', this);
     };
 
@@ -482,8 +491,20 @@ export class Underground extends Scene {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
                 this.enemies[i].clearCombat();
+                this.computerDisengage();
             };
         };
+    };
+    computerDisengage = () => {
+        if (this.enemies.length > 0) {
+            for (let i = 0; i < this.enemies.length; i++) {
+                this.destroyEnemy(this.enemies[i]);
+            };
+        };
+        EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
+        this.time.delayedCall(3000, () => {
+            EventBus.emit("scene-switch", "Underground");
+        }, undefined, this);
     };
     combatEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
@@ -509,7 +530,7 @@ export class Underground extends Scene {
             } else {
                 this.musicBackground.resume();
             };
-            this.stopCombatTimer();    
+            this.stopCombatTimer();
         };
         this.combat = bool;
         EventBus.emit('combat-engaged', bool);
@@ -587,7 +608,7 @@ export class Underground extends Scene {
         for (let i = 0; i < this.markers.length; i++) {
             const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
             const direction = position.subtract(this.player.position);
-            if (direction.length() < 600) {
+            if (direction.length() < 1000) {
                 markers.push(this.markers[i]);
             };
         };
@@ -596,12 +617,13 @@ export class Underground extends Scene {
         this.enemies.push(enemy);
         return enemy;
     };
-    createArenaEnemy = (data: Compiler[]) => {
+    createArenaEnemy = () => {
+        let data: Compiler[] = this.registry.get("enemies");
         let marker: any, markers: any[] = [];
         for (let i = 0; i < this.markers.length; i++) {
             const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
             const direction = position.subtract(this.player.position);
-            if (direction.length() < 600) {
+            if (direction.length() < 1000) {
                 markers.push(this.markers[i]);
             };
         };
@@ -618,12 +640,15 @@ export class Underground extends Scene {
     };
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
-        enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, "Something is tearing into me. Please, help!", 2000, 'damage', false, true, () => enemy.specialCombatText = undefined);
+        enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, "Something is tearing into me. Please, help!", 1500, 'damage', false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DEATH);
-        this.time.delayedCall(3000, () => {
+        this.time.delayedCall(2000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e !== enemy);
             enemy.cleanUp();
             enemy.destroy();
+            if (this.enemies.length === 0 || !this.combat) {
+                this.computerDisengage();
+            };
         }, undefined, this);
     };
     summonEnemy = (summons: number) => {
@@ -681,8 +706,6 @@ export class Underground extends Scene {
             this.enemies[i].update();
             if (this.enemies[i].isDefeated && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
         };
-        for (let i = 0; i < this.dms.length; i++) {this.dms[i].update();};
-        // for (let i = 0; i < this.npcs.length; i++) {this.npcs[i].update();};
         const camera = this.cameras.main;
         const bounds = new Phaser.Geom.Rectangle(
             this.map.worldToTileX(camera.worldView.x) as number - 2,

@@ -11,6 +11,7 @@ import { useResizeListener } from "../../utility/dimensions";
 import { Underground } from "./Underground";
 import Logger, { ConsoleLogger } from '../../utility/Logger';
 import { roundToTwoDecimals } from "../../utility/combat";
+import { Arena } from "./Arena";
 const dimensions = useResizeListener();
 
 export class Hud extends Phaser.Scene {
@@ -135,8 +136,8 @@ export class Hud extends Phaser.Scene {
         });
         EventBus.on('switch-scene', (data: {current: string, next: string}) => {
             const { current, next } = data;
-            const cScene = this.scene.get(current) as Game | Underground;
-            const nScene = this.scene.get(next) as Game | Underground;
+            const cScene = this.scene.get(current) as Game | Underground | Arena;
+            const nScene = this.scene.get(next) as Game | Underground | Arena;
             cScene.switchScene(current);
             this.time.delayedCall(1000, () => {
                 if (this.scene.isSleeping(next)) {

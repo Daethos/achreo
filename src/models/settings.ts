@@ -23,7 +23,8 @@ export default class Settings {
     public stamina: string;
     public control: string;
     public desktop: boolean;
-    public difficulty: { 
+    public difficulty: {
+        arena: boolean;
         aggression: number; 
         aim: boolean; 
         computer: boolean;
@@ -151,6 +152,7 @@ export default class Settings {
         this.control = 'Buttons';
         this.desktop = false;
         this.difficulty = {
+            arena: true,
             aggression: 0.5,
             aim: false,
             computer: false,

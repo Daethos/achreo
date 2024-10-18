@@ -5,7 +5,7 @@ import { Combat } from "../stores/combat";
 import { ARENA_ENEMY, EnemySheet } from '../utility/enemy';
 import { EventBus } from "../game/EventBus";
 import { GameState } from '../stores/game';
-import { LevelSheet } from '../utility/ascean';
+import { Compiler, LevelSheet } from '../utility/ascean';
 import { usePhaserEvent } from '../utility/hooks';
 import { consumePrayer, instantActionCompiler, prayerEffectTick, prayerRemoveTick, statusEffectCheck, weaponActionCompiler } from '../utility/combat';
 import { screenShake } from '../game/phaser/ScreenShake';
@@ -16,7 +16,7 @@ import { validateHealth, validateLevel, validateMastery } from '../utility/valid
 import { adjustTime } from './Timer';
 import { Store } from 'solid-js/store';
 import { IRefPhaserGame } from '../game/PhaserGame';
-import Arena from './Arena';
+import Roster from './Roster';
 const Character = lazy(async () => await import('./Character'));
 const CombatUI = lazy(async () => await import('./CombatUI'));
 const Deity = lazy(async () => await import('./Deity'));
@@ -382,6 +382,8 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     opponentExp: Math.min(experience, res?.player?.level! * 1000),
                 };
                 EventBus.emit('record-win', { record: res, experience: newState, enemies: arena().enemies, wager: arena().wager });
+                // if (instance.scene?.scene.key !== 'Arena') {
+                // };
                 const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
                 EventBus.emit('enemy-loot', loot);
                 setAsceanState({ ...asceanState(), avarice: false });
@@ -419,7 +421,18 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
     usePhaserEvent('show-roster', () => setArena({ ...arena(), show: true }));
-    usePhaserEvent('set-wager', (wager: { silver: number; gold: number; }) => setArena({ ...arena(), wager }));
+    usePhaserEvent('set-wager-arena', (data: { wager: { silver: number; gold: number; }; enemies: Compiler[] }) => {
+        const { wager, enemies } = data;
+        instance.game?.registry.set("enemies", enemies);
+        setArena({ ...arena(), wager });
+        EventBus.emit("scene-switch", "Arena");
+    });
+    usePhaserEvent('set-wager-underground', (data: { wager: { silver: number; gold: number; }; enemies: Compiler[] }) => {
+        const { wager, enemies } = data;
+        instance.game?.registry.set("enemies", enemies);
+        setArena({ ...arena(), wager });
+        EventBus.emit("create-arena", enemies);
+    });
     return <div id='base-ui'>
         <Show when={game().showPlayer} fallback={<div style={{ position: "absolute", 'z-index': 1 }}>
             <Suspense fallback={<Puff color="gold" />}>
@@ -448,6 +461,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 <Deity ascean={ascean} combat={combat} game={game} statistics={statistics} />
             </Suspense>
         </Show>
-        <Arena arena={arena} ascean={ascean} setArena={setArena} base={true} />
+        <Roster arena={arena} ascean={ascean} setArena={setArena} base={true} />
     </div>;
 };

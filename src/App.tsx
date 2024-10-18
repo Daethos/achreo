@@ -298,20 +298,21 @@ export default function App() {
     const actions = {
         "Duel": (val: number) => summonEnemy(val),
         "Roster": () => { EventBus.emit('show-roster'); },
-        'Enter Cave': () => switchScene('Underground'),
+        'Enter Underground': () => switchScene('Underground'),
         'Enter Tent': () => switchScene('Tent'),
         'Enter North Port': () => EventBus.emit('Port', 'South'),
         'Enter South Port': () => EventBus.emit('Port', 'North'),
         'Enter East Port': () => EventBus.emit('Port', 'West'),
         'Enter West Port': () => EventBus.emit('Port', 'East'),
         'Close': () => setShow(false),
-        'Exit Cave': () => switchScene('Game'),
+        'Exit Underground': () => switchScene('Game'),
         'Exit World': () => switchScene('Game'),
         'Pause': () => togglePause(true),
         'Resume': () => togglePause(false),
     };
     usePhaserEvent('alert', (payload: { header: string, body: string, delay?: number, key?: string, arg: any }) => makeToast(payload.header, payload.body, payload.delay, payload.key, payload.arg));
     usePhaserEvent('set-tips', setTips);
+    usePhaserEvent('scene-switch', (scene: string) => switchScene(scene));
     usePhaserEvent('enter-menu', enterMenu);
     usePhaserEvent('fetch-ascean', fetchAscean);
     usePhaserEvent('loading-ascean', loadingAscean);

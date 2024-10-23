@@ -62,6 +62,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     isClimbing: boolean = false;
     inCombat: boolean = false;
     isContemplating: boolean = false;
+    isDefeated: boolean = false;
     isPosted: boolean = false;
     isRanged: boolean = false;
 
@@ -191,6 +192,18 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     specialAction: string = '';
     isComputer: boolean = false;
     evadeType: number = 1;
+    negationName: string = '';
+    evadeRight: boolean = false;
+    evadeUp: boolean = false;
+    contemplationTime: number;
+    chiomicTimer: Phaser.Time.TimerEvent | undefined;
+    confuseTimer: Phaser.Time.TimerEvent | undefined;
+    consumedTimer: Phaser.Time.TimerEvent | undefined;
+    devourTimer: Phaser.Time.TimerEvent | undefined;
+    fearTimer: Phaser.Time.TimerEvent | undefined;
+    patrolTimer: Phaser.Time.TimerEvent | undefined;
+    polymorphTimer: Phaser.Time.TimerEvent | undefined;
+    reconTimer: Phaser.Time.TimerEvent | undefined;
 
     static preload(scene: Phaser.Scene) {
         scene.load.atlas(`player_actions`, '../assets/gui/player_actions.png', '../assets/gui/player_actions_atlas.json');

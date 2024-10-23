@@ -283,10 +283,10 @@ export default function App() {
             setMenu({ ...menu()});
         };
     };
-    function switchScene(next: string): void {
+    function switchScene(current: string, next: string): void {
         setShow(false);
-        const scene = phaserRef.scene as Scene;
-        EventBus.emit('switch-scene', { current: scene.scene.key, next });
+        // console.log(`Switching Scenes from ${current} to ${next}`);
+        EventBus.emit('switch-scene', { current, next });
     };
     function summonEnemy(val: number = 1) {
         EventBus.emit('summon-enemy', val);
@@ -298,21 +298,21 @@ export default function App() {
     const actions = {
         "Duel": (val: number) => summonEnemy(val),
         "Roster": () => { EventBus.emit('show-roster'); },
-        'Enter Underground': () => switchScene('Underground'),
-        'Enter Tent': () => switchScene('Tent'),
+        'Enter Underground': () => switchScene('Game', 'Underground'),
+        'Enter Tent': () => switchScene('Game', 'Tent'),
         'Enter North Port': () => EventBus.emit('Port', 'South'),
         'Enter South Port': () => EventBus.emit('Port', 'North'),
         'Enter East Port': () => EventBus.emit('Port', 'West'),
         'Enter West Port': () => EventBus.emit('Port', 'East'),
         'Close': () => setShow(false),
-        'Exit Underground': () => switchScene('Game'),
-        'Exit World': () => switchScene('Game'),
+        'Exit Underground': () => switchScene('Underground', 'Game'),
+        'Exit World': () => switchScene('Underground', 'Game'),
         'Pause': () => togglePause(true),
         'Resume': () => togglePause(false),
     };
     usePhaserEvent('alert', (payload: { header: string, body: string, delay?: number, key?: string, arg: any }) => makeToast(payload.header, payload.body, payload.delay, payload.key, payload.arg));
     usePhaserEvent('set-tips', setTips);
-    usePhaserEvent('scene-switch', (scene: string) => switchScene(scene));
+    usePhaserEvent('scene-switch', (data:{current:string,next:string}) => switchScene(data.current,data.next));
     usePhaserEvent('enter-menu', enterMenu);
     usePhaserEvent('fetch-ascean', fetchAscean);
     usePhaserEvent('loading-ascean', loadingAscean);

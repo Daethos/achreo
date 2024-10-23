@@ -1,9 +1,9 @@
-import { Game } from "../scenes/Game";
 import { masteryNumber } from "../../utility/styling";
+import { Play } from "../main";
 const CONVERSION = {
     Arena: {
-        X: 500,
-        Y: 35
+        X: 0,
+        Y: 0
     },
     Game: {
         X: 265,
@@ -17,7 +17,7 @@ const CONVERSION = {
 export default class Beam {
     player: any;
     color: number;
-    scene: Game;
+    scene: Play;
     emitter: Phaser.GameObjects.Particles.ParticleEmitter;
     enemyEmitters: any;
     target: any;

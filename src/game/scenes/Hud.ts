@@ -8,10 +8,9 @@ import { initReputation, Reputation } from "../../utility/player";
 import Settings, { initSettings } from "../../models/settings";
 import { EventBus } from "../EventBus";
 import { useResizeListener } from "../../utility/dimensions";
-import { Underground } from "./Underground";
 import Logger, { ConsoleLogger } from '../../utility/Logger';
 import { roundToTwoDecimals } from "../../utility/combat";
-import { Arena } from "./Arena";
+import { Play } from "../main";
 const dimensions = useResizeListener();
 
 export class Hud extends Phaser.Scene {
@@ -67,6 +66,7 @@ export class Hud extends Phaser.Scene {
             this.logger.log('Console: Something concerning but potentially innocuous!');
             this.logger.log('Warning: Some function did not work, but did not crash the game!');
             this.logger.log('Error: Some portion if not all of the game has crashed!');
+            this.logger.log(`Console: Current Height: ${this.gameHeight} / Width: ${this.gameWidth}`);
         }, undefined, this);
         this.input.keyboard?.on('keydown-P', () => {
             EventBus.emit('action-button-sound');
@@ -110,12 +110,21 @@ export class Hud extends Phaser.Scene {
                 this.rightJoystick?.pointer?.setVisible(false);
                 this.joystick?.joystick?.setVisible(false);
                 this.rightJoystick?.joystick?.setVisible(false);
-                if (this.actionBar) this.actionBar.draw();
+                if (this.actionBar) {
+                    // this.actionBar.setVisible(true);
+                    this.actionBar.draw();
+                };
             } else {
-                this.joystick?.joystick?.setVisible(true);
-                this.rightJoystick?.joystick?.setVisible(true);
-                this.rightJoystick?.pointer?.setVisible(true);
-                if (this.actionBar) this.actionBar.draw();
+                const player = this.registry.get("player");
+                if (!player.isComputer) {
+                    this.joystick?.joystick?.setVisible(true);
+                    this.rightJoystick?.joystick?.setVisible(true);
+                    this.rightJoystick?.pointer?.setVisible(true);
+                    if (this.actionBar) {
+                        // this.actionBar.setVisible(true);
+                        this.actionBar.draw();
+                    };
+                };
             };
         }); 
         
@@ -136,12 +145,17 @@ export class Hud extends Phaser.Scene {
         });
         EventBus.on('switch-scene', (data: {current: string, next: string}) => {
             const { current, next } = data;
-            const cScene = this.scene.get(current) as Game | Underground | Arena;
-            const nScene = this.scene.get(next) as Game | Underground | Arena;
-            cScene.switchScene(current);
-            this.time.delayedCall(1000, () => {
-                if (this.scene.isSleeping(next)) {
-                    nScene.resumeScene();
+            this.logger.log(`Console: Moving from ${current} to ${next}.`);
+            const currentScene = this.scene.get(current) as Play;
+            const nextScene = this.scene.get(next) as Play;
+            currentScene.switchScene(current);
+            this.time.delayedCall(1250, () => {
+                const asleep = this.scene.isSleeping(next);
+                const paused = this.scene.isPaused(next);
+                const active = this.scene.isActive(next);
+                // console.log(`%c The next scene is active: ${active} The next scene asleep: ${asleep}. The next scene paused: ${paused}.`, 'color:gold');
+                if (active || asleep || paused) {
+                    nextScene.resumeScene();
                 } else {
                     this.scene.launch(next, this);
                 };

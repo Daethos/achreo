@@ -54,8 +54,9 @@ export default function Roster({ arena, ascean, setArena, base }: { arena: Acces
         <div class='modal'>
         <div class='center creature-heading' style={{ position: 'absolute',left: '20%',top: '10%',height: '80%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' }}>
             <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Opponents Chosen:</span> {arena().enemies.length}</h1>
+            <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Wager:</span> {arena().wager.gold}g {arena().wager.silver}s</h1>
             <h1 style={{ margin: '8px 0' }} onClick={() => setSwitchScene(!switchScene())}><span style={{ color: '#fdf6d8' }}>Map Selected: </span>{switchScene() ? 'Arena' : 'Underground'}</h1>
-            <span style={{ 'font-size': '0.65em' }}>Click to switch maps. Note: Player AI is available only in the Arena at this time.</span>
+            <p style={{ 'font-size': '0.75em', 'margin': '0' }}>Click to switch maps. [Note]: Player AI is available only in the Arena at this time.</p>
             {arena().enemies.length > 0 && <button class='highlight animate' onClick={() => createArena()} style={{ 'font-size': '1.25em' }}>Enter the Eulex</button>}
             <For each={arena().enemies}>{(enemy) => {
                 return (

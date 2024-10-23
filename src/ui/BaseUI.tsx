@@ -425,7 +425,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         const { wager, enemies } = data;
         instance.game?.registry.set("enemies", enemies);
         setArena({ ...arena(), wager });
-        EventBus.emit("scene-switch", "Arena");
+        EventBus.emit("scene-switch", {current:"Underground", next:"Arena"});
     });
     usePhaserEvent('set-wager-underground', (data: { wager: { silver: number; gold: number; }; enemies: Compiler[] }) => {
         const { wager, enemies } = data;

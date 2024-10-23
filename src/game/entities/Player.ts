@@ -43,6 +43,7 @@ const ORIGIN = {
  
 export default class Player extends Entity {
     playerID: string;
+    computerAction: boolean = false;
     currentTarget: undefined | Enemy = undefined;
     spellTarget: string = '';
     maxStamina: number;
@@ -71,6 +72,34 @@ export default class Player extends Entity {
     markAnimation: boolean = false;
     reactiveTarget: string;
     inputKeys: any;
+    wasFlipped: boolean = false;
+    specials: boolean = false;
+    spellName: string = '';
+    reconTimer: Phaser.Time.TimerEvent | undefined = undefined;
+    isNetherswapping: boolean = false;
+    isStimulating: boolean = false;
+    netherswapTarget: Enemy | undefined = undefined;
+    hookTime: number;
+    isDiseasing: boolean = false;
+    isSacrificing: boolean = false;
+    isSlowing: boolean = false;
+    reactiveName: string = '';
+    confuseDirection = 'down';
+    confuseVelocity = { x: 0, y: 0 };
+    polymorphVelocity = { x: 0, y: 0 };
+    fearVelocity = { x: 0, y: 0 };
+    isHowling: boolean = false;
+    isBerserking: boolean = false;
+    isBlinding: boolean = false;
+    isCaerenesis: boolean = false;
+    isScreaming: boolean = false;
+    isRenewing: boolean = false;
+    isEnduring: boolean = false;
+    isConvicted: boolean = false;
+    isImpermanent: boolean = false;
+    isSeering: boolean = false;
+    snareDuration = DURATION.SNARED;
+
 
     constructor(data: any) {
         const { scene } = data;
@@ -250,6 +279,7 @@ export default class Player extends Entity {
             this.highlightAnimation = true;
             this.animateTarget();
         };
+        // if (!sprite || !sprite.body) return;
         this.highlight.setPosition(sprite.x, sprite.y);
         this.highlight.setVisible(true);
         this.scene.targetTarget = sprite;
@@ -437,7 +467,10 @@ export default class Player extends Entity {
         };
         if (e.computerRollSuccess === true) this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.resistCombatText = undefined);
         if (e.newComputerHealth <= 0 && e.playerWin === true) this.defeatedEnemyCheck(e.enemyID);
-        if (e.newPlayerHealth <= 0) this.disengage();    
+        if (e.newPlayerHealth <= 0) {
+            this.isDefeated = true;
+            this.disengage();
+        };    
         if (e.playerAttributes?.stamina as number > this.maxStamina) this.maxStamina = e.playerAttributes?.stamina as number;
         if (e.playerAttributes?.grace as number > this.maxGrace) this.maxGrace = e.playerAttributes?.grace as number;
         if (this.inCombat === false && this.scene.combat === true) this.scene.combatEngaged(false);
@@ -1514,7 +1547,7 @@ export default class Player extends Entity {
             if (!this.isSuffering() && !this.scene.hud.input.activePointer.rightButtonDown() && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.left.A.isDown) {
                 this.playerVelocity.x = 0;
             };
-            if (!this.isSuffering() && !this.scene.hud.input.activePointer.rightButtonDown() && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown) {
+            if (!this.isSuffering() && !this.scene.hud.input.activePointer.rightButtonDown() && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.right.D.isDown) {
                 this.playerVelocity.x = 0;
             };
             if (!this.isSuffering() && !this.scene.hud.input.activePointer.rightButtonDown() && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown) {
@@ -1565,11 +1598,11 @@ export default class Player extends Entity {
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
     }; 
 
-    update() {
+    update(dt: number) {
         this.handleConcerns();
         this.handleActions();
         this.handleAnimations();
         this.handleMovement(); 
-        this.playerMachine.update(this.dt);
+        this.playerMachine.update(dt);
     };  
 };

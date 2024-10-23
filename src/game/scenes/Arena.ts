@@ -1,14 +1,11 @@
-import Ascean from '../../models/ascean';
 import { Cameras, GameObjects, Scene, Tilemaps, Time } from 'phaser';
 import { Combat, initCombat } from '../../stores/combat';
 import { EventBus } from '../EventBus';
 import LootDrop from '../matter/LootDrop';
-import ActionButtons from '../phaser/ActionButtons';
 import { GameState } from '../../stores/game';
 import Equipment from '../../models/equipment';
 import { States } from '../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
-import SmallHud from '../phaser/SmallHud';
 import Fov from '../phaser/Fov';
 import { Reputation, initReputation } from '../../utility/player';
 import Player from '../entities/Player';
@@ -31,7 +28,6 @@ export class Arena extends Scene {
     offsetX: number;
     offsetY: number;
     gameState: GameState | undefined;
-    ascean: Ascean  | undefined;
     state: Combat = initCombat;
     reputation: Reputation = initReputation;
     player: any;
@@ -48,7 +44,6 @@ export class Arena extends Scene {
     combatTime: number = 0;
     combatTimer: Time.TimerEvent;
     tweenManager: any;
-    actionBar: ActionButtons;
     particleManager: ParticleManager;
     map: Tilemaps.Tilemap;
     background: GameObjects.Image;
@@ -62,7 +57,6 @@ export class Arena extends Scene {
     musicStealth: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     volumeEvent: () => void;
     matterCollision: any;
-    smallHud: SmallHud;
     combatManager: CombatManager;
     vision: any;
     fov?: any;
@@ -78,6 +72,7 @@ export class Arena extends Scene {
     hud: Hud;
     platform: MovingPlatform;
     platform2: MovingPlatform;
+    platform3: MovingPlatform;
 
     constructor () {
         super('Arena');
@@ -132,8 +127,8 @@ export class Arena extends Scene {
         } else {
             this.player = new PlayerComputer({ scene: this, x: random.x, y: random.y, texture: 'player_actions', frame: 'player_idle_0' });
             this.hud.actionBar.setVisible(false);
-            this.hud.joystick.setVisible(false);
-            this.hud.rightJoystick.setVisible(false);
+            this.hud.joystick.joystick.setVisible(false);
+            this.hud.rightJoystick.joystick.setVisible(false);
         };
 
 
@@ -170,11 +165,17 @@ export class Arena extends Scene {
         this.musicCombat = this.sound.add('industrial', { volume: this?.hud?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
         
-        // this.platform = new MovingPlatform(this, 400, 1500, 'player-castbar', { isStatic: true });
-        // this.platform.vertical(0, -1500, 15000);
-        // this.platform2 = new MovingPlatform(this, 400, 1500, 'player-castbar', { isStatic: true });
+        // this.platform = new MovingPlatform(this, 1440, 640, 'player-castbar', { isStatic: true });
+        // this.platform.vertical(0, 1320, 12000);
+        
+        // this.platform2 = new MovingPlatform(this, 768, 224, 'player-castbar', { isStatic: true });
         // this.platform2.setAngle(90);
-        // this.platform2.horizontal(0, 1500, 15000);
+        // this.platform2.horizontal(0, 1824, 12000);
+        
+        // this.platform3 = new MovingPlatform(this, 192, 1792, 'player-castbar', { isStatic: true });
+        // this.platform3.setAngle(90);
+        // this.platform3.horizontal(0, 1440, 12000);
+        
 
         this.postFxEvent();
         if (this.hud.settings.desktop === true) {
@@ -203,10 +204,8 @@ export class Arena extends Scene {
     
 
     cleanUp = (): void => {
-        EventBus.off('ascean');
         EventBus.off('combat');
         EventBus.off('reputation');
-        EventBus.off('settings');
         EventBus.off('enemyLootDrop');
         EventBus.off('minimap');
         EventBus.off('aggressive-enemy');
@@ -230,7 +229,6 @@ export class Arena extends Scene {
     };
 
     gameEvent = (): void => {
-        EventBus.on('ascean', (ascean: Ascean) => this.ascean = ascean);
         EventBus.on('combat', (combat: any) => this.state = combat); 
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
         EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
@@ -274,25 +272,6 @@ export class Arena extends Scene {
             let camera = this.cameras.main;
             camera.zoom = zoom;
         });
-        EventBus.on('create-enemy', this.createEnemy);
-        EventBus.on('summon-enemy', this.summonEnemy);
-        EventBus.on('Port', (direction: string) => {
-            switch (direction) {
-                case 'North':
-                    this.player.setPosition(this.north.x, this.north.y + 32);
-                    break;
-                case 'South':
-                    this.player.setPosition(this.south.x, this.south.y + 32);
-                    break;
-                case 'East':
-                    this.player.setPosition(this.east.x, this.east.y + 32);
-                    break;
-                case 'West':
-                    this.player.setPosition(this.west.x, this.west.y + 32);
-                    break;
-                default: break;
-            };
-        });
         EventBus.on('update-speed', (data: { speed: number, type: string }) => {
             switch (data.type) {
                 case 'playerSpeed':
@@ -303,12 +282,6 @@ export class Arena extends Scene {
                         this.enemies[i].adjustSpeed(data.speed);
                     };
                     break;
-            };
-        });
-        EventBus.on('update-enemy-aggression', (aggression: number) => {
-            for (let i = 0; i < this.enemies.length; i++) {
-                this.enemies[i].isAggressive = aggression >= Math.random();
-
             };
         });
         EventBus.on('update-enemy-special', (special: number) => {
@@ -325,30 +298,34 @@ export class Arena extends Scene {
     };
 
     resumeScene = () => {
-        this.cameras.main.fadeIn();
-        // this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, (_cam: any, _effect: any) => {
+        this.cameras.main.fadeIn();//.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, (_cam: any, _effect: any) => {
             this.resumeMusic();
             this.state = this.registry.get("combat");
-            this.registry.set("player", this.player);
             this.player.health = this.state.newPlayerHealth;
             this.player.healthbar.setValue(this.state.newPlayerHealth);
+            this.registry.set("player", this.player);
             if (this.state.isStealth) {
                 this.player.playerMachine.positiveMachine.setState(States.STEALTH);
                 this.stealthEngaged(true);
             };
             const random = this.markers[Math.floor(Math.random() * this.markers.length)];
             this.player.setPosition(random.x, random.y);
+            if (this.player.isComputer) {
+                this.hud.actionBar.setVisible(false);
+                this.hud.joystick.joystick.setVisible(false);
+                this.hud.rightJoystick.joystick.setVisible(false);
+            };
             this.createArenaEnemy();
             this.scene.wake();
             EventBus.emit('current-scene-ready', this);
         // });
     };
     switchScene = (current: string) => {
-        this.cameras.main.fadeOut();
-        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
+        this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
             this.registry.set("combat", this.state);
             this.registry.set("settings", this.hud.settings);
             this.registry.set("ascean", this.state.player);
+            this.hud.actionBar.setVisible(true);
             this.player.disengage();
             this.pauseMusic();
             this.scene.sleep(current);
@@ -497,19 +474,19 @@ export class Arena extends Scene {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
                 this.enemies[i].clearCombat();
-                this.computerDisengage();
             };
         };
     };
     computerDisengage = () => {
-        if (this.enemies.length > 0) {
-            for (let i = 0; i < this.enemies.length; i++) {
-                this.destroyEnemy(this.enemies[i]);
-            };
-        };
+        this.player.disengage();
+        // if (this.enemies.length > 0) {
+        //     for (let i = 0; i < this.enemies.length; i++) {
+        //         this.destroyEnemy(this.enemies[i]);
+        //     };
+        // };
         EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
         this.time.delayedCall(3000, () => {
-            EventBus.emit("scene-switch", "Underground");
+            EventBus.emit("scene-switch", {current:"Arena", next:"Underground"});
         }, undefined, this);
     };
     combatEngaged = (bool: boolean) => {
@@ -525,7 +502,7 @@ export class Arena extends Scene {
             if (this.musicStealth.isPlaying) this.musicStealth.stop();
             this.startCombatTimer();
         } else if (bool === false) {
-            this.clearAggression();
+            // this.clearAggression();
             this.musicCombat.stop();
             if (this.player.isStealthing) {
                 if (this.musicStealth.isPaused) {
@@ -564,7 +541,7 @@ export class Arena extends Scene {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (this.musicBackground.isPlaying) this.musicBackground.pause();
         if (this.musicCombat.isPlaying) this.musicCombat.pause();
-        this.musicStealth.pause();
+        if (this.musicStealth.isPlaying) this.musicStealth.pause();
     };
     resumeMusic = (): void => {
         if (this.scene.isSleeping(this.scene.key)) return;
@@ -609,68 +586,49 @@ export class Arena extends Scene {
         EventBus.emit('blend-game', { dialogTag });
         this.hud.smallHud.activate('dialog', dialogTag);
     }; // smallHud: dialog
-    createEnemy = () => {
-        let marker: any, markers: any[] = [];
-        for (let i = 0; i < this.markers.length; i++) {
-            const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
-            const direction = position.subtract(this.player.position);
-            if (direction.length() < 1000) {
-                markers.push(this.markers[i]);
-            };
-        };
-        marker = markers[Math.floor(Math.random() * markers.length)];
-        const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0', data: undefined  });
-        this.enemies.push(enemy);
-        return enemy;
-    };
     createArenaEnemy = () => {
-        let data: Compiler[] = this.registry.get("enemies");
-        let marker: any, markers: any[] = [];
-        for (let i = 0; i < this.markers.length; i++) {
-            const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
-            const direction = position.subtract(this.player.position);
-            if (direction.length() < 1000) {
-                markers.push(this.markers[i]);
+        EventBus.emit('alert', { header: "Prepare!", body: "The enemies are being summoned. Prepare for the Eulex.", key: "Close" });
+        this.time.delayedCall(1500, () => {
+            let data: Compiler[] = this.registry.get("enemies");
+            let marker: any, markers: any[] = [];
+            for (let i = 0; i < this.markers.length; i++) {
+                const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
+                const direction = position.subtract(this.player.position);
+                if (direction.length() < 1000) {
+                    markers.push(this.markers[i]);
+                };
             };
-        };
-        for (let j = 0; j < data.length; j++) {
-            marker = markers[Math.floor(Math.random() * markers.length)];
-            const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0', data: data[j] });
-            this.enemies.push(enemy);
-            this.time.delayedCall(3000, () => {
-                enemy.checkEnemyCombatEnter();
-                this.player.targets.push(enemy);
-                this.player.targetEngagement(enemy.enemyID);
-                if (this.player.isComputer || !this.hud.settings.difficulty.arena) this.player.playerMachine.stateMachine.setState(States.CHASE);
-            }, undefined, this);
-        };
+            for (let j = 0; j < data.length; j++) {
+                marker = markers[Math.floor(Math.random() * markers.length)];
+                const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0', data: data[j] });
+                this.enemies.push(enemy);
+                this.time.delayedCall(1500, () => {
+                    enemy.checkEnemyCombatEnter();
+                    this.player.targets.push(enemy);
+                    this.player.targetEngagement(enemy.enemyID);
+                    if (this.player.isComputer || !this.hud.settings.difficulty.arena) this.player.playerMachine.stateMachine.setState(States.CHASE);
+                }, undefined, this);
+            };
+        }, undefined, this);
     };
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
-        enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, "Something is tearing into me. Please, help!", 1500, 'damage', false, true, () => enemy.specialCombatText = undefined);
+        const saying = enemy.isDefeated ? "Something is tearing into me. Please, help!" : "I'll be seeing you.";
+        enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, saying, 1250, 'bone', false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DEATH);
         this.time.delayedCall(2000, () => {
-            this.enemies = this.enemies.filter((e: Enemy) => e !== enemy);
+            this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
             enemy.cleanUp();
             enemy.destroy();
             if (this.enemies.length === 0 || !this.combat) {
+                console.log('computerDisengage destroyEnemy');
                 this.computerDisengage();
             };
         }, undefined, this);
     };
-    summonEnemy = (summons: number) => {
-        for (let i = 0; i < summons; i++) {
-            const enemy = this.createEnemy();
-            this.time.delayedCall(3000, () => {
-                enemy.checkEnemyCombatEnter();
-                this.player.targets.push(enemy);
-                this.player.targetEngagement(enemy.enemyID);
-            }, undefined, this);
-        };
-    };
     // ============================ Player ============================ \\
-    playerUpdate = (): void => {
-        this.player.update(); 
+    playerUpdate = (delta: number): void => {
+        this.player.update(delta); 
         this.combatManager.combatMachine.process();
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
@@ -707,11 +665,11 @@ export class Arena extends Scene {
         EventBus.emit('update-combat-timer', this.combatTime);
     };
     update(_time: number, delta: number): void {
-        this.playerUpdate();
+        this.playerUpdate(delta);
         this.hud.rightJoystick.update();
         for (let i = 0; i < this.enemies.length; i++) {
-            this.enemies[i].update();
-            if (this.enemies[i].isDefeated && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
+            this.enemies[i].update(delta);
+            if ((this.enemies[i].isDefeated || this.enemies[i].isTriumphant) && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
         };
         const camera = this.cameras.main;
         const bounds = new Phaser.Geom.Rectangle(

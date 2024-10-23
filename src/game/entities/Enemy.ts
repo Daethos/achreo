@@ -47,7 +47,6 @@ export default class Enemy extends Entity {
     computerAggressive: boolean;
     isSpecial: boolean;
     slowDuration: number = DURATION.SLOWED;
-    isDefeated: boolean = false;
     isTriumphant: boolean = false;
     isLuckout: boolean = false;
     isPersuaded: boolean = false;
@@ -68,18 +67,7 @@ export default class Enemy extends Entity {
     patrolDelay: number;
     wasFlipped: boolean = false;
     channelCount: number = 0;
-    contemplationTime: number;
-    evadeRight: boolean = false;
-    evadeUp: boolean = false;
     isSwinging: boolean = false;
-    chiomicTimer: Phaser.Time.TimerEvent | undefined;
-    confuseTimer: Phaser.Time.TimerEvent | undefined;
-    consumedTimer: Phaser.Time.TimerEvent | undefined;
-    devourTimer: Phaser.Time.TimerEvent | undefined;
-    fearTimer: Phaser.Time.TimerEvent | undefined;
-    patrolTimer: Phaser.Time.TimerEvent | undefined;
-    polymorphTimer: Phaser.Time.TimerEvent | undefined;
-    reconTimer: Phaser.Time.TimerEvent | undefined;
     isDiseasing: boolean = false;
     reactiveName: string = '';
     isHowling: boolean = false;
@@ -2281,6 +2269,7 @@ export default class Enemy extends Entity {
             getStealth(this.spriteShield);
         } else {
             const clearStealth = (object: any) => {
+                if (!object) return;
                 this.scene.tweens.killTweensOf(object);
                 object.setAlpha(1);
                 object.clearTint();
@@ -2975,7 +2964,7 @@ export default class Enemy extends Entity {
     };
 
     currentWeaponCheck = () => {
-        if (this.spriteWeapon && this.spriteShield) {
+        if (this.spriteWeapon && this.spriteShield && this.body) {
             this.spriteWeapon.setPosition(this.x, this.y);
             this.spriteShield.setPosition(this.x, this.y);
             this.weaponRotation('enemy', this.attacking);
@@ -3021,12 +3010,14 @@ export default class Enemy extends Entity {
     };
     
     evaluateEnemyState = () => {
-        this.currentWeaponCheck();
-        if (this.healthbar) this.healthbar.update(this);
-        if (this.scrollingCombatText !== undefined) this.scrollingCombatText.update(this);
-        if (this.specialCombatText !== undefined) this.specialCombatText.update(this); 
-        if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-        if (this.negationBubble) this.negationBubble.update(this.x, this.y);
+        if (this.body) {
+            this.currentWeaponCheck();
+            if (this.healthbar) this.healthbar.update(this);
+            if (this.scrollingCombatText !== undefined) this.scrollingCombatText.update(this);
+            if (this.specialCombatText !== undefined) this.specialCombatText.update(this); 
+            if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
+            if (this.negationBubble) this.negationBubble.update(this.x, this.y);
+        };
         if (this.inCombat === false) return;
         this.evaluateEnemyAnimation();
         if (this.isConfused && !this.sansSuffering('isConfused') && !this.stateMachine.isCurrentState(States.CONFUSED)) {
@@ -3115,11 +3106,11 @@ export default class Enemy extends Entity {
         }; 
     };
  
-    update() {
+    update(dt: number) {
         this.evaluateEnemyState(); 
-        this.positiveMachine.update(this.scene.sys.game.loop.delta);   
-        this.stateMachine.update(this.scene.sys.game.loop.delta);
-        this.negativeMachine.update(this.scene.sys.game.loop.delta);
+        this.positiveMachine.update(dt);   
+        this.stateMachine.update(dt);
+        this.negativeMachine.update(dt);
     };
     evaluateCombat = () => {  
         // return States.PARRY;

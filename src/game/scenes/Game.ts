@@ -1,13 +1,10 @@
-import Ascean from '../../models/ascean';
 import { Cameras, GameObjects, Scene, Tilemaps, Time } from 'phaser';
 import { Combat, initCombat } from '../../stores/combat';
 import { EventBus } from '../EventBus';
 import LootDrop from '../matter/LootDrop';
-import ActionButtons from '../phaser/ActionButtons';
 import Equipment from '../../models/equipment';
 import { States } from '../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
-import SmallHud from '../phaser/SmallHud';
 import { useResizeListener } from '../../utility/dimensions';
 import { Reputation, initReputation } from '../../utility/player';
 // @ts-ignore
@@ -17,7 +14,6 @@ import Enemy from '../entities/Enemy';
 import NPC from '../entities/NPC';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
-import MovingPlatform from '../matter/MovingPlatform';
 import { CombatManager } from '../phaser/CombatManager';
 import MiniMap from '../phaser/MiniMap';
 import { screenShake } from '../phaser/ScreenShake';
@@ -28,7 +24,6 @@ export class Game extends Scene {
     animatedTiles: any[];
     offsetX: number = 0;
     offsetY: number = 0;
-    ascean: Ascean  | undefined;
     state: Combat = initCombat;
     reputation: Reputation = initReputation;
     player: Player;
@@ -44,10 +39,8 @@ export class Game extends Scene {
     combatTime: number = 0;
     combatTimer: Time.TimerEvent;
     tweenManager: any = {};
-    actionBar: ActionButtons;
     particleManager: ParticleManager;
     map: Tilemaps.Tilemap;
-    background: GameObjects.Image;
     camera: Cameras.Scene2D.Camera;
     minimap: MiniMap;
     navMesh: any;
@@ -58,14 +51,11 @@ export class Game extends Scene {
     musicCombat2: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicStealth: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     fpsText: GameObjects.Text;
-    smallHud: SmallHud;
     combatManager: CombatManager;
     baseLayer: Phaser.Tilemaps.TilemapLayer;
     climbingLayer: Phaser.Tilemaps.TilemapLayer;
     flowers: Phaser.Tilemaps.TilemapLayer;
     plants: Phaser.Tilemaps.TilemapLayer;
-    platform: MovingPlatform;
-    platform2: MovingPlatform;
     matterCollision: any;
     glowFilter: any;
     targetTarget: Enemy;
@@ -132,7 +122,6 @@ export class Game extends Scene {
             this.enemies.push(new Enemy({ scene: this, x: enemy.x, y: enemy.y, texture: 'player_actions', frame: 'player_idle_0', data: undefined })));
         map?.getObjectLayer('Npcs')?.objects.forEach((npc: any) => 
             this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' })));
-        
         let camera = this.cameras.main;
         camera.zoom = this.hud.settings.positions?.camera?.zoom || 0.8; // 0.8 
         camera.startFollow(this.player, false, 0.1, 0.1);
@@ -180,10 +169,8 @@ export class Game extends Scene {
     };
 
     cleanUp = (): void => {
-        EventBus.off('ascean');
         EventBus.off('combat');
         EventBus.off('reputation');
-        EventBus.off('settings');
         EventBus.off('enemyLootDrop');
         EventBus.off('minimap');
         EventBus.off('aggressive-enemy');
@@ -206,7 +193,6 @@ export class Game extends Scene {
     };
 
     gameEvent = (): void => {
-        EventBus.on('ascean', (ascean: Ascean) => this.ascean = ascean);
         EventBus.on('combat', (combat: any) => this.state = combat); 
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
         EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
@@ -289,9 +275,7 @@ export class Game extends Scene {
         this.scene.sleep('Game');
     };
     resumeScene = () => {
-        this.cameras.main.fadeIn();
-        // this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, (_cam: any, _effect: any) => {
-            this.scene.wake();
+        this.cameras.main.fadeIn();//.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, (_cam: any, _effect: any) => {
             this.resumeMusic();
             this.state = this.registry.get("combat");
             this.player.health = this.state.newPlayerHealth;
@@ -301,18 +285,16 @@ export class Game extends Scene {
                 this.player.playerMachine.positiveMachine.setState(States.STEALTH);
                 this.stealthEngaged(true);
             };
+            this.scene.wake();
             EventBus.emit('current-scene-ready', this);
         // });
     };
     switchScene = (current: string) => {
-        this.cameras.main.fadeOut();
-        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
+        this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
             this.registry.set("combat", this.state);
             this.registry.set("settings", this.hud.settings);
             this.registry.set("ascean", this.state.player);
-            // this.registry.set("health", this.player.health);
             this.player.disengage();
-            this.scene.pause();
             this.pauseMusic();
             this.scene.sleep(current);
         });
@@ -534,10 +516,10 @@ export class Game extends Scene {
     };
     pauseMusic = (): void => {
         if (this.scene.isSleeping(this.scene.key)) return;
-        if (this.musicBackground?.isPlaying) this.musicBackground.pause();
-        if (this.musicCombat?.isPlaying) this.musicCombat.pause();
-        if (this.musicCombat2?.isPlaying) this.musicCombat2.pause();
-        if (this.musicStealth?.isPlaying) this.musicStealth.pause();
+        if (this.musicBackground.isPlaying) this.musicBackground.pause();
+        if (this.musicCombat.isPlaying) this.musicCombat.pause();
+        if (this.musicCombat2.isPlaying) this.musicCombat2.pause();
+        if (this.musicStealth.isPlaying) this.musicStealth.pause();
     };
     resumeMusic = (): void => {
         if (this.scene.isSleeping(this.scene.key)) return;
@@ -586,23 +568,23 @@ export class Game extends Scene {
         EventBus.emit('blend-game', { dialogTag });
         this.hud.smallHud.activate('dialog', dialogTag);
     }; // smallHud: dialog
-    summonEnemy = (val: number) => {
-        let count = 0;
-        for (let i = 0; i < this.enemies.length; i++) {
-            const enemy = this.enemies[i];
-            if (enemy.isDefeated === true) continue;
-            enemy.setPosition(this.player.x + Phaser.Math.Between(-500, 500), this.player.y + Phaser.Math.Between(-500, 500));
-            enemy.checkEnemyCombatEnter();
-            if (this.player.isEnemyInTargets(enemy.enemyID) === false) {
-                this.player.targets.push(enemy);
-            };
-            if (this.player.currentTarget === undefined || this.player.currentTarget?.enemyID !== enemy.enemyID) {
-                this.player.targetEngagement(enemy.enemyID);
-            };
-            count++;
-            if (count === val) return;
-        };
-    };
+    // summonEnemy = (val: number) => {
+    //     let count = 0;
+    //     for (let i = 0; i < this.enemies.length; i++) {
+    //         const enemy = this.enemies[i];
+    //         if (enemy.isDefeated === true) continue;
+    //         enemy.setPosition(this.player.x + Phaser.Math.Between(-500, 500), this.player.y + Phaser.Math.Between(-500, 500));
+    //         enemy.checkEnemyCombatEnter();
+    //         if (this.player.isEnemyInTargets(enemy.enemyID) === false) {
+    //             this.player.targets.push(enemy);
+    //         };
+    //         if (this.player.currentTarget === undefined || this.player.currentTarget?.enemyID !== enemy.enemyID) {
+    //             this.player.targetEngagement(enemy.enemyID);
+    //         };
+    //         count++;
+    //         if (count === val) return;
+    //     };
+    // };
     // ============================ Player ============================ \\
     checkEnvironment = (player: Player | Enemy) => {
         const x = this.map.worldToTileX(player.x || 0);
@@ -638,8 +620,8 @@ export class Game extends Scene {
             };
         };
     };
-    playerUpdate = (): void => {
-        this.player.update(); 
+    playerUpdate = (delta: number): void => {
+        this.player.update(delta); 
         this.combatManager.combatMachine.process();
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
@@ -680,11 +662,12 @@ export class Game extends Scene {
         this.combatTime = 0;
         EventBus.emit('update-combat-timer', this.combatTime);
     };
-    update(): void {
-        this.playerUpdate();
+    update(_time: number, delta: number): void {
+        this.playerUpdate(delta);
         this.hud.rightJoystick.update();
         for (let i = 0; i < this.enemies.length; i++) {
-            this.enemies[i].update();
+            // if (!this.enemies[i] || !this.enemies[i].body) return;
+            this.enemies[i].update(delta);
             this.checkEnvironment(this.enemies[i]);
         };
         for (let i = 0; i < this.npcs.length; i++) {

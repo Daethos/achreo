@@ -1,14 +1,11 @@
-import Ascean from '../../models/ascean';
 import { Cameras, GameObjects, Scene, Tilemaps, Time } from 'phaser';
 import { Combat, initCombat } from '../../stores/combat';
 import { EventBus } from '../EventBus';
 import LootDrop from '../matter/LootDrop';
-import ActionButtons from '../phaser/ActionButtons';
 import { GameState } from '../../stores/game';
 import Equipment from '../../models/equipment';
 import { States } from '../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
-import SmallHud from '../phaser/SmallHud';
 import Fov from '../phaser/Fov';
 import { Reputation, initReputation } from '../../utility/player';
 import Player from '../entities/Player';
@@ -31,7 +28,6 @@ export class Underground extends Scene {
     offsetX: number;
     offsetY: number;
     gameState: GameState | undefined;
-    ascean: Ascean  | undefined;
     state: Combat = initCombat;
     reputation: Reputation = initReputation;
     player: any;
@@ -50,7 +46,6 @@ export class Underground extends Scene {
     combatTime: number = 0;
     combatTimer: Time.TimerEvent;
     tweenManager: any;
-    actionBar: ActionButtons;
     particleManager: ParticleManager;
     map: Tilemaps.Tilemap;
     background: GameObjects.Image;
@@ -64,7 +59,6 @@ export class Underground extends Scene {
     musicStealth: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     volumeEvent: () => void;
     matterCollision: any;
-    smallHud: SmallHud;
     combatManager: CombatManager;
     vision: any;
     fov?: any;
@@ -192,10 +186,8 @@ export class Underground extends Scene {
     };
 
     cleanUp = (): void => {
-        EventBus.off('ascean');
         EventBus.off('combat');
         EventBus.off('reputation');
-        EventBus.off('settings');
         EventBus.off('enemyLootDrop');
         EventBus.off('minimap');
         EventBus.off('aggressive-enemy');
@@ -222,7 +214,6 @@ export class Underground extends Scene {
     };
 
     gameEvent = (): void => {
-        EventBus.on('ascean', (ascean: Ascean) => this.ascean = ascean);
         EventBus.on('combat', (combat: any) => this.state = combat); 
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
         EventBus.on('create-arena', this.createArenaEnemy);
@@ -329,18 +320,21 @@ export class Underground extends Scene {
                 this.player.playerMachine.positiveMachine.setState(States.STEALTH);
                 this.stealthEngaged(true);
             };
+            this.hud.actionBar.setVisible(true);
+            if (!this.hud.settings.desktop) {
+                this.hud.joystick.joystick.setVisible(true);
+                this.hud.rightJoystick.joystick.setVisible(true);
+            };
             this.scene.wake();
             EventBus.emit('current-scene-ready', this);
         // });
     };
     switchScene = (current: string) => {
-        this.cameras.main.fadeOut();
-        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
+        this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
             this.registry.set("combat", this.state);
             this.registry.set("settings", this.hud.settings);
             this.registry.set("ascean", this.state.player);
             this.player.disengage();
-            this.player.currentTarget = undefined
             this.pauseMusic();
             this.scene.sleep(current);
         });
@@ -542,7 +536,7 @@ export class Underground extends Scene {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (this.musicBackground.isPlaying) this.musicBackground.pause();
         if (this.musicCombat.isPlaying) this.musicCombat.pause();
-        this.musicStealth.pause();
+        if (this.musicStealth.isPlaying) this.musicStealth.pause();
     };
     resumeMusic = (): void => {
         if (this.scene.isSleeping(this.scene.key)) return;
@@ -642,8 +636,8 @@ export class Underground extends Scene {
         };
     };
     // ============================ Player ============================ \\
-    playerUpdate = (): void => {
-        this.player.update(); 
+    playerUpdate = (delta: number): void => {
+        this.player.update(delta); 
         this.combatManager.combatMachine.process();
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
@@ -680,10 +674,10 @@ export class Underground extends Scene {
         EventBus.emit('update-combat-timer', this.combatTime);
     };
     update(_time: number, delta: number): void {
-        this.playerUpdate();
+        this.playerUpdate(delta);
         this.hud.rightJoystick.update();
         for (let i = 0; i < this.enemies.length; i++) {
-            this.enemies[i].update();
+            this.enemies[i].update(delta);
             if (this.enemies[i].isDefeated && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
         };
         for (let i = 0; i < this.dms.length; i++) {

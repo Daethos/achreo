@@ -15,13 +15,17 @@ const cleanSettings = {
     actionTooltip: false,
     computerArena: false,
     combatTargeting: false,
-    desktop: false,
     enemyAggression: false,
     enemyInteractive: false,
     enemySpecials: false,
+    tidbits: false,
+};
+const cleanFrame = {
+    combat: false,
+    desktop: false,
     speed: false,
     sound: false,
-    tidbits: false,
+    tooltips: false,
 };
 const cleanFx = {
     postfx: false,
@@ -45,12 +49,19 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
     const [specialShow, setSpecialShow] = createSignal<boolean>(false);
     const [currentSpecial, setCurrentSpecial] = createSignal({special: SPECIALS[0],index: 0});
     const [showRestart, setShowRestart] = createSignal<boolean>(false);
+    const [frame, setFrame] = createSignal(cleanFrame);
     const dimensions = useResizeListener();
     const [difficulty, setDifficulty] = createSignal(cleanSettings);
     const [fx, setFx] = createSignal(cleanFx);
     function resetDifficulty(exception: string, change: boolean) {
         setDifficulty({
             ...cleanSettings,
+            [exception]: change
+        });
+    };
+    function resetFrame(exception: string, change: boolean) {
+        setFrame({
+            ...cleanFrame,
             [exception]: change
         });
     };
@@ -329,62 +340,63 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                     </div>
                     <div style={font('0.5em')}>[Whether Computer Enemies Will Engage In Combat With Each Other (Not Yet Implemented)]</div> */}
 
-                    <h1 onClick={() => resetDifficulty('actionTooltip', !difficulty().actionTooltip)} style={font('1.25em')}>Action Tooltip</h1>
-                    <Collapse value={difficulty().actionTooltip} class='my-transition'>
-                        <button class='gold highlight' onClick={() => handleTooltips()}>{settings().difficulty.tooltips ? 'Enabled' : 'Disabled'}</button>
-                        <div style={font('0.5em')}>[Enabled = Click / Hover Actions to Provide an Info Popup, Disabled = No Info Popups]</div>
-                    </Collapse>
-                        <h1 onClick={() => resetDifficulty('computerArena', !difficulty().computerArena)} style={font('1.25em')}>Arena Combat</h1>
-                    <Collapse value={difficulty().computerArena} class='my-transition'> 
-                        <div style={font('1em', '#fdf6d8')}>
-                            <button class='gold highlight' onClick={() => handleArenaCombat()}>{settings().difficulty.arena ? 'Manual' : 'Computer'}</button>
-                            <div style={font('0.5em')}>[Whether you control your character in the Arena. If the Arena has been loaded, you must reload the game for this change to take effect.]</div>
-                        </div>
-                    </Collapse>
-                    <h1 onClick={() => resetDifficulty('combatTargeting', !difficulty().combatTargeting)} style={font('1.25em')}>Combat Targeting</h1>
-                    <Collapse value={difficulty().combatTargeting} class='my-transition'>
-                        <div style={font('1em', '#fdf6d8')}>
-                            <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'Manual' : 'Auto'} Aim</button>
-                        </div>
-                        <div style={font('0.5em')}>[Whether You Use the Second Joystick to Aim Ranged Attacks in Combat]</div>
+                    <h1 onClick={() => resetFrame('combat', !frame().combat)} style={font('1.25em')}>Combat</h1>
+                    <Collapse value={frame().combat} class='my-transition'>
+                        <h1 onClick={() => resetDifficulty('computerArena', !difficulty().computerArena)} style={font('0.85em')}>Arena Combat</h1>
+                        <Collapse value={difficulty().computerArena} class='my-transition'> 
+                            <div style={font('0.85em', '#fdf6d8')}>
+                                <button class='gold highlight' onClick={() => handleArenaCombat()}>{settings().difficulty.arena ? 'Manual' : 'Computer'}</button>
+                                <div style={font('0.5em')}>[Whether you control your character in the Arena. If the Arena has been loaded, you must reload the game for this change to take effect.]</div>
+                            </div>
+                        </Collapse>
+
+
+                        <h1 onClick={() => resetDifficulty('combatTargeting', !difficulty().combatTargeting)} style={font('0.85em')}>Combat Targeting</h1>
+                        <Collapse value={difficulty().combatTargeting} class='my-transition'>
+                            <div style={font('0.85em', '#fdf6d8')}>
+                                <button class='gold highlight' onClick={() => handleAim()}>{settings().difficulty.aim ? 'Manual' : 'Auto'} Aim</button>
+                            </div>
+                            <div style={font('0.5em')}>[Whether You Use the Second Joystick to Aim Ranged Attacks in Combat]</div>
+                        </Collapse>
+
+                        <h1 onClick={() => resetDifficulty('enemyAggression', !difficulty().enemyAggression)} style={font('0.85em')}>Enemy Aggression</h1>
+                        <Collapse value={difficulty().enemyAggression} class='my-transition'>
+                            <div style={font('0.85em', '#fdf6d8')}>
+                            <span class='gold'>{settings().difficulty.aggression * 100}%</span> <br />
+                            <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.aggression} onChange={(e) => handleAggression(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                            </div>
+                            <div style={font('0.5em')}>[Aggressive Enemy Occurrence: 0 - 100%]</div>
+                        </Collapse>
+
+                        <h1 onClick={() => resetDifficulty('enemyInteractive', !difficulty().enemyInteractive)} style={font('0.85em')}>Enemy Interactive (Combat)</h1>
+                        <Collapse value={difficulty().enemyInteractive} class='my-transition'>
+                            <div style={font('0.85em', '#fdf6d8')}>
+                            <button class='gold highlight' onClick={() => handleEnemyCombatInteractive(!settings().difficulty.enemyCombatInteract)}>{settings().difficulty.enemyCombatInteract ? 'Enabled' : 'Disabled'}</button> <br />
+                            </div>
+                            <div style={font('0.5em')}>[Enabled: You can focus ANY enemy. <br /> Disabled: If in combat, you cannot focus enemies that are not in combat.]</div>
+                        </Collapse>
+
+                        <h1 onClick={() => resetDifficulty('enemySpecials', !difficulty().enemySpecials)} style={font('0.85em')}>Enemy Specials</h1>
+                        <Collapse value={difficulty().enemySpecials} class='my-transition'>
+                            <div style={font('0.85em', '#fdf6d8')}>
+                                <span class='gold'>{settings().difficulty.special * 100}%</span> <br />
+                                <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.special} onChange={(e) => handleSpecial(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                            </div>
+                            <div style={font('0.5em')}>[Special (Elite) Enemy Occurrence: 0 - 100%]</div>
+                        </Collapse>
                     </Collapse>
 
-                    <h1 onClick={() => resetDifficulty('desktop', !difficulty().desktop)} style={font('1.25em')}>Desktop</h1>
-                    <Collapse value={difficulty().desktop} class='my-transition'>
+                    <h1 onClick={() => resetFrame('desktop', !frame().desktop)} style={font('1.25em')}>Desktop</h1>
+                    <Collapse value={frame().desktop} class='my-transition'>
                         <div style={font('1em', '#fdf6d8')}>
                         <button class='gold highlight' onClick={() => handleDesktop(!settings().desktop)}>{settings().desktop ? 'Enabled' : 'Disabled'}</button>
                         </div>
                         <div style={font('0.5em')}>[Desktop allows you to hide the joystick UI and reset the button UI, and enable keyboard and mouse for actions and movement.]</div>
                     </Collapse>
 
-                    <h1 onClick={() => resetDifficulty('enemyAggression', !difficulty().enemyAggression)} style={font('1.25em')}>Enemy Aggression</h1>
-                    <Collapse value={difficulty().enemyAggression} class='my-transition'>
-                        <div style={font('1em', '#fdf6d8')}>
-                        <span class='gold'>{settings().difficulty.aggression * 100}%</span> <br />
-                        <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.aggression} onChange={(e) => handleAggression(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
-                        </div>
-                        <div style={font('0.5em')}>[Aggressive Enemy Occurrence: 0 - 100%]</div>
-                    </Collapse>
 
-                    <h1 onClick={() => resetDifficulty('enemyInteractive', !difficulty().enemyInteractive)} style={font('1.25em')}>Enemy Interactive (Combat)</h1>
-                    <Collapse value={difficulty().enemyInteractive} class='my-transition'>
-                        <div style={font('1em', '#fdf6d8')}>
-                        <button class='gold highlight' onClick={() => handleEnemyCombatInteractive(!settings().difficulty.enemyCombatInteract)}>{settings().difficulty.enemyCombatInteract ? 'Enabled' : 'Disabled'}</button> <br />
-                        </div>
-                        <div style={font('0.5em')}>[Enabled: You can focus ANY enemy. <br /> Disabled: If in combat, you cannot focus enemies that are not in combat.]</div>
-                    </Collapse>
-
-                    <h1 onClick={() => resetDifficulty('enemySpecials', !difficulty().enemySpecials)} style={font('1.25em')}>Enemy Specials</h1>
-                    <Collapse value={difficulty().enemySpecials} class='my-transition'>
-                        <div style={font('1em', '#fdf6d8')}>
-                            <span class='gold'>{settings().difficulty.special * 100}%</span> <br />
-                            <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.special} onChange={(e) => handleSpecial(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
-                        </div>
-                        <div style={font('0.5em')}>[Special (Elite) Enemy Occurrence: 0 - 100%]</div>
-                    </Collapse>
-
-                    <h1 onClick={() => resetDifficulty('speed', !difficulty().speed)} style={font('1.25em')}>Speed</h1>
-                    <Collapse value={difficulty().speed} class='my-transition'>
+                    <h1 onClick={() => resetFrame('speed', !frame().speed)} style={font('1.25em')}>Speed</h1>
+                    <Collapse value={frame().speed} class='my-transition'>
                         <div style={font('1em')}>
                             <button class='highlight' onClick={() => handleSpeed(roundToTwoDecimals(Math.max(-1, (settings().difficulty.playerSpeed - 0.025) || 0), 3), 'playerSpeed', -0.025)}>-</button>            
                             Player: ({settings().difficulty.playerSpeed})
@@ -398,8 +410,8 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                         <div style={font('0.5em')}>[Adjusts the movement speed of the associated entity. This effect is immediate.]</div>
                     </Collapse>
 
-                    <h1 onClick={() => resetDifficulty('sound', !difficulty().sound)} style={font('1.25em')}>Sound</h1>
-                    <Collapse value={difficulty().sound} class='my-transition'>
+                    <h1 onClick={() => resetFrame('sound', !frame().sound)} style={font('1.25em')}>Sound</h1>
+                    <Collapse value={frame().sound} class='my-transition'>
                         <div style={font('0.75em', '#fdf6d8')}> 
                             <button class='gold highlight' onClick={() => handleMusic()}>{settings().music ? 'Enabled' : 'Disabled'}</button>
                         </div>
@@ -408,10 +420,19 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                         <Form.Range min={0} max={1} step={0.1} value={settings().volume} onChange={(e) => handleVolume(Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                     </Collapse>
                     
-                    <h1 onClick={() => resetDifficulty('tidbits', !difficulty().tidbits)} style={font('1.25em')}>Tidbit Popups</h1>
-                    <Collapse value={difficulty().tidbits} class='my-transition'>
-                        <button class='gold highlight' onClick={() => handleTidbits()}>{settings().difficulty.tidbits ? 'Enabled' : 'Disabled'}</button>
-                        <div style={font('0.5em')}>[Enabled = Helpful Hints and Lore Popups, Disabled = No Info Popups]</div>
+                    <h1 onClick={() => resetFrame('tooltips', !frame().tooltips)} style={font('1.25em')}>Tooltips</h1>
+                    <Collapse value={frame().tooltips} class='my-transition'>
+                        <h1 onClick={() => resetDifficulty('actionTooltip', !difficulty().actionTooltip)} style={font('0.85em')}>Button</h1>
+                        <Collapse value={difficulty().actionTooltip} class='my-transition'>
+                            <button class='gold highlight' onClick={() => handleTooltips()}>{settings().difficulty.tooltips ? 'Enabled' : 'Disabled'}</button>
+                            <div style={font('0.5em')}>[Enabled = Click / Hover Actions to Provide an Info Popup, Disabled = No Info Popups]</div>
+                        </Collapse>
+
+                        <h1 onClick={() => resetDifficulty('tidbits', !difficulty().tidbits)} style={font('0.85em')}>Informational Pop-ups</h1>
+                        <Collapse value={difficulty().tidbits} class='my-transition'>
+                            <button class='gold highlight' onClick={() => handleTidbits()}>{settings().difficulty.tidbits ? 'Enabled' : 'Disabled'}</button>
+                            <div style={font('0.5em')}>[Enabled = Helpful Hints and Lore Popups, Disabled = No Info Popups]</div>
+                        </Collapse>
                     </Collapse>
                     <br />
                 </div>

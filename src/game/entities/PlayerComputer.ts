@@ -5,13 +5,13 @@ import { DURATION } from "../../utility/enemy";
 import { PLAYER } from "../../utility/player";
 import { Particle } from "../matter/ParticleManager";
 import { States } from "../phaser/StateMachine";
+import { Arena } from "../scenes/Arena";
+import { Underground } from "../scenes/Underground";
 import Player from "./Player";
 
 export default class PlayerComputer extends Player {
     combatConcerns: Phaser.Time.TimerEvent | undefined;
     combatSpecials: any[];
-    computerAction: boolean = false;
-    specials: boolean;
     constructor(data: any) {
         const { scene } = data;
         const ascean = scene.registry.get("ascean");
@@ -20,8 +20,8 @@ export default class PlayerComputer extends Player {
         this.originPoint = {}; // For Leashing
         this.isComputer = true;
         this.combatConcerns = undefined;
-        this.specials = false;
         this.checkSpecials(ascean);
+        this.scene.registry.set("player", this);
     };
     checkSpecials(ascean: Ascean) {
         const traits = {
@@ -50,7 +50,7 @@ export default class PlayerComputer extends Player {
         };
         // this.setSpecialCombat();
     };
-    setSpecialCombat = (mult = 0.75, remove = false) => {
+    setSpecialCombat = (mult = 0.6, remove = false) => {
         if (remove) {
             this.specialCombat?.remove(false);
             return;
@@ -64,6 +64,7 @@ export default class PlayerComputer extends Player {
                 this.setSpecialCombat(0.25);
                 return;
             };
+            // console.log(this.combatSpecials, 'Combat Specials');
             const special = this.combatSpecials[Math.floor(Math.random() * this.combatSpecials.length)];
             this.specialAction = special;
             // this.currentAction = 'special';
@@ -112,6 +113,22 @@ export default class PlayerComputer extends Player {
         return (this.currentTarget?.isRanged && this.checkEvasion(player) && !this.playerMachine.stateMachine.isCurrentState(States.EVADE));
     };
 
+    checkLineOfSight() {
+        const line = new Phaser.Geom.Line(this.currentTarget?.x, this.currentTarget?.y, this.x, this.y);
+        const points = line.getPoints(30);  // Adjust number of points based on precision
+        for (let i = 0; i < points.length; i++) {
+            const point = points[i];
+            const layer = (this.scene as Arena | Underground).groundLayer;
+            const tile = this.scene.map.getTileAtWorldXY(point.x, point.y, false, this.scene.cameras.main, layer);
+            if (tile && tile.properties.Wall) {
+                console.log(tile, 'Tile?');
+                console.log('Obstacle detected! Adjusting position.');
+                return true;  // Wall is detected
+            };
+        };
+        return false;  // Clear line of sight
+    };
+
     evaluateCombatDistance = () => {
         this.getDirection();
         if (this.currentTarget) {
@@ -120,20 +137,28 @@ export default class PlayerComputer extends Player {
                 this.scene.setupEnemy(this.currentTarget);
             };
         };
-        if (this.isCasting === true || this.isSuffering() === true || this.isContemplating === true || this.currentTarget === undefined || this.scene.state.newPlayerHealth <= 0 || this.playerMachine.stateMachine.isCurrentState(States.LEASH) || this.playerMachine.stateMachine.isCurrentState(States.CHASE) || this.playerMachine.stateMachine.isCurrentState(States.EVADE)) return;
-        if (!this.inCombat) {
+        if (this.isDefeated && !this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) {
+            this.isDefeated = false;
+            this.playerMachine.stateMachine.setState(States.DEFEATED);
+            return;
+        };
+        if (this.playerMachine.stateMachine.isCurrentState(States.LEASH) || this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) return;
+        if (!this.inCombat || this.isCasting || this.isContemplating || this.health <= 0) {
             this.setVelocity(0);
             return;    
         };
+        if (this.isSuffering() || this.currentTarget === undefined || this.scene.state.newPlayerHealth <= 0 || this.playerMachine.stateMachine.isCurrentState(States.CHASE) || this.playerMachine.stateMachine.isCurrentState(States.EVADE)) return;
         if (!this.currentTarget.body || !this.currentTarget.position || !this.currentTarget.x || !this.currentTarget.y) return;
         let direction = this.currentTarget.position.subtract(this.position);
         const distanceY = Math.abs(direction.y);
         const multiplier = this.rangedDistanceMultiplier(PLAYER.DISTANCE.RANGED_MULTIPLIER);
-        if (direction.length() >= PLAYER.DISTANCE.CHASE * multiplier) { // Switch to CHASE MODE.
+        if (this.isUnderRangedAttack()) { // Evade
+            this.playerMachine.stateMachine.setState(States.EVADE);
+            return;
+        } else if (direction.length() >= PLAYER.DISTANCE.CHASE * multiplier) { // Switch to CHASE MODE.
             this.playerMachine.stateMachine.setState(States.CHASE);
         } else if (this.isRanged) { // Contiually Checking Distance for RANGED ENEMIES.
             if (!this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
-
             if (distanceY > PLAYER.DISTANCE.RANGED_ALIGNMENT) {
                 direction.normalize();
                 this.setVelocityY(direction.y * this.speed + 0.5); // 2 || 4
@@ -151,6 +176,8 @@ export default class PlayerComputer extends Player {
                     this.setVelocityX(direction.x * -this.speed + 0.5); // -2.25 | -2 | -1.75
                     this.setVelocityY(direction.y * -this.speed + 0.5); // -1.5 | -1.25
                 };
+            } else if (this.checkLineOfSight()) {
+                console.log('Obscured Line of Sight!');
             } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.
                 this.setVelocity(0);
                 this.anims.play('player_idle', true);
@@ -160,11 +187,10 @@ export default class PlayerComputer extends Player {
             };
         } else { // Melee || Contiually Maintaining Reach for MELEE ENEMIES.
             if (!this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
-            
             if (direction.length() > PLAYER.DISTANCE.ATTACK) { 
                 direction.normalize();
-                this.setVelocityX(direction.x * this.speed + 0.25); // 2.5
-                this.setVelocityY(direction.y * this.speed + 0.25); // 2.5
+                this.setVelocityX(direction.x * (this.speed + 0.25)); // 2.5
+                this.setVelocityY(direction.y * (this.speed + 0.25)); // 2.5
                 this.isPosted = false;
             } else { // Inside melee range
                 this.setVelocity(0);
@@ -175,7 +201,7 @@ export default class PlayerComputer extends Player {
     };
     
     evaluateCombat = () => {
-        if (this.isCasting === true || this.isSuffering() === true) return;
+        if (this.isCasting || this.isSuffering() || this.health <= 0) return;
         let actionNumber = Math.floor(Math.random() * 101);
         if (actionNumber > 70) { // 71-100 (30%)
             this.playerMachine.stateMachine.setState(States.ATTACK);

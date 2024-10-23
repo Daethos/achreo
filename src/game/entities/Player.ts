@@ -180,17 +180,17 @@ export default class Player extends Entity {
         this.setFixedRotation();   
         this.checkEnemyCollision(playerSensor);
         this.checkWorldCollision(playerSensor);
-        this.beam = new Beam(this);
         this.setInteractive(new Phaser.Geom.Rectangle(
             48, 0,
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
-            .on('pointerdown', () => {
-                const button = this.scene.hud.smallHud.getButton('info');
-                // const hud = this.scene.scene.get('Hud') as Hud;
-                this.scene.hud.smallHud.pressButton(button as Phaser.GameObjects.Image);
-                // this.scene.smallHud.pressButton(button as Phaser.GameObjects.Image);
-            });
+        .on('pointerdown', () => {
+            const button = this.scene.hud.smallHud.getButton('info');
+            // const hud = this.scene.scene.get('Hud') as Hud;
+            this.scene.hud.smallHud.pressButton(button as Phaser.GameObjects.Image);
+            // this.scene.smallHud.pressButton(button as Phaser.GameObjects.Image);
+        });
+        this.beam = new Beam(this);
         scene.registry.set('player', this);
     };   
 

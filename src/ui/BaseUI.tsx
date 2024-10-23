@@ -381,14 +381,12 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     opponent: res.computer?.level,
                     opponentExp: Math.min(experience, res?.player?.level! * 1000),
                 };
-                EventBus.emit('record-win', { record: res, experience: newState, enemies: arena().enemies, wager: arena().wager });
-                // if (instance.scene?.scene.key !== 'Arena') {
-                // };
+                EventBus.emit('record-win', { record: res, experience: newState });
                 const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
                 EventBus.emit('enemy-loot', loot);
                 setAsceanState({ ...asceanState(), avarice: false });
             } else {
-                EventBus.emit('record-loss', {combat:res, wager:arena().wager});
+                EventBus.emit('record-loss', res);
             };
             res = statusEffectCheck(res);
             // setArena({ ...arena(), enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 } });

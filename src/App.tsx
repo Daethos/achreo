@@ -145,8 +145,9 @@ export default function App() {
     };
     const loadingAscean = () => EventBus.emit('enter-game');
     const makeToast = (header: string, body: string, delay = 3000, key = '', arg: any): void => {
+        setShow(false);
         setAlert({ header, body, delay, key, arg });
-        setShow(true);    
+        setShow(true);
     };
     const setTips = (on: boolean): void => {
         if (on === true) {

@@ -154,11 +154,6 @@ export class Game extends Scene {
         this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
         if (this.hud.settings?.music === true) this.musicBackground.play();
 
-        // this.platform = new MovingPlatform(this, 650, 3200, 'player-castbar', { isStatic: true });
-        // this.platform.vertical(0, -3000, 12000);
-        // this.platform2 = new MovingPlatform(this, 500, 3950, 'player-castbar', { isStatic: true });
-        // this.platform2.setAngle(90);
-        // this.platform2.horizontal(0, 3500, 14000);
         this.postFxEvent();
         this.particleManager = new ParticleManager(this);
         this.combatManager = new CombatManager(this);

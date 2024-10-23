@@ -125,13 +125,16 @@ export class Arena extends Scene {
         map?.getObjectLayer('summons')?.objects.forEach((summon: any) => this.markers.push(summon));
         const random = this.markers[Math.floor(Math.random() * this.markers.length)];        
         if (this.hud.settings.difficulty.arena) {
-            this.player = new Player({ scene: this, x: random.x, y: random.y, texture: 'player_actions', frame: 'player_idle_0' });
+            this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
         } else {
-            this.player = new PlayerComputer({ scene: this, x: random.x, y: random.y, texture: 'player_actions', frame: 'player_idle_0' });
+            this.player = new PlayerComputer({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
             this.hud.actionBar.setVisible(false);
             this.hud.joystick.joystick.setVisible(false);
             this.hud.rightJoystick.joystick.setVisible(false);
         };
+        this.player.setPosition(random.x,random.y);
+        // this.time.delayedCall(1000, () => {
+        // });
 
 
     // =========================== Camera =========================== \\

@@ -19,6 +19,7 @@ import Thievery from './Thievery';
 import Merchant from './Merchant';
 import { ARENA_ENEMY } from '../utility/enemy';
 import Roster from './Roster';
+import { Offcanvas } from 'solid-bootstrap'
 
 const GET_FORGE_COST = {
     Common: 1,
@@ -237,6 +238,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [luckoutModalShow, setLuckoutModalShow] = createSignal<boolean>(false);
     const [persuasionModalShow, setPersuasionModalShow] = createSignal<boolean>(false);
     const [luckout, setLuckout] = createSignal<boolean>(false);
+    const [luckoutShow, setLuckoutShow] = createSignal<boolean>(false);
     const [luckoutTraits, setLuckoutTraits] = createSignal<any>([]);
     const [persuasion, setPersuasion] = createSignal<boolean>(false);
     const [persuasionTraits, setPersuasionTraits] = createSignal<any>([]);
@@ -724,6 +726,11 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     };
     return (
         <Show when={combat().computer}>
+        
+        <Offcanvas
+            show={combat().computer !== undefined}
+            placement={`bottom`}
+        >
         <div class='dialog-window'>
             <div class='wrap' style={{ width: combat().isEnemy ? '75%' : '100%', padding: '2%', height: 'auto' }}> 
             <div style={{ color: 'gold', 'font-size': '1em', 'margin-bottom': "3%" }}>
@@ -844,7 +851,12 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                                 </> 
                             ) }
                             { luckout() ? ( 
-                                <LuckoutModal traits={luckoutTraits} callback={attemptLuckout} name={combat()?.computer?.name as string} influence={influence as Accessor<string>} show={luckoutModalShow} setShow={setLuckoutModalShow} /> 
+                                <>
+                                    <button class='highlight' onClick={() => setLuckoutShow(!luckoutShow())}>{luckoutShow() ? 'Hide Scenarios' : 'Show Luckout Scenarios'}</button><br />
+                                    <Show when={luckoutShow()}>
+                                        <LuckoutModal traits={luckoutTraits} callback={attemptLuckout} name={combat()?.computer?.name as string} influence={influence as Accessor<string>} show={luckoutModalShow} setShow={setLuckoutModalShow} /> 
+                                    </Show>
+                                </>
                             ) : ('') } 
                         </div>
                     ) } 
@@ -975,6 +987,9 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 <DialogButtons options={game().dialog} setIntent={handleIntent} />
             </div>}
         </div>
+        </Offcanvas>
+
+
         <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
         <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} />

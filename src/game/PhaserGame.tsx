@@ -384,7 +384,7 @@ export default function PhaserGame (props: IProps) {
         return newReputation;
     }; 
     
-    function recordLoss(data: Combat,wager:{silver:number;gold:number;}) {
+    function recordLoss(data: Combat) {
         let stat = {
             wins: data.playerWin ? 1 : 0,
             losses: data.playerWin ? 0 : 1,
@@ -424,14 +424,9 @@ export default function PhaserGame (props: IProps) {
             computerWin: false,
             combatEngaged: false,
         });
-        let silver: number = props.ascean().currency.silver, gold: number = props.ascean().currency.gold;
-        // silver -= wager.silver;
-        // gold -= wager.gold;
-        let currency = rebalanceCurrency({ silver, gold });
 
         const update = { 
             ...props.ascean(), 
-            currency: currency,
             skills: newSkills,
             health: { ...props.ascean().health, current: data.newPlayerHealth },
         };
@@ -456,7 +451,7 @@ export default function PhaserGame (props: IProps) {
         return newSkills;
     };
 
-    function recordWin(record: Combat, experience: LevelSheet, enemies: ARENA_ENEMY[], wager: { silver: number; gold: number; }) {
+    function recordWin(record: Combat, experience: LevelSheet) {
         let stat = {
             wins: record.playerWin ? 1 : 0,
             losses: record.playerWin ? 0 : 1,
@@ -485,15 +480,6 @@ export default function PhaserGame (props: IProps) {
             if (computerLevel <= 15) {
                 if (Math.random() >= 0.5) { silver = Math.floor(Math.random() * 10) + 1; gold = 1; } else { silver = Math.floor(Math.random() * 10) + 35; gold = 0; };
             };
-        };
-        let multiplier = 0;
-        for (let i = 0; i < enemies.length; i++) {
-            multiplier += (enemies[i].level / props.ascean().level);
-            // console.log(multiplier, 'New Multiplier!');
-        };
-        if (enemies.length > 1) {
-            multiplier *= ((enemies.length - 1) * 1.5);
-            // console.log(multiplier, 'Extra Multiplier!');
         };
         // console.log(multiplier, 'Final Multiplier!');
         silver += experience.currency.silver;
@@ -1045,8 +1031,8 @@ export default function PhaserGame (props: IProps) {
             EventBus.emit('enemy-persuasion', { enemy: combat().enemyID, persuaded, persuasion });
             setCombat({ ...combat(), playerTrait: persuasion, enemyPersuaded: persuaded, persuasionScenario: true });   
         }); 
-        EventBus.on('record-loss', (e: {combat:Combat,wager:{silver:number;gold:number;}}) => recordLoss(e.combat,e.wager));
-        EventBus.on('record-win', (e: { record: Combat; experience: LevelSheet; enemies: ARENA_ENEMY[]; wager: { silver: number; gold: number; }; }) => recordWin(e.record, e.experience, e.enemies, e.wager));
+        EventBus.on('record-loss', (e:Combat) => recordLoss(e));
+        EventBus.on('record-win', (e: { record: Combat; experience: LevelSheet; }) => recordWin(e.record, e.experience));
         EventBus.on('save-health', saveHealth);
 
         onCleanup(() => {

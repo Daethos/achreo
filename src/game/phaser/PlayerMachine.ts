@@ -1159,9 +1159,9 @@ export default class PlayerMachine {
         };
         this.scene.combatManager.slow(this.player.spellTarget, 975);
         if (this.player.spellTarget === this.player.getEnemyId()) {
-            this.scene.combatManager.combatMachine.action({ type: 'Chiomic', data: this.player.entropicMultiplier(15) }); 
+            this.scene.combatManager.combatMachine.action({ type: 'Chiomic', data: this.player.entropicMultiplier(20) }); 
         } else {
-            const chiomic = Math.round(this.mastery() * (1 + (this.player.entropicMultiplier(15) / 100)) * this.caerenicDamage() * this.levelModifier());
+            const chiomic = Math.round(this.mastery() * (1 + (this.player.entropicMultiplier(20) / 100)) * this.caerenicDamage() * this.levelModifier());
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });

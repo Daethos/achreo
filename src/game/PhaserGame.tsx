@@ -22,7 +22,7 @@ import { Inventory, Reputation, faction } from '../utility/player';
 import { Puff } from 'solid-spinner';
 const BaseUI = lazy(async () => await import('../ui/BaseUI'));
 
-function rebalanceCurrency(currency: { silver: number; gold: number; }): { silver: number; gold: number; } {
+export function rebalanceCurrency(currency: { silver: number; gold: number; }): { silver: number; gold: number; } {
     let { silver, gold } = currency;
     // console.log(silver, gold, 'Starting rebalanceCurrency');
     if (isFloat(gold)) {
@@ -425,8 +425,8 @@ export default function PhaserGame (props: IProps) {
             combatEngaged: false,
         });
         let silver: number = props.ascean().currency.silver, gold: number = props.ascean().currency.gold;
-        silver -= wager.silver;
-        gold -= wager.gold;
+        // silver -= wager.silver;
+        // gold -= wager.gold;
         let currency = rebalanceCurrency({ silver, gold });
 
         const update = { 
@@ -496,8 +496,10 @@ export default function PhaserGame (props: IProps) {
             // console.log(multiplier, 'Extra Multiplier!');
         };
         // console.log(multiplier, 'Final Multiplier!');
-        silver += experience.currency.silver + (wager.silver * multiplier);
-        gold += experience.currency.gold + (wager.gold * multiplier);
+        silver += experience.currency.silver;
+        gold += experience.currency.gold;
+        // silver += experience.currency.silver + (wager.silver * multiplier);
+        // gold += experience.currency.gold + (wager.gold * multiplier);
         let currency = rebalanceCurrency({ silver, gold });
         if (props.ascean().firewater.current < 5 && props.ascean().level <= experience.opponent) {
             firewater = {

@@ -81,7 +81,6 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
     };
     const handleEnemyCombatInteractive = async (interactive: boolean) => {
         try {
-            console.log(interactive, 'Interactiving with Enemies in Combat?');
             const newSettings = {...settings(), difficulty: {
                 ...settings().difficulty,
                 enemyCombatInteract: interactive

@@ -72,6 +72,7 @@ export class Underground extends Scene {
     markers: any;
     glowFilter: any;
     hud: Hud;
+    wager = { silver: 0, gold: 0, multiplier: 0 };
 
     constructor () {
         super('Underground');
@@ -614,13 +615,22 @@ export class Underground extends Scene {
                 this.player.targetEngagement(enemy.enemyID);
             }, undefined, this);
         };
+        this.wager = this.registry.get("wager");
     };
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
         enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, "Something is tearing into me. Please, help!", 2000, 'damage', false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DEATH);
         this.time.delayedCall(3000, () => {
-            this.enemies = this.enemies.filter((e: Enemy) => e !== enemy);
+            this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
+            if (this.enemies.length === 0) {
+                if (enemy.isDefeated) {
+                    EventBus.emit('settle-wager', { wager: this.wager, win: true });
+                } else if (enemy.isTriumphant) {
+                    EventBus.emit('settle-wager', { wager: this.wager, win: false });
+                };
+                this.wager = { silver: 0, gold: 0, multiplier: 0 };
+            };
             enemy.cleanUp();
             enemy.destroy();
         }, undefined, this);

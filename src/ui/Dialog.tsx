@@ -255,7 +255,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
     const [thievery, setThievery] = createSignal<boolean>(false);
     const [specialMerchant, setSpecialMerchant] = createSignal<boolean>(false);
-    const [arena, setArena] = createSignal<{ show: boolean; enemies: ARENA_ENEMY[] | []; wager: { silver: number; gold: number; }; }>({ show: false, enemies: [], wager: { silver: 0, gold: 0 } });
+    const [arena, setArena] = createSignal<{ show: boolean; enemies: ARENA_ENEMY[] | []; wager: { silver: number; gold: number; multiplier: number; }; }>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 } });
     const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {

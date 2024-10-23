@@ -567,24 +567,7 @@ export class Game extends Scene {
     showDialog = (dialogTag: boolean) => {
         EventBus.emit('blend-game', { dialogTag });
         this.hud.smallHud.activate('dialog', dialogTag);
-    }; // smallHud: dialog
-    // summonEnemy = (val: number) => {
-    //     let count = 0;
-    //     for (let i = 0; i < this.enemies.length; i++) {
-    //         const enemy = this.enemies[i];
-    //         if (enemy.isDefeated === true) continue;
-    //         enemy.setPosition(this.player.x + Phaser.Math.Between(-500, 500), this.player.y + Phaser.Math.Between(-500, 500));
-    //         enemy.checkEnemyCombatEnter();
-    //         if (this.player.isEnemyInTargets(enemy.enemyID) === false) {
-    //             this.player.targets.push(enemy);
-    //         };
-    //         if (this.player.currentTarget === undefined || this.player.currentTarget?.enemyID !== enemy.enemyID) {
-    //             this.player.targetEngagement(enemy.enemyID);
-    //         };
-    //         count++;
-    //         if (count === val) return;
-    //     };
-    // };
+    };
     // ============================ Player ============================ \\
     checkEnvironment = (player: Player | Enemy) => {
         const x = this.map.worldToTileX(player.x || 0);

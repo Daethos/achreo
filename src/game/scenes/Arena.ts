@@ -54,6 +54,7 @@ export class Arena extends Scene {
     postFxPipeline: any;
     musicBackground: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicCombat: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+    musicCombat2: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicStealth: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     volumeEvent: () => void;
     matterCollision: any;
@@ -73,6 +74,7 @@ export class Arena extends Scene {
     platform: MovingPlatform;
     platform2: MovingPlatform;
     platform3: MovingPlatform;
+    wager = { silver: 0, gold: 0, multiplier: 0 };
 
     constructor () {
         super('Arena');
@@ -163,6 +165,7 @@ export class Arena extends Scene {
         this.musicBackground = this.sound.add('isolation', { volume: this?.hud?.settings?.volume || 0.1, loop: true });
         if (this.hud.settings?.music === true) this.musicBackground.play();
         this.musicCombat = this.sound.add('industrial', { volume: this?.hud?.settings?.volume, loop: true });
+        this.musicCombat2 = this.sound.add('combat2', { volume: this?.hud?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
         
         // this.platform = new MovingPlatform(this, 1440, 640, 'player-castbar', { isStatic: true });
@@ -334,7 +337,12 @@ export class Arena extends Scene {
     wakeUp = () => {
         this.scene.resume();
         if (this.combat) {
-            this.musicCombat.resume();
+            if (this.musicCombat.isPaused) {
+                this.musicCombat.resume();
+            } else {
+                this.musicCombat2.resume();
+            };
+            // this.musicCombat.resume();
             this.startCombatTimer();    
         } else if (this.player.isStealthing) {
             this.musicStealth.resume();
@@ -479,6 +487,7 @@ export class Arena extends Scene {
     };
     computerDisengage = () => {
         this.player.disengage();
+        this.wager = { silver: 0, gold: 0, multiplier: 0 };
         // if (this.enemies.length > 0) {
         //     for (let i = 0; i < this.enemies.length; i++) {
         //         this.destroyEnemy(this.enemies[i]);
@@ -497,13 +506,19 @@ export class Arena extends Scene {
         };
         if (bool === true && this.combat === false) {
             this.player.startCombat();
-            this.musicCombat.play();
+            if (Math.random() > 0.5) {
+                this.musicCombat.play();
+            } else {
+                this.musicCombat2.play();
+            };
+            // this.musicCombat.play();
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
             if (this.musicStealth.isPlaying) this.musicStealth.stop();
             this.startCombatTimer();
         } else if (bool === false) {
             // this.clearAggression();
             this.musicCombat.stop();
+            this.musicCombat2.stop();
             if (this.player.isStealthing) {
                 if (this.musicStealth.isPaused) {
                     this.musicStealth.resume();
@@ -523,6 +538,7 @@ export class Arena extends Scene {
         if (bool) {
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
             if (this.musicCombat.isPlaying) this.musicCombat.pause();
+            if (this.musicCombat2.isPlaying) this.musicCombat2.pause();
             if (this.musicStealth.isPaused) {
                 this.musicStealth.resume();
             } else {
@@ -541,6 +557,7 @@ export class Arena extends Scene {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (this.musicBackground.isPlaying) this.musicBackground.pause();
         if (this.musicCombat.isPlaying) this.musicCombat.pause();
+        if (this.musicCombat2.isPlaying) this.musicCombat2.pause();
         if (this.musicStealth.isPlaying) this.musicStealth.pause();
     };
     resumeMusic = (): void => {
@@ -558,7 +575,12 @@ export class Arena extends Scene {
                 this.musicBackground.play();
             };
         } else {
-            this.musicCombat.resume();
+            if (this.musicCombat.isPaused) {
+                this.musicCombat.resume();
+            } else {
+                this.musicCombat2.resume();
+            };
+            // this.musicCombat.resume();
         };
     };
     drinkFlask = (): boolean => EventBus.emit('drink-firewater');
@@ -610,6 +632,7 @@ export class Arena extends Scene {
                 }, undefined, this);
             };
         }, undefined, this);
+        this.wager = this.registry.get("wager");
     };
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
@@ -618,12 +641,16 @@ export class Arena extends Scene {
         enemy.stateMachine.setState(States.DEATH);
         this.time.delayedCall(2000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
-            enemy.cleanUp();
-            enemy.destroy();
-            if (this.enemies.length === 0 || !this.combat) {
-                console.log('computerDisengage destroyEnemy');
+            if (this.enemies.length === 0) { // || !this.inCombat
+                if (enemy.isDefeated) {
+                    EventBus.emit('settle-wager', { wager: this.wager, win: true });
+                } else if (enemy.isTriumphant) {
+                    EventBus.emit('settle-wager', { wager: this.wager, win: false });
+                };
                 this.computerDisengage();
             };
+            enemy.cleanUp();
+            enemy.destroy();
         }, undefined, this);
     };
     // ============================ Player ============================ \\

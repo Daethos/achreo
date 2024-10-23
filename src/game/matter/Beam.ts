@@ -2,8 +2,8 @@ import { masteryNumber } from "../../utility/styling";
 import { Play } from "../main";
 const CONVERSION = {
     Arena: {
-        X: 0,
-        Y: 0
+        X: 500,
+        Y: 500
     },
     Game: {
         X: 265,
@@ -43,7 +43,7 @@ export default class Beam {
             speedX: {min:35, max:75},
             speedY: {min:35, max:75},
             reserve: 25,
-            follow: this.player,
+            follow: player,
             followOffset: { x: -this.xOffset, y: -this.yOffset },
             visible: true
         };
@@ -70,8 +70,12 @@ export default class Beam {
     };
     startEmitter = (target: any, time: number) => {
         this.emitter.start();
+        // this.emitter.visible = true;
         this.target = target;
         this.updateEmitter(target);
+        // const point = this.scene.cameras.main.getWorldPoint(this.emitter.x, this.emitter.y);
+        console.log(`Starting emitter in ${this.scene.scene.key} --- ${this.emitter.x} X | ${this.emitter.y} Y`);
+        
         this.scene.time.addEvent({
             delay: time / 20,
             callback: () => {if (this.target !== undefined) this.updateEmitter(this.target);},

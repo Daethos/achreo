@@ -15,7 +15,7 @@ import Statistics from '../utility/statistics';
 import { validateHealth, validateLevel, validateMastery } from '../utility/validators';
 import { adjustTime } from './Timer';
 import { Store } from 'solid-js/store';
-import { IRefPhaserGame } from '../game/PhaserGame';
+import { IRefPhaserGame, rebalanceCurrency } from '../game/PhaserGame';
 import Roster from './Roster';
 const Character = lazy(async () => await import('./Character'));
 const CombatUI = lazy(async () => await import('./CombatUI'));
@@ -62,7 +62,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         caeren: 0,
         kyosir: 0,
     });
-    const [arena, setArena] = createSignal<{ show: boolean; enemies: ARENA_ENEMY[] | []; wager: { silver: number; gold: number; } }>({ show: false, enemies: [], wager: { silver: 0, gold: 0 } });
+    const [arena, setArena] = createSignal<{ show: boolean; enemies: ARENA_ENEMY[] | []; wager: { silver: number; gold: number; multiplier: number; } }>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 } });
     createEffect(() => EventBus.emit('combat', combat()));  
     createEffect(() => EventBus.emit('game', game()));  
     createEffect(() => EventBus.emit('reputation', reputation()));
@@ -391,7 +391,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 EventBus.emit('record-loss', {combat:res, wager:arena().wager});
             };
             res = statusEffectCheck(res);
-            setArena({ ...arena(), enemies: [], wager: { silver: 0, gold: 0 } });
+            // setArena({ ...arena(), enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 } });
         } catch (err: any) {
             console.warn(err, 'Error Resolving Combat');
         };
@@ -421,17 +421,36 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
     usePhaserEvent('show-roster', () => setArena({ ...arena(), show: true }));
-    usePhaserEvent('set-wager-arena', (data: { wager: { silver: number; gold: number; }; enemies: Compiler[] }) => {
+    usePhaserEvent('set-wager-arena', (data: { wager: { silver: number; gold: number; multiplier: number; }; enemies: Compiler[] }) => {
         const { wager, enemies } = data;
         instance.game?.registry.set("enemies", enemies);
+        instance.game?.registry.set("wager", wager);
         setArena({ ...arena(), wager });
         EventBus.emit("scene-switch", {current:"Underground", next:"Arena"});
     });
-    usePhaserEvent('set-wager-underground', (data: { wager: { silver: number; gold: number; }; enemies: Compiler[] }) => {
+    usePhaserEvent('set-wager-underground', (data: { wager: { silver: number; gold: number; multiplier: number; }; enemies: Compiler[] }) => {
         const { wager, enemies } = data;
         instance.game?.registry.set("enemies", enemies);
+        instance.game?.registry.set("wager", wager);
         setArena({ ...arena(), wager });
         EventBus.emit("create-arena", enemies);
+    });
+    usePhaserEvent('settle-wager', (data: { wager: { silver: number; gold: number; multiplier: number; }; win: boolean; }) => {
+        const { wager, win } = data;
+        // console.log(wager, win, 'usePhaserEvent settle-wager');
+        let silver = ascean().currency.silver, gold = ascean().currency.gold;
+        if (win) {
+            silver +=  (wager.silver * wager.multiplier);
+            gold += (wager.gold * wager.multiplier);
+        } else {
+            silver -= wager.silver;
+            gold -= wager.gold;
+        };
+        let currency = { silver, gold };
+        currency = rebalanceCurrency(currency);
+        const update = { ...ascean(), currency };
+        EventBus.emit('update-ascean', update);
+        setArena({ ...arena(), enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 } });
     });
     return <div id='base-ui'>
         <Show when={game().showPlayer} fallback={<div style={{ position: "absolute", 'z-index': 1 }}>

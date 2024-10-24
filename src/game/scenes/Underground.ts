@@ -619,7 +619,8 @@ export class Underground extends Scene {
     };
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
-        enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, "Something is tearing into me. Please, help!", 2000, 'damage', false, true, () => enemy.specialCombatText = undefined);
+        const saying = enemy.isDefeated ? "Something is tearing into me. Please, help!" : `I'll be seeing you, ${this.state.player?.name}.`;
+        enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, saying, 2000, 'bone', false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DEATH);
         this.time.delayedCall(3000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
@@ -655,14 +656,14 @@ export class Underground extends Scene {
     setCameraOffset = () => {
         const { width, height } = this.cameras.main.worldView;
         if (this.player.flipX === true) {
-            this.offsetX = Math.min((width / 12.5), this.offsetX + 3);
+            this.offsetX = Math.min((width / 12.5), this.offsetX + 2);
         } else {
-            this.offsetX = Math.max(this.offsetX - 3, -(width / 12.5));
+            this.offsetX = Math.max(this.offsetX - 2, -(width / 12.5));
         };
         if (this.player.velocity?.y as number > 0) {
-            this.offsetY = Math.max(this.offsetY - 2.5, -(height / 9));
+            this.offsetY = Math.max(this.offsetY - 1.5, -(height / 9));
         } else if (this.player.velocity?.y as number < 0) {
-            this.offsetY = Math.min((height / 9), this.offsetY + 2.5);
+            this.offsetY = Math.min((height / 9), this.offsetY + 1.5);
         };
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };

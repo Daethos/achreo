@@ -613,9 +613,9 @@ export class Game extends Scene {
             this.offsetX = Math.max(this.offsetX - 3, -(width / 10));
         };
         if (this.player.velocity?.y as number > 0) {
-            this.offsetY = Math.max(this.offsetY - 2.5, -(height / 7));
+            this.offsetY = Math.max(this.offsetY - 2, -(height / 7));
         } else if (this.player.velocity?.y as number < 0) {
-            this.offsetY = Math.min((height / 7), this.offsetY + 2.5);
+            this.offsetY = Math.min((height / 7), this.offsetY + 2);
         };
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };

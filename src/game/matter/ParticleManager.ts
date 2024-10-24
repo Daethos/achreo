@@ -254,6 +254,7 @@ export default class ParticleManager extends Phaser.Scene {
         if (!particle.triggered) this.impactEffect(particle);
         if (!particle.triggered && particle.magic) {
             particle.triggered = true;
+            if (particle.player.isDeleting) return;
             particle.player.particleAoe(particle);
         };
     };

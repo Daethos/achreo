@@ -54,7 +54,6 @@ export default class Enemy extends Entity {
     currentWeapon: any = undefined;
     isCurrentTarget: boolean = false;
     parryAction: string = '';
-    isDeleting: boolean = false;
     sensorDisp: number = 12;
     colliderDisp: number = 16;
     fearCount: number = 0;

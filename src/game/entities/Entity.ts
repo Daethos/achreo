@@ -204,6 +204,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     patrolTimer: Phaser.Time.TimerEvent | undefined;
     polymorphTimer: Phaser.Time.TimerEvent | undefined;
     reconTimer: Phaser.Time.TimerEvent | undefined;
+    isDeleting: boolean = false;
 
     static preload(scene: Phaser.Scene) {
         scene.load.atlas(`player_actions`, '../assets/gui/player_actions.png', '../assets/gui/player_actions_atlas.json');

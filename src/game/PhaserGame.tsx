@@ -8,7 +8,7 @@ import StartGame from './main';
 import { EventBus } from './EventBus';
 import { Menu } from '../utility/screens';
 import { Combat, initCombat } from '../stores/combat';
-import { ARENA_ENEMY, fetchEnemy } from '../utility/enemy';
+import { fetchEnemy } from '../utility/enemy';
 import { GameState, initGame } from '../stores/game';
 import { Compiler, LevelSheet, asceanCompiler } from '../utility/ascean';
 import { deleteEquipment, getAscean, getInventory, populate, updateSettings } from '../assets/db/db';
@@ -24,12 +24,9 @@ const BaseUI = lazy(async () => await import('../ui/BaseUI'));
 
 export function rebalanceCurrency(currency: { silver: number; gold: number; }): { silver: number; gold: number; } {
     let { silver, gold } = currency;
-    // console.log(silver, gold, 'Starting rebalanceCurrency');
     if (isFloat(gold)) {
         let extraSilver = Number(`0.${String(gold).split('.')[1]}`);
-        // console.log(extraSilver, 'Extra Silver?');
         extraSilver *= 100;
-        // console.log(extraSilver, 'Adjusted for Inflation ~_^');
         silver += extraSilver;
     };
     silver = Math.round(silver);
@@ -42,13 +39,11 @@ export function rebalanceCurrency(currency: { silver: number; gold: number; }): 
         gold -= 1; 
         silver += 100; 
     };
-    // console.log(silver, gold, 'Ending rebalanceCurrency');
     return { silver, gold };
 };
 
 function isFloat(num: number) {
     const float = /[\.]/.test(String(num));
-    // console.log(float, 'Is this a float?');
     return float;
 };
 

@@ -90,7 +90,6 @@ export class Arena extends Scene {
         this.gameEvent();
         this.state = this.registry.get("combat");
         this.reputation = this.getReputation();
-        // this.hud.settings = this.registry.get("settings");
         this.offsetX = 0;
         this.offsetY = 0;
         this.tweenManager = {};
@@ -133,9 +132,6 @@ export class Arena extends Scene {
             this.hud.rightJoystick.joystick.setVisible(false);
         };
         this.player.setPosition(random.x,random.y);
-        // this.time.delayedCall(1000, () => {
-        // });
-
 
     // =========================== Camera =========================== \\
         camera.startFollow(this.player, false, 0.1, 0.1);
@@ -664,15 +660,16 @@ export class Arena extends Scene {
         this.setCameraOffset();
     };
     setCameraOffset = () => {
+        const { width, height } = this.cameras.main.worldView;
         if (this.player.flipX === true) {
-            this.offsetX = Math.min(75, this.offsetX + 3);
+            this.offsetX = Math.min((width / 12.5), this.offsetX + 3);
         } else {
-            this.offsetX = Math.max(this.offsetX - 3, -75);
+            this.offsetX = Math.max(this.offsetX - 3, -(width / 12.5));
         };
-        if (this.player.velocity.y > 0) {
-            this.offsetY = Math.max(this.offsetY - 2, -50);
-        } else if (this.player.velocity.y < 0) {
-            this.offsetY = Math.min(50, this.offsetY + 2);
+        if (this.player.velocity?.y as number > 0) {
+            this.offsetY = Math.max(this.offsetY - 2.5, -(height / 9));
+        } else if (this.player.velocity?.y as number < 0) {
+            this.offsetY = Math.min((height / 9), this.offsetY + 2.5);
         };
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };

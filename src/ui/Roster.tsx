@@ -21,7 +21,6 @@ export default function Roster({ arena, ascean, setArena, base }: { arena: Acces
             multiplier *= ((arena().enemies.length - 1) * 1.5);
         };
         multiplier /= 2;
-        // console.log(multiplier, 'End Eulex Multiplier');
         const wager = { ...arena().wager, multiplier };
         if (switchScene()) {
             EventBus.emit('set-wager-arena', {wager, enemies});

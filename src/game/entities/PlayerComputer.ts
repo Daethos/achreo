@@ -120,9 +120,8 @@ export default class PlayerComputer extends Player {
             const point = points[i];
             const layer = (this.scene as Arena | Underground).groundLayer;
             const tile = this.scene.map.getTileAtWorldXY(point.x, point.y, false, this.scene.cameras.main, layer);
-            if (tile && tile.properties.Wall) {
-                console.log(tile, 'Tile?');
-                console.log('Obstacle detected! Adjusting position.');
+            if (tile && (tile.properties.collides || tile.properties.wall)) {
+                console.log(tile.properties, 'Tile Obfuscating!');
                 return true;  // Wall is detected
             };
         };
@@ -176,8 +175,9 @@ export default class PlayerComputer extends Player {
                     this.setVelocityX(direction.x * -this.speed + 0.5); // -2.25 | -2 | -1.75
                     this.setVelocityY(direction.y * -this.speed + 0.5); // -1.5 | -1.25
                 };
-            } else if (this.checkLineOfSight()) {
-                console.log('Obscured Line of Sight!');
+            } else if (this.checkLineOfSight() && !this.playerMachine.stateMachine.isCurrentState(States.EVADE)) {
+                this.playerMachine.stateMachine.setState(States.EVADE);
+                return;
             } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.
                 this.setVelocity(0);
                 this.anims.play('player_idle', true);

@@ -273,10 +273,10 @@ export default class Enemy extends Entity {
         EventBus.off('enemy-luckout', this.luckoutUpdate);
         EventBus.off('update-enemy-health', this.healthUpdate);
         // this.removeInteractive();
-        this.setActive(false);
-        this.clearBubbles();
         if (this.isGlowing) this.checkCaerenic(false);
         if (this.isShimmering) this.stealthEffect(false);
+        this.setActive(false);
+        this.clearBubbles();
         this.scrollingCombatText = undefined;
         this.specialCombatText = undefined;
         this.castbar.cleanUp();
@@ -1242,7 +1242,7 @@ export default class Enemy extends Entity {
         this.leashTimer = this.scene.time.addEvent({
             delay: 500,
             callback: () => {
-                if (this.isDeleting) {
+                if (!this.scene || !this.scene.navMesh || this.isDeleting) {
                     this.leashTimer?.remove(false);
                     this.leashTimer?.destroy();
                     this.leashTimer = undefined;
@@ -2886,6 +2886,21 @@ export default class Enemy extends Entity {
         this.setVelocity(direction.x * DISTANCE.MOMENTUM, direction.y * DISTANCE.MOMENTUM);
     };
 
+    checkLineOfSight() {
+        const line = new Phaser.Geom.Line(this.attacking?.x, this.attacking?.y, this.x, this.y);
+        const points = line.getPoints(30);  // Adjust number of points based on precision
+        for (let i = 0; i < points.length; i++) {
+            const point = points[i];
+            const layer = (this.scene as Arena | Underground).groundLayer;
+            const tile = this.scene.map.getTileAtWorldXY(point.x, point.y, false, this.scene.cameras.main, layer);
+            if (tile && tile.properties.wall) {
+                console.log(tile.properties, 'Tile Obfuscating Enemy!');
+                return true;  // Wall is detected
+            };
+        };
+        return false;  // Clear line of sight
+    };
+
     evaluateCombatDistance = () => {
         if (this.isCasting === true || this.isSuffering() === true || this.isHurt === true || this.isContemplating === true) return;
         if (this.attacking === undefined || this.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
@@ -2914,6 +2929,9 @@ export default class Enemy extends Entity {
                 direction.normalize();
                 this.setVelocityX(direction.x * -this.speed * (this.isClimbing ? 0.65 : 1)); // -2.25 | -2 | -1.75
                 this.setVelocityY(direction.y * -this.speed * (this.isClimbing ? 0.65 : 1)); // -1.5 | -1.25
+            } else if (this.checkLineOfSight() && !this.stateMachine.isCurrentState(States.EVADE)) {
+                this.stateMachine.setState(States.EVADE);
+                return;
             } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.
                 this.setVelocity(0);
                 this.anims.play('player_idle', true);

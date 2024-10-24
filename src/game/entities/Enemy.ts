@@ -273,7 +273,10 @@ export default class Enemy extends Entity {
         EventBus.off('update-enemy-health', this.healthUpdate);
         // this.removeInteractive();
         if (this.isGlowing) this.checkCaerenic(false);
-        if (this.isShimmering) this.stealthEffect(false);
+        if (this.isShimmering) {
+            this.isShimmering = false;
+            this.stealthEffect(false);
+        };
         this.setActive(false);
         this.clearBubbles();
         this.scrollingCombatText = undefined;
@@ -837,6 +840,10 @@ export default class Enemy extends Entity {
 
     onDefeatedEnter = () => {
         this.anims.play('player_pray', true).on('animationcomplete', () => this.anims.play('player_idle', true));
+        if (this.isShimmering) {
+            this.isShimmering = false;
+            this.stealthEffect(false);
+        };
         this.isDefeated = true;
         this.inCombat = false;
         this.setSpecialCombat(false);
@@ -859,6 +866,10 @@ export default class Enemy extends Entity {
         this.setVelocity(0);
         this.enemyAnimation();
         this.currentRound = 0;
+        if (this.isShimmering) {
+            this.isShimmering = false;
+            this.stealthEffect(false);
+        };    
     };
     onIdleUpdate = (dt: number) => {
         this.idleWait -= dt;
@@ -2158,8 +2169,10 @@ export default class Enemy extends Entity {
         // if (!this.isStealthing) 
         this.stealthEffect(true);    
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIMMER, () => {
-            this.isShimmering = false;
-            this.stealthEffect(false);    
+            if (this.isShimmering) {
+                this.isShimmering = false;
+                this.stealthEffect(false);    
+            };
         }, undefined, this);
         EventBus.emit('enemy-combat-text', {
             computerSpecialDescription: `${this.ascean.name} shimmers, fading in and out of this world.`
@@ -2893,7 +2906,7 @@ export default class Enemy extends Entity {
             const layer = (this.scene as Arena | Underground).groundLayer;
             const tile = this.scene.map.getTileAtWorldXY(point.x, point.y, false, this.scene.cameras.main, layer);
             if (tile && tile.properties.wall) {
-                console.log(tile.properties, 'Tile Obfuscating Enemy!');
+                // console.log(tile.properties, 'Tile Obfuscating Enemy!');
                 return true;  // Wall is detected
             };
         };
@@ -2925,6 +2938,15 @@ export default class Enemy extends Entity {
                 this.setVelocityY(direction.y * this.speed * (this.isClimbing ? 0.65 : 1)); // 2.25          
             } else if (this.attacking.position.subtract(this.position).length() < DISTANCE.THRESHOLD && !this.attacking.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
                 this.enemyAnimation();
+                if (Phaser.Math.Between(1, 250) === 1 && !this.stateMachine.isCurrentState(States.EVADE)) {
+                    // console.log('Entering EVADE 1 in 250 Chance!');
+                    this.stateMachine.setState(States.EVADE);
+                    return;
+                } else {
+                    direction.normalize();
+                    this.setVelocityX(direction.x * -this.speed + 0.5); // -2.25 | -2 | -1.75
+                    this.setVelocityY(direction.y * -this.speed + 0.5); // -1.5 | -1.25
+                };
                 direction.normalize();
                 this.setVelocityX(direction.x * -this.speed * (this.isClimbing ? 0.65 : 1)); // -2.25 | -2 | -1.75
                 this.setVelocityY(direction.y * -this.speed * (this.isClimbing ? 0.65 : 1)); // -1.5 | -1.25

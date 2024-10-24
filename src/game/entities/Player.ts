@@ -99,7 +99,7 @@ export default class Player extends Entity {
     isImpermanent: boolean = false;
     isSeering: boolean = false;
     snareDuration = DURATION.SNARED;
-
+    evasionTime: number = 0;
 
     constructor(data: any) {
         const { scene } = data;

@@ -486,12 +486,8 @@ export class Arena extends Scene {
     };
     computerDisengage = () => {
         this.player.disengage();
+        if (this.player.isComputer) (this.player as PlayerComputer).completeReset();
         this.wager = { silver: 0, gold: 0, multiplier: 0 };
-        // if (this.enemies.length > 0) {
-        //     for (let i = 0; i < this.enemies.length; i++) {
-        //         this.destroyEnemy(this.enemies[i]);
-        //     };
-        // };
         EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
         this.time.delayedCall(3000, () => {
             EventBus.emit("scene-switch", {current:"Arena", next:"Underground"});

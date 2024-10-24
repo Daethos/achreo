@@ -1510,8 +1510,12 @@ export default class Player extends Entity {
 
     handleMovement = () => {
         let speed = this.speed;
-        if (this.scene.hud.settings.desktop === true) {
-            if (this.scene.hud.input.activePointer.rightButtonDown()) {
+        const suffering = this.isSuffering();
+        const isDesktop = this.scene.hud.settings.desktop === true;
+        const input = isDesktop ? this.inputKeys : this.scene.hud.joystickKeys;
+        if (isDesktop) {
+            const pointer = this.scene.hud.input.activePointer.rightButtonDown();
+            if (pointer) {
                 const point = this.scene.getWorldPointer();
                 const direction = point.subtract(this.position);
                 direction.normalize();
@@ -1521,38 +1525,38 @@ export default class Player extends Entity {
                 this.playerVelocity.y *= direction.y;
                 this.flipX = this.playerVelocity.x < 0;
             };
-            if (this.inputKeys.right.D.isDown || this.inputKeys.right.RIGHT.isDown) {
+            if (input.right.D.isDown || input.right.RIGHT.isDown) {
                 this.playerVelocity.x += this.acceleration;
                 this.flipX = false;
             };
-            if (this.inputKeys.left.A.isDown || this.inputKeys.left.LEFT.isDown) {
+            if (input.left.A.isDown || input.left.LEFT.isDown) {
                 this.playerVelocity.x -= this.acceleration;
                 this.flipX = true;
             };
-            if ((this.inputKeys.up.W.isDown || this.inputKeys.up.UP.isDown)) {
+            if ((input.up.W.isDown || input.up.UP.isDown)) {
                 this.playerVelocity.y -= this.acceleration;
             }; 
-            if (this.inputKeys.down.S.isDown || this.inputKeys.down.DOWN.isDown) {
+            if (input.down.S.isDown || input.down.DOWN.isDown) {
                 this.playerVelocity.y += this.acceleration;
             };
-            if (this.inputKeys.strafe.E.isDown || this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0) {
+            if (input.strafe.E.isDown || this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0) {
                 speed += 0.1;
                 this.flipX = true;
             };
-            if (this.inputKeys.strafe.Q.isDown || this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x < 0) {
+            if (input.strafe.Q.isDown || this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x < 0) {
                 speed -= 0.1;    
                 this.flipX = false;
             };
-            if (!this.isSuffering() && !this.scene.hud.input.activePointer.rightButtonDown() && !this.inputKeys.right.D.isDown && !this.inputKeys.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.left.A.isDown) {
+            if (!suffering && !pointer && !input.right.D.isDown && !input.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !input.left.A.isDown && !input.left.LEFT.isDown) {
                 this.playerVelocity.x = 0;
             };
-            if (!this.isSuffering() && !this.scene.hud.input.activePointer.rightButtonDown() && !this.inputKeys.left.A.isDown && !this.inputKeys.left.LEFT.isDown && this.playerVelocity.x !== 0 && !this.inputKeys.right.D.isDown) {
+            if (!suffering && !pointer && !input.left.A.isDown && !input.left.LEFT.isDown && this.playerVelocity.x !== 0 && !input.right.D.isDown && !input.right.RIGHT.isDown) {
                 this.playerVelocity.x = 0;
             };
-            if (!this.isSuffering() && !this.scene.hud.input.activePointer.rightButtonDown() && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown) {
+            if (!suffering && !pointer && !input.up.W.isDown && !input.up.UP.isDown && this.playerVelocity.y !== 0 && !input.down.S.isDown && !input.down.DOWN.isDown) {
                 this.playerVelocity.y = 0;
             };
-            if (!this.isSuffering() && !this.scene.hud.input.activePointer.rightButtonDown() && !this.inputKeys.down.S.isDown && !this.inputKeys.down.DOWN.isDown && this.playerVelocity.y !== 0 && !this.inputKeys.up.W.isDown && !this.inputKeys.up.UP.isDown) {
+            if (!suffering && !pointer && !input.down.S.isDown && !input.down.DOWN.isDown && this.playerVelocity.y !== 0 && !input.up.W.isDown && !input.up.UP.isDown) {
                 this.playerVelocity.y = 0;
             };
         } else {
@@ -1578,16 +1582,16 @@ export default class Player extends Entity {
                 speed -= 0.1;    
                 this.flipX = false;
             };
-            if (!this.isSuffering() && this.playerVelocity.x !== 0 && !this.scene.hud.joystickKeys.left.isDown && !this.scene.hud.joystickKeys.right.isDown) {
+            if (!suffering && this.playerVelocity.x !== 0 && !this.scene.hud.joystickKeys.left.isDown && !this.scene.hud.joystickKeys.right.isDown) {
                 this.playerVelocity.x = 0;
             };
-            if (!this.isSuffering() && this.playerVelocity.x !== 0 && !this.scene.hud.joystickKeys.right.isDown && !this.scene.hud.joystickKeys.left.isDown) {
+            if (!suffering && this.playerVelocity.x !== 0 && !this.scene.hud.joystickKeys.right.isDown && !this.scene.hud.joystickKeys.left.isDown) {
                 this.playerVelocity.x = 0;
             };
-            if (!this.isSuffering() && this.playerVelocity.y !== 0 && !this.scene.hud.joystickKeys.down.isDown && !this.scene.hud.joystickKeys.up.isDown) {
+            if (!suffering && this.playerVelocity.y !== 0 && !this.scene.hud.joystickKeys.down.isDown && !this.scene.hud.joystickKeys.up.isDown) {
                 this.playerVelocity.y = 0;
             };
-            if (!this.isSuffering() && this.playerVelocity.y !== 0 && !this.scene.hud.joystickKeys.up.isDown && !this.scene.hud.joystickKeys.down.isDown) {
+            if (!suffering && this.playerVelocity.y !== 0 && !this.scene.hud.joystickKeys.up.isDown && !this.scene.hud.joystickKeys.down.isDown) {
                 this.playerVelocity.y = 0;
             };
         };

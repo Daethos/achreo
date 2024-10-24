@@ -167,7 +167,7 @@ export default class PlayerComputer extends Player {
                 this.setVelocityX(direction.x * this.speed + 0.25); // 2.25
                 this.setVelocityY(direction.y * this.speed + 0.25); // 2.25          
             } else if (this.currentTarget.position.subtract(this.position).length() < PLAYER.DISTANCE.THRESHOLD && !this.currentTarget.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
-                if (Phaser.Math.Between(1, 300) === 1) {
+                if (Phaser.Math.Between(1, 250) === 1) {
                     this.playerMachine.stateMachine.setState(States.EVADE);
                     return;
                 } else {

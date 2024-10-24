@@ -14,17 +14,20 @@ import StaminaModal from '../components/StaminaModal';
 import GraceModal from '../components/GraceModal';
 import { createHealthDisplay } from '../utility/health';
 import Settings from '../models/settings';
+import { Store } from 'solid-js/store';
+import { IRefPhaserGame } from '../game/PhaserGame';
 // import { CombatAttributes } from '../utility/combat';
 // import Equipment from '../models/equipment';
 // import Ascean, { initAscean } from '../models/ascean';
 interface Props {
+    instance: Store<IRefPhaserGame>;
     state: Accessor<Combat>;
     game: Accessor<GameState>;
     settings: Accessor<Settings>;
     stamina: Accessor<number>;
     grace: Accessor<number>;
 };
-export default function CombatUI({ state, game, settings, stamina, grace }: Props) {
+export default function CombatUI({ instance, state, game, settings, stamina, grace }: Props) {
     const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal(false);
     const [prayerShow, setPrayerShow] = createSignal(false);
@@ -122,6 +125,13 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
             <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>Disengage</div>
         </button> 
         </Show>
+         
+        <Show when={instance.scene?.scene.key === 'Arena'}>
+        <button class='disengage highlight combatUiAnimation' style={{ top: '12.5vh', left: '25vw' }} onClick={() => EventBus.emit('scene-switch', { current: 'Arena', next: 'Underground' })}>
+            <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>Leave Arena</div>
+        </button>
+        </Show>
+
         <Show when={prayerShow()}>
             <PrayerModal prayer={effect as Accessor<StatusEffect>} show={prayerShow} setShow={setPrayerShow} />
         </Show>

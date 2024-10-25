@@ -60,9 +60,7 @@ export default class PlayerComputer extends Player {
     };
     
     setSpecialCombat = (mult = 0.6, remove = false) => {
-        if (remove) {
-            return;
-        };
+        if (remove) return;
         this.scene.time.delayedCall(DURATION.SPECIAL * mult, () => {
             if (!this.inCombat) return;
             if (this.isCasting === true || this.isSuffering() || this.isContemplating) {
@@ -74,10 +72,8 @@ export default class PlayerComputer extends Player {
             this.setVelocity(0);
             this.isMoving = false;
             if (this.playerMachine.stateMachine.isState(special)) {
-                // console.log(`%c Special: ${special}`, 'color:gold');
                 this.playerMachine.stateMachine.setState(special);
             } else if (this.playerMachine.positiveMachine.isState(special)) {
-                // console.log(`%c  Special: ${special}`, 'color:fuchsia');
                 this.playerMachine.positiveMachine.setState(special);
             };
             this.setSpecialCombat();

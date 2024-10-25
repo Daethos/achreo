@@ -22,8 +22,8 @@ const DURATION = {
     ROOTED: 3000,
     STUNNED: 3000,
     TEXT: 1500,
-    DODGE: 288, // 288
-    ROLL: 320, // 320
+    DODGE: 288,
+    ROLL: 320,
     SPECIAL: 5000,
 };
 const MOVEMENT = {
@@ -432,7 +432,6 @@ export default class PlayerMachine {
         this.player.setVelocity(0);
         this.scene.time.delayedCall(Phaser.Math.Between(1000, 1500), () => {
             if (this.player.isSuffering() || this.player.isCasting || this.player.isPraying || this.player.computerAction) {
-                // console.log('RE-ENTERING LULL');
                 this.player.computerAction = false;
                 this.stateMachine.setState(States.LULL);
                 return;
@@ -471,7 +470,6 @@ export default class PlayerMachine {
     };
     onComputerCombatUpdate = (_dt: number) => { 
         if (!this.player.computerAction) this.stateMachine.setState(States.LULL);  
-        // (this.player as PlayerComputer).evaluateCombatDistance();
     };
 
     onComputerAttackEnter = () => {

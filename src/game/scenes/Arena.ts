@@ -133,10 +133,8 @@ export class Arena extends Scene {
         };
         this.player.setPosition(random.x,random.y);
 
-    // =========================== Camera =========================== \\
         camera.startFollow(this.player, false, 0.1, 0.1);
         camera.setLerp(0.1, 0.1);
-        // camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         camera.setRoundPixels(true);
 
         var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
@@ -144,7 +142,7 @@ export class Arena extends Scene {
         this.setPostFx(this.hud.settings?.postFx, this.hud.settings?.postFx.enable);
         this.particleManager = new ParticleManager(this);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
-    // =========================== Input Keys =========================== \\
+
         this.player.inputKeys = {
             up: this?.input?.keyboard?.addKeys('W,UP'),
             down: this?.input?.keyboard?.addKeys('S,DOWN'),
@@ -160,7 +158,7 @@ export class Arena extends Scene {
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 100, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-    // =========================== Music =========================== \\
+
         this.musicBackground = this.sound.add('isolation', { volume: this?.hud?.settings?.volume || 0.1, loop: true });
         if (this.hud.settings?.music === true) this.musicBackground.play();
         this.musicCombat = this.sound.add('industrial', { volume: this?.hud?.settings?.volume, loop: true });
@@ -178,7 +176,6 @@ export class Arena extends Scene {
         // this.platform3.setAngle(90);
         // this.platform3.horizontal(0, 1440, 12000);
         
-
         this.postFxEvent();
         if (this.hud.settings.desktop === true) {
             this.input.setDefaultCursor('url(assets/images/cursor.png), pointer');
@@ -191,19 +188,6 @@ export class Arena extends Scene {
         this.createArenaEnemy();
         EventBus.emit('current-scene-ready', this);
     };
-
-    handleFloorChange(entity: any, floorLayer: any) {
-        if (floorLayer === 'base_layer') {
-            // Enable collisions with the base layer and disable with the top layer
-            entity.setCollisionCategory(this.groundLayer);
-            entity.setCollidesWith(this.groundLayer);
-        } else if (floorLayer === 'top_layer') {
-            // Enable collisions with the top layer and disable with the base layer
-            entity.setCollisionCategory(this.layer3);
-            entity.setCollidesWith(this.layer3);
-        };
-    };
-    
 
     cleanUp = (): void => {
         EventBus.off('combat');
@@ -300,27 +284,26 @@ export class Arena extends Scene {
     };
 
     resumeScene = () => {
-        this.cameras.main.fadeIn();//.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, (_cam: any, _effect: any) => {
-            this.resumeMusic();
-            this.state = this.registry.get("combat");
-            this.player.health = this.state.newPlayerHealth;
-            this.player.healthbar.setValue(this.state.newPlayerHealth);
-            this.registry.set("player", this.player);
-            if (this.state.isStealth) {
-                this.player.playerMachine.positiveMachine.setState(States.STEALTH);
-                this.stealthEngaged(true);
-            };
-            const random = this.markers[Math.floor(Math.random() * this.markers.length)];
-            this.player.setPosition(random.x, random.y);
-            if (this.player.isComputer) {
-                this.hud.actionBar.setVisible(false);
-                this.hud.joystick.joystick.setVisible(false);
-                this.hud.rightJoystick.joystick.setVisible(false);
-            };
-            this.createArenaEnemy();
-            this.scene.wake();
-            EventBus.emit('current-scene-ready', this);
-        // });
+        this.cameras.main.fadeIn();
+        this.resumeMusic();
+        this.state = this.registry.get("combat");
+        this.player.health = this.state.newPlayerHealth;
+        this.player.healthbar.setValue(this.state.newPlayerHealth);
+        this.registry.set("player", this.player);
+        if (this.state.isStealth) {
+            this.player.playerMachine.positiveMachine.setState(States.STEALTH);
+            this.stealthEngaged(true);
+        };
+        const random = this.markers[Math.floor(Math.random() * this.markers.length)];
+        this.player.setPosition(random.x, random.y);
+        if (this.player.isComputer) {
+            this.hud.actionBar.setVisible(false);
+            this.hud.joystick.joystick.setVisible(false);
+            this.hud.rightJoystick.joystick.setVisible(false);
+        };
+        this.createArenaEnemy();
+        this.scene.wake();
+        EventBus.emit('current-scene-ready', this);
     };
     switchScene = (current: string) => {
         this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
@@ -341,7 +324,6 @@ export class Arena extends Scene {
             } else {
                 this.musicCombat2.resume();
             };
-            // this.musicCombat.resume();
             this.startCombatTimer();    
         } else if (this.player.isStealthing) {
             this.musicStealth.resume();
@@ -487,13 +469,13 @@ export class Arena extends Scene {
     clearArena = () => {
         if (this.enemies.length > 0) {
             for (let i = 0; i < this.enemies.length; i++) {
-                // this.destroyEnemy(this.enemies[i]);
                 this.enemies[i].cleanUp();
                 this.enemies[i].destroy();
             };
             this.enemies = [];
         };
         this.player.disengage();
+        this.player.clearEnemies();
         if (this.player.isComputer) (this.player as PlayerComputer).completeReset();
         this.wager = { silver: 0, gold: 0, multiplier: 0 };
         EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
@@ -503,6 +485,7 @@ export class Arena extends Scene {
     };
     computerDisengage = () => {
         this.player.disengage();
+        this.player.clearEnemies();
         if (this.player.isComputer) (this.player as PlayerComputer).completeReset();
         this.wager = { silver: 0, gold: 0, multiplier: 0 };
         EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
@@ -523,12 +506,10 @@ export class Arena extends Scene {
             } else {
                 this.musicCombat2.play();
             };
-            // this.musicCombat.play();
             if (this.musicBackground.isPlaying) this.musicBackground.pause();
             if (this.musicStealth.isPlaying) this.musicStealth.stop();
             this.startCombatTimer();
         } else if (bool === false) {
-            // this.clearAggression();
             this.musicCombat.stop();
             this.musicCombat2.stop();
             if (this.player.isStealthing) {
@@ -592,7 +573,6 @@ export class Arena extends Scene {
             } else {
                 this.musicCombat2.resume();
             };
-            // this.musicCombat.resume();
         };
     };
     drinkFlask = (): boolean => EventBus.emit('drink-firewater');
@@ -619,7 +599,7 @@ export class Arena extends Scene {
     showDialog = (dialogTag: boolean) => {
         EventBus.emit('blend-game', { dialogTag });
         this.hud.smallHud.activate('dialog', dialogTag);
-    }; // smallHud: dialog
+    };
     createArenaEnemy = () => {
         EventBus.emit('alert', { header: "Prepare!", body: "The enemies are being summoned. Prepare for the Eulex.", key: "Close" });
         this.time.delayedCall(1500, () => {
@@ -665,7 +645,6 @@ export class Arena extends Scene {
             enemy.destroy();
         }, undefined, this);
     };
-    // ============================ Player ============================ \\
     playerUpdate = (delta: number): void => {
         this.player.update(delta); 
         this.combatManager.combatMachine.process();

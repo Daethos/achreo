@@ -115,7 +115,7 @@ export class Game extends Scene {
         this.navMesh = navMesh;
         // const debugGraphics = this.add.graphics().setAlpha(0.75);
         // this.navMesh.enableDebug(debugGraphics); 
-        this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
+        this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         (this.sys as any).animatedTiles.init(this.map);
         this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
         map?.getObjectLayer('Enemies')?.objects.forEach((enemy: any) => 
@@ -123,7 +123,7 @@ export class Game extends Scene {
         map?.getObjectLayer('Npcs')?.objects.forEach((npc: any) => 
             this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' })));
         let camera = this.cameras.main;
-        camera.zoom = this.hud.settings.positions?.camera?.zoom || 0.8; // 0.8 
+        camera.zoom = this.hud.settings.positions?.camera?.zoom || 0.8;
         camera.startFollow(this.player, false, 0.1, 0.1);
         camera.setLerp(0.1, 0.1);
         camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
@@ -146,7 +146,7 @@ export class Game extends Scene {
             escape: this?.input?.keyboard?.addKeys('ESC'),
         }; 
         this.lights.enable();
-        this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 150, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520 || 0.0675
+        this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 150, 0.05, 0.05);
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
         this.musicBackground = this.sound.add(Math.random() > 0.5 ? 'background' : 'background2', { volume: this?.hud?.settings?.volume / 2 || 0.1, loop: true });
         this.musicCombat = this.sound.add('combat', { volume: this?.hud?.settings?.volume, loop: true });
@@ -270,19 +270,18 @@ export class Game extends Scene {
         this.scene.sleep('Game');
     };
     resumeScene = () => {
-        this.cameras.main.fadeIn();//.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, (_cam: any, _effect: any) => {
-            this.resumeMusic();
-            this.state = this.registry.get("combat");
-            this.player.health = this.state.newPlayerHealth;
-            this.player.healthbar.setValue(this.state.newPlayerHealth);
-            this.registry.set("player", this.player);
-            if (this.state.isStealth) {
-                this.player.playerMachine.positiveMachine.setState(States.STEALTH);
-                this.stealthEngaged(true);
-            };
-            this.scene.wake();
-            EventBus.emit('current-scene-ready', this);
-        // });
+        this.cameras.main.fadeIn();
+        this.resumeMusic();
+        this.state = this.registry.get("combat");
+        this.player.health = this.state.newPlayerHealth;
+        this.player.healthbar.setValue(this.state.newPlayerHealth);
+        this.registry.set("player", this.player);
+        if (this.state.isStealth) {
+            this.player.playerMachine.positiveMachine.setState(States.STEALTH);
+            this.stealthEngaged(true);
+        };
+        this.scene.wake();
+        EventBus.emit('current-scene-ready', this);
     };
     switchScene = (current: string) => {
         this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
@@ -563,7 +562,6 @@ export class Game extends Scene {
         EventBus.emit('blend-game', { dialogTag });
         this.hud.smallHud.activate('dialog', dialogTag);
     };
-    // ============================ Player ============================ \\
     checkEnvironment = (player: Player | Enemy) => {
         const x = this.map.worldToTileX(player.x || 0);
         const y = this.map.worldToTileY(player.y || 0);
@@ -645,7 +643,6 @@ export class Game extends Scene {
         this.playerUpdate(delta);
         this.hud.rightJoystick.update();
         for (let i = 0; i < this.enemies.length; i++) {
-            // if (!this.enemies[i] || !this.enemies[i].body) return;
             this.enemies[i].update(delta);
             this.checkEnvironment(this.enemies[i]);
         };

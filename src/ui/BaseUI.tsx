@@ -389,7 +389,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 EventBus.emit('record-loss', res);
             };
             res = statusEffectCheck(res);
-            // setArena({ ...arena(), enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 } });
         } catch (err: any) {
             console.warn(err, 'Error Resolving Combat');
         };
@@ -435,7 +434,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     });
     usePhaserEvent('settle-wager', (data: { wager: { silver: number; gold: number; multiplier: number; }; win: boolean; }) => {
         const { wager, win } = data;
-        // console.log(wager, win, 'usePhaserEvent settle-wager');
         let silver = ascean().currency.silver, gold = ascean().currency.gold;
         if (win) {
             silver +=  (wager.silver * wager.multiplier);

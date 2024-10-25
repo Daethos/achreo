@@ -37,7 +37,6 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
     const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, false);
     const disengage = () => EventBus.emit('disengage');
     const showPlayer = () => {
-        // EventBus.emit('show-player');
         EventBus.emit('action-button-sound');
         EventBus.emit('update-small-hud');
         EventBus.emit('outside-press', 'info');
@@ -74,10 +73,8 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
     };
     function leaveArena() {
         if (instance.scene) {
-            console.log('Clearing the Arena');
             (instance.scene as any).clearArena();
         };
-        // EventBus.emit('scene-switch', { current: 'Arena', next: 'Underground' });
     };
     // function createPrayer() {
     //     const computer = initAscean;

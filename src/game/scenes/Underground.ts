@@ -88,13 +88,12 @@ export class Underground extends Scene {
         this.gameEvent();
         this.state = this.registry.get("combat");
         this.reputation = this.getReputation();
-        // this.hud.settings = this.registry.get("settings");
         this.offsetX = 0;
         this.offsetY = 0;
         this.tweenManager = {};
         this.markers = [];
         let camera = this.cameras.main;
-        camera.zoom = this.hud.settings.positions?.camera?.zoom || 0.8; // 0.8 
+        camera.zoom = this.hud.settings.positions?.camera?.zoom || 0.8;
         const map = this.make.tilemap({ key: 'underground' });
         this.map = map;
         this.add.rectangle(0, 0, 4096, 4096, 0x000000);
@@ -132,21 +131,16 @@ export class Underground extends Scene {
         const objectLayer = map.getObjectLayer('navmesh');
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;
-        this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
+        this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         (this.sys as any).animatedTiles.init(this.map);
         this.player = new Player({ scene: this, x: this.centerX, y: 64, texture: 'player_actions', frame: 'player_idle_0' });
         map?.getObjectLayer('summons')?.objects.forEach((summon: any) => this.markers.push(summon));
         map?.getObjectLayer('dms')?.objects.forEach((_dm: any) => {
             (this.dms as any).push(new DM({ scene: this, x: 912, y: 78, texture: 'player_actions', frame: 'player_idle_0' }));
         });
-        // map?.getObjectLayer('npcs')?.objects.forEach((npc: any) => {
-        //     (this.npcs as any).push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' }));
-        // });
 
-    // =========================== Camera =========================== \\
         camera.startFollow(this.player, false, 0.1, 0.1);
         camera.setLerp(0.1, 0.1);
-        // camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         camera.setRoundPixels(true);
 
         var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
@@ -154,7 +148,7 @@ export class Underground extends Scene {
         this.setPostFx(this.hud.settings?.postFx, this.hud.settings?.postFx.enable);
         this.particleManager = new ParticleManager(this);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
-    // =========================== Input Keys =========================== \\
+
         this.player.inputKeys = {
             up: this?.input?.keyboard?.addKeys('W,UP'),
             down: this?.input?.keyboard?.addKeys('S,DOWN'),
@@ -170,7 +164,7 @@ export class Underground extends Scene {
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 100, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-    // =========================== Music =========================== \\
+
         this.musicBackground = this.sound.add('isolation', { volume: this?.hud?.settings?.volume || 0.1, loop: true });
         if (this.hud.settings?.music === true) this.musicBackground.play();
         this.musicCombat = this.sound.add('industrial', { volume: this?.hud?.settings?.volume, loop: true });
@@ -311,24 +305,22 @@ export class Underground extends Scene {
 
     resumeScene = () => {
         this.cameras.main.fadeIn();
-        // this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, (_cam: any, _effect: any) => {
-            this.resumeMusic();
-            this.state = this.registry.get("combat");
-            this.player.health = this.state.newPlayerHealth;
-            this.player.healthbar.setValue(this.state.newPlayerHealth);
-            this.registry.set("player", this.player);
-            if (this.state.isStealth) {
-                this.player.playerMachine.positiveMachine.setState(States.STEALTH);
-                this.stealthEngaged(true);
-            };
-            this.hud.actionBar.setVisible(true);
-            if (!this.hud.settings.desktop) {
-                this.hud.joystick.joystick.setVisible(true);
-                this.hud.rightJoystick.joystick.setVisible(true);
-            };
-            this.scene.wake();
-            EventBus.emit('current-scene-ready', this);
-        // });
+        this.resumeMusic();
+        this.state = this.registry.get("combat");
+        this.player.health = this.state.newPlayerHealth;
+        this.player.healthbar.setValue(this.state.newPlayerHealth);
+        this.registry.set("player", this.player);
+        if (this.state.isStealth) {
+            this.player.playerMachine.positiveMachine.setState(States.STEALTH);
+            this.stealthEngaged(true);
+        };
+        this.hud.actionBar.setVisible(true);
+        if (!this.hud.settings.desktop) {
+            this.hud.joystick.joystick.setVisible(true);
+            this.hud.rightJoystick.joystick.setVisible(true);
+        };
+        this.scene.wake();
+        EventBus.emit('current-scene-ready', this);
     };
     switchScene = (current: string) => {
         this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
@@ -581,7 +573,7 @@ export class Underground extends Scene {
     showDialog = (dialogTag: boolean) => {
         EventBus.emit('blend-game', { dialogTag });
         this.hud.smallHud.activate('dialog', dialogTag);
-    }; // smallHud: dialog
+    };
     createEnemy = () => {
         let marker: any, markers: any[] = [];
         for (let i = 0; i < this.markers.length; i++) {
@@ -631,6 +623,7 @@ export class Underground extends Scene {
                     EventBus.emit('settle-wager', { wager: this.wager, win: false });
                 };
                 this.wager = { silver: 0, gold: 0, multiplier: 0 };
+                this.player.clearEnemies();
             };
             enemy.cleanUp();
             enemy.destroy();
@@ -646,7 +639,6 @@ export class Underground extends Scene {
             }, undefined, this);
         };
     };
-    // ============================ Player ============================ \\
     playerUpdate = (delta: number): void => {
         this.player.update(delta); 
         this.combatManager.combatMachine.process();

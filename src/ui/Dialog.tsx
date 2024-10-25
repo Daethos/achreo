@@ -19,7 +19,6 @@ import Thievery from './Thievery';
 import Merchant from './Merchant';
 import { ARENA_ENEMY } from '../utility/enemy';
 import Roster from './Roster';
-import { Offcanvas } from 'solid-bootstrap'
 
 const GET_FORGE_COST = {
     Common: 1,
@@ -71,7 +70,7 @@ const DialogOption = ({ currentIndex, dialogNodes, option, onClick, actions, set
       <div>
         { showDialogOptions() && (
             <button class='highlight' style={{ 'font-size': '0.85em' }} onClick={handleClick} data-function-name='handleClick'>
-                <Typewriter stringText={option.text} styling={{ 'overflow-y': 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                <Typewriter stringText={option.text} styling={{ 'overflow-y': 'auto', 'scrollbar-width': 'none', 'text-align': 'left' }} performAction={hollowClick} />
             </button>
         ) }
       </div>
@@ -181,8 +180,8 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
     };
   
     return (
-        <div class='wrap'> 
-            <Typewriter stringText={renderedText} styling={{ 'overflow-y': 'auto', 'scrollbar-width':'none' }} performAction={handleOptionClick} />
+        <div class='wrap' style={{ 'text-align':'left' }}> 
+            <Typewriter stringText={renderedText} styling={{ 'overflow-y': 'auto', 'scrollbar-width':'none', 'text-align': 'left' }} performAction={handleOptionClick} />
             <br />
             {renderedOptions()?.map((option: DialogNodeOption) => (
                 <DialogOption currentIndex={currentIndex} dialogNodes={dialogNodes} option={option} onClick={handleOptionClick} actions={actions} setPlayerResponses={setPlayerResponses} setKeywordResponses={setKeywordResponses} setShowDialogOptions={setShowDialogOptions} showDialogOptions={showDialogOptions} />
@@ -725,12 +724,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         };
     };
     return (
-        <Show when={combat().computer}>
-        
-        <Offcanvas
-            show={combat().computer !== undefined}
-            placement={`bottom`}
-        >
+        <Show when={combat().computer}>  
         <div class='dialog-window'>
             <div class='wrap' style={{ width: combat().isEnemy ? '75%' : '100%', padding: '2%', height: 'auto' }}> 
             <div style={{ color: 'gold', 'font-size': '1em', 'margin-bottom': "3%" }}>
@@ -987,9 +981,6 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                 <DialogButtons options={game().dialog} setIntent={handleIntent} />
             </div>}
         </div>
-        </Offcanvas>
-
-
         <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
         <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} />

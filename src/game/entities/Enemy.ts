@@ -2498,6 +2498,7 @@ export default class Enemy extends Entity {
     };
 
     onFrozenEnter = () => {
+        if (this.isDeleting) return;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Frozen', DURATION.TEXT, 'cast', false, true, () => this.specialCombatText = undefined);
         this.anims.play('player_idle', true);
         this.setTint(0x0000FF); // 0x888888
@@ -2519,12 +2520,14 @@ export default class Enemy extends Entity {
     };
     onFrozenUpdate = (_dt: number) => {if (!this.isFrozen) this.evaluateCombatDistance();};
     onFrozenExit = () => {
+        if (this.isDeleting) return;
         this.clearTint();
         this.setTint(ENEMY_COLOR);
         this.setStatic(false);
     };
 
     onHurtEnter = () => {
+        if (this.isDeleting) return;
         this.clearAnimations();
         this.clearTint();
         this.setStatic(true);
@@ -2543,11 +2546,13 @@ export default class Enemy extends Entity {
         };
     };
     onHurtExit = () => {
+        if (this.isDeleting) return;
         this.setTint(ENEMY_COLOR);
         this.setStatic(false);
     };
 
     onParalyzedEnter = () => {
+        if (this.isDeleting) return;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Paralyzed', DURATION.TEXT, 'effect', false, true, () => this.specialCombatText = undefined);
         this.paralyzeDuration = DURATION.PARALYZED;
         this.isAttacking = false;
@@ -2571,7 +2576,8 @@ export default class Enemy extends Entity {
     };
     onParalyzedUpdate = (_dt: number) => {if (this.isParalyzed === false) this.evaluateCombatDistance();};
     onParalyzedExit = () => {
-        this.setTint(this.setEnemyColor())
+        if (this.isDeleting) return;
+        this.setTint(this.setEnemyColor());
         this.setStatic(false);
         this.anims.resume();
     };
@@ -2661,6 +2667,7 @@ export default class Enemy extends Entity {
     };
 
     onStunEnter = () => {
+        if (this.isDeleting) return;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Stunned', 2500, 'effect', false, true, () => this.specialCombatText = undefined);
         this.stunDuration = DURATION.STUNNED;
         this.isAttacking = false;
@@ -2688,7 +2695,8 @@ export default class Enemy extends Entity {
         if (!this.isStunned) this.evaluateCombatDistance(); // Wasn't if (!this.isStunned)
     };
     onStunExit = () => { 
-        this.setTint(this.setEnemyColor())
+        if (this.isDeleting) return;
+        this.setTint(this.setEnemyColor());
         this.setStatic(false);
         this.anims.resume();
     };
@@ -2697,6 +2705,7 @@ export default class Enemy extends Entity {
     onCleanExit = () => {};
 
     onRootEnter = () => {
+        if (this.isDeleting) return;
         this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Rooted', DURATION.TEXT, 'effect', false, true, () => this.specialCombatText = undefined);
         this.setTint(0x888888); // 0x888888
         this.setStatic(true);
@@ -2719,7 +2728,8 @@ export default class Enemy extends Entity {
             this.anims.play('player_idle', true);
         };
     };
-    onRootExit = () => {  
+    onRootExit = () => {
+        if (this.isDeleting) return;
         this.clearTint();
         this.setTint(ENEMY_COLOR);
         this.setStatic(false);

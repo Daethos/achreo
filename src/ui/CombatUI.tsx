@@ -72,6 +72,13 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
             default: return '3vh';
         };
     };
+    function leaveArena() {
+        if (instance.scene) {
+            console.log('Clearing the Arena');
+            (instance.scene as any).clearArena();
+        };
+        // EventBus.emit('scene-switch', { current: 'Arena', next: 'Underground' });
+    };
     // function createPrayer() {
     //     const computer = initAscean;
     //     const exists = new StatusEffect(
@@ -127,7 +134,7 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
         </Show>
          
         <Show when={instance.scene?.scene.key === 'Arena' && !state().combatEngaged}>
-        <button class='disengage highlight combatUiAnimation' style={{ top: '13vh', left: '24vw' }} onClick={() => EventBus.emit('scene-switch', { current: 'Arena', next: 'Underground' })}>
+        <button class='disengage highlight combatUiAnimation' style={{ top: '13vh', left: '24vw' }} onClick={() => leaveArena()}>
             <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>Leave Arena</div>
         </button>
         </Show>

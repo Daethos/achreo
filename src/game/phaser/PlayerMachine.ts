@@ -774,7 +774,11 @@ export default class PlayerMachine {
     };
     onAstraveExit = () => {
         if (this.player.castingSuccess === true) {
-            this.player.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, true);    
+            if (this.player.isComputer) {
+                this.player.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, false, this.player.currentTarget);    
+            } else {
+                this.player.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, true);    
+            };
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You unearth the winds and lightning from the land of hush and tendril.`
             });
@@ -1018,7 +1022,11 @@ export default class PlayerMachine {
         this.player.castbar.setTime(PLAYER.DURATIONS.FYERUS);
         this.player.castbar.setVisible(true);  
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);  
-        this.player.aoe = new AoE(this.scene, 'fyerus', 6, false, undefined, true);    
+        if (this.player.isComputer) {
+            this.player.aoe = new AoE(this.scene, 'fyerus', 6, false, undefined, false, this.player.currentTarget);    
+        } else {
+            this.player.aoe = new AoE(this.scene, 'fyerus', 6, false, undefined, true);    
+        };
         this.scene.combatManager.useGrace(PLAYER.STAMINA.FYERUS);    
         if (!this.player.isComputer) this.player.setTimeEvent('fyerusCooldown', PLAYER.COOLDOWNS.SHORT);
         this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
@@ -1151,7 +1159,11 @@ export default class PlayerMachine {
     };
     onKynisosExit = () => {
         if (this.player.castingSuccess === true) {
-            this.player.aoe = new AoE(this.scene, 'kynisos', 3, false, undefined, true);    
+            if (this.player.isComputer) {
+                this.player.aoe = new AoE(this.scene, 'kynisos', 3, false, undefined, false, this.player.currentTarget);    
+            } else {
+                this.player.aoe = new AoE(this.scene, 'kynisos', 3, false, undefined, true);    
+            };
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You unearth the netting of the golden hunt.`
             });
@@ -1841,9 +1853,20 @@ export default class PlayerMachine {
     onAbsorbUpdate = (_dt: number) => {if (!this.player.isAbsorbing) this.positiveMachine.setState(States.CLEAN);};
 
     absorb = () => {
+        if (this.player.negationBubble === undefined || this.player.isAbsorbing === false) {
+            if (this.player.negationBubble) {
+                this.player.negationBubble.destroy();
+                this.player.negationBubble = undefined;
+            };
+            this.player.isAbsorbing = false;
+            return;
+        };
         this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
-        this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Abosrbed', 500, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.scene.combatManager.useGrace(-25);
+        this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Absorbed', 500, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        if (this.player.grace - 25 <= 0) {
+            this.player.isAbsorbing = false;
+        };
+        this.scene.combatManager.useGrace(25);
     };
 
     onChiomicEnter = () => {
@@ -1929,10 +1952,10 @@ export default class PlayerMachine {
         };
         this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Enveloped', 500, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        if (this.player.grace - 40 <= 0) {
+        if (this.player.stamina - 25 <= 0) {
             this.player.isEnveloping = false;
         };
-        this.scene.combatManager.useGrace(40);
+        this.scene.combatManager.useStamina(25);
     };
 
     onFreezeEnter = () => {

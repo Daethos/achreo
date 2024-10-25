@@ -608,14 +608,14 @@ export class Game extends Scene {
     setCameraOffset = () => {
         const { width, height } = this.cameras.main.worldView;
         if (this.player.flipX === true) {
-            this.offsetX = Math.min((width / 10), this.offsetX + 3);
+            this.offsetX = Math.min((width / 12.5), this.offsetX + 3);
         } else {
-            this.offsetX = Math.max(this.offsetX - 3, -(width / 10));
+            this.offsetX = Math.max(this.offsetX - 3, -(width / 12.5));
         };
         if (this.player.velocity?.y as number > 0) {
-            this.offsetY = Math.max(this.offsetY - 2, -(height / 7));
+            this.offsetY = Math.max(this.offsetY - 2, -(height / 9));
         } else if (this.player.velocity?.y as number < 0) {
-            this.offsetY = Math.min((height / 7), this.offsetY + 2);
+            this.offsetY = Math.min((height / 9), this.offsetY + 2);
         };
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };

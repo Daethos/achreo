@@ -286,7 +286,6 @@ export default function App() {
     };
     function switchScene(current: string, next: string): void {
         setShow(false);
-        // console.log(`Switching Scenes from ${current} to ${next}`);
         EventBus.emit('switch-scene', { current, next });
     };
     function summonEnemy(val: number = 1) {

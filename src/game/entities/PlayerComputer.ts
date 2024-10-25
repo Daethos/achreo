@@ -171,7 +171,6 @@ export default class PlayerComputer extends Player {
             return;
         } else if (this.isRanged) { // Contiually Checking Distance for RANGED ENEMIES.
             if (!this.computerAction && !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) {
-                // console.log('Entering COMPUTER COMBAT isRanged');
                 this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
                 return;    
             };
@@ -185,7 +184,6 @@ export default class PlayerComputer extends Player {
                 this.setVelocityY(direction.y * this.speed + 0.25); // 2.25          
             } else if (this.currentTarget.position.subtract(this.position).length() < PLAYER.DISTANCE.THRESHOLD && !this.currentTarget.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
                 if (Phaser.Math.Between(1, 250) === 1 && !this.playerMachine.stateMachine.isCurrentState(States.EVADE)) {
-                    // console.log('Entering EVADE 1 in 250 Chance!');
                     this.playerMachine.stateMachine.setState(States.EVADE);
                     return;
                 } else {
@@ -194,7 +192,6 @@ export default class PlayerComputer extends Player {
                     this.setVelocityY(direction.y * -this.speed + 0.5); // -1.5 | -1.25
                 };
             } else if (this.checkLineOfSight() && !this.playerMachine.stateMachine.isCurrentState(States.EVADE)) {
-                // console.log('Entering EVADE Line of Sight!');
                 this.playerMachine.stateMachine.setState(States.EVADE);
                 return;
             } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.
@@ -205,20 +202,17 @@ export default class PlayerComputer extends Player {
                 this.setVelocityY(direction.y * this.speed + 0.5); // 2.25
             };
         } else { // Melee || Contiually Maintaining Reach for MELEE ENEMIES.
-            this.isPosted = true;
             if (!this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) {
-                // console.log('Entering COMPUTER COMBAT from Melee');
                 this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
                 return;
             };
             if (direction.length() > PLAYER.DISTANCE.ATTACK) { 
-                // console.log('Getting Closer to the Enemy');
                 direction.normalize();
                 this.setVelocityX(direction.x * (this.speed + 0.25)); // 2.5
                 this.setVelocityY(direction.y * (this.speed + 0.25)); // 2.5
                 this.isPosted = false;
             } else { // Inside melee range
-                // console.log('Inside Melee Range');
+                this.isPosted = true;
                 this.setVelocity(0);
                 this.anims.play('player_idle', true);
             };

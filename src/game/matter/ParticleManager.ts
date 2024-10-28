@@ -146,7 +146,7 @@ export class Particle {
             direction.normalize();
             return direction;
         } else {
-            if (scene.hud.settings.difficulty.aim === true || !(player as Player).currentTarget || special === true) {
+            if (!(player as Player).isComputer && (scene.hud.settings.difficulty.aim === true || !(player as Player).currentTarget || special === true)) {
                 const target = scene.getWorldPointer();
                 const direction = target.subtract(player.position);
                 direction.normalize();

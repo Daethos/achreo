@@ -1,12 +1,13 @@
 import { Accessor, Show } from "solid-js";
 import { EnemySheet } from "../utility/enemy";
+import { EventBus } from "../game/EventBus";
 
-interface Props {
-    enemies: Accessor<EnemySheet[]>;
-    fetchEnemy: (enemy: any) => void;
-};
-
-export default function EnemyPreview ({ enemies, fetchEnemy }: Props) {
+export default function EnemyPreview ({ enemies }: { enemies: Accessor<EnemySheet[]>; }) {
+    
+    function fetchEnemy(enemy: any) {
+        EventBus.emit('setup-enemy', enemy);
+        EventBus.emit('tab-target', enemy);    
+    }; 
     return <>
         {enemies()?.length > 0 && enemies()?.map((enemy, index) => {
             if (enemies().length < 2 || index !== 0) return;

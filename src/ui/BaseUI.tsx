@@ -398,10 +398,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         experience = Math.round(experience);
         return experience;
     };
-    function fetchEnemy(enemy: any) {
-        EventBus.emit('setup-enemy', enemy);
-        EventBus.emit('tab-target', enemy);    
-    }; 
     function filterEnemies(id: string) {
         let newEnemies = enemies();
         newEnemies = newEnemies.filter((enemy) => {
@@ -453,7 +449,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             <Suspense fallback={<Puff color="gold" />}>
                 <CombatUI instance={instance} state={combat} game={game} settings={settings} stamina={stamina} grace={grace} />
             </Suspense>
-            <Show when={combat().computer} fallback={<EnemyPreview enemies={enemies} fetchEnemy={fetchEnemy} />}>
+            <Show when={combat().computer} fallback={<EnemyPreview enemies={enemies} />}>
             <Suspense fallback={<Puff color="gold" />}>
                 <EnemyUI state={combat} game={game} enemies={enemies} />
             </Suspense>

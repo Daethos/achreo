@@ -17,9 +17,7 @@ export default function Roster({ arena, ascean, setArena, base }: { arena: Acces
         for (let i = 0; i < arena().enemies.length; i++) {
             multiplier += (arena().enemies[i].level / ascean().level);
         };
-        if (arena().enemies.length > 1) {
-            multiplier *= ((arena().enemies.length - 1) * 1.5);
-        };
+        if (arena().enemies.length > 1) multiplier *= ((arena().enemies.length - 1) * 1.5);
         multiplier /= 2;
         const wager = { ...arena().wager, multiplier };
         if (switchScene()) {

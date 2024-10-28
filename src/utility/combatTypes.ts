@@ -5,7 +5,7 @@ export const ATTACKS = {
     posture: 'posture against',
     roll: 'roll into',
     parry: 'parry',
-    quor: 'quorse into',
+    quor: 'quorse through',
     leap: 'leap onto',
     rush: 'rush through',
     storm: 'storm through',

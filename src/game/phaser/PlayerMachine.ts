@@ -736,10 +736,10 @@ export default class PlayerMachine {
     onAchireExit = () => {
         if (this.player.castingSuccess === true) { 
             this.player.particleEffect =  this.scene.particleManager.addEffect('achire', this.player, 'achire', true);
+            if (!this.player.isComputer) this.player.setTimeEvent('achireCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `Your Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0]?.name}.`
             });
-            if (!this.player.isComputer) this.player.setTimeEvent('achireCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
             this.player.castingSuccess = false;
             this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ACHIRE);
@@ -776,11 +776,11 @@ export default class PlayerMachine {
                 this.player.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, false, this.player.currentTarget);    
             } else {
                 this.player.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, true);    
+                this.player.setTimeEvent('astraveCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
             };
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You unearth the winds and lightning from the land of hush and tendril.`
             });
-            if (!this.player.isComputer) this.player.setTimeEvent('astraveCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
             this.player.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ASTRAVE);    

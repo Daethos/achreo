@@ -68,7 +68,8 @@ export default class PlayerComputer extends Player {
                 return;
             };
             const special = this.combatSpecials[Math.floor(Math.random() * this.combatSpecials.length)].toLowerCase();
-            // const special = ['astrave', 'fyerus', 'kynisos'][Math.floor(Math.random() * 3)].toLowerCase();
+            // const test = ['achire', 'quor'];
+            // const special = test[Math.floor(Math.random() * test.length)];
             this.setVelocity(0);
             this.isMoving = false;
             if (this.playerMachine.stateMachine.isState(special)) {

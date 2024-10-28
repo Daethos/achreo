@@ -930,6 +930,7 @@ export default class Player extends Entity {
     };
 
     setTimeEvent = (cooldown: string, limit = 30000) => {
+        if (this.isComputer) return;
         const evasion = cooldown === 'rollCooldown' || cooldown === 'dodgeCooldown'; 
         if (evasion === false) {
             (this as any)[cooldown] = limit;

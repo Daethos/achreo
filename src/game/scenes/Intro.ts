@@ -35,34 +35,34 @@ export class Intro extends Scene {
                 stroke: 'black',
                 strokeThickness: 2,
                 align: 'center',
-                // fixedWidth: this.game.canvas.width * 0.7,
+                // fixedWidth: this.game.canvas.width * 0.8,
                 wordWrap: {
-                    width: this.game.canvas.width * 0.7,
+                    width: this.game.canvas.width * 0.8,
                     callback: undefined,
                     callbackScope: undefined,
                     useAdvancedWrap: true
                 }
             });
-        this.introText.setPosition(this.game.canvas.width * 0.15, this.game.canvas.height * 0.2).setOrigin(0, 0).setScrollFactor(0);
+        this.introText.setPosition(this.game.canvas.width * 0.1, this.game.canvas.height * 0.2).setOrigin(0, 0).setScrollFactor(0);
 
         this.introTextBorder = new Phaser.GameObjects.Rectangle(this,
-            0, // this.introText.x * 0.9,
+            1, // this.introText.x * 0.9,
             0, // this.introText.y * 0.9,
             this.game.canvas.width,
             this.game.canvas.height,
         );
-        this.introTextBorder.setStrokeStyle(2, 0xfdf6d8);
+        this.introTextBorder.setStrokeStyle(4, 0xfdf6d8);
         this.introTextBorder.setOrigin(0);
 
         this.introContainer = new Phaser.GameObjects.Container(this, 0, 0, [this.introTextBorder, this.introText]);
-        this.introContainer.width = this.game.canvas.width * 0.7;
+        this.introContainer.width = this.game.canvas.width * 0.8;
         this.introContainer.height = this.game.canvas.height * 0.6;
         this.add.existing(this.introContainer);
 
         this.node = INTRO_NODES[0];
         var typing = new TextTyping(this.introText, {
             wrap: true,
-            speed: 30, // type speed in ms
+            speed: 40, // type speed in ms
             typeMode: 0, //0|'left-to-right'|1|'right-to-left'|2|'middle-to-sides'|3|'sides-to-middle'
             setTextCallback: function (text, _isLastChar, _insertIdx) { 
                 return text;

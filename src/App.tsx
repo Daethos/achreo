@@ -310,6 +310,8 @@ export default function App() {
         'Pause': () => togglePause(true),
         'Resume': () => togglePause(false),
     };
+    const sendSettings = () => EventBus.emit('get-settings', settings);
+    usePhaserEvent('request-settings', sendSettings);
     usePhaserEvent('alert', (payload: { header: string, body: string, delay?: number, key?: string, arg: any }) => makeToast(payload.header, payload.body, payload.delay, payload.key, payload.arg));
     usePhaserEvent('set-tips', setTips);
     usePhaserEvent('scene-switch', (data:{current:string,next:string}) => switchScene(data.current,data.next));

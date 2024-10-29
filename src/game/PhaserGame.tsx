@@ -1003,7 +1003,7 @@ export default function PhaserGame (props: IProps) {
         }));
         EventBus.on('useHighlight', (e: string) => setGame({ ...game(), selectedHighlight: e }));
         EventBus.on('useScroll', () => {
-            if (game().showPlayer === false && game().showDialog === false) {
+            if (game().showPlayer === false && game().showDialog === false && game().showCombat === false) {
                 EventBus.emit('update-pause', !game().scrollEnabled);
             };
             setGame({ 
@@ -1029,6 +1029,8 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('record-loss', (e:Combat) => recordLoss(e));
         EventBus.on('record-win', (e: { record: Combat; experience: LevelSheet; }) => recordWin(e.record, e.experience));
         EventBus.on('save-health', saveHealth);
+        EventBus.on('enemy-combat-text', (e: { computerSpecialDescription: string; }) => EventBus.emit('add-combat-logs', { ...combat(), computerActionDescription: e.computerSpecialDescription }));
+        EventBus.on('special-combat-text', (e: { playerSpecialDescription: string; }) => EventBus.emit('add-combat-logs', { ...combat(), playerActionDescription: e.playerSpecialDescription }));
 
         onCleanup(() => {
             if (instance.game) {
@@ -1103,6 +1105,9 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener('useHighlight');
             EventBus.removeListener('useScroll');
             EventBus.removeListener('upgrade-item');
+
+            EventBus.removeListener('special-combat-text');
+            EventBus.removeListener('enemy-combat-text');
         });
     });
     return <>

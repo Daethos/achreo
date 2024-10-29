@@ -3,7 +3,7 @@ import Settings from "../models/settings";
 import { SPECIALS } from "./abilities";
 import { ACTION_ORIGIN } from "./actions";
 
-const svg = (type: string) => {
+export const svg = (type: string) => {
     switch (type) {
         case 'ATTACK': 
             return <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 512 512">

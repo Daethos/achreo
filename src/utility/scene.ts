@@ -96,39 +96,62 @@ export const INTRO_NODES = {
         key: 0,
         prev: undefined, // undefined
         next: 1,
-        text: `This world is a menagerie of beauty and horror. Full of bounty where humans gather, its jungle's reach is long and wild. Marred and mutated, this land is rife with the blood of Ancients--worldly beings of fantastic might and worship a thousand years past, who grew civilization and genius from their worshipers. The Sundering eclipsed such flourishing; a War of the Ancients.`,
+        text: `This world is a menagerie of beauty and horror, its jungle's reach cruel and wild. 
+        Marred and mutated, this land is rife with the blood of Ancients--
+        worldly beings of fantastic might and worship a thousand years past, 
+        who grew civilization and genius from their worshipers. 
+        The Sundering eclipsed such flourishing; a War of the Ancients.`,
     },
     1: {
         key: 1,
         prev: 0,
         next: 2,
-        text: `Most humans died. Those who lived did so from the brilliance of General Laetrois Ath'Shaorah, prophet of Daethos, who warred against the Ancients. Humans freed from the Ancients and their homes; the Sundering's last gift to the world. For a thousand years, strange people from stranger lands clashed. Few coalesced.`,
+        text: `Most humans died. Those who lived did so from the brilliance of the prophet of Daethos, 
+        Laetrois Ath'Shaorah, who warred against the Ancients. 
+        Humans freed from the Ancients and their homes; 
+        the Sundering's last gift to the world. 
+        For a thousand years, strange people from stranger lands clashed. 
+        Few coalesced.`,
     },
     2: {
         key: 2,
         prev: 1,
         next: 3,
-        text: `And yet, the beauty of this world bloomed once more, with many curious and traveling, despite whispers of the old and the Ancient being seen again. Whether in their mythic forms or of an othernature altogether, perhaps not all perished in their war. Perhaps its horror has returned.`,
+        text: `And yet, the beauty of this world bloomed once more, with many now curious and traveling, 
+        despite whispers of the old and the Ancient being seen again. 
+        Whether in their mythic forms or of an othernature altogether, 
+        perhaps not all perished in their war. Perhaps its horror has returned.`,
     },
     3: {
         key: 3,
         prev: 2,
         next: 4,
-        text: `Inside of the last century, warring has ceased into an easing peace. Many fathers and sons died in its making; honored in the hearts of those still alive alive. Themselves now tranquil, or perhaps placid. For some, the Ascea is satiating; a decennial tournament full of jest and joust, where prestige and wealth is sought, and the 'va'Esai' crowned. To be 'Worthy of the Preservation of Being.'`,
+        text: `Inside of the last century, warring has ceased into uncomfortable peace. 
+        Many fathers and sons died in its making--honored 
+        in the hearts of those still alive alive. 
+        Those survived now tranquil, or perhaps placid, 
+        some find the Ascea satiating; a decennial tournament 
+        full of jest and joust, where prestige and wealth are sought,
+        and the 'va'Esai' crowned.`,
     },
     4: {
         key: 4,
         prev: 3,
         next: 5,
-        text: `A great, distinguishing burden befall the Ascean who claim the mantle. 
-            King Mathyus Caderyn II, the Daethic, and Warden of the Eye; 
-            High Lord Theogeni Spiras, Ghost Hawk of Greyrock, and Fyers Protectorate of the Firelands; 
-            Evrio Lorian Peroumes, General of Licivitas, Proconsul of Licivitas, [Current va'Esai]. \n Such titles achieved post coronation.`,
+        text: `A great and distinguishing burden befalls the Ascean that claims this mantle. 
+            Mathyus Caderyn II: King; Daethic; Noth'eon of the Eye
+            Theogeni Spiras: High Lord; Fyers Protectorate of the Firelands 
+            Evrio Lorian Peroumes: General; Li'ivinus [Current va'Esai] \n 
+            Such titles achieved post coronation.`,
     },
     5: {
         key: 5,
         prev: 4,
         next: undefined, // undefined
-        text: `The Ascea may grant forms of honor, swathes of land, increased prestige, and numerous titles--yet these are base, inert. To become the Ascean, the va'Esai. To be Worthy. That is the offer. Do not listen to whispers otherwise. Do not be led astray. Do not fear the bleating of the fallen and beaten. There is nothing else.`,
+        text: `The Ascea may grant forms of honor, swathes of land, prestige, and numerous titles--yet these are base, inert. 
+        To become the va'Esai. To be Worthy. That is the offer. That is the reward.
+        Do not listen to whispers otherwise. Do not be led astray. 
+        Do not fear the bleating of the fallen and the beaten. 
+        There is nothing else.`,
     },
 };

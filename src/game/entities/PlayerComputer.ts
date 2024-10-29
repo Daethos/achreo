@@ -26,10 +26,10 @@ export default class PlayerComputer extends Player {
     };
 
     completeReset = () => {
+        this.playerMachine.stateMachine.setState(States.IDLE);
         this.specials = false;
         this.isCasting = false;
         this.isMoving = false;
-        this.setVelocity(0);
     };
     
     checkSpecials(ascean: Ascean) {
@@ -79,6 +79,19 @@ export default class PlayerComputer extends Player {
             };
             this.setSpecialCombat();
         }, undefined, this);
+    };
+
+    computerEngagement = (id: string) => {
+        const enemy = this.scene.enemies.find((obj: Enemy) => obj.enemyID === id);
+        if (!enemy) return;
+        if (this.isNewEnemy(enemy)) this.targets.push(enemy);
+        if (this.scene.state.enemyID !== id) this.scene.setupEnemy(enemy);
+        this.inCombat = true;
+        this.scene.combatEngaged(true);
+        this.targetID = id;
+        this.currentTarget = enemy;
+        this.highlightTarget(enemy);
+        this.playerMachine.stateMachine.setState(States.CHASE);
     };
 
     checkEvasion = (particle: Particle) => {
@@ -151,8 +164,8 @@ export default class PlayerComputer extends Player {
             this.setVelocity(0);
             return;    
         };
+        // console.log(`Suffering: ${this.isSuffering()} | Chase: ${this.playerMachine.stateMachine.isCurrentState(States.CHASE)} | Evasion: ${this.playerMachine.stateMachine.isCurrentState(States.EVADE)}`);
         if (this.isSuffering() || !this.currentTarget || !this.currentTarget.body || this.playerMachine.stateMachine.isCurrentState(States.CHASE) || this.playerMachine.stateMachine.isCurrentState(States.EVADE)) {
-            // console.log(`Suffering: ${this.isSuffering()} | Chase: ${this.playerMachine.stateMachine.isCurrentState(States.CHASE)} | Evasion: ${this.playerMachine.stateMachine.isCurrentState(States.EVADE)}`);
             return;
         };
         
@@ -160,8 +173,8 @@ export default class PlayerComputer extends Player {
         const distanceY = Math.abs(direction.y);
         const multiplier = this.rangedDistanceMultiplier(PLAYER.DISTANCE.RANGED_MULTIPLIER);
         
+        // console.log('Entering EVADE Under Ranged Attack');
         if (this.isUnderRangedAttack()) { // Switch to EVADE the Enemy
-            // console.log('Entering EVADE Under Ranged Attack');
             this.playerMachine.stateMachine.setState(States.EVADE);
             return;
         } else if (direction.length() >= PLAYER.DISTANCE.CHASE * multiplier) { // Switch to CHASE the Enemy

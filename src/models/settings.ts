@@ -21,6 +21,8 @@ export default class Settings {
     public healthViews: string;
     public grace: string;
     public stamina: string;
+    public combatText: { left: string; top: string; height: string; width: string; };
+    public combatSettings: { left: string; top: string; height: string; width: string; };
     public control: string;
     public desktop: boolean;
     public difficulty: {
@@ -149,6 +151,8 @@ export default class Settings {
         this.healthViews = 'FULL';
         this.grace = 'NUMBER';
         this.stamina = 'NUMBER';
+        this.combatText = { left: '20vh', top: '40vh', height: '50vh', width: '60vw' };
+        this.combatSettings = { left: '20%', top: '40%', height: '50%', width: '60%' };
         this.control = 'Buttons';
         this.desktop = false;
         this.difficulty = {

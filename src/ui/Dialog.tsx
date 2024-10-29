@@ -845,7 +845,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
                                 </> 
                             ) }
                             { luckout() ? ( 
-                                <>
+                                <><br />
                                     <button class='highlight' onClick={() => setLuckoutShow(!luckoutShow())}>{luckoutShow() ? 'Hide Scenarios' : 'Show Luckout Scenarios'}</button><br />
                                     <Show when={luckoutShow()}>
                                         <LuckoutModal traits={luckoutTraits} callback={attemptLuckout} name={combat()?.computer?.name as string} influence={influence as Accessor<string>} show={luckoutModalShow} setShow={setLuckoutModalShow} /> 

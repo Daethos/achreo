@@ -134,6 +134,9 @@ export const PADDING = {
 };
 export const RANGE = {
     LEASH: 1000,
+    Underground: 1000,
+    Game: 1000,
+    Arena: 2000,
 }; 
 
 // ELEMENT IN ARRAY 

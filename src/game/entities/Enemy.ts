@@ -1009,7 +1009,7 @@ export default class Enemy extends Entity {
         const rangeMultiplier = this.rangedDistanceMultiplier(3);
         const direction = this.attacking.position.subtract(this.position);
         const distance = direction.length();
-        if (Math.abs(this.originPoint.x - this.position.x) > RANGE.LEASH * rangeMultiplier || Math.abs(this.originPoint.y - this.position.y) > RANGE.LEASH * rangeMultiplier || !this.inCombat || distance > RANGE.LEASH * rangeMultiplier) {
+        if (Math.abs(this.originPoint.x - this.position.x) > RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier || Math.abs(this.originPoint.y - this.position.y) > RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier || !this.inCombat || distance > RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier) {
             this.stateMachine.setState(States.LEASH);
             return;
         };  
@@ -3162,7 +3162,6 @@ export default class Enemy extends Entity {
         this.negativeMachine.update(dt);
     };
     evaluateCombat = () => {  
-        // return States.PARRY;
         let actionNumber = Math.floor(Math.random() * 101);
         if (actionNumber > PLAYER.ACTION_WEIGHT.ATTACK) { // 61-100 (40%) || (100 - computerActions.attack)
             return States.ATTACK;

@@ -1,9 +1,10 @@
-import { Accessor, For, JSX, Match, Show, Switch, onMount } from 'solid-js';
+import { Accessor, For, JSX, Match, Setter, Show, Switch, createEffect, createSignal, onMount } from 'solid-js';
 import { EventBus } from '../game/EventBus';
 import { borderColor } from '../utility/styling'; 
-import { useResizeListener } from '../utility/dimensions';
 import { GameState } from '../stores/game';
 import { Combat } from '../stores/combat';
+import Settings from '../models/settings';
+import { svg } from '../utility/settings';
 const BUTTONS = [
     {direction: 'left', symbol: '<-'}, 
     {direction:'up', symbol: '^'}, 
@@ -26,8 +27,28 @@ const highlightCycle = {
 };
 const PRAYERS = ['Buff', 'Heal', 'Debuff', 'Damage', 'Avarice', 'Denial', 'Dispel', 'Silence'];
 
-export default function CombatSettings({ combat, game }: { combat: Accessor<Combat>; game: Accessor<GameState>; }) {
-    const dimensions = useResizeListener();
+export default function CombatSettings({ combat, game, settings, editShow, setEditShow }: { combat: Accessor<Combat>; game: Accessor<GameState>; settings: Accessor<Settings>; editShow: Accessor<boolean>; setEditShow: Setter<boolean>; }) {
+    const [edit, setEdit] = createSignal({
+        top: settings()?.combatSettings?.top || '40%',
+        left: settings()?.combatSettings?.left || '25%',
+        height: settings()?.combatSettings?.height || '50%',
+        width: settings()?.combatSettings?.width || '50%',
+    });
+    createEffect(() => {
+        if (!settings().combatSettings) return;
+        setEdit({...settings().combatSettings});
+    });
+    function editCombatText(key: string, value: string): void {
+        const update = {
+            ...settings(),
+            combatSettings: {
+                ...edit(),
+                [key]: value
+            }
+        };
+        console.log(update, 'Updating Settings');
+        EventBus.emit('save-settings', update);
+    };
     const prayer = (el: string) => el === combat().playerBlessing ?  true : false;
     onMount(() => EventBus.emit('selectPrayer', { index: PRAYERS.findIndex(prayer), highlight: game().selectedHighlight }));
     const mapTypes = (types: any) => {
@@ -72,15 +93,16 @@ export default function CombatSettings({ combat, game }: { combat: Accessor<Comb
         if (direction === 'left') EventBus.emit('useHighlight', highlightCycle[game().selectedHighlight as keyof typeof highlightCycle].prev);
         if (direction === 'right') EventBus.emit('useHighlight', highlightCycle[game().selectedHighlight as keyof typeof highlightCycle].next);
     };
-
     function buttonText(direction: string, highlight: string | undefined) {
         return direction === 'up' && highlight !== 'Weapon' ? 'Left' : direction === 'up' ? 'Up' 
         : direction === 'down' && highlight !== 'Weapon' ? 'Right' : direction === 'down' ? 'Down' 
         : direction === 'left' ? `${highlightCycle[game().selectedHighlight as keyof typeof highlightCycle].prev}` 
         : `${highlightCycle[game().selectedHighlight as keyof typeof highlightCycle].next}`;
     };
-
-    return <div class='center combatSettings' style={dimensions().ORIENTATION === 'landscape' ? { height: '40%', width: "50%", top: '50%', left: '25%', background: '#000', 'border': '0.1em solid #FFC700', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700' }: { top: '70%', left: '10%' }}>
+    return <div>
+            <button class='highlight' onClick={() => setEditShow(!editShow())} style={{ top: `${Number(edit().top.split('%')[0]) - 12.5}%`, left: `${Number(edit().left.split('%')[0]) - 1.25}%`, position: 'absolute', color: 'gold', transform: 'scale(0.75)' }}>{svg('UI')}</button>
+            
+        <div class='center combatSettings' style={{ ...edit(), background: '#000', 'border': '0.1em solid #FFC700', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700' }}>
         <div class='center shadow' style={{ display: 'flex', 'flex-direction': 'row', 'margin-top': '1%', width: '100%', 'z-index': 1 }}>
         <For each={BUTTONS}>{((button) => {
             return <button class='highlight gold' style={{ 'z-index': 1 }} onClick={() => handleButton(button.direction)}>
@@ -111,5 +133,52 @@ export default function CombatSettings({ combat, game }: { combat: Accessor<Comb
             </Match>
             </Switch>
         </Show>
+        <Show when={editShow()}>
+            <div class='modal'>
+            <div class='border creature-heading center superCenter' style={{ padding: '2.5%', width: '30vw' }}>
+                <h1>Top</h1>
+                <button class='highlight' onClick={() => editCombatText('top', 
+                    `${Math.max(Number(edit().top.split('%')[0]) - 1, 0)}%`)}>-</button>
+                <span style={{ margin: '0 10%' }}>
+                {edit().top.split('%')[0]}%
+                </span>
+                <button class='highlight' onClick={() => editCombatText('top', 
+                    `${Math.min(Number(edit().top.split('%')[0]) + 1, 100)}%`
+                )}>+</button>
+                <h1>Left</h1>
+                <button class='highlight' onClick={() => editCombatText('left', 
+                    `${Math.max(Number(edit().left.split('%')[0]) - 1, 0)}%`
+                )}>-</button>
+                <span style={{ margin: '0 10%' }}>
+                {edit().left.split('%')[0]}%
+                </span>
+                <button class='highlight' onClick={() => editCombatText('left', 
+                    `${Math.min(Number(edit().left.split('%')[0]) + 1, 100)}%`
+                )}>+</button>
+                <h1>Height</h1>
+                <button class='highlight' onClick={() => editCombatText('height', 
+                    `${Math.max(Number(edit().height.split('%')[0]) - 1, 10)}%`
+                )}>-</button>
+                <span style={{ margin: '0 10%' }}>
+                {edit().height.split('%')[0]}%
+                </span>
+                <button class='highlight' onClick={() => editCombatText('height', 
+                    `${Math.min(Number(edit().height.split('%')[0]) + 1, 100)}%`
+                )}>+</button>
+                <h1>Width</h1>
+                <button class='highlight' onClick={() => editCombatText('width', 
+                    `${Math.max(Number(edit().width.split('%')[0]) - 1, 10)}%`
+                )}>-</button>
+                <span style={{ margin: '0 10%' }}>
+                {edit().width.split('%')[0]}%
+                </span>
+                <button class='highlight' onClick={() => editCombatText('width', 
+                    `${Math.min(Number(edit().width.split('%')[0]) + 1, 100)}%`
+                )}>+</button>
+            <button class='highlight cornerTR' style={{ color: 'red' }} onClick={() => setEditShow(false)}>X</button>
+            </div>
+            </div>
+        </Show>
+        </div>
     </div>;
 };

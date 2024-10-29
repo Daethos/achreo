@@ -71,7 +71,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         EventBus.emit('settings', settings());
     });
     const sendEnemyData = () => EventBus.emit('get-enemy', combat().computer);
-    const sendSettings = () => EventBus.emit('get-settings', settings);
     function initiateCombat(data: any, type: string) {
         try {    
             let res: Combat | undefined | any = undefined,
@@ -408,9 +407,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     usePhaserEvent('initiate-combat', (payload: { data: any, type: string }) => initiateCombat(payload.data, payload.type));
     usePhaserEvent('remove-enemy', filterEnemies);
     usePhaserEvent('request-enemy', sendEnemyData);
-    usePhaserEvent('request-settings', sendSettings);
-    usePhaserEvent('special-combat-text', (e: { playerSpecialDescription: string }) => EventBus.emit('add-combat-logs', { ...combat(), playerActionDescription: e.playerSpecialDescription }));
-    usePhaserEvent('enemy-combat-text', (e: { computerSpecialDescription: string }) => EventBus.emit('add-combat-logs', { ...combat(), computerActionDescription: e.computerSpecialDescription }));
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
     usePhaserEvent('show-roster', () => setArena({ ...arena(), show: true }));

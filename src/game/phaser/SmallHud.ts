@@ -330,8 +330,10 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             };
             if (this.switches[button.texture.key as keyof typeof this.switches] === true) {
                 button.setBlendMode(Phaser.BlendModes.SCREEN);
+                button.setAlpha(0.25);
             } else {
                 button.setBlendMode(Phaser.BlendModes.NORMAL);    
+                button.setAlpha(1);
             };
         });
         EventBus.emit('update-small-hud');
@@ -372,9 +374,11 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                 };
             };
             if (this.switches[button.texture.key as keyof typeof this.switches] === true) {
-                button.setBlendMode(Phaser.BlendModes.ADD);
+                button.setBlendMode(Phaser.BlendModes.SCREEN);
+                button.setAlpha(0.25);
             } else {
                 button.setBlendMode(Phaser.BlendModes.NORMAL);    
+                button.setAlpha(1);
             };
         });
     };

@@ -488,7 +488,7 @@ export class Arena extends Scene {
         this.player.clearEnemies();
         if (this.player.isComputer) (this.player as PlayerComputer).completeReset();
         this.wager = { silver: 0, gold: 0, multiplier: 0 };
-        EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
+        EventBus.emit("alert", { healder: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
         this.time.delayedCall(3000, () => {
             EventBus.emit("scene-switch", {current:"Arena", next:"Underground"});
         }, undefined, this);
@@ -604,11 +604,11 @@ export class Arena extends Scene {
         EventBus.emit('alert', { header: "Prepare!", body: "The enemies are being summoned. Prepare for the Eulex.", key: "Close" });
         this.time.delayedCall(1500, () => {
             let data: Compiler[] = this.registry.get("enemies");
-            let marker: any, markers: any[] = [];
+            let marker: any, markers: any[] = [], count = data.length - 1;
             for (let i = 0; i < this.markers.length; i++) {
                 const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
                 const direction = position.subtract(this.player.position);
-                if (direction.length() < 1000) {
+                if (direction.length() < 1250) {
                     markers.push(this.markers[i]);
                 };
             };
@@ -619,7 +619,14 @@ export class Arena extends Scene {
                 this.time.delayedCall(1500, () => {
                     enemy.checkEnemyCombatEnter();
                     this.player.targets.push(enemy);
-                    this.player.targetEngagement(enemy.enemyID);
+                    if (count === j) {
+                        console.log('last enemy!');
+                        if (this.player.isComputer) {
+                            this.player.computerEngagement(enemy.enemyID);
+                        } else {
+                            this.player.targetEngagement(enemy.enemyID);
+                        };
+                    };
                     if (this.player.isComputer || !this.hud.settings.difficulty.arena) this.player.playerMachine.stateMachine.setState(States.CHASE);
                 }, undefined, this);
             };
@@ -629,7 +636,7 @@ export class Arena extends Scene {
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
         const saying = enemy.isDefeated ? "Something is tearing into me. Please, help!" : `I'll be seeing you, ${this.state.player?.name}.`;
-        enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, saying, 1250, 'bone', false, true, () => enemy.specialCombatText = undefined);
+        enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, saying, 1500, 'bone', false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DEATH);
         this.time.delayedCall(2000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);

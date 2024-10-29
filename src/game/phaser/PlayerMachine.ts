@@ -333,14 +333,14 @@ export default class PlayerMachine {
             this.stateMachine.setState(States.COMPUTER_COMBAT);
         };
         if (this.player.evadeRight) {
-            this.player.setVelocityX((this.player.speed));
+            this.player.setVelocityX((this.player.speed - 0.25));
         } else {
-            this.player.setVelocityX(-(this.player.speed));
+            this.player.setVelocityX(-(this.player.speed - 0.25));
         };
         if (this.player.evadeUp) {
-            this.player.setVelocityY((this.player.speed));
+            this.player.setVelocityY((this.player.speed - 0.25));
         } else {
-            this.player.setVelocityY(-(this.player.speed));
+            this.player.setVelocityY(-(this.player.speed - 0.25));
         };
     }; 
     onEvasionExit = () => (this.player as PlayerComputer).evaluateCombatDistance();
@@ -474,7 +474,7 @@ export default class PlayerMachine {
 
     onComputerAttackEnter = () => {
         this.player.isAttacking = true;
-        this.player.attack();
+        // this.player.attack();
         this.player.frameCount = 0;
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ATTACK);
     };
@@ -483,7 +483,7 @@ export default class PlayerMachine {
         if (!this.player.isAttacking) (this.player as PlayerComputer).evaluateCombatDistance(); 
     };
     onComputerAttackExit = () => {
-        if (this.scene.state.action !== '') this.scene.combatManager.combatMachine.input('action', '');
+        this.scene.combatManager.combatMachine.input('action', '');
         this.player.frameCount = 0;
         this.player.computerAction = false;    
         this.player.computerAction = false;    
@@ -491,7 +491,7 @@ export default class PlayerMachine {
 
     onComputerParryEnter = () => {
         this.player.isParrying = true;
-        this.player.anims.play('player_attack_1', true);
+        // this.player.anims.play('player_attack_1', true);
         this.player.frameCount = 0;
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.PARRY);
         if (this.player.hasMagic === true) {
@@ -511,7 +511,7 @@ export default class PlayerMachine {
     onComputerParryExit = () => {
         this.player.isParrying = false;
         this.player.currentAction = '';
-        if (this.scene.state.action !== '') this.scene.combatManager.combatMachine.input('action', '');
+        this.scene.combatManager.combatMachine.input('action', '');
         this.player.frameCount = 0;
         this.player.computerAction = false;    
     };
@@ -519,7 +519,7 @@ export default class PlayerMachine {
     onComputerPostureEnter = () => {
         this.player.isPosturing = true;
         this.player.spriteShield.setVisible(true);
-        this.player.posture();
+        // this.player.posture();
         this.player.frameCount = 0;
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.POSTURE);
     };
@@ -528,7 +528,7 @@ export default class PlayerMachine {
         if (!this.player.isPosturing) (this.player as PlayerComputer).evaluateCombatDistance();
     };
     onComputerPostureExit = () => {
-        if (this.scene.state.action !== '') this.scene.combatManager.combatMachine.input('action', '');
+        this.scene.combatManager.combatMachine.input('action', '');
         this.player.spriteShield.setVisible(this.player.isStalwart);
         this.player.frameCount = 0;
         this.player.computerAction = false;    
@@ -536,7 +536,7 @@ export default class PlayerMachine {
 
     onComputerThrustEnter = () => {
         this.player.isThrusting = true;
-        this.player.thrustAttack();
+        // this.player.thrustAttack();
         this.player.frameCount = 0;
     };
     onComputerThrustUpdate = (_dt: number) => {
@@ -544,7 +544,7 @@ export default class PlayerMachine {
         if (!this.player.isThrusting) (this.player as PlayerComputer).evaluateCombatDistance();
     };
     onComputerThrustExit = () => {
-        if (this.scene.state.action !== '') this.scene.combatManager.combatMachine.input('action', '');
+        this.scene.combatManager.combatMachine.input('action', '');
         this.player.frameCount = 0;
         this.player.computerAction = false;    
     };

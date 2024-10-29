@@ -11,6 +11,7 @@ import Dialog from './Dialog';
 import { LevelSheet } from '../utility/ascean';
 import Settings from '../models/settings';
 import { text } from '../utility/text';
+import { svg } from '../utility/settings';
 interface Props {
     ascean: Accessor<Ascean>;
     asceanState: Accessor<LevelSheet>;
@@ -25,6 +26,8 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
     const [clicked, setClicked] = createSignal<any>({
         showPlayer: false,
     });
+    const [editTextShow, setEditTextShow] = createSignal(false);
+    const [editSettingsShow, setEditSettingsShow] = createSignal(false);
     const [combatHistory, setCombatHistory] = createSignal<any>("");
     createMemo(() => {
         if (ascean()?.experience as number > experience()) {
@@ -97,13 +100,15 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
             </div>
         </Show>
         <Show when={game().scrollEnabled}>
-            <CombatSettings combat={combat} game={game} />
+            <button class='highlight' onClick={() => setEditSettingsShow(!editSettingsShow())} style={{ top: `${Number(settings()?.combatSettings?.top.split('%')[0]) - 12.5}%`, left: `${Number(settings()?.combatSettings?.left.split('%')[0]) - 1.25}%`, position: 'absolute', color: 'gold', transform: 'scale(0.75)' }}>{svg('UI')}</button>
+            <CombatSettings combat={combat} game={game} settings={settings} editShow={editSettingsShow} setEditShow={setEditSettingsShow} />
         </Show>
         <Show when={game().lootDrops.length > 0 && game().showLoot}>
             <LootDropUI ascean={ascean} game={game} settings={settings} />
         </Show>
        <Show when={game().showCombat}>
-            <CombatText combat={combat} combatHistory={combatHistory} />
+            <button class='highlight' onClick={() => setEditTextShow(!editTextShow())} style={{ top: `${Number(settings().combatText.top.split('vh')[0]) - 12.5}vh`, left: `${Number(settings().combatText.left.split('vw')[0]) - 1.25}vw`, position: 'absolute', color: 'gold', transform: 'scale(0.75)' }}>{svg('UI')}</button>
+            <CombatText settings={settings} combat={combat} combatHistory={combatHistory} editShow={editTextShow} setEditShow={setEditTextShow} />
         </Show>
         <Show when={game().showDialog}>
             <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} />

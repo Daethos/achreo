@@ -281,6 +281,7 @@ export class Arena extends Scene {
                 EventBus.emit('reset-game');
             });
         });
+        EventBus.on('switch-arena', this.switchArena);
     };
 
     resumeScene = () => {
@@ -466,6 +467,13 @@ export class Arena extends Scene {
             };
         };
     };
+    switchArena = () => {
+        this.wager = { silver: 0, gold: 0, multiplier: 0 };
+        EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
+        this.time.delayedCall(3000, () => {
+            EventBus.emit("scene-switch", {current:"Arena", next:"Underground"});
+        }, undefined, this);
+    };
     clearArena = () => {
         if (this.enemies.length > 0) {
             for (let i = 0; i < this.enemies.length; i++) {
@@ -477,21 +485,21 @@ export class Arena extends Scene {
         this.player.disengage();
         this.player.clearEnemies();
         if (this.player.isComputer) (this.player as PlayerComputer).completeReset();
-        this.wager = { silver: 0, gold: 0, multiplier: 0 };
-        EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
-        this.time.delayedCall(3000, () => {
-            EventBus.emit("scene-switch", {current:"Arena", next:"Underground"});
-        }, undefined, this);
+        // this.wager = { silver: 0, gold: 0, multiplier: 0 };
+        // EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
+        // this.time.delayedCall(3000, () => {
+        //     EventBus.emit("scene-switch", {current:"Arena", next:"Underground"});
+        // }, undefined, this);
     };
     computerDisengage = () => {
         this.player.disengage();
         this.player.clearEnemies();
         if (this.player.isComputer) (this.player as PlayerComputer).completeReset();
-        this.wager = { silver: 0, gold: 0, multiplier: 0 };
-        EventBus.emit("alert", { healder: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
-        this.time.delayedCall(3000, () => {
-            EventBus.emit("scene-switch", {current:"Arena", next:"Underground"});
-        }, undefined, this);
+        // this.wager = { silver: 0, gold: 0, multiplier: 0 };
+        // EventBus.emit("alert", { healder: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
+        // this.time.delayedCall(3000, () => {
+        //     EventBus.emit("scene-switch", {current:"Arena", next:"Underground"});
+        // }, undefined, this);
     };
     combatEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;

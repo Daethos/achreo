@@ -24,7 +24,13 @@ const EnemyPreview = lazy(async () => await import('./EnemyPreview'));
 const EnemyUI = lazy(async () => await import('./EnemyUI'));
 const SmallHud = lazy(async () => await import('./SmallHud'));
 const TutorialOverlay = lazy(async () => await import('../utility/tutorial'));
-
+export type ArenaRoster = {
+    show: boolean;
+    enemies: ARENA_ENEMY[] | [];
+    wager: { silver: number; gold: number; multiplier: number; };
+    result: boolean;
+    win: boolean;
+};
 interface Props {
     instance: Store<IRefPhaserGame>;
     ascean: Accessor<Ascean>;
@@ -62,7 +68,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         caeren: 0,
         kyosir: 0,
     });
-    const [arena, setArena] = createSignal<{ show: boolean; enemies: ARENA_ENEMY[] | []; wager: { silver: number; gold: number; multiplier: number; } }>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 } });
+    const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, result: false, win: false });
     createEffect(() => EventBus.emit('combat', combat()));  
     createEffect(() => EventBus.emit('game', game()));  
     createEffect(() => EventBus.emit('reputation', reputation()));
@@ -424,21 +430,10 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         setArena({ ...arena(), wager });
         EventBus.emit("create-arena", enemies);
     });
+    
     usePhaserEvent('settle-wager', (data: { wager: { silver: number; gold: number; multiplier: number; }; win: boolean; }) => {
         const { wager, win } = data;
-        let silver = ascean().currency.silver, gold = ascean().currency.gold;
-        if (win) {
-            silver +=  (wager.silver * wager.multiplier);
-            gold += (wager.gold * wager.multiplier);
-        } else {
-            silver -= wager.silver;
-            gold -= wager.gold;
-        };
-        let currency = { silver, gold };
-        currency = rebalanceCurrency(currency);
-        const update = { ...ascean(), currency };
-        EventBus.emit('update-ascean', update);
-        setArena({ ...arena(), enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 } });
+        setArena({ ...arena(), wager, result: true, show: true, win });
     });
     return <div id='base-ui'>
         <Show when={game().showPlayer} fallback={<div style={{ position: "absolute", 'z-index': 1 }}>
@@ -468,6 +463,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 <Deity ascean={ascean} combat={combat} game={game} statistics={statistics} />
             </Suspense>
         </Show>
-        <Roster arena={arena} ascean={ascean} setArena={setArena} base={true} />
+        <Roster arena={arena} ascean={ascean} setArena={setArena} base={true} game={game} />
     </div>;
 };

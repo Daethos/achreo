@@ -17,8 +17,8 @@ import { getQuests } from '../utility/quests';
 import { namedNameCheck } from '../utility/player';
 import Thievery from './Thievery';
 import Merchant from './Merchant';
-import { ARENA_ENEMY } from '../utility/enemy';
 import Roster from './Roster';
+import { ArenaRoster } from './BaseUI';
 
 const GET_FORGE_COST = {
     Common: 1,
@@ -225,7 +225,7 @@ interface StoryDialogProps {
     game: Accessor<GameState>;
 };
 
-export default function Dialog({ ascean, asceanState, combat, game }: StoryDialogProps) {
+export default function Dialog({ ascean, asceanState, combat, game,  }: StoryDialogProps) {
     const [forgeModalShow, setForgeModalShow] = createSignal(false); 
     const [influence, setInfluence] = createSignal(combat()?.weapons[0]?.influences?.[0]);
     const [persuasionString, setPersuasionString] = createSignal<string>('');
@@ -256,7 +256,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
     const [thievery, setThievery] = createSignal<boolean>(false);
     const [specialMerchant, setSpecialMerchant] = createSignal<boolean>(false);
-    const [arena, setArena] = createSignal<{ show: boolean; enemies: ARENA_ENEMY[] | []; wager: { silver: number; gold: number; multiplier: number; }; }>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 } });
+    const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, result: false, win: false });
     const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
@@ -983,7 +983,7 @@ export default function Dialog({ ascean, asceanState, combat, game }: StoryDialo
         </div>
         <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
-        <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} />
+        <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} game={game} />
         <Show when={showBuy() && merchantTable()?.length > 0}>
             <div class='modal'>
             <div class='creature-heading' style={{ position: 'absolute',left: '20%',top: '20%',height: '70%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' }}>

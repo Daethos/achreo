@@ -92,7 +92,6 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
         setClicked({ ...clicked(), showPlayer: setShow });
     };
 
-
     return <>
         <Show when={toastShow()}>
             <div class='verticalBottom realize' style={{ width: '30%' }}>

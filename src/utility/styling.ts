@@ -48,6 +48,7 @@ const COLORS = {
     'White': 0xFFFFFF,
     'Wine': 0x722F37,
 };
+
 const NUMBERS = {
     0x9F2B68: 'Amaranth',
     0x00FFFF: 'Aqua',

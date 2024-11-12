@@ -487,6 +487,7 @@ export default class PlayerMachine {
         this.player.frameCount = 0;
         this.player.computerAction = false;    
         this.player.computerAction = false;    
+        if (this.player.isPosted) this.player.anims.play('player_idle', true);
     };
 
     onComputerParryEnter = () => {
@@ -514,6 +515,7 @@ export default class PlayerMachine {
         this.scene.combatManager.combatMachine.input('action', '');
         this.player.frameCount = 0;
         this.player.computerAction = false;    
+        if (this.player.isPosted) this.player.anims.play('player_idle', true);
     };
 
     onComputerPostureEnter = () => {
@@ -532,6 +534,7 @@ export default class PlayerMachine {
         this.player.spriteShield.setVisible(this.player.isStalwart);
         this.player.frameCount = 0;
         this.player.computerAction = false;    
+        if (this.player.isPosted) this.player.anims.play('player_idle', true);
     };
 
     onComputerThrustEnter = () => {
@@ -547,6 +550,7 @@ export default class PlayerMachine {
         this.scene.combatManager.combatMachine.input('action', '');
         this.player.frameCount = 0;
         this.player.computerAction = false;    
+        if (this.player.isPosted) this.player.anims.play('player_idle', true);
     };
 
     onAttackEnter = () => {

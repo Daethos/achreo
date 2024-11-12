@@ -1090,7 +1090,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteWeapon.setAngle(107.5);
                 } else {
                     this.spriteWeapon.setDepth(this.depth + 1);
-                    this.spriteWeapon.setOrigin(0, 0.5);
+                    this.spriteWeapon.setOrigin(0, 0.75);
                     this.spriteWeapon.setAngle(107.5);
                 };
                 if (this.isStalwart) {

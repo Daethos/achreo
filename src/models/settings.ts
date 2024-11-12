@@ -151,7 +151,7 @@ export default class Settings {
         this.healthViews = 'FULL';
         this.grace = 'NUMBER';
         this.stamina = 'NUMBER';
-        this.combatText = { left: '20vh', top: '40vh', height: '50vh', width: '60vw' };
+        this.combatText = { left: '20vw', top: '40vh', height: '50vh', width: '60vw' };
         this.combatSettings = { left: '20%', top: '40%', height: '50%', width: '60%' };
         this.control = 'Buttons';
         this.desktop = false;

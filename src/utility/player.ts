@@ -19,7 +19,7 @@ export const PLAYER = {
     },
     DISTANCE: {
         MIN: 0,
-        ATTACK: 40,
+        ATTACK: 50,
         MOMENTUM: 2,
         THRESHOLD: 75,
         CHASE: 75,

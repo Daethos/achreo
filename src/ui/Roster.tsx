@@ -168,7 +168,7 @@ export default function Roster({ arena, ascean, setArena, base, game }: { arena:
                 <button class='highlight cornerBR' onClick={() => setArena({ ...arena(), show: false })} style={{ color: 'red' }}>X</button>
             </>}>
                 <div class='center creature-heading moisten' style={style}>
-                    <p style={{ color: 'gold', margin: '8px 0', 'font-size': '2em' }}>{arena().win ? 'You Win' : 'You Lose'}</p>
+                    <p style={{ color: 'gold', margin: '12px 0', 'font-size': '2em' }}>{arena().win ? 'You Won' : 'You Lost'}</p>
                     <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Opponents Chosen:</span> {arena().enemies.length}</h1>
                     <For each={arena().enemies}>{(enemy) => {
                         return (
@@ -177,7 +177,7 @@ export default function Roster({ arena, ascean, setArena, base, game }: { arena:
                     }}</For>
                     <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Wager:</span> {arena().wager.gold}g {arena().wager.silver}s</h1>
                     <p class='gold' style={{ margin: '0 auto', 'font-size': '1.25em' }}>
-                        {arena().win ? `+${roundToTwoDecimals(arena().wager.gold * arena().wager.multiplier)}g` : `-${arena().wager.gold}g`} <span style={{ color: '#fdf6d8' }}>{arena().win ? `+${roundToTwoDecimals(arena().wager.silver * arena().wager.multiplier)}s` : `-${arena().wager.silver}s`}</span>
+                        {arena().wager.gold > 0 ? arena().win ? `+${roundToTwoDecimals(arena().wager.gold * arena().wager.multiplier)}g` : `-${arena().wager.gold}g` : ``} <span style={{ color: '#fdf6d8' }}>{arena().wager.silver > 0 ? arena().win ? `+${roundToTwoDecimals(arena().wager.silver * arena().wager.multiplier)}s` : `-${arena().wager.silver}s` : ``}</span>
                     </p>
                     <Show when={game().lootDrops.length > 0}>
                         <For each={game().lootDrops}>
@@ -185,6 +185,9 @@ export default function Roster({ arena, ascean, setArena, base, game }: { arena:
                                 return <LootDrop lootDrop={lootDrop} setShow={setShow} setLootDrop={setLootDrop} />
                             })}
                         </For>
+                    </Show>
+                    <Show when={!arena().win}>
+                        <h2 style={{ color: '', width: '75%', margin: '5% auto', 'font-size': "1.25em" }}>Do not worry, {ascean().name}, there is still time to train for the Ascea. {arena().enemies.length > 1 ? `Perhaps you need to focus on fewer opponents?` : `Perhaps you need a different, or easier opponent?`}</h2>
                     </Show>
                 </div>
                 <Show when={show()}>

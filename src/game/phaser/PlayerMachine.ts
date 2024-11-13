@@ -211,7 +211,7 @@ export default class PlayerMachine {
             this.stateMachine.setState(States.IDLE);
             return;
         };  
-        if (distance >= 50 * rangeMultiplier) { // was 75 || 100
+        if (distance >= 60 * rangeMultiplier) { // was 75 || 100
             if (this.player.path && this.player.path.length > 1) {
                 this.player.setVelocity(this.player.pathDirection.x * this.player.speed, this.player.pathDirection.y * this.player.speed); // 2.5
             } else {
@@ -460,7 +460,7 @@ export default class PlayerMachine {
         };
         this.player.frameCount = 0;
         this.player.computerAction = true;
-        this.scene.time.delayedCall(Phaser.Math.Between(1000, 1500), () => {
+        this.scene.time.delayedCall(Phaser.Math.Between(750, 1500), () => {
             this.player.computerAction = false;
             (this.player as PlayerComputer).evaluateCombat();
         }, undefined, this);

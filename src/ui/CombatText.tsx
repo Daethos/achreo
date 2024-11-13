@@ -14,7 +14,6 @@ export default function CombatText({ settings, combat, combatHistory, editShow, 
         setEdit({...settings().combatText});
     });
     function editCombatText(key: string, value: string): void {
-        // if (key === 'left') value = '20vw';
         const update = {
             ...settings(),
             combatText: {

@@ -3054,9 +3054,7 @@ export default class Enemy extends Entity {
         };
     };
 
-    cleanCombatAnimation = () => {
-        return (this.stateMachine.isCurrentState(States.COMBAT) || this.stateMachine.isCurrentState(States.CHASE));
-    };
+    cleanCombatAnimation = () => this.stateMachine.isCurrentState(States.COMBAT) || this.stateMachine.isCurrentState(States.CHASE);
     
     evaluateEnemyState = () => {
         if (this.body) {
@@ -3161,6 +3159,7 @@ export default class Enemy extends Entity {
         this.stateMachine.update(dt);
         this.negativeMachine.update(dt);
     };
+
     evaluateCombat = () => {  
         let actionNumber = Math.floor(Math.random() * 101);
         if (actionNumber > PLAYER.ACTION_WEIGHT.ATTACK) { // 61-100 (40%) || (100 - computerActions.attack)

@@ -344,7 +344,6 @@ export default class PlayerMachine {
         };
     }; 
     onEvasionExit = () => (this.player as PlayerComputer).evaluateCombatDistance();
-    
 
     onContemplateEnter = () => {
         if (this.player.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
@@ -430,7 +429,7 @@ export default class PlayerMachine {
     onLullEnter = () => {
         this.player.isMoving = false;
         this.player.setVelocity(0);
-        this.scene.time.delayedCall(Phaser.Math.Between(1000, 1500), () => {
+        this.scene.time.delayedCall(Phaser.Math.Between(500, 1000), () => {
             if (this.player.isSuffering() || this.player.isCasting || this.player.isPraying || this.player.computerAction) {
                 this.player.computerAction = false;
                 this.stateMachine.setState(States.LULL);
@@ -451,10 +450,8 @@ export default class PlayerMachine {
             this.player.specials = true;
             (this.player as PlayerComputer).setSpecialCombat();
         };
-        if (this.player.isSuffering()) {
-            // console.log(`Suffering: ${this.player.isSuffering()}`, 'color:red');
-            return;
-        }; 
+        // console.log(`Suffering: ${this.player.isSuffering()}`, 'color:red');
+        if (this.player.isSuffering()) return;
         if (this.player.isCasting || this.player.isPraying || this.player.isContemplating || this.player.computerAction) {
             this.player.setVelocity(0);
             this.player.isMoving = false;
@@ -474,9 +471,8 @@ export default class PlayerMachine {
 
     onComputerAttackEnter = () => {
         this.player.isAttacking = true;
-        // this.player.attack();
         this.player.frameCount = 0;
-        this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ATTACK);
+        this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_ATTACK);
     };
     onComputerAttackUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input('action', 'attack');
@@ -487,14 +483,13 @@ export default class PlayerMachine {
         this.player.frameCount = 0;
         this.player.computerAction = false;    
         this.player.computerAction = false;    
-        if (this.player.isPosted) this.player.anims.play('player_idle', true);
+        if (!this.player.isRanged) this.player.anims.play('player_idle', true);
     };
 
     onComputerParryEnter = () => {
         this.player.isParrying = true;
-        // this.player.anims.play('player_attack_1', true);
         this.player.frameCount = 0;
-        this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.PARRY);
+        this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_PARRY);
         if (this.player.hasMagic === true) {
             this.player.specialCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Counter Spell', 1000, 'hush', false, true, () => this.player.specialCombatText = undefined);
             this.player.isCounterSpelling = true;
@@ -515,15 +510,14 @@ export default class PlayerMachine {
         this.scene.combatManager.combatMachine.input('action', '');
         this.player.frameCount = 0;
         this.player.computerAction = false;    
-        if (this.player.isPosted) this.player.anims.play('player_idle', true);
+        if (!this.player.isRanged) this.player.anims.play('player_idle', true);
     };
 
     onComputerPostureEnter = () => {
         this.player.isPosturing = true;
         this.player.spriteShield.setVisible(true);
-        // this.player.posture();
         this.player.frameCount = 0;
-        this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.POSTURE);
+        this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_POSTURE);
     };
     onComputerPostureUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.POSTURE_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input('action', 'posture');
@@ -534,12 +528,12 @@ export default class PlayerMachine {
         this.player.spriteShield.setVisible(this.player.isStalwart);
         this.player.frameCount = 0;
         this.player.computerAction = false;    
-        if (this.player.isPosted) this.player.anims.play('player_idle', true);
+        if (!this.player.isRanged) this.player.anims.play('player_idle', true);
     };
 
     onComputerThrustEnter = () => {
         this.player.isThrusting = true;
-        // this.player.thrustAttack();
+        this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_THRUST);
         this.player.frameCount = 0;
     };
     onComputerThrustUpdate = (_dt: number) => {
@@ -550,7 +544,7 @@ export default class PlayerMachine {
         this.scene.combatManager.combatMachine.input('action', '');
         this.player.frameCount = 0;
         this.player.computerAction = false;    
-        if (this.player.isPosted) this.player.anims.play('player_idle', true);
+        if (!this.player.isRanged) this.player.anims.play('player_idle', true);
     };
 
     onAttackEnter = () => {
@@ -626,7 +620,7 @@ export default class PlayerMachine {
     onDodgeEnter = () => {
         if (this.player.isStalwart || this.player.isStorming || this.player.isRolling) return;
         this.player.isDodging = true;
-        this.scene.combatManager.useStamina(PLAYER.STAMINA.DODGE);
+        this.scene.combatManager.useStamina(this.player.isComputer ? PLAYER.STAMINA.COMPUTER_DODGE : PLAYER.STAMINA.DODGE);
         if (!this.player.isComputer) this.player.swingReset(States.DODGE, true);
         this.scene.sound.play('dodge', { volume: this.scene.hud.settings.volume / 2 });
         this.player.wasFlipped = this.player.flipX; 
@@ -660,7 +654,7 @@ export default class PlayerMachine {
     onRollEnter = () => {
         if (this.player.isStalwart || this.player.isStorming || this.player.isDodging) return;
         this.player.isRolling = true;
-        this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ROLL);
+        this.scene.combatManager.useStamina(this.player.isComputer ? PLAYER.STAMINA.COMPUTER_ROLL : PLAYER.STAMINA.ROLL);
         if (!this.player.isComputer) this.player.swingReset(States.ROLL, true);
         this.scene.sound.play('roll', { volume: this.scene.hud.settings.volume / 2 });
         (this.player.body as any).parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;

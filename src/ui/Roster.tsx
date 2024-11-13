@@ -99,10 +99,11 @@ export default function Roster({ arena, ascean, setArena, base, game }: { arena:
         if (switchScene()) EventBus.emit('switch-arena');
     };
     const style = { position: 'absolute',left: '20%',top: '10%',height: '80%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none','z-index': 999 } as JSX.PropAttributes;
+    // Math.max(selector().level - 2, 2) || Math.min(selector().level + 2, 8)
     return <Show when={arena().show}>
         <div class='modal'>
             <Show when={arena().result} fallback={<>
-                <div class='center creature-heading' style={style}>
+                <div class='center creature-heading moisten' style={style}>
                     <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Opponents Chosen:</span> {arena().enemies.length}</h1>
                     <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Wager:</span> {arena().wager.gold}g {arena().wager.silver}s</h1>
                     <h1 style={{ margin: '8px 0' }} onClick={() => setSwitchScene(!switchScene())}><span style={{ color: '#fdf6d8' }}>Map Selected: </span>{switchScene() ? 'Arena' : 'Underground'}</h1>
@@ -120,8 +121,8 @@ export default function Roster({ arena, ascean, setArena, base, game }: { arena:
                     <div style={{ display: 'grid', 'grid-template-columns': 'repeat(2, 1fr)' }}>
                         <div>
                             <p style={{ color: 'gold', margin: '8px 0', 'font-size': '1.4em' }}>Level ({selector().level})</p>
-                            <button class='highlight' onClick={() => selectOpponent('level', Math.max(selector().level - 2, 2))}>-</button>
-                            <button class='highlight' onClick={() => selectOpponent('level', Math.min(selector().level + 2, 8))}>+</button>
+                            <button class='highlight' onClick={() => selectOpponent('level', selectors[selector().level as keyof typeof selectors].prev)}>-</button>
+                            <button class='highlight' onClick={() => selectOpponent('level', selectors[selector().level as keyof typeof selectors].next)}>+</button>
                         </div>
                         <div style={{ 'margin-bottom': '8px' }}><p style={{ color: 'gold', margin: '8px 0', 'font-size': '1.4em' }}>Mastery ({selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)})</p>
                             <button class='highlight' onClick={() => selectOpponent('mastery', 'constitution')}>Con</button>
@@ -166,7 +167,7 @@ export default function Roster({ arena, ascean, setArena, base, game }: { arena:
                 </div>
                 <button class='highlight cornerBR' onClick={() => setArena({ ...arena(), show: false })} style={{ color: 'red' }}>X</button>
             </>}>
-                <div class='center creature-heading' style={style}>
+                <div class='center creature-heading moisten' style={style}>
                     <p style={{ color: 'gold', margin: '8px 0', 'font-size': '2em' }}>{arena().win ? 'You Win' : 'You Lose'}</p>
                     <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Opponents Chosen:</span> {arena().enemies.length}</h1>
                     <For each={arena().enemies}>{(enemy) => {
@@ -175,7 +176,7 @@ export default function Roster({ arena, ascean, setArena, base, game }: { arena:
                         )
                     }}</For>
                     <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Wager:</span> {arena().wager.gold}g {arena().wager.silver}s</h1>
-                    <p class='gold' style={{ margin: '0 auto' }}>
+                    <p class='gold' style={{ margin: '0 auto', 'font-size': '1.25em' }}>
                         {arena().win ? `+${roundToTwoDecimals(arena().wager.gold * arena().wager.multiplier)}g` : `-${arena().wager.gold}g`} <span style={{ color: '#fdf6d8' }}>{arena().win ? `+${roundToTwoDecimals(arena().wager.silver * arena().wager.multiplier)}s` : `-${arena().wager.silver}s`}</span>
                     </p>
                     <Show when={game().lootDrops.length > 0}>

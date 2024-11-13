@@ -134,22 +134,10 @@ export const PADDING = {
 };
 export const RANGE = {
     LEASH: 1000,
-    Underground: 1000,
+    Underground: 2000,
     Game: 1000,
     Arena: 2000,
 }; 
-
-// ELEMENT IN ARRAY 
-// [0]: Critical Heal
-// [1]: Casual Heal
-// [2]: Critical Damage
-// [3]: Casual Damage
-// [4]: Melee < 100 Distance
-// [5]: Ranged < 100 Distance
-// [6]: Melee > 100 && < 250 Distance
-// [7]: Ranged > 100 && < 250 Distance
-// [8]: Melee > 250 Distance
-// [9]: Ranged > 250 Distance
 
 export const INSTINCTS = {
     'constitution': [

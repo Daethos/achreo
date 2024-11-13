@@ -15,7 +15,7 @@ import Statistics from '../utility/statistics';
 import { validateHealth, validateLevel, validateMastery } from '../utility/validators';
 import { adjustTime } from './Timer';
 import { Store } from 'solid-js/store';
-import { IRefPhaserGame, rebalanceCurrency } from '../game/PhaserGame';
+import { IRefPhaserGame } from '../game/PhaserGame';
 import Roster from './Roster';
 const Character = lazy(async () => await import('./Character'));
 const CombatUI = lazy(async () => await import('./CombatUI'));

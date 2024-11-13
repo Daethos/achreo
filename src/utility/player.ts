@@ -72,10 +72,12 @@ export const PLAYER = {
         ROLL: 15, // 25
         THRUST: 15,
         CONTEMPLATE: 0,
-        COMPUTER_ATTACK: 25,
-        COMPUTER_PARRY: 10,
-        COMPUTER_POSTURE: 20,
-        COMPUTER_THRUST: 15,
+        COMPUTER_ATTACK: 20,
+        COMPUTER_DODGE: 5,
+        COMPUTER_PARRY: 5,
+        COMPUTER_POSTURE: 15,
+        COMPUTER_ROLL: 10,
+        COMPUTER_THRUST: 10,
 
         // Magical
         // Low Cost        

@@ -98,7 +98,7 @@ export default class PlayerComputer extends Player {
         const particleVector = new Phaser.Math.Vector2(particle.effect.x, particle.effect.y);
         const playerVector = new Phaser.Math.Vector2(this.x, this.y);
         const particleDistance = particleVector.subtract(playerVector);
-        if (particleDistance.length() < (50) && !this.isPosted && !this.isCasting) { // 50 || 100
+        if (particleDistance.length() < 50 && !this.isPosted && !this.isCasting) { // 50 || 100
             return true;
         };
         return false;
@@ -248,7 +248,6 @@ export default class PlayerComputer extends Player {
             action = States.CONTEMPLATE;
         };
         let check: {success: boolean; cost: number;} = staminaCheck(this.stamina, PLAYER.STAMINA[action.toUpperCase() as keyof typeof PLAYER.STAMINA]);
-        // console.log(`%c Action: ${action}`, `color:${check.success ? 'green':'red'}`);
         if (check.success === true && this.playerMachine.stateMachine.isState(action)) {
             this.playerMachine.stateMachine.setState(action);
         };
@@ -259,7 +258,7 @@ export default class PlayerComputer extends Player {
             this.actionSuccess = false;
             this.playerActionSuccess();
         };
-        if (this.particleEffect !== undefined) { 
+        if (this.particleEffect !== undefined) {
             if (this.particleEffect.success) {
                 this.particleEffect.success = false;
                 this.particleEffect.triggered = true;
@@ -268,7 +267,7 @@ export default class PlayerComputer extends Player {
                 this.scene.particleManager.removeEffect(this.particleEffect.id);
                 this.particleEffect = undefined;                
             } else if (!this.particleEffect.effect?.active) {
-                this.particleEffect = undefined;                
+                this.particleEffect = undefined;   
             } else {
                 this.scene.particleManager.updateParticle(this.particleEffect);
             };
@@ -276,12 +275,16 @@ export default class PlayerComputer extends Player {
 
         if (this.scene.combat === true && (!this.currentTarget || !this.currentTarget.inCombat)) this.findEnemy(); // this.inCombat === true && state.combatEngaged
         if (this.healthbar) this.healthbar.update(this);
-        if (this.scrollingCombatText !== undefined) this.scrollingCombatText.update(this);
-        if (this.specialCombatText !== undefined) this.specialCombatText.update(this); 
-        if (this.resistCombatText !== undefined) this.resistCombatText.update(this);
+        if (this.scrollingCombatText) this.scrollingCombatText.update(this);
+        if (this.specialCombatText) this.specialCombatText.update(this);
+        if (this.resistCombatText) this.resistCombatText.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-
+        
+        if (this.isConfused && !this.sansSuffering('isConfused') && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
+            this.playerMachine.stateMachine.setState(States.CONFUSED);
+            return;
+        };
         if (this.isFeared && !this.sansSuffering('isFeared') && !this.playerMachine.stateMachine.isCurrentState(States.FEARED)) {
             this.playerMachine.stateMachine.setState(States.FEARED);
             return;
@@ -307,8 +310,8 @@ export default class PlayerComputer extends Player {
             return;
         };
         if (this.isSnared && !this.playerMachine.negativeMachine.isCurrentState(States.SNARED) && !this.currentNegativeState(States.SNARED)) {
-            this.playerMachine.negativeMachine.setState(States.SNARED); 
-            return;    
+            this.playerMachine.negativeMachine.setState(States.SNARED);
+            return;
         };
 
         this.weaponRotation('player', this.currentTarget as Enemy);

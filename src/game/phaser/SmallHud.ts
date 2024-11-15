@@ -358,7 +358,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                         break;
                     case 'stalwart':
                         this.switches.stalwart = !this.switches.stalwart;
-                        EventBus.emit('update-stalwart');                        
+                        EventBus.emit('update-stalwart', this.switches.stalwart);                        
                         break;
                     case 'caerenic':
                         this.switches.caerenic = !this.switches.caerenic;

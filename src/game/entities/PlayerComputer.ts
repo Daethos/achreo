@@ -181,7 +181,7 @@ export default class PlayerComputer extends Player {
             this.playerMachine.stateMachine.setState(States.CHASE);
             return;
         } else if (this.isRanged) { // Contiually Checking Distance for RANGED ENEMIES.
-            if (!this.computerAction && !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) {
+            if (!this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) { // !this.computerAction && 
                 this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
                 return;    
             };

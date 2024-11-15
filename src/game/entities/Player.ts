@@ -173,7 +173,7 @@ export default class Player extends Entity {
         this.castbar = new CastingBar(this.scene.hud, this.x, this.y, 0, this);
         scene.time.delayedCall(1000, () => {
             if (this.scene.state.isCaerenic) this.caerenicUpdate();
-            if (this.scene.state.isStalwart) this.stalwartUpdate();
+            if (this.scene.state.isStalwart) this.stalwartUpdate(this.scene.state.isStalwart);
         }, undefined, this);
         this.rushedEnemies = [];
         this.playerStateListener();
@@ -227,8 +227,8 @@ export default class Player extends Entity {
         };
     };
 
-    stalwartUpdate = () => {
-        this.isStalwart = this.isStalwart ? false : true;
+    stalwartUpdate = (stalwart: boolean) => {
+        this.isStalwart = stalwart;
         this.spriteShield.setVisible(this.isStalwart);
         this.scene.sound.play('stalwart', { volume: this.scene.hud.settings.volume });
         EventBus.emit('stalwart-buttons', this.isStalwart);

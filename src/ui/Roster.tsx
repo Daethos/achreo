@@ -99,8 +99,8 @@ export default function Roster({ arena, ascean, setArena, base, game, settings }
         setArena({ ...arena(), enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, win: false, show: false, result: false });
         if (switchScene()) EventBus.emit('switch-arena');
     };
-    const style = { position: 'absolute',left: '20%',top: '10%',height: '80%',width: '60%',background: 'linear-gradient(#000, #444)',border: `0.2em solid ${masteryColor(ascean().mastery)}`,'border-radius': '0.15em','box-shadow': `0 0 0.75em ${masteryColor(ascean().mastery)}`,overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' } as JSX.PropAttributes;
-    const partial = { top: '10%', height: '80%', width: '49%', background: 'linear-gradient(#000, #444)',border: `0.2em solid ${masteryColor(ascean().mastery)}`,'border-radius': '0.15em','box-shadow': `0 0 0.75em ${masteryColor(ascean().mastery)}`,overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' } as JSX.PropAttributes;
+    const style = { position: 'absolute',left: '20%',top: '10%',height: '80%',width: '60%',background: 'linear-gradient(#000, #444)',border: `0.2em solid ${masteryColor(ascean().mastery)}`,'border-radius': '0.25em','box-shadow': `0 0 1.25em ${masteryColor(ascean().mastery)}`,overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' } as JSX.PropAttributes;
+    const partial = { top: '10%', height: '80%', width: '49%', background: 'linear-gradient(#000, #444)',border: `0.2em solid ${masteryColor(ascean().mastery)}`,'border-radius': '0.25em','box-shadow': `0 0 1.25em ${masteryColor(ascean().mastery)}`,overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' } as JSX.PropAttributes;
     
     return <Show when={arena().show}>
         <div class='modal' style={{ 'z-index': 99 }}>

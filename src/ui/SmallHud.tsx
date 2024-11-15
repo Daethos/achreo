@@ -110,7 +110,7 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
             <CombatText settings={settings} combat={combat} combatHistory={combatHistory} editShow={editTextShow} setEditShow={setEditTextShow} />
         </Show>
         <Show when={game().showDialog}>
-            <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} />
+            <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} settings={settings} />
         </Show>
     </>;
 };

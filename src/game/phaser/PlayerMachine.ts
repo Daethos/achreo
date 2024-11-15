@@ -482,7 +482,6 @@ export default class PlayerMachine {
         this.scene.combatManager.combatMachine.input('action', '');
         this.player.frameCount = 0;
         this.player.computerAction = false;    
-        this.player.computerAction = false;    
         if (!this.player.isRanged) this.player.anims.play('player_idle', true);
     };
 
@@ -543,7 +542,7 @@ export default class PlayerMachine {
     onComputerThrustExit = () => {
         this.scene.combatManager.combatMachine.input('action', '');
         this.player.frameCount = 0;
-        this.player.computerAction = false;    
+        this.player.computerAction = false;
         if (!this.player.isRanged) this.player.anims.play('player_idle', true);
     };
 

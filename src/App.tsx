@@ -297,7 +297,7 @@ export default function App() {
     };
     const actions = {
         "Duel": (val: number) => summonEnemy(val),
-        "Roster": () => { EventBus.emit('show-roster'); },
+        "Roster": () => { EventBus.emit('show-roster'); setShow(false); },
         'Enter Underground': () => switchScene('Game', 'Underground'),
         'Enter Tent': () => switchScene('Game', 'Tent'),
         'Enter North Port': () => EventBus.emit('Port', 'South'),

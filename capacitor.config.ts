@@ -1,5 +1,4 @@
 import { CapacitorConfig } from '@capacitor/cli';
-
 const config: CapacitorConfig = {
   appId: 'app.vercel.achreo',
   appName: 'the-ascean',
@@ -8,5 +7,4 @@ const config: CapacitorConfig = {
     androidScheme: 'https'
   }
 };
-
 export default config;

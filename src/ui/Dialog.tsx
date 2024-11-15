@@ -19,6 +19,7 @@ import Thievery from './Thievery';
 import Merchant from './Merchant';
 import Roster from './Roster';
 import { ArenaRoster } from './BaseUI';
+import Settings from '../models/settings';
 
 const GET_FORGE_COST = {
     Common: 1,
@@ -223,9 +224,10 @@ interface StoryDialogProps {
     asceanState: Accessor<LevelSheet>;
     combat: Accessor<Combat>;
     game: Accessor<GameState>;
+    settings: Accessor<Settings>;
 };
 
-export default function Dialog({ ascean, asceanState, combat, game,  }: StoryDialogProps) {
+export default function Dialog({ ascean, asceanState, combat, game, settings }: StoryDialogProps) {
     const [forgeModalShow, setForgeModalShow] = createSignal(false); 
     const [influence, setInfluence] = createSignal(combat()?.weapons[0]?.influences?.[0]);
     const [persuasionString, setPersuasionString] = createSignal<string>('');
@@ -983,7 +985,7 @@ export default function Dialog({ ascean, asceanState, combat, game,  }: StoryDia
         </div>
         <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
-        <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} game={game} />
+        <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} game={game} settings={settings} />
         <Show when={showBuy() && merchantTable()?.length > 0}>
             <div class='modal'>
             <div class='creature-heading' style={{ position: 'absolute',left: '20%',top: '20%',height: '70%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' }}>

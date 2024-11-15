@@ -463,6 +463,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 <Deity ascean={ascean} combat={combat} game={game} statistics={statistics} />
             </Suspense>
         </Show>
-        <Roster arena={arena} ascean={ascean} setArena={setArena} base={true} game={game} />
+        <Roster arena={arena} ascean={ascean} setArena={setArena} base={true} game={game} settings={settings} />
     </div>;
 };

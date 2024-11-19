@@ -26,7 +26,7 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
         this.setScale(0.5);
         this._id = drop._id;
         this.drop = drop;
-        this.setupCollider();
+        // this.setupCollider();
         this.setupListener();
         this.tween = scene.tweens.add({
             targets: this,

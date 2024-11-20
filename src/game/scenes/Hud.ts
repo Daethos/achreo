@@ -11,6 +11,7 @@ import { useResizeListener } from "../../utility/dimensions";
 import Logger, { ConsoleLogger } from '../../utility/Logger';
 import { roundToTwoDecimals } from "../../utility/combat";
 import { Play } from "../main";
+import { Grid } from "@phaserquick/grid";
 const dimensions = useResizeListener();
 
 
@@ -28,7 +29,7 @@ export class Hud extends Phaser.Scene {
     settings: Settings = initSettings;
     logger!: Logger;
     currentZoom: number;
-    currentY: number;
+    currentX: number;
     evCache: any[] = [];
     prevDiff: number = -1;
 
@@ -39,6 +40,8 @@ export class Hud extends Phaser.Scene {
     };
 
     create() {
+        const grid = new Grid(this, 9, 9);
+        // grid.enableDebug();
         this.gameEvents();
         this.gameState = this.registry.get('game');
         this.settings = this.registry.get('settings');
@@ -84,50 +87,75 @@ export class Hud extends Phaser.Scene {
             };
             EventBus.emit('update-camera-zoom', this.currentZoom);
         });
-        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+
+        const swipe = this.add.rectangle(0, 0, this.gameWidth * 0.275, this.gameHeight * 0.22, 0x000000, 0);
+        const cell20 = grid.cell(20);
+        swipe.setPosition(cell20.x, cell20.y);
+
+        swipe.setInteractive().on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.evCache.push(pointer);
-            this.currentY = pointer.y;
+            this.currentX = pointer.x;
             // if (this.evCache.length > 1) this.logger.log(`Console: Current Number in evCache: ${this.evCache.length}`);
         })
         .on('pointermove', (pointer: Phaser.Input.Pointer) => {
-            const index = this.evCache.findIndex(
-                (cachedEv: Phaser.Input.Pointer) => cachedEv.pointerId === pointer.pointerId,
-            );
-            this.evCache[index] = pointer;
-
-            // If two pointers are down, check for pinch gestures
-            if (this.evCache.length === 2) {
-                // Caclculate the distance between the two pointers
-                this.logger.log(`Console: x[0]: ${this.evCache[0].x}, x[1]: ${this.evCache[1].x}`);
-                var curDiff = Math.abs(this.evCache[0].x - this.evCache[1].x);
-                // var curDiff = Math.sqrt(
-                //     Math.pow(this.evCache[0].x - this.evCache[1].x, 2) +
-                //     Math.pow(this.evCache[0].y - this.evCache[1].y, 2)
-                // );
-
-                if (this.prevDiff > 0) {
-                    if (curDiff > this.prevDiff) {
-                        // The distance between the two pointers has increased
-                        this.logger.log(`Console: Pinch Moving OUT -> Zoom In: ${curDiff} | ${this.prevDiff}`);
-                        this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.01)), 1.5);
-                    };
-                    if (curDiff < this.prevDiff) {
-                        // The distance between the two pointers has decreased
-                        this.logger.log(`Console: Pinch Moving IN -> Zoom Out: ${curDiff} | ${this.prevDiff}`);
-                        this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.01)), 0.5);
-                    };
-                    this.prevDiff = curDiff;
+            // const index = this.evCache.findIndex(
+            //     (cachedEv: Phaser.Input.Pointer) => cachedEv.pointerId === pointer.pointerId,
+            // );
+            // this.evCache[index] = pointer;
+            // console.log(this.currentX, 'Current Cached X', pointer.x, 'Current X');
+            var curDiff = Math.abs(this.currentX - pointer.x);
+            // console.log(curDiff, 'Current Difference?')
+            if (this.prevDiff > 0) {
+                if (curDiff < this.currentX) {
+                    // The distance between the two pointers has increased
+                    // this.logger.log(`Console: Pinch Moving OUT -> Zoom In: ${curDiff} | ${this.currentX}`);
+                    this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.00675)), 1.5);
                 };
+                if (curDiff > this.currentX) {
+                    // The distance between the two pointers has decreased
+                    // this.logger.log(`Console: Pinch Moving IN -> Zoom Out: ${curDiff} | ${this.currentX}`);
+                    this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.00675)), 0.5);
+                };
+                // this.currentX = pointer.x;
                 EventBus.emit('update-camera-zoom', this.currentZoom);
             };
+            this.prevDiff = curDiff;
+            
+
+            // // If two pointers are down, check for pinch gestures
+            // if (this.evCache.length === 2) {
+            //     // Caclculate the distance between the two pointers
+            //     this.logger.log(`Console: x[0]: ${this.evCache[0].x}, x[1]: ${this.evCache[1].x}`);
+            //     var curDiff = Math.abs(this.evCache[0].x - this.evCache[1].x);
+            //     // var curDiff = Math.sqrt(
+            //     //     Math.pow(this.evCache[0].x - this.evCache[1].x, 2) +
+            //     //     Math.pow(this.evCache[0].y - this.evCache[1].y, 2)
+            //     // );
+
+            //     if (this.prevDiff > 0) {
+            //         if (curDiff > this.prevDiff) {
+            //             // The distance between the two pointers has increased
+            //             this.logger.log(`Console: Pinch Moving OUT -> Zoom In: ${curDiff} | ${this.prevDiff}`);
+            //             this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.01)), 1.5);
+            //         };
+            //         if (curDiff < this.prevDiff) {
+            //             // The distance between the two pointers has decreased
+            //             this.logger.log(`Console: Pinch Moving IN -> Zoom Out: ${curDiff} | ${this.prevDiff}`);
+            //             this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.01)), 0.5);
+            //         };
+            //         this.prevDiff = curDiff;
+            //     };
+            //     EventBus.emit('update-camera-zoom', this.currentZoom);
+            // };
 
         })
         .on('pointerup', (pointer: Phaser.Input.Pointer) => {
             this.removeEvent(pointer);
             // If the number of pointers down is less than two then reset diff tracker
-            if (this.evCache.length < 2) {
-                this.prevDiff = -1;
-            };
+            this.prevDiff = -1;
+            this.currentX = 0;
+            // if (this.evCache.length < 2) {
+            // };
         });
         this.startGameScene();
     };

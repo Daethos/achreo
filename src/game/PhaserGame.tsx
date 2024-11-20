@@ -734,6 +734,65 @@ export default function PhaserGame (props: IProps) {
         setLive(!live());
     };
 
+    var evCache: any[] = [];
+    var prevDiff: number = -1;
+    var currentY: number = 0;
+
+    const initGesture = () => {
+        var el = document.getElementById("game-container");
+        if (!el) return;
+        (el as any).onpointerdown = pointerdownHandler;
+        (el as any).onpointermove = pointermoveHandler;
+        (el as any).onpointerup = pointerupHandler;
+
+    };
+    function pointerdownHandler(pointer: Phaser.Input.Pointer) {
+        evCache.push(pointer);
+        currentY = pointer.y;
+    };
+    function pointermoveHandler(pointer: Phaser.Input.Pointer) {
+        const index = evCache.findIndex(
+            (cachedEv: Phaser.Input.Pointer) => cachedEv.pointerId === pointer.pointerId,
+        );
+        evCache[index] = pointer;
+        
+        // If two pointers are down, check for pinch gestures
+        if (evCache.length === 2) {
+            EventBus.emit('add-combat-logs', { ...combat(), playerActionDescription: "Pinching" });
+            // Caclculate the distance between the two pointers
+            const curDiff = Math.abs(evCache[0].x - evCache[1].x);
+            
+            if (prevDiff > 0) {
+                if (curDiff > prevDiff) {
+                    EventBus.emit('add-combat-logs', { ...combat(), playerActionDescription: "Pinch moving OUT -> Zooming In" });
+                    // The distance between the two pointers has increased
+                    console.log('Pinch moving OUT -> Zoom In', pointer);
+                };
+                if (curDiff < prevDiff) {
+                    // The distance between the two pointers has decreased
+                    EventBus.emit('add-combat-logs', { ...combat(), playerActionDescription: "Pinch moving IN -> Zooming Out" });
+                    console.log("Pinch moving IN -> Zoom out", pointer);
+                };
+            };
+            
+            prevDiff = curDiff;
+        };
+        
+    };
+    function pointerupHandler(pointer: Phaser.Input.Pointer) {
+        removeEvent(pointer);
+        if (evCache.length < 2) {
+            prevDiff = -1;
+        };
+    };
+
+    function removeEvent(ev: Phaser.Input.Pointer) {
+        const index = evCache.findIndex(
+            (cachedEv: Phaser.Input.Pointer) => cachedEv.pointerId === ev.pointerId,
+        );
+        evCache.splice(index, 1);
+    };
+
     onMount(() => {
         const gameInstance = StartGame("game-container", props.settings().fps);
         setInstance("game", gameInstance);
@@ -1031,6 +1090,7 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('save-health', saveHealth);
         EventBus.on('enemy-combat-text', (e: { computerSpecialDescription: string; }) => EventBus.emit('add-combat-logs', { ...combat(), computerActionDescription: e.computerSpecialDescription }));
         EventBus.on('special-combat-text', (e: { playerSpecialDescription: string; }) => EventBus.emit('add-combat-logs', { ...combat(), playerActionDescription: e.playerSpecialDescription }));
+        // initGesture();
 
         onCleanup(() => {
             if (instance.game) {
@@ -1110,12 +1170,12 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener('enemy-combat-text');
         });
     });
-    return <>
+    return <div>
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
         <Show when={live() && checkUi()}>
             <Suspense fallback={<Puff color="gold" />}>
                 <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} statistics={props.statistics} stamina={stamina} grace={grace} tutorial={tutorial} showDeity={showDeity} showTutorial={showTutorial} setShowTutorial={setShowTutorial} />
             </Suspense>
         </Show>
-    </>;
+    </div>;
 };

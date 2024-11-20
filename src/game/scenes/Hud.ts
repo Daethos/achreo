@@ -86,9 +86,9 @@ export class Hud extends Phaser.Scene {
         });
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.evCache.push(pointer);
-            console.log(pointer, 'Pointer Down?');
+            // console.log(pointer, 'Pointer Down?');
             this.currentY = pointer.y;
-            this.logger.log(`Console: Current Number in evCache: ${this.evCache.length}`);
+            if (this.evCache.length > 1) this.logger.log(`Console: Current Number in evCache: ${this.evCache.length}`);
         })
         .on('pointermove', (pointer: Phaser.Input.Pointer) => {
             const index = this.evCache.findIndex(
@@ -98,19 +98,22 @@ export class Hud extends Phaser.Scene {
 
             // If two pointers are down, check for pinch gestures
             if (this.evCache.length === 2) {
+                this.logger.log("Console: Pinching");
                 // Caclculate the distance between the two pointers
-                const curDiff = Math.abs(this.evCache[0].clientX - this.evCache[1].clientX);
+                const curDiff = Math.abs(this.evCache[0].y - this.evCache[1].y);
 
                 if (this.prevDiff > 0) {
                     if (curDiff > this.prevDiff) {
                         // The distance between the two pointers has increased
-                        console.log('Pinch moving OUT -> Zoom In', pointer);
+                        // console.log('Pinch moving OUT -> Zoom In', pointer);
                         this.logger.log("Console: Pinch moving OUT -> Zoom In");
+                        this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.05)), 1.5);
                     };
                     if (curDiff < this.prevDiff) {
                         // The distance between the two pointers has decreased
-                        console.log("Pinch moving IN -> Zoom out", pointer);
+                        // console.log("Pinch moving IN -> Zoom out", pointer);
                         this.logger.log("Console: Pinch moving IN -> Zoom out");
+                        this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.05)), 0.5);
                     };
                 };
 
@@ -119,7 +122,7 @@ export class Hud extends Phaser.Scene {
 
         })
         .on('pointerup', (pointer: Phaser.Input.Pointer) => {
-            console.log(pointer, 'Pointer Up');
+            // console.log(pointer, 'Pointer Up');
             this.removeEvent(pointer);
             if (this.evCache.length < 2) {
                 this.prevDiff = -1;

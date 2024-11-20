@@ -363,7 +363,7 @@ export default function PhaserGame (props: IProps) {
 
     function recordCombatReputation(computer: Ascean) {
         let newReputation = { ...props.reputation() };
-        if (!computer.name) return newReputation;
+        if (!computer?.name) return newReputation;
         newReputation.factions.forEach((faction: faction) => {
             if (faction.name === computer.name) {
                 if (faction.reputation < 25) {

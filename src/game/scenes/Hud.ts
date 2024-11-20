@@ -116,8 +116,8 @@ export class Hud extends Phaser.Scene {
                         this.logger.log(`Console: Pinch Moving IN -> Zoom Out: ${curDiff} | ${this.prevDiff}`);
                         this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.01)), 0.5);
                     };
+                    this.prevDiff = curDiff;
                 };
-                this.prevDiff = curDiff;
                 EventBus.emit('update-camera-zoom', this.currentZoom);
             };
 

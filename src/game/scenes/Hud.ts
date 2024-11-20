@@ -86,7 +86,6 @@ export class Hud extends Phaser.Scene {
         });
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.evCache.push(pointer);
-            // console.log(pointer, 'Pointer Down?');
             this.currentY = pointer.y;
             if (this.evCache.length > 1) this.logger.log(`Console: Current Number in evCache: ${this.evCache.length}`);
         })
@@ -98,43 +97,31 @@ export class Hud extends Phaser.Scene {
 
             // If two pointers are down, check for pinch gestures
             if (this.evCache.length === 2) {
-                this.logger.log("Console: Pinching");
                 // Caclculate the distance between the two pointers
-                const curDiff = Math.abs(this.evCache[0].y - this.evCache[1].y);
+                const curDiff = Math.abs(this.evCache[0].x - this.evCache[1].x);
 
                 if (this.prevDiff > 0) {
                     if (curDiff > this.prevDiff) {
                         // The distance between the two pointers has increased
-                        // console.log('Pinch moving OUT -> Zoom In', pointer);
                         this.logger.log("Console: Pinch moving OUT -> Zoom In");
                         this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.05)), 1.5);
                     };
                     if (curDiff < this.prevDiff) {
                         // The distance between the two pointers has decreased
-                        // console.log("Pinch moving IN -> Zoom out", pointer);
                         this.logger.log("Console: Pinch moving IN -> Zoom out");
                         this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.05)), 0.5);
                     };
                 };
-
                 this.prevDiff = curDiff;
+                EventBus.emit('update-camera-zoom', this.currentZoom);
             };
 
         })
         .on('pointerup', (pointer: Phaser.Input.Pointer) => {
-            // console.log(pointer, 'Pointer Up');
             this.removeEvent(pointer);
             if (this.evCache.length < 2) {
                 this.prevDiff = -1;
             };
-
-            // console.log(pointer, 'Pointer Up');
-            // if (pointer.y > this.currentY) {
-            //     this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.05)), 0.5);
-            // } else if (pointer.y < this.currentY) {
-            //     this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.05)), 1.5);
-            // };
-            // EventBus.emit('update-camera-zoom', this.currentZoom);
         });
         this.startGameScene();
     };

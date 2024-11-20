@@ -172,7 +172,7 @@ export class Game extends Scene {
         EventBus.off('update-postfx');
         EventBus.off('music');
         EventBus.off('game-map-load');
-        EventBus.off('update-fps');
+        EventBus.off('update-current-fps');
         EventBus.off('update-camera-zoom');
         EventBus.off('update-speed');
         EventBus.off('update-enemy-aggression');
@@ -228,7 +228,7 @@ export class Game extends Scene {
         EventBus.on('check-stealth', (stealth: boolean) => {
             this.stealth = stealth;
         });
-        EventBus.on('update-fps', (data: {x: number, y: number}) => {
+        EventBus.on('update-current-fps', (data: {x: number, y: number}) => {
             const { x, y } = data;
             const newX = dimensions()?.WIDTH * x;
             const newY = dimensions()?.HEIGHT * y;

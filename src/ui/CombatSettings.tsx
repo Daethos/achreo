@@ -46,7 +46,6 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
                 [key]: value
             }
         };
-        console.log(update, 'Updating Settings');
         EventBus.emit('save-settings', update);
     };
     const prayer = (el: string) => el === combat().playerBlessing ?  true : false;

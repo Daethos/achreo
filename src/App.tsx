@@ -363,6 +363,13 @@ export default function App() {
         EventBus.emit('reorder-buttons', { list: settings().actions, type: 'action' });
         EventBus.emit('reorder-buttons', { list: settings().specials, type: 'special' });
     });
+    usePhaserEvent('update-fps', (fps: any) => {
+        if (!phaserRef.scene) return;
+        const game = phaserRef.scene.game;
+        game.loop.stop();
+        Phaser.Core.TimeStep.call(game.loop, game, fps);
+        game.loop.start(game.step.bind(game));
+    });
     return <div id="app">
         <Show when={startGame()} fallback={<>
         {menu().creatingCharacter ? (

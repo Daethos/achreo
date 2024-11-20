@@ -11,6 +11,7 @@ export default class Settings {
     public actions: string[];
     public specials: string[];
     public prayer: string;
+    public fps: { min: number; target: number; limit: number; forceSetTimeOut: boolean; deltaHistory: number; panicMax: number; smoothStep: boolean; };
     public shake: { duration: number; intensity: number; };
     public selected: { prayer: number; damageType: number; weapon: number; highlight: string; };
     public show: { combat: boolean; dialog: boolean; inventory: boolean; loot: boolean; player: boolean; };
@@ -130,6 +131,15 @@ export default class Settings {
         this.actions = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
         this.specials = STARTING_SPECIALS[mastery as keyof typeof STARTING_SPECIALS];
         this.prayer = 'Buff';
+        this.fps = {
+            min: 5,
+            target: 60,
+            limit: 90,
+            forceSetTimeOut: false,
+            deltaHistory: 10,
+            panicMax: 120,
+            smoothStep: true
+        };
         this.shake = { duration: 100, intensity: 0.05 };
         this.selected = {
             prayer: 0,

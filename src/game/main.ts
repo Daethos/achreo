@@ -33,7 +33,7 @@ const config: Phaser.Types.Core.GameConfig = {
         default: 'matter',
         matter: {gravity: {x: 0, y: 0}}, // debug: true,
     },
-    fps: {limit:90,target:60},
+    fps: {min: 30,target: 60,limit: 90,forceSetTimeOut: false,deltaHistory: 10,panicMax: 120,smoothStep: true},
     fullscreenTarget: 'base-ui',
     plugins: {
         global: [{
@@ -61,7 +61,7 @@ const config: Phaser.Types.Core.GameConfig = {
         }],
     }
 };
-const StartGame = (parent: string): Phaser.Game => {
-    return new Phaser.Game({ ...config, parent });
+const StartGame = (parent: string, fps: any = {min: 30,target: 60,limit: 90,forceSetTimeOut: false,deltaHistory: 10,panicMax: 120,smoothStep: true}): Phaser.Game => {
+    return new Phaser.Game({ ...config, parent, fps });
 };
 export default StartGame;

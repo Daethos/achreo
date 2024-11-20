@@ -189,7 +189,6 @@ export class Underground extends Scene {
         EventBus.off('update-postfx');
         EventBus.off('music');
         EventBus.off('game-map-load');
-        EventBus.off('update-fps');
         EventBus.off('update-joystick-color');
         EventBus.off('update-joystick-position');
         EventBus.off('update-joystick-width');

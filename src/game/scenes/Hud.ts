@@ -13,6 +13,7 @@ import { roundToTwoDecimals } from "../../utility/combat";
 import { Play } from "../main";
 const dimensions = useResizeListener();
 
+
 export class Hud extends Phaser.Scene {
     gameHeight: number;
     gameWidth: number;
@@ -27,6 +28,9 @@ export class Hud extends Phaser.Scene {
     settings: Settings = initSettings;
     logger!: Logger;
     currentZoom: number;
+    currentY: number;
+    evCache: any[] = [];
+    prevDiff: number = -1;
 
     constructor() {
         super('Hud');
@@ -80,6 +84,55 @@ export class Hud extends Phaser.Scene {
             };
             EventBus.emit('update-camera-zoom', this.currentZoom);
         });
+        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            this.evCache.push(pointer);
+            console.log(pointer, 'Pointer Down?');
+            this.currentY = pointer.y;
+        })
+        .on('pointermove', (pointer: Phaser.Input.Pointer) => {
+            const index = this.evCache.findIndex(
+                (cachedEv: Phaser.Input.Pointer) => cachedEv.pointerId === pointer.pointerId,
+            );
+            this.evCache[index] = pointer;
+
+            // If two pointers are down, check for pinch gestures
+            if (this.evCache.length === 2) {
+                // Caclculate the distance between the two pointers
+                const curDiff = Math.abs(this.evCache[0].clientX - this.evCache[1].clientX);
+
+                if (this.prevDiff > 0) {
+                    if (curDiff > this.prevDiff) {
+                        // The distance between the two pointers has increased
+                        console.log('Pinch moving OUT -> Zoom In', pointer);
+                        this.logger.log("Console: Pinch moving OUT -> Zoom In");
+                    };
+                    if (curDiff < this.prevDiff) {
+                        // The distance between the two pointers has decreased
+                        console.log("Pinch moving IN -> Zoom out", pointer);
+                        this.logger.log("Console: Pinch moving IN -> Zoom out");
+                    };
+                };
+
+                this.prevDiff = curDiff;
+            };
+        })
+        .on('pointerup', (pointer: Phaser.Input.Pointer) => {
+            console.log(pointer, 'Pointer Up');
+            this.removeEvent(pointer);
+            if (this.evCache.length < 2) {
+                console.log('Resetting prevDiff');    
+                this.prevDiff = -1;
+            };
+
+
+            // console.log(pointer, 'Pointer Up');
+            // if (pointer.y > this.currentY) {
+            //     this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.05)), 0.5);
+            // } else if (pointer.y < this.currentY) {
+            //     this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.05)), 1.5);
+            // };
+            // EventBus.emit('update-camera-zoom', this.currentZoom);
+        });
         this.startGameScene();
     };
     cleanUp() {
@@ -91,6 +144,13 @@ export class Hud extends Phaser.Scene {
         this.rightJoystick.destroy();
         this.smallHud.cleanUp();
         this.smallHud.destroy();
+    };
+
+    removeEvent = (ev: Phaser.Input.Pointer) => {
+        const index = this.evCache.findIndex(
+            (cachedEv: Phaser.Input.Pointer) => cachedEv.pointerId === ev.pointerId,
+        );
+        this.evCache.splice(index, 1);
     };
 
     startGameScene = () => {

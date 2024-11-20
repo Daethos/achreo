@@ -23,6 +23,7 @@ const cleanSettings = {
 const cleanFrame = {
     combat: false,
     desktop: false,
+    fps: false,
     speed: false,
     sound: false,
     tooltips: false,
@@ -99,6 +100,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
             console.warn(err, 'Error Handling Desktop');
         };
     };
+
     async function currentControl(e: string) {
         const newSettings: Settings = { ...settings(), control: e };
         await saveSettings(newSettings);
@@ -106,6 +108,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
             EventBus.emit('show-castbar', true);
         };
     };
+
     function actionModal(action: string, index: number) {
         setCurrentAction({ action: action, index: index });
         setActionShow(true);
@@ -115,6 +118,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         setCurrentSpecial({ special: special, index: index });
         setSpecialShow(true);
     };
+
     async function handleActionButton(e: string, i: number) {
         const newActions = [...settings().actions];
         const newAction = e;
@@ -138,6 +142,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         await saveSettings(newSettings);
         EventBus.emit('reorder-buttons', { list: newSpecials, type: 'special' }); 
     };
+
     async function handlePostFx(type: string, val: any) {
         EventBus.emit('update-postfx', { type, val });
         const newSettings = { ...settings(), postFx: { ...settings().postFx, [type]: val } };
@@ -165,6 +170,27 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         await saveSettings(newSettings);
     };
  
+    async function handleFps(type: string, payload: boolean | number | string) {
+        let limit = settings().fps.limit, target = settings().fps.target;
+        if (type === 'min') {
+            if (payload as number > limit) {
+                limit = payload as number;
+            };
+            if (payload as number > target) {
+                target = payload as number;
+            };
+        };
+        const fps = { 
+            ...settings().fps, 
+            limit,
+            target,
+            [type]: payload,
+        };
+        const newSettings = { ...settings(), fps };
+        await saveSettings(newSettings);
+        EventBus.emit('update-fps', fps);
+    };
+
     async function handleSpecial(e: any) {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, special: e.target.value } };
         await saveSettings(newSettings);
@@ -188,6 +214,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         await saveSettings(newSettings);
         EventBus.emit('update-speed', {speed: change, type});
     };
+
     async function handleTooltips() {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, tooltips: !settings().difficulty.tooltips } };
         await saveSettings(newSettings);
@@ -393,6 +420,40 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                         <div style={font('0.5em')}>[Desktop allows you to hide the joystick UI and reset the button UI, and enable keyboard and mouse for actions and movement.]</div>
                     </Collapse>
 
+                    <h1 onClick={() => resetFrame('fps', !frame().fps)} style={font('1.25em')}>FPS</h1>
+                    <Collapse value={frame().fps} class='my-transition'>
+                        <div style={font('1em')}>
+                            <p>Min: ({settings().fps.min})</p>
+                            <button class='highlight' onClick={() => handleFps('min', 5)}>5</button>            
+                            <button class='highlight' onClick={() => handleFps('min', 30)}>30</button>
+                            <button class='highlight' onClick={() => handleFps('min', 60)}>60</button>
+                            <div style={font('0.5em', 'gold')}>[The minimum acceptable rendering rate, in frames per second.]</div>
+                            
+                            <p>Target: ({settings().fps.target})</p>
+                            <button class='highlight' onClick={() => handleFps('target', Math.max(settings().fps.min, 30))}>30</button>            
+                            <button class='highlight' onClick={() => handleFps('target', Math.max(settings().fps.min, 60))}>60</button>            
+                            <button class='highlight' onClick={() => handleFps('target', 90)}>90</button>
+                            <button class='highlight' onClick={() => handleFps('target', 120)}>120</button>
+                            <div style={font('0.5em', 'gold')}>[The optimum rendering rate, in frames per second. This does not enforce the fps rate, it merely tells Phaser what rate is considered optimal for this game.]</div>
+                            
+                            <p>Limit: ({settings().fps.limit})</p>
+                            <button class='highlight' onClick={() => handleFps('limit', Math.max(settings().fps.min, 30))}>30</button>            
+                            <button class='highlight' onClick={() => handleFps('limit', Math.max(settings().fps.min, 60))}>60</button>            
+                            <button class='highlight' onClick={() => handleFps('limit', 90)}>90</button>
+                            <button class='highlight' onClick={() => handleFps('limit', 120)}>120</button>
+                            <div style={font('0.5em', 'gold')}>[Enforces an fps rate limit that the game step will run at, regardless of browser frequency. 0 means 'no limit'. Never set this higher than RAF can handle.]</div>
+                            
+                            <button class='highlight' onClick={() => handleFps('forceSetTimeOut', !settings().fps.forceSetTimeOut)}>
+                                Force Set Time Out: ({settings().fps.forceSetTimeOut ? 'True' : 'False'})
+                            </button>            
+                            <div style={font('0.5em', 'gold')}>[Use setTimeout instead of requestAnimationFrame to run the game loop.]</div>
+                            
+                            <button class='highlight' onClick={() => handleFps('smoothStep', !settings().fps.smoothStep)}>
+                                Smooth Step: ({settings().fps.smoothStep ? 'True' : 'False'})
+                            </button>            
+                            <div style={font('0.5em', 'gold')}>[Apply delta smoothing during the game update to help avoid spikes?]</div>
+                        </div>
+                    </Collapse>
 
                     <h1 onClick={() => resetFrame('speed', !frame().speed)} style={font('1.25em')}>Speed</h1>
                     <Collapse value={frame().speed} class='my-transition'>
@@ -406,7 +467,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                             Enemy: ({settings().difficulty.enemySpeed})
                             <button class='highlight' onClick={() => handleSpeed(roundToTwoDecimals(Math.min(1, (settings().difficulty.enemySpeed + 0.025) || 0), 3), 'enemySpeed', 0.025)}>+</button>
                         </div>
-                        <div style={font('0.5em')}>[Adjusts the movement speed of the associated entity. This effect is immediate.]</div>
+                        <div style={font('0.5em', 'gold')}>[Adjusts the movement speed of the associated entity. This effect is immediate.]</div>
                     </Collapse>
 
                     <h1 onClick={() => resetFrame('sound', !frame().sound)} style={font('1.25em')}>Sound</h1>

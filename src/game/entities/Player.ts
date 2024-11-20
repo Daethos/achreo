@@ -184,7 +184,7 @@ export default class Player extends Entity {
             48, 0,
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
-        .on('pointerdown', () => {
+        .on('pointerup', () => {
             if (this.inCombat) return;
             const button = this.scene.hud.smallHud.getButton('info');
             this.scene.hud.smallHud.pressButton(button as Phaser.GameObjects.Image);

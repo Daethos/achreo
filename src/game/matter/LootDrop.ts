@@ -26,7 +26,7 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
         this.setScale(0.5);
         this._id = drop._id;
         this.drop = drop;
-        // this.setupCollider();
+        this.setupCollider();
         this.setupListener();
         this.tween = scene.tweens.add({
             targets: this,
@@ -56,30 +56,30 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
         const lootSensor = Bodies.circle(this.x, this.y, 12, { isSensor: true, label: "lootSensor" });
         this.setExistingBody(lootSensor);
         this.setStatic(true);
-        this.scene.matterCollision.addOnCollideStart({
-            objectA: [lootSensor],
-            callback: (other: any) => {
-                if (other.gameObjectB && other.bodyB.label === 'playerSensor') {
-                    other.gameObjectB.interacting.push(this);
-                    const interactingLoot = { loot: this._id, interacting: true };
-                    EventBus.emit('interacting-loot', interactingLoot);
-                    // EventBus.emit('blend-game', { lootTag: true });
-                    EventBus.emit('blend-game', { showLoot: true });
-                };
-            },
-            context: this.scene,
-        }); 
-        this.scene.matterCollision.addOnCollideEnd({
-            objectA: [lootSensor],
-            callback: (other: any) => {
-                if (other.gameObjectB && other.bodyB.label === 'playerSensor') {
-                    other.gameObjectB.interacting = other.gameObjectB.interacting.filter((obj: any) => obj._id !== this._id);
-                    const interactingLoot = { loot: this._id, interacting: false };
-                    EventBus.emit('interacting-loot', interactingLoot);
-                };
-            },
-            context: this.scene,
-        });
+        // this.scene.matterCollision.addOnCollideStart({
+        //     objectA: [lootSensor],
+        //     callback: (other: any) => {
+        //         if (other.gameObjectB && other.bodyB.label === 'playerSensor') {
+        //             other.gameObjectB.interacting.push(this);
+        //             const interactingLoot = { loot: this._id, interacting: true };
+        //             EventBus.emit('interacting-loot', interactingLoot);
+        //             // EventBus.emit('blend-game', { lootTag: true });
+        //             EventBus.emit('blend-game', { showLoot: true });
+        //         };
+        //     },
+        //     context: this.scene,
+        // }); 
+        // this.scene.matterCollision.addOnCollideEnd({
+        //     objectA: [lootSensor],
+        //     callback: (other: any) => {
+        //         if (other.gameObjectB && other.bodyB.label === 'playerSensor') {
+        //             other.gameObjectB.interacting = other.gameObjectB.interacting.filter((obj: any) => obj._id !== this._id);
+        //             const interactingLoot = { loot: this._id, interacting: false };
+        //             EventBus.emit('interacting-loot', interactingLoot);
+        //         };
+        //     },
+        //     context: this.scene,
+        // });
     };
     setupListener = () => EventBus.on('destroy-lootdrop', this.destroyLootDrop);
     destroyLootDrop = (e: string) => {

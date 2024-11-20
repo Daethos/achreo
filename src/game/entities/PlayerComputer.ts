@@ -59,12 +59,12 @@ export default class PlayerComputer extends Player {
         };
     };
     
-    setSpecialCombat = (mult = 0.6, remove = false) => {
+    setSpecialCombat = (mult = 0.5, remove = false) => {
         if (remove) return;
         this.scene.time.delayedCall(DURATION.SPECIAL * mult, () => {
             if (!this.inCombat) return;
             if (this.isCasting === true || this.isSuffering() || this.isContemplating) {
-                this.setSpecialCombat(0.2);
+                this.setSpecialCombat(0.1);
                 return;
             };
             const special = this.combatSpecials[Math.floor(Math.random() * this.combatSpecials.length)].toLowerCase();

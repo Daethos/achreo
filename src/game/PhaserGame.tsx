@@ -735,7 +735,7 @@ export default function PhaserGame (props: IProps) {
     };
 
     onMount(() => {
-        const gameInstance = StartGame("game-container");
+        const gameInstance = StartGame("game-container", props.settings().fps);
         setInstance("game", gameInstance);
         if (props.ref) {
             props.ref({ game: gameInstance, scene: null });

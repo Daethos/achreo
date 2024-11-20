@@ -87,7 +87,7 @@ export class Hud extends Phaser.Scene {
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.evCache.push(pointer);
             this.currentY = pointer.y;
-            if (this.evCache.length > 1) this.logger.log(`Console: Current Number in evCache: ${this.evCache.length}`);
+            // if (this.evCache.length > 1) this.logger.log(`Console: Current Number in evCache: ${this.evCache.length}`);
         })
         .on('pointermove', (pointer: Phaser.Input.Pointer) => {
             const index = this.evCache.findIndex(
@@ -100,8 +100,8 @@ export class Hud extends Phaser.Scene {
                 // Caclculate the distance between the two pointers
                 // const curDiff = Math.abs(this.evCache[0].x - this.evCache[1].x);
                 var curDiff = Math.sqrt(
-                    Math.pow(this.evCache[1].clientX - this.evCache[0].clientX, 2) +
-                    Math.pow(this.evCache[1].clientY - this.evCache[0].clientY, 2)
+                    Math.pow(this.evCache[1].x - this.evCache[0].x, 2) +
+                    Math.pow(this.evCache[1].y - this.evCache[0].y, 2)
                 );
 
                 if (this.prevDiff > 0) {

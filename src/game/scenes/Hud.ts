@@ -100,8 +100,8 @@ export class Hud extends Phaser.Scene {
                 // Caclculate the distance between the two pointers
                 // const curDiff = Math.abs(this.evCache[0].x - this.evCache[1].x);
                 var curDiff = Math.sqrt(
-                    Math.pow(this.evCache[1].x - this.evCache[0].x, 2) +
-                    Math.pow(this.evCache[1].y - this.evCache[0].y, 2)
+                    Math.pow(this.evCache[0].x - this.evCache[1].x, 2) +
+                    Math.pow(this.evCache[0].y - this.evCache[1].y, 2)
                 );
 
                 if (this.prevDiff > 0) {

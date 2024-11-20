@@ -88,6 +88,7 @@ export class Hud extends Phaser.Scene {
             this.evCache.push(pointer);
             console.log(pointer, 'Pointer Down?');
             this.currentY = pointer.y;
+            this.logger.log(`Console: Current Number in evCache: ${this.evCache.length}`);
         })
         .on('pointermove', (pointer: Phaser.Input.Pointer) => {
             const index = this.evCache.findIndex(
@@ -115,15 +116,14 @@ export class Hud extends Phaser.Scene {
 
                 this.prevDiff = curDiff;
             };
+
         })
         .on('pointerup', (pointer: Phaser.Input.Pointer) => {
             console.log(pointer, 'Pointer Up');
             this.removeEvent(pointer);
             if (this.evCache.length < 2) {
-                console.log('Resetting prevDiff');    
                 this.prevDiff = -1;
             };
-
 
             // console.log(pointer, 'Pointer Up');
             // if (pointer.y > this.currentY) {

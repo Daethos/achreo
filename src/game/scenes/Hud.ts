@@ -98,7 +98,7 @@ export class Hud extends Phaser.Scene {
             // If two pointers are down, check for pinch gestures
             if (this.evCache.length === 2) {
                 // Caclculate the distance between the two pointers
-                this.logger.log(`Console: ${this.evCache[0].x}, ${this.evCache[1].y}`);
+                this.logger.log(`Console: x[0]: ${this.evCache[0].x}, x[1]: ${this.evCache[1].x}`);
                 var curDiff = Math.abs(this.evCache[0].x - this.evCache[1].x);
                 // var curDiff = Math.sqrt(
                 //     Math.pow(this.evCache[0].x - this.evCache[1].x, 2) +
@@ -108,13 +108,13 @@ export class Hud extends Phaser.Scene {
                 if (this.prevDiff > 0) {
                     if (curDiff > this.prevDiff) {
                         // The distance between the two pointers has increased
-                        this.logger.log(`Console: Pinch moving OUT -> Zoom In: ${curDiff} | ${this.prevDiff}`);
-                        this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.005)), 1.5);
+                        this.logger.log(`Console: Pinch Moving OUT -> Zoom In: ${curDiff} | ${this.prevDiff}`);
+                        this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.01)), 1.5);
                     };
                     if (curDiff < this.prevDiff) {
                         // The distance between the two pointers has decreased
-                        this.logger.log(`Console: Pinch moving IN -> Zoom Out: ${curDiff} | ${this.prevDiff}`);
-                        this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.005)), 0.5);
+                        this.logger.log(`Console: Pinch Moving IN -> Zoom Out: ${curDiff} | ${this.prevDiff}`);
+                        this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.01)), 0.5);
                     };
                 };
                 this.prevDiff = curDiff;
@@ -124,6 +124,7 @@ export class Hud extends Phaser.Scene {
         })
         .on('pointerup', (pointer: Phaser.Input.Pointer) => {
             this.removeEvent(pointer);
+            // If the number of pointers down is less than two then reset diff tracker
             if (this.evCache.length < 2) {
                 this.prevDiff = -1;
             };

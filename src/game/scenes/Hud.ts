@@ -98,18 +98,22 @@ export class Hud extends Phaser.Scene {
             // If two pointers are down, check for pinch gestures
             if (this.evCache.length === 2) {
                 // Caclculate the distance between the two pointers
-                const curDiff = Math.abs(this.evCache[0].x - this.evCache[1].x);
+                // const curDiff = Math.abs(this.evCache[0].x - this.evCache[1].x);
+                var curDiff = Math.sqrt(
+                    Math.pow(this.evCache[1].clientX - this.evCache[0].clientX, 2) +
+                    Math.pow(this.evCache[1].clientY - this.evCache[0].clientY, 2)
+                );
 
                 if (this.prevDiff > 0) {
                     if (curDiff > this.prevDiff) {
                         // The distance between the two pointers has increased
-                        this.logger.log("Console: Pinch moving OUT -> Zoom In");
-                        this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.05)), 1.5);
+                        this.logger.log(`Console: Pinch moving OUT -> Zoom In: ${curDiff}`);
+                        this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.01)), 1.5);
                     };
                     if (curDiff < this.prevDiff) {
                         // The distance between the two pointers has decreased
-                        this.logger.log("Console: Pinch moving IN -> Zoom out");
-                        this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.05)), 0.5);
+                        this.logger.log(`Console: Pinch moving IN -> Zoom Out: ${curDiff}`);
+                        this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.01)), 0.5);
                     };
                 };
                 this.prevDiff = curDiff;

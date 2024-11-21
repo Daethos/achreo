@@ -11,7 +11,7 @@ import { useResizeListener } from "../../utility/dimensions";
 import Logger, { ConsoleLogger } from '../../utility/Logger';
 import { roundToTwoDecimals } from "../../utility/combat";
 import { Play } from "../main";
-import { Grid } from "@phaserquick/grid";
+// import { Grid } from "@phaserquick/grid";
 const dimensions = useResizeListener();
 
 
@@ -40,7 +40,7 @@ export class Hud extends Phaser.Scene {
     };
 
     create() {
-        const grid = new Grid(this, 9, 9);
+        // const grid = new Grid(this, 9, 9);
         // grid.enableDebug();
         this.gameEvents();
         this.gameState = this.registry.get('game');
@@ -88,35 +88,35 @@ export class Hud extends Phaser.Scene {
             EventBus.emit('update-camera-zoom', this.currentZoom);
         });
 
-        const swipe = this.add.rectangle(0, 0, this.gameWidth * 0.275, this.gameHeight * 0.165, 0x000000, 0);
-        const cell20 = grid.cell(20, { x: 'left', y: 'top' });
-        swipe.setPosition(cell20.x, cell20.y);
+        // const swipe = this.add.rectangle(0, 0, this.gameWidth * 0.275, this.gameHeight * 0.165, 0x000000, 0);
+        // const cell20 = grid.cell(20, { x: 'left', y: 'top' });
+        // swipe.setPosition(cell20.x, cell20.y);
 
-        swipe.setInteractive().on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            this.evCache.push(pointer);
-            this.currentX = pointer.x;
-        })
-        .on('pointermove', (pointer: Phaser.Input.Pointer) => {
-            var curDiff = Math.abs(this.currentX - pointer.x);
-            if (this.prevDiff > 0) {
-                if (curDiff < this.currentX) {
-                    // The distance between the two pointers has increased
-                    this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.00675)), 1.5);
-                };
-                if (curDiff > this.currentX) {
-                    // The distance between the two pointers has decreased
-                    this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.00675)), 0.5);
-                };
-                EventBus.emit('update-camera-zoom', this.currentZoom);
-            };
-            this.prevDiff = curDiff;
-        })
-        .on('pointerup', (pointer: Phaser.Input.Pointer) => {
-            this.removeEvent(pointer);
-            // If the number of pointers down is less than two then reset diff tracker
-            this.prevDiff = -1;
-            this.currentX = 0;
-        });
+        // swipe.setInteractive().on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+        //     this.evCache.push(pointer);
+        //     this.currentX = pointer.x;
+        // })
+        // .on('pointermove', (pointer: Phaser.Input.Pointer) => {
+        //     var curDiff = Math.abs(this.currentX - pointer.x);
+        //     if (this.prevDiff > 0) {
+        //         if (curDiff < this.currentX) {
+        //             // The distance between the two pointers has increased
+        //             this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.00675)), 1.5);
+        //         };
+        //         if (curDiff > this.currentX) {
+        //             // The distance between the two pointers has decreased
+        //             this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.00675)), 0.5);
+        //         };
+        //         EventBus.emit('update-camera-zoom', this.currentZoom);
+        //     };
+        //     this.prevDiff = curDiff;
+        // })
+        // .on('pointerup', (pointer: Phaser.Input.Pointer) => {
+        //     this.removeEvent(pointer);
+        //     // If the number of pointers down is less than two then reset diff tracker
+        //     this.prevDiff = -1;
+        //     this.currentX = 0;
+        // });
         this.startGameScene();
     };
     cleanUp() {

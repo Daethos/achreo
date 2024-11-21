@@ -242,6 +242,7 @@ export default class Player extends Entity {
         sprite.setDepth(this.depth + 1);
         return sprite;
     }; 
+
     cleanUp() {
         EventBus.off('set-player', this.setPlayer);
         EventBus.off('combat', this.constantUpdate);
@@ -256,6 +257,7 @@ export default class Player extends Entity {
         EventBus.off('tab-target', this.tabUpdate);
         EventBus.off('updated-stamina', this.updateStamina);
     };
+
     animateMark = () => {
         this.scene.tweens.add({
             targets: this.mark,
@@ -278,7 +280,6 @@ export default class Player extends Entity {
             this.highlightAnimation = true;
             this.animateTarget();
         };
-        // if (!sprite || !sprite.body) return;
         this.highlight.setPosition(sprite.x, sprite.y);
         this.highlight.setVisible(true);
         this.scene.targetTarget = sprite;

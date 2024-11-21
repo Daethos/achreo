@@ -681,7 +681,7 @@ export class Underground extends Scene {
         this.hud.rightJoystick.update();
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(delta);
-            if (this.enemies[i].isDefeated && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
+            if ((this.enemies[i].isDefeated || this.enemies[i].isTriumphant) && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
         };
         for (let i = 0; i < this.dms.length; i++) {
             this.dms[i].update(delta);

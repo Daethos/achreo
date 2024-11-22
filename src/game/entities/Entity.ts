@@ -15,6 +15,7 @@ import { Game } from '../scenes/Game';
 import { Underground } from '../scenes/Underground';
 import { States } from '../phaser/StateMachine';
 import { Arena } from '../scenes/Arena';
+import { applyWeaponFrameSettings, WEAPON_FRAME_CONFIG } from '../../utility/rotations';
 export const FRAME_COUNT = {
     ATTACK_LIVE: 16,
     ATTACK_SUCCESS: 39,
@@ -586,6 +587,42 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     particleAoe = (effect: Particle) => {
         new AoE(this.scene, effect.key.split('_effect')[0], 3, false, undefined, false, undefined, {effect,entity:this});
+    };
+
+    functionality = (entity: any, target: any) => {
+        if (this.isPraying || this.isCasting) {
+            const config = this.flipX
+                ? WEAPON_FRAME_CONFIG.prayingCasting.flipX
+                : WEAPON_FRAME_CONFIG.prayingCasting.noFlipX;
+          
+            if (this.spriteWeapon.depth < this.depth) {
+                this.spriteWeapon.setDepth(this.depth + 1);
+            };
+          
+            applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
+            this.frameCount += 1;
+        } else if (this.isParrying) {
+            const configKey = this.hasBow ? "bow" : "noBow";
+            const config = this.flipX
+                ? WEAPON_FRAME_CONFIG.parrying[configKey].flipX
+                : WEAPON_FRAME_CONFIG.parrying[configKey].noFlipX;
+          
+            if (this.frameCount === FRAME_COUNT.PARRY_SUCCESS && !this.isRanged) {
+                this.checkActionSuccess(entity, target);
+            };
+          
+            if (this.spriteWeapon.depth !== 1) {
+                this.spriteWeapon.setDepth(1); // Recomp
+            };
+          
+            applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
+          
+            this.frameCount += 1;
+          
+            if (this.frameCount >= FRAME_COUNT.PARRY_KILL) {
+                this.isParrying = false;
+            };
+        };
     };
 
     weaponRotation = (entity: string, target: Player | Enemy) => {  

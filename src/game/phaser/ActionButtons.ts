@@ -413,7 +413,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         let angle = 0, buttonX = 0, buttonY = 0; 
         if (this.scene.settings.desktop) {
             const centerX = key === 'action' ? this.scene.gameWidth / 33 : this.scene.gameWidth / 3;
-            const bottomY = this.scene.gameHeight * this.scene.settings.positions.actionButtons.y; // - (this.buttonHeight * 5);
+            const bottomY = this.scene.gameHeight * (this.scene.settings.positions.actionButtons.y * 1.05); // - (this.buttonHeight * 5);
             // const centerX = key === 'action' ? this.scene.cameras.main.width * 0.003 : this.scene.cameras.main.width / 3;
             // const bottomY = this.scene.cameras.main.height - (this.buttonHeight * 3);
             buttonX = centerX + index * (radius / spacing);

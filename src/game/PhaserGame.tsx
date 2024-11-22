@@ -1110,12 +1110,12 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener('enemy-combat-text');
         });
     });
-    return <div>
+    return <>
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
         <Show when={live() && checkUi()}>
             <Suspense fallback={<Puff color="gold" />}>
                 <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} statistics={props.statistics} stamina={stamina} grace={grace} tutorial={tutorial} showDeity={showDeity} showTutorial={showTutorial} setShowTutorial={setShowTutorial} />
             </Suspense>
         </Show>
-    </div>;
+    </>;
 };

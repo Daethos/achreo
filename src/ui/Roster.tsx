@@ -107,15 +107,15 @@ export default function Roster({ arena, ascean, setArena, base, game, settings }
             <Show when={arena().result} fallback={<>
                 <div class='left moisten' style={{...partial, left: '0%'}}>
                     <div class='creature-heading center' >
-                        <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Opponents Chosen:</span> {arena().enemies.length}</h1>
+                        <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Opponent(s):</span> {arena().enemies.length}</h1>
                         <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Wager:</span> {arena().wager.gold}g {arena().wager.silver}s</h1>
                         {/* settings().difficulty.arena ? 'Arena [Computer]' : */}
-                        <h1 style={{ margin: '8px 0' }} onClick={() => setSwitchScene(!switchScene())}><span style={{ color: '#fdf6d8' }}>Map Selected: </span>{switchScene() ? !settings().difficulty.arena ? 'Arena [Computer]' : 'Arena [Manual]' : 'Underground [Manual]'}</h1>
-                        <p style={{ 'font-size': '0.75em', 'margin': '0' }}>Click to switch maps. [Note]: Player AI is available only in the Arena at this time.</p>
+                        <h1 style={{ margin: '8px 0' }} onClick={() => setSwitchScene(!switchScene())}><span style={{ color: '#fdf6d8' }}>Map: </span>{switchScene() ? !settings().difficulty.arena ? 'Arena [Computer]' : 'Arena [Manual]' : 'Underground [Manual]'}</h1>
+                        <p style={{ color: 'gold', 'font-size': '0.75em', 'margin': '0' }}>Click Maps to Switch. [Note]: Player AI is available only in the Arena.</p>
                         {arena().enemies.length > 0 && <button class='highlight animate' onClick={() => createArena()} style={{ 'font-size': '1.25em' }}>Enter the Eulex</button>}
                         <For each={arena().enemies}>{(enemy) => {
                             return (
-                                <div style={{ color: masteryColor(enemy.mastery) }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)} <button class='highlight' onClick={() => opponentRemove(enemy)}>Remove</button></div>
+                                <div style={{ color: masteryColor(enemy.mastery), margin: 0 }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)} <button class='highlight' onClick={() => opponentRemove(enemy)}>Remove</button></div>
                             )
                         }}</For>
                         <div>

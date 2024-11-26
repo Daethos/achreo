@@ -102,8 +102,7 @@ export class Hud extends Phaser.Scene {
                 if (pointer.x < this.currentX) {
                     // The distance between the two pointers has increased
                     this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.00675)), 1.5);
-                };
-                if (pointer.x > this.currentX) {
+                } else if (pointer.x > this.currentX) {
                     // The distance between the two pointers has decreased
                     this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.00675)), 0.5);
                 };
@@ -113,12 +112,12 @@ export class Hud extends Phaser.Scene {
         })
         .on('pointerup', (pointer: Phaser.Input.Pointer) => {
             this.removeEvent(pointer);
-            // If the number of pointers down is less than two then reset diff tracker
             this.prevDiff = -1;
             this.currentX = 0;
         });
         this.startGameScene();
     };
+    
     cleanUp() {
         this.actionBar.cleanUp();
         this.actionBar.destroy();
@@ -128,6 +127,14 @@ export class Hud extends Phaser.Scene {
         this.rightJoystick.destroy();
         this.smallHud.cleanUp();
         this.smallHud.destroy();
+    };
+
+    horizontal = () => {
+        return this.joystickKeys.right.isDown || this.joystickKeys.left.isDown;
+    };
+
+    vertical = () => {
+        return this.joystickKeys.up.isDown || this.joystickKeys.down.isDown;
     };
 
     removeEvent = (ev: Phaser.Input.Pointer) => {
@@ -274,5 +281,4 @@ export class Hud extends Phaser.Scene {
         EventBus.emit('blend-game', { dialogTag });
         this.smallHud.activate('dialog', dialogTag);
     }; // smallHud: dialog
-
 };

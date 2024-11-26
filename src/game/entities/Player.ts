@@ -266,6 +266,7 @@ export default class Player extends Entity {
             yoyo: true
         });
     };
+
     animateTarget = () => {
         this.scene.tweens.add({
             targets: this.highlight,
@@ -371,12 +372,14 @@ export default class Player extends Entity {
             };
         };
     };
+    
     invalidTarget = (id: string) => {
         const enemy = this.scene.enemies.find((enemy: Enemy) => enemy.enemyID === id);
         if (enemy) return enemy.health === 0; // enemy.isDefeated;
         this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Combat Issue: NPC Targeted`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
         return true;
     };
+
     outOfRange = (range: number) => {
         const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget?.x as number, this.currentTarget?.y as number);
         if (distance > range) {
@@ -443,13 +446,8 @@ export default class Player extends Entity {
         this.health = e.newPlayerHealth;
         this.healthbar.setValue(this.health);
         if (this.healthbar.getTotal() < e.playerHealth) this.healthbar.setTotal(e.playerHealth);
-        if (this.currentRound !== e.combatRound && this.scene.combat === true) {
-            this.currentRound = e.combatRound;
-            if (e.computerDamaged || e.playerDamaged || e.rollSuccess || e.parrySuccess || e.computerRollSuccess || e.computerParrySuccess) this.soundEffects(e);
-        };
         if (e.computerParrySuccess === true) {
             this.isStunned = true;
-            // this.playerMachine.stateMachine.setState(States.STUN);
             this.scene.combatManager.combatMachine.input('computerParrySuccess', false);
             this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Parry', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.resistCombatText = undefined);    
         };
@@ -466,6 +464,10 @@ export default class Player extends Entity {
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
         };
         if (e.computerRollSuccess === true) this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.resistCombatText = undefined);
+        if (this.currentRound !== e.combatRound && this.scene.combat === true) {
+            this.currentRound = e.combatRound;
+            if (e.computerDamaged || e.playerDamaged || e.rollSuccess || e.parrySuccess || e.computerRollSuccess || e.computerParrySuccess) this.soundEffects(e);
+        };
         if (e.newComputerHealth <= 0 && e.playerWin === true) this.defeatedEnemyCheck(e.enemyID);
         if (e.newPlayerHealth <= 0) {
             this.isDefeated = true;
@@ -473,6 +475,11 @@ export default class Player extends Entity {
         };    
         if (e.playerAttributes?.stamina as number > this.maxStamina) this.maxStamina = e.playerAttributes?.stamina as number;
         if (e.playerAttributes?.grace as number > this.maxGrace) this.maxGrace = e.playerAttributes?.grace as number;
+        if (e.criticalSuccess || e.glancingBlow || e.computerGlancingBlow || e.computerCriticalSuccess) {
+            EventBus.emit('blend-combat', { 
+                computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false, parrySuccess: false, computerParrySuccess: false, rollSuccess: false, computerRollSuccess: false, criticalSuccess: false, computerCriticalSuccess: false, religiousSuccess: false,
+            });
+        };
         if (this.inCombat === false && this.scene.combat === true) this.scene.combatEngaged(false);
     };
 
@@ -616,9 +623,9 @@ export default class Player extends Entity {
             if (sfx.religiousSuccess === true) this.scene.sound.play('righteous', { volume: this.scene.hud.settings.volume });            
             if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.sound.play('roll', { volume: this.scene.hud.settings.volume / 2 });
             if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) this.scene.sound.play('parry', { volume: this.scene.hud.settings.volume });
-            EventBus.emit('blend-combat', { 
-                computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false, parrySuccess: false, computerParrySuccess: false, rollSuccess: false, computerRollSuccess: false, criticalSuccess: false, computerCriticalSuccess: false, religiousSuccess: false,
-            });
+            // EventBus.emit('blend-combat', { 
+            //     computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false, parrySuccess: false, computerParrySuccess: false, rollSuccess: false, computerRollSuccess: false, criticalSuccess: false, computerCriticalSuccess: false, religiousSuccess: false,
+            // });
         } catch (err) {
             console.warn(err, 'Error Setting Sound Effects');
         };
@@ -742,20 +749,8 @@ export default class Player extends Entity {
 
     isAttackTarget = (enemy: Enemy) => this.getEnemyId() === enemy.enemyID;
     isNewEnemy = (enemy: Enemy) => this.targets.every(obj => obj.enemyID !== enemy.enemyID);
-
-    isValidEnemyCollision = (other: any): boolean =>  (
-        other.gameObjectB &&
-        other.bodyB.label === 'enemyCollider' &&
-        other.gameObjectB.isAggressive &&
-        other.gameObjectB.ascean
-    );
-
-    isValidNeutralCollision = (other: any): boolean => (
-        other.gameObjectB &&
-        other.bodyB.label === 'enemyCollider' &&
-        other.gameObjectB.ascean
-    );
-
+    isValidEnemyCollision = (other: any): boolean =>  (other.gameObjectB && other.bodyB.label === 'enemyCollider' && other.gameObjectB.isAggressive && other.gameObjectB.ascean);
+    isValidNeutralCollision = (other: any): boolean => (other.gameObjectB && other.bodyB.label === 'enemyCollider' && other.gameObjectB.ascean);
     isValidRushEnemy = (enemy: Enemy) => {
         if (!enemy?.enemyID) return;
         if (this.isRushing) {
@@ -763,11 +758,7 @@ export default class Player extends Entity {
             if (newEnemy) this.rushedEnemies.push(enemy);
         };
     };
-
-    isValidTouching = (other: any): boolean => 
-        other.gameObjectB &&
-        other.bodyB.label === 'enemyCollider' &&
-        other.gameObjectB.ascean;
+    isValidTouching = (other: any): boolean => other.gameObjectB && other.bodyB.label === 'enemyCollider' && other.gameObjectB.ascean;
  
     checkEnemyCollision(playerSensor: any) {
         this.scene.matterCollision.addOnCollideStart({
@@ -1507,7 +1498,7 @@ export default class Player extends Entity {
         if (this.resistCombatText !== undefined) this.resistCombatText.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-        this.weaponRotation('player', this.currentTarget as Enemy);
+        this.functionality('player', this.currentTarget as Enemy);
     };
 
     handleMovement = () => {
@@ -1584,16 +1575,16 @@ export default class Player extends Entity {
                 speed -= 0.1;    
                 this.flipX = false;
             };
-            if (!suffering && this.playerVelocity.x !== 0 && !this.scene.hud.joystickKeys.left.isDown && !this.scene.hud.joystickKeys.right.isDown) {
+            if (!suffering && this.playerVelocity.x !== 0 && !this.scene.hud.horizontal()) {
                 this.playerVelocity.x = 0;
             };
-            if (!suffering && this.playerVelocity.x !== 0 && !this.scene.hud.joystickKeys.right.isDown && !this.scene.hud.joystickKeys.left.isDown) {
+            if (!suffering && this.playerVelocity.x !== 0 && !this.scene.hud.horizontal()) {
                 this.playerVelocity.x = 0;
             };
-            if (!suffering && this.playerVelocity.y !== 0 && !this.scene.hud.joystickKeys.down.isDown && !this.scene.hud.joystickKeys.up.isDown) {
+            if (!suffering && this.playerVelocity.y !== 0 && !this.scene.hud.vertical()) {
                 this.playerVelocity.y = 0;
             };
-            if (!suffering && this.playerVelocity.y !== 0 && !this.scene.hud.joystickKeys.up.isDown && !this.scene.hud.joystickKeys.down.isDown) {
+            if (!suffering && this.playerVelocity.y !== 0 && !this.scene.hud.vertical()) {
                 this.playerVelocity.y = 0;
             };
         };

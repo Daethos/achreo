@@ -314,7 +314,7 @@ export default class PlayerComputer extends Player {
             return;
         };
 
-        this.weaponRotation('player', this.currentTarget as Enemy);
+        this.functionality('player', this.currentTarget as Enemy);
     };
 
     update() {

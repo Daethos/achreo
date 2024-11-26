@@ -21,6 +21,7 @@ export default class Joystick extends Phaser.GameObjects.Container {
         this.joystick.setVisible(!scene.settings.desktop);
         this.doubleTap();
     };
+
     cleanUp() {
         EventBus.off('update-cursor');
         EventBus.off('update-desktop-cursor');

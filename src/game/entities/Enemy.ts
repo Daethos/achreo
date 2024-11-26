@@ -322,7 +322,7 @@ export default class Enemy extends Entity {
         if (this.health > e.health) {
             let damage: number | string = Math.round(this.health - e.health);
             damage = e?.glancing === true ? `${damage} (Glancing)` : damage;
-            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, damage as string, 1500, 'damage', e?.critical, false, () => this.scrollingCombatText = undefined);
+            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `${damage}`, 1500, 'damage', e?.critical, false, () => this.scrollingCombatText = undefined);
             if (this.isMalicing) this.maliceHit();
             if (this.isMending) this.mendHit();
             if (!this.inCombat && e.health > 0) this.jumpIntoCombat();
@@ -3017,7 +3017,7 @@ export default class Enemy extends Entity {
         if (this.spriteWeapon && this.spriteShield && this.body) {
             this.spriteWeapon.setPosition(this.x, this.y);
             this.spriteShield.setPosition(this.x, this.y);
-            this.weaponRotation('enemy', this.attacking);
+            this.functionality('enemy', this.attacking);
         };
         if (!this.currentWeapon || this.currentWeaponSprite === this.imgSprite(this.currentWeapon) || this.enemyID !== this.scene.state.enemyID) return;
         this.currentWeaponSprite = this.imgSprite(this.currentWeapon);

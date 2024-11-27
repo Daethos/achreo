@@ -1,9 +1,11 @@
 import { States } from "../game/phaser/StateMachine";
 import Equipment from "../models/equipment";
+
 export const PHYSICAL_ACTIONS = ['attack', 'posture', 'thrust'];
 export const PHYSICAL_EVASIONS = ['dodge', 'roll'];
 const COST = {LOW: 25, MID: 50, HIGH: 75};
 const DURATION = {BOTTOM: 750, STANDARD: 1500, ONE: 1000, THREE: 3000, FIVE: 5000, MODERATE: 6000, HIGH: 8000, TEN: 10000};
+
 export const PLAYER = {
     ACTION_WEIGHT: {
         ATTACK: 60,
@@ -240,7 +242,6 @@ export const PLAYER = {
         LONG: 500,
     },
 };
-
 
 // ELEMENT IN ARRAY 
 // [0]: Critical Heal
@@ -541,6 +542,7 @@ export const NAMED_ENEMY = [
     "Jadei Myelle", 
     "King Mathyus Caderyn", 
     "Kreceus", 
+    "Lacheo of the Seyr", // Daethic Inquisitor. Mute
     "Laetrois Ath'Shaorah", 
     "Leaf", 
     "Lorian", 
@@ -555,7 +557,6 @@ export const NAMED_ENEMY = [
     "Quor'estes", 
     "Rangiltan Caderyn", 
     "Relien Myelle", 
-    "Sacheo of the Seyr", // Daethic Inquisitor. Mute
     "Sedeysus", 
     "Sera Lorian", 
     "Seria Capulo", 

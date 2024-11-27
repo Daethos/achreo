@@ -75,7 +75,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         let open = this.scene.add.image(this.x, this.y, 'open');
         let closed = this.scene.add.image(this.x, this.y, 'closed');
         let pause = this.scene.add.image(this.x, this.y, 'pause');
-        let minimap = this.scene.add.image(this.x, this.y, 'minimap');
+        // let minimap = this.scene.add.image(this.x, this.y, 'minimap');
         let cursor = this.scene.add.image(this.x, this.y, 'cursor-reset');
         let stealth = this.scene.add.image(this.x, this.y, 'stealth');
         let stalwart = this.scene.add.image(this.x, this.y, 'stalwart');
@@ -90,7 +90,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.bar.push(settings);
         this.bar.push(logs);
         this.bar.push(cursor);
-        this.bar.push(minimap);
+        // this.bar.push(minimap);
         this.bar.push(pause);
         this.bar.push(closed);
         this.bar.push(open);

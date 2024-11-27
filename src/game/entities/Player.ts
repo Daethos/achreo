@@ -1,7 +1,7 @@
-import Entity from "./Entity";  
+import Entity, { SWING_TIME } from "./Entity";  
 import { screenShake, sprint, vibrate, walk } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
-import ScrollingCombatText from "../phaser/ScrollingCombatText";
+// import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import HealthBar from "../phaser/HealthBar";
 import PlayerMachine from '../phaser/PlayerMachine';
 import { EventBus } from "../EventBus";
@@ -114,10 +114,10 @@ export default class Player extends Entity {
         this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, this.currentWeaponSprite);
         if (weapon.grip === 'One Hand') {
             this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
-            this.swingTimer = 1250
+            this.swingTimer = SWING_TIME['One Hand'];
         } else {
             this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
-            this.swingTimer = 1650;
+            this.swingTimer = SWING_TIME['Two Hand'];
         };
         this.spriteWeapon.setOrigin(0.25, 1);
         this.scene.add.existing(this);
@@ -154,19 +154,19 @@ export default class Player extends Entity {
         this.scene.add.existing(this.weaponHitbox);
 
         this.highlight = this.scene.add.graphics()
-            .lineStyle(4, 0xFFc700) // 3
-            .setScale(0.2) // 35
-            .strokeCircle(0, 0, 12) // 10 
+            .lineStyle(4, 0xFFc700)
+            .setScale(0.2)
+            .strokeCircle(0, 0, 12)
             .setDepth(99);
         (this.scene.plugins?.get?.('rexGlowFilterPipeline') as any)?.add(this.highlight, {
-            intensity: 0.005, // 005
+            intensity: 0.005,
         });
         this.highlight.setVisible(false);
 
         this.mark = this.scene.add.graphics()
-            .lineStyle(4, 0xfdf6d8) // 3
-            .setScale(0.5) // 35
-            .strokeCircle(0, 0, 12); // 10 
+            .lineStyle(4, 0xfdf6d8)
+            .setScale(0.5)
+            .strokeCircle(0, 0, 12);
         this.mark.setVisible(false);
         this.markAnimation = false;
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health, 'player');
@@ -372,18 +372,20 @@ export default class Player extends Entity {
             };
         };
     };
-    
+
     invalidTarget = (id: string) => {
         const enemy = this.scene.enemies.find((enemy: Enemy) => enemy.enemyID === id);
         if (enemy) return enemy.health === 0; // enemy.isDefeated;
-        this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Combat Issue: NPC Targeted`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
+        this.resistCombatText = this.scene.showCombatText(this.x, this.y, `Combat Issue: NPC Targeted`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
+        // this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Combat Issue: NPC Targeted`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
         return true;
     };
 
     outOfRange = (range: number) => {
         const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget?.x as number, this.currentTarget?.y as number);
         if (distance > range) {
-            this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: -${Math.round(distance - range)}`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
+            this.resistCombatText = this.scene.showCombatText(this.x, this.y, `Out of Range: -${Math.round(distance - range)}`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
+            // this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `Out of Range: -${Math.round(distance - range)}`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
             return true;    
         };
         return false;
@@ -419,7 +421,8 @@ export default class Player extends Entity {
         if (this.health > e.newPlayerHealth) {
             let damage: number | string = Math.round(this.health - e.newPlayerHealth);
             damage = e.computerCriticalSuccess === true ? `${damage} (Critical)` : e.computerGlancingBlow === true ? `${damage} (Glancing)` : damage;
-            this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `${damage}`, PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.scrollingCombatText = undefined);
+            this.scrollingCombatText = this.scene.showCombatText(this.x, this.y, `${damage}`, PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.scrollingCombatText = undefined);
+            // this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `${damage}`, PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.scrollingCombatText = undefined);
             if (this.isConfused) this.isConfused = false;
             if (this.isPolymorphed) this.isPolymorphed = false;
             if (this.reactiveBubble) {
@@ -435,35 +438,41 @@ export default class Player extends Entity {
             if (this.isFeared) {
                 const chance = Math.random() < 0.1 + this.fearCount;
                 if (chance) {
-                    this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.resistCombatText = undefined);
+                    this.resistCombatText = this.scene.showCombatText(this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.resistCombatText = undefined);
+                    // this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Fear Broken', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.resistCombatText = undefined);
                     this.isFeared = false;    
                 } else {
                     this.fearCount += 0.1;
                 };
             };
         };
-        if (this.health < e.newPlayerHealth) this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `${Math.round(e.newPlayerHealth - this.health)}`, PLAYER.DURATIONS.TEXT, 'heal', false, false, () => this.scrollingCombatText = undefined);
+        if (this.health < e.newPlayerHealth) this.scrollingCombatText = this.scene.showCombatText(this.x, this.y, `${Math.round(e.newPlayerHealth - this.health)}`, PLAYER.DURATIONS.TEXT, 'heal', false, false, () => this.scrollingCombatText = undefined);
+        // if (this.health < e.newPlayerHealth) this.scrollingCombatText = new ScrollingCombatText(this.scene, this.x, this.y, `${Math.round(e.newPlayerHealth - this.health)}`, PLAYER.DURATIONS.TEXT, 'heal', false, false, () => this.scrollingCombatText = undefined);
         this.health = e.newPlayerHealth;
         this.healthbar.setValue(this.health);
         if (this.healthbar.getTotal() < e.playerHealth) this.healthbar.setTotal(e.playerHealth);
         if (e.computerParrySuccess === true) {
             this.isStunned = true;
             this.scene.combatManager.combatMachine.input('computerParrySuccess', false);
-            this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Parry', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.resistCombatText = undefined);    
+            this.resistCombatText = this.scene.showCombatText(this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Parry', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.resistCombatText = undefined);    
+            // this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Parry', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.resistCombatText = undefined);    
         };
         if (e.rollSuccess === true) {
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Roll', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
+            this.specialCombatText = this.scene.showCombatText(this.x, this.y, 'Roll', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
+            // this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Roll', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
         };
         if (e.parrySuccess === true) {
-            this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Parry', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
+            this.specialCombatText = this.scene.showCombatText(this.x, this.y, 'Parry', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
+            // this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Parry', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
             this.scene.combatManager.stunned(e.enemyID);
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'parry');
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
         };
-        if (e.computerRollSuccess === true) this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.resistCombatText = undefined);
+        if (e.computerRollSuccess === true) this.resistCombatText = this.scene.showCombatText(this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.resistCombatText = undefined);
+        // if (e.computerRollSuccess === true) this.resistCombatText = new ScrollingCombatText(this.scene, this.currentTarget?.position?.x as number, this.currentTarget?.position?.y as number, 'Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.resistCombatText = undefined);
         if (this.currentRound !== e.combatRound && this.scene.combat === true) {
             this.currentRound = e.combatRound;
             if (e.computerDamaged || e.playerDamaged || e.rollSuccess || e.parrySuccess || e.computerRollSuccess || e.computerParrySuccess) this.soundEffects(e);
@@ -484,7 +493,8 @@ export default class Player extends Entity {
     };
 
     resist = () => {
-        this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Resisted', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.resistCombatText = undefined);  
+        this.resistCombatText = this.scene.showCombatText(this.x, this.y, 'Resisted', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.resistCombatText = undefined);
+        // this.resistCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Resisted', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.resistCombatText = undefined);
     };
 
     leap = () => {
@@ -558,7 +568,8 @@ export default class Player extends Entity {
 
     storm = () => {
         this.isStorming = true;
-        this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined); 
+        this.specialCombatText = this.scene.showCombatText(this.x, this.y, 'Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined); 
+        // this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined); 
         this.isAttacking = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.STORM);
         this.scene.tweens.add({
@@ -569,7 +580,8 @@ export default class Player extends Entity {
             onLoop: () => {
                 this.isAttacking = true;
                 screenShake(this.scene);
-                this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined);
+                this.specialCombatText = this.scene.showCombatText(this.x, this.y, 'Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined);
+                // this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, 'Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined);
                 if (this.touching.length > 0) {
                     this.touching.forEach((enemy) => {
                         if (enemy.health === 0) return;
@@ -618,14 +630,11 @@ export default class Player extends Entity {
                         return this.scene.sound.play('blunt', { volume: this.scene.hud.settings.volume });
                 };
             };
-            if (sfx.computerDamaged === true) soundEffectMap(sfx.playerDamageType, sfx.weapons[0] as Equipment);                
+            if (sfx.computerDamaged === true) soundEffectMap(sfx.playerDamageType, sfx.weapons[0] as Equipment);
             if (sfx.playerDamaged === true) soundEffectMap(sfx.computerDamageType, sfx.computerWeapons[0]);
-            if (sfx.religiousSuccess === true) this.scene.sound.play('righteous', { volume: this.scene.hud.settings.volume });            
+            if (sfx.religiousSuccess === true) this.scene.sound.play('righteous', { volume: this.scene.hud.settings.volume });
             if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.sound.play('roll', { volume: this.scene.hud.settings.volume / 2 });
             if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) this.scene.sound.play('parry', { volume: this.scene.hud.settings.volume });
-            // EventBus.emit('blend-combat', { 
-            //     computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false, parrySuccess: false, computerParrySuccess: false, rollSuccess: false, computerRollSuccess: false, criticalSuccess: false, computerCriticalSuccess: false, religiousSuccess: false,
-            // });
         } catch (err) {
             console.warn(err, 'Error Setting Sound Effects');
         };
@@ -825,7 +834,6 @@ export default class Player extends Entity {
                     EventBus.emit('alert', { 
                         header: "Ancient Eulex", 
                         body: `You have the option of summoning enemies to the dueling grounds. \n Would you like to see the roster?`, 
-                        // body: `You have the option of summoning an enemy (${other.gameObjectB?.properties?.key}) to random location in the dueling grounds. \n Would you like the challenge?`, 
                         delay: 3000, 
                         key: "Roster",
                         arg: other.gameObjectB?.properties?.key
@@ -915,15 +923,15 @@ export default class Player extends Entity {
     combatChecker = (state: boolean) => {
         if (state) return;
         if (this.inCombat) {
-            this.playerMachine.stateMachine.setState(States.COMBAT); 
+            this.playerMachine.stateMachine.setState(States.COMBAT);
         } else {
-            this.playerMachine.stateMachine.setState(States.NONCOMBAT); 
+            this.playerMachine.stateMachine.setState(States.NONCOMBAT);
         };
     };
 
     setTimeEvent = (cooldown: string, limit = 30000) => {
         if (this.isComputer) return;
-        const evasion = cooldown === 'rollCooldown' || cooldown === 'dodgeCooldown'; 
+        const evasion = cooldown === 'rollCooldown' || cooldown === 'dodgeCooldown';
         if (evasion === false) {
             (this as any)[cooldown] = limit;
         };
@@ -1274,6 +1282,17 @@ export default class Player extends Entity {
         requestAnimationFrame(rollLoop);
     };
 
+    xCheck = () => this.velocity?.x !== 0;
+
+    playAnimation = (key: string, onComplete?: any) => {
+        if (this.anims.currentAnim?.key !== key) {
+            const animation = this.anims.play(key, true);
+            if (onComplete) {
+                animation.on('animationcomplete', onComplete);
+            };
+        };
+    };
+
     handleActions = () => {
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
@@ -1339,109 +1358,71 @@ export default class Player extends Entity {
     };
 
     handleAnimations = () => {
-        if (this.isPolymorphed || this.isConfused || this.isFeared) {
-            if (this.isPolymorphed) {
-                this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
+        if (this.isPolymorphed) {
+            this.playAnimation(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`);
+        } else if (this.isConfused || this.isFeared) {
+            if (this.moving()) {
+                this.handleMovementAnimations();
             } else {
-                if (this.moving()) {
-                    if (!Math.abs(this.velocity?.x as number)) {
-                        if (this.velocity?.y as number > 0) {
-                            this.anims.play('run_down', true);
-                        } else {
-                            this.anims.play('run_up', true);
-                        };
-                    } else {
-                        this.anims.play('player_running', true);
-                    };
-                } else {
-                    this.anims.play('player_idle', true);
-                };
+                this.handleIdleAnimations();
             };
         } else if (this.isParrying) {
-            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isParrying = false); 
+            this.playAnimation('player_attack_1', () => (this.isParrying = false));
         } else if (this.isThrusting) {
             sprint(this.scene);
-            this.anims.play('player_attack_2', true).on('animationcomplete', () => this.isThrusting = false);
-        } else if (this.isDodging) { 
-            this.anims.play('player_slide', true);
+            this.playAnimation('player_attack_2', () => (this.isThrusting = false));
+        } else if (this.isDodging) {
+            this.playAnimation('player_slide');
             if (this.dodgeCooldown === 0) this.playerDodge();
-        } else if (this.isRolling) { 
+        } else if (this.isRolling) {
             sprint(this.scene);
-            this.anims.play('player_roll', true);
+            this.playAnimation('player_roll');
             if (this.rollCooldown === 0) this.playerRoll();
         } else if (this.isPosturing) {
             sprint(this.scene);
-            this.anims.play('player_attack_3', true).on('animationcomplete', () => this.isPosturing = false);
+            this.playAnimation('player_attack_3', () => this.isPosturing = false);
         } else if (this.isAttacking) {
             sprint(this.scene);
-            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isAttacking = false); 
+            this.playAnimation('player_attack_1', () => this.isAttacking = false); 
         } else if (this.moving()) {
-            if (this.isClimbing) {
-                walk(this.scene);
-                this.anims.play('player_climb', true);
-            } else if (this.inWater) {
-                walk(this.scene);
-                if (this.velocity?.y as number > 0) {
-                    this.anims.play('swim_down', true);
-                } else {
-                    this.anims.play('swim_up', true);
-                };
-            } else {
-                if (!Math.abs(this.velocity?.x as number)) {
-                    if (this.velocity?.y as number > 0) {
-                        this.anims.play('run_down', true);
-                    } else {
-                        this.anims.play('run_up', true);
-                    };
-                } else {
-                    this.anims.play('player_running', true);
-                };
-            };
-            if (!this.isMoving) this.isMoving = true;
-        } else if (this.isCasting) { 
+            this.handleMovementAnimations();
+            this.isMoving = true;
+        } else if (this.isCasting) {
             walk(this.scene);
-            this.anims.play('player_health', true);
+            this.playAnimation('player_health');
         } else if (this.isPraying) {
-            this.anims.play('player_pray', true).on('animationcomplete', () => this.isPraying = false);
-        } else if (this.isStealthing) {
-            if (this.isMoving) {
-                if (!Math.abs(this.velocity?.x as number)) {
-                    if (this.velocity?.y as number > 0) {
-                        this.anims.play('run_down', true);
-                    } else {
-                        this.anims.play('run_up', true);
-                    };
-                } else {
-                    this.anims.play('player_running', true);
-                };
-            } else if (this.isClimbing) {
-                this.anims.play('player_climb', true);
-            } else if (this.inWater) {
-                if (this.velocity?.y as number > 0) {
-                    this.anims.play('swim_down', true);
-                } else {
-                    this.anims.play('swim_up', true);
-                };
-            } else {
-                this.anims.play('player_crouch_idle', true);
-            };
+            this.playAnimation('player_pray', () => this.isPraying = false);
         } else {
-            if (this.isMoving) this.isMoving = false;
-            if (this.isClimbing) {
-                this.anims.play('player_climb', true);
-                this.anims.pause();
-            } else if (this.inWater) {
-                if (this.velocity?.y as number > 0) {
-                    this.anims.play('swim_down', true);
-                } else {
-                    this.anims.play('swim_up', true);
-                };
-            } else {
-                this.anims.play('player_idle', true);
-            };
+            this.isMoving = false;
+            this.handleIdleAnimations();
         };
         this.spriteWeapon.setPosition(this.x, this.y);
         this.spriteShield.setPosition(this.x, this.y);
+    };
+
+    handleIdleAnimations = () => {
+        if (this.isClimbing) {
+            this.anims.play('player_climb', true);
+            this.anims.pause();
+        } else if (this.inWater) {
+            this.anims.play(this.velocity?.y as number > 0 ? 'swim_down' : 'swim_up', true);
+        } else {
+            this.anims.play(this.isStealthing ? 'player_crouch_idle' : 'player_idle', true);
+        };
+    };
+
+    handleMovementAnimations = () => {
+        if (this.isClimbing) {
+            walk(this.scene);
+            this.anims.play('player_climb', true);
+        } else if (this.inWater) {
+            walk(this.scene);
+            this.playAnimation(this.velocity?.y as number > 0 ? 'swim_down' : 'swim_up');
+        } else if (!this.xCheck()) {
+            this.playAnimation(this.velocity?.y as number > 0 ? 'run_down' : 'run_up');
+        } else {
+            this.playAnimation('player_running');
+        };
     };
 
     handleConcerns = () => {
@@ -1528,7 +1509,7 @@ export default class Player extends Entity {
             };
             if ((input.up.W.isDown || input.up.UP.isDown)) {
                 this.playerVelocity.y -= this.acceleration;
-            }; 
+            };
             if (input.down.S.isDown || input.down.DOWN.isDown) {
                 this.playerVelocity.y += this.acceleration;
             };
@@ -1592,13 +1573,13 @@ export default class Player extends Entity {
         if (this.isClimbing || this.inWater) speed *= 0.65;
         this.playerVelocity.limit(speed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
-    }; 
+    };
 
     update(dt: number) {
         this.handleConcerns();
         this.handleActions();
         this.handleAnimations();
-        this.handleMovement(); 
+        this.handleMovement();
         this.playerMachine.update(dt);
-    };  
+    };
 };

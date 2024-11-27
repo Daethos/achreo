@@ -1,5 +1,6 @@
 import { Accessor, JSX, createEffect, createSignal } from 'solid-js';
 import Typed from "typed.js";
+import { EventBus } from '../game/EventBus';
 type StyleMap = { [key: string]: JSX.CSSProperties };
 const styleMap: StyleMap = {
     rebukeButton: {
@@ -164,11 +165,13 @@ interface TypewriterProps {
     stringText: string | Accessor<any>;
     styling?: JSX.CSSProperties;
     performAction: (action: string) => void;
+    main?: boolean;
 };
 
-export default function Typewriter({ stringText, styling, performAction }: TypewriterProps) {
+export default function Typewriter({ stringText, styling, performAction, main }: TypewriterProps) {
     const [el, setEl] = createSignal<HTMLDivElement | null>(null);
     let typed: Typed | null = null;
+    let isTyping = false; // Flag to track typing status
     (window as any).handleButton = (button: string) => performAction(button);
     const applyStyles = (element: any): void => {
         for (const [property, value] of Object.entries(styleMap[element?.attributes?.class?.value])) {
@@ -202,11 +205,27 @@ export default function Typewriter({ stringText, styling, performAction }: Typew
             typeSpeed: 30,
             backSpeed: 0,
             showCursor: false,
+            onBegin: () => (isTyping = true), // Set flag when typing starts
+            onComplete: () => {
+                if (main) EventBus.emit('typing-complete');
+                isTyping = false;
+            }, // Clear flag when typing completes
         };
         typed = new Typed(el(), typedContent);
         return () => (typed as Typed).destroy();
     };
+
+    const skipTyping = () => {
+        if (isTyping && typed) {
+            typed.destroy();
+            isTyping = false;
+            const check = typeof stringText === 'function' ? stringText() : stringText;
+            el()!.innerHTML = styleHTML(check);
+            EventBus.emit('typing-complete');
+        };
+    };
+
     return (
-        <div id="typewriter" ref={setEl} style={{'text-align': 'left', ...styling}}></div>
+        <div id="typewriter" onClick={skipTyping} ref={setEl} style={{'text-align': 'left', ...styling}}></div>
     );
 };

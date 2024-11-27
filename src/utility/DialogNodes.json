@@ -806,7 +806,7 @@
                     ]
                 },
                 {
-                    "text": "Not to cut this short, but could I actually trouble you for your wares?",
+                    "text": "Not to cut this short, but could I trouble you for your wares?",
                     "next": "0020",
                     "npcIds": [
                         11
@@ -837,7 +837,7 @@
             "text": "It does seem that it would be cross, and it brings up the worship adhering to the Ancients as opposed to Daethos. However, trial by combat was seen as a legitimate form of exculpation due to many of the trials taking place between worshippers of different ancients, and one could proclaim Daethos as exceptional and before all being. The Eulex meant to poise your belief against your adversary's, and retains this honor with the advent of Daethos.",
             "options": [
                 {
-                    "text": "What is the Ancient Eulex, again?.",
+                    "text": "What is the Ancient Eulex, again?",
                     "next": "0030",
                     "npcIds": [
                         11
@@ -865,10 +865,10 @@
         },
         {
             "id": "0032",
-            "text": "With the proliferation of Daethos, the practice of trial by combat had waned since its use to show favor of a single Ancient was seen as a perversion to the blessing of Daethos and our providence. Not to mention the Ancients role in the Sundering, with some regions--even within majoirty adherent provinces, seeing it as heretical.",
+            "text": "With the proliferation of Daethos, the practice of trial by combat had waned since its use to show favor of a single Ancient was seen as a perversion to the blessing of Daethos and our providence. Not to mention the Ancients role in the Sundering, with some regions--even within majority adherent provinces, seeing it as heretical.",
             "options": [
                 {
-                    "text": "What is the Ancient Eulex, again?.",
+                    "text": "What is the Ancient Eulex, again?",
                     "next": "0030",
                     "npcIds": [
                         11
@@ -899,7 +899,7 @@
             "text": "You let me know how confident you're feeling: the amount of enemies you wish to face; how well trained they are; their specialty in combat. If you are interested, we can find your perfect opponent(s).",
             "options": [
                 {
-                    "text": "What is the origin of this practice, again?.",
+                    "text": "What is the origin of this practice, again?",
                     "next": "0030",
                     "npcIds": [
                         11
@@ -920,7 +920,7 @@
         },
         {
             "id": "0034",
-            "text": "[This is a work in progress. Eventually, there will be options for computer spectating and wagering.]",
+            "text": "[This is a work in progress: computerized player and wagering available. Eventually, there will be options for spectating computer combat.]",
             "options": [
                 {
                     "text": "What is the origin of this practice, again?",

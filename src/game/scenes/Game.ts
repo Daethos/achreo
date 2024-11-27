@@ -19,6 +19,8 @@ import MiniMap from '../phaser/MiniMap';
 import { screenShake } from '../phaser/ScreenShake';
 import ParticleManager from '../matter/ParticleManager';
 import { Hud } from './Hud';
+import ScrollingCombatText from '../phaser/ScrollingCombatText';
+import { ObjectPool } from '../phaser/ObjectPool';
 const dimensions = useResizeListener();
 export class Game extends Scene {
     animatedTiles: any[];
@@ -60,6 +62,7 @@ export class Game extends Scene {
     glowFilter: any;
     targetTarget: Enemy;
     hud: Hud;
+    scrollingTextPool: ObjectPool<ScrollingCombatText>;
 
     constructor () {
         super('Game');
@@ -160,7 +163,18 @@ export class Game extends Scene {
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
+
+        this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
+        for (let i = 0; i < 50; i++) {
+            this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
+        };
         EventBus.emit('current-scene-ready', this);
+    };
+
+    showCombatText(x: number, y: number, text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): ScrollingCombatText {
+        const combatText = this.scrollingTextPool.acquire();
+        combatText.reset(x, y, text, duration, context, critical, constant, onDestroyCallback);
+        return combatText;
     };
 
     cleanUp = (): void => {

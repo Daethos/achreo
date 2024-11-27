@@ -20,6 +20,7 @@ import Merchant from './Merchant';
 import Roster from './Roster';
 import { ArenaRoster } from './BaseUI';
 import Settings from '../models/settings';
+import { usePhaserEvent } from '../utility/hooks';
 
 const GET_FORGE_COST = {
     Common: 1,
@@ -63,8 +64,8 @@ const DialogOption = ({ currentIndex, dialogNodes, option, onClick, actions, set
         };
         if (dialogNodes[currentIndex()]?.id !== option.next) {
             onClick(option.next as string);
-            setShowDialogOptions(false);
         };
+        setShowDialogOptions(false);
     };
 
     return (
@@ -136,18 +137,18 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
         let newOptions: DialogNodeOption[] = [];
         let currentNode = dialogNodes?.[index];
         if (currentNode === undefined) return;
-        let delay = 0;
+        // let delay = 0;
         const { text, options } = currentNode as DialogNode;
         if (typeof text === 'string') {
             newText = (text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
-            delay = text?.split('').reduce((a: number, s: string | any[]) => a + s.length * 50, 0);
+            // delay = text?.split('').reduce((a: number, s: string | any[]) => a + s.length * 50, 0);
         } else if (Array.isArray(text)) {
             const npcOptions = text.filter((option: any) => {
                 const id = getNpcId(enemy.name);
                 const included = (option as DialogNodeOption)?.npcIds?.includes(id);
                 return included;
             });
-            delay = npcOptions[0].text?.split('').reduce((a: number, s: string | any[]) => a + s.length * 50, 0);
+            // delay = npcOptions[0].text?.split('').reduce((a: number, s: string | any[]) => a + s.length * 50, 0);
             newText = (npcOptions[0]?.text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
         };
         newText = processText(newText, { ascean, enemy, combat });
@@ -161,9 +162,13 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
             renderedOptions: newOptions, 
             renderedText: newText
         });
-        const dialogTimeout = setTimeout(() => setShowDialogOptions(true), delay);
-        return(() => clearTimeout(dialogTimeout)); 
+        // const dialogTimeout = setTimeout(() => setShowDialogOptions(true), delay);
+        // return(() => clearTimeout(dialogTimeout)); 
     };
+
+    const dialogTimeout = () => setShowDialogOptions(true);
+
+    usePhaserEvent('typing-complete', dialogTimeout);
 
     const getOptionKey = (ascean: Ascean, combat: any, game: Accessor<GameState>,  key: string) => {
         const newKey = key === 'mastery' ? ascean[key].toLowerCase() : key;
@@ -182,7 +187,7 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
   
     return (
         <div class='wrap' style={{ 'text-align':'left' }}> 
-            <Typewriter stringText={renderedText} styling={{ 'overflow-y': 'auto', 'scrollbar-width':'none', 'text-align': 'left' }} performAction={handleOptionClick} />
+            <Typewriter stringText={renderedText} styling={{ 'overflow-y': 'auto', 'scrollbar-width':'none', 'text-align': 'left' }} performAction={handleOptionClick} main={true} />
             <br />
             {renderedOptions()?.map((option: DialogNodeOption) => (
                 <DialogOption currentIndex={currentIndex} dialogNodes={dialogNodes} option={option} onClick={handleOptionClick} actions={actions} setPlayerResponses={setPlayerResponses} setKeywordResponses={setKeywordResponses} setShowDialogOptions={setShowDialogOptions} showDialogOptions={showDialogOptions} />

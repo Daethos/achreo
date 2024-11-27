@@ -16,7 +16,7 @@ import { validateHealth, validateLevel, validateMastery } from '../utility/valid
 import { adjustTime } from './Timer';
 import { Store } from 'solid-js/store';
 import { IRefPhaserGame } from '../game/PhaserGame';
-import Roster from './Roster';
+const Roster = lazy(async () => await import('./Roster'));
 const Character = lazy(async () => await import('./Character'));
 const CombatUI = lazy(async () => await import('./CombatUI'));
 const Deity = lazy(async () => await import('./Deity'));
@@ -430,7 +430,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         setArena({ ...arena(), wager });
         EventBus.emit("create-arena", enemies);
     });
-    
     usePhaserEvent('settle-wager', (data: { wager: { silver: number; gold: number; multiplier: number; }; win: boolean; }) => {
         const { wager, win } = data;
         setArena({ ...arena(), wager, result: true, show: true, win });
@@ -444,7 +443,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             <Suspense fallback={<Puff color="gold" />}>
                 <EnemyUI state={combat} game={game} enemies={enemies} />
             </Suspense>
-            </Show> 
+            </Show>
         </div>}>
             <Suspense fallback={<Puff color="gold" />}>
                 <Character reputation={reputation} settings={settings} setSettings={setSettings} statistics={statistics} ascean={ascean} asceanState={asceanState} game={game} combat={combat} />
@@ -462,7 +461,9 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             <Suspense fallback={<Puff color="gold" />}>
                 <Deity ascean={ascean} combat={combat} game={game} statistics={statistics} />
             </Suspense>
-        </Show>
-        <Roster arena={arena} ascean={ascean} setArena={setArena} base={true} game={game} settings={settings} />
+        </Show>    
+        <Suspense fallback={<Puff color="gold" />}>
+            <Roster arena={arena} ascean={ascean} setArena={setArena} base={true} game={game} settings={settings} />
+        </Suspense>
     </div>;
 };

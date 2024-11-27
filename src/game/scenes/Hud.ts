@@ -87,7 +87,7 @@ export class Hud extends Phaser.Scene {
             };
             EventBus.emit('update-camera-zoom', this.currentZoom);
         });
-
+        
         const swipe = this.add.rectangle(0, 0, this.gameWidth * 0.275, this.gameHeight * 0.165, 0x000000, 0);
         const cell20 = grid.cell(20, { x: 'left', y: 'top' });
         swipe.setPosition(cell20.x, cell20.y);
@@ -117,7 +117,7 @@ export class Hud extends Phaser.Scene {
         });
         this.startGameScene();
     };
-    
+
     cleanUp() {
         this.actionBar.cleanUp();
         this.actionBar.destroy();

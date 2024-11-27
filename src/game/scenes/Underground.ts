@@ -16,12 +16,14 @@ import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.mi
 import Tile from '../phaser/Tile';
 import { CombatManager } from '../phaser/CombatManager';
 import MiniMap from '../phaser/MiniMap';
-import ScrollingCombatText from '../phaser/ScrollingCombatText';
+// import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import ParticleManager from '../matter/ParticleManager';
 import { screenShake } from '../phaser/ScreenShake';
 import { Hud } from './Hud';
 import DM from '../entities/DM';
 import { Compiler } from '../../utility/ascean';
+import { ObjectPool } from '../phaser/ObjectPool';
+import ScrollingCombatText from '../phaser/ScrollingCombatText';
 
 export class Underground extends Scene {
     animatedTiles: any[];
@@ -73,6 +75,7 @@ export class Underground extends Scene {
     glowFilter: any;
     hud: Hud;
     wager = { silver: 0, gold: 0, multiplier: 0 };
+    scrollingTextPool: ObjectPool<ScrollingCombatText>;
 
     constructor () {
         super('Underground');
@@ -177,7 +180,18 @@ export class Underground extends Scene {
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
+
+        this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
+        for (let i = 0; i < 50; i++) {
+            this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
+        };
         EventBus.emit('current-scene-ready', this);
+    };
+
+    showCombatText(x: number, y: number, text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): ScrollingCombatText {
+        const combatText = this.scrollingTextPool.acquire();
+        combatText.reset(x, y, text, duration, context, critical, constant, onDestroyCallback);
+        return combatText;
     };
 
     cleanUp = (): void => {
@@ -611,7 +625,8 @@ export class Underground extends Scene {
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
         const saying = enemy.isDefeated ? "Something is tearing into me. Please, help!" : `I'll be seeing you, ${this.state.player?.name}.`;
-        enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, saying, 2000, 'bone', false, true, () => enemy.specialCombatText = undefined);
+        enemy.specialCombatText = this.showCombatText(enemy.x, enemy.y, saying, 2000, 'bone', false, true, () => enemy.specialCombatText = undefined);
+        // enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, saying, 2000, 'bone', false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DEATH);
         this.time.delayedCall(3000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);

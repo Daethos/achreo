@@ -188,9 +188,9 @@ export class Underground extends Scene {
         EventBus.emit('current-scene-ready', this);
     };
 
-    showCombatText(x: number, y: number, text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): ScrollingCombatText {
+    showCombatText(text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): ScrollingCombatText {
         const combatText = this.scrollingTextPool.acquire();
-        combatText.reset(x, y, text, duration, context, critical, constant, onDestroyCallback);
+        combatText.reset(text, duration, context, critical, constant, onDestroyCallback);
         return combatText;
     };
 
@@ -625,8 +625,7 @@ export class Underground extends Scene {
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
         const saying = enemy.isDefeated ? "Something is tearing into me. Please, help!" : `I'll be seeing you, ${this.state.player?.name}.`;
-        enemy.specialCombatText = this.showCombatText(enemy.x, enemy.y, saying, 2000, 'bone', false, true, () => enemy.specialCombatText = undefined);
-        // enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, saying, 2000, 'bone', false, true, () => enemy.specialCombatText = undefined);
+        enemy.specialCombatText = this.showCombatText(saying, 2000, 'bone', false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DEATH);
         this.time.delayedCall(3000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);

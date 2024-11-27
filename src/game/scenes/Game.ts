@@ -171,9 +171,9 @@ export class Game extends Scene {
         EventBus.emit('current-scene-ready', this);
     };
 
-    showCombatText(x: number, y: number, text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): ScrollingCombatText {
+    showCombatText(text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): ScrollingCombatText {
         const combatText = this.scrollingTextPool.acquire();
-        combatText.reset(x, y, text, duration, context, critical, constant, onDestroyCallback);
+        combatText.reset(text, duration, context, critical, constant, onDestroyCallback);
         return combatText;
     };
 

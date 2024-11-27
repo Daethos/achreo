@@ -196,9 +196,9 @@ export class Arena extends Scene {
         EventBus.emit('current-scene-ready', this);
     };
 
-    showCombatText(x: number, y: number, text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): ScrollingCombatText {
+    showCombatText(text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): ScrollingCombatText {
         const combatText = this.scrollingTextPool.acquire();
-        combatText.reset(x, y, text, duration, context, critical, constant, onDestroyCallback);
+        combatText.reset(text, duration, context, critical, constant, onDestroyCallback);
         return combatText;
     };
 
@@ -497,21 +497,11 @@ export class Arena extends Scene {
         this.player.disengage();
         this.player.clearEnemies();
         if (this.player.isComputer) (this.player as PlayerComputer).completeReset();
-        // this.wager = { silver: 0, gold: 0, multiplier: 0 };
-        // EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
-        // this.time.delayedCall(3000, () => {
-        //     EventBus.emit("scene-switch", {current:"Arena", next:"Underground"});
-        // }, undefined, this);
     };
     computerDisengage = () => {
         this.player.disengage();
         this.player.clearEnemies();
         if (this.player.isComputer) (this.player as PlayerComputer).completeReset();
-        // this.wager = { silver: 0, gold: 0, multiplier: 0 };
-        // EventBus.emit("alert", { healder: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
-        // this.time.delayedCall(3000, () => {
-        //     EventBus.emit("scene-switch", {current:"Arena", next:"Underground"});
-        // }, undefined, this);
     };
     combatEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
@@ -656,8 +646,7 @@ export class Arena extends Scene {
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
         const saying = enemy.isDefeated ? "Something is tearing into me. Please, help!" : `I'll be seeing you, ${this.state.player?.name}.`;
-        enemy.specialCombatText = this.showCombatText(enemy.x, enemy.y, saying, 1500, 'bone', false, true, () => enemy.specialCombatText = undefined);
-        // enemy.specialCombatText = new ScrollingCombatText(this, enemy.x, enemy.y, saying, 1500, 'bone', false, true, () => enemy.specialCombatText = undefined);
+        enemy.specialCombatText = this.showCombatText(saying, 1500, 'bone', false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DEATH);
         this.time.delayedCall(2000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);

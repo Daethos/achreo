@@ -604,9 +604,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 ? WEAPON_FRAME_CONFIG.parrying[configKey].flipX
                 : WEAPON_FRAME_CONFIG.parrying[configKey].noFlipX;
           
-            if (this.frameCount === FRAME_COUNT.PARRY_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
+            if (this.frameCount === FRAME_COUNT.PARRY_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
             this.frameCount += 1;
             if (this.frameCount >= FRAME_COUNT.PARRY_KILL) this.isParrying = false;
         } else if (this.isThrusting) {
@@ -633,6 +633,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             }; 
             
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
+            if (this.frameCount === (FRAME_COUNT.THRUST_SUCCESS) && !this.isRanged) this.checkActionSuccess(entity, target);
             this.frameCount += 1;
         } else if (this.isRolling) {
             if (this.frameCount === FRAME_COUNT.ROLL_LIVE) {
@@ -671,6 +672,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
+            if (this.frameCount === (FRAME_COUNT.ATTACK_SUCCESS) && !this.isRanged) this.checkActionSuccess(entity, target);
             this.frameCount += 1;
         } else if (this.isPosturing) {
             const configKey = this.hasBow ? "bow" : "noBow";
@@ -696,6 +698,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             }; 
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
+            if (this.frameCount === (FRAME_COUNT.POSTURE_SUCCESS) && !this.isRanged) this.checkActionSuccess(entity, target);
             this.frameCount += 1;
         } else if (this.movingVertical()) {
             if (!this.flipX) {

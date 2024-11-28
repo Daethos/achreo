@@ -199,17 +199,11 @@ export class Underground extends Scene {
         EventBus.off('reputation');
         EventBus.off('enemyLootDrop');
         EventBus.off('minimap');
-        EventBus.off('aggressive-enemy');
         EventBus.off('update-postfx');
         EventBus.off('music');
         EventBus.off('game-map-load');
-        EventBus.off('update-joystick-color');
-        EventBus.off('update-joystick-position');
-        EventBus.off('update-joystick-width');
         EventBus.off('update-camera-zoom');
-        EventBus.off('update-joystick-opacity');
         EventBus.off('update-speed');
-        EventBus.off('update-enemy-aggression');
         EventBus.off('update-enemy-special');
         EventBus.off('resetting-game');
         for (let i = 0; i < this.enemies.length; i++) {
@@ -239,17 +233,6 @@ export class Underground extends Scene {
                 this.minimap.minimap.setVisible(true);
                 this.minimap.border.setVisible(true);
                 this.minimap.minimap.startFollow(this.player);
-            };
-        });
-        EventBus.on('aggressive-enemy', (e: {id: string, isAggressive: boolean}) => {
-            let enemy = this.enemies.find((enemy: any) => enemy.enemyID === e.id);
-            enemy.isAggressive = e.isAggressive;
-            if (e.isAggressive === true) {
-                enemy.setSpecialCombat(true);
-                enemy.attacking = this.player;
-                enemy.inCombat = true;
-                enemy.originPoint = new Phaser.Math.Vector2(enemy.x, enemy.y).clone();
-                enemy.stateMachine.setState(States.CHASE);
             };
         });
         EventBus.on('music', (on: boolean) => {
@@ -295,12 +278,6 @@ export class Underground extends Scene {
                         this.enemies[i].adjustSpeed(data.speed);
                     };
                     break;
-            };
-        });
-        EventBus.on('update-enemy-aggression', (aggression: number) => {
-            for (let i = 0; i < this.enemies.length; i++) {
-                this.enemies[i].isAggressive = aggression >= Math.random();
-
             };
         });
         EventBus.on('update-enemy-special', (special: number) => {
@@ -445,7 +422,6 @@ export class Underground extends Scene {
         this.postFxPipeline.setCRTEnable(settings.crtEnable);
         this.postFxPipeline.crtHeight = settings.crtHeight;
         this.postFxPipeline.crtWidth = settings.crtWidth;
-
     };
     getReputation = (): Reputation => {
         EventBus.emit('request-reputation');
@@ -546,6 +522,7 @@ export class Underground extends Scene {
     };
     resumeMusic = (): void => {
         if (this.scene.isSleeping(this.scene.key)) return;
+        if (this.hud.settings?.music === false) return;
         if (!this.combat) {
             if (this.player.isStealthing) {
                 if (this.musicStealth.isPaused) {
@@ -719,7 +696,6 @@ export class Underground extends Scene {
     };
     resume(): void {
         this.scene.resume();
-        if (this.hud.settings?.music === false) return;
         this.resumeMusic();
     };
 };

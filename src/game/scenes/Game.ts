@@ -535,6 +535,7 @@ export class Game extends Scene {
     };
     resumeMusic = (): void => {
         if (this.scene.isSleeping(this.scene.key)) return;
+        if (this.hud.settings?.music === false) return;
         if (!this.combat) {
             if (this.player.isStealthing) {
                 if (this.musicStealth.isPaused) {
@@ -620,6 +621,7 @@ export class Game extends Scene {
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
         this.checkEnvironment(this.player);
+        if (!this.hud.settings.desktop) this.hud.rightJoystick.update();
     };
     setCameraOffset = () => {
         const { width, height } = this.cameras.main.worldView;
@@ -659,7 +661,6 @@ export class Game extends Scene {
     };
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
-        this.hud.rightJoystick.update();
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(delta);
             this.checkEnvironment(this.enemies[i]);
@@ -674,7 +675,6 @@ export class Game extends Scene {
     };
     resume(): void {
         this.scene.resume();
-        if (this.hud.settings?.music === false) return;
         this.resumeMusic();
     };
 };

@@ -207,17 +207,11 @@ export class Arena extends Scene {
         EventBus.off('reputation');
         EventBus.off('enemyLootDrop');
         EventBus.off('minimap');
-        EventBus.off('aggressive-enemy');
         EventBus.off('update-postfx');
         EventBus.off('music');
         EventBus.off('game-map-load');
-        EventBus.off('update-joystick-color');
-        EventBus.off('update-joystick-position');
-        EventBus.off('update-joystick-width');
         EventBus.off('update-camera-zoom');
-        EventBus.off('update-joystick-opacity');
         EventBus.off('update-speed');
-        EventBus.off('update-enemy-aggression');
         EventBus.off('update-enemy-special');
         EventBus.off('resetting-game');
         for (let i = 0; i < this.enemies.length; i++) {
@@ -243,17 +237,6 @@ export class Arena extends Scene {
                 this.minimap.minimap.setVisible(true);
                 this.minimap.border.setVisible(true);
                 this.minimap.minimap.startFollow(this.player);
-            };
-        });
-        EventBus.on('aggressive-enemy', (e: {id: string, isAggressive: boolean}) => {
-            let enemy = this.enemies.find((enemy: any) => enemy.enemyID === e.id);
-            enemy.isAggressive = e.isAggressive;
-            if (e.isAggressive === true) {
-                enemy.setSpecialCombat(true);
-                enemy.attacking = this.player;
-                enemy.inCombat = true;
-                enemy.originPoint = new Phaser.Math.Vector2(enemy.x, enemy.y).clone();
-                enemy.stateMachine.setState(States.CHASE);
             };
         });
         EventBus.on('music', (on: boolean) => {
@@ -318,6 +301,7 @@ export class Arena extends Scene {
         this.scene.wake();
         EventBus.emit('current-scene-ready', this);
     };
+
     switchScene = (current: string) => {
         this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
             this.registry.set("combat", this.state);
@@ -329,6 +313,7 @@ export class Arena extends Scene {
             this.scene.sleep(current);
         });
     };
+
     wakeUp = () => {
         this.scene.resume();
         if (this.combat) {
@@ -410,6 +395,7 @@ export class Arena extends Scene {
             };
         };
     });
+
     setPostFx = (settings: any, enable: boolean): void => { 
         if (enable === true) {
             this.postFxPipeline.setEnable();
@@ -436,18 +422,22 @@ export class Arena extends Scene {
         this.postFxPipeline.crtWidth = settings.crtWidth;
 
     };
+
     getReputation = (): Reputation => {
         EventBus.emit('request-reputation');
         return this.reputation;
     };
+
     getEnemy = (id: string): Enemy => {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };
+
     getWorldPointer = () => {
         const pointer = this.hud.rightJoystick.pointer;
         const point = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
         return point;
     };
+
     rotateTween = (tween: any, count: number, active: boolean) => {
         if (active === true) {
             this.tweenManager[tween.name] = this.tweens.add({
@@ -461,7 +451,9 @@ export class Arena extends Scene {
             this.tweenManager[tween.name].stop();
         };
     };
+
     isStateEnemy = (id: string): boolean => id === this.state.enemyID;
+
     quickCombat = () => {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
@@ -470,8 +462,11 @@ export class Arena extends Scene {
             };
         };
     };
+
     clearNonAggressiveEnemy = () => this.combatManager.combatMachine.action({ data: { key: 'player', value: 0, id: this.player.playerID }, type: 'Remove Enemy' });
+    
     clearNPC = (): boolean => EventBus.emit('clear-npc');
+
     clearAggression = () => {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
@@ -479,6 +474,7 @@ export class Arena extends Scene {
             };
         };
     };
+
     switchArena = () => {
         this.wager = { silver: 0, gold: 0, multiplier: 0 };
         EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
@@ -486,6 +482,7 @@ export class Arena extends Scene {
             EventBus.emit("scene-switch", {current:"Arena", next:"Underground"});
         }, undefined, this);
     };
+
     clearArena = () => {
         if (this.enemies.length > 0) {
             for (let i = 0; i < this.enemies.length; i++) {
@@ -498,11 +495,13 @@ export class Arena extends Scene {
         this.player.clearEnemies();
         if (this.player.isComputer) (this.player as PlayerComputer).completeReset();
     };
+
     computerDisengage = () => {
         this.player.disengage();
         this.player.clearEnemies();
         if (this.player.isComputer) (this.player as PlayerComputer).completeReset();
     };
+
     combatEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (bool === true) {
@@ -536,6 +535,7 @@ export class Arena extends Scene {
         this.combat = bool;
         EventBus.emit('combat-engaged', bool);
     };
+
     stealthEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (bool) {
@@ -556,6 +556,7 @@ export class Arena extends Scene {
             };
         };
     };
+
     pauseMusic = (): void => {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (this.musicBackground.isPlaying) this.musicBackground.pause();
@@ -563,8 +564,10 @@ export class Arena extends Scene {
         if (this.musicCombat2.isPlaying) this.musicCombat2.pause();
         if (this.musicStealth.isPlaying) this.musicStealth.pause();
     };
+
     resumeMusic = (): void => {
         if (this.scene.isSleeping(this.scene.key)) return;
+        if (this.hud.settings?.music === false) return;
         if (!this.combat) {
             if (this.player.isStealthing) {
                 if (this.musicStealth.isPaused) {
@@ -585,6 +588,7 @@ export class Arena extends Scene {
             };
         };
     };
+
     drinkFlask = (): boolean => EventBus.emit('drink-firewater');
     setupEnemy = (enemy: any): void => {
         const data: EnemySheet = { 
@@ -667,6 +671,7 @@ export class Arena extends Scene {
         this.combatManager.combatMachine.process();
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
+        if (!this.hud.settings.desktop) this.hud.rightJoystick.update();
     };
     setCameraOffset = () => {
         const { width, height } = this.cameras.main.worldView;
@@ -702,7 +707,6 @@ export class Arena extends Scene {
     };
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
-        this.hud.rightJoystick.update();
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(delta);
             if ((this.enemies[i].isDefeated || this.enemies[i].isTriumphant) && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
@@ -726,7 +730,6 @@ export class Arena extends Scene {
     };
     resume(): void {
         this.scene.resume();
-        if (this.hud.settings?.music === false) return;
         this.resumeMusic();
     };
 };

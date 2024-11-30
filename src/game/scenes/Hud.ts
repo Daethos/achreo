@@ -11,7 +11,6 @@ import { useResizeListener } from "../../utility/dimensions";
 import Logger, { ConsoleLogger } from '../../utility/Logger';
 import { roundToTwoDecimals } from "../../utility/combat";
 import { Play } from "../main";
-import { Grid } from "@phaserquick/grid";
 const dimensions = useResizeListener();
 
 
@@ -40,8 +39,6 @@ export class Hud extends Phaser.Scene {
     };
 
     create() {
-        const grid = new Grid(this, 9, 9);
-        // grid.enableDebug();
         this.gameEvents();
         this.gameState = this.registry.get('game');
         this.settings = this.registry.get('settings');
@@ -88,9 +85,8 @@ export class Hud extends Phaser.Scene {
             EventBus.emit('update-camera-zoom', this.currentZoom);
         });
         
-        const swipe = this.add.rectangle(0, 0, this.gameWidth * 0.275, this.gameHeight * 0.165, 0x000000, 0);
-        const cell20 = grid.cell(20, { x: 'left', y: 'top' });
-        swipe.setPosition(cell20.x, cell20.y);
+        const swipe = this.add.rectangle(0, 0, this.gameWidth * 0.225, this.gameHeight * 0.165, 0x000000, 0);
+        swipe.setPosition(this.gameWidth * 0.125, this.gameHeight * 0.25)
 
         swipe.setInteractive().on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.evCache.push(pointer);

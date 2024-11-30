@@ -671,10 +671,12 @@ export class Game extends Scene {
     };
     pause(): void {
         this.scene.pause();
+        this.matter.pause();
         this.pauseMusic();
     };
     resume(): void {
         this.scene.resume();
+        this.matter.resume();
         this.resumeMusic();
     };
 };

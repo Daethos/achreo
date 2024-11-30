@@ -67,7 +67,7 @@ export class Hud extends Phaser.Scene {
         this.logger = new Logger();
         this.logger.add('console', new ConsoleLogger());
         this.time.delayedCall(2000, () => {
-            this.logger.log('Console: Something concerning but potentially innocuous!');
+            this.logger.log('Console: Something potentially innocuous!');
             this.logger.log('Warning: Some function did not work, but did not crash the game!');
             this.logger.log('Error: Some portion if not all of the game has crashed!');
             this.logger.log(`Console: Current Height: ${this.gameHeight} / Width: ${this.gameWidth}`);

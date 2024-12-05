@@ -10,8 +10,8 @@ const CONVERSION = {
         Y: 165
     },
     Underground: {
-        X: 500,
-        Y: 35
+        X: 500, // 500
+        Y: 35 // 35
     },
 };
 export default class Beam {
@@ -68,16 +68,17 @@ export default class Beam {
 
     enemyEmitter = (enemy: any, time: number, mastery: string) => { // Mastery for Enemy using Player Beam ??
         const color = masteryNumber(mastery);
-        if (!this.enemyEmitters[enemy.enemyID]) {
-            this.enemyEmitters[enemy.enemyID] = this.scene.add.particles(enemy.x, enemy.y, 'beam', {
-                ...this.settings, color: [color], follow: enemy,
-            });
-        };
-        this.enemyEmitters[enemy.enemyID].start();
+        this.emitter.start();
+        // if (!this.enemyEmitters[enemy.enemyID]) {
+        //     this.enemyEmitters[enemy.enemyID] = this.scene.add.particles(enemy.x, enemy.y, 'beam', {
+        //         ...this.settings, color: [color], follow: enemy,
+        //     });
+        // };
+        // this.enemyEmitters[enemy.enemyID].start();
         this.updateEnemyEmitter(enemy, color);
         this.scene.time.addEvent({
             delay: time / 20,
-            callback: () => {if (enemy) this.updateEnemyEmitter(enemy, color);},
+            callback: () => {if (enemy && this.player.body) this.updateEnemyEmitter(enemy, color);},
             callbackScope: this,
             repeat: 19
         });
@@ -116,16 +117,16 @@ export default class Beam {
     updateEnemyEmitter = (enemy: any, color: number) => {
         const dynamicConfig = {
             color: [color],
-            moveToX: this.player.x - 795,
-            moveToY: this.player.y - 330,
+            moveToX: enemy.x - this.xOffset,
+            moveToY: enemy.y - this.yOffset,
             scale: this.glow(),
         };
-        this.enemyEmitters[enemy.enemyID].setConfig({ ...this.settings, ...dynamicConfig });
+        this.emitter.setConfig({ ...this.settings, ...dynamicConfig });
     };
     
     glow = (): number => Math.random() / 10;
     
-    randomize = (): number => Math.random() * 25 * (Math.random() > 0.5 ? 1 : -1); 
+    randomize = (): number => Math.random() * 50 * (Math.random() > 0.5 ? 1 : -1); 
     
     reset = () => {
         this.emitter.stop(); // Added

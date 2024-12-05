@@ -574,7 +574,8 @@ export class Underground extends Scene {
             };
         };
         marker = markers[Math.floor(Math.random() * markers.length)];
-        const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0', data: undefined  });
+        const enemy = new Enemy({ scene: this, x: this.centerX, y: 64, texture: 'player_actions', frame: 'player_idle_0', data: undefined  });
+        enemy.setPosition(marker.x, marker.y);
         this.enemies.push(enemy);
         return enemy;
     };
@@ -589,7 +590,8 @@ export class Underground extends Scene {
         };
         for (let j = 0; j < data.length; j++) {
             marker = markers[Math.floor(Math.random() * markers.length)];
-            const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0', data: data[j] });
+            const enemy = new Enemy({ scene: this, x: this.centerX, y: 64, texture: 'player_actions', frame: 'player_idle_0', data: data[j] });
+            enemy.setPosition(marker.x, marker.y);
             this.enemies.push(enemy);
             this.time.delayedCall(3000, () => {
                 enemy.checkEnemyCombatEnter();

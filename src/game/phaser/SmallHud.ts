@@ -281,6 +281,15 @@ export default class SmallHud extends Phaser.GameObjects.Container {
 
     deactivate = (type: string) => {
         const button = this.getButton(type);
+        if (!button) return;
+        this.switches[type as keyof typeof this.switches] = false;
+        // if (this.switches[type as keyof typeof this.switches] === true) {
+            // button.setBlendMode(Phaser.BlendModes.SCREEN);
+            // button.setAlpha(0.25);
+        // } else {
+            button.setBlendMode(Phaser.BlendModes.NORMAL);    
+            button.setAlpha(1);
+        // };
         button?.setVisible(false);
         this.draw();
     };

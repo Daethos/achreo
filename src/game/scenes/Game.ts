@@ -121,8 +121,11 @@ export class Game extends Scene {
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         (this.sys as any).animatedTiles.init(this.map);
         this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
-        map?.getObjectLayer('Enemies')?.objects.forEach((enemy: any) => 
-            this.enemies.push(new Enemy({ scene: this, x: enemy.x, y: enemy.y, texture: 'player_actions', frame: 'player_idle_0', data: undefined })));
+        map?.getObjectLayer('Enemies')?.objects.forEach((enemy: any) => {
+            const e = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: undefined });
+            this.enemies.push(e);
+            e.setPosition(enemy.x, enemy.y)
+        });
         map?.getObjectLayer('Npcs')?.objects.forEach((npc: any) => 
             this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' })));
         let camera = this.cameras.main;
@@ -135,7 +138,6 @@ export class Game extends Scene {
         this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
         this.setPostFx(this.hud.settings?.postFx, this.hud.settings?.postFx.enable);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
-
         this.player.inputKeys = {
             up: this?.input?.keyboard?.addKeys('W,UP'),
             down: this?.input?.keyboard?.addKeys('S,DOWN'),

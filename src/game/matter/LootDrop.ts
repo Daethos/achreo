@@ -89,6 +89,8 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
     destroyLootDrop = (e: string) => {
         if (e === this._id) {
             EventBus.emit('equip-sound');
+            this.scene.player.interacting = this.scene.player.interacting.filter((obj: any) => obj._id !== this._id);
+            if (this.scene.player.interacting.length === 0) EventBus.emit('smallhud-deactivate', 'loot');
             this.scene.plugins.get('rexGlowFilterPipeline').remove(this);
             this.tween.stop();
             this.cleanUp();

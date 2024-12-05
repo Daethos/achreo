@@ -19,6 +19,7 @@ import Equipment from "../../models/equipment";
 import { Particle } from "../matter/ParticleManager";
 import { Compiler } from "../../utility/ascean";
 import { Arena } from "../scenes/Arena";
+import Beam from "../matter/Beam";
 
 const ENEMY_COLOR = 0xFF0000;
 const TARGET_COLOR = 0x00FF00;
@@ -213,6 +214,7 @@ export default class Enemy extends Entity {
         this.isDeleting = false;
         this.sensorDisp = 12;
         this.colliderDisp = 16; 
+        this.beam = new Beam(this);
 
         const colliderWidth = PLAYER.COLLIDER.WIDTH; 
         const colliderHeight = PLAYER.COLLIDER.HEIGHT; 
@@ -686,12 +688,12 @@ export default class Enemy extends Entity {
                 const special = ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL][Math.floor(Math.random() * ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL].length)].toLowerCase();
                 this.specialAction = special;
                 // this.currentAction = 'special';
-                // const specific = ['renewal'];
-                // const test = specific[Math.floor(Math.random() * specific.length)];
-                if (this.stateMachine.isState(special)) {
-                    this.stateMachine.setState(special);
-                } else if (this.positiveMachine.isState(special)) {
-                    this.positiveMachine.setState(special);
+                const specific = ['ilirech'];
+                const test = specific[Math.floor(Math.random() * specific.length)];
+                if (this.stateMachine.isState(test)) {
+                    this.stateMachine.setState(test);
+                } else if (this.positiveMachine.isState(test)) {
+                    this.positiveMachine.setState(test);
                 };
                 this.setSpecialCombat(true);
             }, undefined, this);
@@ -789,8 +791,8 @@ export default class Enemy extends Entity {
         this.castbar.reset();
         this.isCasting = true;
         this.specialCombatText = this.scene.showCombatText(name, duration / 2, style, false, true, () => this.specialCombatText = undefined);
-        // this.specialCombatText = new ScrollingCombatText(this.scene, this.x, this.y, name, duration / 2, style, false, true, () => this.specialCombatText = undefined);
         this.castbar.setTotal(duration);
+        this.beam.enemyEmitter(this.scene.player, duration, this.ascean.mastery);
         if (channel === true) this.castbar.setTime(duration);
         if (this.isGlowing === false) this.checkCaerenic(true);
         this.setVelocity(0);
@@ -801,6 +803,7 @@ export default class Enemy extends Entity {
         this.isCasting = false;
         this.castingSuccess = false;
         this.castbar.reset();
+        this.beam.reset();
         if (this.isGlowing === true) this.checkCaerenic(false);
         if (this.isCounterSpelled === true) {
             this.specialCombatText = this.scene.showCombatText(counter, 750, 'damage', false, true, () => this.specialCombatText = undefined);

@@ -376,7 +376,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             if (res.playerWin === true) {
                 let experience: number = Math.round((res.computer?.level as number) * 50 * (res.computer?.level as number / res?.player?.level!) + (res?.playerAttributes?.rawKyosir as number));
                 experience = balanceExperience(experience, res?.player?.level as number);
-                experience += ascean().experience;
+                // experience += ascean().experience;
                 const newState = { 
                     ...asceanState(), 
                     avarice: res.prayerData.length > 0 ? res.prayerData.includes('Avarice') : false, 
@@ -384,12 +384,13 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     firewater: ascean().firewater,
                     currentHealth: res.newPlayerHealth,
                     opponent: res.computer?.level,
-                    opponentExp: Math.min(experience, res?.player?.level! * 1000),
+                    opponentExp: Math.min(experience + ascean().experience, res?.player?.level! * 1000),
                 };
                 EventBus.emit('record-win', { record: res, experience: newState });
                 const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
                 EventBus.emit('enemy-loot', loot);
                 setAsceanState({ ...asceanState(), avarice: false });
+                EventBus.emit('special-combat-text', { playerSpecialDescription: `Providence: You have gained up to ${experience} experience.` });
             } else {
                 EventBus.emit('record-loss', res);
             };

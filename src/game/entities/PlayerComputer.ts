@@ -318,9 +318,9 @@ export default class PlayerComputer extends Player {
     };
 
     update() {
+        this.handleAnimations();
         this.handleComputerConcerns();
         this.evaluateCombatDistance();
-        this.handleAnimations();
         this.playerMachine.update(this.dt);
     };
 };

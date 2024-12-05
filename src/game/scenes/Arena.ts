@@ -628,8 +628,9 @@ export class Arena extends Scene {
             };
             for (let j = 0; j < data.length; j++) {
                 marker = markers[Math.floor(Math.random() * markers.length)];
-                const enemy = new Enemy({ scene: this, x: marker.x, y: marker.y , texture: 'player_actions', frame: 'player_idle_0', data: data[j] });
+                const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: data[j] });
                 this.enemies.push(enemy);
+                enemy.setPosition(marker.x, marker.y);
                 this.time.delayedCall(1500, () => {
                     enemy.checkEnemyCombatEnter();
                     this.player.targets.push(enemy);

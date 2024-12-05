@@ -9,6 +9,7 @@ const HUSH = ['Invocation', 'Hush', 'hush', 'tendril', 'sacrifice', 'shimmer', '
 const NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 const TENDRIL = ['Tendril', 'tendril', 'tendrils', 'suture', 'sutures', 'sutured', 'shield', 'shields', 'mend', 'achire', 'kynisos', 'quorse'];
 const CONSOLE = 'Console';
+const PROVIDENCE = 'Providence';
 const ERROR = 'Error';
 const WARNING = 'Warning';
 export const text = (prev: string, data: Combat) => {
@@ -47,7 +48,7 @@ function checkAlignment(line: string[]) {
     for (let i = 0; i < line.length; i++) {
         if (line[i].includes('You')) { 
             count++;
-        } else if (line[i].includes('defeated') || line[i].includes('Resetting') || line[i].includes('Console') || line[i].includes('Warning') || line[i].includes('Error') || line[i].includes('Initial')) {
+        } else if (line[i].includes('defeated') || line[i].includes('Providence') || line[i].includes('Resetting') || line[i].includes('Console') || line[i].includes('Warning') || line[i].includes('Error') || line[i].includes('Initial')) {
             return 'center';
         };
     };
@@ -69,6 +70,7 @@ function styleText(text: string) {
         const isPartial = t.includes('Partial');
         const isGlancing = t.includes('Glancing');
         const isConsole = t.includes(CONSOLE);
+        const isProvidence = t.includes(PROVIDENCE);
         const isError = t.includes(ERROR);
         const isWarning = t.includes(WARNING);
         const lush = isAttack === true || isCast === true || isNumber === true || isHush === true || isTendril === true;
@@ -82,7 +84,7 @@ function styleText(text: string) {
             (isCast || isConsole) ? COLORS.BLUE :
             isDamage ? COLORS.TEAL :
             isNumber ? COLORS[numType as keyof typeof COLORS] : 
-            isHeal ? COLORS.HEAL :
+            (isHeal || isProvidence) ? COLORS.HEAL :
             isGlancing ? COLORS.LIGHT_BLUE : 
             isTendril ? COLORS.PURPLE : 
             (isAttack || isCritical || isPartial || isError) ? COLORS.RED : 

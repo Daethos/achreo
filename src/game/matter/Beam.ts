@@ -69,12 +69,6 @@ export default class Beam {
     enemyEmitter = (enemy: any, time: number, mastery: string) => { // Mastery for Enemy using Player Beam ??
         const color = masteryNumber(mastery);
         this.emitter.start();
-        // if (!this.enemyEmitters[enemy.enemyID]) {
-        //     this.enemyEmitters[enemy.enemyID] = this.scene.add.particles(enemy.x, enemy.y, 'beam', {
-        //         ...this.settings, color: [color], follow: enemy,
-        //     });
-        // };
-        // this.enemyEmitters[enemy.enemyID].start();
         this.updateEnemyEmitter(enemy, color);
         this.scene.time.addEvent({
             delay: time / 20,
@@ -87,7 +81,6 @@ export default class Beam {
         this.emitter.start();
         this.target = target;
         this.updateEmitter(target);
-        // console.log(`Starting emitter in ${this.scene.scene.key} --- Emitter: ${this.emitter.x} X | ${this.emitter.y} Y --- Player: ${this.player.x} X | ${this.player.y} Y`);
         this.scene.time.addEvent({
             delay: time / 20,
             callback: () => {if (this.target !== undefined) this.updateEmitter(this.target);},

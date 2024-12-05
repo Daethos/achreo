@@ -27,6 +27,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
     public controls: Phaser.GameObjects.Container
     public closed: boolean = true;
     public switches: {
+        loot: boolean;
         dialog: boolean;
         info: boolean;
         settings: boolean;
@@ -41,6 +42,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         closed: boolean;
         open: boolean;
     } = {
+        loot: false,
         dialog: false,
         info: false,
         settings: false,
@@ -84,7 +86,9 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         let settings = this.scene.add.image(this.x, this.y, 'settings');
         let info = this.scene.add.image(this.x, this.y, 'info');
         let dialog = this.scene.add.image(this.x, this.y, 'dialog');
+        let loot = this.scene.add.image(this.x, this.y, 'loot');
         let strafe = this.scene.add.image(this.x, this.y, 'strafe');
+        this.bar.push(loot);
         this.bar.push(dialog);
         this.bar.push(info);
         this.bar.push(settings);
@@ -129,6 +133,12 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                 const dialog = this.scene.gameState?.dialogTag as boolean;
                 const num = this.closed ? bar.length - 3 : 0;
                 item.setVisible(dialog);
+                item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
+            };
+            if (item.texture.key === 'loot') {
+                const loot = this.scene.gameState?.lootTag as boolean;
+                const num = this.closed ? this.scene.gameState?.dialogTag as boolean ? bar.length - 4 : bar.length - 3 : 1;
+                item.setVisible(loot);
                 item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
             };
             item.on('pointerdown', () => {
@@ -206,9 +216,15 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     item.setVisible(true); // false
                 };
             };
+            if (item.texture.key === 'loot') {
+                const loot = this.scene.gameState?.lootTag as boolean;
+                const num = this.closed ? this.scene.gameState?.dialogTag as boolean ? bar.length - 4 : bar.length - 3 : 0;
+                item.setVisible(loot);
+                item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
+            };
             if (item.texture.key === 'dialog') {
                 const dialog = this.scene.gameState?.dialogTag as boolean;
-                const num = this.closed ? bar.length - 3 : 0;
+                const num = this.closed ? bar.length - 3 : 1;
                 item.setVisible(dialog);
                 item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
             };
@@ -222,6 +238,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
 
     listener = () => {
         EventBus.on('outside-press', this.outsidePress);
+        EventBus.on('smallhud-deactivate', this.deactivate);
         EventBus.on('update-hud-position', (data: {x: number, y: number}) => {
             const { x, y } = data;
             this.x = this.scene.gameWidth * x;
@@ -246,7 +263,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         });
         EventBus.on('update-small-hud-offset', (offset: number) => {
             this.bar.forEach((item, index) => {
-                item.x = xModifier(this.x, Math.min(index, 7), offset); // || 43.75
+                item.x = xModifier(this.x, Math.min(index, 8), offset); // || 43.75
             });
         });
         EventBus.on('update-left-hud-offset', (offset: number) => {
@@ -259,6 +276,13 @@ export default class SmallHud extends Phaser.GameObjects.Container {
     activate = (type: string, active: boolean) => {
         const button = this.getButton(type);
         button?.setVisible(active);
+        this.draw();
+    };
+
+    deactivate = (type: string) => {
+        const button = this.getButton(type);
+        button?.setVisible(false);
+        this.draw();
     };
 
     getButton = (key: string) => {
@@ -324,6 +348,11 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     EventBus.emit('action-button-sound');
                     EventBus.emit('show-dialogue');
                     this.switches.dialog = !this.switches.dialog;
+                    break;
+                case 'loot':
+                    this.switches.loot = !this.switches.loot;
+                    EventBus.emit('action-button-sound');
+                    EventBus.emit('blend-game', { showLoot: this.switches.loot });
                     break;
                 default:
                     break;

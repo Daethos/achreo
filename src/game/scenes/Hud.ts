@@ -13,7 +13,6 @@ import { roundToTwoDecimals } from "../../utility/combat";
 import { Play } from "../main";
 const dimensions = useResizeListener();
 
-
 export class Hud extends Phaser.Scene {
     gameHeight: number;
     gameWidth: number;
@@ -110,6 +109,17 @@ export class Hud extends Phaser.Scene {
             this.removeEvent(pointer);
             this.prevDiff = -1;
             this.currentX = 0;
+            const newSettings = {
+                ...this.settings,
+                positions: {
+                    ...this.settings.positions,
+                    camera: {
+                        ...this.settings.positions.camera,
+                        zoom: this.currentZoom,
+                    }
+                }
+            };
+            EventBus.emit('save-settings', newSettings);
         });
         this.startGameScene();
     };

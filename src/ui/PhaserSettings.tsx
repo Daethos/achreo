@@ -10,6 +10,7 @@ import { Form } from "solid-bootstrap";
 import { ActionButtonModal } from "../utility/buttons";
 import { roundToTwoDecimals } from "../utility/combat";
 import { Collapse } from "solid-collapse";
+import ComputerLoadout from "../components/ComputerLoadout";
 const PhaserShaper = lazy(async () => await import('./PhaserShaper'));
 const cleanSettings = {
     actionTooltip: false,
@@ -373,6 +374,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                             <div style={font('0.85em', '#fdf6d8')}>
                                 <button class='gold highlight' onClick={() => handleArenaCombat()}>{settings().difficulty.arena ? 'Manual' : 'Computer'}</button>
                                 <div style={font('0.5em')}>[Whether you control your character in the Arena. If the Arena has been loaded, you must reload the game for this change to take effect.]</div>
+                                <ComputerLoadout settings={settings} />
                             </div>
                         </Collapse>
 

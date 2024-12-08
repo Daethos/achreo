@@ -1272,15 +1272,6 @@ export default class Player extends Entity {
 
     xCheck = () => this.velocity?.x !== 0;
 
-    playAnimation = (key: string, onComplete?: any) => {
-        if (this.anims.currentAnim?.key !== key) {
-            const animation = this.anims.play(key, true);
-            if (onComplete) {
-                animation.on('animationcomplete', onComplete);
-            };
-        };
-    };
-
     handleActions = () => {
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
@@ -1347,7 +1338,7 @@ export default class Player extends Entity {
 
     handleAnimations = () => {
         if (this.isPolymorphed) {
-            this.playAnimation(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`);
+            this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
         } else if (this.isConfused || this.isFeared) {
             if (this.moving()) {
                 this.handleMovementAnimations();
@@ -1355,31 +1346,31 @@ export default class Player extends Entity {
                 this.handleIdleAnimations();
             };
         } else if (this.isParrying) {
-            this.playAnimation('player_attack_1', () => (this.isParrying = false));
+            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isParrying = false); 
         } else if (this.isThrusting) {
             sprint(this.scene);
-            this.playAnimation('player_attack_2', () => (this.isThrusting = false));
-        } else if (this.isDodging) {
-            this.playAnimation('player_slide');
+            this.anims.play('player_attack_2', true).on('animationcomplete', () => this.isThrusting = false);
+        } else if (this.isDodging) { 
+            this.anims.play('player_slide', true);
             if (this.dodgeCooldown === 0) this.playerDodge();
-        } else if (this.isRolling) {
+        } else if (this.isRolling) { 
             sprint(this.scene);
-            this.playAnimation('player_roll');
+            this.anims.play('player_roll', true);
             if (this.rollCooldown === 0) this.playerRoll();
         } else if (this.isPosturing) {
             sprint(this.scene);
-            this.playAnimation('player_attack_3', () => this.isPosturing = false);
+            this.anims.play('player_attack_3', true).on('animationcomplete', () => this.isPosturing = false);
         } else if (this.isAttacking) {
             sprint(this.scene);
-            this.playAnimation('player_attack_1', () => this.isAttacking = false); 
+            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isAttacking = false); 
         } else if (this.moving()) {
             this.handleMovementAnimations();
             this.isMoving = true;
-        } else if (this.isCasting) {
+        } else if (this.isCasting) { 
             walk(this.scene);
-            this.playAnimation('player_health');
+            this.anims.play('player_health', true);
         } else if (this.isPraying) {
-            this.playAnimation('player_pray', () => this.isPraying = false);
+            this.anims.play('player_pray', true).on('animationcomplete', () => this.isPraying = false);
         } else {
             this.isMoving = false;
             this.handleIdleAnimations();
@@ -1405,11 +1396,11 @@ export default class Player extends Entity {
             this.anims.play('player_climb', true);
         } else if (this.inWater) {
             walk(this.scene);
-            this.playAnimation(this.velocity?.y as number > 0 ? 'swim_down' : 'swim_up');
+            this.anims.play(this.velocity?.y as number > 0 ? 'swim_down' : 'swim_up', true);
         } else if (!this.xCheck()) {
-            this.playAnimation(this.velocity?.y as number > 0 ? 'run_down' : 'run_up');
+            this.anims.play(this.velocity?.y as number > 0 ? 'run_down' : 'run_up', true);
         } else {
-            this.playAnimation('player_running');
+            this.anims.play('player_running', true);
         };
     };
 

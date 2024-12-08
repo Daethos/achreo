@@ -199,7 +199,7 @@ export const STARTING_SPECIALS = {
     'constitution': ['Healing', 'Kyrnaicism', 'Mend', 'Renewal', 'Shield'],
     'strength': ['Arc', 'Desperation', 'Howl', 'Leap', 'Storm'],
     'agility': ['Pursuit', 'Recover', 'Rush', 'Shimmer', 'Sprint'],
-    'achre': ['Blink', 'Envelop', 'Polymorph', 'Root', 'Slow'],
+    'achre': ['Blink', 'Absorb', 'Polymorph', 'Astrave', 'Slow'],
     'caeren': ['Fear', 'Ilirech', 'Mend', 'Sacrifice', 'Scream'],
     'kyosir': ['Confuse', 'Maiereth', 'Malice', 'Reconstitute', 'Sacrifice'],
 };

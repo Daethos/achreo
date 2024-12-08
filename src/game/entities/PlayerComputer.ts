@@ -234,16 +234,17 @@ export default class PlayerComputer extends Player {
         if (this.isCasting || this.isPraying || this.isSuffering() || this.health <= 0) return;
         let actionNumber = Math.floor(Math.random() * 101);
         let action = '';
-        if (actionNumber > 70) { // 71-100 (30%)
+        const loadout = this.scene.hud.settings.computerLoadout || { attack: 30, parry: 10, roll: 10, thrust: 15, posture: 15 };
+        if (actionNumber > 100 - loadout.attack) { // 71-100 (30%)
             action = States.COMPUTER_ATTACK;
-        } else if (actionNumber > 55) { // 56-70 (15%)
-            action = States.COMPUTER_POSTURE;
-        } else if (actionNumber > 40 && !this.isRanged) { // 41-55 (15%)
-            action = States.ROLL;
-        } else if (actionNumber > 25 && !this.isRanged) { // 26-40 (15%)
+        } else if (actionNumber > 100 - loadout.attack - loadout.parry) { // 26-40 (15%) || 25 && !this.isRanged
             action = States.COMPUTER_PARRY;
-        } else if (actionNumber > 10) { // 11-20 (10%) || 11-40 (this.isRanged) (30%)
+        } else if (actionNumber > 100 - loadout.attack - loadout.parry - loadout.roll) { // 41-55 (15%) || 40 && !this.isRanged
+            action = States.ROLL;
+        } else if (actionNumber > 100 - loadout.attack - loadout.parry - loadout.roll - loadout.thrust) { // 11-20 (10%) || 11-40 (this.isRanged) (30%)
             action = States.COMPUTER_THRUST;
+        } else if (actionNumber > 100 - loadout.attack - loadout.parry - loadout.roll - loadout.thrust - loadout.posture) { // 56-70 (15%)
+            action = States.COMPUTER_POSTURE;
         } else { // New State 1-10 (10%)
             action = States.CONTEMPLATE;
         };
@@ -318,8 +319,8 @@ export default class PlayerComputer extends Player {
     };
 
     update() {
-        this.handleAnimations();
         this.handleComputerConcerns();
+        this.handleAnimations();
         this.evaluateCombatDistance();
         this.playerMachine.update(this.dt);
     };

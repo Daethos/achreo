@@ -26,6 +26,14 @@ export default class Settings {
     public combatSettings: { left: string; top: string; height: string; width: string; };
     public control: string;
     public desktop: boolean;
+    public computerLoadout: {
+        attack: number;
+        posture: number;
+        roll: number;
+        thrust: number;
+        parry: number;
+        special: number;
+    }; 
     public difficulty: {
         arena: boolean;
         aggression: number; 
@@ -165,6 +173,14 @@ export default class Settings {
         this.combatSettings = { left: '20%', top: '40%', height: '50%', width: '60%' };
         this.control = 'Buttons';
         this.desktop = false;
+        this.computerLoadout = {
+            attack: 30,
+            posture: 15,
+            roll: 15,
+            thrust: 15,
+            parry: 15,
+            special: 10,
+        };
         this.difficulty = {
             arena: true,
             aggression: 0.5,

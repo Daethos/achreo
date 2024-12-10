@@ -292,7 +292,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
         'Traveling Sedyreal':'Sedyreal',
         'Traveling Kyrisian':'Kyrisian',
         'Kreceus': 'Kreceus',
-        "Ashreu'ul": "Ashreu'ul"    
+        "Ashreu'ul": "Ashreu'ul",
+        'Tutorial Teacher': 'Tutorial Teacher',
     };
 
     const actions = {
@@ -308,6 +309,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
         setBlacksmithSell: () => setBlacksmithSell(!blacksmithSell()),
         setForgeSee: () => setForgeSee(!forgeSee()),
         setRoster: () => setArena({ ...arena(), show: true }),
+        // getTutorialMovement: () => ,
+        // getTutorialEnemy: () => ,
+        // getTutorialSettings: () => ,
+        // getTutorialCombat: () => ,
     };
     
     function steal(item: Equipment): void {

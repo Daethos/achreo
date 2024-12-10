@@ -1,6 +1,6 @@
-import { Accessor, For } from "solid-js";
+import { Accessor, createSignal, For, Match, Switch } from "solid-js";
 import Settings from "../models/settings"; 
-import { SPECIALS } from "./abilities";
+import { SPECIAL, SPECIALS, TRAITS } from "./abilities";
 import { ACTION_ORIGIN } from "./actions";
 
 export const svg = (type: string) => {
@@ -212,13 +212,67 @@ const CombatSettings = () => {
     </div>;
 };
 
-const SpecialSettings = () => {
+const SpecialSettings = ({specials}: { specials: Accessor<string[]>; }) => {
+    const [showPersonal, setShowPersonal] = createSignal<string>('all');
     return <div>
         <div>
             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>{svg('SPECIALS')} Specials</p>
             When you wish to alter the fight through othernatural means, choose one of the specials.
         </div><br />
-        <For each={SPECIALS}>{(special) => {
+        <button class='highlight' onClick={() => setShowPersonal('all')}>All</button>
+        <button class='highlight' onClick={() => setShowPersonal('personal')}>Personal</button>
+        {/* <button class='highlight' onClick={() => setShowPersonal('traits')}>Traits</button> */}
+    <Switch>
+        <Match when={showPersonal() === 'all'}>
+            <For each={SPECIALS}>{(special) => {
+                const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
+                return <div>
+                    <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                        {svg(spec?.svg)} {special} <br />
+                    </p>
+                    <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>
+                        {spec?.description}
+                    </p>
+                    <p class='' style={{ color: 'aqua' }}>
+                        {spec?.time} {spec?.special} <br />
+                        {spec?.cost}. {spec?.cooldown} Cooldown <br />
+                    </p>
+                </div>;
+            }}</For>
+        </Match>
+        <Match when={showPersonal() === 'personal'}>
+            <PersonalSpecialSettings specials={specials} />
+        </Match>
+        <Match when={showPersonal() === 'traits'}>
+            <TraitSpecialSettings />
+        </Match>
+    </Switch>
+    </div>;
+};
+
+export const PersonalSpecialSettings = ({specials}: { specials: Accessor<string[]>; }) => {
+    return <div>
+        <For each={specials()}>{(special) => {
+            const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
+            return <div>
+                <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                    {svg(spec?.svg)} {special} <br />
+                </p>
+                <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>
+                    {spec?.description}
+                </p>
+                <p class='' style={{ color: 'aqua' }}>
+                    {spec?.time} {spec?.special} <br />
+                    {spec?.cost}. {spec?.cooldown} Cooldown <br />
+                </p>
+            </div>;
+        }}</For>
+    </div>;
+};
+
+export const TraitSpecialSettings = () => {
+    return <div>
+        <For each={TRAITS}>{(special) => {
             const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
             return <div>
                 <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
@@ -405,13 +459,13 @@ const ControlSettings = () => {
     );
 };
 
-export default function SettingSetter({ setting }: { setting: Accessor<Settings> }) {
+export default function SettingSetter({ setting, specials }: { setting: Accessor<Settings>; specials: Accessor<string[]>; }) {
     return (
         <>
         {setting().settingViews === 'Actions' ? (
             <CombatSettings />
         ) : setting().settingViews === 'Specials' ? (
-            <SpecialSettings />
+            <SpecialSettings specials={specials} />
         ) : setting().settingViews === 'Control' ? (
             <ControlSettings />
         ) : setting().settingViews === 'Combat' ? (

@@ -168,7 +168,6 @@ export class Hud extends Phaser.Scene {
                 this.joystick?.joystick?.setVisible(false);
                 this.rightJoystick?.joystick?.setVisible(false);
                 if (this.actionBar) {
-                    // this.actionBar.setVisible(true);
                     this.actionBar.draw();
                 };
             } else {
@@ -178,7 +177,6 @@ export class Hud extends Phaser.Scene {
                     this.rightJoystick?.joystick?.setVisible(true);
                     this.rightJoystick?.pointer?.setVisible(true);
                     if (this.actionBar) {
-                        // this.actionBar.setVisible(true);
                         this.actionBar.draw();
                     };
                 };
@@ -280,6 +278,9 @@ export class Hud extends Phaser.Scene {
                     this.rightJoystick.joystick.thumb.setScale(width);
                     break;
             };
+        });
+        EventBus.on('highlight', (data: { key: string, value: boolean }) => {
+            
         });
     };
 

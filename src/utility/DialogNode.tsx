@@ -52,6 +52,7 @@ const REVERSE_KEY = {
     'Traveling Sedyreal': 'Merchant-All-Weapon',
     'Kreceus': 'Merchant-All',
     "Ashreu'ul": 'Merchant-All',
+    "Tutorial Teacher": 'Merchant-Tutorial',
 };
 
 export const npcIds: NpcIds = {
@@ -67,6 +68,63 @@ export const npcIds: NpcIds = {
     "Merchant-All-Armor": 9,
     "Merchant-All-Weapon": 10,
     "Merchant-All": 11,
+    "Tutorial Teacher": 12
+};
+
+export const TUTORIAL = {
+    "_id":"tutorial_1",
+    "origin":"Li'ivi",
+    "sex":"Man",
+    "mastery":"constitution",
+    "level":0.5,
+    "experience":0,
+    "inventory":[],
+    "name":"Tut",
+    "description":"Tutorial Enemy for the Game",
+    "constitution":10,
+    "strength":10,
+    "agility":10,
+    "achre":10,
+    "caeren":10,
+    "kyosir":10,
+    "weaponOne":{
+        name: 'Pernach',
+        rarity: 'Common',
+    },"weaponTwo":{
+        name: 'Spear',
+        rarity: 'Common',
+    },"weaponThree":{
+        name: 'Achestra',
+        rarity: 'Common',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Common',
+    },"helmet":{
+        name: 'Cloth Helm (Starter)',
+        rarity: 'Default',
+    },"chest":{
+        name: 'Cloth Robes (Starter)',
+        rarity: 'Default',
+    },"legs":{
+        name: 'Cloth Skirt (Starter)',
+        rarity: 'Default',
+    },"ringOne":{
+        name: 'Empty Ring Slow',
+        rarity: 'Default',
+    },"ringTwo":{
+        name: 'Empty Ring Slow',
+        rarity: 'Default',
+    },"amulet":{
+        name: 'Empty Amulet Slow',
+        rarity: 'Default',
+    },"trinket":    {
+        name: 'Empty Trinket Slot',
+        rarity: 'Default',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":1000,"max":1000}
 };
 const KRECEUS = {
     "_id":"kreceus_16",

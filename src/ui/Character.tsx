@@ -728,7 +728,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
                     <div style={{ 'scrollbar-width': "none", overflow: 'scroll' }}> 
                         <div class='center' style={{ padding: '5%', 'font-size': '0.75em' }}>
                         <Suspense fallback={<Puff color="gold"/>}>
-                            <SettingSetter setting={settings} />
+                            <SettingSetter setting={settings} specials={specials} />
                         </Suspense>
                         </div>
                     </div>

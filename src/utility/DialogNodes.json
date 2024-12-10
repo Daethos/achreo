@@ -38,6 +38,20 @@
                             "value": "0"
                         }
                     ]
+                },
+                {
+                    "text": "Welcome to the Ascean, ${ascean.name}, and the beginning of your adventure in this world!",
+                    "next": "0030",
+                    "npcIds": [
+                        12
+                    ],
+                    "conditions": [
+                        {
+                            "key": "interactCount",
+                            "operator": "===",
+                            "value": "0"
+                        }
+                    ]
                 }
             ],
             "options": [
@@ -147,6 +161,35 @@
                         }
                     ],
                     "action": "setRoster"
+                },
+                {
+                    "text": "Pleased to meet you. What am I in for, what kind of game is this?",
+                    "next": "0040",
+                    "npcIds": [
+                        12
+                    ],
+                    "conditions": [
+                        {
+                            "key": "interactCount",
+                            "operator": ">",
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "text": "I'm here to sharpen my skills. Summon forth an enemy for me to duel.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ],
+                    "conditions": [
+                        {
+                            "key": "interactCount",
+                            "operator": ">",
+                            "value": "0"
+                        }
+                    ],
+                    "action": "getTutorialEnemy"
                 }
             ],
             "npcIds": [
@@ -160,7 +203,8 @@
                 8,
                 9,
                 10,
-                11
+                11,
+                12
             ]
         },
         {
@@ -992,6 +1036,264 @@
             ],
             "npcIds": [
                 11
+            ]
+        },
+        {
+            "id": "0040",
+            "text": "This is an action roleplaying game. As you may have noted, you've created a character and entered this world without much explanation, but I am here to guide you further.",
+            "options": [
+                {
+                    "text": "How am I expected to navigate and interact with this world?",
+                    "next": "0042",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialMovement"
+                },
+                {
+                    "text": "How does combat function, and what am I capable of performing?",
+                    "next": "0043",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialCombat"
+                },
+                {
+                    "text": "How do I improve myself in this game?",
+                    "next": "0044",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialMerchant"
+                },
+                {
+                    "text": "Is there anything I can do if I find the gameplay too difficult?",
+                    "next": "0045",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialSettings"
+                },
+                {
+                    "text": "Enough of the rabble, bring me an enemy to test myself, I believe I am ready.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ]
+                }
+            ],
+            "npcIds": [
+                12
+            ]
+        },
+        {
+            "id": "0041",
+            "text": "Very well, good luck to you in the combat encounter. When you feel ready for the real world, take the exit",
+            "options": [
+                {
+                    "text": "Enough of the rabble, bring me an enemy to test myself, I believe I am ready.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialEnemy"
+                },
+                {
+                    "text": "How am I expected to navigate and interact with this world?",
+                    "next": "0042",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialMovement"
+                },
+                {
+                    "text": "How does combat function, and what am I capable of performing?",
+                    "next": "0043",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialCombat"
+                },
+                {
+                    "text": "How do I improve myself in this game?",
+                    "next": "0044",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialMerchant"
+                },
+                {
+                    "text": "Is there anything I can do if I find the gameplay too difficult?",
+                    "next": "0045",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialSettings"
+                }
+            ],
+            "npcIds": [
+                12
+            ]
+        },
+        {
+            "id": "0042",
+            "text": "The game starts with mobile in mind, with twin joysticks for movement and aiming (if you are ranged). The left joystick allows you to move your character, and the right is used for certain special abilities and manual targeting if you have it enabled in the settings menu. However, in desktop, the keyboard and mouse are used in tandem for movement and aiming.",
+            "options": [
+                {
+                    "text": "How does combat function, and what am I capable of performing?",
+                    "next": "0043",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialCombat"
+                },
+                {
+                    "text": "How do I improve myself in this game?",
+                    "next": "0044",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialMerchant"
+                },
+                {
+                    "text": "Is there anything I can do if I find the gameplay too difficult?",
+                    "next": "0045",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialSettings"
+                },
+                {
+                    "text": "Enough of the rabble, bring me an enemy to test myself, I believe I am ready.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ]
+                }
+            ],
+            "npcIds": [
+                12
+            ]
+        },
+        {
+            "id": "0043",
+            "text": "The Physical and Special Action Buttons allow you to perform damage in combat. Everyone is capable of swining their weapon and shooting projectiles in various ways, as well as forms of evasion against the enemy. With specials, you are restricted to your current mastery, and perform specialized actions that can heal yourself, directly damage the enemy, or control them via magical effects.",
+            "options": [
+                {
+                    "text": "How am I expected to navigate and interact with this world?",
+                    "next": "0042",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialMovement"
+                },
+                {
+                    "text": "How do I improve myself in this game?",
+                    "next": "0044",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialMerchant"
+                },
+                {
+                    "text": "Is there anything I can do if I find the gameplay too difficult?",
+                    "next": "0045",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialSettings"
+                },
+                {
+                    "text": "Enough of the rabble, bring me an enemy to test myself, I believe I am ready.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialEnemy"
+                }
+            ],
+            "npcIds": [
+                12
+            ]
+        },
+        {
+            "id": "0044",
+            "text": "When defeating enemies, you have the chance of getting improved loot relative to your current garb. Merchants also sell multitudes of armor and weapons, in addition to yourself being capable of forging greater qualities if you have multiple copies of lesser quality items.",
+            "options": [
+                {
+                    "text": "How am I expected to navigate and interact with this world?",
+                    "next": "0042",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialMovement"
+                },
+                {
+                    "text": "How does combat function, and what am I capable of performing?",
+                    "next": "0043",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialCombat"
+                },
+                {
+                    "text": "Is there anything I can do if I find the gameplay too difficult?",
+                    "next": "0045",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialSettings"
+                },
+                {
+                    "text": "Enough of the rabble, bring me an enemy to test myself, I believe I am ready.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ]
+                }
+            ],
+            "npcIds": [
+                12
+            ]
+        },
+        {
+            "id": "0045",
+            "text": "Absolutely. Clicking on your name in the HUD, your character in-game (when not in combat), or toggling the book menu in the bottom right and clicking on the player icon will all lead you to the main settings menu. From here, you can change multiple options for gameplay concerns, including but not limited to: enemy aggression, special capability, and speed, as well as player speed.",
+            "options": [
+                {
+                    "text": "How am I expected to navigate and interact with this world?",
+                    "next": "0042",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialMovement"
+                },
+                {
+                    "text": "How does combat function, and what am I capable of performing?",
+                    "next": "0043",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialCombat"
+                },
+                {
+                    "text": "How do I improve myself in this game?",
+                    "next": "0044",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialMerchant"
+                },
+                {
+                    "text": "Enough of the rabble, bring me an enemy to test myself, I believe I am ready.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ]
+                }
+            ],
+            "npcIds": [
+                12
             ]
         }
     ]

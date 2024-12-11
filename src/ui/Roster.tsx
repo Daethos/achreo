@@ -15,7 +15,8 @@ import { roundToTwoDecimals } from "../utility/combat";
 import { masteryColor } from "../utility/styling";
 import Settings from "../models/settings";
 const selectors = {
-    1: { prev: 1, next: 2 },
+    0.5: { prev: 0.5, next: 1 },
+    1: { prev: 0.5, next: 2 },
     2: { prev: 1, next: 4 },
     4: { prev: 2, next: 6 },
     6: { prev: 4, next: 8 },

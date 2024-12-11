@@ -75,17 +75,22 @@ export default class Joystick extends Phaser.GameObjects.Container {
     highlightAnimation(type: string) {
         const base = type === 'left' ? this.scene.settings.positions.leftJoystick.base : this.scene.settings.positions.rightJoystick.base;
         const thumb = type === 'left' ? this.scene.settings.positions.leftJoystick.thumb : this.scene.settings.positions.rightJoystick.thumb;
+        const opacity = type === 'left' ? this.scene.settings.positions.leftJoystick.opacity : this.scene.settings.positions.rightJoystick.opacity;
         this.joystick.base.setFillStyle();
         this.joystick.base.setFillStyle(thumb);
         this.joystick.thumb.setFillStyle();
         this.joystick.thumb.setFillStyle(base);
+        this.joystick.base.setAlpha(1);
+        this.joystick.thumb.setAlpha(1);
 
         this.scene.time.delayedCall(500, () => {
             this.joystick.base.setFillStyle();
             this.joystick.base.setFillStyle(base);
             this.joystick.thumb.setFillStyle();
             this.joystick.thumb.setFillStyle(thumb);
-        }, undefined, this);
+            this.joystick.base.setAlpha(opacity);
+            this.joystick.thumb.setAlpha(opacity);
+            }, undefined, this);
     };
     update() {
         if (this.joystick.force > 0) {

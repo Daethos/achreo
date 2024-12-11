@@ -21,6 +21,7 @@ import Roster from './Roster';
 import { ArenaRoster } from './BaseUI';
 import Settings from '../models/settings';
 import { usePhaserEvent } from '../utility/hooks';
+import { fetchTutorial } from '../utility/enemy';
 
 const GET_FORGE_COST = {
     Common: 1,
@@ -111,15 +112,15 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
                 const optionValue = getOptionKey(ascean, combat, game, key);
                 switch (operator) {
                     case '>':
-                        return optionValue > value;
+                        return Number(optionValue) > Number(value);
                     case '>=':
-                        return optionValue >= value;
+                        return Number(optionValue) >= Number(value);
                     case '<':
-                        return optionValue < value;
+                        return Number(optionValue) < Number(value);
                     case '<=':
-                        return optionValue <= value;
+                        return Number(optionValue) <= Number(value);
                     case '=':
-                        return optionValue === value;
+                        return Number(optionValue) === Number(value);
                     default:
                         return false;
                 };
@@ -310,9 +311,19 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
         setForgeSee: () => setForgeSee(!forgeSee()),
         setRoster: () => setArena({ ...arena(), show: true }),
         getTutorialMovement: () => EventBus.emit('highlight', 'joystick'),
-        getTutorialEnemy: () => EventBus.emit('highlight', 'joystick'), // TODO:FIXME: Change to actually summon an enemy!
+        getTutorialEnemy: () => fetchTutorialEnemyPrompt(), // TODO:FIXME: Change to actually summon an enemy!
         getTutorialSettings: () => EventBus.emit('highlight', 'smallhud'),
         getTutorialCombat: () => EventBus.emit('highlight', 'action-bar'),
+        getDialogClose: () => EventBus.emit('outside-press', 'dialog'),
+    };
+
+    function fetchTutorialEnemyPrompt() {
+        const enemy = fetchTutorial();
+        setTimeout(() => {
+            EventBus.emit('blend-game', { tutorialEncounter: game().tutorialEncounter + 1 });
+            EventBus.emit('set-tutorial-enemy', enemy);
+            EventBus.emit('outside-press', 'dialog');
+        }, 5000);
     };
     
     function steal(item: Equipment): void {

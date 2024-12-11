@@ -76,7 +76,7 @@ export class Tutorial extends Phaser.Scene {
         const map = this.make.tilemap({ key: 'tutorial' });
         this.map = map;
         const tileSize = 32;
-        const tileSet = map.addTilesetImage('GrasslandMainLev2.0', 'GrasslandMainLev2.0', tileSize, tileSize, 0, 0);
+        const tileSet = map.addTilesetImage('GrasslandMainLev2.0', 'GrasslandMainLev2.0', tileSize, tileSize, 1, 2);
         let layer0 = map.createLayer('Tile Layer 0 - Base', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
         let layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
         this.baseLayer = layer0 as Phaser.Tilemaps.TilemapLayer;
@@ -266,6 +266,7 @@ export class Tutorial extends Phaser.Scene {
                 this.enemies[i].isSpecial = special >= Math.random();
             };
         });
+        EventBus.on('create-tutorial-enemy', this.createTutorialEnemy);
         EventBus.on('resetting-game', this.resetting);
     };
 

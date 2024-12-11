@@ -26,6 +26,20 @@
                     ]
                 },
                 {
+                    "text": "Welcome to the Ascean, ${ascean.name}, and the beginning of your adventure in this world.",
+                    "next": "0030",
+                    "npcIds": [
+                        12
+                    ],
+                    "conditions": [
+                        {
+                            "key": "interactCount",
+                            "operator": "=",
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
                     "text": "Welcome to the Ancient Eulex. You may call me ${enemy.name}.",
                     "next": "0030",
                     "npcIds": [
@@ -34,13 +48,13 @@
                     "conditions": [
                         {
                             "key": "interactCount",
-                            "operator": "===",
+                            "operator": "=",
                             "value": "0"
                         }
                     ]
                 },
                 {
-                    "text": "Welcome to the Ascean, ${ascean.name}, and the beginning of your adventure in this world!",
+                    "text": "Welcome back, ${ascean.name}. How may I guide you?",
                     "next": "0030",
                     "npcIds": [
                         12
@@ -48,8 +62,8 @@
                     "conditions": [
                         {
                             "key": "interactCount",
-                            "operator": "===",
-                            "value": "0"
+                            "operator": ">",
+                            "value": "1"
                         }
                     ]
                 }
@@ -163,7 +177,21 @@
                     "action": "setRoster"
                 },
                 {
-                    "text": "Pleased to meet you. What am I in for, what kind of game is this?",
+                    "text": "Alright, I feel well enough and good about my abilities. What now?",
+                    "next": "0046",
+                    "npcIds": [
+                        12
+                    ],
+                    "conditions": [
+                        {
+                            "key": "tutorialEncounter",
+                            "operator": ">",
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "text": "Oh hey there. What kind of game is this, again?",
                     "next": "0040",
                     "npcIds": [
                         12
@@ -172,7 +200,21 @@
                         {
                             "key": "interactCount",
                             "operator": ">",
-                            "value": "0"
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "text": "Pleased to meet you. What am I in for, what kind of game is this?",
+                    "next": "0040",
+                    "npcIds": [
+                        12
+                    ],
+                    "conditions": [
+                        {
+                            "key": "interactCount",
+                            "operator": "=",
+                            "value": "1"
                         }
                     ]
                 },
@@ -186,7 +228,7 @@
                         {
                             "key": "interactCount",
                             "operator": ">",
-                            "value": "0"
+                            "value": "1"
                         }
                     ],
                     "action": "getTutorialEnemy"
@@ -1075,11 +1117,20 @@
                     "action": "getTutorialSettings"
                 },
                 {
-                    "text": "Enough of the rabble, bring me an enemy to test myself, I believe I am ready.",
+                    "text": "Well then, bring forth an enemy and allow me to test myself. I believe I am ready.",
                     "next": "0041",
                     "npcIds": [
                         12
-                    ]
+                    ],
+                    "action": "getTutorialEnemy"
+                },
+                {
+                    "text": "Enough of this babble, bring them to me.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialEnemy"
                 }
             ],
             "npcIds": [
@@ -1088,10 +1139,10 @@
         },
         {
             "id": "0041",
-            "text": "Very well, good luck to you in the combat encounter. When you feel ready for the real world, take the exit",
+            "text": "Very well. Good luck to you in the encounter, ${ascean.name}. Speak to me again when you are finished.",
             "options": [
                 {
-                    "text": "Enough of the rabble, bring me an enemy to test myself, I believe I am ready.",
+                    "text": "I wish to fight again, bring me another.",
                     "next": "0041",
                     "npcIds": [
                         12
@@ -1164,11 +1215,20 @@
                     "action": "getTutorialSettings"
                 },
                 {
-                    "text": "Enough of the rabble, bring me an enemy to test myself, I believe I am ready.",
+                    "text": "Well then, bring forth an enemy and allow me to test myself. I believe I am ready.",
                     "next": "0041",
                     "npcIds": [
                         12
-                    ]
+                    ],
+                    "action": "getTutorialEnemy"
+                },
+                {
+                    "text": "Enough of this babble, bring them to me.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialEnemy"
                 }
             ],
             "npcIds": [
@@ -1204,7 +1264,15 @@
                     "action": "getTutorialSettings"
                 },
                 {
-                    "text": "Enough of the rabble, bring me an enemy to test myself, I believe I am ready.",
+                    "text": "Well then, bring forth an enemy and allow me to test myself. I believe I am ready.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialEnemy"
+                },
+                {
+                    "text": "Enough of this babble, bring them to me.",
                     "next": "0041",
                     "npcIds": [
                         12
@@ -1245,11 +1313,20 @@
                     "action": "getTutorialSettings"
                 },
                 {
-                    "text": "Enough of the rabble, bring me an enemy to test myself, I believe I am ready.",
+                    "text": "Well then, bring forth an enemy and allow me to test myself. I believe I am ready.",
                     "next": "0041",
                     "npcIds": [
                         12
-                    ]
+                    ],
+                    "action": "getTutorialEnemy"
+                },
+                {
+                    "text": "Enough of this babble, bring them to me.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialEnemy"
                 }
             ],
             "npcIds": [
@@ -1285,11 +1362,77 @@
                     "action": "getTutorialMerchant"
                 },
                 {
-                    "text": "Enough of the rabble, bring me an enemy to test myself, I believe I am ready.",
+                    "text": "Well then, bring forth an enemy and allow me to test myself. I believe I am ready.",
                     "next": "0041",
                     "npcIds": [
                         12
-                    ]
+                    ],
+                    "action": "getTutorialEnemy"
+                },
+                {
+                    "text": "Enough of this babble, bring them to me.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialEnemy"
+                }
+            ],
+            "npcIds": [
+                12
+            ]
+        },
+        {
+            "id": "0046",
+            "text": "Down the stairs and to the left, you will enter and join the world, vested with the knowledge to gain some coin and experience, and learn some things of the people that inhabit that world. \n\n Find the underground and the arena, and keep readying yourself for the Ascea, it'll be here sooner than you wish.",
+            "options": [
+                {
+                    "text": "Just making sure, movement, hows that go again?",
+                    "next": "0042",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialMovement"
+                },
+                {
+                    "text": "One more time, real quick, how does combat work again, what can I do exactly?",
+                    "next": "0043",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialCombat"
+                },
+                {
+                    "text": "One last question, how do I improve myself again?",
+                    "next": "0044",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialMerchant"
+                },
+                {
+                    "text": "For old time's sake, bring me one last enemy. Just to make sure.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialEnemy"
+                },
+                {
+                    "text": "You know what, I think I want another. Just a quick one. I think I'm getting good at this.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialEnemy"
+                },
+                {
+                    "text": "Goodbye, ${enemy.name}. I appreciate the help.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getDialogClose"
                 }
             ],
             "npcIds": [

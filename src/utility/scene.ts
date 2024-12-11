@@ -62,7 +62,7 @@ export const image: {key: string, value:string}[] = [
     {key: 'cursor', value: '../assets/images/cursor.png'},
     {key: 'target', value: '../assets/gui/target_1.png'},
     {key: 'castle_outside', value: '../assets/gui/castle_outside.png'},
-    {key: 'GrasslandMainLev2.0', value: '../assets/gui/GrasslandMainLev2.0.png'},
+    {key: 'GrasslandMainLev2.0', value: '../assets/gui/GrasslandMainLev2.0-extruded.png'},
     {key: 'AncientForestMain', value: '../assets/gui/AncientForestMainLev-extruded.png'},
     {key: 'AncientForestDecorative', value: '../assets/gui/AncientForestDecorative.png'},
     {key: 'Camp_Graves', value: '../assets/gui/Camp_Graves.png'},

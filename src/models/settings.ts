@@ -3,6 +3,7 @@ import { initTutorial, Tutorial } from "../utility/tutorial";
 
 export default class Settings {
     public _id: string;
+    public map: string;
     public music: boolean;
     public sound: boolean;
     public volume: number;
@@ -131,6 +132,7 @@ export default class Settings {
 
     public constructor(id: string, mastery: string) {
         this._id = id;
+        this.map = 'Tutorial';
         this.music = true;
         this.sound = true;
         this.volume = 0.3;

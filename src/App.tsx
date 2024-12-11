@@ -290,6 +290,7 @@ export default function App() {
     function switchScene(current: string, next: string): void {
         setShow(false);
         EventBus.emit('switch-scene', { current, next });
+        EventBus.emit('insert-settings', { map: next });
     };
     function summonEnemy(val: number = 1) {
         EventBus.emit('summon-enemy', val);

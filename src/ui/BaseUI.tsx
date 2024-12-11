@@ -417,6 +417,10 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
     usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
     usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
     usePhaserEvent('show-roster', () => setArena({ ...arena(), show: true }));
+    usePhaserEvent('set-tutorial-enemy', (enemy: Compiler) => {
+        instance.game?.registry.set("enemies", enemy);
+        EventBus.emit("create-tutorial-enemy");
+    });
     usePhaserEvent('set-wager-arena', (data: { wager: { silver: number; gold: number; multiplier: number; }; enemies: Compiler[] }) => {
         const { wager, enemies } = data;
         instance.game?.registry.set("enemies", enemies);

@@ -635,7 +635,6 @@ export class Arena extends Scene {
                     enemy.checkEnemyCombatEnter();
                     this.player.targets.push(enemy);
                     if (count === j) {
-                        console.log('last enemy!');
                         if (this.player.isComputer) {
                             this.player.computerEngagement(enemy.enemyID);
                         } else {

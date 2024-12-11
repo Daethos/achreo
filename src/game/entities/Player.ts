@@ -888,6 +888,14 @@ export default class Player extends Entity {
                         key: 'Exit World'
                     });
                 };
+                if (other.gameObjectB && other.gameObjectB?.properties?.name === 'Enter Tutorial') {
+                    EventBus.emit('alert', { 
+                        header: 'Tutorial', 
+                        body: `You are near the entrance to the tutorial. \n Would you like to head back to area?`, 
+                        delay: 3000, 
+                        key: 'Enter Tutorial'
+                    });
+                };
             },
             context: this.scene,
         });

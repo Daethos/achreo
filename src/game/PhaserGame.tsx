@@ -14,7 +14,7 @@ import { Compiler, LevelSheet, asceanCompiler } from '../utility/ascean';
 import { deleteEquipment, getAscean, getInventory, populate, updateSettings } from '../assets/db/db';
 import { getNpcDialog } from '../utility/dialog';
 import { getAsceanTraits } from '../utility/traits';
-import { fetchDm, getNodesForNPC, npcIds } from '../utility/DialogNode';
+import { fetchDm, fetchTutorialEnemy, getNodesForNPC, npcIds } from '../utility/DialogNode';
 import { fetchNpc } from '../utility/npc';
 import { checkDeificConcerns } from '../utility/deities';
 import { STARTING_SPECIALS } from '../utility/abilities';
@@ -815,6 +815,7 @@ export default function PhaserGame (props: IProps) {
             await deleteMerchantEquipment();
             setGame({ ...game(), merchantEquipment: [], dialogTag: false, currentNode: undefined, currentNodeIndex: 0 });    
         });
+        EventBus.on('fetch-tutorial-enemy', fetchTutorialEnemy);
         EventBus.on('fetch-enemy', fetchEnemy);
         EventBus.on('fetch-npc', fetchNpc);
         EventBus.on('fetch-dm', fetchDm);
@@ -1062,6 +1063,7 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener('drink-firewater'); 
             EventBus.removeListener('enemy-loot');
             EventBus.removeListener('fetch-enemy');
+            EventBus.removeListener('fetch-tutorial-enemy');
             EventBus.removeListener('fetch-npc');
             EventBus.removeListener('gain-experience');
             EventBus.removeListener('interacting-loot');

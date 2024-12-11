@@ -165,11 +165,11 @@ export default function TutorialOverlay({ ascean, settings, tutorial, show, setS
                     <span class='super' style={{ color: '#fdf6d8' }}>[This Displays your Name, Health, Stamina, Grace and Weapon <br />
                         Click your name, weapon or something else to Display More Information]</span>
                 </p>
-                <p class='verticalTop gold highlight' style={{ top: '2em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
+                {/* <p class='verticalTop gold highlight' style={{ top: '2em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                    FPS {arrows.up} <br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[Current Game FPS (Frames Per Second)</span>
-                </p>
-                <p class='cornerTR gold highlight' style={{ right: '0', top: '10%', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
+                </p> */}
+                <p class='cornerTR gold highlight' style={{ right: '0', top: '', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                     Specials (Black) {arrows.down} <br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[Actions of an othernature that are only available during combat. <br />
                         These abilities are much more varied than physical actions, augmented by your mastery.]</span>

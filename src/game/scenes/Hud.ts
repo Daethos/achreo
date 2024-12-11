@@ -81,11 +81,22 @@ export class Hud extends Phaser.Scene {
             } else if (event.deltaY < 0) {
                 this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.05)), 1.5);
             };
+            const newSettings = {
+                ...this.settings,
+                positions: {
+                    ...this.settings.positions,
+                    camera: {
+                        ...this.settings.positions.camera,
+                        zoom: this.currentZoom,
+                    }
+                }
+            };
+            EventBus.emit('save-settings', newSettings);
             EventBus.emit('update-camera-zoom', this.currentZoom);
         });
         
-        const swipe = this.add.rectangle(0, 0, this.gameWidth * 0.225, this.gameHeight * 0.165, 0x000000, 0);
-        swipe.setPosition(this.gameWidth * 0.125, this.gameHeight * 0.25)
+        const swipe = this.add.rectangle(0, 0, this.gameWidth * 0.225, this.gameHeight * 0.1, 0x000000, 0);
+        swipe.setPosition(this.gameWidth * 0.125, this.gameHeight * 0.2125)
 
         swipe.setInteractive().on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.evCache.push(pointer);
@@ -151,8 +162,9 @@ export class Hud extends Phaser.Scene {
     };
 
     startGameScene = () => {
-        // if (!this.settings.tutorial?.boot) return;
-        this.scene.launch('Tutorial', this);
+        if (!this.settings.tutorial?.boot) return;
+        const scene = this.settings?.map ? this.settings.map : 'Tutorial';
+        this.scene.launch(scene, this);
     };
 
     gameEvents = (): void => {

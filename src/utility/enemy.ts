@@ -352,3 +352,17 @@ export function fetchArena(enemies: ARENA_ENEMY[]) {
         console.warn(err, 'Error Retrieving Enemies');
     };
 };
+export function fetchTutorial(enemies: ARENA_ENEMY[] = [{level:0.5,mastery: ['constitution','strength','agility','achre','caeren','kyosir'][Math.floor(Math.random() * 6)], id: '0'}]) {
+    try {
+        let complete: any[] = [];
+        for (let i = 0; i < enemies.length; i++) {
+            let enemy = nonRandomEnemy(enemies[i].level, enemies[i].mastery);
+            enemy = populateEnemy(enemy);
+            const res = asceanCompiler(enemy);
+            complete.push(res);
+        };
+        return complete;
+    } catch (err) {
+        console.warn(err, 'Error Retrieving Enemies');
+    };
+};

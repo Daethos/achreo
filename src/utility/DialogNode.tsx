@@ -274,7 +274,6 @@ export function getNodesForEnemy(enemy: Ascean): DialogNode[] {
 };
 
 export function getNodesForNPC(npcId: number): DialogNode[] {
-    console.log(npcId, 'NPC ID Fetching Dialog Nodes');
     const matchingNodes: DialogNode[] = [];
     for (const node of DialogNodes.nodes) {
         if (node.options.length === 0) {
@@ -299,7 +298,7 @@ export const DialogOption = ({ option, onClick, actions }: DialogOptionProps) =>
     const handleClick = async () => {
         if (option.action && typeof option.action === 'string') {
             const actionName = option.action.trim();
-            console.log(actionName, "Did we make it here?")
+            // console.log(actionName, "Did we make it here?")
             const actionFunction = actions[actionName];
             if (actionFunction) {
                 actionFunction();
@@ -344,7 +343,7 @@ const DialogTree = ({ ascean, engageCombat, getLoot, dialogNodes, game, state, r
         if (game()?.currentNode) {
             let newText = game()?.currentNode?.text;
             let newOptions: DialogNodeOption[] = [];
-            console.log(typeof game().currentNode?.text, 'Type of text?')
+            // console.log(typeof game().currentNode?.text, 'Type of text?')
             if (typeof game().currentNode?.text === 'string') {
                 newText = (game().currentNode?.text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
             } else if (Array.isArray(game().currentNode?.text)) {
@@ -366,15 +365,15 @@ const DialogTree = ({ ascean, engageCombat, getLoot, dialogNodes, game, state, r
                                 const optionValue = ascean[key] !== undefined ? ascean[key] : state[key]; // Hopefully this works!
                                 switch (operator) {
                                 case '>':
-                                    return optionValue > value;
+                                    return Number(optionValue) > Number(value);
                                 case '>=':
-                                    return optionValue >= value;
+                                    return Number(optionValue) >= Number(value);
                                 case '<':
-                                    return optionValue < value;
+                                    return Number(optionValue) < Number(value);
                                 case '<=':
-                                    return optionValue <= value;
+                                    return Number(optionValue) <= Number(value);
                                 case '=':
-                                    return optionValue === value;
+                                    return Number(optionValue) === Number(value);
                                 default:
                                     return false;
                                 }
@@ -399,15 +398,15 @@ const DialogTree = ({ ascean, engageCombat, getLoot, dialogNodes, game, state, r
                             const optionValue = ascean[key] !== undefined ? ascean[key] : state[key]; // Hopefully this works!
                             switch (operator) {
                             case '>':
-                                return optionValue > value;
+                                return Number(optionValue) > Number(value);
                             case '>=':
-                                return optionValue >= value;
+                                return Number(optionValue) >= Number(value);
                             case '<':
-                                return optionValue < value;
+                                return Number(optionValue) < Number(value);
                             case '<=':
-                                return optionValue <= value;
+                                return Number(optionValue) <= Number(value);
                             case '=':
-                                return optionValue === value;
+                                return Number(optionValue) === Number(value);
                             default:
                                 return false;
                             }

@@ -311,7 +311,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
         setForgeSee: () => setForgeSee(!forgeSee()),
         setRoster: () => setArena({ ...arena(), show: true }),
         getTutorialMovement: () => EventBus.emit('highlight', 'joystick'),
-        getTutorialEnemy: () => fetchTutorialEnemyPrompt(), // TODO:FIXME: Change to actually summon an enemy!
+        getTutorialEnemy: () => fetchTutorialEnemyPrompt(), 
         getTutorialSettings: () => EventBus.emit('highlight', 'smallhud'),
         getTutorialCombat: () => EventBus.emit('highlight', 'action-bar'),
         getDialogClose: () => EventBus.emit('outside-press', 'dialog'),

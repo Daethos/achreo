@@ -98,7 +98,6 @@ export class Tutorial extends Phaser.Scene {
 
         map?.getObjectLayer('pillars')?.objects.forEach((pillar: any) => {
             const type = pillar.properties?.[0].value;
-            console.log(type, 'Pillar?');
             const graphics = new Phaser.Physics.Matter.Image(this.matter.world, pillar.x, pillar.y, 'beam');
             const sensor = Bodies.circle(pillar.x, pillar.y, 16, { isSensor: true, label: `${type}PillarSensor` });
             graphics.setExistingBody(sensor);
@@ -613,7 +612,7 @@ export class Tutorial extends Phaser.Scene {
             let data: Compiler[] = this.registry.get("enemies");
             for (let j = 0; j < data.length; j++) {
                 const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: data[j] });
-                enemy.setPosition(this.player.x + 50, this.player.y);
+                enemy.setPosition(this.player.x - 50, this.player.y);
                 this.enemies.push(enemy);
                 this.time.delayedCall(1500, () => {
                     enemy.checkEnemyCombatEnter();
@@ -683,6 +682,7 @@ export class Tutorial extends Phaser.Scene {
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(delta);
+            if ((this.enemies[i].isDefeated || this.enemies[i].isTriumphant) && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
         };
         for (let i = 0; i < this.dms.length; i++) {
             this.dms[i].update(delta);

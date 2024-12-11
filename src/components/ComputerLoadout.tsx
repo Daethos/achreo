@@ -17,7 +17,6 @@ export default function ComputerLoadout({ settings }: { settings: Accessor<Setti
             ...computerLoadout(),
             [name]: computerLoadout()[name as keyof typeof computerLoadout] + value
         });
-        // FIXME:TODO: Figure out what to do, save setting every manipulation, or have a specific 'save' button ?
         setPool(pool() + value);
     };
     function saveLoadout() {
@@ -29,10 +28,8 @@ export default function ComputerLoadout({ settings }: { settings: Accessor<Setti
         };
         EventBus.emit('save-settings', newSettings);
     };
-    console.log(computerLoadout(), settings().computerLoadout, pool(), 'Current Loadout Being Saved');
     const ceiling = (): boolean => pool() < 100;
     const floor = (name: string): boolean => computerLoadout()?.[name as keyof typeof computerLoadout] as number > 0;
-
     return <div class='center creature-heading fadeIn' style={{ 'margin': '10% auto 5%', width: '100%' }}>
         <h1 class='gold' style={{ 'margin-bottom' : '5%' }}>Pool: {pool()} / 100</h1>
         <For each={actions}>

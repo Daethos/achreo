@@ -309,10 +309,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
         setBlacksmithSell: () => setBlacksmithSell(!blacksmithSell()),
         setForgeSee: () => setForgeSee(!forgeSee()),
         setRoster: () => setArena({ ...arena(), show: true }),
-        // getTutorialMovement: () => ,
-        // getTutorialEnemy: () => ,
-        // getTutorialSettings: () => ,
-        // getTutorialCombat: () => ,
+        getTutorialMovement: () => EventBus.emit('highlight', 'joystick'),
+        getTutorialEnemy: () => EventBus.emit('highlight', 'joystick'), // TODO:FIXME: Change to actually summon an enemy!
+        getTutorialSettings: () => EventBus.emit('highlight', 'smallhud'),
+        getTutorialCombat: () => EventBus.emit('highlight', 'action-bar'),
     };
     
     function steal(item: Equipment): void {

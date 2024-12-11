@@ -294,6 +294,29 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.draw();
     };
 
+    highlightAnimation() {
+        this.bar.forEach((button: Phaser.GameObjects.Image, index: number) => {
+            this.scene.time.delayedCall(250 * index, () => {
+                button.setBlendMode(Phaser.BlendModes.MULTIPLY);
+                button.setScale(this.scene.settings.positions.smallHud.scale * 1.15);
+                this.scene.time.delayedCall(250 * index, () => {
+                    button.setBlendMode(Phaser.BlendModes.NORMAL);
+                    button.setScale(this.scene.settings.positions.smallHud.scale);
+                }, undefined, this);
+            }, undefined, this);
+        });
+        this.stances.forEach((button: Phaser.GameObjects.Image, index: number) => {
+            this.scene.time.delayedCall(250 * index, () => {
+                button.setBlendMode(Phaser.BlendModes.MULTIPLY);
+                button.setScale(this.scene.settings.positions.leftHud.scale * 1.15);
+                this.scene.time.delayedCall(250 * index, () => {
+                    button.setBlendMode(Phaser.BlendModes.NORMAL);
+                    button.setScale(this.scene.settings.positions.leftHud.scale);
+                }, undefined, this);
+            }, undefined, this);
+        });
+    };
+
     getButton = (key: string) => {
         const bar = this.bar.find((b: any) => b.texture.key === key.toLowerCase());
         const stance = this.stances.find((b: any) => b.texture.key === key.toLowerCase());

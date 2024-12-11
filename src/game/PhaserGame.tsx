@@ -689,7 +689,7 @@ export default function PhaserGame (props: IProps) {
     };
 
     function checkUi(): boolean {
-        return props.scene() === 'Game' || props.scene() === 'Underground' || props.scene() === 'Arena';
+        return props.scene() === 'Game' || props.scene() === 'Underground' || props.scene() === 'Arena' || props.scene() === 'Tutorial';
     };
     
     async function createUi(id: string): Promise<void> {

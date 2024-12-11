@@ -14,7 +14,8 @@ import { Intro } from './scenes/Intro';
 import { Tent } from './scenes/Interior';
 import { Underground } from './scenes/Underground';
 import { Arena } from './scenes/Arena';
-export type Play = Arena | Game | Underground;
+import { Tutorial } from './scenes/Tutorial';
+export type Play = Arena | Game | Tutorial | Underground;
 const dimensions = useResizeListener();
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
@@ -28,7 +29,7 @@ const config: Phaser.Types.Core.GameConfig = {
     backgroundColor: '#000',
     dom: {createContainer: true},
     input: {activePointers: 10, mouse:true, windowEvents:false},
-    scene: [Boot,Preloader,MainMenu,Game,Hud,Intro,Tent,Underground,Arena],
+    scene: [Boot,Preloader,MainMenu,Tutorial,Game,Hud,Intro,Tent,Underground,Arena],
     physics: {
         default: 'matter',
         matter: {gravity: {x: 0, y: 0}}, // debug: true,

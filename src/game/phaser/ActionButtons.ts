@@ -329,6 +329,19 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         }); 
     };
 
+    highlightAnimation() {
+        this.actionButtons.forEach((button: ActionButton, index: number) => {
+            this.scene.time.delayedCall(500 * index, () => {
+                this.animateButton(button);
+            }, undefined, this);
+        });
+        this.specialButtons.forEach((button: ActionButton, index: number) => {
+            this.scene.time.delayedCall(500 * index, () => {
+                this.animateButton(button);     
+            }, undefined, this);
+        });
+    };
+
     animate(button: ActionButton, border: number, color: number, opacity: number, width: number, modifier: number, special: boolean) {
         button.graphic.fillStyle(color, opacity);
         button.border.lineStyle(SETTINGS.BORDER_LINE, border, opacity);

@@ -216,7 +216,7 @@ export default class Settings {
                 x: 0,
                 y: 0,
                 z: 0,
-                zoom: 0.8,
+                zoom: 1,
             },
             castbar: {
                 barHeight: 24,

@@ -1,4 +1,3 @@
-import { Cameras, GameObjects, Scene, Tilemaps, Time } from 'phaser';
 import { Combat, initCombat } from '../../stores/combat';
 import { EventBus } from '../EventBus';
 import LootDrop from '../matter/LootDrop';
@@ -7,24 +6,22 @@ import { States } from '../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
 import { useResizeListener } from '../../utility/dimensions';
 import { Reputation, initReputation } from '../../utility/player';
-// @ts-ignore
-import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 import Player from '../entities/Player';
 import Enemy from '../entities/Enemy';
-import NPC from '../entities/NPC';
-// @ts-ignore
-import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 import { CombatManager } from '../phaser/CombatManager';
-import MiniMap from '../phaser/MiniMap';
 import { screenShake } from '../phaser/ScreenShake';
 import ParticleManager from '../matter/ParticleManager';
 import { Hud } from './Hud';
 import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import { ObjectPool } from '../phaser/ObjectPool';
 import { Compiler } from '../../utility/ascean';
+import DM from '../entities/DM';
+// @ts-ignore
+import { PhaserNavMeshPlugin } from 'phaser-navmesh';
+// @ts-ignore
+const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const dimensions = useResizeListener();
-export class Tutorial extends Scene {
-    animatedTiles: any[];
+export class Tutorial extends Phaser.Scene {
     offsetX: number = 0;
     offsetY: number = 0;
     state: Combat = initCombat;
@@ -33,19 +30,18 @@ export class Tutorial extends Scene {
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
     enemies: Enemy[] = [];
-    npcs: NPC[] = [];
+    dms: DM[] = [];
     lootDrops: LootDrop[] = [];
     target: Phaser.GameObjects.Sprite;
     playerLight: Phaser.GameObjects.PointLight;
     combat: boolean = false;
     stealth: boolean = false;
     combatTime: number = 0;
-    combatTimer: Time.TimerEvent;
+    combatTimer: Phaser.Time.TimerEvent;
     tweenManager: any = {};
     particleManager: ParticleManager;
-    map: Tilemaps.Tilemap;
-    camera: Cameras.Scene2D.Camera;
-    minimap: MiniMap;
+    map: Phaser.Tilemaps.Tilemap;
+    camera: Phaser.Cameras.Scene2D.Camera;
     navMesh: any;
     navMeshPlugin: PhaserNavMeshPlugin;
     postFxPipeline: any;
@@ -53,7 +49,7 @@ export class Tutorial extends Scene {
     musicCombat: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicCombat2: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicStealth: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
-    fpsText: GameObjects.Text;
+    fpsText: Phaser.GameObjects.Text;
     combatManager: CombatManager;
     baseLayer: Phaser.Tilemaps.TilemapLayer;
     climbingLayer: Phaser.Tilemaps.TilemapLayer;
@@ -69,9 +65,7 @@ export class Tutorial extends Scene {
         super('Tutorial');
     };
 
-    preload() {
-        this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
-    };
+    preload() {};
 
     create (hud: Hud) {
         this.cameras.main.fadeIn();
@@ -82,9 +76,9 @@ export class Tutorial extends Scene {
         const map = this.make.tilemap({ key: 'tutorial' });
         this.map = map;
         const tileSize = 32;
-        const tileSet = map.addTilesetImage('Grasslands', 'Grasslands', tileSize, tileSize, 1, 2);
-        let layer0 = map.createLayer('Tile Layer 0 - Base', tileSet as Tilemaps.Tileset, 0, 0);
-        let layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Tilemaps.Tileset, 0, 0);
+        const tileSet = map.addTilesetImage('GrasslandMainLev2.0', 'GrasslandMainLev2.0', tileSize, tileSize, 0, 0);
+        let layer0 = map.createLayer('Tile Layer 0 - Base', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
+        let layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
         this.baseLayer = layer0 as Phaser.Tilemaps.TilemapLayer;
         this.climbingLayer = layer1 as Phaser.Tilemaps.TilemapLayer;
         [layer0, layer1].forEach((layer) => {
@@ -98,10 +92,43 @@ export class Tutorial extends Scene {
         // const debugGraphics = this.add.graphics().setAlpha(0.75);
         // this.navMesh.enableDebug(debugGraphics); 
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-        (this.sys as any).animatedTiles.init(this.map);
         this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
         map?.getObjectLayer('Npcs')?.objects.forEach((npc: any) => 
-            this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' })));
+            this.dms.push(new DM({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0', npcType: "Tutorial Teacher", id: 12 })));
+
+        map?.getObjectLayer('pillars')?.objects.forEach((pillar: any) => {
+            const type = pillar.properties?.[0].value;
+            console.log(type, 'Pillar?');
+            const graphics = new Phaser.Physics.Matter.Image(this.matter.world, pillar.x, pillar.y, 'beam');
+            const sensor = Bodies.circle(pillar.x, pillar.y, 16, { isSensor: true, label: `${type}PillarSensor` });
+            graphics.setExistingBody(sensor);
+            const body = 
+                type === 'game' ? `This is an action roleplaying game. As you may have noted, you've created a character and entered this world. \n\n You can speak to and attack any enemy, and trade with local merchants to yield better equipment and improve yourself.` :
+                type === 'movement' ? `The game starts with mobile in mind; twin joysticks for movement and aiming (ranged and specials). \n\n The left joystick allows you to move your character, and the right is used for certain special abilities and manual targeting if you have it enabled in the settings menu. \n\n However, in desktop, the keyboard and mouse are both modular and can be used for either movement or actions.` :
+                type === 'combat' ? `The Physical and Special action buttons allow you to perform damage in combat. \n\n Physically, everyone is capable of swinging their weapon and/or shooting projectiles, in addition to forms of evasion with dodge and roll. \n\n With Specials, you are restricted to your current 'mastery', and perform specialized abilities that can heal yourself, directly damage the enemy, or control them via magical effects.` :
+                type === 'settings' ? `Clicking on your name, your character in-game, or toggling the book menu and clicking on the first 'player' icon will all lead you to the main settings menu. \n\n From here, you can tab and change multiple options for gameplay concerns, including but not limited to: enemy aggression, special capability, and movement speed.` :
+                type === 'improvement' ? `Defeated enemies drop loot, and chances are that it may be an improvment of your current garb. \n\n Merchants also sell multitudes of armor, shields, and weapons, with some being able to forge greater qualities from lesser ones. \n\n You can compare and contrast the different peculiarities of each item and decide how to augment and enhance your character, even in combat.` :
+                type === "exit" ? "If you feel comfortable with what you've learned and have a fair understanding of what this game asks of you, feel free to enter the world and explore!" : "";
+            const extra = 
+                type === 'movement' ? "Movement" :
+                type === 'combat' ? "Combat" :
+                type === 'settings' ? "Settings" :
+                type === 'exit' ? "Enter World" : "";
+            this.matterCollision.addOnCollideStart({
+                objectA: [sensor],
+                callback: (other: any) => {
+                    if (other.gameObjectB?.name !== 'player') return;
+                    EventBus.emit('alert', { header: `${type.charAt(0).toUpperCase() + type.slice(1)} Pillar`,
+                        body,
+                        delay: 10000,
+                        key: 'Close',
+                        extra
+                    });
+                },
+                context: this
+            });
+        });
+
         let camera = this.cameras.main;
         camera.zoom = this.hud.settings.positions?.camera?.zoom;
         camera.startFollow(this.player, false, 0.1, 0.1);
@@ -136,7 +163,6 @@ export class Tutorial extends Scene {
         this.postFxEvent();
         this.particleManager = new ParticleManager(this);
         this.combatManager = new CombatManager(this);
-        this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
 
@@ -157,7 +183,6 @@ export class Tutorial extends Scene {
         EventBus.off('combat');
         EventBus.off('reputation');
         EventBus.off('enemyLootDrop');
-        EventBus.off('minimap');
         EventBus.off('aggressive-enemy');
         EventBus.off('update-postfx');
         EventBus.off('music');
@@ -171,8 +196,8 @@ export class Tutorial extends Scene {
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].cleanUp();
         };
-        for (let i = 0; i < this.npcs.length; i++) {
-            this.npcs[i].cleanUp();
+        for (let i = 0; i < this.dms.length; i++) {
+            this.dms[i].cleanUp();
         };
         this.player.cleanUp();
     };
@@ -184,17 +209,6 @@ export class Tutorial extends Scene {
         EventBus.on('enemyLootDrop', (drops: any) => {
             if (drops.scene !== 'Game') return;
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
-        });    
-        EventBus.on('minimap', () => {
-            if (this.minimap.minimap.visible === true) {
-                this.minimap.minimap.setVisible(false);
-                this.minimap.border.setVisible(false);
-                this.minimap.reset.setVisible(false);
-            } else {
-                this.minimap.minimap.setVisible(true);
-                this.minimap.border.setVisible(true);
-                this.minimap.minimap.startFollow(this.player);
-            };
         });
         EventBus.on('aggressive-enemy', (e: {id: string, isAggressive: boolean}) => {
             let enemy = this.enemies.find((enemy: any) => enemy.enemyID === e.id);
@@ -669,8 +683,8 @@ export class Tutorial extends Scene {
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(delta);
         };
-        for (let i = 0; i < this.npcs.length; i++) {
-            this.npcs[i].update();
+        for (let i = 0; i < this.dms.length; i++) {
+            this.dms[i].update(delta);
         };
     };
     pause(): void {

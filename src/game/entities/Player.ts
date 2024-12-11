@@ -104,7 +104,7 @@ export default class Player extends Entity {
     constructor(data: any) {
         const { scene } = data;
         const ascean = scene.registry.get("ascean");
-        super({ ...data, name: 'player', ascean: ascean, health: ascean?.health?.current || scene.state.newPlayerHealth }); 
+        super({ ...data, name: 'player', ascean: ascean, health: ascean?.health?.current || scene.state.newPlayerHealth });
         this.ascean = ascean;
         this.health = this.ascean.health.current;
         this.playerID = this.ascean._id;

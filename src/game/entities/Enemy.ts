@@ -11,7 +11,6 @@ import Bubble from "../phaser/Bubble";
 import { DISTANCE, DURATION, ENEMY_SPECIAL, GRIP_SCALE, INSTINCTS, RANGE } from "../../utility/enemy";
 import { screenShake, vibrate } from "../phaser/ScreenShake";
 import { roundToTwoDecimals } from "../../utility/combat";
-import { Game } from "../scenes/Game";
 import { Underground } from "../scenes/Underground";
 import { Combat } from "../../stores/combat";
 import Player from "./Player";
@@ -20,6 +19,7 @@ import { Particle } from "../matter/ParticleManager";
 import { Compiler } from "../../utility/ascean";
 import { Arena } from "../scenes/Arena";
 import Beam from "../matter/Beam";
+import { Play } from "../main";
 
 const ENEMY_COLOR = 0xFF0000;
 const TARGET_COLOR = 0x00FF00;
@@ -85,7 +85,7 @@ export default class Enemy extends Entity {
     paralyzeDuration: number;
     snareDuration: number;
 
-    constructor(data: { scene: Game | Underground | Arena, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
+    constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: "enemy", ascean: undefined, health: 1 }); 
         this.scene.add.existing(this);
         this.enemyID = uuidv4();

@@ -9,6 +9,10 @@ const CONVERSION = {
         X: 265,
         Y: 165
     },
+    Tutorial: {
+        X: 265,
+        Y: 165
+    },
     Underground: {
         X: 500, // 500
         Y: 35 // 35

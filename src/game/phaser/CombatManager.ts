@@ -1,16 +1,14 @@
 import CombatMachine from '../phaser/CombatMachine';
 import Enemy from '../entities/Enemy';
-import { Game } from '../scenes/Game';
-import { Underground } from '../scenes/Underground';
 import { EventBus } from '../EventBus';
 import Player from '../entities/Player';
-import { Arena } from '../scenes/Arena';
+import { Play } from '../main';
 
 export class CombatManager extends Phaser.Scene {
     combatMachine: CombatMachine;
-    context: Game | Underground | Arena;
+    context: Play;
 
-    constructor(scene: Game | Underground | Arena) {
+    constructor(scene: Play) {
         super('Combat');
         this.context = scene;
         this.combatMachine = new CombatMachine(this);

@@ -1,14 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Game } from '../scenes/Game';
-import { Underground } from '../scenes/Underground';
 export const PARTICLES = ['achire', 'earth',  'fire',  'frost', 'hook', 'lightning', 'righteous', 'quor', 'sorcery', 'spooky', 'wild', 'wind'];
 const TIME = { quor: 3000, achire: 2000, attack: 1500, hook: 1750, thrust: 1150, posture: 1750, roll: 1500, special: 2000 };
 const VELOCITY = { quor: 4.5, achire: 6, attack: 5, hook: 5.5, thrust: 6, posture: 4, roll: 4, special: 5 }; // 7.5 || 9 || 6 || 6
 import Player from '../entities/Player';
-// @ts-ignore
 import Enemy from '../entities/Enemy';
 import Entity from '../entities/Entity';
-import { Arena } from '../scenes/Arena';
+import { Play } from '../main';
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 const MAGIC = ['earth','fire','frost','lightning','righteous','sorcery','spooky','wild','wind'];
@@ -44,7 +41,7 @@ function angleTarget(target: Phaser.Math.Vector2): number {
 };
 
 export class Particle {
-    scene: Game | Underground | Arena;
+    scene: Play;
     id: string;
     pID: string;
     action: string;
@@ -62,7 +59,7 @@ export class Particle {
     triggered: boolean = false;
     velocity: number;
 
-    constructor(scene: Game | Underground | Arena, action: string, key: string, player: Player | Enemy | Entity, special: boolean) {
+    constructor(scene: Play, action: string, key: string, player: Player | Enemy | Entity, special: boolean) {
         const particle = PARTICLES.includes(key);
         const id = uuidv4();
         const idKey = key + '_effect';
@@ -139,7 +136,7 @@ export class Particle {
         });
     };
 
-    setTarget(player: Player | Enemy | Entity, scene: Game | Underground | Arena, special = false): Phaser.Math.Vector2 {
+    setTarget(player: Player | Enemy | Entity, scene: Play, special = false): Phaser.Math.Vector2 {
         if (player.name === 'enemy') {
             const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y);
             const direction = target.subtract(player.position);
@@ -170,7 +167,7 @@ export class Particle {
         return VELOCITY[action as keyof typeof VELOCITY];
     };
 
-    spriteMaker(scene: Game | Underground | Arena, player: Player | Enemy | Entity, key: string, particle: boolean, special: boolean): Phaser.Physics.Matter.Sprite {
+    spriteMaker(scene: Play, player: Player | Enemy | Entity, key: string, particle: boolean, special: boolean): Phaser.Physics.Matter.Sprite {
         return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key)
             .setScale(this.scaler(particle, special, this.action))
             .setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
@@ -178,7 +175,7 @@ export class Particle {
 };
 
 export default class ParticleManager extends Phaser.Scene { 
-    context: Game | Underground | Arena;
+    context: Play;
     particles: Particle[];
     impacts: Phaser.GameObjects.Sprite[];
 
@@ -212,14 +209,14 @@ export default class ParticleManager extends Phaser.Scene {
         scene.load.animation('impact_anim', '../assets/gui/impact_anim.json');
     };
 
-    constructor(scene: Game | Underground | Arena) {
+    constructor(scene: Play) {
         super('particle_effects'); // scene.matter.world, 0, 0, 
         this.context = scene; 
         this.particles = []; 
         this.impacts = this.createImpacts(scene);
     };
 
-    createImpacts(scene: Game | Underground | Arena) {
+    createImpacts(scene: Play) {
         let count = 0, collection = [];
         while (count < 10) {
             const impact = scene.add.sprite(0, 0, 'impact').setActive(false).setDepth(9).setOrigin(0.5).setScale(0.25).setVisible(false); // Add it to the scene

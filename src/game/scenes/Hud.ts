@@ -41,7 +41,7 @@ export class Hud extends Phaser.Scene {
         this.gameEvents();
         this.gameState = this.registry.get('game');
         this.settings = this.registry.get('settings');
-        this.currentZoom = this.settings.positions.camera?.zoom;
+        this.currentZoom = this.settings.positions.camera.zoom;
         this.smallHud = new SmallHud(this);
         this.actionBar = new ActionButtons(this);
         this.joystick = new Joystick(this, 
@@ -151,8 +151,8 @@ export class Hud extends Phaser.Scene {
     };
 
     startGameScene = () => {
-        if (!this.settings.tutorial?.boot) return;
-        this.scene.launch('Game', this);
+        // if (!this.settings.tutorial?.boot) return;
+        this.scene.launch('Tutorial', this);
     };
 
     gameEvents = (): void => {
@@ -182,7 +182,6 @@ export class Hud extends Phaser.Scene {
                 };
             };
         }); 
-        
         EventBus.on('equip-sound', () => this.sound.play('equip', { volume: this.settings.volume }));
         EventBus.on('unequip-sound', () => this.sound.play('unequip', { volume: this.settings.volume }));
         EventBus.on('purchase-sound', () => this.sound.play('purchase', { volume: this.settings.volume }));
@@ -279,11 +278,33 @@ export class Hud extends Phaser.Scene {
                     break;
             };
         });
-        EventBus.on('highlight', (data: { key: string, value: boolean }) => {
-            
+        EventBus.on('highlight', (element: string) => {
+            switch (element) {
+                case 'action-bar':
+                    this.highlightElements('action');
+                    break;
+                case 'joystick':
+                    this.highlightElements('joystick');
+                    break;
+                case 'smallhud':
+                    this.highlightElements('smallhud');
+                    break;
+                default: break;
+            };
         });
     };
-
+    
+    highlightElements(type: string) {
+        if (type === 'smallhud') { // Small HUD
+            this.smallHud.highlightAnimation();
+        } else if (type === 'joystick') {
+            this.joystick.highlightAnimation('left');
+            this.rightJoystick.highlightAnimation('right');
+        } else { // Action Buttons
+            this.actionBar.highlightAnimation();
+        };
+    };
+    
     showDialog = (dialogTag: boolean) => {
         EventBus.emit('blend-game', { dialogTag });
         this.smallHud.activate('dialog', dialogTag);

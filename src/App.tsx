@@ -16,6 +16,7 @@ import { Puff } from 'solid-spinner';
 import type { IRefPhaserGame } from './game/PhaserGame';
 import Statistics, { initStatistics } from './utility/statistics';
 import LoadAscean from './components/LoadAscean';
+import { Tutorial } from './game/scenes/Tutorial';
 const AsceanBuilder = lazy(async () => await import('./components/AsceanBuilder'));
 const AsceanView = lazy(async () => await import('./components/AsceanView'));
 const MenuAscean = lazy(async () => await import('./components/MenuAscean'));
@@ -25,8 +26,10 @@ var click = new Audio("../assets/sounds/TV_Button_Press.wav");
 var creation = new Audio("../assets/sounds/freeze.wav");
 var load = new Audio("../assets/sounds/combat-round.mp3");
 
+export type Toast = { header: string; body: string; delay: number; key?: string; extra?: string; arg: any };
+
 export default function App() {
-    const [alert, setAlert] = createSignal({ header: '', body: '', delay: 0, key: '', arg: undefined });
+    const [alert, setAlert] = createSignal<Toast>({ header: '', body: '', delay: 0, key: '', arg: undefined });
     const [ascean, setAscean] = createSignal<Ascean>(undefined as unknown as Ascean);
     const [menu, setMenu] = createSignal<Menu>(initMenu);
     const [loading, setLoading] = createSignal<boolean>(false);
@@ -144,9 +147,9 @@ export default function App() {
         };
     };
     const loadingAscean = () => EventBus.emit('enter-game');
-    const makeToast = (header: string, body: string, delay = 3000, key = '', arg: any): void => {
+    const makeToast = (header: string, body: string, delay = 3000, key = '', extra = '', arg: any): void => {
         setShow(false);
-        setAlert({ header, body, delay, key, arg });
+        setAlert({ header, body, delay, key, extra, arg });
         setShow(true);
     };
     const setTips = (on: boolean): void => {
@@ -295,6 +298,7 @@ export default function App() {
     function setScreen(screen: string) {
         setMenu({ ...menu(), screen });
     };
+
     const actions = {
         "Duel": (val: number) => summonEnemy(val),
         "Roster": () => { EventBus.emit('show-roster'); setShow(false); },
@@ -309,10 +313,15 @@ export default function App() {
         'Exit World': () => switchScene('Underground', 'Game'),
         'Pause': () => togglePause(true),
         'Resume': () => togglePause(false),
+        "Movement": () => EventBus.emit('highlight', 'joystick'),
+        "Combat": () => EventBus.emit('highlight', 'action-bar'),
+        "Settings": () => EventBus.emit('highlight', 'smallhud'),
+        "Enter World" : () => switchScene('Tutorial', 'Game'),
+        "Enter Tutorial" : () => switchScene('Game', 'Tutorial'),
     };
     const sendSettings = () => EventBus.emit('get-settings', settings);
     usePhaserEvent('request-settings', sendSettings);
-    usePhaserEvent('alert', (payload: { header: string, body: string, delay?: number, key?: string, arg: any }) => makeToast(payload.header, payload.body, payload.delay, payload.key, payload.arg));
+    usePhaserEvent('alert', (payload: Toast) => makeToast(payload.header, payload.body, payload.delay, payload.key, payload.extra, payload.arg));
     usePhaserEvent('set-tips', setTips);
     usePhaserEvent('scene-switch', (data:{current:string,next:string}) => switchScene(data.current,data.next));
     usePhaserEvent('enter-menu', enterMenu);
@@ -342,13 +351,14 @@ export default function App() {
         const scene = phaserRef.scene as Scene; // 'intro'
         scene.scene.stop('Intro');
         scene.scene.wake('Hud');
-        const game = scene.scene.get('Game') as Game;
-        if (scene.scene.isSleeping('Game')) {
-            scene.scene.wake('Game');
+        const game = scene.scene.get('Tutorial') as Tutorial;
+        if (scene.scene.isSleeping('Tutorial')) {
+            scene.scene.wake('Tutorial');
             game.musicBackground.resume();
         } else {
             const hud = scene.scene.get('Hud');
-            scene.scene.launch('Game', hud);
+            scene.scene.launch('Tutorial', hud);
+            // scene.scene.launch('Game', hud);
         };
         EventBus.emit('boot-tutorial');
         EventBus.emit('current-scene-ready', game);

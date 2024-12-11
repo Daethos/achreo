@@ -5,7 +5,6 @@ import CastingBar from '../phaser/CastingBar';
 import HealthBar from '../phaser/HealthBar';
 import Enemy from './Enemy';
 import Player from './Player';
-// import ScrollingCombatText, { CombatText } from '../phaser/ScrollingCombatText';
 import Ascean from '../../models/ascean';
 import Equipment from '../../models/equipment';
 import { v4 as uuidv4 } from 'uuid';
@@ -586,7 +585,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     particleAoe = (effect: Particle) => {
-        new AoE(this.scene, effect.key.split('_effect')[0], 3, false, undefined, false, undefined, {effect,entity:this});
+        new AoE(this.scene, effect.key.split('_effect')[0], 3, false, undefined, false, undefined, {effect,entity:this as any});
     };
 
     functionality = (entity: string, target: Player | Enemy) => {

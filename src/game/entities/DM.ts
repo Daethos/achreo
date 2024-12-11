@@ -27,12 +27,12 @@ export default class DM extends Entity {
     npcSensor: any;
 
     constructor(data: any) {
-        let { scene } = data;
+        let { scene, npcType, id } = data;
         super({ ...data, name: "npc", ascean: undefined, health: 0 }); 
         this.scene = scene;
-        this.id = 11;
+        this.id = id;
         this.enemyID = uuidv4();
-        this.npcType = "Merchant-All";
+        this.npcType = npcType;
         this.npcTarget = undefined;
         this.createNPC();
         this.stateMachine = new StateMachine(this, 'npc');

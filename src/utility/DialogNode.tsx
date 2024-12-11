@@ -124,7 +124,7 @@ export const TUTORIAL = {
     "faith":"adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
-    "health":{"current":1000,"max":1000}
+    "health":{"current":10,"max":10}
 };
 const KRECEUS = {
     "_id":"kreceus_16",
@@ -237,6 +237,16 @@ const ASHREUUL = {
     "health":{"current":1000,"max":1000}
 };
 
+export function fetchTutorialEnemy() {
+    try {
+        let enemy: any = populateEnemy(TUTORIAL as any);
+        const res = asceanCompiler(enemy);
+        EventBus.emit('tutorial-enemy-fetched', res);
+    } catch (err) {
+        console.warn(err, 'Error Fetching Tutorial Enemy');
+    };
+};
+
 export function fetchDm(_data: { enemy: string; npcType: string; }) {
     try {
         let dm: any = Math.random() > 0.5 ? KRECEUS : ASHREUUL;
@@ -264,6 +274,7 @@ export function getNodesForEnemy(enemy: Ascean): DialogNode[] {
 };
 
 export function getNodesForNPC(npcId: number): DialogNode[] {
+    console.log(npcId, 'NPC ID Fetching Dialog Nodes');
     const matchingNodes: DialogNode[] = [];
     for (const node of DialogNodes.nodes) {
         if (node.options.length === 0) {
@@ -275,7 +286,6 @@ export function getNodesForNPC(npcId: number): DialogNode[] {
             matchingNodes.push(updatedNode);
         };
     };
-
     return matchingNodes;
 };
 

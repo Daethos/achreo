@@ -1,18 +1,19 @@
 import { EventBus } from "../EventBus";
+import { Hud } from "../scenes/Hud";
 const FORCE = 0.1;
 export default class Joystick extends Phaser.GameObjects.Container {
-    public scene: any;
+    public scene: Hud;
     public pointer: any;
     public joystick: any;
-    constructor(scene: any, x: number, y: number, base: number, thumb: number) {
+    constructor(scene: Hud, x: number, y: number, base: number, thumb: number) {
         super(scene, x, y);
         this.scene = scene;
         this.scene.add.existing(this);
         this.pointer = null;
         const height = window.innerHeight;
-        this.joystick = scene.plugins.get('rexVirtualJoystick').add(scene, {
-            x: x,
-            y: y,
+        this.joystick = (scene?.plugins?.get('rexVirtualJoystick') as any).add(scene, {
+            x,
+            y,
             radius: height / 6,
             base: scene.add.circle(0, 0, height / 6, base, 1),
             thumb: scene.add.circle(0, 0, height / 12, thumb, 1),
@@ -70,6 +71,21 @@ export default class Joystick extends Phaser.GameObjects.Container {
                 this.detachMouseFromPointer();
             };
         });
+    };
+    highlightAnimation(type: string) {
+        const base = type === 'left' ? this.scene.settings.positions.leftJoystick.base : this.scene.settings.positions.rightJoystick.base;
+        const thumb = type === 'left' ? this.scene.settings.positions.leftJoystick.thumb : this.scene.settings.positions.rightJoystick.thumb;
+        this.joystick.base.setFillStyle();
+        this.joystick.base.setFillStyle(thumb);
+        this.joystick.thumb.setFillStyle();
+        this.joystick.thumb.setFillStyle(base);
+
+        this.scene.time.delayedCall(500, () => {
+            this.joystick.base.setFillStyle();
+            this.joystick.base.setFillStyle(base);
+            this.joystick.thumb.setFillStyle();
+            this.joystick.thumb.setFillStyle(thumb);
+        }, undefined, this);
     };
     update() {
         if (this.joystick.force > 0) {

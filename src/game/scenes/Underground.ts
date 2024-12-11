@@ -139,7 +139,7 @@ export class Underground extends Scene {
         this.player = new Player({ scene: this, x: this.centerX, y: 64, texture: 'player_actions', frame: 'player_idle_0' });
         map?.getObjectLayer('summons')?.objects.forEach((summon: any) => this.markers.push(summon));
         map?.getObjectLayer('dms')?.objects.forEach((_dm: any) => {
-            (this.dms as any).push(new DM({ scene: this, x: 912, y: 78, texture: 'player_actions', frame: 'player_idle_0' }));
+            (this.dms as any).push(new DM({ scene: this, x: 912, y: 78, texture: 'player_actions', frame: 'player_idle_0', npcType: 'Merchant-All', id: 11 }));
         });
 
         camera.startFollow(this.player, false, 0.1, 0.1);

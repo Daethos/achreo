@@ -1137,7 +1137,7 @@
         },
         {
             "id": "0042",
-            "text": "The game starts with mobile in mind, with twin joysticks for movement and aiming (if you are ranged). The left joystick allows you to move your character, and the right is used for certain special abilities and manual targeting if you have it enabled in the settings menu. However, in desktop, the keyboard and mouse are used in tandem for movement and aiming.",
+            "text": "The game starts with mobile in mind; twin joysticks for movement and aiming (ranged and specials). \n\n The left joystick allows you to move your character, and the right is used for certain special abilities and manual targeting if you have it enabled in the settings menu. \n\n However, in desktop, the keyboard and mouse are both modular and can be used for either movement or actions.",
             "options": [
                 {
                     "text": "How does combat function, and what am I capable of performing?",
@@ -1177,7 +1177,7 @@
         },
         {
             "id": "0043",
-            "text": "The Physical and Special Action Buttons allow you to perform damage in combat. Everyone is capable of swining their weapon and shooting projectiles in various ways, as well as forms of evasion against the enemy. With specials, you are restricted to your current mastery, and perform specialized actions that can heal yourself, directly damage the enemy, or control them via magical effects.",
+            "text": "The Physical and Special action buttons allow you to perform damage in combat. \n\n Physically, everyone is capable of swinging their weapon and/or shooting projectiles, in addition to forms of evasion with dodge and roll. \n\n With Specials, you are restricted to your current 'mastery', and perform specialized abilities that can heal yourself, directly damage the enemy, or control them via magical effects.",
             "options": [
                 {
                     "text": "How am I expected to navigate and interact with this world?",
@@ -1258,7 +1258,7 @@
         },
         {
             "id": "0045",
-            "text": "Absolutely. Clicking on your name in the HUD, your character in-game (when not in combat), or toggling the book menu in the bottom right and clicking on the player icon will all lead you to the main settings menu. From here, you can change multiple options for gameplay concerns, including but not limited to: enemy aggression, special capability, and speed, as well as player speed.",
+            "text": "Clicking on your name, your character in-game, or toggling the book menu and clicking on the first 'player' icon will all lead you to the main settings menu. \n\n From here, you can tab and change multiple options for gameplay concerns, including but not limited to: enemy aggression, special capability, and movement speed.",
             "options": [
                 {
                     "text": "How am I expected to navigate and interact with this world?",

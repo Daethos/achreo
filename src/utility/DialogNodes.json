@@ -27,7 +27,7 @@
                 },
                 {
                     "text": "Welcome to the Ascean, ${ascean.name}, and the beginning of your adventure in this world.",
-                    "next": "0030",
+                    "next": "0040",
                     "npcIds": [
                         12
                     ],
@@ -55,7 +55,7 @@
                 },
                 {
                     "text": "Welcome back, ${ascean.name}. How may I guide you?",
-                    "next": "0030",
+                    "next": "0040",
                     "npcIds": [
                         12
                     ],

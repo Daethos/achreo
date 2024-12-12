@@ -206,7 +206,7 @@ export class Tutorial extends Phaser.Scene {
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
         EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
         EventBus.on('enemyLootDrop', (drops: any) => {
-            if (drops.scene !== 'Game') return;
+            if (drops.scene !== 'Tutorial') return;
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
         });
         EventBus.on('aggressive-enemy', (e: {id: string, isAggressive: boolean}) => {

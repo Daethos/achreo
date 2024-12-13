@@ -5,11 +5,14 @@ import { font } from "../utility/styling";
 
 export default function Preview({ newAscean }: { newAscean: Accessor<CharacterSheet> }) {
     const dimensions = useResizeListener();
+    const [name, setName] = createSignal('');
     const [description, setDescription] = createSignal('');
     const [picture, setPicture] = createSignal('' as string);
     createEffect(() => {
         createDescription(newAscean().description);
+        setName(newAscean().name);
         setPicture(`../assets/images/${newAscean().origin}-${newAscean().sex}.jpg`);   
+        console.log(name(), name().length, 'Name and Length');
     });
     function createDescription(descrip: string): void {
         let count = 0;
@@ -24,7 +27,7 @@ export default function Preview({ newAscean }: { newAscean: Accessor<CharacterSh
         }).join('');
         setDescription(desc);
     };
-    const photo = { 'height': dimensions().ORIENTATION === 'landscape' ? 'auto' : 'auto', 'width': dimensions().ORIENTATION === 'landscape' ? '7.5vw' : '15vw', 'top': dimensions().ORIENTATION === 'landscape' ? '3vh' : '0', 'left': dimensions().ORIENTATION === 'landscape' ? '20vw' : '3vw', 'border': '0.15em solid gold', 'border-radius': '0.5em',  };
+    const photo = { 'height': dimensions().ORIENTATION === 'landscape' ? 'auto' : 'auto', 'width': dimensions().ORIENTATION === 'landscape' ? '7.5vw' : '15vw', 'top': dimensions().ORIENTATION === 'landscape' ? '3vh' : '0', 'left': dimensions().ORIENTATION === 'landscape' ? `33vw` : '3vw', 'border': '0.15em solid gold', 'border-radius': '0.5em',  };
     function qualifiers(char: string, idx: number, count: number, splitter: number): boolean {
         if ((char === ' ' || char === '.') && idx !== 0 && idx !== splitter - 1 && ((idx <= 49 && idx >= 25 && count === 0) || (idx <= 74 && idx >= 50 && count === 1))) {
             return true;

@@ -1,6 +1,8 @@
 import { EventBus } from "../EventBus";
+import { Arena } from "../scenes/Arena";
 import { Game } from "../scenes/Game";
 import { Hud } from "../scenes/Hud";
+import { Tutorial } from "../scenes/Tutorial";
 import { Underground } from "../scenes/Underground";
 
 const MOBILE = ['cursor-reset', 'minimap', 'pause'];
@@ -411,8 +413,14 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                         if (this.scene.scene.isActive('Game')) {
                             const game = this.scene.scene.get('Game') as Game;
                             game.stealthEngaged(!this.switches.stealth);
-                        } else {
+                        } else if (this.scene.scene.isActive('Underground')) {
                             const game = this.scene.scene.get('Underground') as Underground;
+                            game.stealthEngaged(!this.switches.stealth);
+                        } else if (this.scene.scene.isActive('Arena')) {
+                            const game = this.scene.scene.get('Arena') as Arena;
+                            game.stealthEngaged(!this.switches.stealth);
+                        } else if (this.scene.scene.isActive('Tutorial')) {
+                            const game = this.scene.scene.get('Tutorial') as Tutorial;
                             game.stealthEngaged(!this.switches.stealth);
                         };
                         EventBus.emit('update-stealth');

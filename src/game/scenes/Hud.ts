@@ -30,6 +30,8 @@ export class Hud extends Phaser.Scene {
     currentX: number;
     evCache: any[] = [];
     prevDiff: number = -1;
+    prevScene: string = '';
+    currScene: string = '';
 
     constructor() {
         super('Hud');
@@ -211,6 +213,8 @@ export class Hud extends Phaser.Scene {
         });
         EventBus.on('switch-scene', (data: {current: string, next: string}) => {
             const { current, next } = data;
+            this.prevScene = current;
+            this.currScene = next;
             this.logger.log(`Console: Moving from ${current} to ${next}.`);
             const currentScene = this.scene.get(current) as Play;
             const nextScene = this.scene.get(next) as Play;

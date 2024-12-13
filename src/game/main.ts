@@ -29,7 +29,7 @@ const config: Phaser.Types.Core.GameConfig = {
     backgroundColor: '#000',
     dom: {createContainer: true},
     input: {activePointers: 10, mouse:true, windowEvents:false},
-    scene: [Boot,Preloader,MainMenu,Tutorial,Game,Hud,Intro,Tent,Underground,Arena],
+    scene: [Boot,Preloader,MainMenu,Tutorial,Game,Intro,Tent,Underground,Arena,Hud],
     physics: {
         default: 'matter',
         matter: {gravity: {x: 0, y: 0}}, // debug: true,

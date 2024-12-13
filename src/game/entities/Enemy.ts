@@ -228,7 +228,7 @@ export default class Enemy extends Entity {
         let enemySensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: 'enemySensor' }); // Sensor was 48
         const compoundBody = Body.create({
             parts: [enemyCollider, enemySensor],
-            density: 0.002,
+            density: 0.0015,
             frictionAir: 0.1, 
             restitution: 0.3,
             friction: 0.15,

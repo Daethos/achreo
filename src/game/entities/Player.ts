@@ -145,8 +145,8 @@ export default class Player extends Entity {
         let playerSensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: 'playerSensor' }); // Y + 2 For Platformer
         const compoundBody = Body.create({
             parts: [playerCollider, playerSensor],
-            frictionAir: 0.35, 
-            restitution: 0.2,  
+            frictionAir: 0.5,
+            restitution: 0.2,
         });
         this.setExistingBody(compoundBody);                                    
         this.sensor = playerSensor;
@@ -1568,5 +1568,6 @@ export default class Player extends Entity {
         this.handleAnimations();
         this.handleMovement();
         this.playerMachine.update(dt);
+        // console.log(this.x, this.y);
     };
 };

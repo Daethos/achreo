@@ -40,17 +40,10 @@
                     ]
                 },
                 {
-                    "text": "Welcome to the Ancient Eulex. You may call me ${enemy.name}.",
+                    "text": "Welcome to the Ascean. You may call me ${enemy.name}.",
                     "next": "0030",
                     "npcIds": [
                         11
-                    ],
-                    "conditions": [
-                        {
-                            "key": "interactCount",
-                            "operator": "=",
-                            "value": "0"
-                        }
                     ]
                 },
                 {
@@ -1082,7 +1075,7 @@
         },
         {
             "id": "0040",
-            "text": "This is an action roleplaying game. As you may have noted, you've created a character and entered this world without much explanation, but I am here to guide you further.",
+            "text": "This is an action roleplaying game. As you may have noted, you've created a character and entered this world without much explanation, but I am here to guide you further.\n\nWith its emphasis being combat, this game invites you to learn its combat system and your abilities, and tailor your preferred style against its denizens. It's experimental with 10 actions, metered by 2 resources, a fair jump in complexity concerning mobile users, but less than many desktop rpgs demand.\n\nFind and utilize better equipment as you gain strength from defeating enemies. Speak and build relationships while awaiting the upcoming Ascea, a grand tournament featuring the greatest people across the land, competing in tests of fitness and warfare to gain adoration, alliances, renown, and riches.",
             "options": [
                 {
                     "text": "How am I expected to navigate and interact with this world?",
@@ -1188,7 +1181,7 @@
         },
         {
             "id": "0042",
-            "text": "The game starts with mobile in mind; twin joysticks for movement and aiming (ranged and specials). \n\n The left joystick allows you to move your character, and the right is used for certain special abilities and manual targeting if you have it enabled in the settings menu. \n\n However, in desktop, the keyboard and mouse are both modular and can be used for either movement or actions.",
+            "text": "The game starts with mobile in mind; twin joysticks for movement and aiming (ranged and specials).\n\nThe left joystick allows you to move your character, and the right is used for certain special abilities and manual targeting if you have it enabled in the settings menu.\n\nHowever, in desktop, the keyboard and mouse are both modular and can be used for either movement or actions.",
             "options": [
                 {
                     "text": "How does combat function, and what am I capable of performing?",
@@ -1237,7 +1230,7 @@
         },
         {
             "id": "0043",
-            "text": "The Physical and Special action buttons allow you to perform damage in combat. \n\n Physically, everyone is capable of swinging their weapon and/or shooting projectiles, in addition to forms of evasion with dodge and roll. \n\n With Specials, you are restricted to your current 'mastery', and perform specialized abilities that can heal yourself, directly damage the enemy, or control them via magical effects.",
+            "text": "The Physical and Special action buttons allow you to perform damage in combat.\n\nPhysically, everyone is capable of swinging their weapon and/or shooting projectiles, in addition to forms of evasion with dodge and roll.\n\nWith Specials, you are restricted to your current 'mastery', and perform specialized abilities that can heal yourself, directly damage the enemy, or control them via magical effects.",
             "options": [
                 {
                     "text": "How am I expected to navigate and interact with this world?",
@@ -1335,7 +1328,7 @@
         },
         {
             "id": "0045",
-            "text": "Clicking on your name, your character in-game, or toggling the book menu and clicking on the first 'player' icon will all lead you to the main settings menu. \n\n From here, you can tab and change multiple options for gameplay concerns, including but not limited to: enemy aggression, special capability, and movement speed.",
+            "text": "Clicking on your name, your character in-game, or toggling the book menu and clicking on the first 'player' icon will all lead you to the main settings menu.\n\nFrom here, you can tab and change multiple options for gameplay concerns, including but not limited to: enemy aggression, special capability, and movement speed.",
             "options": [
                 {
                     "text": "How am I expected to navigate and interact with this world?",
@@ -1384,7 +1377,7 @@
         },
         {
             "id": "0046",
-            "text": "Down the stairs and to the left, you will enter and join the world, vested with the knowledge to gain some coin and experience, and learn some things of the people that inhabit that world. \n\n Find the underground and the arena, and keep readying yourself for the Ascea, it'll be here sooner than you wish.",
+            "text": "Down the stairs and to the left, you will enter and join the world, vested with the knowledge to gain some coin and experience, and learn some things of the people that inhabit that world.\n\nFind the underground caves and strongholds that have since gone to ruin. Seek out the Ancient Eulex and test yourself against those also on quests of grandeur, and keep readying yourself for the Ascea, it'll be here sooner than you wish.",
             "options": [
                 {
                     "text": "Just making sure, movement, hows that go again?",

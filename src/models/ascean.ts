@@ -171,7 +171,7 @@ async function createAscean(data: any, template?: boolean): Promise<Ascean> {
                 data.weaponOne = 'Daethic Halberd';
                 data.weaponTwo = 'Hush of Daethos';
             } else if (strength < agility) {
-                data.weaponOne = 'Hush';
+                data.weaponOne = 'Gladius';
                 data.weaponTwo = 'Daethic Bow';
             } else {
                 data.weaponOne = 'Daethic Halberd';

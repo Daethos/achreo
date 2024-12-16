@@ -93,6 +93,7 @@ export class Tutorial extends Phaser.Scene {
         // this.navMesh.enableDebug(debugGraphics); 
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
+        if (this.hud.prevScene === 'Game') this.player.setPosition(415,697);
         map?.getObjectLayer('Npcs')?.objects.forEach((npc: any) => 
             this.dms.push(new DM({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0', npcType: "Tutorial Teacher", id: 12 })));
 
@@ -117,9 +118,9 @@ export class Tutorial extends Phaser.Scene {
                 objectA: [sensor],
                 callback: (other: any) => {
                     if (other.gameObjectB?.name !== 'player') return;
-                    EventBus.emit('alert', { header: `${type.charAt(0).toUpperCase() + type.slice(1)} Pillar`,
+                    EventBus.emit('alert', { header: `${type.charAt(0).toUpperCase() + type.slice(1)} Post`,
                         body,
-                        delay: 10000,
+                        delay: 60000,
                         key: 'Close',
                         extra
                     });

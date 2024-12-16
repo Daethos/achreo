@@ -122,6 +122,7 @@ export class Game extends Scene {
         (this.sys as any).animatedTiles.init(this.map);
         this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
         if (this.hud.prevScene === 'Underground') this.player.setPosition(1410,130);
+        if (this.hud.prevScene === 'Tutorial') this.player.setPosition(38,72);
         map?.getObjectLayer('Enemies')?.objects.forEach((enemy: any) => {
             const e = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: undefined });
             this.enemies.push(e);

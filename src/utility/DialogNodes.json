@@ -34,16 +34,37 @@
                     "conditions": [
                         {
                             "key": "interactCount",
-                            "operator": "=",
+                            "operator": "<=",
                             "value": "1"
                         }
                     ]
                 },
                 {
-                    "text": "Welcome to the Ascean. You may call me ${enemy.name}.",
+                    "text": "Welcome to the Ancient Eulex. You may call me ${enemy.name}.",
                     "next": "0030",
                     "npcIds": [
                         11
+                    ],
+                    "conditions": [
+                        {
+                            "key": "interactCount",
+                            "operator": "<=",
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "text": "Welcome back, ${ascean.name}. What brings you to the Eulex?",
+                    "next": "0030",
+                    "npcIds": [
+                        11
+                    ],
+                    "conditions": [
+                        {
+                            "key": "interactCount",
+                            "operator": ">",
+                            "value": "1"
+                        }
                     ]
                 },
                 {
@@ -164,7 +185,7 @@
                         {
                             "key": "interactCount",
                             "operator": ">",
-                            "value": "0"
+                            "value": "1"
                         }
                     ],
                     "action": "setRoster"
@@ -184,7 +205,7 @@
                     ]
                 },
                 {
-                    "text": "Oh hey there. What kind of game is this, again?",
+                    "text": "Hello again, ${enemy.name}. Once more, what kind of game is this?",
                     "next": "0040",
                     "npcIds": [
                         12
@@ -1133,48 +1154,7 @@
         {
             "id": "0041",
             "text": "Very well. Good luck to you in the encounter, ${ascean.name}. Speak to me again when you are finished.",
-            "options": [
-                {
-                    "text": "I wish to fight again, bring me another.",
-                    "next": "0041",
-                    "npcIds": [
-                        12
-                    ],
-                    "action": "getTutorialEnemy"
-                },
-                {
-                    "text": "How am I expected to navigate and interact with this world?",
-                    "next": "0042",
-                    "npcIds": [
-                        12
-                    ],
-                    "action": "getTutorialMovement"
-                },
-                {
-                    "text": "How does combat function, and what am I capable of performing?",
-                    "next": "0043",
-                    "npcIds": [
-                        12
-                    ],
-                    "action": "getTutorialCombat"
-                },
-                {
-                    "text": "How do I improve myself in this game?",
-                    "next": "0044",
-                    "npcIds": [
-                        12
-                    ],
-                    "action": "getTutorialMerchant"
-                },
-                {
-                    "text": "Is there anything I can do if I find the gameplay too difficult?",
-                    "next": "0045",
-                    "npcIds": [
-                        12
-                    ],
-                    "action": "getTutorialSettings"
-                }
-            ],
+            "options": [],
             "npcIds": [
                 12
             ]

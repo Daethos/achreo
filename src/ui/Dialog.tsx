@@ -138,22 +138,49 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
         let newOptions: DialogNodeOption[] = [];
         let currentNode = dialogNodes?.[index];
         if (currentNode === undefined) return;
-        // let delay = 0;
         const { text, options } = currentNode as DialogNode;
+        // console.log(text, options, 'Text and Options')
         if (typeof text === 'string') {
             newText = (text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
-            // delay = text?.split('').reduce((a: number, s: string | any[]) => a + s.length * 50, 0);
         } else if (Array.isArray(text)) {
             const npcOptions = text.filter((option: any) => {
-                const id = getNpcId(enemy.name);
+                // const id = getNpcId(combat().npcType || enemy.name);
+                const id = npcIds[combat().npcType];
+                // console.log(id, id, combat().npcType, 'Current ID of nPC')
                 const included = (option as DialogNodeOption)?.npcIds?.includes(id);
-                return included;
+                let condition = true;
+                if (option?.conditions?.length > 0) {
+                    const { key, operator, value } = option.conditions[0];
+                    const optionValue = getOptionKey(ascean, combat, game, key);
+                    switch (operator) {
+                        case '>':
+                            condition = Number(optionValue) > Number(value);
+                            break;
+                        case '>=':
+                            condition = Number(optionValue) >= Number(value);
+                            break;
+                        case '<':
+                            condition = Number(optionValue) < Number(value);
+                            break;
+                        case '<=':
+                            condition = Number(optionValue) <= Number(value);
+                            break;
+                        case '=':
+                            condition = Number(optionValue) === Number(value);
+                            break;
+                        default:
+                            condition = false;
+                            break;        
+                    };
+                };
+                // console.log(included, condition, option, 'Included and Condition')
+                return included && condition;
             });
-            // delay = npcOptions[0].text?.split('').reduce((a: number, s: string | any[]) => a + s.length * 50, 0);
             newText = (npcOptions[0]?.text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
         };
         newText = processText(newText, { ascean, enemy, combat });
         newOptions = processOptions(options, { ascean, enemy, combat });
+        // console.log(newText, 'Text')
         setRenderedOptions(newOptions);
         setRenderedText(newText);
         setCurrentIndex(index || 0);
@@ -163,8 +190,6 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
             renderedOptions: newOptions, 
             renderedText: newText
         });
-        // const dialogTimeout = setTimeout(() => setShowDialogOptions(true), delay);
-        // return(() => clearTimeout(dialogTimeout)); 
     };
 
     const dialogTimeout = () => setShowDialogOptions(true);
@@ -806,7 +831,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
                 <div style={{ 'font-size': '0.75em' }}>
                     <DialogTree 
                         game={game} combat={combat} ascean={ascean() as Ascean} enemy={combat().computer} dialogNodes={getNodesForEnemy(combat()?.computer as Ascean) as DialogNode[]} 
-                        setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} 
+                        setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions}
                     />
                 { game().currentIntent === 'challenge' ? (
                     <>
@@ -965,7 +990,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
                                 ) : ( '' ) }
                             </div>
                         ) : ( '' ) }
-                        {/* TODO:FIXME: This is where the QUEST MODAL will go. FIXME:TODO: */}
                         <QuestModal quests={quests} show={showQuests} setShow={setShowQuests} />
                     </>
                 ) : game().currentIntent === 'provincialWhispers' ? (
@@ -996,13 +1020,15 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
                     setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions}
                 />
             ) : ( '' ) } 
-            {merchantTable()?.length > 0 && 
-                <button class='highlight' style={{ 'color': 'green' }} onClick={() => setShowBuy(true)}>See the merchant's current set of items</button>
-            }
+                <Show when={merchantTable()?.length > 0}> 
+                    <button class='highlight' style={{ 'color': 'green' }} onClick={() => setShowBuy(true)}>See the merchant's current set of items</button>
+                </Show>
             </div>
-            {combat().isEnemy && <div class='story-dialog-options' style={{ width: '25%', margin: 'auto', 'text-align': 'center', overflow: 'scroll', height: 'auto', 'scrollbar-width': 'none' }}>
-                <DialogButtons options={game().dialog} setIntent={handleIntent} />
-            </div>}
+            <Show when={combat().isEnemy}>
+                <div class='story-dialog-options' style={{ width: '25%', margin: 'auto', 'text-align': 'center', overflow: 'scroll', height: 'auto', 'scrollbar-width': 'none' }}>
+                    <DialogButtons options={game().dialog} setIntent={handleIntent} />
+                </div>
+            </Show>
         </div>
         <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />

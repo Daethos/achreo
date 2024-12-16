@@ -52,7 +52,7 @@ const REVERSE_KEY = {
     'Traveling Sedyreal': 'Merchant-All-Weapon',
     'Kreceus': 'Merchant-All',
     "Ashreu'ul": 'Merchant-All',
-    "Tutorial Teacher": 'Merchant-Tutorial',
+    "Tutorial Teacher": 'Tutorial Teacher',
 };
 
 export const npcIds: NpcIds = {
@@ -276,14 +276,15 @@ export function getNodesForEnemy(enemy: Ascean): DialogNode[] {
 export function getNodesForNPC(npcId: number): DialogNode[] {
     const matchingNodes: DialogNode[] = [];
     for (const node of DialogNodes.nodes) {
-        if (node.options.length === 0) {
-            continue;
-        };
+        // if (node.options.length === 0) {
+        //     continue;
+        // };
         const npcOptions = node.options.filter((option) => (option as DialogNodeOption)?.npcIds?.includes(npcId));
-        if (npcOptions.length > 0) {
+        // console.log(npcOptions, 'NPC Options');
+        // if (npcOptions.length > 0) {
             const updatedNode = { ...node, options: npcOptions };
             matchingNodes.push(updatedNode);
-        };
+        // };
     };
     return matchingNodes;
 };

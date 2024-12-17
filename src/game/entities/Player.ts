@@ -1,7 +1,6 @@
 import Entity, { SWING_TIME } from "./Entity";  
 import { screenShake, sprint, vibrate, walk } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
-// import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import HealthBar from "../phaser/HealthBar";
 import PlayerMachine from '../phaser/PlayerMachine';
 import { EventBus } from "../EventBus";
@@ -100,6 +99,7 @@ export default class Player extends Entity {
     isSeering: boolean = false;
     snareDuration = DURATION.SNARED;
     evasionTime: number = 0;
+    prevInstinct: number = 0;
 
     constructor(data: any) {
         const { scene } = data;

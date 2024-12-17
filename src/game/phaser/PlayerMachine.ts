@@ -355,6 +355,7 @@ export default class PlayerMachine {
         this.player.frameCount = 0;
         this.player.setVelocity(0);
         this.player.contemplationTime = Phaser.Math.Between(500, 1000);
+        this.player.specialCombatText = this.scene.showCombatText('Contemplation', 1000, 'hush', false, true, () => this.player.specialCombatText = undefined);
     };
     onContemplateUpdate = (dt: number) => {
         this.player.contemplationTime -= dt;
@@ -371,41 +372,47 @@ export default class PlayerMachine {
     };
 
     instincts = () => {
-        if (this.player.inCombat === false) {
+        if (this.player.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
+            this.player.inCombat = false;
             this.stateMachine.setState(States.IDLE);
             return;
         };
         this.player.isMoving = false;
         this.player.setVelocity(0);
-        this.scene.time.delayedCall(500, () => {
-            let chance = [1, 2, 3, (!this.player.isRanged ? 6 : 7), (!this.player.isRanged ? 8 : 9)][Math.floor(Math.random() * 5)];
-            let mastery = this.player.ascean.mastery;
-            let health = this.player.health / this.player.ascean.health.max;
-            let player = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
-            const direction = this.player.currentTarget?.position.subtract(this.player.position);
-            const distance = direction?.length() || 0;
-            let instinct =
-                health <= 0.33 ? 0 : // Critical Heal
-                health <= 0.66 ? 1 : // Casual Heal
-                
-                player <= 0.33 ? 2 : // Critical Damage
-                player <= 0.66 ? 3 : // Casual Damage
-                
-                (distance <= 100 && !this.player.isRanged) ? 4 : // AoE + Melee at Short Range
-                (distance <= 100 && this.player.isRanged) ? 4 : // AoE + Ranged at Short Range
-                
-                (distance > 100 && distance < 250 && !this.player.isRanged) ? 5 : // Melee at Mid Range
-                (distance > 100 && distance < 250 && this.player.isRanged) ? 6 : // Ranged at Mid Range
-                
-                (distance >= 250 && !this.player.isRanged) ? 5 : // Melee at Long Range
-                (distance >= 250 && this.player.isRanged) ? 6 : // Ranged at Long Range
-                chance; // Range
-            // console.log(`Chance: ${chance} | Instinct: ${instinct} | Mastery: ${mastery}`);
-            let key = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].key, value = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].value;
-            (this as any)[key].setState(value);
-            if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
-            this.scene.hud.logger.log(`Your instinct leads you to ${value}`);
-        }, undefined, this);
+        let chance = [1, 2, 3, (!this.player.isRanged ? 6 : 7), (!this.player.isRanged ? 8 : 9)][Math.floor(Math.random() * 5)];
+        let mastery = this.player.ascean.mastery;
+        let health = this.player.health / this.player.ascean.health.max;
+        let player = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
+        const direction = this.player.currentTarget?.position.subtract(this.player.position);
+        const distance = direction?.length() || 0;
+        let instinct =
+            health <= 0.33 ? 0 : // Critical Heal
+            health <= 0.66 ? 1 : // Casual Heal
+            
+            player <= 0.33 ? 2 : // Critical Damage
+            player <= 0.66 ? 3 : // Casual Damage
+            
+            (distance <= 100 && !this.player.isRanged) ? 4 : // AoE + Melee at Short Range
+            (distance <= 100 && this.player.isRanged) ? 4 : // AoE + Ranged at Short Range
+            
+            (distance > 100 && distance < 250 && !this.player.isRanged) ? 5 : // Melee at Mid Range
+            (distance > 100 && distance < 250 && this.player.isRanged) ? 6 : // Ranged at Mid Range
+            
+            (distance >= 250 && !this.player.isRanged) ? 5 : // Melee at Long Range
+            (distance >= 250 && this.player.isRanged) ? 6 : // Ranged at Long Range
+
+            chance; // Range
+
+        if (this.player.prevInstinct === instinct) {
+            instinct = chance;
+        };
+        
+        // console.log(`Chance: ${chance} | Instinct: ${instinct} | Mastery: ${mastery}`);
+        let key = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].key, value = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].value;
+        (this as any)[key].setState(value);
+        if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
+        this.scene.hud.logger.log(`Your instinct leads you to ${value}.`);
+        this.player.prevInstinct = instinct;
     };
 
     onIdleEnter = () => {

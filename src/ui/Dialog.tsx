@@ -5,7 +5,7 @@ import Ascean from '../models/ascean';
 import { GameState } from '../stores/game';
 import { ProvincialWhispersButtons, Region, regionInformation } from '../utility/regions';
 import { LuckoutModal, PersuasionModal, QuestModal, checkTraits } from '../utility/traits';
-import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, getNpcId, npcIds } from '../utility/DialogNode';
+import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds } from '../utility/DialogNode';
 import Typewriter from '../utility/Typewriter';
 import Currency from '../utility/Currency';
 import MerchantTable from './MerchantTable';

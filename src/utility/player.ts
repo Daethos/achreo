@@ -255,15 +255,17 @@ export const PLAYER = {
 // [8]: Melee > 250 Distance
 // [9]: Ranged > 250 Distance
 
+// Currently 10 'Instincts' and 16 Options + Invoke
+
 export const PLAYER_INSTINCTS = {
     'constitution': [
-        { // 0 - Desperate Heal
+        { // 0 - Critical Heal
             key: 'stateMachine',
             value: States.DESPERATION
         },{ // 1 - Casual Heal
             key: 'stateMachine',
             value: States.HEALING
-        },{ // 2 - Desperate Damage
+        },{ // 2 - Critical Damage
             key: 'stateMachine',
             value: States.MAIERETH
         },{ // 3 - Casual Damage
@@ -290,16 +292,16 @@ export const PLAYER_INSTINCTS = {
         }
     ],
     'strength': [
-        { // 0
+        { // 0 - Critical Heal
             key: 'stateMachine',
             value: States.DESPERATION
-        },{ // 1
+        },{ // 1 - Casual Heal
             key: 'stateMachine',
             value: States.DEVOUR
-        },{ // 2
+        },{ // 2 - Critical Damage
             key: 'stateMachine',
             value: States.RUSH
-        },{ // 3
+        },{ // 3 - Casual Damage
             key: 'stateMachine',
             value: States.STORM
         },{ // 4
@@ -434,10 +436,10 @@ export const PLAYER_INSTINCTS = {
         },{ // 3
             key: 'stateMachine',
             value: States.MAIERETH
-        },{ // 4
+        },{ // 4 - AoE + Short Range
             key: 'positiveMachine',
             value: States.CHIOMIC
-        },{ // 5
+        },{ // 5 - Mid Range
             key: 'positiveMachine',
             value: States.PROTECT
         },{ // 6 - Melee > 100 && < 250 Distance

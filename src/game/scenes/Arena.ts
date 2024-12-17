@@ -670,7 +670,7 @@ export class Arena extends Scene {
         this.player.update(delta); 
         this.combatManager.combatMachine.process();
         this.playerLight.setPosition(this.player.x, this.player.y);
-        // this.setCameraOffset();
+        this.setCameraOffset();
         if (!this.hud.settings.desktop) this.hud.rightJoystick.update();
     };
     setCameraOffset = () => {

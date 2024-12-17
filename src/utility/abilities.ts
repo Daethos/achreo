@@ -137,7 +137,7 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         'Sprint',
         'Storm',
     ], // 14
-    'achre': [ // 14 
+    'achre': [ // 14
         'Invoke',
         'Consume',
         'Mark',

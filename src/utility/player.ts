@@ -243,217 +243,302 @@ export const PLAYER = {
     },
 };
 
-// ELEMENT IN ARRAY 
+// ELEMENT IN ARRAY
+
 // [0]: Critical Heal
 // [1]: Casual Heal
-// [2]: Critical Damage
-// [3]: Casual Damage
-// [4]: Melee < 100 Distance
-// [5]: Ranged < 100 Distance
-// [6]: Melee > 100 && < 250 Distance
-// [7]: Ranged > 100 && < 250 Distance
-// [8]: Melee > 250 Distance
-// [9]: Ranged > 250 Distance
+// [2]: Starter Heal
+
+// [3]: Critical Damage
+// [4]: Casual Damage
+// [5]: Starter Damage
+
+// [6]: Melee < 100 Distance
+// [7]: Ranged < 100 Distance
+
+// [8]: Melee > 100 && < 200 Distance
+// [9]: Ranged > 100 && < 200 Distance
+
+// [10]: Melee > 200 Distance && Distance < 300
+// [11]: Ranged > 200 Distance && Distance < 300
+
+// [12]: Melee > 300 Distance
+// [13]: Ranged > 300 Distance
 
 // Currently 10 'Instincts' and 16 Options + Invoke
+
+const STATE = "stateMachine";
+const POSITIVE = "positiveMachine";
 
 export const PLAYER_INSTINCTS = {
     'constitution': [
         { // 0 - Critical Heal
-            key: 'stateMachine',
+            key: STATE,
             value: States.DESPERATION
         },{ // 1 - Casual Heal
-            key: 'stateMachine',
+            key: STATE,
             value: States.HEALING
-        },{ // 2 - Critical Damage
-            key: 'stateMachine',
+        },{ // 2 - Starter Heal
+            key: STATE,
+            value: States.INVOKE
+        },{ // 3 - Critical Damage
+            key: STATE,
             value: States.MAIERETH
-        },{ // 3 - Casual Damage
-            key: 'stateMachine',
-            value: States.KYRNAICISM
-        },{ // 4 - Melee < 100 Distance
-            key: 'positiveMachine',
-            value: States.DISEASE
-        },{ // 5 - Ranged < 100 Distance
-            key: 'positiveMachine',
-            value: States.SHIELD
-        },{ // 6 - Melee > 100 && < 250 Distance
-            key: 'stateMachine',
+        },{ // 4 - Casual Damage
+            key: STATE,
             value: States.ILIRECH
-        },{ // 7 - Ranged > 100 && < 250 Distance
-            key: 'stateMachine',
+        },{ // 5 - Starter Damage
+            key: STATE,
             value: States.KYRNAICISM
-        },{ // 8 - Melee > 250 Distance
-            key: 'positiveMachine',
-            value: States.WARD
-        },{ // 9 - Ranged > 250 Distance
-            key: 'stateMachine',
+        },{ // 6 - Melee < 100 Distance
+            key: POSITIVE,
+            value: States.DISEASE
+        },{ // 7 - Ranged < 100 Distance
+            key: POSITIVE,
+            value: States.RENEWAL
+        },{ // 8 - Melee > 100 && < 200 Distance
+            key: STATE,
+            value: States.TETHER
+        },{ // 9 - Ranged > 100 && < 200 Distance
+            key: STATE,
             value: States.PARALYZE
+        },{ // 10 - Melee > 200 Distance && Distance < 300
+            key: POSITIVE,
+            value: States.WARD
+        },{ // 11 - Ranged > 200 Distance && Distance < 300
+            key: STATE,
+            value: States.SHIELD
+        },{ // 12 - Melee > 300 Distance
+            key: POSITIVE,
+            value: States.WARD
+        },{ // 13 - Ranged > 300 Distance
+            key: STATE,
+            value: States.SHIELD
         }
     ],
     'strength': [
         { // 0 - Critical Heal
-            key: 'stateMachine',
+            key: STATE,
             value: States.DESPERATION
         },{ // 1 - Casual Heal
-            key: 'stateMachine',
+            key: STATE,
             value: States.DEVOUR
-        },{ // 2 - Critical Damage
-            key: 'stateMachine',
+        },{ // 2 - Starter Heal
+            key: STATE,
+            value: States.INVOKE
+        },{ // 3 - Critical Damage
+            key: STATE,
             value: States.RUSH
-        },{ // 3 - Casual Damage
-            key: 'stateMachine',
+        },{ // 4 - Casual Damage
+            key: STATE,
             value: States.STORM
-        },{ // 4
-            key: 'positiveMachine',
-            value: States.WRITHE
-        },{ // 5
-            key: 'positiveMachine',
-            value: States.HOWL
-        },{ // 6 - Melee > 100 && < 250 Distance
-            key: 'positiveMachine',
+        },{ // 5 - Starter Damage
+            key: POSITIVE,
             value: States.RECOVER
-        },{ // 7 - Ranged > 100 && < 250 Distance
-            key: 'positiveMachine',
-            value: States.WARD
-        },{ // 8 - Ranged at Distance
-            key: 'stateMachine',
+        },{ // 6 - Melee < 100 Distance
+            key: POSITIVE,
+            value: States.WRITHE
+        },{ // 7 - Ranged < 100 Distance
+            key: POSITIVE,
+            value: States.HOWL
+        },{ // 8 - Melee > 100 && < 200 Distance
+            key: POSITIVE,
+            value: States.SPRINTING
+        },{ // 9 - Ranged > 100 && < 200 Distance
+            key: POSITIVE,
+            value: States.SPRINTING
+        },{ // 10 - Melee > 200 Distance && Distance < 300
+            key: STATE,
             value: States.LEAP
-        },{ // 9 - Ranged > 250 Distance
-            key: 'stateMachine',
+        },{ // 11 - Ranged > 200 Distance && Distance < 300
+            key: STATE,
             value: States.QUOR
+        },{ // 12 - Melee > 300 Distance
+            key: POSITIVE,
+            value: States.HOOK
+        },{ // 13 - Ranged > 300 Distance
+            key: STATE,
+            value: States.WARD
         }
     ],
     'agility': [
-        { // 0
-            key: 'stateMachine',
+        { // 0 - Critical Heal
+            key: STATE,
             value: States.DESPERATION
-        },{ // 1
-            key: 'positiveMachine',
+        },{ // 1 - Casual Heal
+            key: POSITIVE,
             value: States.ENVELOP
-        },{ // 2
-            key: 'stateMachine',
+        },{ // 2 - Starter Heal
+            key: STATE,
+            value: States.INVOKE
+        },{ // 3 - Critical Damage
+            key: STATE,
             value: States.RUSH
-        },{ // 3
-            key: 'stateMachine',
+        },{ // 4 - Casual Damage
+            key: STATE,
             value: States.STORM
-        },{ // 4
-            key: 'positiveMachine',
+        },{ // 5 - Starter Damage
+            key: POSITIVE,
+            value: States.SPRINTING
+        },{ // 6 - Melee < 100 Distance
+            key: POSITIVE,
             value: States.WRITHE
-        },{ // 5
-            key: 'stateMachine',
+        },{ // 7 - Ranged < 100 Distance
+            key: STATE,
             value: States.PURSUIT
-        },{ // 6 - Melee > 100 && < 250 Distance
-            key: 'positiveMachine',
+        },{ // 8 - Melee > 100 && < 200 Distance
+            key: POSITIVE,
             value: States.RECOVER
-        },{ // 7 - Ranged > 100 && < 250 Distance
-            key: 'positiveMachine',
+        },{ // 9 - Ranged > 100 && < 200 Distance
+            key: POSITIVE,
             value: States.RECOVER
-        },{ // 8 - Melee > 250 Distance
-            key: 'positiveMachine',
+        },{ // 10 - Melee > 200 Distance && Distance < 300
+            key: POSITIVE,
             value: States.SHADOW
-        },{ // 9 - Ranged > 250 Distance
-            key: 'stateMachine',
+        },{ // 11 - Ranged > 200 Distance && Distance < 300
+            key: STATE,
+            value: States.ACHIRE
+        },{ // 12 - Melee > 300 Distance
+            key: POSITIVE,
+            value: States.LEAP
+        },{ // 13 - Ranged > 300 Distance
+            key: STATE,
             value: States.ACHIRE
         }
     ],
     'achre': [
-        { // 0
-            key: 'stateMachine',
+        { // 0 - Critical Heal
+            key: STATE,
             value: States.HEALING
-        },{ // 1
-            key: 'stateMachine',
+        },{ // 1 - Casual Heal
+            key: STATE,
             value: States.RECONSTITUTE
-        },{ // 2
-            key: 'stateMachine',
+        },{ // 2 - Starter Heal
+            key: STATE,
+            value: States.INVOKE
+        },{ // 3 - Critical Damage
+            key: STATE,
             value: States.ASTRAVE
-        },{ // 3
-            key: 'stateMachine',
+        },{ // 4 - Casual Damage
+            key: STATE,
             value: States.ACHIRE
-        },{ // 4
-            key: 'positiveMachine',
-            value: States.FREEZE
-        },{ // 5
-            key: 'positiveMachine',
-            value: States.FREEZE
-        },{ // 6 - Melee > 100 && < 250 Distance
-            key: 'stateMachine',
+        },{ // 5 - Starter Damage
+            key: STATE,
             value: States.SLOW
-        },{ // 7 - Ranged > 100 && < 250 Distance
-            key: 'positiveMachine',
+        },{ // 6 - Melee < 100 Distance
+            key: POSITIVE,
+            value: States.FREEZE
+        },{ // 7 - Ranged < 100 Distance
+            key: STATE,
+            value: States.POLYMORPH
+        },{ // 8 - Melee > 100 && < 200 Distance
+            key: POSITIVE,
+            value: States.MODERATE
+        },{ // 9 - Ranged > 100 && < 200 Distance
+            key: POSITIVE,
             value: States.MULTIFARIOUS
-        },{ // 8 - Melee > 250 Distance
-            key: 'positiveMachine',
+        },{ // 10 - Melee > 200 Distance && Distance < 300
+            key: STATE,
+            value: States.BLINK
+        },{ // 11 - Ranged > 200 Distance && Distance < 300
+            key: STATE,
+            value: States.FYERUS
+        },{ // 12 - Melee > 300 Distance
+            key: POSITIVE,
             value: States.ABSORB
-        },{ // 9 - Ranged > 250 Distance
-            key: 'positiveMachine',
+        },{ // 13 - Ranged > 300 Distance
+            key: STATE,
             value: States.QUOR
         }
     ],
     'caeren': [
-        { // 0
-            key: 'stateMachine',
+        { // 0 - Critical Heal
+            key: STATE,
             value: States.HEALING
-        },{ // 1
-            key: 'positiveMachine',
+        },{ // 1 - Casual Heal
+            key: POSITIVE,
             value: States.MEND
-        },{ // 2
-            key: 'stateMachine',
+        },{ // 2 - Starter Heal
+            key: STATE,
+            value: States.INVOKE
+        },{ // 3 - Critical Damage
+            key: STATE,
             value: States.SACRIFICE
-        },{ // 3
-            key: 'stateMachine',
-            value: States.MAIERETH
-        },{ // 4
-            key: 'positiveMachine',
-            value: States.SCREAM
-        },{ // 5
-            key: 'stateMachine',
-            value: States.FEAR
-        },{ // 6 - Melee > 100 && < 250 Distance
-            key: 'positiveMachine',
-            value: States.MALICE
-        },{ // 7 - Ranged > 100 && < 250 Distance
-            key: 'stateMachine',
+        },{ // 4 - Casual Damage
+            key: STATE,
+            value: States.ILIRECH
+        },{ // 5 - Starter Damage
+            key: STATE,
             value: States.KYRNAICISM
-        },{ // 8 - Melee > 250 Distance
-            key: 'stateMachine',
+        },{ // 6 - Melee < 100 Distance
+            key: POSITIVE,
+            value: States.SCREAM
+        },{ // 7 - Ranged < 100 Distance
+            key: STATE,
+            value: States.FEAR
+        },{ // 8 - Melee > 100 && < 200 Distance
+            key: POSITIVE,
+            value: States.MALICE
+        },{ // 9 - Ranged > 100 && < 200 Distance
+            key: STATE,
+            value: States.ASTRAVE
+        },{ // 10 - Melee > 200 Distance && Distance < 300
+            key: STATE,
             value: States.SHIRK
-        },{ // 9 - Ranged > 250 Distance
-            key: 'positiveMachine',
+        },{ // 11 - Ranged > 200 Distance && Distance < 300
+            key: STATE,
+            value: States.FYERUS
+        },{ // 12 - Melee > 300 Distance
+            key: STATE,
+            value: States.SHIRK
+        },{ // 13 - Ranged > 300 Distance
+            key: STATE,
             value: States.MENACE
         }
     ],
     'kyosir': [
-        { // 0
-            key: 'stateMachine',
+        { // 0 - Critical Heal
+            key: STATE,
+            value: States.RECONSTITUTE
+        },{ // 1 - Casual Heal
+            key: STATE,
             value: States.HEALING
-        },{ // 1
-            key: 'stateMachine',
-            value: States.DEVOUR
-        },{ // 2
-            key: 'stateMachine',
+        },{ // 2 - Starter Heal
+            key: STATE,
+            value: States.SUTURE
+        },{ // 3 - Critical Damage
+            key: STATE,
             value: States.SACRIFICE
-        },{ // 3
-            key: 'stateMachine',
+        },{ // 4 - Casual Damage
+            key: STATE,
             value: States.MAIERETH
-        },{ // 4 - AoE + Short Range
-            key: 'positiveMachine',
+        },{ // 5 - Starter Damage
+            key: STATE,
+            value: States.INVOKE
+        },{ // 6 - Melee < 100 Distance
+            key: POSITIVE,
             value: States.CHIOMIC
-        },{ // 5 - Mid Range
-            key: 'positiveMachine',
-            value: States.PROTECT
-        },{ // 6 - Melee > 100 && < 250 Distance
-            key: 'stateMachine',
+        },{ // 7 - Ranged < 100 Distance
+            key: POSITIVE,
+            value: States.CHIOMIC
+        },{ // 8 - Melee > 100 && < 200 Distance
+            key: STATE,
             value: States.CONFUSE
-        },{ // 7 - Ranged > 100 && < 250 Distance
-            key: 'stateMachine',
+        },{ // 9 - Ranged > 100 && < 200 Distance
+            key: STATE,
             value: States.KYRNAICISM
-        },{ // 8 - Melee > 250 Distance
-            key: 'stateMachine',
+        },{ // 10 - Melee > 200 Distance && Distance < 300
+            key: STATE,
             value: States.HOOK
-        },{ // 9 - Ranged > 250 Distance
-            key: 'stateMachine',
-            value: States.ILIRECH
+        },{ // 11 - Ranged > 200 Distance && Distance < 300
+            key: STATE,
+            value: States.MAIERETH
+        },{ // 12 - Melee > 300 Distance
+            key: POSITIVE,
+            value: States.MYSTIFY
+        },{ // 13 - Ranged > 300 Distance
+            key: STATE,
+            value: States.PROTECT
         }
     ]
 };

@@ -437,15 +437,23 @@ export class Underground extends Scene {
     };
     rotateTween = (tween: any, count: number, active: boolean) => {
         if (active === true) {
-            this.tweenManager[tween.name] = this.tweens.add({
-                targets: tween,
-                angle: count * 360,
-                duration: count * 925,
-                ease: 'Circ.easeInOut',
-                yoyo: false,
-            });
+            if (tween && tween.name) {
+                this.tweenManager[tween.name] = this.tweens.add({
+                    targets: tween,
+                    angle: count * 360,
+                    duration: count * 925,
+                    ease: 'Circ.easeInOut',
+                    yoyo: false,
+                });
+            } else {
+                console.warn("Tween or Tween name is undefined.", tween);
+            };
         } else {
-            this.tweenManager[tween.name].stop();
+            if (this.tweenManager[tween.name]) {
+                this.tweenManager[tween.name].stop();
+            } else {
+                console.warn("Tween Manager does not have the specified tween.", tween.name);
+            };
         };
     };
     isStateEnemy = (id: string): boolean => id === this.state.enemyID;

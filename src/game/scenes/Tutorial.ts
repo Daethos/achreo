@@ -4,7 +4,6 @@ import LootDrop from '../matter/LootDrop';
 import Equipment from '../../models/equipment';
 import { States } from '../phaser/StateMachine';
 import { EnemySheet } from '../../utility/enemy';
-import { useResizeListener } from '../../utility/dimensions';
 import { Reputation, initReputation } from '../../utility/player';
 import Player from '../entities/Player';
 import Enemy from '../entities/Enemy';
@@ -20,7 +19,6 @@ import DM from '../entities/DM';
 import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
-const dimensions = useResizeListener();
 export class Tutorial extends Phaser.Scene {
     offsetX: number = 0;
     offsetY: number = 0;
@@ -49,12 +47,7 @@ export class Tutorial extends Phaser.Scene {
     musicCombat: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicCombat2: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicStealth: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
-    fpsText: Phaser.GameObjects.Text;
     combatManager: CombatManager;
-    baseLayer: Phaser.Tilemaps.TilemapLayer;
-    climbingLayer: Phaser.Tilemaps.TilemapLayer;
-    flowers: Phaser.Tilemaps.TilemapLayer;
-    plants: Phaser.Tilemaps.TilemapLayer;
     matterCollision: any;
     glowFilter: any;
     targetTarget: Enemy;
@@ -79,18 +72,13 @@ export class Tutorial extends Phaser.Scene {
         const tileSet = map.addTilesetImage('GrasslandMainLev2.0', 'GrasslandMainLev2.0', tileSize, tileSize, 1, 2);
         let layer0 = map.createLayer('Tile Layer 0 - Base', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
         let layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
-        this.baseLayer = layer0 as Phaser.Tilemaps.TilemapLayer;
-        this.climbingLayer = layer1 as Phaser.Tilemaps.TilemapLayer;
         [layer0, layer1].forEach((layer) => {
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
         });
-        // this.matter.world.createDebugGraphic(); 
         const objectLayer = map.getObjectLayer('navmesh');
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;
-        // const debugGraphics = this.add.graphics().setAlpha(0.75);
-        // this.navMesh.enableDebug(debugGraphics); 
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
         if (this.hud.prevScene === 'Game') this.player.setPosition(415,697);
@@ -159,13 +147,11 @@ export class Tutorial extends Phaser.Scene {
         this.musicCombat2 = this.sound.add('combat2', { volume: this?.hud?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
         if (this.hud.settings?.music === true) this.musicBackground.play();
-
         this.postFxEvent();
         this.particleManager = new ParticleManager(this);
         this.combatManager = new CombatManager(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
-
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
@@ -231,12 +217,6 @@ export class Tutorial extends Phaser.Scene {
         });
         EventBus.on('check-stealth', (stealth: boolean) => {
             this.stealth = stealth;
-        });
-        EventBus.on('update-current-fps', (data: {x: number, y: number}) => {
-            const { x, y } = data;
-            const newX = dimensions()?.WIDTH * x;
-            const newY = dimensions()?.HEIGHT * y;
-            this.fpsText.setPosition(newX, newY);
         });
         EventBus.on('update-camera-zoom', (zoom: number) => {
             let camera = this.cameras.main;
@@ -426,15 +406,23 @@ export class Tutorial extends Phaser.Scene {
     };
     rotateTween = (tween: any, count: number, active: boolean) => {
         if (active === true) {
-            this.tweenManager[tween.name] = this.tweens.add({
-                targets: tween,
-                angle: count * 360,
-                duration: count * 925,
-                ease: 'Circ.easeInOut',
-                yoyo: false,
-            });
+            if (tween && tween.name) {
+                this.tweenManager[tween.name] = this.tweens.add({
+                    targets: tween,
+                    angle: count * 360,
+                    duration: count * 925,
+                    ease: 'Circ.easeInOut',
+                    yoyo: false,
+                });
+            } else {
+                console.warn("Tween or Tween name is undefined.", tween);
+            };
         } else {
-            this.tweenManager[tween.name].stop();
+            if (this.tweenManager[tween.name]) {
+                this.tweenManager[tween.name].stop();
+            } else {
+                console.warn("Tween Manager does not have the specified tween.", tween.name);
+            };
         };
     };
     isStateEnemy = (id: string): boolean => id === this.state.enemyID;
@@ -572,40 +560,6 @@ export class Tutorial extends Phaser.Scene {
         EventBus.emit('blend-game', { dialogTag });
         this.hud.smallHud.activate('dialog', dialogTag);
     };
-    checkEnvironment = (player: Player | Enemy) => {
-        const x = this.map.worldToTileX(player.x || 0);
-        const y = this.map.worldToTileY(player.y || 0);
-        if (!this.climbingLayer) return;
-        const climb = this.climbingLayer.getTileAt(x as number, y as number);
-        if (climb && climb.properties && climb.properties.climb) {
-            player.isClimbing = true;
-        } else {
-            player.isClimbing = false;
-        };
-        if (!this.baseLayer) return;
-        const water = this.baseLayer.getTileAt(x as number, y as number);
-        if (water && water.properties && water.properties.water) {
-            player.inWater = true;
-        } else {
-            player.inWater = false;
-        };
-        const flower = this.flowers.getTileAt(x as number, y as number);
-        if (flower) {
-            if (flower.pixelY > player.y - 12) {
-                player.setDepth(2);
-            } else {
-                player.setDepth(4);
-            };
-        };
-        const plant = this.plants.getTileAt(x as number, y as number);
-        if (plant) {
-            if (plant.pixelY > player.y - 12) {
-                player.setDepth(2);
-            } else {
-                player.setDepth(4);
-            };
-        };
-    };
 
     createTutorialEnemy = () => {
         EventBus.emit('alert', { header: "Tutorial", body: "The tutorial enemy is being summoned.", key: "Close" });
@@ -634,7 +588,6 @@ export class Tutorial extends Phaser.Scene {
             enemy.destroy();
         }, undefined, this);
     };
-
 
     playerUpdate = (delta: number): void => {
         this.player.update(delta); 

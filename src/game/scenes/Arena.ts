@@ -440,18 +440,26 @@ export class Arena extends Scene {
 
     rotateTween = (tween: any, count: number, active: boolean) => {
         if (active === true) {
-            this.tweenManager[tween.name] = this.tweens.add({
-                targets: tween,
-                angle: count * 360,
-                duration: count * 925,
-                ease: 'Circ.easeInOut',
-                yoyo: false,
-            });
+            if (tween && tween.name) {
+                this.tweenManager[tween.name] = this.tweens.add({
+                    targets: tween,
+                    angle: count * 360,
+                    duration: count * 925,
+                    ease: 'Circ.easeInOut',
+                    yoyo: false,
+                });
+            } else {
+                console.warn("Tween or Tween name is undefined.", tween);
+            };
         } else {
-            this.tweenManager[tween.name].stop();
+            if (this.tweenManager[tween.name]) {
+                this.tweenManager[tween.name].stop();
+            } else {
+                console.warn("Tween Manager does not have the specified tween.", tween.name);
+            };
         };
     };
-
+    
     isStateEnemy = (id: string): boolean => id === this.state.enemyID;
 
     quickCombat = () => {
@@ -618,6 +626,10 @@ export class Arena extends Scene {
         EventBus.emit('alert', { header: "Prepare!", body: "The enemies are being summoned. Prepare for the Eulex.", key: "Close" });
         this.time.delayedCall(1500, () => {
             let data: Compiler[] = this.registry.get("enemies");
+            if (!data) {
+                this.switchArena();
+                return;
+            };
             let marker: any, markers: any[] = [], count = data.length - 1;
             for (let i = 0; i < this.markers.length; i++) {
                 const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);

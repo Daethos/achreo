@@ -1,6 +1,6 @@
 export const Asceans: any[] = [
 {
-    "_id":"chiomic_jester_1",
+    "_id":"chiomic_jester_0.5",
     "origin":"Fyers",
     "sex":"Man",
     "mastery":"kyosir",

@@ -1,7 +1,7 @@
 import Player from '../entities/Player';
 import StateMachine, { States } from "./StateMachine";
 // import ScrollingCombatText from "./ScrollingCombatText";
-import { PLAYER, PLAYER_INSTINCTS } from "../../utility/player";
+import { PLAYER, PLAYER_INSTINCTS, STAMINA, staminaCheck } from "../../utility/player";
 import { FRAME_COUNT } from '../entities/Entity';
 import AoE from './AoE';
 import { EventBus } from "../EventBus";
@@ -352,10 +352,10 @@ export default class PlayerMachine {
             return;
         };
         this.player.isContemplating = true;
+        this.player.isMoving = false;
         this.player.frameCount = 0;
         this.player.setVelocity(0);
-        this.player.contemplationTime = Phaser.Math.Between(500, 1000);
-        this.player.specialCombatText = this.scene.showCombatText('Contemplation', 1000, 'hush', false, true, () => this.player.specialCombatText = undefined);
+        this.player.contemplationTime = Phaser.Math.Between(250, 750);
     };
     onContemplateUpdate = (dt: number) => {
         this.player.contemplationTime -= dt;
@@ -368,7 +368,6 @@ export default class PlayerMachine {
         this.player.isContemplating = false;
         this.player.currentAction = '';
         this.instincts();
-        this.stateMachine.setState(States.CHASE);
     };
 
     instincts = () => {
@@ -392,7 +391,7 @@ export default class PlayerMachine {
             
             enemy <= 0.3 ? 3 : // Critical Damage
             enemy <= 0.55 ? 4 : // Casual Damage
-            (enemy >= 0.8) ? 5 : // Starter Damage
+            enemy >= 0.8 ? 5 : // Starter Damage
             
             (distance < 100 && !this.player.isRanged) ? 6 : // AoE + Melee at Melee~ Range
             (distance < 100 && this.player.isRanged) ? 7 : // AoE + Ranged at Melee~ Range
@@ -411,13 +410,23 @@ export default class PlayerMachine {
         if (this.player.prevInstinct === instinct) {
             instinct = chance;
         };
-        
+
         // console.log(`Chance: ${chance} | Instinct: ${instinct} | Mastery: ${mastery}`);
         let key = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].key, value = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].value;
-        (this as any)[key].setState(value);
-        if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
-        this.scene.hud.logger.log(`Your instinct leads you to ${value}.`);
-        this.player.prevInstinct = instinct;
+        let check: {success:boolean;cost:number;} = {success:false,cost:0};
+        const grace = PLAYER.STAMINA[value.toUpperCase() as keyof typeof PLAYER.STAMINA];
+        check = staminaCheck(this.player.grace, grace);
+
+        if (check.success === true) {
+            (this as any)[key].setState(value);
+            if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
+            this.player.specialCombatText = this.scene.showCombatText('Instinct', 1000, 'hush', false, true, () => this.player.specialCombatText = undefined);
+            this.scene.hud.logger.log(`Your instinct leads you to ${value}.`);
+            this.player.prevInstinct = instinct;
+        } else {
+            this.player.specialCombatText = this.scene.showCombatText('Compose Yourself', 1000, 'dread', false, true, () => this.player.specialCombatText = undefined);
+            this.stateMachine.setState(States.THRUST);
+        };
     };
 
     onIdleEnter = () => {

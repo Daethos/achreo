@@ -411,6 +411,10 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
         });
         setEnemies(newEnemies);
     };
+    usePhaserEvent('remove-non-aggressive-enemy', () => {
+        if (combat().enemyID !== '') filterEnemies(combat().enemyID);
+        EventBus.emit('clear-enemy');
+    });
     usePhaserEvent('initiate-combat', (payload: { data: any, type: string }) => initiateCombat(payload.data, payload.type));
     usePhaserEvent('remove-enemy', filterEnemies);
     usePhaserEvent('request-enemy', sendEnemyData);

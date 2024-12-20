@@ -5,7 +5,6 @@ import LootDrop from '../matter/LootDrop';
 import { GameState } from '../../stores/game';
 import Equipment from '../../models/equipment';
 import { States } from '../phaser/StateMachine';
-import { EnemySheet } from '../../utility/enemy';
 import Fov from '../phaser/Fov';
 import { Reputation, initReputation } from '../../utility/player';
 import Player from '../entities/Player';
@@ -15,7 +14,6 @@ import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.mi
 import Tile from '../phaser/Tile';
 import { CombatManager } from '../phaser/CombatManager';
 import MiniMap from '../phaser/MiniMap';
-// import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import ParticleManager from '../matter/ParticleManager';
 import { screenShake } from '../phaser/ScreenShake';
 import { Hud } from './Hud';
@@ -314,24 +312,6 @@ export class Arena extends Scene {
         });
     };
 
-    wakeUp = () => {
-        this.scene.resume();
-        if (this.combat) {
-            if (this.musicCombat.isPaused) {
-                this.musicCombat.resume();
-            } else {
-                this.musicCombat2.resume();
-            };
-            this.startCombatTimer();    
-        } else if (this.player.isStealthing) {
-            this.musicStealth.resume();
-        } else {
-            this.musicBackground.resume();
-        };
-        this.createArenaEnemy();
-        EventBus.emit('current-scene-ready', this);
-    };
-
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
         if (type === 'bloom') this.postFxPipeline.setBloomRadius(val);
@@ -471,10 +451,6 @@ export class Arena extends Scene {
         };
     };
 
-    clearNonAggressiveEnemy = () => this.combatManager.combatMachine.action({ data: { key: 'player', value: 0, id: this.player.playerID }, type: 'Remove Enemy' });
-    
-    clearNPC = (): boolean => EventBus.emit('clear-npc');
-
     clearAggression = () => {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
@@ -598,30 +574,6 @@ export class Arena extends Scene {
     };
 
     drinkFlask = (): boolean => EventBus.emit('drink-firewater');
-    setupEnemy = (enemy: any): void => {
-        const data: EnemySheet = { 
-            id: enemy.enemyID, 
-            game: enemy.ascean, 
-            enemy: enemy.combatStats, 
-            health: enemy.health, 
-            isAggressive: enemy.isAggressive, 
-            startedAggressive: enemy.startedAggressive, 
-            isDefeated: enemy.isDefeated, 
-            isTriumphant: enemy.isTriumphant,
-            isLuckout: enemy.isLuckout, 
-            isPersuaded: enemy.isPersuaded, 
-            playerTrait: enemy.playerTrait
-        };
-        EventBus.emit('setup-enemy', data);
-    };
-    setupNPC = (npc: any): void => {
-        const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType, interactCount: npc.interactCount };
-        EventBus.emit('setup-npc', data);    
-    };
-    showDialog = (dialogTag: boolean) => {
-        EventBus.emit('blend-game', { dialogTag });
-        this.hud.smallHud.activate('dialog', dialogTag);
-    };
     createArenaEnemy = () => {
         EventBus.emit('alert', { header: "Prepare!", body: "The enemies are being summoned. Prepare for the Eulex.", key: "Close" });
         this.time.delayedCall(1500, () => {

@@ -299,7 +299,6 @@ export const DialogOption = ({ option, onClick, actions }: DialogOptionProps) =>
     const handleClick = async () => {
         if (option.action && typeof option.action === 'string') {
             const actionName = option.action.trim();
-            // console.log(actionName, "Did we make it here?")
             const actionFunction = actions[actionName];
             if (actionFunction) {
                 actionFunction();
@@ -344,20 +343,9 @@ const DialogTree = ({ ascean, engageCombat, getLoot, dialogNodes, game, state, r
         if (game()?.currentNode) {
             let newText = game()?.currentNode?.text;
             let newOptions: DialogNodeOption[] = [];
-            // console.log(typeof game().currentNode?.text, 'Type of text?')
             if (typeof game().currentNode?.text === 'string') {
                 newText = (game().currentNode?.text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
             } else if (Array.isArray(game().currentNode?.text)) {
-                // newText = (game()?.currentNode?.text?.text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
-                // const id = getNpcId(ascean.name);
-                // const npcOptions = (game().currentNode?.text as DialogNodeText[]).filter((option: any) => {
-                //     const id = getNpcId(enemy.name);
-                //     const included = (option as DialogNodeOption)?.npcIds?.includes(id);
-                //     console.log(enemy.name, id, option, included, 'enemy name, id, option,  included');
-                //     return included;
-                // });
-
-
                 if (game().currentNode?.text) {
                     newOptions = (game()?.currentNode?.text as DialogNodeText[]).filter((node: any) => {
                         if (node.conditions) {

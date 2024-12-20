@@ -78,7 +78,7 @@ export default class NPC extends Entity {
                 vibrate();
                 this.clearTint();
                 this.setTint(0x00FF00); 
-                this.scene.setupNPC(this);
+                this.scene.hud.setupNPC(this);
                 this.scene.player.setCurrentTarget(this);
                 this.scene.player.animateTarget();
             })
@@ -114,7 +114,7 @@ export default class NPC extends Entity {
                 if (other.gameObjectB && other.gameObjectB.name === 'player' && !other.gameObjectB.inCombat && !this.isInteracting) {
                     this.isInteracting = true;
                     this.interactCount++;
-                    this.scene.setupNPC(this);
+                    this.scene.hud.setupNPC(this);
                     this.npcTarget = other.gameObjectB;
                     this.stateMachine.setState(States.AWARE);
                     other.gameObjectB.currentTarget = this;
@@ -134,7 +134,7 @@ export default class NPC extends Entity {
                     this.isInteracting = false;
                     this.stateMachine.setState(States.IDLE); 
                     other.gameObjectB.targets = other.gameObjectB.targets.filter((obj: any) => obj.enemyID !== this.enemyID);
-                    this.scene.clearNPC();
+                    this.scene.hud.clearNPC();
                     other.gameObjectB.checkTargets();
                 };
             },
@@ -143,14 +143,14 @@ export default class NPC extends Entity {
     }; 
 
     onIdleEnter = () => this.anims.play('player_idle', true);
-    onAwarenessEnter = () => this.scene.showDialog(true);
+    onAwarenessEnter = () => this.scene.hud.showDialog(true);
     onAwarenessUpdate = (_dt: number) => {
         if (this.npcTarget) {
             const direction = this.npcTarget.position.subtract(this.position);
             if (direction.x < 0) { this.flipX = true } else { this.flipX = false };
         };
     };
-    onAwarenessExit = () => this.scene.showDialog(false);
+    onAwarenessExit = () => this.scene.hud.showDialog(false);
 
     update = () => this.stateMachine.update(this.scene.sys.game.loop.delta);
 };

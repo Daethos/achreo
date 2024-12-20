@@ -388,11 +388,11 @@ export default class PlayerMachine {
         let instinct =
             health <= 0.3 ? 0 : // Critical Heal
             health <= 0.6 ? 1 : // Casual Heal
-            health <= 0.75 ? 2 : // Starter Heal
+            (health >= 0.75 && health <= 0.95) ? 2 : // Starter Heal
             
             enemy <= 0.3 ? 3 : // Critical Damage
-            enemy <= 0.6 ? 4 : // Casual Damage
-            enemy <= 0.75 ? 5 : // Starter Damage
+            enemy <= 0.55 ? 4 : // Casual Damage
+            (enemy >= 0.8) ? 5 : // Starter Damage
             
             (distance < 100 && !this.player.isRanged) ? 6 : // AoE + Melee at Melee~ Range
             (distance < 100 && this.player.isRanged) ? 7 : // AoE + Ranged at Melee~ Range

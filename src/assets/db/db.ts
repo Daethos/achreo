@@ -16,6 +16,10 @@ const SETTINGS = 'Settings';
 const REPUTATION = 'Reputation';
 const INVENTORY = 'Inventory';
 const STATISTICS = 'Statistics';
+const PARTY = 'Party';
+
+export const getParty = async (id: string) => await db.collection(PARTY).doc({ _id: id }).get();
+
 
 export const getAsceans = async () => await db.collection(ASCEANS).get();
 export const getAscean = async (id: string) => await db.collection(ASCEANS).doc({ _id: id }).get();

@@ -85,7 +85,7 @@ export default class PlayerComputer extends Player {
         const enemy = this.scene.enemies.find((obj: Enemy) => obj.enemyID === id);
         if (!enemy) return;
         if (this.isNewEnemy(enemy)) this.targets.push(enemy);
-        if (this.scene.state.enemyID !== id) this.scene.setupEnemy(enemy);
+        if (this.scene.state.enemyID !== id) this.scene.hud.setupEnemy(enemy);
         this.inCombat = true;
         this.scene.combatEngaged(true);
         this.targetID = id;
@@ -147,7 +147,7 @@ export default class PlayerComputer extends Player {
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
             if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
-                this.scene.setupEnemy(this.currentTarget);
+                this.scene.hud.setupEnemy(this.currentTarget);
             };
         };
         if (this.isDefeated && !this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) {
@@ -320,8 +320,8 @@ export default class PlayerComputer extends Player {
 
     update() {
         this.handleComputerConcerns();
-        this.handleAnimations();
         this.evaluateCombatDistance();
+        this.handleAnimations();
         this.playerMachine.update(this.dt);
     };
 };

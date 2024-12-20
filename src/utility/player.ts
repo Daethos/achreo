@@ -1,4 +1,5 @@
 import { States } from "../game/phaser/StateMachine";
+import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 
 export const PHYSICAL_ACTIONS = ['attack', 'posture', 'thrust'];
@@ -1127,3 +1128,14 @@ export class Inventory {
 };
 
 export const initInventory: Inventory = new Inventory('inventory');
+
+export class Party<T> {
+    public _id: string;
+    public party: T[] | [];
+    public constructor(id: string) {
+        this._id = id;
+        this.party = [];
+    };
+};
+
+export const initParty: Party<Ascean> = new Party('party');

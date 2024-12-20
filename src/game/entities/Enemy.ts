@@ -1,7 +1,6 @@
 import Entity, { FRAME_COUNT } from "./Entity"; 
 import StateMachine, { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
-// import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import { EventBus } from "../EventBus";
 import { v4 as uuidv4 } from 'uuid';
 import { PLAYER } from "../../utility/player";
@@ -21,10 +20,10 @@ import { Arena } from "../scenes/Arena";
 import Beam from "../matter/Beam";
 import { Play } from "../main";
 
-const ENEMY_COLOR = 0xFF0000;
-const TARGET_COLOR = 0x00FF00;
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
+const ENEMY_COLOR = 0xFF0000;
+const TARGET_COLOR = 0x00FF00;
 
 export default class Enemy extends Entity {
     enemyID: string;
@@ -220,9 +219,9 @@ export default class Enemy extends Entity {
         const colliderHeight = PLAYER.COLLIDER.HEIGHT; 
         const paddingWidth = 10;         
         const paddingHeight = 10; 
-
         const paddedWidth = colliderWidth + 2 * paddingWidth;
         const paddedHeight = colliderHeight + 2 * paddingHeight;
+
         let enemyCollider = Bodies.rectangle(this.x, this.y + 10, colliderWidth, colliderHeight, { isSensor: false, label: 'enemyCollider' });
         enemyCollider.boundsPadding = { x: paddedWidth, y: paddedHeight };
         let enemySensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: 'enemySensor' }); // Sensor was 48
@@ -249,7 +248,7 @@ export default class Enemy extends Entity {
                 vibrate();
                 this.clearTint();
                 this.setTint(TARGET_COLOR);
-                if (this.enemyID !== this.scene.state.enemyID) this.scene.setupEnemy(this);
+                if (this.enemyID !== this.scene.state.enemyID) this.scene.hud.setupEnemy(this);
                 const newEnemy = this.isNewEnemy(this.scene.player);
                 if (newEnemy) this.scene.player.addEnemy(this);
                 this.scene.player.setCurrentTarget(this);
@@ -475,7 +474,7 @@ export default class Enemy extends Entity {
                             other.gameObjectB.targets.push(this);
                             other.gameObjectB.checkTargets();
                         };
-                        if (this.isReasonable()) this.scene.setupEnemy(this);
+                        if (this.isReasonable()) this.scene.hud.setupEnemy(this);
                         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
                         if (this.stateMachine.isCurrentState(States.DEFEATED)) {
                             this.scene.hud.showDialog(true);
@@ -502,7 +501,7 @@ export default class Enemy extends Entity {
                         } else {
                             this.stateMachine.setState(States.IDLE);
                         };
-                        if (this.isCurrentTarget === true && !this.inCombat) this.scene.clearNonAggressiveEnemy();
+                        if (this.isCurrentTarget === true && !this.inCombat) this.scene.hud.clearNonAggressiveEnemy();
                     };
                 };
             },

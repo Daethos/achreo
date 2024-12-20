@@ -31,7 +31,6 @@ const DURATION = {
     ROLL: 320, // 320
     SPECIAL: 5000,
 };
-
 const ORIGIN = {
     WEAPON: { X: 0.25, Y: 1 },
     SHIELD: { X: -0.2, Y: 0.25 },
@@ -331,7 +330,7 @@ export default class Player extends Entity {
 
     disengage = () => {
         this.scene.combatEngaged(false);
-        this.scene.clearNonAggressiveEnemy();
+        this.scene.hud.clearNonAggressiveEnemy();
         this.healthbar.setVisible(false);
         this.inCombat = false;
         this.currentTarget = undefined;
@@ -395,14 +394,14 @@ export default class Player extends Entity {
         this.targetID = enemy.enemyID;
         this.currentTarget = enemy;
         this.highlightTarget(enemy);
-        if (this.scene.state.enemyID !== enemy.enemyID) this.scene.setupEnemy(enemy);
+        if (this.scene.state.enemyID !== enemy.enemyID) this.scene.hud.setupEnemy(enemy);
     };
 
     targetEngagement = (id: string) => {
         const enemy = this.scene.enemies.find((obj: Enemy) => obj.enemyID === id);
         if (!enemy) return;
         if (this.isNewEnemy(enemy)) this.targets.push(enemy);
-        if (this.scene.state.enemyID !== id) this.scene.setupEnemy(enemy);
+        if (this.scene.state.enemyID !== id) this.scene.hud.setupEnemy(enemy);
         this.inCombat = true;
         this.scene.combatEngaged(true);
         this.targetID = id;
@@ -658,7 +657,7 @@ export default class Player extends Entity {
             if (!newTarg) return;
             this.currentTarget = newTarg;
             this.highlightTarget(this.currentTarget as Enemy);
-            this.scene.setupEnemy(this.currentTarget);
+            this.scene.hud.setupEnemy(this.currentTarget);
         };
     };
 
@@ -667,7 +666,7 @@ export default class Player extends Entity {
         if (!enemy) return;
         enemy.ping();
         vibrate();
-        if (enemy.enemyID !== this.scene.state.enemyID) this.scene.setupEnemy(enemy);
+        if (enemy.enemyID !== this.scene.state.enemyID) this.scene.hud.setupEnemy(enemy);
         this.currentTarget = enemy;
         this.targetIndex = this.targets.findIndex(obj => obj.enemyID === enemy.enemyID);
         this.highlightTarget(enemy); 
@@ -689,7 +688,7 @@ export default class Player extends Entity {
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
             this.animateTarget();
-            this.scene.setupEnemy(this.currentTarget);
+            this.scene.hud.setupEnemy(this.currentTarget);
         };
     };
 
@@ -705,7 +704,7 @@ export default class Player extends Entity {
         };
         const enemyInCombat = this.targets.find(obj => obj.inCombat && obj.health > 0);
         if (enemyInCombat) {
-            this.scene.setupEnemy(enemyInCombat);
+            this.scene.hud.setupEnemy(enemyInCombat);
             this.currentTarget = enemyInCombat;
             this.targetID = enemyInCombat.enemyID;
             this.highlightTarget(enemyInCombat);
@@ -727,7 +726,7 @@ export default class Player extends Entity {
     }; 
 
     enterCombat = (other: any) => {
-        this.scene.setupEnemy(other.gameObjectB);
+        this.scene.hud.setupEnemy(other.gameObjectB);
         this.actionTarget = other;
         this.currentTarget = other.gameObjectB;
         this.targetID = other.gameObjectB.enemyID;
@@ -737,7 +736,7 @@ export default class Player extends Entity {
     };
 
     prepareCombat = (other: any) => {
-        this.scene.setupEnemy(other.gameObjectB);
+        this.scene.hud.setupEnemy(other.gameObjectB);
         this.actionTarget = other;
         this.currentTarget = other.gameObjectB;
         this.targetID = other.gameObjectB.enemyID;
@@ -778,7 +777,7 @@ export default class Player extends Entity {
                     if (!isNewNeutral) return;
                     this.targets.push(other.gameObjectB);
                     this.checkTargets();
-                    if (this.inCombat === false) this.scene.setupEnemy(other.gameObjectB);
+                    if (this.inCombat === false) this.scene.hud.setupEnemy(other.gameObjectB);
                 };
             },
             context: this.scene,
@@ -1045,9 +1044,9 @@ export default class Player extends Entity {
         this.currentTarget = newTarget;
         this.targetID = newTarget.enemyID;
         if (newTarget.npcType) {
-            this.scene.setupNPC(newTarget);
+            this.scene.hud.setupNPC(newTarget);
         } else {
-            this.scene.setupEnemy(newTarget);
+            this.scene.hud.setupEnemy(newTarget);
         };
         this.highlightTarget(this.currentTarget as Enemy); 
     };
@@ -1284,7 +1283,7 @@ export default class Player extends Entity {
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
             if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
-                this.scene.setupEnemy(this.currentTarget);
+                this.scene.hud.setupEnemy(this.currentTarget);
             };
         } else if (this.highlight.visible) {
             this.removeHighlight();

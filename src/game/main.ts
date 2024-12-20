@@ -11,7 +11,6 @@ import { Hud } from './scenes/Hud';
 import { Preloader } from './scenes/Preloader';
 import { useResizeListener } from '../utility/dimensions';
 import { Intro } from './scenes/Intro';
-import { Tent } from './scenes/Interior';
 import { Underground } from './scenes/Underground';
 import { Arena } from './scenes/Arena';
 import { Tutorial } from './scenes/Tutorial';
@@ -29,7 +28,7 @@ const config: Phaser.Types.Core.GameConfig = {
     backgroundColor: '#000',
     dom: {createContainer: true},
     input: {activePointers: 10, mouse:true, windowEvents:false},
-    scene: [Boot,Preloader,MainMenu,Tutorial,Game,Intro,Tent,Underground,Arena,Hud],
+    scene: [Boot,Preloader,MainMenu,Tutorial,Game,Intro,Underground,Arena,Hud],
     physics: {
         default: 'matter',
         matter: {gravity: {x: 0, y: 0}}, // debug: true,

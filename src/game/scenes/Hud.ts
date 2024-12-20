@@ -11,6 +11,10 @@ import { useResizeListener } from "../../utility/dimensions";
 import Logger, { ConsoleLogger } from '../../utility/Logger';
 import { roundToTwoDecimals } from "../../utility/combat";
 import { Play } from "../main";
+import { Tutorial } from "./Tutorial";
+import { Arena } from "./Arena";
+import { Underground } from "./Underground";
+import { EnemySheet } from "../../utility/enemy";
 const dimensions = useResizeListener();
 
 export class Hud extends Phaser.Scene {
@@ -98,7 +102,7 @@ export class Hud extends Phaser.Scene {
         });
         
         const swipe = this.add.rectangle(0, 0, this.gameWidth * 0.225, this.gameHeight * 0.1, 0x000000, 0);
-        swipe.setPosition(this.gameWidth * 0.125, this.gameHeight * 0.2125)
+        swipe.setPosition(this.gameWidth * 0.125, this.gameHeight * 0.2125);
 
         swipe.setInteractive().on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.evCache.push(pointer);
@@ -108,10 +112,8 @@ export class Hud extends Phaser.Scene {
             var curDiff = Math.abs(this.currentX - pointer.x);
             if (curDiff > 0 || this.prevDiff > 0) {
                 if (pointer.x < this.currentX) {
-                    // The distance between the two pointers has increased
                     this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.00675)), 1.5);
                 } else if (pointer.x > this.currentX) {
-                    // The distance between the two pointers has decreased
                     this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.00675)), 0.5);
                 };
                 EventBus.emit('update-camera-zoom', this.currentZoom);
@@ -162,6 +164,29 @@ export class Hud extends Phaser.Scene {
         );
         this.evCache.splice(index, 1);
     };
+    clearNonAggressiveEnemy = () => EventBus.emit('remove-non-aggressive-enemy'); // this.combatManager.combatMachine.action({ data: { key: 'player', value: 0, id: 0 }, type: 'Remove Enemy' });
+    clearNPC = (): boolean => EventBus.emit('clear-npc');
+    setupEnemy = (enemy: any): void => {
+        const data: EnemySheet = { 
+            id: enemy.enemyID, 
+            game: enemy.ascean, 
+            enemy: enemy.combatStats, 
+            health: enemy.health, 
+            isAggressive: enemy.isAggressive, 
+            startedAggressive: enemy.startedAggressive, 
+            isDefeated: enemy.isDefeated, 
+            isTriumphant: enemy.isTriumphant,
+            isLuckout: enemy.isLuckout, 
+            isPersuaded: enemy.isPersuaded, 
+            playerTrait: enemy.playerTrait
+        };
+        EventBus.emit('setup-enemy', data);
+    };
+
+    setupNPC = (npc: any): void => {
+        const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType, interactCount: npc.interactCount };
+        EventBus.emit('setup-npc', data);    
+    };
 
     startGameScene = () => {
         if (!this.settings.tutorial?.boot) return;
@@ -204,11 +229,34 @@ export class Hud extends Phaser.Scene {
         EventBus.on('weapon-order-sound', () => this.sound.play('weaponOrder', { volume: this.settings.volume }));
         EventBus.on('action-button-sound', () => this.sound.play('TV_Button_Press', { volume: this?.settings?.volume * 2 }));
         EventBus.on('music', (on: boolean) => {
-            const scene = this.scene.manager.getScene('Game') as Game;
-            if (on === true && !this.scene.isPaused('Game')) {
-                scene.resumeMusic();
-            } else {
-                scene.pauseMusic();
+            const game = this.scene.manager.getScene('Game') as Game;
+            const tutorial = this.scene.manager.getScene('Tutorial') as Tutorial;
+            const arena = this.scene.manager.getScene('Arena') as Arena;
+            const underground = this.scene.manager.getScene('Underground') as Underground;
+            if (this.scene.isActive('Game')) {
+                if (on) {
+                    game.resumeMusic();
+                } else {
+                    game.pauseMusic();
+                };
+            } else if (this.scene.isActive('Tutorial')) {
+                if (on) {
+                    tutorial.resumeMusic();
+                } else {
+                    tutorial.pauseMusic();
+                };
+            } else if (this.scene.isActive('Underground')) {
+                if (on) {
+                    underground.resumeMusic();
+                } else {
+                    underground.pauseMusic();
+                };
+            } else if (this.scene.isActive('Arena')) {
+                if (on) {
+                    arena.resumeMusic();
+                } else {
+                    arena.pauseMusic();
+                };
             };
         });
         EventBus.on('switch-scene', (data: {current: string, next: string}) => {
@@ -223,7 +271,6 @@ export class Hud extends Phaser.Scene {
                 const asleep = this.scene.isSleeping(next);
                 const paused = this.scene.isPaused(next);
                 const active = this.scene.isActive(next);
-                // console.log(`%c The next scene is active: ${active} The next scene asleep: ${asleep}. The next scene paused: ${paused}.`, 'color:gold');
                 if (active || asleep || paused) {
                     nextScene.resumeScene();
                 } else {
@@ -311,12 +358,12 @@ export class Hud extends Phaser.Scene {
     };
     
     highlightElements(type: string) {
-        if (type === 'smallhud') { // Small HUD
+        if (type === 'smallhud') {
             this.smallHud.highlightAnimation();
         } else if (type === 'joystick') {
             this.joystick.highlightAnimation('left');
             this.rightJoystick.highlightAnimation('right');
-        } else { // Action Buttons
+        } else {
             this.actionBar.highlightAnimation();
         };
     };
@@ -324,5 +371,5 @@ export class Hud extends Phaser.Scene {
     showDialog = (dialogTag: boolean) => {
         EventBus.emit('blend-game', { dialogTag });
         this.smallHud.activate('dialog', dialogTag);
-    }; // smallHud: dialog
+    };
 };

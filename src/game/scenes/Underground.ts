@@ -5,7 +5,6 @@ import LootDrop from '../matter/LootDrop';
 import { GameState } from '../../stores/game';
 import Equipment from '../../models/equipment';
 import { States } from '../phaser/StateMachine';
-import { EnemySheet } from '../../utility/enemy';
 import Fov from '../phaser/Fov';
 import { Reputation, initReputation } from '../../utility/player';
 import Player from '../entities/Player';
@@ -16,7 +15,6 @@ import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.mi
 import Tile from '../phaser/Tile';
 import { CombatManager } from '../phaser/CombatManager';
 import MiniMap from '../phaser/MiniMap';
-// import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import ParticleManager from '../matter/ParticleManager';
 import { screenShake } from '../phaser/ScreenShake';
 import { Hud } from './Hud';
@@ -322,18 +320,6 @@ export class Underground extends Scene {
             this.scene.sleep(current);
         });
     };
-    wakeUp = () => {
-        this.scene.resume();
-        if (this.combat) {
-            this.musicCombat.resume();
-            this.startCombatTimer();    
-        } else if (this.player.isStealthing) {
-            this.musicStealth.resume();
-        } else {
-            this.musicBackground.resume();
-        };
-        EventBus.emit('current-scene-ready', this);
-    };
 
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
@@ -465,8 +451,6 @@ export class Underground extends Scene {
             };
         };
     };
-    clearNonAggressiveEnemy = () => this.combatManager.combatMachine.action({ data: { key: 'player', value: 0, id: this.player.playerID }, type: 'Remove Enemy' });
-    clearNPC = (): boolean => EventBus.emit('clear-npc');
     clearAggression = () => {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
@@ -548,30 +532,6 @@ export class Underground extends Scene {
         };
     };
     drinkFlask = (): boolean => EventBus.emit('drink-firewater');
-    setupEnemy = (enemy: any): void => {
-        const data: EnemySheet = { 
-            id: enemy.enemyID, 
-            game: enemy.ascean, 
-            enemy: enemy.combatStats, 
-            health: enemy.health, 
-            isAggressive: enemy.isAggressive, 
-            startedAggressive: enemy.startedAggressive, 
-            isDefeated: enemy.isDefeated, 
-            isTriumphant: enemy.isTriumphant,
-            isLuckout: enemy.isLuckout, 
-            isPersuaded: enemy.isPersuaded, 
-            playerTrait: enemy.playerTrait
-        };
-        EventBus.emit('setup-enemy', data);
-    };
-    setupNPC = (npc: any): void => {
-        const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType, interactCount: npc.interactCount };
-        EventBus.emit('setup-npc', data);    
-    };
-    showDialog = (dialogTag: boolean) => {
-        EventBus.emit('blend-game', { dialogTag });
-        this.hud.smallHud.activate('dialog', dialogTag);
-    };
     createEnemy = () => {
         let marker: any, markers: any[] = [];
         for (let i = 0; i < this.markers.length; i++) {

@@ -4,16 +4,11 @@ import { EventBus } from '../EventBus';
 import LootDrop from '../matter/LootDrop';
 import Equipment from '../../models/equipment';
 import { States } from '../phaser/StateMachine';
-import { EnemySheet } from '../../utility/enemy';
 import { useResizeListener } from '../../utility/dimensions';
 import { Reputation, initReputation } from '../../utility/player';
-// @ts-ignore
-import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 import Player from '../entities/Player';
 import Enemy from '../entities/Enemy';
 import NPC from '../entities/NPC';
-// @ts-ignore
-import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 import { CombatManager } from '../phaser/CombatManager';
 import MiniMap from '../phaser/MiniMap';
 import { screenShake } from '../phaser/ScreenShake';
@@ -21,6 +16,10 @@ import ParticleManager from '../matter/ParticleManager';
 import { Hud } from './Hud';
 import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import { ObjectPool } from '../phaser/ObjectPool';
+// @ts-ignore
+import { PhaserNavMeshPlugin } from 'phaser-navmesh';
+// @ts-ignore
+import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 const dimensions = useResizeListener();
 export class Game extends Scene {
     animatedTiles: any[];
@@ -311,22 +310,6 @@ export class Game extends Scene {
             this.scene.sleep(current);
         });
     };
-    wakeUp = () => {
-        this.scene.resume();
-        if (this.combat) {
-            if (this.musicCombat.isPaused) {
-                this.musicCombat.resume();
-            } else {
-                this.musicCombat2.resume();
-            };
-            this.startCombatTimer();    
-        } else if (this.player.isStealthing) {
-            this.musicStealth.resume();
-        } else {
-            this.musicBackground.resume();
-        };
-        EventBus.emit('current-scene-ready', this);
-    };
 
     postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
@@ -415,7 +398,6 @@ export class Game extends Scene {
         this.postFxPipeline.setCRTEnable(settings.crtEnable);
         this.postFxPipeline.crtHeight = settings.crtHeight;
         this.postFxPipeline.crtWidth = settings.crtWidth;
-
     };
     resetting = (): void => {
         this.sound.play('TV_Button_Press', { volume: this?.hud?.settings?.volume * 2 });
@@ -467,8 +449,6 @@ export class Game extends Scene {
             };
         };
     };
-    clearNonAggressiveEnemy = () => this.combatManager.combatMachine.action({ data: { key: 'player', value: 0, id: this.player.playerID }, type: 'Remove Enemy' });
-    clearNPC = (): boolean => EventBus.emit('clear-npc');
     clearAggression = () => {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
@@ -569,30 +549,6 @@ export class Game extends Scene {
         };
     };
     drinkFlask = (): boolean => EventBus.emit('drink-firewater');
-    setupEnemy = (enemy: any): void => {
-        const data: EnemySheet = { 
-            id: enemy.enemyID, 
-            game: enemy.ascean, 
-            enemy: enemy.combatStats, 
-            health: enemy.health, 
-            isAggressive: enemy.isAggressive, 
-            startedAggressive: enemy.startedAggressive, 
-            isDefeated: enemy.isDefeated, 
-            isTriumphant: enemy.isTriumphant,
-            isLuckout: enemy.isLuckout, 
-            isPersuaded: enemy.isPersuaded, 
-            playerTrait: enemy.playerTrait
-        };
-        EventBus.emit('setup-enemy', data);
-    };
-    setupNPC = (npc: any): void => {
-        const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType, interactCount: npc.interactCount };
-        EventBus.emit('setup-npc', data);    
-    };
-    showDialog = (dialogTag: boolean) => {
-        EventBus.emit('blend-game', { dialogTag });
-        this.hud.smallHud.activate('dialog', dialogTag);
-    };
     checkEnvironment = (player: Player | Enemy) => {
         const x = this.map.worldToTileX(player.x || 0);
         const y = this.map.worldToTileY(player.y || 0);

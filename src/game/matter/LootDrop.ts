@@ -1,4 +1,3 @@
-import Phaser from "phaser";
 import { EventBus } from "../EventBus";
 import Equipment from "../../models/equipment";
 // @ts-ignore

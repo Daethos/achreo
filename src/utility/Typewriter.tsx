@@ -224,7 +224,6 @@ export default function Typewriter({ stringText, styling, performAction, main }:
             EventBus.emit('typing-complete');
         };
     };
-// 'white-space': 'pre-wrap',
     return (
         <div id="typewriter" onClick={skipTyping} ref={setEl} style={{'white-space': 'pre-wrap', 'text-align': 'left', ...styling}}></div>
     );

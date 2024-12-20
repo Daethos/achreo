@@ -761,17 +761,14 @@ export default class Player extends Entity {
             objectA: [playerSensor],
             callback: (other: any) => {
                 if (other.gameObjectB?.isDeleting) return;
-                // if (this.isValidTouching(other)) this.touching.push(other.gameObjectB);
                 this.isValidRushEnemy(other.gameObjectB);
                 if (this.isValidEnemyCollision(other)) {
-                    // this.touching.push(other.gameObjectB);
                     const isNewEnemy = this.isNewEnemy(other.gameObjectB);
                     if (!isNewEnemy) return;
                     this.targets.push(other.gameObjectB);
                     this.shouldPlayerEnterCombat(other);
                     this.checkTargets();
                 } else if (this.isValidNeutralCollision(other)) {
-                    // this.touching.push(other.gameObjectB);
                     other.gameObjectB.originPoint = new Phaser.Math.Vector2(other.gameObjectB.x, other.gameObjectB.y).clone();
                     const isNewNeutral = this.isNewEnemy(other.gameObjectB);
                     if (!isNewNeutral) return;
@@ -801,7 +798,6 @@ export default class Player extends Entity {
             objectA: [playerSensor],
             callback: (other: any) => {
                 if (other.gameObjectB?.isDeleting) return;
-                // this.touching = this.touching.filter(obj => obj?.enemyID !== other?.gameObjectB?.enemyID);
                 if (this.isValidEnemyCollision(other) && !this.touching.length) {
                     this.actionAvailable = false;
                     this.triggeredActionAvailable = undefined;

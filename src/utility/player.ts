@@ -298,7 +298,7 @@ export const PLAYER_INSTINCTS = {
             key: POSITIVE,
             value: States.RENEWAL
         },{ // 8 - Melee > 100 && < 200 Distance
-            key: STATE,
+            key: POSITIVE,
             value: States.TETHER
         },{ // 9 - Ranged > 100 && < 200 Distance
             key: STATE,
@@ -307,14 +307,14 @@ export const PLAYER_INSTINCTS = {
             key: POSITIVE,
             value: States.WARD
         },{ // 11 - Ranged > 200 Distance && Distance < 300
-            key: STATE,
+            key: POSITIVE,
             value: States.SHIELD
         },{ // 12 - Melee > 300 Distance
             key: POSITIVE,
-            value: States.WARD
+            value: States.ABSORB
         },{ // 13 - Ranged > 300 Distance
             key: STATE,
-            value: States.SHIELD
+            value: States.WARD
         }
     ],
     'strength': [

@@ -419,12 +419,12 @@ export default class PlayerMachine {
         if (check.success === true) {
             (this as any)[key].setState(value);
             if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
-            this.player.specialCombatText = this.scene.showCombatText('Instinct', 1000, 'hush', false, true, () => this.player.specialCombatText = undefined);
+            this.player.specialCombatText = this.scene.showCombatText('Instinct', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
             this.scene.hud.logger.log(`Your instinct leads you to ${value}.`);
             this.player.prevInstinct = instinct;
         } else {
-            this.player.specialCombatText = this.scene.showCombatText('Compose Yourself', 1000, 'dread', false, true, () => this.player.specialCombatText = undefined);
-            this.stateMachine.setState(States.THRUST);
+            this.player.specialCombatText = this.scene.showCombatText('Compose Yourself', 750, 'dread', false, true, () => this.player.specialCombatText = undefined);
+            this.stateMachine.setState(States.COMPUTER_THRUST);
         };
     };
 
@@ -466,10 +466,10 @@ export default class PlayerMachine {
             this.stateMachine.setState(States.IDLE);
             return;
         };
-        if (this.player.specials === false) {
-            this.player.specials = true;
-            (this.player as PlayerComputer).setSpecialCombat();
-        };
+        // if (this.player.specials === false) {
+        //     this.player.specials = true;
+        //     (this.player as PlayerComputer).setSpecialCombat();
+        // };
         // console.log(`Suffering: ${this.player.isSuffering()}`, 'color:red');
         if (this.player.isSuffering()) return;
         if (this.player.isCasting || this.player.isPraying || this.player.isContemplating || this.player.computerAction) {

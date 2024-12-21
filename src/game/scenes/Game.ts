@@ -62,6 +62,7 @@ export class Game extends Scene {
     targetTarget: Enemy;
     hud: Hud;
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
+    daytime: number = 0.0;
 
     constructor () {
         super('Game');
@@ -636,6 +637,8 @@ export class Game extends Scene {
         for (let i = 0; i < this.npcs.length; i++) {
             this.npcs[i].update();
         };
+        this.daytime += delta;
+        var value = (Math.sin(this.daytime - Math.PI / 2) + 1.0) / 2.0;    
     };
     pause(): void {
         this.scene.pause();

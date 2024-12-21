@@ -708,7 +708,6 @@ export class ArenaView extends Arena {
     private hudScene: Hud;
 
     constructor(data: {scene: Hud; arenaIndex: number;}) {
-        console.log(data, 'CONSTRUCTOR Data CONSTRUCTOR?');
         super(`ArenaView${data.arenaIndex}`);
         this.arenaIndex = data.arenaIndex;
         this.hudScene = data.scene;
@@ -722,13 +721,11 @@ export class ArenaView extends Arena {
     };
 
     create() {
-        console.log(this.hudScene, 'Hud Scene');
         const ascean = this.registry.get("ascean");
         const masteries = ['constitution', 'strength', 'agility', 'achre', 'caeren', 'kyosir'];
         const mastery = masteries[Math.floor(Math.random() * masteries.length)];
         const enemies = { level: ascean.level, mastery, id: uuidv4() };
         const fetch = fetchArena([enemies]);
-        console.log(fetch, 'Fetched Enemy?');
         this.registry.set("enemies",fetch);
         this.registry.set("wager", {silver:0,gold:0,multiplier:0});
         super.create(this.hudScene);

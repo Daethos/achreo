@@ -2,6 +2,7 @@ import * as Dispatcher from "./Dispatcher";
 import { EventBus } from "../EventBus";
 import { CombatManager } from "./CombatManager";
 import { Combat } from "../../stores/combat";
+import StatusEffect from "../../utility/prayer";
 
 type ActionHandler = (data: any) => void;
 interface Action {
@@ -31,6 +32,7 @@ const ACTIONS: { [key: string]: ActionHandler } = {
     'Player': (data: any) => Dispatcher.player(data),
     'Enemy': (data: any) => Dispatcher.enemy(data),
     'Remove Enemy': (data: KVI) => Dispatcher.removeEnemy(data),
+    'Remove Effect': (data: StatusEffect) => Dispatcher.removeEffect(data),
 };
 
 export default class CombatMachine {

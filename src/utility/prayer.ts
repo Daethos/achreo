@@ -62,8 +62,12 @@ export const PRAYERS = {
     DAMAGE: "Damage",
     DEBUFF: "Debuff",
     DENIAL: "Denial",
+    DISPEL: "Dispel",
     HEAL: "Heal",
+    INSIGHT: "Insight",
 };
+
+const SPECIALS = ['Avarice', 'Denial', 'Dispel', 'Insight', 'Silence'];
 
 export default class StatusEffect {
     public id: string;
@@ -119,8 +123,7 @@ export default class StatusEffect {
         return uuidv4();
     };
     setSpecial = (prayer: string) => {
-        const specials = ['Avarice', 'Denial', 'Dispel', 'Silence'];
-        return specials.includes(prayer) ? true : false;
+        return SPECIALS.includes(prayer) ? true : false;
     };
     static buff(potentialModifiers: any, realizedModifiers: any): any {
         realizedModifiers.physicalDefenseModifier = potentialModifiers.physicalDefenseModifier ? Math.round(potentialModifiers.physicalDefenseModifier * 100) / 100 : 0;
@@ -516,10 +519,10 @@ export default class StatusEffect {
         };
     };
     setRefreshes(prayer: string): boolean {
-        return this.refreshes = (prayer === 'Heal' || prayer === 'Debuff' || prayer === 'Avarice' || prayer === 'Denial' || prayer === 'Dispel' || prayer === 'Silence') ? true : false;
+        return this.refreshes = (prayer === 'Heal' || prayer === 'Debuff' || prayer === 'Avarice' || prayer === 'Denial' || prayer === 'Dispel' || prayer === 'Insight' || prayer === 'Silence') ? true : false;
     };
     setStacks(prayer: string): boolean {
-        return this.stacks = prayer === 'Buff' || prayer === 'Damage' ? true : false;
+        return this.stacks = (prayer === 'Buff' || prayer === 'Damage') ? true : false;
     };
 
     setEffect(combat: Combat, player: Ascean, weapon: Equipment, prayer: string) {

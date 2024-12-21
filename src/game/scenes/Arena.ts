@@ -1,4 +1,3 @@
-import { Cameras, GameObjects, Scene, Tilemaps, Time } from 'phaser';
 import { Combat, initCombat } from '../../stores/combat';
 import { EventBus } from '../EventBus';
 import LootDrop from '../matter/LootDrop';
@@ -22,8 +21,10 @@ import PlayerComputer from '../entities/PlayerComputer';
 import MovingPlatform from '../matter/MovingPlatform';
 import { ObjectPool } from '../phaser/ObjectPool';
 import ScrollingCombatText from '../phaser/ScrollingCombatText';
+import { v4 as uuidv4 } from 'uuid';
+import { fetchArena } from '../../utility/enemy';
 
-export class Arena extends Scene {
+export class Arena extends Phaser.Scene {
     animatedTiles: any[];
     offsetX: number;
     offsetY: number;
@@ -42,12 +43,12 @@ export class Arena extends Scene {
     combat: boolean = false;
     stealth: boolean = false;
     combatTime: number = 0;
-    combatTimer: Time.TimerEvent;
+    combatTimer: Phaser.Time.TimerEvent;
     tweenManager: any;
     particleManager: ParticleManager;
-    map: Tilemaps.Tilemap;
-    background: GameObjects.Image;
-    camera: Cameras.Scene2D.Camera;
+    map: Phaser.Tilemaps.Tilemap;
+    background: Phaser.GameObjects.Image;
+    camera: Phaser.Cameras.Scene2D.Camera;
     minimap: MiniMap;
     navMesh: any;
     navMeshPlugin: any;
@@ -77,8 +78,8 @@ export class Arena extends Scene {
     wager = { silver: 0, gold: 0, multiplier: 0 };
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
 
-    constructor () {
-        super('Arena');
+    constructor (view?: string) {
+        super(view || 'Arena');
     };
 
     preload() {
@@ -103,9 +104,9 @@ export class Arena extends Scene {
         const tileSize = 32;
         const castleInterior = map.addTilesetImage('Castle Interior', 'Castle Interior', tileSize, tileSize, 0, 0);
         const castleDecorations = map.addTilesetImage('Castle Decoratives', 'Castle Decoratives', tileSize, tileSize, 0, 0);
-        let layer1 = map.createLayer('Floors', castleInterior as Tilemaps.Tileset, 0, 0);
-        let layer2 = map.createLayer('Decorations', castleDecorations as Tilemaps.Tileset, 0, 0);
-        let layer3 = map.createLayer('Top Layer', castleInterior as Tilemaps.Tileset, 0, 0);
+        let layer1 = map.createLayer('Floors', castleInterior as Phaser.Tilemaps.Tileset, 0, 0);
+        let layer2 = map.createLayer('Decorations', castleDecorations as Phaser.Tilemaps.Tileset, 0, 0);
+        let layer3 = map.createLayer('Top Layer', castleInterior as Phaser.Tilemaps.Tileset, 0, 0);
         layer1?.setCollisionByProperty({ collides: true });
         [layer1, layer2, layer3].forEach((layer) => {
             layer?.setCollisionByProperty({ collides: true });
@@ -574,6 +575,7 @@ export class Arena extends Scene {
     };
 
     drinkFlask = (): boolean => EventBus.emit('drink-firewater');
+
     createArenaEnemy = () => {
         EventBus.emit('alert', { header: "Prepare!", body: "The enemies are being summoned. Prepare for the Eulex.", key: "Close" });
         this.time.delayedCall(1500, () => {
@@ -611,6 +613,7 @@ export class Arena extends Scene {
         }, undefined, this);
         this.wager = this.registry.get("wager");
     };
+
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
         const saying = enemy.isDefeated ? "Something is tearing into me. Please, help!" : `I'll be seeing you, ${this.state.player?.name}.`;
@@ -697,5 +700,38 @@ export class Arena extends Scene {
         this.scene.resume();
         this.matter.resume();
         this.resumeMusic();
+    };
+};
+
+export class ArenaView extends Arena {
+    private arenaIndex: number;
+    private hudScene: Hud;
+
+    constructor(data: {scene: Hud; arenaIndex: number;}) {
+        console.log(data, 'CONSTRUCTOR Data CONSTRUCTOR?');
+        super(`ArenaView${data.arenaIndex}`);
+        this.arenaIndex = data.arenaIndex;
+        this.hudScene = data.scene;
+    };
+
+    init() {
+    };
+
+    preload() {
+        super.preload();
+    };
+
+    create() {
+        console.log(this.hudScene, 'Hud Scene');
+        const ascean = this.registry.get("ascean");
+        const masteries = ['constitution', 'strength', 'agility', 'achre', 'caeren', 'kyosir'];
+        const mastery = masteries[Math.floor(Math.random() * masteries.length)];
+        const enemies = { level: ascean.level, mastery, id: uuidv4() };
+        const fetch = fetchArena([enemies]);
+        console.log(fetch, 'Fetched Enemy?');
+        this.registry.set("enemies",fetch);
+        this.registry.set("wager", {silver:0,gold:0,multiplier:0});
+        super.create(this.hudScene);
+        this.add.text(10, 10, `Arena ${this.arenaIndex}`, { font: 'Arial', fontSize: '16px', color: '#fdf6d8' });
     };
 };

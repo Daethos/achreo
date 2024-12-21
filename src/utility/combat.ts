@@ -555,6 +555,9 @@ function statusEffectCheck(combat: Combat): Combat {
                 combat.weapons[matchingDebuffTargetIndex] = reBuff.weapon;
                 combat.playerDefense = reBuff.defense;
             };
+            if (effect.prayer === PRAYERS.INSIGHT) {
+                combat.isInsight = false;
+            };
             return false;
         };
         return true;
@@ -650,9 +653,12 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
                 weapon = buff.weapon;
             };
             if (exists.prayer === PRAYERS.DAMAGE) damageTick(combat, exists, true);
-            if (exists.prayer === 'Dispel') {
+            if (exists.prayer === PRAYERS.DISPEL) {
                 if (combat.computerEffects.length > 0) computerDispel(combat); 
                 combat.playerEffects.pop();
+            };
+            if (exists.prayer === PRAYERS.INSIGHT) {
+                combat.isInsight = true;
             };
             if (exists.prayer === PRAYERS.DEBUFF) {
                 const debuff = applyEffect(exists, combat.computerDefense as Defense, combat.computerWeapons[0], false);
@@ -1864,6 +1870,7 @@ function weaponActionSplitter(combat: Combat): Combat {
         'isCaerenic': cleanData.isCaerenic,
         'isStalwart': cleanData.isStalwart,
         'isStealth': cleanData.isStealth,
+        'isInsight': cleanData.isInsight,
         'astrication': cleanData.astrication,
         'berserk': cleanData.berserk,
         'conviction': cleanData.conviction,
@@ -1981,6 +1988,7 @@ function newDataCompiler(combat: Combat): any {
         startedAggressive: combat.startedAggressive,
         isStealth: combat.isStealth,
         isSeering: combat.isSeering,
+        isInsight: combat.isInsight,
         persuasionScenario: combat.persuasionScenario,
         luckoutScenario: combat.luckoutScenario,
         playerTrait: combat.playerTrait,
@@ -2084,6 +2092,8 @@ function instantActionSplitter(combat: Combat): any {
         'playerWin': combat.playerWin,
         'playerActionDescription': combat.playerActionDescription,
         'playerInfluenceDescription': combat.playerInfluenceDescription,
+
+        'isInsight': combat.isInsight,
     };
     return changes;
 };
@@ -2244,6 +2254,9 @@ function prayerRemoveTickSplitter(combat: Combat, statusEffect: StatusEffect): C
                 const reBuff = stripEffect(effect, combat.playerDefense as Defense, combat.weapons[matchingDebuffTargetIndex] as Equipment, true);
                 combat.playerDefense = reBuff.defense;
                 combat.weapons[matchingDebuffTargetIndex] = reBuff.weapon;
+            };
+            if (effect.prayer === PRAYERS.INSIGHT) {
+                combat.isInsight = false;
             };
             return false;
         });

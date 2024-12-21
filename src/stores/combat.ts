@@ -121,6 +121,7 @@ export interface Combat {
     isCaerenic: boolean; // +15% Attack, -15% Defense
     isStealth: boolean; //
     isSeering: boolean;
+    isInsight: boolean;
     enemyID: string;
     damagedID: string;
     combatTimer: number;
@@ -256,6 +257,7 @@ export const initCombat: Combat = {
     isCaerenic: false, // +15% Attack, -15% Defense
     isStealth: false,
     isSeering: false,
+    isInsight: false,
     enemyID: '',
     damagedID: '',
     combatTimer: 0,

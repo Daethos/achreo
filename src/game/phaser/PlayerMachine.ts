@@ -1,7 +1,6 @@
 import Player from '../entities/Player';
 import StateMachine, { States } from "./StateMachine";
-// import ScrollingCombatText from "./ScrollingCombatText";
-import { PLAYER, PLAYER_INSTINCTS, STAMINA, staminaCheck } from "../../utility/player";
+import { PLAYER, PLAYER_INSTINCTS, staminaCheck } from "../../utility/player";
 import { FRAME_COUNT } from '../entities/Entity';
 import AoE from './AoE';
 import { EventBus } from "../EventBus";

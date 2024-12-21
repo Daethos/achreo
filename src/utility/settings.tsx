@@ -1,8 +1,9 @@
 import { Accessor, createSignal, For, Match, Switch } from "solid-js";
 import Settings from "../models/settings"; 
-import { SPECIAL, SPECIALS, TRAITS } from "./abilities";
+import { SPECIALS, TRAITS } from "./abilities";
 import { ACTION_ORIGIN } from "./actions";
-
+const pGold = { color: 'gold', 'font-size': '1.25em', margin: '3%' };
+const pBone = { 'color':'#fdf6d8', 'font-size':'1em' };
 export const svg = (type: string) => {
     switch (type) {
         case 'ATTACK': 
@@ -191,16 +192,16 @@ export const svg = (type: string) => {
 const CombatSettings = () => {
     return <div>
         <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>{svg('CHARACTER')} Combat</p>
+            <p style={pGold}>{svg('CHARACTER')} Combat</p>
             When you wish to attack, choose one of the actions. Certain actions, if successful, may cancel out the opponents or otherwise.
         </div><br />
         <For each={['ATTACK', 'DODGE', 'PARRY', 'POSTURE', 'ROLL', 'THRUST']}>{(physical) => {
             const phys = ACTION_ORIGIN[physical.toUpperCase() as keyof typeof ACTION_ORIGIN];
             return <div>
-                <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                <p style={pGold}>
                     {svg(phys?.svg)} {physical} <br />
                 </p>
-                <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>
+                <p style={pBone}>
                     {phys?.description}
                 </p>
                 <p class='' style={{ color: 'green' }}>
@@ -216,21 +217,20 @@ const SpecialSettings = ({specials}: { specials: Accessor<string[]>; }) => {
     const [showPersonal, setShowPersonal] = createSignal<string>('all');
     return <div>
         <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>{svg('SPECIALS')} Specials</p>
+            <p style={pGold}>{svg('SPECIALS')} Specials</p>
             When you wish to alter the fight through othernatural means, choose one of the specials.
         </div><br />
         <button class='highlight' onClick={() => setShowPersonal('all')}>All</button>
         <button class='highlight' onClick={() => setShowPersonal('personal')}>Personal</button>
-        {/* <button class='highlight' onClick={() => setShowPersonal('traits')}>Traits</button> */}
     <Switch>
         <Match when={showPersonal() === 'all'}>
             <For each={SPECIALS}>{(special) => {
                 const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
                 return <div>
-                    <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                    <p style={pGold}>
                         {svg(spec?.svg)} {special} <br />
                     </p>
-                    <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>
+                    <p style={pBone}>
                         {spec?.description}
                     </p>
                     <p class='' style={{ color: 'aqua' }}>
@@ -255,10 +255,10 @@ export const PersonalSpecialSettings = ({specials}: { specials: Accessor<string[
         <For each={specials()}>{(special) => {
             const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
             return <div>
-                <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                <p style={pGold}>
                     {svg(spec?.svg)} {special} <br />
                 </p>
-                <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>
+                <p style={pBone}>
                     {spec?.description}
                 </p>
                 <p class='' style={{ color: 'aqua' }}>
@@ -275,10 +275,10 @@ export const TraitSpecialSettings = () => {
         <For each={TRAITS}>{(special) => {
             const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
             return <div>
-                <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                <p style={pGold}>
                     {svg(spec?.svg)} {special} <br />
                 </p>
-                <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>
+                <p style={pBone}>
                     {spec?.description}
                 </p>
                 <p class='' style={{ color: 'aqua' }}>
@@ -294,7 +294,7 @@ const GeneralSettings = () => {
     return (
         <div style={{ margin: 'auto', color: '#fdf6d8' }}>
             <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            <p style={pGold}>
             {svg('CHARACTER')}{' '}
             Character
             </p>
@@ -302,14 +302,14 @@ const GeneralSettings = () => {
             </div>
             <br />
             <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            <p style={pGold}>
             {svg('GEAR')} Gear
             </p>
             Your gear and its improvement is paramount to your success as you gain power and fight tougher enemies. No item is unique and can be held and worn in multiplicity. You can also use your gear to craft higher quality items. Common and Uncommon quality scale with leveling, yet Rare and Epic are refined to a degree that even a novice would feel its improvement.
             </div>
             <br />
             <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}> 
+            <p style={pGold}> 
             {/* LEVELING */}
             {svg('LEVELING')} Leveling
             </p>
@@ -321,7 +321,7 @@ const GeneralSettings = () => {
             Epic - No Scaling. (Req. Level 12)
             </div><br /> 
             <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            <p style={pGold}>
             {svg('SMALLHUD')} Progression
             </p>
             And this is the developer trying to keep you informed and updated. Currently I am working on the framework of how the game will technically function i.e. combat, equipment, leveling, and scaling.
@@ -334,41 +334,41 @@ const InventorySettings = () => {
     return (
         <div style={{ margin: 'auto' }}>
             <div style={{ color: '#fdf6d8' }}>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            <p style={pGold}>
             {svg('GEAR')} Inventory
             </p>
             Here you are able to view item statistics, and inspect for use in various ways. If you are of the mind, you may even be able to find a way to tinker with them.
             </div>
             <br />
             <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            <p style={pGold}>
             {svg('CHARACTER')} Equip
             </p>
             If this option is available, you can equip this in place of your current item slot, placing the previously worn into your inventory. This may be performed during combat.
             </div>
             <br />
             <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            <p style={pGold}>
             {svg('INSPECT')} Inspect
             </p>
             If this tab is available, it may elude to having multiple options for comparison, or it can be upgarded to a higher quality.
             </div>
             <br />
             <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            <p style={pGold}>
             {svg('REMOVE')} Remove
             </p>
             This will remove the item from your inventory, and permanently destroy it.
             </div>
             <br />
             <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            <p style={pGold}>
             {svg('SORT')} Sorting
             </p>
             Inventory positions can be changed with double-tapping to highlight in yellow and then double-tapping once more at your intended slot as you see fit.
             </div><br />
             <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            <p style={pGold}>
             {svg('TREASURE')} Loot
             </p>
             Equipment and its improvement is paramount to your success as you gain power to combat tougher enemies. No item is unique and can be held and worn in multiplicity. You can also use your gear to craft higher quality items. Common and Uncommon quality scale with leveling, yet Rare and Epic are refined to a degree that even a novice would feel its improvement.
@@ -381,21 +381,21 @@ const TacticSettings = () => {
     return (
         <div style={{ margin: 'auto', color: '#fdf6d8' }}>
             <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            <p style={pGold}>
             {svg('WEAPONS')} Weapons
             </p>
             This dropdown allows you to toggle between your equipped weapons in order to choose the best option for the current situation. Overtime, the layering of your weapons can augment your combat effectiveness, such as dual wielding.
             </div>
             <br />
             <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            <p style={pGold}>
             {svg('DAMAGE')} Damage Types
             </p>
             Depending on the main weapon you have equipped (in slot 1), it can offer a variety of ways to damage your enemies, from slashing, piercing, blunt, and more. Each weapon has a different damage type, and each type has a different effect on the enemy. For example, piercing weapons are great for cutting through lighter armors, while blunt weapons are great for crushing heavier armors.
             </div>
             <br />
             <div>
-            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+            <p style={pGold}>
             {svg('PRAYERS')} Prayers
             </p>
             Based on your weapon of choice, in addition to various choices of your character, you may be able to invoke the power of the Ancients or Daethos themself. Prayers are powerful abilities that can be used in combat, to provide powerful blessings and curses, to heal yourself, or to damage your enemies. Myriad concerns weight the effectiveness of a prayer.
@@ -408,21 +408,20 @@ const ControlSettings = () => {
     return (
         <div style={{ margin: 'auto', color: '#fdf6d8' }}>
             <div>
-                <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                <p style={pGold}>
                 {svg('JOYSTICKS')} Joysticks
                 </p>
                 (Left) Character Movement. Omnidirectional. Omnidirectional.
                 (Right) Character Aim <br /> <span class='gold' style={{ 'font-size':'0.75em' }}>(Manual Projectile via Settings, Certain Specials)</span>
             </div><br />
             <div>
-                <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                <p style={pGold}>
                 {svg('UI')} Player / Enemy UI
                 </p>
                 Name, Health, Weapon, Shield, Prayers, Stamina, Grace. Clickable / Interactive.
             </div><br />
             <div>
-                {/*  Combat Logs,  */}
-                <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                <p style={pGold}>
                 {svg('SMALLHUD')} Small HUD (Heads Up Display)
                 </p>
                 <img src={'../assets/images/info.png'} style={{ width: '1.5em' }} /> [Character Sheets] <br /> 
@@ -443,14 +442,14 @@ const ControlSettings = () => {
                 <img src={'../assets/images/dialog.png'} style={{ width: '1.5em' }} /> [Dialog]
             </div><br />
             <div>
-                <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                <p style={pGold}>
                 {svg('ATTACK')} Physical Actions
                 </p>
                 Attack, Posture, Roll, Dodge, Parry/Counterspell, Thrust <br />
                 <span class='gold' style={{ 'font-size':'0.75em' }}>(Primary (Larger) Button Chain Cascading Numerically from Bottom Left to Top Right. Governed by Stamina)</span>
             </div><br />
             <div>
-                <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                <p style={pGold}>
                 {svg('SPECIALS')} Special Actions</p>
                 Include Invoking and Consuming Prayers, Polymorphing, Life Drain, Roots, Snares, and more.
                 <br /> <span class='gold' style={{ 'font-size':'0.75em' }}>(Secondary (Smaller) Button Chain Cascading Numerically from Bottom Left to Top Right. Governed by Grace)</span>

@@ -365,7 +365,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 adjustTime(1000, res.combatEngaged, res.newPlayerHealth);
             };
             screenShake(instance.scene as Phaser.Scene); // [250, 150, 250]
-            // screenShake(instance.game?.scene.scenes[3] as Phaser.Scene); // [250, 150, 250]
         } catch (err: any) {
             console.warn(err, 'Error Initiating Combat');
         };

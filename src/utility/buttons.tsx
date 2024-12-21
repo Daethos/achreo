@@ -5,11 +5,12 @@ import Equipment from '../models/equipment';
 import { useResizeListener } from './dimensions';
 import StatusEffect from './prayer';
 import { EventBus } from '../game/EventBus';
-const specials = ['Avarice', 'Dispel', 'Denial', 'Silence']; // Slow, Fear, Confuse, Charm
+const specials = ['Avarice', 'Dispel', 'Denial', 'Insight', 'Silence']; // Slow, Fear, Confuse, Charm
 const specialDescription = {
     'Avarice': 'Increases the amount of experience and gold gained.',
     'Dispel': 'Removes the last prayer affecting the enemy.',
     'Denial': 'Prevents the enemy from killing you.',
+    'Insight': 'The grace required for your next special action is reduced to 0 if above 0.',
     'Silence': 'Prevents the enemy from praying.'
 };
 
@@ -107,7 +108,7 @@ export function Modal({ items, inventory, callback, show, setShow, forge, setFor
 
 export function PrayerModal({ prayer, show, setShow }: { prayer: Accessor<StatusEffect>, show: Accessor<boolean>, setShow: Setter<boolean> }) {
     const dimensions = useResizeListener();
-    // console.log(prayer(), 'prayer');
+    console.log(prayer(), specialDescription[prayer().prayer as keyof typeof specialDescription], 'prayer');
 
     async function consume() {
         // console.log(`Consuming ${prayer().prayer}...`);

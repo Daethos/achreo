@@ -12,7 +12,7 @@ import Logger, { ConsoleLogger } from '../../utility/Logger';
 import { roundToTwoDecimals } from "../../utility/combat";
 import { Play } from "../main";
 import { Tutorial } from "./Tutorial";
-import { Arena } from "./Arena";
+import { Arena, ArenaView } from "./Arena";
 import { Underground } from "./Underground";
 import { EnemySheet } from "../../utility/enemy";
 const dimensions = useResizeListener();
@@ -36,6 +36,10 @@ export class Hud extends Phaser.Scene {
     prevDiff: number = -1;
     prevScene: string = '';
     currScene: string = '';
+    private arenaContainers: Phaser.GameObjects.Container[] = []; 
+    private arenaButton: Phaser.GameObjects.Image; 
+    private updateInterval: any;
+    private borders: Phaser.GameObjects.Graphics[] = [];
 
     constructor() {
         super('Hud');
@@ -136,7 +140,64 @@ export class Hud extends Phaser.Scene {
             };
             EventBus.emit('save-settings', newSettings);
         });
+        // this.arenaButton = this.add.image(this.cameras.main.width / 2, 50, 'toggleButton').setDepth(10).setInteractive(); 
+        // this.arenaButton.on('pointerdown', this.toggleArenaView, this);
+        // // Create a 3x3 grid of containers 
+        // const gridSize = 3; const containerWidth = this.cameras.main.width / gridSize; const containerHeight = (this.cameras.main.height - 100) / gridSize; 
+        // const colors = [0xfdf6d8,0xff0000,0x00ff00,0x0000ff,0x800080,0xffc700];
+        // for (let i = 0; i < gridSize; i++) { 
+        //     for (let j = 0; j < gridSize; j++) { 
+        //         const container = this.add.container(i * containerWidth, 100 + j * containerHeight); 
+        //         container.setSize(containerWidth, containerHeight); 
+        //         this.arenaContainers.push(container); 
+        //         const arenaIndex = i * gridSize + j;
+        //         const sceneKey = `ArenaView${arenaIndex}`;
+        //         // Create the new scene instance
+        //         this.scene.add(sceneKey, new ArenaView({scene:this,arenaIndex}), false);
+        //         // Start the scene and configure its camera
+        //         this.scene.launch(sceneKey); // Start the scene
+        //         const sceneInstance = this.scene.get(sceneKey) as ArenaView;
+        //         const x = i * containerWidth;
+        //         const y = 100 + j * containerHeight;
+        //         // Configure the viewport of the scene's camera
+        //         const camera = sceneInstance.cameras.main;
+        //         camera.setViewport(x, y, containerWidth, containerHeight);
+        //         // Optionally scale the scene within the viewport
+        //         camera.setZoom(0.5);
+
+        //         // Create and style the border around the viewport 
+        //         const border = this.add.graphics();
+        //         border.lineStyle(4, colors[Math.floor(Math.random() * colors.length)], 1); 
+        //         // White border with thickness of 4 
+        //         border.strokeRect(x, y, containerWidth, containerHeight); 
+        //         this.borders.push(border);
+        //     };
+        // };
         this.startGameScene();
+    };
+    toggleArenaView() { 
+        // Toggle visibility of the arena grid 
+        const isVisible = this.arenaContainers[0].visible; 
+        this.arenaContainers.forEach(container => container.setVisible(!isVisible)); 
+        this.borders.forEach(border => border.setVisible(!isVisible));
+        if (!isVisible) { 
+            // Start updating the arenas 
+            this.updateArenas(); 
+            this.updateInterval = setInterval(() => this.updateArenas(), 6000); 
+        } else { 
+            // Stop updating the arenas 
+            clearInterval(this.updateInterval); 
+        }; 
+    }; 
+    updateArenas() { 
+        // Fetch new arena data and update each container 
+        this.arenaContainers.forEach((_container, index) => { 
+            const sceneKey = `ArenaView${index}`;
+            const sceneInstance = this.scene.get(sceneKey) as ArenaView;
+            if (sceneInstance && this.scene.isSleeping(sceneKey)) {
+                sceneInstance.resumeScene();
+            };
+        }); 
     };
 
     cleanUp() {

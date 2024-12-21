@@ -25,7 +25,7 @@ const highlightCycle = {
         prev: 'Damage'
     }
 };
-const PRAYERS = ['Buff', 'Heal', 'Debuff', 'Damage', 'Avarice', 'Denial', 'Dispel', 'Silence'];
+const PRAYERS = ['Buff', 'Heal', 'Debuff', 'Damage', 'Avarice', 'Denial', 'Dispel', 'Insight', 'Silence'];
 
 export default function CombatSettings({ combat, game, settings, editShow, setEditShow }: { combat: Accessor<Combat>; game: Accessor<GameState>; settings: Accessor<Settings>; editShow: Accessor<boolean>; setEditShow: Setter<boolean>; }) {
     const [edit, setEdit] = createSignal({

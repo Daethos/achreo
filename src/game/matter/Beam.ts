@@ -5,6 +5,42 @@ const CONVERSION = {
         X: 265,
         Y: 165
     },
+    ArenaView0: {
+        X: 265,
+        Y: 165
+    },
+    ArenaView1: {
+        X: 265,
+        Y: 165
+    },
+    ArenaView2: {
+        X: 265,
+        Y: 165
+    },
+    ArenaView3: {
+        X: 265,
+        Y: 165
+    },
+    ArenaView4: {
+        X: 265,
+        Y: 165
+    },
+    ArenaView5: {
+        X: 265,
+        Y: 165
+    },
+    ArenaView6: {
+        X: 265,
+        Y: 165
+    },
+    ArenaView7: {
+        X: 265,
+        Y: 165
+    },
+    ArenaView8: {
+        X: 265,
+        Y: 165
+    },
     Game: {
         X: 265,
         Y: 165

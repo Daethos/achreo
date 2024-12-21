@@ -176,11 +176,12 @@ const borderColor = (prayer: string): string => {
     switch (prayer) {
         case 'Buff': return 'gold';
         case 'Debuff': return 'purple';
-        case 'Heal': return 'green';
+        case 'Heal': return '#0f0';
         case 'Damage': return 'red';
+        case 'Insight': return '#0cf';
         case 'Avarice' : return 'greenyellow';
-        case 'Denial' : return '#0cf';
-        case 'Silence' : return 'black';
+        case 'Denial' : return '#00f';
+        case 'Silence' : return '#000';
         case 'Blunt': return '#fdf6d8';
         case 'Pierce': return '#fdf6d8';
         case 'Slash': return '#fdf6d8';

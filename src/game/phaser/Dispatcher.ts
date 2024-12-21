@@ -1,5 +1,6 @@
 import { KVI } from "./CombatMachine";
 import { EventBus } from "../EventBus";
+import StatusEffect from "../../utility/prayer";
 const ActionTypes = {
     WEAPON: 'Weapon',
     INSTANT: 'Instant',
@@ -73,4 +74,8 @@ function setHealth(data: KVI): void {
 function removeEnemy(data: KVI) {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.REMOVE })
 };
-export { weapon, instant, prayer, player, enemy, actionInput, chiomic, tshaeral, health, setHealth, sacrifice, suture, enemyChiomic, enemySacrifice, enemySuture, enemyTshaeral, removeEnemy };
+
+function removeEffect(data: StatusEffect) {
+    EventBus.emit('initiate-combat', { data, type: 'Remove Tick' });
+};
+export { weapon, instant, prayer, player, enemy, actionInput, chiomic, tshaeral, health, setHealth, sacrifice, suture, enemyChiomic, enemySacrifice, enemySuture, enemyTshaeral, removeEnemy, removeEffect };

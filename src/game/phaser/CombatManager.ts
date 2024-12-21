@@ -3,6 +3,7 @@ import Enemy from '../entities/Enemy';
 import { EventBus } from '../EventBus';
 import Player from '../entities/Player';
 import { Play } from '../main';
+import StatusEffect, { PRAYERS } from '../../utility/prayer';
 
 export class CombatManager extends Phaser.Scene {
     combatMachine: CombatMachine;
@@ -350,6 +351,14 @@ export class CombatManager extends Phaser.Scene {
     caerenic = (): boolean => EventBus.emit('update-caerenic');
     stalwart = (): boolean => EventBus.emit('update-stalwart');
     useGrace = (value: number) => {
+        if (this.context.state.isInsight && value > 0) {
+            const effect = this.context.state.playerEffects.find((prayer: StatusEffect) => prayer.prayer === PRAYERS.INSIGHT);
+            if (effect) {
+                this.combatMachine.action({ type: 'Remove Effect', data: effect });
+            };
+            this.combatMachine.input('isInsight',false);
+            return;
+        };
         EventBus.emit('update-grace', value);
         this.context.player.grace -= value;
     };

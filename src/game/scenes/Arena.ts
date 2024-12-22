@@ -721,10 +721,10 @@ export class ArenaView extends Arena {
     };
 
     create() {
-        const ascean = this.registry.get("ascean");
+        // const ascean = this.registry.get("ascean");
         const masteries = ['constitution', 'strength', 'agility', 'achre', 'caeren', 'kyosir'];
         const mastery = masteries[Math.floor(Math.random() * masteries.length)];
-        const enemies = { level: ascean.level, mastery, id: uuidv4() };
+        const enemies = { level: 1, mastery, id: uuidv4() };
         const fetch = fetchArena([enemies]);
         this.registry.set("enemies",fetch);
         this.registry.set("wager", {silver:0,gold:0,multiplier:0});

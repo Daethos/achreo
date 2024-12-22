@@ -1,5 +1,5 @@
 import { Accessor, Setter, createEffect, createSignal, onCleanup } from 'solid-js'
-import { itemStyle } from '../utility/styling';
+import { borderColor } from '../utility/styling';
 // import { prayerEffectTick, prayerRemoveTick } from '../utility/combat';
 import StatusEffect from '../utility/prayer';
 import { Combat } from '../stores/combat';
@@ -10,7 +10,6 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
     const [effectTimer, setEffectTimer] = createSignal(effect.endTime - effect.startTime);
     const [effectEndTime, setEffectEndTime] = createSignal(effect.endTime);
     var timeout: any = undefined;
-    // console.log(effect, 'Effect')
     function tick(): void {
         if (expiring()) { 
             // console.log('%c Prayer Effect Expired', 'color: red');
@@ -66,9 +65,9 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
         setEffect(effect);
         setShow(!show());
     };
-
+    // {...itemStyle(combat()?.weapons?.[0]?.rarity as string) }
     return <div class={enemy === true ? 'enemyStatusEffects' : 'playerStatusEffects'} style={{ 'margin-left': '0.5vw' }}>
-        <button style={{...itemStyle(combat()?.weapons?.[0]?.rarity as string) }} onClick={() => showEffect()}>
+        <button style={{ border: `0.15em solid ${borderColor(effect.prayer)}`, 'background-color': '#000' }} onClick={() => showEffect()}>
             <img src={effect?.imgUrl} />
             <div class='center gold' style={{ 'font-size': '0.75em' }}>
                 {effectTimer()}s

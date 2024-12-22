@@ -36,10 +36,10 @@ export class Hud extends Phaser.Scene {
     prevDiff: number = -1;
     prevScene: string = '';
     currScene: string = '';
-    private arenaContainers: Phaser.GameObjects.Container[] = []; 
-    private arenaButton: Phaser.GameObjects.Image; 
-    private updateInterval: any;
-    private borders: Phaser.GameObjects.Graphics[] = [];
+    // private arenaContainers: Phaser.GameObjects.Container[] = []; 
+    // private arenaButton: Phaser.GameObjects.Image; 
+    // private updateInterval: any;
+    // private borders: Phaser.GameObjects.Graphics[] = [];
 
     constructor() {
         super('Hud');
@@ -163,7 +163,7 @@ export class Hud extends Phaser.Scene {
         //         const camera = sceneInstance.cameras.main;
         //         camera.setViewport(x, y, containerWidth, containerHeight);
         //         // Optionally scale the scene within the viewport
-        //         camera.setZoom(0.5);
+        //         camera.setZoom(0.125);
 
         //         // Create and style the border around the viewport 
         //         const border = this.add.graphics();
@@ -175,30 +175,30 @@ export class Hud extends Phaser.Scene {
         // };
         this.startGameScene();
     };
-    toggleArenaView() { 
-        // Toggle visibility of the arena grid 
-        const isVisible = this.arenaContainers[0].visible; 
-        this.arenaContainers.forEach(container => container.setVisible(!isVisible)); 
-        this.borders.forEach(border => border.setVisible(!isVisible));
-        if (!isVisible) { 
-            // Start updating the arenas 
-            this.updateArenas(); 
-            this.updateInterval = setInterval(() => this.updateArenas(), 6000); 
-        } else { 
-            // Stop updating the arenas 
-            clearInterval(this.updateInterval); 
-        }; 
-    }; 
-    updateArenas() { 
-        // Fetch new arena data and update each container 
-        this.arenaContainers.forEach((_container, index) => { 
-            const sceneKey = `ArenaView${index}`;
-            const sceneInstance = this.scene.get(sceneKey) as ArenaView;
-            if (sceneInstance && this.scene.isSleeping(sceneKey)) {
-                sceneInstance.resumeScene();
-            };
-        }); 
-    };
+    // toggleArenaView() { 
+    //     // Toggle visibility of the arena grid 
+    //     const isVisible = this.arenaContainers[0].visible; 
+    //     this.arenaContainers.forEach(container => container.setVisible(!isVisible)); 
+    //     this.borders.forEach(border => border.setVisible(!isVisible));
+    //     if (!isVisible) { 
+    //         // Start updating the arenas 
+    //         this.updateArenas(); 
+    //         this.updateInterval = setInterval(() => this.updateArenas(), 6000); 
+    //     } else { 
+    //         // Stop updating the arenas 
+    //         clearInterval(this.updateInterval); 
+    //     }; 
+    // }; 
+    // updateArenas() { 
+    //     // Fetch new arena data and update each container 
+    //     this.arenaContainers.forEach((_container, index) => { 
+    //         const sceneKey = `ArenaView${index}`;
+    //         const sceneInstance = this.scene.get(sceneKey) as ArenaView;
+    //         if (sceneInstance && this.scene.isSleeping(sceneKey)) {
+    //             sceneInstance.resumeScene();
+    //         };
+    //     }); 
+    // };
 
     cleanUp() {
         this.actionBar.cleanUp();

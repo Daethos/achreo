@@ -220,31 +220,33 @@ export class CombatManager extends Phaser.Scene {
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) return;
         this.context.targetTarget = enemy;
-        let x = enemy.x; // this.rightJoystick.pointer.x;
-        let x2 = window.innerWidth / 2;
-        let y = enemy.y; // this.rightJoystick.pointer.y;
-        let y2 = window.innerHeight / 2;
-        const worldX = (x > x2 ? x : -x) + this.context.player.x;
-        const worldY = (y > y2 ? y : -y) + this.context.player.y;
-        const duration = Phaser.Math.Distance.Between(this.context.player.x, this.context.player.y, worldX, worldY);
-        const rootTween = this.context.add.tween({
-            targets: this.context.target,
-            x: { from: this.context.player.x, to: worldX, duration: 1000 },
-            y: { from: this.context.player.y, to: worldY, duration: 1000 }, 
-            ease: 'Linear',
-            yoyo: false,
-            onStart: () => {
-                this.context.target.setVisible(true);
-                enemy.isRooted = true;
-                enemy.count.rooted += 1;
-            },    
-            onComplete: () => {
-                this.context.time.delayedCall(3000 - duration, () => {
-                    this.context.target.setVisible(false);
-                    rootTween.destroy();
-                }, undefined, this);
-            }, 
-        });
+        enemy.isRooted = true;
+        enemy.count.rooted += 1;
+        // let x = enemy.x; // this.rightJoystick.pointer.x;
+        // let x2 = window.innerWidth / 2;
+        // let y = enemy.y; // this.rightJoystick.pointer.y;
+        // let y2 = window.innerHeight / 2;
+        // const worldX = (x > x2 ? x : -x) + this.context.player.x;
+        // const worldY = (y > y2 ? y : -y) + this.context.player.y;
+        // const duration = Phaser.Math.Distance.Between(this.context.player.x, this.context.player.y, worldX, worldY);
+        // const rootTween = this.context.add.tween({
+        //     targets: this.context.target,
+        //     x: { from: this.context.player.x, to: worldX, duration: 1000 },
+        //     y: { from: this.context.player.y, to: worldY, duration: 1000 }, 
+        //     ease: 'Linear',
+        //     yoyo: false,
+        //     onStart: () => {
+        //         this.context.target.setVisible(true);
+        //         enemy.isRooted = true;
+        //         enemy.count.rooted += 1;
+        //     },    
+        //     onComplete: () => {
+        //         this.context.time.delayedCall(3000 - duration, () => {
+        //             this.context.target.setVisible(false);
+        //             rootTween.destroy();
+        //         }, undefined, this);
+        //     }, 
+        // });
     };
     scream = (id: string): void => {
         if (id === '') return;

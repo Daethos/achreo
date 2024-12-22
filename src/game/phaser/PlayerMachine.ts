@@ -449,7 +449,7 @@ export default class PlayerMachine {
     onLullEnter = () => {
         this.player.isMoving = false;
         this.player.setVelocity(0);
-        this.scene.time.delayedCall(Phaser.Math.Between(250, 750), () => {
+        this.scene.time.delayedCall(Phaser.Math.Between(500, 1000), () => {
             if (this.player.isSuffering() || this.player.isCasting || this.player.isPraying || this.player.computerAction) {
                 this.player.computerAction = false;
                 this.stateMachine.setState(States.LULL);
@@ -480,7 +480,7 @@ export default class PlayerMachine {
         };
         this.player.frameCount = 0;
         this.player.computerAction = true;
-        this.scene.time.delayedCall(Phaser.Math.Between(625, 1250), () => {
+        this.scene.time.delayedCall(Phaser.Math.Between(750, 1250), () => {
             this.player.computerAction = false;
             (this.player as PlayerComputer).evaluateCombat();
         }, undefined, this);

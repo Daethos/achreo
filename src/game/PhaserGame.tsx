@@ -94,7 +94,9 @@ export default function PhaserGame (props: IProps) {
         try {
             const res = await getOneRandom(level);
             if (!res) return;
-            setGame({ ...game(), lootDrops: [ ...game().lootDrops, res[0] ] });
+            let lootDrops = JSON.parse(JSON.stringify(game().lootDrops));
+            lootDrops.push(res[0]);
+            setGame({ ...game(), lootDrops }); // : [ ...game().lootDrops, res[0] ]
             EventBus.emit('enemyLootDrop',{ enemyID, drops: res, scene: props.scene() });
         } catch (err: any) {
             console.warn(err, 'Error Dropping Loot');

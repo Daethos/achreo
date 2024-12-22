@@ -25,6 +25,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { fetchArena } from '../../utility/enemy';
 
 export class Arena extends Phaser.Scene {
+    sceneKey: string = '';
     animatedTiles: any[];
     offsetX: number;
     offsetY: number;
@@ -79,7 +80,9 @@ export class Arena extends Phaser.Scene {
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
 
     constructor (view?: string) {
-        super(view || 'Arena');
+        const key = view || 'Arena';
+        super(key);
+        this.sceneKey = key;
     };
 
     preload() {
@@ -224,7 +227,7 @@ export class Arena extends Phaser.Scene {
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
         EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
         EventBus.on('enemyLootDrop', (drops: any) => {
-            if (drops.scene !== 'Arena') return;
+            if (drops.scene !== this.sceneKey) return;
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
         });    
         EventBus.on('minimap', () => {
@@ -239,7 +242,7 @@ export class Arena extends Phaser.Scene {
             };
         });
         EventBus.on('music', (on: boolean) => {
-            if (on === true && !this.scene.isPaused('Arena')) {
+            if (on === true && !this.scene.isPaused(this.sceneKey)) {
                 this.resumeMusic();
             } else {
                 this.pauseMusic();

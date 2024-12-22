@@ -632,21 +632,29 @@ export default class Player extends Entity {
         this.currentDamageType = damage;    
         this.hasMagic = this.checkDamageType(damage, 'magic');
         this.checkMeleeOrRanged(weapon);
+        let staminaModifier = 0;
         if (this.currentWeaponSprite !== this.assetSprite(weapon)) {
             this.currentWeaponSprite = this.assetSprite(weapon);
             this.spriteWeapon.setTexture(this.currentWeaponSprite);
             if (weapon.grip === 'One Hand') {
-                this.staminaModifier = 0;
                 this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
             } else {
-                this.staminaModifier = 3;
+                staminaModifier += 2;
                 this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
             };
         };
         if (this.currentShieldSprite !== this.assetSprite(shield)) {
             this.currentShieldSprite = this.assetSprite(shield);
             this.spriteShield.setTexture(this.currentShieldSprite);
+            if (shield.type === "Medium Shield") {
+                staminaModifier += 1;
+            } else if (shield.type === "Large Shield") {
+                staminaModifier += 2;
+            } else if (shield.type === "Great Shield") {
+                staminaModifier += 3;
+            };
         };
+        this.staminaModifier = staminaModifier;
     };
 
     enemyUpdate = (e: string) => {

@@ -50,7 +50,7 @@ export default class PlayerMachine {
             .addState(States.LULL, { onEnter: this.onLullEnter, onExit: this.onLullExit }) // onUpdate: this.onLullUpdate
             .addState(States.CHASE, { onEnter: this.onChaseEnter, onUpdate: this.onChaseUpdate, onExit: this.onChaseExit })
             .addState(States.LEASH, { onEnter: this.onLeashEnter, onUpdate: this.onLeashUpdate, onExit: this.onLeashExit })
-            .addState(States.DEFEATED, { onEnter: this.onDefeatedEnter }) // ====== Special States ======
+            .addState(States.DEFEATED, { onEnter: this.onDefeatedEnter })
             .addState(States.EVADE, { onEnter: this.onEvasionEnter, onUpdate: this.onEvasionUpdate, onExit: this.onEvasionExit })
             .addState(States.CONTEMPLATE, { onEnter: this.onContemplateEnter, onUpdate: this.onContemplateUpdate, onExit: this.onContemplateExit })
             .addState(States.ATTACK, { onEnter: this.onAttackEnter, onUpdate: this.onAttackUpdate, onExit: this.onAttackExit })
@@ -120,7 +120,7 @@ export default class PlayerMachine {
             .addState(States.STEALTH, { onEnter: this.onStealthEnter, onUpdate: this.onStealthUpdate, onExit: this.onStealthExit })
             .addState(States.PROTECT, { onEnter: this.onProtectEnter, onUpdate: this.onProtectUpdate })
             .addState(States.RECOVER, { onEnter: this.onRecoverEnter, onUpdate: this.onRecoverUpdate })
-            .addState(States.REIN, { onEnter: this.onReinEnter, onUpdate: this.onReinUpdate }) // 1
+            .addState(States.REIN, { onEnter: this.onReinEnter, onUpdate: this.onReinUpdate })
             .addState(States.RENEWAL, { onEnter: this.onRenewalEnter, onUpdate: this.onRenewalUpdate })
             .addState(States.SCREAM, { onEnter: this.onScreamEnter, onUpdate: this.onScreamUpdate, onExit: this.onScreamExit })
             .addState(States.SHIELD, { onEnter: this.onShieldEnter, onUpdate: this.onShieldUpdate })
@@ -212,11 +212,11 @@ export default class PlayerMachine {
         };  
         if (distance >= 60 * rangeMultiplier) { // was 75 || 100
             if (this.player.path && this.player.path.length > 1) {
-                this.player.setVelocity(this.player.pathDirection.x * this.player.speed, this.player.pathDirection.y * this.player.speed); // 2.5
+                this.player.setVelocity(this.player.pathDirection.x * this.player.speed, this.player.pathDirection.y * this.player.speed);
             } else {
                 if (this.player.isPathing) this.player.isPathing = false;
                 direction.normalize();
-                this.player.setVelocity(direction.x * this.player.speed, direction.y * this.player.speed); // 2.5
+                this.player.setVelocity(direction.x * this.player.speed, direction.y * this.player.speed);
             };
         } else {
             this.stateMachine.setState(States.COMPUTER_COMBAT);
@@ -278,11 +278,11 @@ export default class PlayerMachine {
         
         if (direction.length() >= 10) {
             if (this.player.path && this.player.path.length > 1) {
-                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed), this.player.pathDirection.y * (this.player.speed)); // 2.5
+                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed), this.player.pathDirection.y * (this.player.speed));
             } else {
                 if (this.player.isPathing) this.player.isPathing = false;
                 direction.normalize();
-                this.player.setVelocity(direction.x * (this.player.speed), direction.y * (this.player.speed)); // 2.5
+                this.player.setVelocity(direction.x * (this.player.speed), direction.y * (this.player.speed));
             };
         } else {
             this.stateMachine.setState(States.IDLE);
@@ -384,33 +384,28 @@ export default class PlayerMachine {
         const direction = this.player.currentTarget?.position.subtract(this.player.position);
         const distance = direction?.length() || 0;
         let instinct =
-            health <= 0.3 ? 0 : // Critical Heal
-            health <= 0.6 ? 1 : // Casual Heal
-            (health >= 0.75 && health <= 0.95) ? 2 : // Starter Heal
+            health <= 0.3 ? 0 :
+            health <= 0.6 ? 1 :
+            (health >= 0.75 && health <= 0.95) ? 2 :
+            enemy <= 0.3 ? 3 :
+            enemy <= 0.55 ? 4 :
+            enemy >= 0.8 ? 5 :
             
-            enemy <= 0.3 ? 3 : // Critical Damage
-            enemy <= 0.55 ? 4 : // Casual Damage
-            enemy >= 0.8 ? 5 : // Starter Damage
-            
-            (distance < 100 && !this.player.isRanged) ? 6 : // AoE + Melee at Melee~ Range
-            (distance < 100 && this.player.isRanged) ? 7 : // AoE + Ranged at Melee~ Range
-            
-            (distance >= 100 && distance < 200 && !this.player.isRanged) ? 8 : // Melee at Short Range
-            (distance >= 100 && distance < 200 && this.player.isRanged) ? 9 : // Ranged at Short Range
-            
-            (distance >= 200 && distance < 300 && !this.player.isRanged) ? 10 : // Melee at Mid Range
-            (distance >= 200 && distance < 300 && this.player.isRanged) ? 11 : // Ranged at Mid Range
-            
-            (distance >= 300 && !this.player.isRanged) ? 12 : // Melee at Long Range
-            (distance >= 300 && this.player.isRanged) ? 13 : // Ranged at Long Range
+            (distance <= 100 && !this.player.isRanged) ? 6 :
+            (distance <= 100 && this.player.isRanged) ? 7 :
+            (distance > 100 && distance <= 200 && !this.player.isRanged) ? 8 :
+            (distance > 100 && distance <= 200 && this.player.isRanged) ? 9 :
+            (distance > 200 && distance <= 300 && !this.player.isRanged) ? 10 :
+            (distance > 200 && distance <= 300 && this.player.isRanged) ? 11 :
+            (distance > 300 && !this.player.isRanged) ? 12 :
+            (distance > 300 && this.player.isRanged) ? 13 :
 
-            chance; // Range
+            chance;
 
         if (this.player.prevInstinct === instinct) {
             instinct = chance;
         };
 
-        // console.log(`Chance: ${chance} | Instinct: ${instinct} | Mastery: ${mastery}`);
         let key = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].key, value = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].value;
         let check: {success:boolean;cost:number;} = {success:false,cost:0};
         const grace = PLAYER.STAMINA[value.toUpperCase() as keyof typeof PLAYER.STAMINA];
@@ -424,7 +419,11 @@ export default class PlayerMachine {
             this.player.prevInstinct = instinct;
         } else {
             this.player.specialCombatText = this.scene.showCombatText('Compose Yourself', 750, 'dread', false, true, () => this.player.specialCombatText = undefined);
-            this.stateMachine.setState(States.COMPUTER_THRUST);
+            if (Math.random() > 0.5) {
+                this.stateMachine.setState(States.COMPUTER_COMBAT);
+            } else {
+                this.stateMachine.setState(States.CHASE);
+            };
         };
     };
 
@@ -466,16 +465,10 @@ export default class PlayerMachine {
             this.stateMachine.setState(States.IDLE);
             return;
         };
-        // if (this.player.specials === false) {
-        //     this.player.specials = true;
-        //     (this.player as PlayerComputer).setSpecialCombat();
-        // };
-        // console.log(`Suffering: ${this.player.isSuffering()}`, 'color:red');
         if (this.player.isSuffering()) return;
         if (this.player.isCasting || this.player.isPraying || this.player.isContemplating || this.player.computerAction) {
             this.player.setVelocity(0);
             this.player.isMoving = false;
-            // console.log(`%c Casting: ${this.player.isCasting} | Contemplating: ${this.player.isContemplating} | Action: ${this.player.computerAction}`, 'color:gold');
             return;
         };
         this.player.frameCount = 0;
@@ -572,7 +565,6 @@ export default class PlayerMachine {
             const correct = this.player.getEnemyDirection(this.player.currentTarget);
             if (!correct) {
                 this.player.resistCombatText = this.scene.showCombatText('Skill Issue: Look at the Enemy!', 1000, 'damage', false, true, () => this.player.resistCombatText = undefined);
-                // this.player.resistCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Skill Issue: Look at the Enemy!', 1000, 'damage', false, true, () => this.player.resistCombatText = undefined);
                 return;
             };
         };
@@ -615,13 +607,11 @@ export default class PlayerMachine {
         if (this.player.isRanged === true) {
             if (this.player.isMoving === true) {
                 this.player.resistCombatText = this.scene.showCombatText('Posture Issue: You are Moving', 1000, 'damage', false, true, () => this.player.resistCombatText = undefined);
-                // this.player.resistCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Posture Issue: You are Moving', 1000, 'damage', false, true, () => this.player.resistCombatText = undefined);
                 return;
             };
             const correct = this.player.getEnemyDirection(this.player.currentTarget);
             if (!correct && this.player.inCombat === true) {
                 this.player.resistCombatText = this.scene.showCombatText('Skill Issue: Look at the Enemy!', 1000, 'damage', false, true, () => this.player.resistCombatText = undefined);
-                // this.player.resistCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Skill Issue: Look at the Enemy!', 1000, 'damage', false, true, () => this.player.resistCombatText = undefined);
                 return;
             };
         };
@@ -711,7 +701,6 @@ export default class PlayerMachine {
             const correct = this.player.getEnemyDirection(this.player.currentTarget);
             if (!correct && this.player.inCombat === true) {
                 this.player.resistCombatText = this.scene.showCombatText('Skill Issue: Look at the Enemy!', 1000, 'damage', false, true, () => this.player.resistCombatText = undefined);
-                // this.player.resistCombatText = new ScrollingCombatText(this.scene, this.player.x, this.player.y, 'Skill Issue: Look at the Enemy!', 1000, 'damage', false, true, () => this.player.resistCombatText = undefined);
                 return;
             };
         };

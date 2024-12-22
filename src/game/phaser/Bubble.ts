@@ -88,7 +88,7 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
     };
 
     updateGlow = (scene: Phaser.Scene) => {
-        if (!this || this.calling === false || !this.glowFilter || !this.warp || !scene) return;
+        if (!this || this.calling === false || !this.glowFilter || !this.warp || !scene || !this.scene?.sys) return;
         let instance = this.glowFilter.get(this)[0];
         if (instance) {
             instance.outerStrength = (this.charges / 2) + Math.sin(scene.time.now * 0.005); // * (this.charges / 2); // Adjust the frequency and amplitude as needed

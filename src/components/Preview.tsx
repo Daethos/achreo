@@ -5,14 +5,11 @@ import { font } from "../utility/styling";
 
 export default function Preview({ newAscean }: { newAscean: Accessor<CharacterSheet> }) {
     const dimensions = useResizeListener();
-    const [name, setName] = createSignal('');
     const [description, setDescription] = createSignal('');
     const [picture, setPicture] = createSignal('' as string);
     createEffect(() => {
         createDescription(newAscean().description);
-        setName(newAscean().name);
         setPicture(`../assets/images/${newAscean().origin}-${newAscean().sex}.jpg`);   
-        console.log(name(), name().length, 'Name and Length');
     });
     function createDescription(descrip: string): void {
         let count = 0;

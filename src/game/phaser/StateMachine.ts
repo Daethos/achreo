@@ -135,6 +135,15 @@ export const States = {
     STUNNED: "stunned",
 };
 
+export const specialStateMachines = [States.ARC, States.BLINK, States.CONFUSE, States.CONSUME, States.DESPERATION, States.FEAR, States.PARALYZE, 
+    States.HEALING, States.INVOKE, States.KYRNAICISM, States.LEAP, States.POLYMORPH, States.PURSUIT, States.ROOT, States.RUSH, States.SACRIFICE, 
+    States.DISPEL, States.SHADOW, States.SHIRK, States.TETHER, States.ACHIRE, States.ASTRAVE, States.FYERUS, States.KYNISOS, States.QUOR, 
+    States.MAIERETH, States.ILIRECH, States.RECONSTITUTE, States.SHROUD, States.SLOW, States.SLOWING, States.STORM, States.SNARE, States.STORM, 
+    States.SUTURE, States.TSHAERAL, States.TSHAER, States.TSHAERING];
+export const specialPositiveMachines = [States.ABSORB, States.CHIOMIC, States.DISEASE, States.ENVELOP, States.FREEZE, States.HOWL, States.MALICE, 
+    States.MEND, States.MODERATE, States.MULTIFARIOUS, States.MYSTIFY, States.PROTECT, States.RECOVER, States.REIN, States.RENEWAL, States.SCREAM, 
+    States.SHIELD, States.SHIMMER, States.SPRINTING, States.WARD, States.WRITHE];
+
 let idCount = 0;
 
 export default class StateMachine {

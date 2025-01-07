@@ -27,6 +27,7 @@ export default class Settings {
     public combatSettings: { left: string; top: string; height: string; width: string; };
     public control: string;
     public desktop: boolean;
+    public computerFocus: string;
     public computerLoadout: {
         attack: number;
         posture: number;
@@ -175,13 +176,14 @@ export default class Settings {
         this.combatSettings = { left: '20%', top: '40%', height: '50%', width: '60%' };
         this.control = 'Buttons';
         this.desktop = false;
+        this.computerFocus = 'Balanced';
         this.computerLoadout = {
-            attack: 30,
+            attack: 15,
             posture: 15,
             roll: 15,
             thrust: 15,
             parry: 15,
-            special: 10,
+            special: 25,
         };
         this.difficulty = {
             arena: true,

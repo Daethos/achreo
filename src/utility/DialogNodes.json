@@ -1357,8 +1357,15 @@
         },
         {
             "id": "0046",
-            "text": "Down the stairs and to the left, you will enter and join the world, vested with the knowledge to gain some coin and experience, and learn some things of the people that inhabit that world.\n\nFind the underground caves and strongholds that have since gone to ruin. Seek out the Ancient Eulex and test yourself against those also on quests of grandeur, and keep readying yourself for the Ascea, it'll be here sooner than you wish.",
+            "text": "Down the stairs and to the left, you will enter and join the world, vested with the knowledge to gain some coin and experience, and learn some things of the people that inhabit that world.\n\nFind the underground caves and strongholds that have since gone to ruin. Seek out the Ancient Eulex to the East and test yourself against those also on quests of grandeur, and keep readying yourself for the Ascea, it'll be here sooner than you wish.",
             "options": [
+                {
+                    "text": "Where exactly is this Arena?",
+                    "next": "0047",
+                    "npcIds": [
+                        12
+                    ]
+                },
                 {
                     "text": "Just making sure, movement, hows that go again?",
                     "next": "0042",
@@ -1411,6 +1418,67 @@
             "npcIds": [
                 12
             ]
+        },
+        {
+            "id": "0047",
+            "text": "When entering the World, travel to the East merely 100 paces and you should see a small plateau with an entrance. Climb and pass through the entrance, and there you will find the Underground. \n\n Inside, you can touch against the walls and find rosters to set up a duel.",
+            "options": [
+                {
+                    "text": "And how do I leave this area, again?",
+                    "next": "0046",
+                    "npcIds": [
+                        12
+                    ]
+                },
+                {
+                    "text": "Just making sure, movement, hows that go again?",
+                    "next": "0042",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialMovement"
+                },
+                {
+                    "text": "One more time, real quick, how does combat work again, what can I do exactly?",
+                    "next": "0043",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialCombat"
+                },
+                {
+                    "text": "One last question, how do I improve myself again?",
+                    "next": "0044",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialMerchant"
+                },
+                {
+                    "text": "For old time's sake, bring me one last enemy. Just to make sure.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialEnemy"
+                },
+                {
+                    "text": "You know what, I think I want another. Just a quick one. I think I'm getting good at this.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getTutorialEnemy"
+                },
+                {
+                    "text": "Goodbye, ${enemy.name}. I appreciate the help.",
+                    "next": "0041",
+                    "npcIds": [
+                        12
+                    ],
+                    "action": "getDialogClose"
+                }
+            ]    
         }
     ]
 }

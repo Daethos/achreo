@@ -1,6 +1,6 @@
 import Player from '../entities/Player';
-import StateMachine, { States } from "./StateMachine";
-import { PLAYER, PLAYER_INSTINCTS, staminaCheck } from "../../utility/player";
+import StateMachine, { specialStateMachines, States } from "./StateMachine";
+import { BALANCED, BALANCED_INSTINCTS, DEFENSIVE, DEFENSIVE_INSTINCTS, OFFENSIVE, OFFENSIVE_INSTINCTS, PLAYER, PLAYER_INSTINCTS, staminaCheck } from "../../utility/player";
 import { FRAME_COUNT } from '../entities/Entity';
 import AoE from './AoE';
 import { EventBus } from "../EventBus";
@@ -406,7 +406,45 @@ export default class PlayerMachine {
             instinct = chance;
         };
 
+        const focus = this.scene.hud.settings.computerFocus || BALANCED;
+        let foci;
+        switch (focus) {
+            case BALANCED:
+                foci = BALANCED_INSTINCTS[mastery as keyof typeof BALANCED_INSTINCTS];
+                foci = foci[Math.floor(Math.random() * foci.length)];
+                break;
+            case DEFENSIVE:
+                foci = DEFENSIVE_INSTINCTS[mastery as keyof typeof DEFENSIVE_INSTINCTS];
+                foci = foci[Math.floor(Math.random() * foci.length)];
+                break;
+            case OFFENSIVE:
+                foci = OFFENSIVE_INSTINCTS[mastery as keyof typeof OFFENSIVE_INSTINCTS];
+                foci = foci[Math.floor(Math.random() * foci.length)];
+                break;
+        };
+        console.log(focus, foci, 'Focus and Foci')
+
         let key = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].key, value = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].value;
+        let finals = [instinct, foci];
+        console.log(finals, 'Finals');
+        if (instinct === 0 || instinct === 3 || instinct === 7 || instinct === 12) {
+            finals.push(instinct);
+        };
+
+        let final = finals[Math.floor(Math.random() * finals.length)];
+
+        if (final === typeof 'string') {
+            if (specialStateMachines.includes(final)) { // State Machine
+                key = "stateMachine";
+                value = final;
+            } else { // Positive Machine
+                key = "positiveMachine";
+                value = final;
+            };
+        };
+
+        console.log(key, value, 'End Key and Value');
+
         let check: {success:boolean;cost:number;} = {success:false,cost:0};
         const grace = PLAYER.STAMINA[value.toUpperCase() as keyof typeof PLAYER.STAMINA];
         check = staminaCheck(this.player.grace, grace);

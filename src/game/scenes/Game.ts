@@ -21,7 +21,39 @@ import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 const dimensions = useResizeListener();
+class WindPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline {
+    private time: number;
+    private intensity: number;
+    private resolution: Float32Array;
+    constructor(game: Phaser.Game) {
+        super({
+            game,
+            fragShader: game.cache.shader.get('windShader').fragmentSrc,
+            vertShader: game.cache.shader.get('windShader').vertShader
+        });
+        this.time = 0.0;
+        this.intensity = 1.0;
+        this.resolution = new Float32Array([game.scale.width, game.scale.height]);
+    };
+
+    onBind(gameObject: Phaser.GameObjects.GameObject) {
+        super.onBind();
+        this.set1f('time', this.time);
+        this.set1f('intensity', this.intensity);
+    };
+    onBatch(gameObject: Phaser.GameObjects.GameObject) {
+        if (gameObject) this.flush();
+    };
+    updateTime(time: number) {
+        this.time = time;
+    };
+    setIntensity(intensity: number) {
+        this.intensity = intensity;
+    }
+};
+
 export class Game extends Scene {
+    overlay: Phaser.GameObjects.Graphics;
     animatedTiles: any[];
     offsetX: number = 0;
     offsetY: number = 0;
@@ -70,6 +102,9 @@ export class Game extends Scene {
 
     preload() {
         this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
+        this.load.glsl('windShader', './src/game/shaders/Wind.glsl');
+        this.load.glsl('dayNightShader', './src/game/shaders/DayNight.glsl');
+        this.load.glsl('rainShadow', './src/game/shaders/Rain.glsl');
     };
 
     create (hud: Hud) {
@@ -116,6 +151,18 @@ export class Game extends Scene {
         const objectLayer = map.getObjectLayer('navmesh');
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;
+
+        this.overlay = this.add.graphics();
+        this.overlay.fillStyle(0x000000, 0.55); // Start transparent
+        this.overlay.fillRect(0, 0, 4096, 4096);
+        this.overlay.setDepth(99);
+        this.startDayNightCycle();
+
+        const windPipeline = new WindPipeline(this.game);
+        (this.game.renderer as any).pipelines.add('Wind', windPipeline);
+        layer2?.setPipeline('Wind');
+        layer3?.setPipeline('Wind');
+
         // const debugGraphics = this.add.graphics().setAlpha(0.75);
         // this.navMesh.enableDebug(debugGraphics); 
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
@@ -173,6 +220,28 @@ export class Game extends Scene {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
         };
         EventBus.emit('current-scene-ready', this);
+    };
+
+    startDayNightCycle() {
+        const transition = 60000;
+        this.tweens.add({
+            targets: this.overlay,
+            alpha: { from: 0, to: 1 },
+            duration: transition,
+            ease: 'Sine.easeInOut',
+            onComplete: () => this.transitionToDay()
+        });
+    };
+
+    transitionToDay() {
+        const transition = 60000;
+        this.tweens.add({
+            targets: this.overlay,
+            alpha: { from: 1, to: 0 },
+            duration: transition,
+            ease: 'Sine.easeInOut',
+            onComplete: () => this.startDayNightCycle()
+        });
     };
 
     showCombatText(text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): ScrollingCombatText {
@@ -628,7 +697,7 @@ export class Game extends Scene {
         this.combatTime = 0;
         EventBus.emit('update-combat-timer', this.combatTime);
     };
-    update(_time: number, delta: number): void {
+    update(time: number, delta: number): void {
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(delta);
@@ -636,6 +705,11 @@ export class Game extends Scene {
         };
         for (let i = 0; i < this.npcs.length; i++) {
             this.npcs[i].update();
+        };
+        const wind = (this.game.renderer as any).pipelines.get('Wind');
+        if (wind) {
+            // console.log(wind,'wind');
+            wind.updateTime(time / 1000);
         };
         // this.daytime += delta;
         // var value = (Math.sin(this.daytime - Math.PI / 2) + 1.0) / 2.0;    

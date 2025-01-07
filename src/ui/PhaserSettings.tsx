@@ -45,6 +45,11 @@ const CONTROLS = {
     POST_FX: 'Post FX',
     PHASER_UI: 'Phaser UI',
 };
+const FOCUS = {
+    Balanced: 'Defensive',
+    Defensive: 'Offensive',
+    Offensive: 'Balanced',
+};
 export default function PhaserSettings({ settings, setSettings, specials }: { settings: Accessor<Settings>; setSettings: Setter<Settings>; specials: Accessor<any[]>; }) {
     const [actionShow, setActionShow] = createSignal<boolean>(false);
     const [currentAction, setCurrentAction] = createSignal({action: ACTIONS[0],index: 0});
@@ -171,6 +176,12 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         await saveSettings(newSettings);
     };
  
+    async function handleComputerFocus() {
+        const computerFocus = FOCUS[settings().computerFocus as keyof typeof FOCUS || 'Balanced' as keyof typeof FOCUS];
+        console.log(computerFocus, 'New Computer Focus');
+        const newSettings = { ...settings(), computerFocus };        
+        await saveSettings(newSettings);
+    };
     async function handleFps(type: string, payload: boolean | number | string) {
         let limit = settings().fps.limit, target = settings().fps.target;
         if (type === 'min') {
@@ -242,15 +253,23 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
     return <>
         <div class='center' style={{ display: 'flex', 'flex-direction': 'row', height: '100%' }}>
         <div class='gold' style={{ position: 'absolute', top: '0', 'font-size': '1.25em', display: 'inline' }}>
-            <div style={{ 'padding-top': '5%' }}>Controls</div>
-            <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.BUTTONS ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Buttons</button>
-            <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.POST_FX ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
-            <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.DIFFICULTY ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
-            <button class='highlight' style={{ 'font-size': '0.3em', display: 'inline', width: 'auto', color: settings().control === CONTROLS.PHASER_UI ? 'gold': '#fdf6d8' }} onClick={() => currentControl(CONTROLS.PHASER_UI)}>UI</button>
+            <div style={{ 'padding-top': '5%' }}>Controls - {settings().control}</div>
+            <Show when={settings().control !== CONTROLS.BUTTONS}>
+                <button class='highlight' style={{ 'font-size': '0.25em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Buttons</button>
+            </Show>
+            <Show when={settings().control !== CONTROLS.POST_FX}>
+                <button class='highlight' style={{ 'font-size': '0.25em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
+            </Show>
+            <Show when={settings().control !== CONTROLS.DIFFICULTY}>
+                <button class='highlight' style={{ 'font-size': '0.25em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
+            </Show>
+            <Show when={settings().control !== CONTROLS.PHASER_UI}>
+                <button class='highlight' style={{ 'font-size': '0.25em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.PHASER_UI)}>UI</button>
+            </Show>
         </div>
         <Switch>
             <Match when={settings().control === CONTROLS.BUTTONS}>
-            <div class='' style={dimensions().ORIENTATION === 'landscape' ? { margin: '25% auto 0' } : { 'margin-top': '50%' }}>
+            <div style={dimensions().ORIENTATION === 'landscape' ? { margin: '25% auto 0' } : { 'margin-top': '50%' }}>
                 <div style={font('1em', '#fdf6d8')}>Physical Actions<br /></div>
                 {settings().actions?.map((action: string, index: number) =>
                     <button class='highlight' onClick={() => actionModal(action, index)} style={{display: 'block'}}>
@@ -258,7 +277,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                     </button>
                 )}
                 </div>
-                <div class='' style={dimensions().ORIENTATION === 'landscape' ? { margin: '25% auto 0' } : { 'margin-top': '50%' }}>
+                <div style={dimensions().ORIENTATION === 'landscape' ? { margin: '25% auto 0' } : { 'margin-top': '50%' }}>
                     <div style={font('1em', '#fdf6d8')}>Special Actions<br /></div>
                     {settings().specials?.map((special: string, index: number) => 
                         <button  class='highlight' onClick={() => specialModal(special, index)} style={{display: 'block'}}>
@@ -374,6 +393,9 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                             <div style={font('0.85em', '#fdf6d8')}>
                                 <button class='gold highlight' onClick={() => handleArenaCombat()}>{settings().difficulty.arena ? 'Manual' : 'Computer'}</button>
                                 <div style={font('0.5em')}>[Whether you control your character in the Arena. If the Arena has been loaded, you must reload the game for this change to take effect.]</div>
+
+                                <h1 class='gold' style={font('0.85em')}>Player Computer Focus</h1>
+                                <button class='gold highlight' onClick={() => handleComputerFocus()}>{settings().computerFocus || 'Balanced'}</button>
                                 <ComputerLoadout settings={settings} />
                             </div>
                         </Collapse>

@@ -30,7 +30,7 @@ export default function ComputerLoadout({ settings }: { settings: Accessor<Setti
     };
     const ceiling = (): boolean => pool() < 100;
     const floor = (name: string): boolean => computerLoadout()?.[name as keyof typeof computerLoadout] as number > 0;
-    return <div class='center creature-heading fadeIn' style={{ 'margin': '10% auto 5%', width: '100%' }}>
+    return <div class='center creature-heading fadeIn' style={{ 'margin': '2.5% auto 5%', width: '100%' }}>
         <h1 class='gold' style={{ 'margin-bottom' : '5%' }}>Pool: {pool()} / 100</h1>
         <For each={actions}>
             {(action) => (
@@ -42,6 +42,7 @@ export default function ComputerLoadout({ settings }: { settings: Accessor<Setti
                 </InputGroup>
             )}
         </For>
+        <span class='gold' style={{ 'font-size': '0.5em' }}>Manually Save to Record Changes</span><br />
         <button class='highlight' onClick={saveLoadout}>Save</button>
     </div>;
 };

@@ -1,3 +1,4 @@
+export const DayNight = `
 precision mediump float;
 
 uniform float uTime;
@@ -14,4 +15,4 @@ void main() {
     vec3 color = mix(nightColor, dayColor, cycle);
 
     gl_FragColor = vec4(color, 1.0);
-}
+}`;

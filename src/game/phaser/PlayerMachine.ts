@@ -422,11 +422,9 @@ export default class PlayerMachine {
                 foci = foci[Math.floor(Math.random() * foci.length)];
                 break;
         };
-        console.log(focus, foci, 'Focus and Foci')
 
         let key = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].key, value = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].value;
         let finals = [instinct, foci];
-        console.log(finals, 'Finals');
         if (instinct === 0 || instinct === 3 || instinct === 7 || instinct === 12) {
             finals.push(instinct);
         };
@@ -442,8 +440,6 @@ export default class PlayerMachine {
                 value = final;
             };
         };
-
-        console.log(key, value, 'End Key and Value');
 
         let check: {success:boolean;cost:number;} = {success:false,cost:0};
         const grace = PLAYER.STAMINA[value.toUpperCase() as keyof typeof PLAYER.STAMINA];

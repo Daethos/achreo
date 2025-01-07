@@ -16,6 +16,9 @@ import ParticleManager from '../matter/ParticleManager';
 import { Hud } from './Hud';
 import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import { ObjectPool } from '../phaser/ObjectPool';
+import { DayNight } from '../shaders/DayNight';
+import { Rain } from '../shaders/Rain';
+import { Wind } from '../shaders/Wind';
 // @ts-ignore
 import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 // @ts-ignore
@@ -102,9 +105,9 @@ export class Game extends Scene {
 
     preload() {
         this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
-        this.load.glsl('windShader', './src/game/shaders/Wind.glsl');
-        this.load.glsl('dayNightShader', './src/game/shaders/DayNight.glsl');
-        this.load.glsl('rainShadow', './src/game/shaders/Rain.glsl');
+        // this.load.glsl('windShader', './src/game/shaders/Wind.glsl');
+        // this.load.glsl('dayNightShader', './src/game/shaders/DayNight.glsl');
+        // this.load.glsl('rainShadow', './src/game/shaders/Rain.glsl');
     };
 
     create (hud: Hud) {
@@ -153,15 +156,15 @@ export class Game extends Scene {
         this.navMesh = navMesh;
 
         this.overlay = this.add.graphics();
-        this.overlay.fillStyle(0x000000, 0.55); // Start transparent
+        this.overlay.fillStyle(0x000000, 1); // Start Full
         this.overlay.fillRect(0, 0, 4096, 4096);
         this.overlay.setDepth(99);
-        this.startDayNightCycle();
+        this.startDayCycle();
 
-        const windPipeline = new WindPipeline(this.game);
-        (this.game.renderer as any).pipelines.add('Wind', windPipeline);
-        layer2?.setPipeline('Wind');
-        layer3?.setPipeline('Wind');
+        // const windPipeline = new WindPipeline(this.game);
+        // (this.game.renderer as any).pipelines.add('Wind', windPipeline);
+        // layer2?.setPipeline('Wind');
+        // layer3?.setPipeline('Wind');
 
         // const debugGraphics = this.add.graphics().setAlpha(0.75);
         // this.navMesh.enableDebug(debugGraphics); 
@@ -222,25 +225,49 @@ export class Game extends Scene {
         EventBus.emit('current-scene-ready', this);
     };
 
-    startDayNightCycle() {
-        const transition = 60000;
+    startDayCycle() {
+        this.sound.play('day', { volume: this?.hud?.settings?.volume * 3 });
+        const duration = 80000;
         this.tweens.add({
             targets: this.overlay,
-            alpha: { from: 0, to: 1 },
-            duration: transition,
+            alpha: { from: 0, to: 0.25 },
+            duration,
             ease: 'Sine.easeInOut',
-            onComplete: () => this.transitionToDay()
+            onComplete: () => this.transitionToEvening()
         });
     };
 
-    transitionToDay() {
-        const transition = 60000;
+    transitionToEvening() {
+        const duration = 40000;
         this.tweens.add({
             targets: this.overlay,
-            alpha: { from: 1, to: 0 },
-            duration: transition,
+            alpha: { from: 0.25, to: 0.5 },
+            duration,
             ease: 'Sine.easeInOut',
-            onComplete: () => this.startDayNightCycle()
+            onComplete: () => this.transitionToNight()
+        });
+    };
+
+    transitionToNight() {
+        this.sound.play('night', { volume: this?.hud?.settings?.volume });
+        const duration = 40000;
+        this.tweens.add({
+            targets: this.overlay,
+            alpha: { from: 0.5, to: 0.65 },
+            duration,
+            ease: 'Sine.easeInOut',
+            onComplete: () => this.transitionToMorning()
+        });
+    };
+
+    transitionToMorning() {
+        const duration = 80000;
+        this.tweens.add({
+            targets: this.overlay,
+            alpha: { from: 0.65, to: 0 },
+            duration,
+            ease: 'Sine.easeInOut',
+            onComplete: () => this.startDayCycle()
         });
     };
 
@@ -706,11 +733,11 @@ export class Game extends Scene {
         for (let i = 0; i < this.npcs.length; i++) {
             this.npcs[i].update();
         };
-        const wind = (this.game.renderer as any).pipelines.get('Wind');
-        if (wind) {
-            // console.log(wind,'wind');
-            wind.updateTime(time / 1000);
-        };
+        // const wind = (this.game.renderer as any).pipelines.get('Wind');
+        // if (wind) {
+        //     // console.log(wind,'wind');
+        //     wind.updateTime(time / 1000);
+        // };
         // this.daytime += delta;
         // var value = (Math.sin(this.daytime - Math.PI / 2) + 1.0) / 2.0;    
     };

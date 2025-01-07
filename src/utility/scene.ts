@@ -55,6 +55,8 @@ export const audio: { key: string, value: string }[] = [
     {key: 'walk-swim', value: '../assets/sounds/walk-swim.mp3'},
     {key: 'industrial', value: '../assets/sounds/industrial.mp3'},
     {key: 'isolation', value: '../assets/sounds/isolation.mp3'},
+    {key: 'day', value: '../assets/sounds/day.mp3'},
+    {key: 'night', value: '../assets/sounds/night.mp3'},
 ];
 
 export const image: {key: string, value:string}[] = [

@@ -190,14 +190,11 @@ export default function Roster({ arena, ascean, setArena, base, game, settings }
                         </Show>
                     </div>
                 </div>
-                {/* <div class='center creature-heading moisten' style={style}>
-                    
-                </div> */}
                 <button class='highlight cornerBR' onClick={() => setArena({ ...arena(), show: false })} style={{ color: 'red' }}>X</button>
             </>}>
                 <div class='center creature-heading moisten' style={style}>
-                    <p style={{ color: 'gold', margin: '12px 0', 'font-size': '2em' }}>{arena().win ? 'You Won' : 'You Lost'}</p>
-                    <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Opponents Chosen:</span> {arena().enemies.length}</h1>
+                    <p style={{ color: 'gold', margin: '12px 0', 'font-size': '3.5em', 'font-variant': 'small-caps' }}>{arena().win ? 'Victory' : 'Defeat'}</p>
+                    <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Opponent(s) Fought:</span> {arena().enemies.length}</h1>
                     <For each={arena().enemies}>{(enemy) => {
                         return (
                             <div style={{ color: masteryColor(enemy.mastery) }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)}</div>

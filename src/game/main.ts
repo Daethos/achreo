@@ -17,7 +17,7 @@ import { Tutorial } from './scenes/Tutorial';
 export type Play = Arena | Game | Tutorial | Underground;
 const dimensions = useResizeListener();
 const config: Phaser.Types.Core.GameConfig = {
-    type: Phaser.AUTO,
+    type: Phaser.WEBGL, // AUTO
     height: dimensions().HEIGHT,
     width: dimensions().WIDTH,
     scale: {

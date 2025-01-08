@@ -666,16 +666,22 @@ export default function PhaserGame (props: IProps) {
                 inventory.splice(itemIndex, 1);
                 await deleteEquipment(itemID);
             });
-            let gold = 0;
-            if (item?.[0].rarity === 'Uncommon') {
-                gold = 1;
-            } else if (item?.[0].rarity === 'Rare') {
-                gold = 3;
-            } else if (item?.[0].rarity === 'Epic') {
-                gold = 12;
-            } else if (item?.[0].rarity === 'Legendary') {
-                gold = 60;
+            const rarityGoldMap = {
+                'Uncommon': 1,
+                'Rare': 3,
+                'Epic': 12,
+                'Legendary': 60
             };
+            let gold = rarityGoldMap[item?.[0].rarity as keyof typeof rarityGoldMap] || 0;
+            // if (item?.[0].rarity === 'Uncommon') {
+            //     gold = 1;
+            // } else if (item?.[0].rarity === 'Rare') {
+            //     gold = 3;
+            // } else if (item?.[0].rarity === 'Epic') {
+            //     gold = 12;
+            // } else if (item?.[0].rarity === 'Legendary') {
+            //     gold = 60;
+            // };
             const update = { ...props.ascean(), currency: { ...props.ascean().currency, gold: props.ascean().currency.gold - gold }, health: { current: combat().newPlayerHealth, max: combat().playerHealth } };
             const clean = { ...game().inventory, inventory };
             setGame({ ...game(), inventory: clean });

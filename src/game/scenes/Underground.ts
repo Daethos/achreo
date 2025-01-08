@@ -571,7 +571,15 @@ export class Underground extends Scene {
     };
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
-        const saying = enemy.isDefeated ? "Something is tearing into me. Please, help!" : `I'll be seeing you, ${this.state.player?.name}.`;
+        
+        const defeated = ["Something is tearing into me. Please, help!", "Noooooooo! This wasn't supposed to happen.", 
+            `Curse you, ${this.state.player?.name}! I'll be back for your head.`, `Well fought, ${this.state.player?.name}.`,
+            `Can't believe I lost to you. I'm in utter digust with myself.`, "Why did it have to be you?"
+        ];
+        const victorious = [`I'll be seeing you, ${this.state.player?.name}.`, "Perhaps try fighting someone of a different mastery, may be easier for you.",
+            "You're joking?", "Why did you even bother me with this.", `Well fought, ${this.state.player?.name}.`, "Very good! May we meet again."
+        ];
+        const saying = enemy.isDefeated ? defeated[Math.floor(Math.random() * defeated.length)] : victorious[Math.floor(Math.random() * victorious.length)];
         enemy.specialCombatText = this.showCombatText(saying, 2000, 'bone', false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DEATH);
         this.time.delayedCall(3000, () => {

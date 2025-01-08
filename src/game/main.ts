@@ -17,7 +17,7 @@ import { Tutorial } from './scenes/Tutorial';
 export type Play = Arena | Game | Tutorial | Underground;
 const dimensions = useResizeListener();
 const config: Phaser.Types.Core.GameConfig = {
-    type: Phaser.WEBGL, // AUTO
+    type: Phaser.AUTO,
     height: dimensions().HEIGHT,
     width: dimensions().WIDTH,
     scale: {
@@ -62,6 +62,6 @@ const config: Phaser.Types.Core.GameConfig = {
     }
 };
 const StartGame = (parent: string, fps: any = {min: 5,target: 60,limit: 90}): Phaser.Game => {
-    return new Phaser.Game({ ...config, parent, fps: { min: fps.min, target: fps.target, limit: fps.limit } });
+    return new Phaser.Game({ ...config, parent, fps });
 };
 export default StartGame;

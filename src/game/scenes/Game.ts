@@ -16,7 +16,6 @@ import ParticleManager from '../matter/ParticleManager';
 import { Hud } from './Hud';
 import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import { ObjectPool } from '../phaser/ObjectPool';
-import { DayNight } from '../shaders/DayNight';
 import { Rain } from '../shaders/Rain';
 import { Wind } from '../shaders/Wind';
 // @ts-ignore
@@ -27,7 +26,7 @@ const dimensions = useResizeListener();
 class WindPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline {
     private time: number;
     private intensity: number;
-    private resolution: Float32Array;
+    // private resolution: Float32Array;
     constructor(game: Phaser.Game) {
         super({
             game,
@@ -36,7 +35,7 @@ class WindPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline {
         });
         this.time = 0.0;
         this.intensity = 1.0;
-        this.resolution = new Float32Array([game.scale.width, game.scale.height]);
+        // this.resolution = new Float32Array([game.scale.width, game.scale.height]);
     };
 
     onBind(gameObject: Phaser.GameObjects.GameObject) {
@@ -52,7 +51,25 @@ class WindPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline {
     };
     setIntensity(intensity: number) {
         this.intensity = intensity;
-    }
+    };
+};
+
+class DayPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline {
+    private time: number = 0.0;
+    constructor(game: Phaser.Game) {
+        super({
+            game,
+            fragShader: game.cache.shader.get('dayNightShader').fragmentSrc,
+            vertShader: game.cache.shader.get('dayNightShader').vertShader
+        });
+    };
+    onBind() {
+        super.onBind();
+        this.set1f('time', this.time);
+    };
+    updateTime(time: number) {
+        this.time = time;
+    };
 };
 
 export class Game extends Scene {
@@ -150,7 +167,7 @@ export class Game extends Scene {
             this.matter.world.convertTilemapLayer(layer!);
             layer?.setDepth(3);
         });
-        // this.matter.world.createDebugGraphic(); 
+        // this.matter.world.createDebugGraphic();
         const objectLayer = map.getObjectLayer('navmesh');
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;
@@ -165,6 +182,8 @@ export class Game extends Scene {
         // (this.game.renderer as any).pipelines.add('Wind', windPipeline);
         // layer2?.setPipeline('Wind');
         // layer3?.setPipeline('Wind');
+        // const dayPipeline = new WindPipeline(this.game);
+        // (this.game.renderer as any).pipelines.add('Day', dayPipeline);
 
         // const debugGraphics = this.add.graphics().setAlpha(0.75);
         // this.navMesh.enableDebug(debugGraphics); 
@@ -724,7 +743,7 @@ export class Game extends Scene {
         this.combatTime = 0;
         EventBus.emit('update-combat-timer', this.combatTime);
     };
-    update(time: number, delta: number): void {
+    update(_time: number, delta: number): void {
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(delta);
@@ -738,8 +757,11 @@ export class Game extends Scene {
         //     // console.log(wind,'wind');
         //     wind.updateTime(time / 1000);
         // };
-        // this.daytime += delta;
-        // var value = (Math.sin(this.daytime - Math.PI / 2) + 1.0) / 2.0;    
+        // const day = (this.game.renderer as any).pipelines.get('Day');
+        // if (day) {
+        //     // console.log(day,'day');
+        //     day.updateTime(time / 1000);
+        // };
     };
     pause(): void {
         this.scene.pause();

@@ -448,7 +448,7 @@ export default function PhaserGame (props: IProps) {
         return newSkills;
     };
 
-    function recordWin(record: Combat, experience: LevelSheet) {
+    function recordWin(record: Combat, levelSheet: LevelSheet) {
         let stat = {
             wins: record.playerWin ? 1 : 0,
             losses: record.playerWin ? 0 : 1,
@@ -463,10 +463,10 @@ export default function PhaserGame (props: IProps) {
         const newStats = recordCombat(stat);
         const newReputation = recordCombatReputation(record.computer as Ascean);
         const newSkills = recordSkills(record.skillData);
-        let silver: number = experience.currency.silver, gold: number = experience.currency.gold, exp: number = experience.opponentExp, firewater = { ...props.ascean().firewater };
-        let computerLevel: number = experience.opponent;
-        if (experience.avarice === true) exp *= 1.2;
-        let health = experience.currentHealth > props.ascean().health.max ? props.ascean().health.max : experience.currentHealth;
+        let silver: number = levelSheet.currency.silver, gold: number = levelSheet.currency.gold, experience: number = levelSheet.opponentExp, firewater = { ...props.ascean().firewater };
+        let computerLevel: number = levelSheet.opponent;
+        if (levelSheet.avarice === true) experience *= 1.2;
+        let health = levelSheet.currentHealth > props.ascean().health.max ? props.ascean().health.max : levelSheet.currentHealth;
         if (computerLevel === 1) {
             silver = Math.floor(Math.random() * 2) + 1;
             gold = 0;
@@ -479,12 +479,12 @@ export default function PhaserGame (props: IProps) {
             };
         };
         // console.log(multiplier, 'Final Multiplier!');
-        silver += experience.currency.silver;
-        gold += experience.currency.gold;
-        // silver += experience.currency.silver + (wager.silver * multiplier);
-        // gold += experience.currency.gold + (wager.gold * multiplier);
+        silver += levelSheet.currency.silver;
+        gold += levelSheet.currency.gold;
+        // silver += levelSheet.currency.silver + (wager.silver * multiplier);
+        // gold += levelSheet.currency.gold + (wager.gold * multiplier);
         let currency = rebalanceCurrency({ silver, gold });
-        if (props.ascean().firewater.current < 5 && props.ascean().level <= experience.opponent) {
+        if (props.ascean().firewater.current < 5 && props.ascean().level <= levelSheet.opponent) {
             firewater = {
                 current: props.ascean().firewater.current + 1,
                 max: props.ascean().firewater.max
@@ -519,9 +519,9 @@ export default function PhaserGame (props: IProps) {
             ...props.ascean(), 
             skills: newSkills,
             health: { ...props.ascean().health, current: health },
-            experience: exp,
-            currency: currency,
-            firewater: firewater,
+            experience,
+            currency,
+            firewater,
         };
         if (!props.settings().tutorial.deity) {
             if (update.experience >= 750 && update.level >= 1) {
@@ -603,7 +603,7 @@ export default function PhaserGame (props: IProps) {
     };
 
     function checkDeificInteractions(ascean: Ascean): boolean {
-        return ascean.interactions.deity <= ascean.level - 1 && ascean.level === 2  && ascean.level * 750 <= ascean.experience;
+        return ascean.interactions.deity <= ascean.level - 1 && ascean.level === 2  && ascean.level * 500 <= ascean.experience;
     };
 
     async function swapEquipment(e: { type: string; item: Equipment }) {

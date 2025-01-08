@@ -398,10 +398,6 @@ export class Game extends Scene {
         EventBus.on('resetting-game', this.resetting);
     };
 
-    sleepScene = () => {
-        this.pauseMusic();
-        this.scene.sleep('Game');
-    };
     resumeScene = () => {
         this.cameras.main.fadeIn();
         this.resumeMusic();
@@ -419,7 +415,6 @@ export class Game extends Scene {
     switchScene = (current: string) => {
         this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
             this.registry.set("combat", this.state);
-            this.registry.set("settings", this.hud.settings);
             this.registry.set("ascean", this.state.player);
             this.player.disengage();
             this.pauseMusic();

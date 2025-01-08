@@ -169,9 +169,6 @@ export class Underground extends Scene {
         if (this.hud.settings?.music === true) this.musicBackground.play();
         this.musicCombat = this.sound.add('industrial', { volume: this?.hud?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
-        // if (this.hud.settings.desktop === true) {
-        //     this.input.setDefaultCursor('url(assets/images/cursor.png), pointer');
-        // };
         this.postFxEvent();
         this.particleManager = new ParticleManager(this);
         this.combatManager = new CombatManager(this);
@@ -313,7 +310,6 @@ export class Underground extends Scene {
     switchScene = (current: string) => {
         this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
             this.registry.set("combat", this.state);
-            this.registry.set("settings", this.hud.settings);
             this.registry.set("ascean", this.state.player);
             this.player.disengage();
             this.pauseMusic();
@@ -571,7 +567,6 @@ export class Underground extends Scene {
     };
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
-        
         const defeated = ["Something is tearing into me. Please, help!", "Noooooooo! This wasn't supposed to happen.", 
             `Curse you, ${this.state.player?.name}! I'll be back for your head.`, `Well fought, ${this.state.player?.name}.`,
             `Can't believe I lost to you. I'm in utter digust with myself.`, "Why did it have to be you?"

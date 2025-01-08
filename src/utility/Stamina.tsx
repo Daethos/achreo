@@ -22,7 +22,7 @@ export default function createStamina(stam: Accessor<number>) {
     };
     const updateStamina = (e: number = 0) => {
         if (e > 1) remaining += STAMINA.UPDATE;
-        if (e === 1) remaining += (STAMINA.HALF);
+        if (e === 1) remaining += STAMINA.HALF;
         if (interval === undefined) {startRecovery();};
         const oldStamina = stamina() * staminaPercentage() / 100;
         const newStamina = Math.max(0, oldStamina - e);

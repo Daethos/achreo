@@ -527,7 +527,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const chance = Math.random() * 101;
         const playerResist = this.scene.state.isStalwart ? this.scene.state.playerDefense?.magicalPosture as number / 4 : this.scene.state.playerDefense?.magicalDefenseModifier as number / 4;
         const enemyPenetration = this.combatStats?.attributes?.kyosirMod || 0;
-        this.scene.hud.logger.log(`Initial Enemy Special Chance: ${roundToTwoDecimals(chance)} | Player Resist: ${playerResist} | Enemy Penetration: ${enemyPenetration}`);
+        this.scene.hud.logger.log(`Enemy Special Chance: ${roundToTwoDecimals(chance)} | Player Resist: ${playerResist} | Enemy Penetration: ${enemyPenetration}`);
         const resist = playerResist - enemyPenetration; // 0 - 25% - 0 - 25%
         if (chance > resist) {
             return true;

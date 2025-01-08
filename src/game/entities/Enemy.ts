@@ -1335,14 +1335,14 @@ export default class Enemy extends Entity {
                 player <= 0.33 ? 2 : // Damage
                 player <= 0.66 ? 3 : // Damage
                 distance <= 100 ? 4 : // AoE
-                distance >= 250 && !this.isRanged ? 5 : // Melee at Distance
-                distance >= 250 && this.isRanged ? 6 : // Ranged at Distance
+                distance >= 200 && !this.isRanged ? 5 : // Melee at Distance
+                distance >= 200 && this.isRanged ? 6 : // Ranged at Distance
                 chance; // Range
             // console.log(`Chance: ${chance} | Instinct: ${instinct} | Mastery: ${mastery}`);
             let key = INSTINCTS[mastery as keyof typeof INSTINCTS][instinct].key, value = INSTINCTS[mastery as keyof typeof INSTINCTS][instinct].value;
+            this.scene.hud.logger.log(`${this.ascean.name}'s instinct leads them to ${value}.`);
             (this as any)[key].setState(value);
             if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
-            this.scene.hud.logger.log(`${this.ascean.name}'s instinct leads them to ${value}`);
         }, undefined, this);
     };
 
@@ -2829,24 +2829,24 @@ export default class Enemy extends Entity {
 
     enemyDodge = () => {
         this.dodgeCooldown = 50; // Was a 6x Mult for Dodge Prev aka 1728
-        const dodgeDistance = DISTANCE.DODGE; // 126
-        const dodgeDuration = DURATION.DODGE; // 18  
+        // const dodgeDistance = DISTANCE.DODGE; // 126
+        // const dodgeDuration = DURATION.DODGE; // 18  
         let currentDistance = 0;
         const dodgeLoop = (timestamp: number) => {
             if (!startTime) startTime = timestamp;
             const progress = timestamp - startTime;
-            if (progress >= dodgeDuration || currentDistance >= dodgeDistance) {
+            if (progress >= DURATION.DODGE || currentDistance >= DISTANCE.DODGE) {
                 this.spriteWeapon.setVisible(true);
                 this.dodgeCooldown = 0;
                 this.isDodging = false;
                 this.currentAction = '';
                 return;
             };
-            const direction = !this.flipX ? -(dodgeDistance / dodgeDuration) : (dodgeDistance / dodgeDuration);
+            const direction = !this.flipX ? -(DISTANCE.DODGE / DURATION.DODGE) : (DISTANCE.DODGE / DURATION.DODGE);
             if (Math.abs(this.velocity?.x as number) > 0.1) this.setVelocityX(direction);
-            if (this.velocity?.y as number > 0.1) this.setVelocityY(dodgeDistance / dodgeDuration);
-            if (this.velocity?.y as number < -0.1) this.setVelocityY(-dodgeDistance / dodgeDuration);
-            currentDistance += Math.abs(dodgeDistance / dodgeDuration);
+            if (this.velocity?.y as number > 0.1) this.setVelocityY(DISTANCE.DODGE / DURATION.DODGE);
+            if (this.velocity?.y as number < -0.1) this.setVelocityY(-DISTANCE.DODGE / DURATION.DODGE);
+            currentDistance += Math.abs(DISTANCE.DODGE / DURATION.DODGE);
             requestAnimationFrame(dodgeLoop);
         };
         let startTime: any = undefined;
@@ -2855,24 +2855,24 @@ export default class Enemy extends Entity {
 
     enemyRoll = () => {
         this.rollCooldown = 50; // Was a x7 Mult for Roll Prev aka 2240
-        const rollDistance = DISTANCE.ROLL; // 140
-        const rollDuration = DURATION.ROLL; // 20
+        // const rollDistance = DISTANCE.ROLL; // 140
+        // const rollDuration = DURATION.ROLL; // 20
         let currentDistance = 0;
         const rollLoop = (timestamp: number) => {
             if (!startTime) startTime = timestamp;
             const progress = timestamp - startTime;
-            if (progress >= rollDuration || currentDistance >= rollDistance) {
+            if (progress >= DURATION.ROLL || currentDistance >= DISTANCE.ROLL) {
                 this.spriteWeapon.setVisible(true);
                 this.rollCooldown = 0;
                 this.isRolling = false;
                 this.currentAction = '';
                 return;
             };
-            const direction = this.flipX ? -(rollDistance / rollDuration) : (rollDistance / rollDuration);
+            const direction = this.flipX ? -(DISTANCE.ROLL / DURATION.ROLL) : (DISTANCE.ROLL / DURATION.ROLL);
             if (Math.abs(this.velocity?.x as number) > 0.1) this.setVelocityX(direction);
-            if (this.velocity?.y as number > 0.1) this.setVelocityY(rollDistance / rollDuration);
-            if (this.velocity?.y as number < -0.1) this.setVelocityY(-rollDistance / rollDuration);
-            currentDistance += Math.abs(rollDistance / rollDuration);
+            if (this.velocity?.y as number > 0.1) this.setVelocityY(DISTANCE.ROLL / DURATION.ROLL);
+            if (this.velocity?.y as number < -0.1) this.setVelocityY(-DISTANCE.ROLL / DURATION.ROLL);
+            currentDistance += Math.abs(DISTANCE.ROLL / DURATION.ROLL);
             requestAnimationFrame(rollLoop);
         };
         let startTime: any = undefined;

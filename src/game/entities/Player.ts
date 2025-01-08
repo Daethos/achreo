@@ -1357,14 +1357,14 @@ export default class Player extends Entity {
                 this.handleIdleAnimations();
             };
         } else if (this.isParrying) {
-            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isParrying = false); 
+            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isParrying = false);
         } else if (this.isThrusting) {
             sprint(this.scene);
             this.anims.play('player_attack_2', true).on('animationcomplete', () => this.isThrusting = false);
         } else if (this.isDodging) { 
             this.anims.play('player_slide', true);
             if (this.dodgeCooldown === 0) this.playerDodge();
-        } else if (this.isRolling) { 
+        } else if (this.isRolling) {
             sprint(this.scene);
             this.anims.play('player_roll', true);
             if (this.rollCooldown === 0) this.playerRoll();
@@ -1373,11 +1373,11 @@ export default class Player extends Entity {
             this.anims.play('player_attack_3', true).on('animationcomplete', () => this.isPosturing = false);
         } else if (this.isAttacking) {
             sprint(this.scene);
-            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isAttacking = false); 
+            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isAttacking = false);
         } else if (this.moving()) {
             this.handleMovementAnimations();
             this.isMoving = true;
-        } else if (this.isCasting) { 
+        } else if (this.isCasting) {
             walk(this.scene);
             this.anims.play('player_health', true);
         } else if (this.isPraying) {

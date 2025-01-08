@@ -307,9 +307,13 @@ export class Arena extends Phaser.Scene {
     switchScene = (current: string) => {
         this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
             this.registry.set("combat", this.state);
-            this.registry.set("settings", this.hud.settings);
             this.registry.set("ascean", this.state.player);
             this.hud.actionBar.setVisible(true);
+            if (!this.hud.settings.desktop) {
+                this.hud.joystick?.joystick?.setVisible(true);
+                this.hud.rightJoystick?.joystick?.setVisible(true);
+                this.hud.rightJoystick?.pointer?.setVisible(true);
+            };
             this.player.disengage();
             this.pauseMusic();
             this.scene.sleep(current);
@@ -723,15 +727,11 @@ export class ArenaView extends Arena {
         this.hudScene = data.scene;
     };
 
-    init() {
-    };
+    init() {};
 
-    preload() {
-        super.preload();
-    };
+    preload() {super.preload();};
 
     create() {
-        // const ascean = this.registry.get("ascean");
         const masteries = ['constitution', 'strength', 'agility', 'achre', 'caeren', 'kyosir'];
         const mastery = masteries[Math.floor(Math.random() * masteries.length)];
         const enemies = { level: 1, mastery, id: uuidv4() };

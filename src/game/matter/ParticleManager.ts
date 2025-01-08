@@ -159,7 +159,8 @@ export class Particle {
 
     setTimer(action: string, id: string): Phaser.Time.TimerEvent {
         return this.scene.time.delayedCall(TIME[action as keyof typeof TIME], () => {
-            this.scene.particleManager.removeEffect(id);
+            const particle = this.scene.particleManager.getEffect(id);
+            if (particle?.effect.active) this.scene.particleManager.removeEffect(id);
         }, undefined, this);
     };
 
@@ -242,7 +243,6 @@ export default class ParticleManager extends Phaser.Scene {
     };
 
     despawnEffect(particle: Particle) {
-        // console.log(`%c End Y: ${particle.effect.y}`, 'color:red');
         particle.effect.setVelocity(0);
         particle.effect.stop();
         particle.effect.setActive(false);

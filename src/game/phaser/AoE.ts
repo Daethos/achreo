@@ -190,7 +190,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             delay: 50,
             callback: () => {
                 if (count >= 20) return;
-                if (this && this.timer) {
+                if (this && this.timer && targ) {
                     scale += 0.01875;
                     this.setScale(scale);
                     this.setPosition(targ.x, targ.y + 6);
@@ -212,7 +212,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             delay: 50,
             callback: () => {
                 if (count >= 20) return;
-                if (this && this.timer) {
+                if (this && this.timer && target.effect) {
                     scale += 0.0075;
                     this.setScale(scale);
                     this.setPosition(target.effect.x, y);
@@ -245,7 +245,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             delay: 50,
             callback: () => {
                 if (count >= 20) return;
-                if (this && this.timer) {
+                if (this && this.timer && targ) {
                     scale += 0.01875;
                     this.setScale(scale);
                     this.setPosition(targ.x, y);

@@ -391,14 +391,14 @@ export default class PlayerMachine {
             enemy <= 0.55 ? 4 :
             enemy >= 0.8 ? 5 :
             
-            (distance <= 100 && !this.player.isRanged) ? 6 :
-            (distance <= 100 && this.player.isRanged) ? 7 :
-            (distance > 100 && distance <= 200 && !this.player.isRanged) ? 8 :
-            (distance > 100 && distance <= 200 && this.player.isRanged) ? 9 :
-            (distance > 200 && distance <= 300 && !this.player.isRanged) ? 10 :
-            (distance > 200 && distance <= 300 && this.player.isRanged) ? 11 :
-            (distance > 300 && !this.player.isRanged) ? 12 :
-            (distance > 300 && this.player.isRanged) ? 13 :
+            (distance <= 75 && !this.player.isRanged) ? 6 :
+            (distance <= 75 && this.player.isRanged) ? 7 :
+            (distance > 75 && distance <= 150 && !this.player.isRanged) ? 8 :
+            (distance > 75 && distance <= 150 && this.player.isRanged) ? 9 :
+            (distance > 150 && distance <= 225 && !this.player.isRanged) ? 10 :
+            (distance > 150 && distance <= 225 && this.player.isRanged) ? 11 :
+            (distance > 225 && !this.player.isRanged) ? 12 :
+            (distance > 225 && this.player.isRanged) ? 13 :
 
             chance;
 
@@ -1873,6 +1873,10 @@ export default class PlayerMachine {
     onCleanExit = () => {};
 
     onAbsorbEnter = () => {
+        if (this.player.negationBubble) {
+            this.player.negationBubble.cleanUp();
+            this.player.negationBubble = undefined;
+        };
         this.player.isAbsorbing = true;
         this.player.negationName = States.ABSORB;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.ABSORB);    
@@ -1962,6 +1966,10 @@ export default class PlayerMachine {
     onHowlExit = () => this.player.aoe.cleanAnimation(this.scene);
 
     onEnvelopEnter = () => {
+        if (this.player.reactiveBubble) {
+            this.player.reactiveBubble.cleanUp();
+            this.player.reactiveBubble = undefined;
+        };
         this.player.isEnveloping = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.ENVELOP);    
         this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });

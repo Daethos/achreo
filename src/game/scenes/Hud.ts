@@ -328,7 +328,7 @@ export class Hud extends Phaser.Scene {
             const currentScene = this.scene.get(current) as Play;
             const nextScene = this.scene.get(next) as Play;
             currentScene.switchScene(current);
-            this.time.delayedCall(1250, () => {
+            this.time.delayedCall(1000, () => {
                 const asleep = this.scene.isSleeping(next);
                 const paused = this.scene.isPaused(next);
                 const active = this.scene.isActive(next);

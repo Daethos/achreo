@@ -1338,7 +1338,6 @@ export default class Enemy extends Entity {
                 distance >= 200 && !this.isRanged ? 5 : // Melee at Distance
                 distance >= 200 && this.isRanged ? 6 : // Ranged at Distance
                 chance; // Range
-            // console.log(`Chance: ${chance} | Instinct: ${instinct} | Mastery: ${mastery}`);
             let key = INSTINCTS[mastery as keyof typeof INSTINCTS][instinct].key, value = INSTINCTS[mastery as keyof typeof INSTINCTS][instinct].value;
             this.scene.hud.logger.log(`${this.ascean.name}'s instinct leads them to ${value}.`);
             (this as any)[key].setState(value);
@@ -2829,8 +2828,6 @@ export default class Enemy extends Entity {
 
     enemyDodge = () => {
         this.dodgeCooldown = 50; // Was a 6x Mult for Dodge Prev aka 1728
-        // const dodgeDistance = DISTANCE.DODGE; // 126
-        // const dodgeDuration = DURATION.DODGE; // 18  
         let currentDistance = 0;
         const dodgeLoop = (timestamp: number) => {
             if (!startTime) startTime = timestamp;
@@ -2855,8 +2852,6 @@ export default class Enemy extends Entity {
 
     enemyRoll = () => {
         this.rollCooldown = 50; // Was a x7 Mult for Roll Prev aka 2240
-        // const rollDistance = DISTANCE.ROLL; // 140
-        // const rollDuration = DURATION.ROLL; // 20
         let currentDistance = 0;
         const rollLoop = (timestamp: number) => {
             if (!startTime) startTime = timestamp;

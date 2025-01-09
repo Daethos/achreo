@@ -446,11 +446,11 @@ export default class PlayerMachine {
         check = staminaCheck(this.player.grace, grace);
 
         if (check.success === true) {
-            (this as any)[key].setState(value);
-            if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
             this.player.specialCombatText = this.scene.showCombatText('Instinct', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
             this.scene.hud.logger.log(`Your instinct leads you to ${value}.`);
             this.player.prevInstinct = instinct;
+            (this as any)[key].setState(value);
+            if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
         } else {
             this.player.specialCombatText = this.scene.showCombatText('Compose Yourself', 750, 'dread', false, true, () => this.player.specialCombatText = undefined);
             if (Math.random() > 0.5) {
@@ -508,6 +508,7 @@ export default class PlayerMachine {
         this.player.frameCount = 0;
         this.player.computerAction = true;
         this.scene.time.delayedCall(Phaser.Math.Between(750, 1250), () => {
+            this.player.frameCount = 0;
             this.player.computerAction = false;
             (this.player as PlayerComputer).evaluateCombat();
         }, undefined, this);
@@ -517,6 +518,7 @@ export default class PlayerMachine {
     };
 
     onComputerAttackEnter = () => {
+        this.player.clearAnimations();
         this.player.isAttacking = true;
         this.player.frameCount = 0;
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_ATTACK);
@@ -533,6 +535,7 @@ export default class PlayerMachine {
     };
 
     onComputerParryEnter = () => {
+        this.player.clearAnimations();
         this.player.isParrying = true;
         this.player.frameCount = 0;
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_PARRY);
@@ -560,6 +563,7 @@ export default class PlayerMachine {
     };
 
     onComputerPostureEnter = () => {
+        this.player.clearAnimations();
         this.player.isPosturing = true;
         this.player.spriteShield.setVisible(true);
         this.player.frameCount = 0;
@@ -578,6 +582,7 @@ export default class PlayerMachine {
     };
 
     onComputerThrustEnter = () => {
+        this.player.clearAnimations();
         this.player.isThrusting = true;
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_THRUST);
         this.player.frameCount = 0;

@@ -210,7 +210,6 @@ export class Arena extends Phaser.Scene {
         EventBus.off('enemyLootDrop');
         EventBus.off('minimap');
         EventBus.off('update-postfx');
-        EventBus.off('music');
         EventBus.off('game-map-load');
         EventBus.off('update-camera-zoom');
         EventBus.off('update-speed');
@@ -239,13 +238,6 @@ export class Arena extends Phaser.Scene {
                 this.minimap.minimap.setVisible(true);
                 this.minimap.border.setVisible(true);
                 this.minimap.minimap.startFollow(this.player);
-            };
-        });
-        EventBus.on('music', (on: boolean) => {
-            if (on === true && !this.scene.isPaused(this.sceneKey)) {
-                this.resumeMusic();
-            } else {
-                this.pauseMusic();
             };
         });
         EventBus.on('check-stealth', (stealth: boolean) => {
@@ -287,6 +279,7 @@ export class Arena extends Phaser.Scene {
         this.state = this.registry.get("combat");
         this.player.health = this.state.newPlayerHealth;
         this.player.healthbar.setValue(this.state.newPlayerHealth);
+        this.player.healthbar.setTotal(this.state.playerHealth);
         this.registry.set("player", this.player);
         if (this.state.isStealth) {
             this.player.playerMachine.positiveMachine.setState(States.STEALTH);

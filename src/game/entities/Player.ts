@@ -487,6 +487,7 @@ export default class Player extends Entity {
     };
 
     leap = () => {
+        this.frameCount = 0;
         this.isLeaping = true;
         const target = this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
@@ -521,6 +522,7 @@ export default class Player extends Entity {
     };
 
     rush = () => {
+        this.frameCount = 0;
         this.isRushing = true;
         this.isThrusting = true;
         this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });        
@@ -556,6 +558,8 @@ export default class Player extends Entity {
     };
 
     storm = () => {
+        this.clearAnimations();
+        this.frameCount = 0;
         this.isStorming = true;
         this.specialCombatText = this.scene.showCombatText('Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined); 
         this.isAttacking = true;
@@ -566,6 +570,8 @@ export default class Player extends Entity {
             duration: 800,
             onStart: () => this.flickerCarenic(3200),
             onLoop: () => {
+                this.frameCount = 0;
+                this.clearAnimations();
                 this.isAttacking = true;
                 screenShake(this.scene);
                 this.specialCombatText = this.scene.showCombatText('Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined);
@@ -1571,6 +1577,5 @@ export default class Player extends Entity {
         this.handleAnimations();
         this.handleMovement();
         this.playerMachine.update(dt);
-        // console.log(this.x, this.y);
     };
 };

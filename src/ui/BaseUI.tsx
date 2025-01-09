@@ -375,7 +375,6 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             if (res.playerWin === true) {
                 let experience: number = Math.round((res.computer?.level as number) * 50 * (res.computer?.level as number / res?.player?.level!) + (res?.playerAttributes?.rawKyosir as number));
                 experience = balanceExperience(experience, res?.player?.level as number);
-                // experience += ascean().experience;
                 const newState = { 
                     ...asceanState(), 
                     avarice: res.prayerData.length > 0 ? res.prayerData.includes('Avarice') : false, 

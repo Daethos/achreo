@@ -21,7 +21,12 @@ import { STARTING_SPECIALS } from '../utility/abilities';
 import { Inventory, Reputation, faction } from '../utility/player';
 import { Puff } from 'solid-spinner';
 const BaseUI = lazy(async () => await import('../ui/BaseUI'));
-
+const rarityGoldMap = {
+    'Uncommon': 1,
+    'Rare': 3,
+    'Epic': 12,
+    'Legendary': 60
+};
 export function rebalanceCurrency(currency: { silver: number; gold: number; }): { silver: number; gold: number; } {
     let { silver, gold } = currency;
     if (isFloat(gold)) {
@@ -475,14 +480,17 @@ export default function PhaserGame (props: IProps) {
             gold = 0;
         } else if (computerLevel > 10 && computerLevel <= 20) {
             if (computerLevel <= 15) {
-                if (Math.random() >= 0.5) { silver = Math.floor(Math.random() * 10) + 1; gold = 1; } else { silver = Math.floor(Math.random() * 10) + 35; gold = 0; };
+                if (Math.random() >= 0.5) { 
+                    silver = Math.floor(Math.random() * 10) + 1; 
+                    gold = 1; 
+                } else { 
+                    silver = Math.floor(Math.random() * 10) + 35; 
+                    gold = 0; 
+                };
             };
         };
-        // console.log(multiplier, 'Final Multiplier!');
         silver += levelSheet.currency.silver;
         gold += levelSheet.currency.gold;
-        // silver += levelSheet.currency.silver + (wager.silver * multiplier);
-        // gold += levelSheet.currency.gold + (wager.gold * multiplier);
         let currency = rebalanceCurrency({ silver, gold });
         if (props.ascean().firewater.current < 5 && props.ascean().level <= levelSheet.opponent) {
             firewater = {
@@ -666,22 +674,7 @@ export default function PhaserGame (props: IProps) {
                 inventory.splice(itemIndex, 1);
                 await deleteEquipment(itemID);
             });
-            const rarityGoldMap = {
-                'Uncommon': 1,
-                'Rare': 3,
-                'Epic': 12,
-                'Legendary': 60
-            };
             let gold = rarityGoldMap[item?.[0].rarity as keyof typeof rarityGoldMap] || 0;
-            // if (item?.[0].rarity === 'Uncommon') {
-            //     gold = 1;
-            // } else if (item?.[0].rarity === 'Rare') {
-            //     gold = 3;
-            // } else if (item?.[0].rarity === 'Epic') {
-            //     gold = 12;
-            // } else if (item?.[0].rarity === 'Legendary') {
-            //     gold = 60;
-            // };
             const update = { ...props.ascean(), currency: { ...props.ascean().currency, gold: props.ascean().currency.gold - gold }, health: { current: combat().newPlayerHealth, max: combat().playerHealth } };
             const clean = { ...game().inventory, inventory };
             setGame({ ...game(), inventory: clean });

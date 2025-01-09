@@ -2917,7 +2917,6 @@ export default class Enemy extends Entity {
             const layer = (this.scene as Arena | Underground).groundLayer;
             const tile = this.scene.map.getTileAtWorldXY(point.x, point.y, false, this.scene.cameras.main, layer);
             if (tile && tile.properties.wall) {
-                // console.log(tile.properties, 'Tile Obfuscating Enemy!');
                 return true;  // Wall is detected
             };
         };

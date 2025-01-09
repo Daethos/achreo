@@ -7,9 +7,9 @@ import { addEquipment } from '../assets/db/db';
 const ATTRIBUTE_RANGE = {
     Default: [0, 0, 0, 0, 0, 0, 0], 
     Common: [0, 1, 1, 1, 2, 2, 3], 
-    Uncommon: [1, 1, 2, 2, 3, 4, 5],
-    Rare: [2, 3, 4, 5, 6, 7, 8],
-    Epic: [4, 5, 6, 7, 8, 10, 12],
+    Uncommon: [1, 1, 2, 2, 3, 4, 6],
+    Rare: [2, 3, 4, 5, 6, 7, 10],
+    Epic: [4, 5, 6, 7, 8, 10, 15],
     Legendary: [10, 14, 17, 20, 24, 27, 30],
 };
 const ATTRIBUTES = ['strength', 'constitution', 'agility', 'achre', 'caeren', 'kyosir'];
@@ -18,9 +18,18 @@ const DAMAGE = ['physicalDamage', 'magicalDamage'];
 const DEFENSE = ['physicalResistance', 'magicalResistance'];
 const CRITICAL = ['criticalDamage'];
 
+function randomIntFromInterval(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
+function randomFloatFromInterval(min: number, max: number): number {
+    return parseFloat((Math.random() * (max - min) + min).toFixed(2));
+};
+
 function influence(influences: string[] | undefined): string[] | undefined {
     if (!influences) return undefined;
-    const deity = influences[Math.floor(Math.random() * influences.length)];
+    const int = randomIntFromInterval(0, influences.length - 1);
+    const deity = influences[int];
     return [deity];
 };
 
@@ -219,9 +228,6 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
                     item[damage] = randomFloatFromInterval(item[damage], item[damage] + 0.01);
                 };
             };
-            if (item.influences) {
-                item.influences = influence(item.influences);
-            };
             await addEquipment(item);
         };
         return equipment;
@@ -235,7 +241,7 @@ async function getOneRandom(level: number = 1) {
         let rarity = determineRarityByLevel(level);
         let type = determineEquipmentType();
         let equipment: Equipment[] = []; // Initialize equipment as an empty array
-        let eqpCheck = Math.floor(Math.random() * 100  + 1);
+        let eqpCheck = randomIntFromInterval(1, 100);
         if ((type === 'Amulet' || type === 'Ring' || type === 'Trinket') && rarity === 'Common') rarity = 'Uncommon';
         if (level < 4) {
             rarity = 'Common';
@@ -324,7 +330,7 @@ async function aggregate(rarity: string, type: string, size: number, name?: stri
                 default:
                     const allEquipmentOfType = [...Weapons, ...Shields, ...Helmets /* add other types here */];
                     const filteredEquipment = allEquipmentOfType.filter((eq) => eq.rarity === rarity);
-                    const randomIndex = Math.floor(Math.random() * filteredEquipment.length);
+                    const randomIndex = randomIntFromInterval(0, filteredEquipment.length - 1);
                     return equipment = {...filteredEquipment[randomIndex]};
             };                       
         };
@@ -341,14 +347,14 @@ async function aggregate(rarity: string, type: string, size: number, name?: stri
 
 function shuffleArray<T>(array: T[]): T[] {
     for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = randomIntFromInterval(0, i + 1);
         [array[i], array[j]] = [array[j], array[i]];
     };
     return array;
 };
 
 function determineRarityByLevel(level: number): string {
-    const chance = Math.random();
+    const chance = randomFloatFromInterval(0.0, 1.0);
     let rarity = '';
     let uScale = level / 40;
     let rScale = level / 200;
@@ -389,7 +395,7 @@ function determineRarityByLevel(level: number): string {
 };
 
 function determineEquipmentType(): string {
-    const roll = Math.floor(Math.random() * 100  + 1);
+    const roll = randomIntFromInterval(1, 100);
     if (roll <= 32) {
         return 'Weapon';
     } else if (roll <= 40) {
@@ -409,7 +415,7 @@ function determineEquipmentType(): string {
     };
 };
 
-async function getHigherRarity(name: string, type: string, rarity: string) {
+async function getHigherRarity(name: string, type: string, rarity: string): Promise<Equipment[] | undefined> {
     let nextRarity: string = '';
     if (rarity === 'Common') {
         nextRarity = 'Uncommon';
@@ -421,12 +427,12 @@ async function getHigherRarity(name: string, type: string, rarity: string) {
         nextRarity = 'Legendary';
     };
     const nextItem = await aggregate(nextRarity, type, 1, name);
-    return nextItem || null;
+    return nextItem || undefined;
 };  
 
 async function upgradeEquipment(data: any) {
     try {
-        let realType;
+        let realType: string = '';
         switch (data.inventoryType) {
             case 'weaponOne': 
                 realType = 'Weapon'; 
@@ -462,56 +468,16 @@ async function upgradeEquipment(data: any) {
                 realType = 'Trinket';
                 break;
             default: 
-                realType = undefined;
+                realType = 'Weapon';
                 break;
         };
         let item = await getHigherRarity(data.upgradeName, realType as string, data.currentRarity);
-        return item;
+        const clone = deepClone(item?.[0]);
+        return [clone];
     } catch (err: any) {
         console.log(err, 'err')
     };
 };
-
-function randomIntFromInterval(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-};
-
-function randomFloatFromInterval(min: number, max: number): number {
-    return parseFloat((Math.random() * (max - min) + min).toFixed(2));
-}; 
-
-// async function getEquipmentSpecific(level: number, types: { type: string; }[]): Promise<Equipment[]> {
-//     try {
-//         const fetchItem = (rarity: string, type: string) => {
-//             switch (type) {
-//                 case 'Jewelry':
-//                     break;
-                    
-//                 case 'Magic Armor':
-//                     break;
-                    
-//                 case 'Physical Armor':
-//                     break;
-                    
-//                 case 'Magic Weapon':
-//                     break;
-//                 case 'Physical Weapon':
-//                     break;
-//                 default:
-//                     break;
-//             };
-//         };
-
-//         let merchantEquipment = [];
-//         for (let i = 0; i < 9; i++) {
-//             const rarity = determineRarityByLevel(level);
-//             fetchItem(rarity, types[i].type);
-//             // let item = shuffleArray([types[i]].filter((eq) => (eq.rarity === rarity)))
-//         };
-//     } catch (err) {
-//         console.warn(err, 'Error in Equipment Specific');
-//     };
-// };
 
 async function getPhysicalWeaponEquipment(level: number): Promise<Equipment[] | undefined> {
     try {
@@ -554,9 +520,10 @@ async function getArmorEquipment(level: number): Promise<Equipment[] | undefined
             let type;
             let rarity;
             let types = ['Shield', 'Helmet', 'Chest', 'Legs', 'Helmet', 'Chest', 'Legs', 'Helmet', 'Chest', 'Legs'];
+            const rand = randomIntFromInterval(0, types.length - 1);
             rarity = determineRarityByLevel(level);
-            type = types[Math.floor(Math.random() * types.length)];
-            let eqpCheck = Math.floor(Math.random() * 100 + 1);
+            type = types[rand];
+            let eqpCheck = randomIntFromInterval(1, 100);
             let item;
             if (level < 4) {
                 if (eqpCheck > 90) {
@@ -595,11 +562,12 @@ async function getJewelryEquipment(level: number): Promise<Equipment[] | undefin
             let type;
             let rarity;
             let types = ['Ring', 'Amulet', 'Trinket'];
+            const rand = randomIntFromInterval(0, types.length - 1);
             rarity = determineRarityByLevel(level);
             if (rarity === 'Common') {
                 rarity = 'Uncommon';
             };
-            type = types[Math.floor(Math.random() * types.length)];
+            type = types[rand];
             let item;
             if (type === 'Ring') {
                 item = shuffleArray( Rings.filter((eq) => (eq.rarity === rarity)))[0];
@@ -640,8 +608,9 @@ async function getClothEquipment(level: number): Promise<Equipment[] | undefined
             let type;
             let rarity;
             let types = ['Helmet', 'Chest', 'Legs'];
+            const rand = randomIntFromInterval(0, types.length - 1);
             rarity = determineRarityByLevel(level);
-            type = types[Math.floor(Math.random() * types.length)];
+            type = types[rand];
             let item;
             if (type === 'Helmet') {
                 item = shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity && eq.type === 'Leather-Cloth' )))[0];
@@ -684,4 +653,4 @@ function deepClone<T>(obj: T): T {
     return objCopy;
 };
 
-export { create, defaultMutate, mutate, getOneRandom, upgradeEquipment, getPhysicalWeaponEquipment, getMagicalWeaponEquipment, getArmorEquipment, getJewelryEquipment, getMerchantEquipment, getClothEquipment };
+export { create, defaultMutate, mutate, getOneRandom, upgradeEquipment, getPhysicalWeaponEquipment, getMagicalWeaponEquipment, getArmorEquipment, getJewelryEquipment, getMerchantEquipment, getClothEquipment, deepClone };

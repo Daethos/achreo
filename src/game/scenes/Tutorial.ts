@@ -207,13 +207,6 @@ export class Tutorial extends Phaser.Scene {
                 enemy.stateMachine.setState(States.CHASE);
             };
         });
-        EventBus.on('music', (on: boolean) => {
-            if (on === true && !this.scene.isPaused('Game')) {
-                this.resumeMusic();
-            } else {
-                this.pauseMusic();
-            };
-        });
         EventBus.on('check-stealth', (stealth: boolean) => {
             this.stealth = stealth;
         });
@@ -249,16 +242,13 @@ export class Tutorial extends Phaser.Scene {
         EventBus.on('resetting-game', this.resetting);
     };
 
-    sleepScene = () => {
-        this.pauseMusic();
-        this.scene.sleep('Game');
-    };
     resumeScene = () => {
         this.cameras.main.fadeIn();
         this.resumeMusic();
         this.state = this.registry.get("combat");
         this.player.health = this.state.newPlayerHealth;
         this.player.healthbar.setValue(this.state.newPlayerHealth);
+        this.player.healthbar.setTotal(this.state.playerHealth);
         this.registry.set("player", this.player);
         if (this.state.isStealth) {
             this.player.playerMachine.positiveMachine.setState(States.STEALTH);
@@ -270,7 +260,6 @@ export class Tutorial extends Phaser.Scene {
     switchScene = (current: string) => {
         this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
             this.registry.set("combat", this.state);
-            this.registry.set("settings", this.hud.settings);
             this.registry.set("ascean", this.state.player);
             this.player.disengage();
             this.pauseMusic();

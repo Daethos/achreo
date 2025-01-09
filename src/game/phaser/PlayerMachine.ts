@@ -1317,7 +1317,7 @@ export default class PlayerMachine {
             this.player.chiomicTimer = undefined;
             return;
         };
-        this.scene.combatManager.slow(this.player.spellTarget, 975);
+        this.scene.combatManager.slow(this.player.spellTarget, 1000);
         if (this.player.spellTarget === this.player.getEnemyId()) {
             this.scene.combatManager.combatMachine.action({ type: 'Chiomic', data: this.player.entropicMultiplier(20) }); 
         } else {

@@ -66,16 +66,14 @@ function enemyTshaeral(data: number): void {
 function health(data: KVI): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.HEALTH });
 };
-
 function setHealth(data: KVI): void {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.SET_HEALTH });
 };
-
 function removeEnemy(data: KVI) {
     EventBus.emit('initiate-combat', { data, type: ActionTypes.REMOVE })
 };
-
 function removeEffect(data: StatusEffect) {
     EventBus.emit('initiate-combat', { data, type: 'Remove Tick' });
 };
+
 export { weapon, instant, prayer, player, enemy, actionInput, chiomic, tshaeral, health, setHealth, sacrifice, suture, enemyChiomic, enemySacrifice, enemySuture, enemyTshaeral, removeEnemy, removeEffect };

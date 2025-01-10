@@ -38,6 +38,14 @@ const ORIGIN = {
     CHEST: { X: 0.5, Y: 0.25 },
     LEGS: { X: 0.5, Y: -0.5 },
 };
+
+/* 
+FIXME:
+
+Need to create an array of IDs of every enemy currently in combat WITH (i.e. against) the PLAYER
+
+FIXME:
+*/
  
 export default class Player extends Entity {
     playerID: string;
@@ -99,6 +107,7 @@ export default class Player extends Entity {
     snareDuration = DURATION.SNARED;
     evasionTime: number = 0;
     prevInstinct: number = 0;
+    currentEnemies: string[] | [] = [];
 
     constructor(data: any) {
         const { scene } = data;
@@ -511,7 +520,7 @@ export default class Player extends Entity {
                 this.isLeaping = false; 
                 if (this.touching.length > 0) {
                     this.touching.forEach((enemy) => {
-                        this.scene.combatManager.melee(enemy.enemyID, 'leap');
+                        this.scene.combatManager.playerMelee(enemy.enemyID, 'leap');
                     });
                 };
             },
@@ -543,13 +552,11 @@ export default class Player extends Entity {
             onComplete: () => {
                 if (this.rushedEnemies.length > 0) {
                     this.rushedEnemies.forEach((enemy) => {
-                        if (!enemy.enemyID) return;
-                        this.scene.combatManager.melee(enemy.enemyID, 'rush');
+                        this.scene.combatManager.playerMelee(enemy.enemyID, 'rush');
                     });
                 } else if (this.touching.length > 0) {
                     this.touching.forEach((enemy) => {
-                        if (!enemy.enemyID) return;
-                        this.scene.combatManager.melee(enemy.enemyID, 'rush');
+                        this.scene.combatManager.playerMelee(enemy.enemyID, 'rush');
                     });
                 };
                 this.isRushing = false;
@@ -578,7 +585,7 @@ export default class Player extends Entity {
                 if (this.touching.length > 0) {
                     this.touching.forEach((enemy) => {
                         if (enemy.health === 0) return;
-                        this.scene.combatManager.melee(enemy.enemyID, 'storm');
+                        this.scene.combatManager.playerMelee(enemy.enemyID, 'storm');
                     });
                 };
             },
@@ -1162,13 +1169,13 @@ export default class Player extends Entity {
                     return;
                 };
                 if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit();
-                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit();
+                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit(this.playerID);
+                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit(this.playerID);
                     return;
                 };
                 if (this.attackedTarget.isMenacing) this.attackedTarget.menace(); 
                 if (this.attackedTarget.isMultifaring) this.attackedTarget.multifarious(); 
-                if (this.attackedTarget.isMystifying) this.attackedTarget.mystify(); 
+                if (this.attackedTarget.isMystifying) this.attackedTarget.mystify(this.playerID); 
             };
             if (this.enemyIdMatch()) {
                 this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: action }});
@@ -1199,13 +1206,13 @@ export default class Player extends Entity {
                     return;
                 };
                 if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit();
-                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit();
+                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit(this.playerID);
+                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit(this.playerID);
                     return;    
                 };
                 if (this.attackedTarget?.isMenacing) this.attackedTarget?.menace();
                 if (this.attackedTarget?.isMultifaring) this.attackedTarget?.multifarious();
-                if (this.attackedTarget?.isMystifying) this.attackedTarget?.mystify();
+                if (this.attackedTarget?.isMystifying) this.attackedTarget?.mystify(this.playerID);
             };
             if (this.enemyIdMatch()) {
                 this.scene.combatManager.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: action } });

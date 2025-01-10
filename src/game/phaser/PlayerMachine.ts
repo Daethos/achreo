@@ -872,7 +872,7 @@ export default class PlayerMachine {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ARC);
             if (this.player.touching.length > 0) {
                 this.player.touching.forEach((enemy: any) => {
-                    this.scene.combatManager.melee(enemy.enemyID, 'arc');
+                    this.scene.combatManager.playerMelee(enemy.enemyID, 'arc');
                 });
             };
         };

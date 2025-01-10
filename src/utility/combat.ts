@@ -1,6 +1,7 @@
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { Combat } from "../stores/combat";
+import { ComputerCombat } from "../stores/computer";
 import { ARMOR_WEIGHT, ARMORS, ACTION_TYPES, ATTACKS, DAMAGE, ENEMY_ATTACKS, HOLD_TYPES, STRONG_ATTACKS, STRONG_TYPES, THRESHOLD, ATTACK_TYPES, DEFENSE_TYPES, DAMAGE_TYPES, MASTERY, WEAPON_TYPES, DEITIES, FAITH_RARITY } from "./combatTypes";
 import StatusEffect, { PRAYERS } from "./prayer";
 
@@ -2312,9 +2313,12 @@ function prayerRemoveTickSplitter(combat: Combat, statusEffect: StatusEffect): C
 // ================================= VALIDATOR - SPLITTERS ===================================== \\
 
 function validate(combat: Combat): boolean {
-    return (combat.player !== undefined && combat.computer !== null && combat.player !== undefined && combat.computer !== null);
+    return (combat.player !== undefined && combat.computer !== undefined && combat.player !== undefined && combat.computer !== undefined);
 };
 
+function validateComputer(combat: ComputerCombat): boolean {
+    return (combat.computer !== undefined && combat.computerEnemy !== undefined && combat.computer !== undefined && combat.computerEnemy !== undefined);
+};
 // ================================= CONTROLLER - SERVICE ===================================== \\
 
 function instantActionCompiler(combat: Combat): Combat | undefined {
@@ -2366,15 +2370,15 @@ function prayerRemoveTick(combat: Combat, statusEffect: StatusEffect): Combat | 
     };
 };
 
-// function computerCombatCompiler(combat: { computerOne: Combat, computerTwo: Combat }): { computerOne: Combat, computerTwo: Combat } | undefined {
-//     try {
-//         if (!validate(combat.computerOne) || !validate(combat.computerTwo)) return combat;
-//         const res = computerCombatSplitter(combat);
-//         return res;
-//     } catch (err) {
-//         console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
-//     };
-// };
+function computerCombatCompiler(combat: { computerOne: ComputerCombat, computerTwo: ComputerCombat }): { computerOne: ComputerCombat, computerTwo: ComputerCombat } | undefined {
+    try {
+        if (!validateComputer(combat.computerOne) || !validateComputer(combat.computerTwo)) return combat;
+        // const res = computerCombatSplitter(combat);
+        // return res;
+    } catch (err) {
+        console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
+    };
+};
 
 export {
     statusEffectCheck,
@@ -2384,5 +2388,5 @@ export {
     weaponActionCompiler,
     prayerEffectTick,
     prayerRemoveTick,
-    // computerCombatCompiler
+    computerCombatCompiler
 };

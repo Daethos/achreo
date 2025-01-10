@@ -2808,7 +2808,7 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
 },{
-    "_id":"firesword_6",
+    "_id":"firesworn_6",
     "origin":"Fyers",
     "sex":"Man",
     "mastery":"agility",

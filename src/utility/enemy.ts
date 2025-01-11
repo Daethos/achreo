@@ -3,6 +3,12 @@ import { EventBus } from "../game/EventBus";
 import Ascean from "../models/ascean";
 import { States } from "../game/phaser/StateMachine";
 import { Compiler, asceanCompiler } from "./ascean";
+
+export const COMPUTER_BROADCAST = 'computer-broadcast';
+export const NEW_COMPUTER_ENEMY_HEALTH = 'newComputerEnemyHealth';
+export const UPDATE_COMPUTER_COMBAT = 'update-computer-combat';
+export const UPDATE_COMPUTER_DAMAGE = 'update-computer-damage';
+
 export const ENEMY_SPECIAL = {
     'constitution': [ // 14
         'Desperation', 

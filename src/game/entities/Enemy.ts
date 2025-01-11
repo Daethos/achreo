@@ -7,7 +7,7 @@ import { PLAYER, ENEMY_ENEMIES } from "../../utility/player";
 import CastingBar from "../phaser/CastingBar";
 import AoE from "../phaser/AoE";
 import Bubble from "../phaser/Bubble";
-import { DISTANCE, DURATION, ENEMY_SPECIAL, GRIP_SCALE, INSTINCTS, RANGE } from "../../utility/enemy";
+import { COMPUTER_BROADCAST, DISTANCE, DURATION, ENEMY_SPECIAL, GRIP_SCALE, INSTINCTS, NEW_COMPUTER_ENEMY_HEALTH, RANGE, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
 import { screenShake, vibrate } from "../phaser/ScreenShake";
 import { roundToTwoDecimals } from "../../utility/combat";
 import { Underground } from "../scenes/Underground";
@@ -284,9 +284,9 @@ export default class Enemy extends Entity {
     cleanUp() {
         EventBus.off('combat', this.playerCombatUpdate);
         EventBus.off('update-combat', this.playerCombatUpdate); 
-        EventBus.on('update-computer-combat', this.computerCombatUpdate);
-        EventBus.on('update-computer-damage', this.computerDamage);
-        EventBus.on('update-computer-healing', this.computerHealing);
+        EventBus.off(COMPUTER_BROADCAST, this.computerBroadcast);
+        EventBus.off(UPDATE_COMPUTER_COMBAT, this.computerCombatUpdate);
+        EventBus.off(UPDATE_COMPUTER_DAMAGE, this.computerDamage);
         EventBus.off('personal-update', this.personalUpdate);    
         EventBus.off('enemy-persuasion', this.persuasionUpdate);
         EventBus.off('enemy-luckout', this.luckoutUpdate);
@@ -308,10 +308,10 @@ export default class Enemy extends Entity {
 
     enemyStateListener() {
         EventBus.on('combat', this.playerCombatUpdate);
+        EventBus.on(COMPUTER_BROADCAST, this.computerBroadcast);
         EventBus.on('update-combat', this.playerCombatUpdate); 
-        EventBus.on('update-computer-combat', this.computerCombatUpdate);
-        EventBus.on('update-computer-damage', this.computerDamage);
-        EventBus.on('update-computer-healing', this.computerHealing);
+        EventBus.on(UPDATE_COMPUTER_COMBAT, this.computerCombatUpdate);
+        EventBus.on(UPDATE_COMPUTER_DAMAGE, this.computerDamage);
         EventBus.on('personal-update', this.personalUpdate);
         EventBus.on('enemy-persuasion', this.persuasionUpdate);
         EventBus.on('enemy-luckout', this.luckoutUpdate);
@@ -420,6 +420,23 @@ export default class Enemy extends Entity {
             personalID: this.enemyID,
         };
         return newSheet;
+    };
+
+    /*
+        EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: total });
+    */
+    computerBroadcast = (e: { id: string; key: string; value: number; }) => {
+        if (this.computerCombatSheet.enemyID !== e.id) return;
+        (this.computerCombatSheet as any)[e.key] = e.value;
+    };
+
+    // Broadcasting Multiple Changes? Seems Potentially Inefficient
+    computerBroadcastChanges = (e: { id: string; changes: any }) => {
+        if (this.computerCombatSheet.enemyID !== e.id) return;
+        this.computerCombatSheet = {
+            ...this.computerCombatSheet,
+            ...e.changes
+        };
     };
 
     computerDamage = (e: { damage: number; id: string; origin: string; }) => {
@@ -930,9 +947,9 @@ export default class Enemy extends Entity {
     mastery = () => this.ascean?.[this.ascean?.mastery];
 
     chiomic = (power: number, id: string) => {
+        this.entropicMultiplier(power);
         if (id === this.scene.player.playerID) { // Player Combat
             if (this.scene.state.newPlayerHealth <= 0) return;
-            this.entropicMultiplier(power);
             this.scene.combatManager.useGrace(power / 10);
             if (this.isCurrentTarget === true) {
                 this.scene.combatManager.combatMachine.action({ type: 'Enemy Chiomic', data: power });
@@ -944,59 +961,82 @@ export default class Enemy extends Entity {
                 this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'player', value: -ratio, id: this.enemyID } });
             };
         } else { // Computer Combat
-            // FIXME: Fundamental Problem is this assumes it 'knows' the current combat sheet, i.e. combat() from Base-UI
-            // FIXME: New Idea, create this all in the CombatManager to house ALL LOGIC CONCERNING COMPUTER v COMPUTER COMBAT
-
-            // this.scene.combatManager.computer({ type: 'Chiomic', data: { value: power, cId: this.enemyID, eId: this.computerCombatSheet.enemyID } });
-
             const chiomic = Math.round(this.mastery() / 2 * (1 + (power / 100)) * ((this.ascean?.level + 9) / 10));
             this.computerCombatSheet.newComputerEnemyHealth -= chiomic;
-            EventBus.emit('update-computer-damage', { damage: chiomic, id, origin: this.enemyID });
+            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage: chiomic, id, origin: this.enemyID });
         };
     };
-    devour = (power: number) => {
-        if (this.scene.state.newPlayerHealth <= 0) return;
-        if (this.isCurrentTarget === true) {
-            this.scene.combatManager.combatMachine.action({ type: 'Enemy Tshaeral', data: 5 });
-        } else {
-            const caerenic = this.scene.state.isCaerenic ? 1.25 : 1;
-            const stalwart = this.scene.state.isStalwart ? 0.85 : 1;
-            const dev = Math.round(this.combatStats.attributes.healthTotal * (power / 100) * caerenic * stalwart * (this.ascean.level + 9) / 10);
-            let newComputerHealth = this.health + dev > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + dev;
-            const computerActionDescription = `${this.ascean?.name} tshaers and devours ${dev} health from you.`;
-            EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
-            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'player', value: -power, id: this.enemyID } });
-            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
+    devour = (power: number, id: string) => {
+        if (id === this.scene.player.playerID) {
+            if (this.scene.state.newPlayerHealth <= 0) return;
+            if (this.isCurrentTarget === true) {
+                this.scene.combatManager.combatMachine.action({ type: 'Enemy Tshaeral', data: 5 });
+            } else {
+                const dev = Math.round(this.combatStats.attributes.healthTotal * (power / 100) * this.playerCaerenic() * this.playerStalwart() * (this.ascean.level + 9) / 10);
+                let newComputerHealth = Math.min(this.health + dev, this.combatStats.attributes.healthTotal);
+                const computerActionDescription = `${this.ascean?.name} tshaers and devours ${dev} health from you.`;
+                EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
+                this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'player', value: -power, id: this.enemyID } });
+                this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
+            };
+        } else { // CvC
+            const dev = Math.round(this.combatStats.attributes.healthTotal * (power / 100) * (this.ascean.level + 9) / 10);
+            let newComputerHealth = Math.min(this.health + dev, this.combatStats.attributes.healthTotal);
+            this.health = newComputerHealth;
+            this.updateHealthBar(this.health);
+            this.computerCombatSheet.newComputerEnemyHealth -= dev;
+            this.computerCombatSheet.newComputerHealth = this.health;
+            EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
+            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage: dev, id, origin: this.enemyID });
         };
     };
-    sacrifice = (power: number) => {
-        if (this.scene.state.newPlayerHealth <= 0) return;
+    sacrifice = (power: number, id: string) => {
         this.entropicMultiplier(power);
-        if (this.isCurrentTarget === true) {
-            this.scene.combatManager.combatMachine.action({ type: 'Enemy Sacrifice', data: power });
-        } else {
-            const sacrifice = Math.round(this.mastery() * this.playerCaerenic() * this.playerStalwart() * ((this.ascean?.level + 9) / 10));
-            let newComputerHealth = this.health + (sacrifice / 2) > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + (sacrifice / 2);
-            const computerActionDescription = `${this.ascean?.name} sacrifices ${sacrifice / 2} health to rip ${roundToTwoDecimals(sacrifice * (1 + power / 100))} from you.`;
-            const ratio = (sacrifice * (1 + power / 50)) / this.scene.state.playerHealth * 100;
-            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'player', value: -ratio, id: this.enemyID } });
-            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
-            EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
+        if (id === this.scene.player.playerID) {
+            if (this.scene.state.newPlayerHealth <= 0) return;
+            if (this.isCurrentTarget === true) {
+                this.scene.combatManager.combatMachine.action({ type: 'Enemy Sacrifice', data: power });
+            } else {
+                const sacrifice = Math.round(this.mastery() * this.playerCaerenic() * this.playerStalwart() * ((this.ascean?.level + 9) / 10));
+                let newComputerHealth = this.health + (sacrifice / 2) > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + (sacrifice / 2);
+                const computerActionDescription = `${this.ascean?.name} sacrifices ${sacrifice / 2} health to rip ${roundToTwoDecimals(sacrifice * (1 + power / 100))} from you.`;
+                const ratio = (sacrifice * (1 + power / 50)) / this.scene.state.playerHealth * 100;
+                this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'player', value: -ratio, id: this.enemyID } });
+                this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
+                EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
+            };
+        } else { // CvC
+            const sacrifice = Math.round(this.mastery() * ((this.ascean?.level + 9) / 10));
+            this.health -= (sacrifice / 2);
+            this.computerCombatSheet.newComputerEnemyHealth -= (sacrifice * (1 * power / 100));
+            this.computerCombatSheet.newComputerHealth = this.health;
+            this.updateHealthBar(this.health);
+            EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
+            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage: sacrifice, id, origin: this.enemyID });
         };
     };
-    suture = (power: number) => {
-        if (this.scene.state.newPlayerHealth <= 0) return;
+    suture = (power: number, id: string) => {
         this.entropicMultiplier(power);
-        if (this.isCurrentTarget === true) {
-            this.scene.combatManager.combatMachine.action({ type: 'Enemy Suture', data: power });
-        } else {
+        if (id === this.scene.player.playerID) {
+            if (this.scene.state.newPlayerHealth <= 0) return;
+            if (this.isCurrentTarget === true) {
+                this.scene.combatManager.combatMachine.action({ type: 'Enemy Suture', data: power });
+            } else {
+                const suture = Math.round(this.mastery() * this.playerCaerenic() * this.playerStalwart() * ((this.ascean?.level + 9) / 10)) * (1 + power / 100) * 0.8;
+                let newComputerHealth = Math.min(this.health + suture, this.combatStats.attributes.healthTotal);
+                const computerActionDescription = `${this.ascean?.name} sutured ${suture} health from you, absorbing ${suture}.`;
+                const ratio = suture / this.scene.state.playerHealth * 100;
+                this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'player', value: -ratio, id: this.enemyID } });
+                this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
+                EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
+            };
+        } else { // CvC
             const suture = Math.round(this.mastery() * this.playerCaerenic() * this.playerStalwart() * ((this.ascean?.level + 9) / 10)) * (1 + power / 100) * 0.8;
-            let newComputerHealth = this.health + suture > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + suture;
-            const computerActionDescription = `${this.ascean?.name} sutured ${suture} health from you, absorbing ${suture}.`;
-            const ratio = suture / this.scene.state.playerHealth * 100;
-            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'player', value: -ratio, id: this.enemyID } });
-            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.enemyID } });
-            EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
+            let newComputerHealth = Math.min(this.health + suture, this.combatStats.attributes.healthTotal);
+            this.computerCombatSheet.newComputerEnemyHealth -= suture;
+            this.computerCombatSheet.newComputerHealth = newComputerHealth;
+            EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: newComputerHealth });
+            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage: suture, id, origin: this.enemyID });
         };
     };
 
@@ -1093,13 +1133,14 @@ export default class Enemy extends Entity {
         };
         this.isDefeated = true;
         this.inCombat = false;
+        this.inComputerCombat = false;
         this.setSpecialCombat(false);
         this.setTint(ENEMY_COLOR);
         this.attacking = undefined;
         this.isAggressive = false;
         this.healthbar.setVisible(false);
         this.currentTargetCheck();
-        this.scene.time.delayedCall(180000, () => {
+        this.scene.time.delayedCall(120000, () => {
             this.isDefeated = false;
             this.health = this.ascean.health.max;
             this.isAggressive = this.startedAggressive;
@@ -1191,7 +1232,6 @@ export default class Enemy extends Entity {
             if (this.patrolPath.length > 1) {
                 this.nextPatrolPoint = this.patrolPath[0];
                 this.pathDirection = new Phaser.Math.Vector2(this.nextPatrolPoint.x, this.nextPatrolPoint.y).subtract(this.position).normalize();
-
                 const distanceToNextPoint = this.calculateDistance(this.position, this.nextPatrolPoint);
                 this.patrolDelay = this.calculatePatrolDelay(distanceToNextPoint, this.speed);
                 
@@ -1302,7 +1342,7 @@ export default class Enemy extends Entity {
     onCombatExit = () => this.evaluateCombatDistance();
 
     onContemplateEnter = () => {
-        if (this.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
+        if (this.inCombat === false || this.health <= 0) {
             this.inCombat = false;
             this.stateMachine.setState(States.LEASH);
             return;
@@ -1572,13 +1612,15 @@ export default class Enemy extends Entity {
         this.setVelocity(0);
         this.leashTimer?.destroy();
         this.leashTimer = undefined;
-        this.scene.navMesh.debugDrawClear(); 
+        // this.scene.navMesh.debugDrawClear();
     };
 
     combatChecker = (state: boolean) => {
         if (state === true) return;
         this.evaluateCombatDistance();
     };
+
+    getTargetId = (): string => this.attacking.name === 'player' ? this.attacking.playerID : this.attacking.enemyID;
 
     // ========================== CREATING ENHANCED ENEMY AI ========================= \\
 
@@ -1612,7 +1654,7 @@ export default class Enemy extends Entity {
 
     // ========================== SPECIAL ENEMY STATES ========================== \\
     onAstraveEnter = () => {
-        this.targetID = this.attacking.name === 'player' ? this.attacking.playerID : this.attacking.enemyID;
+        this.targetID = this.getTargetId();
         this.startCasting('Astrave', PLAYER.DURATIONS.ASTRAVE, 'cast')
     };
     onAstraveUpdate = (dt: number) => {
@@ -1623,8 +1665,6 @@ export default class Enemy extends Entity {
         };
     };
     onAstraveExit = () => {
-        // FIXME: Change the concerns to separate if it's 'inCombat' and/or 'inComputerCombat'
-        // TODO: QC
         if (this.targetID === this.scene.player.playerID) {
             if (this.castingSuccess === true && this.checkPlayerResist() === true) {
                 this.aoe = new AoE(this.scene, 'astrave', 1, true, this, false, this.scene.player);    
@@ -1651,7 +1691,10 @@ export default class Enemy extends Entity {
     onBlinkUpdate = (_dt: number) => {};
     onBlinkExit = () => this.evaluateCombatDistance();
 
-    onConfuseEnter = () => this.startCasting('Confusing', PLAYER.DURATIONS.CONFUSE, 'cast');
+    onConfuseEnter = () => {
+        this.targetID = this.getTargetId();
+        this.startCasting('Confusing', PLAYER.DURATIONS.CONFUSE, 'cast');
+    };
     onConfuseUpdate = (dt: number) => {
         this.counterCheck();
         if (this.isCasting === true) this.castbar.update(dt, 'cast');
@@ -1660,19 +1703,16 @@ export default class Enemy extends Entity {
         };
     };
     onConfuseExit = () => {
-        // TODO:FIXME: This may be the template in how to differentiate whom is the target.
-        if (this.attacking.name === 'player') {
+        if (this.targetID === this.scene.player.playerID) {
             if (this.castingSuccess === true && this.checkPlayerResist() === true) {
-                this.scene.combatManager.confuse(this.scene.state.player?._id as string);
+                this.scene.combatManager.confuse(this.targetID);
                 this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
                 EventBus.emit('enemy-combat-text', {
                     computerSpecialDescription: `${this.ascean?.name} confuses you, causing you to stumble around in a daze.`
                 });
             };
         } else {
-            if (this.castingSuccess === true) {
-                this.scene.combatManager.confuse(this.attacking.enemyID);
-            };
+            if (this.castingSuccess === true) this.scene.combatManager.confuse(this.targetID);
         };
         this.stopCasting('Countered Confuse');
         this.instincts();
@@ -1701,7 +1741,10 @@ export default class Enemy extends Entity {
     };
     onDesperationExit = () => this.isCasting = false;
 
-    onFearingEnter = () => this.startCasting('Fearing', PLAYER.DURATIONS.FEAR, 'cast');
+    onFearingEnter = () => {
+        this.targetID = this.getTargetId();
+        this.startCasting('Fearing', PLAYER.DURATIONS.FEAR, 'cast');
+    };
     onFearingUpdate = (dt: number) => {
         this.counterCheck();
         if (this.isCasting === true) this.castbar.update(dt, 'cast');
@@ -1710,13 +1753,16 @@ export default class Enemy extends Entity {
         };
     };
     onFearingExit = () => {
-        // FIXME: Change the concerns to separate if it's 'inCombat' and/or 'inComputerCombat'
-        if (this.castingSuccess === true && this.checkPlayerResist() === true) {
-            this.scene.combatManager.fear(this.scene.state.player?._id as string);
-            this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
-            EventBus.emit('enemy-combat-text', {
-                computerSpecialDescription: `${this.ascean?.name} strikes fear into you, causing you to panic in terror!`
-            });
+        if (this.targetID === this.scene.player.playerID) {
+            if (this.castingSuccess === true && this.checkPlayerResist() === true) {
+                this.scene.combatManager.fear(this.targetID);
+                this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
+                EventBus.emit('enemy-combat-text', {
+                    computerSpecialDescription: `${this.ascean?.name} strikes fear into you, causing you to panic in terror!`
+                });
+            };
+        } else {
+            if (this.castingSuccess === true) this.scene.combatManager.fear(this.targetID);
         };
         this.stopCasting('Countered Fear');
         this.instincts();
@@ -1734,21 +1780,25 @@ export default class Enemy extends Entity {
         if (this.castingSuccess === true) {
             const heal = Math.round(this.ascean.health.max * 0.25);
             const total = Math.min(this.health + heal, this.ascean.health.max);
-            if (this.inCombat) this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });  
+            if (this.inCombat) this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume }); 
             if (this.isCurrentTarget) {
                 this.scene.combatManager.combatMachine.action({ data: { key: 'enemy', value: total, id: this.enemyID }, type: 'Health' });
             } else {
                 this.health = total;
                 this.updateHealthBar(total);
             };
-            this.computerCombatSheet.newComputerHealth = total;
+            if (this.inComputerCombat) {
+                this.computerCombatSheet.newComputerHealth = total;
+                this.scrollingCombatText = this.scene.showCombatText(`${heal}`, 1500, 'heal', false, false, () => this.scrollingCombatText = undefined);
+                EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: total });
+            };
         };
         this.stopCasting('Countered Healing');
         this.combatChecker(this.isCasting);
     };
 
     onIlirechEnter = () => {
-        this.targetID = this.attacking.name === 'player' ? this.attacking.playerID : this.attacking.enemyID;
+        this.targetID = this.getTargetId();
         this.startCasting('Ilirech', PLAYER.DURATIONS.ILIRECH, 'damage');
     };
     onIlirechUpdate = (dt: number) => {
@@ -1780,12 +1830,11 @@ export default class Enemy extends Entity {
         if (this.attacking.name === 'player') {
             if (this.checkPlayerResist() === false) return;
             this.targetID = this.attacking.playerID;
-            this.scene.combatManager.slow(this.targetID, 1000);
             this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
         } else { // CvC
             this.targetID = this.attacking.enemyID;
-            this.scene.combatManager.slow(this.targetID, 1000);
         };
+        this.scene.combatManager.slow(this.targetID, 1000);
         this.channelCount = 0;
         this.chiomicTimer = this.scene.time.addEvent({
             delay: 1000,
@@ -1831,26 +1880,29 @@ export default class Enemy extends Entity {
         let leap = Math.min(distance + buffer, 250);
         direction.normalize();
         this.flipX = direction.x < 0;
-        this.flickerCarenic(500);
+        this.flickerCarenic(900);
         this.attack();
         this.scene.tweens.add({
             targets: this,
             x: this.x + (direction.x * leap),
             y: this.y + (direction.y * leap),
-            duration: 500,
+            duration: 900,
             ease: 'Elastic',
             onComplete: () => { 
-                // FIXME: Change the concerns to separate if it's 'inCombat' and/or 'inComputerCombat'
                 if (this.touching.length > 0) {
                     this.touching.forEach(enemy => {
-                        if (enemy.playerID !== this.scene.player.playerID) return;
-                        this.scene.combatManager.writhe(enemy.playerID, this.enemyID);
-                        this.scene.combatManager.useStamina(5);
+                        if (enemy.name === 'player') {
+                            this.scene.combatManager.writhe(enemy.playerID, this.enemyID);
+                            this.scene.combatManager.useStamina(5);
+                        } else { // CvC
+                            this.scene.combatManager.writhe(enemy.enemyID, this.enemyID);
+                        };
                     });
                 };
                 this.stateMachine.setState(States.COMBAT);
             },
         });
+        this.scrollingCombatText = this.scene.showCombatText('Leaping!', 900, 'damage', false, false, () => this.scrollingCombatText = undefined);
         if (this.inCombat) {
             EventBus.emit('enemy-combat-text', {
                 computerSpecialDescription: `${this.ascean.name} launches through the air!`
@@ -1858,11 +1910,13 @@ export default class Enemy extends Entity {
         };
     };
     onLeapUpdate = (_dt: number) => {};
-    onLeapExit = () => {
-        this.evaluateCombatDistance();
-    };
+    onLeapExit = () => this.evaluateCombatDistance();
 
-    onMaierethEnter = () => this.startCasting('Maiereth', PLAYER.DURATIONS.MAIERETH, 'damage');
+    onMaierethEnter = () => {
+        this.targetID = this.getTargetId();
+        this.startCasting('Maiereth', PLAYER.DURATIONS.MAIERETH, 'damage');
+    };
+        
     onMaierethUpdate = (dt: number) => {
         this.counterCheck();
         if (this.isCasting === true) this.castbar.update(dt, 'cast');
@@ -1871,23 +1925,27 @@ export default class Enemy extends Entity {
         };
     };
     onMaierethExit = () => {
-        if (this.castingSuccess === true && this.checkPlayerResist() === true) {
-            this.sacrifice(30);
-            const chance = Phaser.Math.Between(1, 100);
-            if (chance > 75) {
-                if (this.checkPlayerResist() === true) {
-                    this.scene.combatManager.fear(this.scene.player.playerID);
-                } else {
-                    EventBus.emit('special-combat-text', {
-                        playerSpecialDescription: `You resist the dread of the dripping Moon.` // Menses wink wink
-                    });
+        if (this.targetID === this.scene.player.playerID) {
+            if (this.castingSuccess === true && this.checkPlayerResist() === true) {
+                this.sacrifice(30, this.targetID);
+                const chance = Phaser.Math.Between(1, 100);
+                if (chance > 75) {
+                    if (this.checkPlayerResist() === true) {
+                        this.scene.combatManager.fear(this.targetID);
+                    } else {
+                        EventBus.emit('special-combat-text', {
+                            playerSpecialDescription: `You resist the dread of the dripping Moon.` // Menses wink wink
+                        });
+                    };
                 };
+                EventBus.emit('enemy-combat-text', {
+                    computerSpecialDescription: `${this.ascean.name} bleeds and strikes you with tendrils of Ma'anre.`
+                });
+                this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
+                screenShake(this.scene, 90);
             };
-            EventBus.emit('enemy-combat-text', {
-                computerSpecialDescription: `${this.ascean.name} bleeds and strikes you with tendrils of Ma'anre.`
-            });
-            this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
-            screenShake(this.scene, 90);
+        } else { // CvC
+            if (this.castingSuccess === true) this.sacrifice(30, this.targetID);
         };
         this.stopCasting('Countered Maiereth');
         this.combatChecker(this.isCasting);
@@ -2010,35 +2068,41 @@ export default class Enemy extends Entity {
     };
     
     onSacrificeEnter = () => {
-        // FIXME: Change the concerns to separate if it's 'inCombat' and/or 'inComputerCombat'
         this.specialCombatText = this.scene.showCombatText('Sacrifice', 750, 'effect', false, true, () => this.specialCombatText = undefined);
-        if (this.checkPlayerResist() === false) return;
-        this.scene.combatManager.useGrace(10);
-        this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume }); 
-        this.sacrifice(30);
+        if (this.attacking.name === 'player') {
+            if (this.checkPlayerResist() === false) return;
+            this.scene.combatManager.useGrace(10);
+            this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
+        };
+        const id = this.getTargetId(); 
+        this.sacrifice(30, id);
         this.flickerCarenic(750);
     };
     onSacrificeUpdate = (_dt: number) => this.stateMachine.setState(States.CLEAN);
     onSacrificeExit = () => this.evaluateCombatDistance();
         
     onSlowingEnter = () => {
-        // FIXME: Change the concerns to separate if it's 'inCombat' and/or 'inComputerCombat'
         this.specialCombatText = this.scene.showCombatText('Slow', 750, 'cast', false, true, () => this.specialCombatText = undefined);
-        if (this.checkPlayerResist() === false) return;
-        this.scene.combatManager.slow(this.scene.state.player?._id as string, 3000);
-        this.flickerCarenic(500);
-        if (this.inCombat) {
+        if (this.attacking.name === 'player') {
+            if (this.checkPlayerResist() === false) return;
+            this.scene.combatManager.slow(this.attacking.playerID, 3000);
             this.scene.combatManager.useGrace(10);
             this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
             EventBus.emit('enemy-combat-text', {
                 computerSpecialDescription: `${this.ascean.name} ensorcels your caeren, slowing you!`
             });
+        } else { // CvC
+            this.scene.combatManager.slow(this.attacking.enemyID, 3000);
         };
+        this.flickerCarenic(500);
     };
     onSlowingUpdate = (_dt: number) => this.stateMachine.setState(States.CLEAN);
     onSlowingExit = () => this.evaluateCombatDistance();
     
-    onSnaringEnter = () => this.startCasting('Snaring', PLAYER.DURATIONS.SNARE, 'cast');
+    onSnaringEnter = () => {
+        this.targetID = this.getTargetId();
+        this.startCasting('Snaring', PLAYER.DURATIONS.SNARE, 'cast');
+    };
     onSnaringUpdate = (dt: number) => {
         this.counterCheck();
         if (this.isCasting === true) this.castbar.update(dt, 'cast');
@@ -2047,15 +2111,18 @@ export default class Enemy extends Entity {
         };
     };
     onSnaringExit = () => {
-        // FIXME: Change the concerns to separate if it's 'inCombat' and/or 'inComputerCombat'
-        if (this.castingSuccess === true && this.checkPlayerResist() === true) {
-            this.scene.combatManager.useGrace(10);
-            this.scene.combatManager.snare(this.scene.state.player?._id as string);
-            this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
-            EventBus.emit('enemy-combat-text', {
-                computerSpecialDescription: `${this.ascean.name} ensorcels you into a snare!`
-            }); 
-            screenShake(this.scene, 90);
+        if (this.targetID === this.scene.player.playerID) {
+            if (this.castingSuccess === true && this.checkPlayerResist() === true) {
+                this.scene.combatManager.useGrace(10);
+                this.scene.combatManager.snare(this.targetID);
+                this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
+                EventBus.emit('enemy-combat-text', {
+                    computerSpecialDescription: `${this.ascean.name} ensorcels you into a snare!`
+                }); 
+                screenShake(this.scene, 90);
+            };
+        } else { // CvC
+            this.scene.combatManager.snare(this.targetID);
         };
         this.stopCasting('Countered Snare');
         this.instincts();
@@ -2066,7 +2133,8 @@ export default class Enemy extends Entity {
         if (this.checkPlayerResist() === false) return;    
         this.scene.combatManager.useGrace(10);
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume }); 
-        this.suture(30);
+        const id = this.getTargetId();
+        this.suture(30, id);
         this.flickerCarenic(750);
     };
     onSutureUpdate = (_dt: number) => this.stateMachine.setState(States.CLEAN);
@@ -2074,21 +2142,25 @@ export default class Enemy extends Entity {
 
     onDevourEnter = () => {
         this.startCasting('Devouring', PLAYER.DURATIONS.TSHAERAL, 'damage', true);
-        if (this.checkPlayerResist() === false) return;
-        this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
-        this.scene.combatManager.useGrace(15);
+        if (this.attacking.name === 'player') {
+            if (this.checkPlayerResist() === false) return;
+            this.targetID = this.attacking.playerID;
+            this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
+            this.scene.combatManager.useGrace(15);
+        } else {
+            this.targetID = this.attacking.enemyID;
+        };
         this.channelCount = 0;
         this.devourTimer = this.scene.time.addEvent({
             delay: 500,
             callback: () => {
-                // FIXME: Change the concerns to separate if it's 'inCombat' and/or 'inComputerCombat'
-                if (this.isCasting === false || this.scene.state.computerWin || this.scene.state.playerWin || this.scene.state.newPlayerHealth <= 0 || this.isCounterSpelled === true) {
+                if (this.isCasting === false || this.health <= 0 || this.isCounterSpelled === true) { // this.scene.state.computerWin || this.scene.state.playerWin || 
                     this.isCasting = false;
                     this.devourTimer?.remove(false);
                     this.devourTimer = undefined;
                     return;
                 };
-                this.devour(5);
+                this.devour(5, this.targetID);
                 this.channelCount++;
                 if (this.channelCount >= 4) {
                     this.isCasting = false;
@@ -2330,7 +2402,9 @@ export default class Enemy extends Entity {
             this.health = heal;
             this.updateHealthBar(heal);
         } else { // Computer Combat
-            this.scene.combatManager.combatMachine.action({ data: { key: 'enemy', value: heal, id: this.enemyID }, type: 'Computer Health' });
+            this.health = heal;
+            this.updateHealthBar(heal);
+            EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: heal });
         };
     };
 

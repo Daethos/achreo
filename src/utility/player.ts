@@ -589,41 +589,74 @@ export type faction = {
     dialog: number; // Reputation threshold to enable dialog option
 };
 
+const ACHREON_DRUID = "Achreon Druid";
+const AHNARE_APOSTLE = "Ahn'are Apostle";
+const ANASHTRE = "Anashtre";
+const ASTRAL_APOSTLE = "Astral Apostle";
+const CAMBIREN_DRUID = "Cambiren Druid";
+const CHIOMIC_JESTER = "Chiomic Jester";
+const DAETHIC_INQUISITOR = "Daethic Inquisitor";
+const DAETHIC_KNIGHT = "Daethic Knight";
+const FANG_DUELIST = "Fang Duelist";
+const FANG_MERCENARY = "Fang Mercenary";
+const FIRESWORN = "Firesworn";
+const FYERS_OCCULTIST = "Fyers Occultist";
+const ILIRE_OCCULTIST = "Ilire Occultist";
+const KINGSMAN = "Kingsman";
+const KYNGIAN_SHAMAN = "Kyn'gian Shaman";
+const KYRISIAN_OCCULTIST = "Kyrisian Occultist";
+const LIIVI_LEGIONNAIRE = "Li'ivi Legionnaire";
+const MAIER_OCCULTIST = "Ma'ier Occultist";
+const MARAUDER = "Marauder";
+const MAVROSIN_OCCULTIST = "Mavrosin Occultist";
+const NORTHREN_WANDERER = "Northren Wanderer";
+const NYREN = "Nyren";
+const OLD_LIIVI_OCCULTIST = "Old Li'ivi Occultist";
+const QUOREITE_OCCULTIST = "Quor'eite Occultist";
+const QUOREITE_STALKER = "Quor'eite Stalker";
+const RAHVREHCUR = "Rahvrehcur";
+const SEDYRIST = "Se'dyrist";
+const SEDYREAL_GUARD = "Sedyreal Guard";
+const SEVA_SHRIEKER = "Se'va Shrieker";
+const SHRYGEIAN_BARD = "Shrygeian Bard";
+const SOUTHRON_WANDERER = "Southron Wanderer";
+const SOVERAIN_BLOOD_CLOAK = "Soverain Blood Cloak";
+const TSHAERAL_SHAMAN = "Tshaeral Shaman";
+
 export const ENEMY_ENEMIES = {
-    "Achreon Druid": ["Kyn'gian Shaman", "Tshaeral Shaman", "Kingsman", "Northren Wanderer"],
-    "Ahn'are Apostle": ["Astral Apostle", "Licivitan Soldier", "Daethic Inquisitor", "Daethic Knight"],
-    "Anashtre": ["Daethic Knight", "Soverain Blood Cloak", "Licivitan Soldier", "Daethic Inquisitor"],
-    "Astral Apostle": ["Ahn'are Apostle", "Licivitan Soldier", "Daethic Inquisitor", "Daethic Knight"],
-    "Cambiren Druid": ["Kyn'gian Shaman", "Tshaeral Shaman", "Kingsman", "Northren Wanderer"],
-    "Chiomic Jester": ["Fang Duelist", "Fang Mercenary", "Kyrisian", "Marauder", "Nyren", "Shrygeian Bard"],
-    "Daethic Inquisitor": ["Ilire Occultist", "Fyers Occultist", "Ma'ier Occultist", "Quor'eite Occultist", "Old Li'ivi Occultist"],
-    "Daethic Knight": ["Anashtre", "Soverain Blood Cloak", "Firesworn", "Se'va Shrieker", "Quor'eite Stalker"],
-    "Fang Duelist": ["Chiomic Jester", "Fang Mercenary", "Kyrisian", "Marauder", "Shrygeian Bard"],
-    "Fang Mercenary": ["Chiomic Jester", "Fang Duelist", "Kyrisian", "Marauder", "Shrygeian Bard"],
-    "Firesworn": ["Daethic Knight", "Fang Mercenary", "Se'va Shrieker", "Quor'eite Stalker", "Southron Wanderer"],
-    "Fyers Occultist": ["Daethic Inquisitor", "Ilire Occultist", "Ma'ier Occultist", "Quor'eite Occultist", "Old Li'ivi Occultist"],
-    "Ilire Occultist": ["Daethic Inquisitor", "Fyers Occultist", "Ma'ier Occultist", "Quor'eite Occultist", "Old Li'ivi Occultist"],
-    "Kingsman": ["Achreon Druid", "Cambiren Druid", "Northren Wanderer", "Soverain Blood Cloak"],
-    "Kyn'gian Shaman": ["Achreon Druid", "Cambiren Druid", "Southron Wanderer", "Sedyreal Guard", "Quor'eite Stalker"],
-    "Kyrisian": ["Chiomic Jester", "Fang Duelist", "Fang Mercenary", "Marauder", "Shrygeian Bard"],
-    "Li'ivi Legionnaire": ["Old Li'ivi Occultist", "Firesworn", "Soverain Blood Cloak", "Kingsman", "Se'va Shrieker"],
-    "Licivitan Soldier": ["Old Li'ivi Occultist", "Firesworn", "Soverain Blood Cloak", "Kingsman", "Se'va Shrieker"],
-    "Ma'ier Occultist": ["Daethic Inquisitor", "Fyers Occultist", "Ilire Occultist", "Mavrosin Occultist", "Quor'eite Occultist", "Old Li'ivi Occultist"],
-    "Marauder": ["Fang Duelist", "Fang Mercenary", "Chiomic Jester", "Shrygeian Bard"],
-    "Mavrosin Occultist": ["Daethic Inquisitor", "Daethic Knight", "Ilire Occultist", "Kingsman", "Ma'ier Occultist", "Northren Wanderer"],
-    "Northren Wanderer": ["Achreon Druid", "Cambiren Druid", "Kingsman", "Soverain Blood Cloak"],
-    "Nyren": ["Fang Duelist", "Fang Mercenary", "Rahvrecur", "Se'va Shrieker", "Marauder", "Fang Mercenary"],
-    "Old Li'ivi Occultist": ["Daethic Inquisitor", "Fyers Occultist", "Ilire Occultist", "Ma'ier Occultist", "Quor'eite Occultist"],
-    "Quor'eite Occultist": ["Daethic Inquisitor", "Fyers Occultist", "Ilire Occultist", "Ma'ier Occultist", "Old Li'ivi Occultist"],
-    "Quor'eite Stalker": ["Daethic Knight", "Firesworn", "Se'va Shrieker", "Sedyreal Guard", "Southron Wanderer"],
-    "Rahvrecur": ["Nyren", "Se'va Shrieker", "Marauder", "Fang Mercenary"],
-    "Se'dyrist": ["Se'va Shrieker", "Fang Mercenary", "Sedyreal Guard", "Firesworn"],
-    "Sedyreal Guard": ["Se'dyrist", "Se'va Shrieker", "Firesworn", "Quor'eite Stalker", "Southron Wanderer"],
-    "Se'va Shrieker": ["Se'dyrist", "Sedyreal Guard", "Firesworn", "Quor'eite Stalker", "Southron Wanderer"],
-    "Shrygeian Bard": ["Chiomic Jester", "Fang Duelist", "Fang Mercenary", "Marauder"],
-    "Southron Wanderer": ["Firesworn", "Quor'eite Stalker", "Sedyreal Guard", "Se'va Shrieker"],
-    "Soverain Blood Cloak": ["Anashtre", "Licivitan Soldier", "Kingsman", "Northren Wanderer"],
-    "Tshaeral Shaman": ["Achreon Druid", "Cambiren Druid", "Daethic Knight", "Daethic Inquisitor"],
+    "Achreon Druid": [DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KYNGIAN_SHAMAN, TSHAERAL_SHAMAN, KINGSMAN, NORTHREN_WANDERER, SOVERAIN_BLOOD_CLOAK],
+    "Ahn'are Apostle": [ANASHTRE, ASTRAL_APOSTLE, LIIVI_LEGIONNAIRE, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KINGSMAN, SOVERAIN_BLOOD_CLOAK],
+    "Anashtre": [AHNARE_APOSTLE, ASTRAL_APOSTLE, DAETHIC_KNIGHT, SOVERAIN_BLOOD_CLOAK, LIIVI_LEGIONNAIRE, DAETHIC_INQUISITOR],
+    "Astral Apostle": [AHNARE_APOSTLE, ANASHTRE, LIIVI_LEGIONNAIRE, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, SOVERAIN_BLOOD_CLOAK, KINGSMAN],
+    "Cambiren Druid": [DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KYNGIAN_SHAMAN, TSHAERAL_SHAMAN, KINGSMAN, NORTHREN_WANDERER, SOVERAIN_BLOOD_CLOAK],
+    "Chiomic Jester": [FANG_DUELIST, FANG_MERCENARY, KYRISIAN_OCCULTIST, MARAUDER, NYREN, RAHVREHCUR, SHRYGEIAN_BARD],
+    "Daethic Inquisitor": [AHNARE_APOSTLE, ASTRAL_APOSTLE, ILIRE_OCCULTIST, FYERS_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, QUOREITE_OCCULTIST, OLD_LIIVI_OCCULTIST],
+    "Daethic Knight": [ANASHTRE, FIRESWORN, KYNGIAN_SHAMAN, SEDYREAL_GUARD, SOVERAIN_BLOOD_CLOAK, SEVA_SHRIEKER, QUOREITE_STALKER, TSHAERAL_SHAMAN],
+    "Fang Duelist": [CHIOMIC_JESTER, FANG_MERCENARY, KYRISIAN_OCCULTIST, NYREN, MARAUDER, RAHVREHCUR, SHRYGEIAN_BARD],
+    "Fang Mercenary": [CHIOMIC_JESTER, FANG_DUELIST, KYRISIAN_OCCULTIST, NYREN, MARAUDER, RAHVREHCUR, SHRYGEIAN_BARD],
+    "Firesworn": [DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FANG_MERCENARY, SEDYREAL_GUARD, SEVA_SHRIEKER, QUOREITE_OCCULTIST, QUOREITE_STALKER, SOUTHRON_WANDERER],
+    "Fyers Occultist": [DAETHIC_INQUISITOR, ILIRE_OCCULTIST, MAIER_OCCULTIST, QUOREITE_OCCULTIST, OLD_LIIVI_OCCULTIST],
+    "Ilire Occultist": [DAETHIC_INQUISITOR, FYERS_OCCULTIST, MAIER_OCCULTIST, QUOREITE_OCCULTIST, OLD_LIIVI_OCCULTIST],
+    "Kingsman": [ACHREON_DRUID, ANASHTRE, CAMBIREN_DRUID, NORTHREN_WANDERER, SOVERAIN_BLOOD_CLOAK],
+    "Kyn'gian Shaman": [ACHREON_DRUID, CAMBIREN_DRUID, SOUTHRON_WANDERER, SEDYREAL_GUARD, QUOREITE_STALKER],
+    "Kyrisian Occultist": [CHIOMIC_JESTER, FANG_DUELIST, FANG_MERCENARY, MARAUDER, SHRYGEIAN_BARD],
+    "Li'ivi Legionnaire": [OLD_LIIVI_OCCULTIST, FIRESWORN, SOVERAIN_BLOOD_CLOAK, KINGSMAN, SEVA_SHRIEKER],
+    "Ma'ier Occultist": [DAETHIC_INQUISITOR, FYERS_OCCULTIST, ILIRE_OCCULTIST, MAVROSIN_OCCULTIST, QUOREITE_OCCULTIST, OLD_LIIVI_OCCULTIST],
+    "Marauder": [FANG_DUELIST, FANG_MERCENARY, CHIOMIC_JESTER, NYREN, RAHVREHCUR, SHRYGEIAN_BARD],
+    "Mavrosin Occultist": [DAETHIC_INQUISITOR, DAETHIC_KNIGHT, ILIRE_OCCULTIST, KINGSMAN, MAIER_OCCULTIST, NORTHREN_WANDERER],
+    "Northren Wanderer": [ACHREON_DRUID, CAMBIREN_DRUID, MARAUDER, SOUTHRON_WANDERER, KINGSMAN, SOVERAIN_BLOOD_CLOAK],
+    "Nyren": [FANG_DUELIST, FANG_MERCENARY, RAHVREHCUR, SEVA_SHRIEKER, MARAUDER, FANG_MERCENARY],
+    "Old Li'ivi Occultist": [DAETHIC_INQUISITOR, FYERS_OCCULTIST, ILIRE_OCCULTIST, MAIER_OCCULTIST, QUOREITE_OCCULTIST],
+    "Quor'eite Occultist": [DAETHIC_INQUISITOR, FYERS_OCCULTIST, ILIRE_OCCULTIST, MAIER_OCCULTIST, OLD_LIIVI_OCCULTIST],
+    "Quor'eite Stalker": [DAETHIC_KNIGHT, FIRESWORN, SEVA_SHRIEKER, SEDYREAL_GUARD, SOUTHRON_WANDERER],
+    "Rahvrehcur": [CHIOMIC_JESTER, NYREN, OLD_LIIVI_OCCULTIST, SEVA_SHRIEKER, MARAUDER, FANG_MERCENARY, SHRYGEIAN_BARD],
+    "Se'dyrist": [SEVA_SHRIEKER, FANG_MERCENARY, SEDYREAL_GUARD, FIRESWORN],
+    "Sedyreal Guard": [SEDYRIST, SEVA_SHRIEKER, FIRESWORN, FYERS_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, SOUTHRON_WANDERER],
+    "Se'va Shrieker": [SEDYRIST, SEDYREAL_GUARD, FIRESWORN, QUOREITE_STALKER, SOUTHRON_WANDERER],
+    "Shrygeian Bard": [CHIOMIC_JESTER, FANG_DUELIST, FANG_MERCENARY, MARAUDER, NYREN, RAHVREHCUR],
+    "Southron Wanderer": [FIRESWORN, FYERS_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, SEDYREAL_GUARD, SEVA_SHRIEKER],
+    "Soverain Blood Cloak": [ANASHTRE, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, LIIVI_LEGIONNAIRE, LIIVI_LEGIONNAIRE, KINGSMAN, NORTHREN_WANDERER],
+    "Tshaeral Shaman": [ACHREON_DRUID, CAMBIREN_DRUID, DAETHIC_KNIGHT, DAETHIC_INQUISITOR, QUOREITE_STALKER, SEDYREAL_GUARD],
 
     "Cyrian Shyne": ["King Mathyus Caderyn"],
     "Dorien Caderyn": ["Garris Ashenus"],

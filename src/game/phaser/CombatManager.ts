@@ -26,6 +26,29 @@ export class CombatManager extends Phaser.Scene {
         return this.context.player[concern];
     };
 
+    // ============================ Computer Combat ============================= \\
+    computer = (combat: { type: string; data: any }) => {
+        const { type, data } = combat;
+        switch (type) {
+            case 'Chiomic':
+                let computerChiomic = this.context.enemies.find((e) => e.enemyID === data.cId).computerCombatSheet;
+                let enemyChiomic = this.context.enemies.find((e) => e.enemyID === data.eId).computerCombatSheet;
+                const chiomicDamage = Math.round(computerChiomic.computer[computerChiomic.computer.mastery] / 2 * (1 + (data.value / 100)) * ((computerChiomic.computer.level + 9) / 10));
+                const enemyChiomicHealth = Math.max(enemyChiomic.newComputerHealth - chiomicDamage, 0);
+                
+                computerChiomic.newComputerEnemyHealth = enemyChiomicHealth;
+                computerChiomic.computerEnemyDamaged = true;
+                enemyChiomic.newComputerHealth = enemyChiomicHealth;
+                enemyChiomic.computerDamaged = true;
+
+                EventBus.emit('computer-combat-update', computerChiomic);
+                EventBus.emit('computer-combat-update', enemyChiomic);
+                break;
+            default: break;
+        };
+    };
+
+
     // ============================ Magic Impact ============================= \\
     magic = (entity: Player | Enemy, target: Player | Enemy): void => {
         // FIXME: This has the originator (ENTITY) and target hit. Enough to correctly orient it for figuring out if it's PLAYER v COMPUTER, or COMPUTER v COMPUTER
@@ -34,10 +57,15 @@ export class CombatManager extends Phaser.Scene {
             const damage = Math.round(entity.ascean?.[entity?.ascean?.mastery as keyof typeof this.context.state.player] * 0.2);
             const health = target.health - damage;
             this.combatMachine.action({ data: { key: 'player', value: health, id: (entity as Enemy).enemyID }, type: 'Set Health' });
-        } else {
+        } else if (entity.name === 'player') {
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.2);
             const health = target.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id: (target as Enemy).enemyID }, type: 'Health' });
+        } else { // Computer Entity + Computer Target
+            const damage = Math.round(entity.ascean?.[entity?.ascean?.mastery as keyof typeof this.context.state.player] * 0.2);
+            const health = target.health - damage;
+            (entity as Enemy).computerCombatSheet.newComputerEnemyHealth = health;
+            (target as Enemy).computerCombatSheet.newComputerHealth = health;
         };
     };
 

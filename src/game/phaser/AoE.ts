@@ -147,11 +147,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             scene.time.delayedCall(975, () => {
                 this.hit.forEach((hit) => {
                     // FIXME: Needs to be agnostic for whether it's the PLAYER or an ENEMY or PARTY
-                    if (hit.hasOwnProperty('playerID')) {
+                    if (hit.name === 'player') {
                         if (scene.player.checkPlayerResist() === true) {
                             (scene.combatManager as any)[type](hit.playerID, enemy.enemyID);
                         };
-                    } else if (hit.hasOwnProperty('enemyID')) {
+                    } else if (hit.name === 'enemy') {
                         (scene.combatManager as any)[type](hit.enemyID, enemy.enemyID);
                     };
                 });
@@ -316,7 +316,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                     const hit = this.hit.find((h) => h.playerID === gameObjectB.playerID);
                     if (!hit) this.hit.push(gameObjectB);
                 } else if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
-                    // FIXME: Add an instance where it's an enemy potentially
                     const enemy = origin.enemies.find((e) => e.id === gameObjectB.enemyID);
                     if (enemy) {
                         this.hit.push(gameObjectB)

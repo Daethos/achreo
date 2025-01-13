@@ -76,7 +76,7 @@ export function roundToTwoDecimals(num: number, dec: number = 2): number {
     return roundedNum;
 };
 
-function damageTypeCompiler(damageType: string, enemy: Ascean, weapon: Equipment, physicalDamage: number, magicalDamage: number): { physicalDamage: number, magicalDamage: number } {
+export function damageTypeCompiler(damageType: string, enemy: Ascean, weapon: Equipment, physicalDamage: number, magicalDamage: number): { physicalDamage: number, magicalDamage: number } {
     if (damageType === DAMAGE_TYPES.BLUNT || damageType === DAMAGE_TYPES.FIRE || damageType === DAMAGE_TYPES.EARTH || damageType === DAMAGE_TYPES.SPOOKY) {
         if (weapon.attackType === ATTACK_TYPES.PHYSICAL) {
             if (enemy.helmet.type === DEFENSE_TYPES.PLATE_MAIL) {
@@ -316,7 +316,7 @@ function damageTypeCompiler(damageType: string, enemy: Ascean, weapon: Equipment
     return { physicalDamage, magicalDamage };
 };
 
-function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, critClearance: number, weapon: Equipment, physicalDamage: number, magicalDamage: number, _weather: string, glancingBlow: boolean, criticalSuccess: boolean, isSeering: boolean = false):{ criticalSuccess: boolean, glancingBlow: boolean, physicalDamage: number, magicalDamage: number, isSeering: boolean } {
+export function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, critClearance: number, weapon: Equipment, physicalDamage: number, magicalDamage: number, _weather: string, glancingBlow: boolean, criticalSuccess: boolean, isSeering: boolean = false):{ criticalSuccess: boolean, glancingBlow: boolean, physicalDamage: number, magicalDamage: number, isSeering: boolean } {
     // if (weather === 'Alluring Isles') critChance -= 10;
     // if (weather === 'Astralands') critChance += 10;
     // if (weather === 'Kingdom') critChance += 5;
@@ -995,7 +995,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
         playerPhysicalDefenseMultiplier = 100 - (combat.playerDefense?.physicalPosture as number);
         playerMagicalDefenseMultiplier = 100 - (combat.playerDefense?.magicalPosture as number);
     };
-    if (computerAction === (ACTION_TYPES.ATTACK || ACTION_TYPES.LEAP || ACTION_TYPES.RUSH || ACTION_TYPES.WRITHE)) {
+    if (computerAction === ACTION_TYPES.ATTACK || computerAction === ACTION_TYPES.LEAP || computerAction === ACTION_TYPES.RUSH || computerAction === ACTION_TYPES.WRITHE) {
         if (combat.computerWeapons[0].grip === HOLD_TYPES.ONE_HAND) {
             if (combat.computerWeapons[0].attackType === ATTACK_TYPES.PHYSICAL) {
                 if (combat.computer?.mastery === MASTERY.AGILITY || combat.computer?.mastery === MASTERY.CONSTITUTION) {
@@ -2287,28 +2287,6 @@ function prayerRemoveTickSplitter(combat: Combat, statusEffect: StatusEffect): C
     return combat;
 };
 
-// function computerCombatSplitter(data: { computerOne: Combat, computerTwo: Combat }) {
-//     try {
-//         let { computerOne, computerTwo } = data;
-//         newDataCompiler(computerOne);
-//         newDataCompiler(computerTwo);
-//         const computerOneActionLive = computerOne.computerAction !== '' ? true : false;
-//         const computerTwoActionLive = computerTwo.computerAction !== '' ? true : false;
-//         if (computerOneActionLive && computerTwoActionLive) {
-//             computerOne = dualActionSplitter(computerOne);
-//             computerTwo = dualActionSplitter(computerTwo);
-//         } else if (computerOneActionLive && !computerTwoActionLive) {
-//             computerActionCompiler(computerTwo, computerOne.computerAction);
-//             computerAttackCompiler(computerTwo, computerOne.computerAction);
-//         } else if (!computerOneActionLive && computerTwoActionLive) {
-//             computerActionCompiler(computerOne, computerTwo.computerAction);
-//             computerAttackCompiler(computerOne, computerTwo.computerAction);
-//         };
-//         return { computerOne, computerTwo } as { computerOne: Combat, computerTwo: Combat };
-//     } catch (err) {
-//         console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
-//     };
-// };
 
 // ================================= VALIDATOR - SPLITTERS ===================================== \\
 
@@ -2317,7 +2295,7 @@ function validate(combat: Combat): boolean {
 };
 
 function validateComputer(combat: ComputerCombat): boolean {
-    return (combat.computer !== undefined && combat.computerEnemy !== undefined && combat.computer !== undefined && combat.computerEnemy !== undefined);
+    return combat.computer !== undefined;
 };
 // ================================= CONTROLLER - SERVICE ===================================== \\
 
@@ -2370,15 +2348,6 @@ function prayerRemoveTick(combat: Combat, statusEffect: StatusEffect): Combat | 
     };
 };
 
-function computerCombatCompiler(combat: { computerOne: ComputerCombat, computerTwo: ComputerCombat }): { computerOne: ComputerCombat, computerTwo: ComputerCombat } | undefined {
-    try {
-        if (!validateComputer(combat.computerOne) || !validateComputer(combat.computerTwo)) return combat;
-        // const res = computerCombatSplitter(combat);
-        // return res;
-    } catch (err) {
-        console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
-    };
-};
 
 export {
     statusEffectCheck,
@@ -2387,6 +2356,5 @@ export {
     consumePrayer,
     weaponActionCompiler,
     prayerEffectTick,
-    prayerRemoveTick,
-    computerCombatCompiler
+    prayerRemoveTick
 };

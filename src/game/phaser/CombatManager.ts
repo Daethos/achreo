@@ -5,6 +5,13 @@ import Player from '../entities/Player';
 import { Play } from '../main';
 import StatusEffect, { PRAYERS } from '../../utility/prayer';
 import ComputerMachine from './ComputerMachine';
+import { COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from '../../utility/enemy';
+import { computerCombatCompiler } from '../../utility/computerCombat';
+
+/*
+    TODO:FIXME:
+    Many of these function correctly without needing to redress because they are agnostic with respect toward who triggered the effect
+*/
 
 export class CombatManager extends Phaser.Scene {
     combatMachine: CombatMachine;
@@ -15,7 +22,6 @@ export class CombatManager extends Phaser.Scene {
         super('Combat');
         this.context = scene;
         this.combatMachine = new CombatMachine(this);
-        this.computerMachine = new ComputerMachine(this);    
     };
         
     checkPlayerSuccess = (): void => {
@@ -27,51 +33,25 @@ export class CombatManager extends Phaser.Scene {
     };
 
     // ============================ Computer Combat ============================= \\
-    computer = (combat: { type: string; data: any }) => {
-        const { type, data } = combat;
+    computer = (combat: { type: string; payload: { action: string; origin: string; enemyID: string; } }) => {
+        // FIXME: Decide if CvC Weapon Based Combat should be set liket his or in computerMelee
+        const { type, payload } = combat;
+        const { action, origin, enemyID } = payload;
         switch (type) {
-            case 'Chiomic':
-                let computerChiomic = this.context.enemies.find((e) => e.enemyID === data.cId).computerCombatSheet;
-                let enemyChiomic = this.context.enemies.find((e) => e.enemyID === data.eId).computerCombatSheet;
-                const chiomicDamage = Math.round(computerChiomic.computer[computerChiomic.computer.mastery] / 2 * (1 + (data.value / 100)) * ((computerChiomic.computer.level + 9) / 10));
-                const enemyChiomicHealth = Math.max(enemyChiomic.newComputerHealth - chiomicDamage, 0);
-                
-                computerChiomic.newComputerEnemyHealth = enemyChiomicHealth;
-                computerChiomic.computerEnemyDamaged = true;
-                enemyChiomic.newComputerHealth = enemyChiomicHealth;
-                enemyChiomic.computerDamaged = true;
-
-                EventBus.emit('computer-combat-update', computerChiomic);
-                EventBus.emit('computer-combat-update', enemyChiomic);
+            case 'Weapon':
+                let computerOne = this.context.enemies.find((e: Enemy) => e.enemyID === origin).computerCombatSheet;
+                let computerTwo = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID).computerCombatSheet;
+                computerOne.computerAction = action;
+                computerOne.computerEnemyAction = computerTwo.computerAction;
+                computerTwo.computerEnemyAction = action;
+                const result = computerCombatCompiler({computerOne, computerTwo});
+                EventBus.emit(UPDATE_COMPUTER_COMBAT, result?.computerOne);
+                EventBus.emit(UPDATE_COMPUTER_COMBAT, result?.computerTwo);
                 break;
             default: break;
         };
     };
-
-
-    // ============================ Magic Impact ============================= \\
-    magic = (entity: Player | Enemy, target: Player | Enemy): void => {
-        // FIXME: This has the originator (ENTITY) and target hit. Enough to correctly orient it for figuring out if it's PLAYER v COMPUTER, or COMPUTER v COMPUTER
-        if (target.health <= 0) return;
-        if (target.name === 'player') {
-            const damage = Math.round(entity.ascean?.[entity?.ascean?.mastery as keyof typeof this.context.state.player] * 0.2);
-            const health = target.health - damage;
-            this.combatMachine.action({ data: { key: 'player', value: health, id: (entity as Enemy).enemyID }, type: 'Set Health' });
-        } else if (entity.name === 'player') {
-            const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.2);
-            const health = target.health - damage;
-            this.combatMachine.action({ data: { key: 'enemy', value: health, id: (target as Enemy).enemyID }, type: 'Health' });
-        } else { // Computer Entity + Computer Target
-            const damage = Math.round(entity.ascean?.[entity?.ascean?.mastery as keyof typeof this.context.state.player] * 0.2);
-            const health = target.health - damage;
-            (entity as Enemy).computerCombatSheet.newComputerEnemyHealth = health;
-            (target as Enemy).computerCombatSheet.newComputerHealth = health;
-        };
-    };
-
-
-    // ============================ Combat Specials ============================ \\ 
-    playerMelee = (id: string, type: string): void => {
+    computerMelee = (id: string, type: string): void => {
         // FIXME: Change to be id agnostic, it first attempts to find ENEMY, then PLAYER, then PARTY ?
         if (!id) return;
         let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
@@ -93,11 +73,61 @@ export class CombatManager extends Phaser.Scene {
             }});
         };
     };
-    astrave = (id: string, enemyID: string): void => {
-        // FIXME: Change to be id agnostic, it first attempts to find ENEMY, then PLAYER, then PARTY ?
+
+    // ============================ Magic Impact ============================= \\
+    magic = (entity: Player | Enemy, target: Player | Enemy): void => {
+        if (target.health <= 0) return;
+        if (target.name === 'player') {
+            const damage = Math.round(entity.ascean?.[entity?.ascean?.mastery as keyof typeof entity.ascean] * 0.2);
+            const health = target.health - damage;
+            this.combatMachine.action({ data: { key: 'player', value: health, id: (entity as Enemy).enemyID }, type: 'Set Health' });
+        } else if (entity.name === 'player') {
+            const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.2);
+            const health = target.health - damage;
+            this.combatMachine.action({ data: { key: 'enemy', value: health, id: (target as Enemy).enemyID }, type: 'Health' });
+        } else { // Computer Entity + Computer Target
+            const damage = Math.round(entity.ascean?.[entity.ascean?.mastery as keyof typeof entity.ascean] * 0.2);
+            const health = target.health - damage;
+            (entity as Enemy).computerCombatSheet.newComputerEnemyHealth = health;
+            (target as Enemy).computerCombatSheet.newComputerHealth = health;
+            EventBus.emit(COMPUTER_BROADCAST, { id: (target as Enemy).enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });
+            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id: (target as Enemy).enemyID, origin: (target as Enemy).enemyID });
+        };
+    };
+
+
+    // ============================ Combat Specials ============================ \\ 
+    playerMelee = (id: string, type: string): void => {
+        if (!id) return;
+        let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
+        if (!enemy) return;
+        const match = this.context.isStateEnemy(id);
+        if (match) { // Target Player Attack
+            this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: type } });
+        } else { // Blind Player Attack
+            if (enemy.health === 0) return;
+            this.combatMachine.action({ type: 'Player', data: { 
+                playerAction: { action: type, parry: this.context.state.parryGuess }, 
+                enemyID: enemy.enemyID, 
+                ascean: enemy.ascean, 
+                damageType: enemy.currentDamageType, 
+                combatStats: enemy.combatStats, 
+                weapons: enemy.weapons, 
+                health: enemy.health, 
+                actionData: { action: enemy.currentAction, parry: enemy.parryAction }
+            }});
+        };
+    };
+    astrave = (id: string, enemyID?: string): void => {
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0) {
+        if (enemy && enemyID) {
+            const entity = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
+            const damage = Math.round(entity.ascean[entity.ascean.mastery as keyof typeof entity.ascean] * 1);
+            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: enemyID });
+            enemy.count.stunned += 1;    
+            enemy.isStunned = true;
+        } else if (enemy && enemy.health > 0) {
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 1);
             const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
@@ -113,7 +143,7 @@ export class CombatManager extends Phaser.Scene {
         // FIXME: Change to be id agnostic, it first attempts to find ENEMY, then PLAYER, then PARTY ?
         if (!id) return;
         let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0) {
+        if (enemy && enemy.health > 0) {
             enemy.count.feared += 1;
             enemy.isFeared = true;
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 1);
@@ -127,7 +157,7 @@ export class CombatManager extends Phaser.Scene {
         // FIXME: Change to be id agnostic, it first attempts to find ENEMY, then PLAYER, then PARTY ?
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0) {
+        if (enemy && enemy.health > 0) {
             enemy.isParalyzed = true;
             if (this.context.player.currentTarget && this.context.player.currentTarget.enemyID === this.context.player.getEnemyId()) {
                 this.combatMachine.action({ type: 'Tshaeral', data: 15 });
@@ -143,7 +173,6 @@ export class CombatManager extends Phaser.Scene {
         };
     };
     chiomic = (id: string): void => {
-        // FIXME: Change to be id agnostic, it first attempts to find ENEMY, then PLAYER, then PARTY ?
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
@@ -194,12 +223,13 @@ export class CombatManager extends Phaser.Scene {
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.35) * (this.context.player.isCaerenic ? 1.15 : 1) * ((this.context.state.player?.level as number + 9) / 10);
             const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
-            enemy.slowDuration = 950;
+            enemy.slowDuration = 1000;
             enemy.count.slowed += 1;
             enemy.isSlowed = true;
         };
     };
     howl = (id: string): void => {
+        // TODO:FIXME: This only accounts for either a Player using it or an enemy attacking the player
         if (!id) return;
         this.stunned(id);
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
@@ -210,6 +240,7 @@ export class CombatManager extends Phaser.Scene {
         };
     };
     kynisos = (id: string): void => {
+        // TODO:FIXME: This only accounts for either a Player using it or an enemy attacking the player
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
@@ -225,7 +256,7 @@ export class CombatManager extends Phaser.Scene {
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
-            this.useGrace(15);
+            this.useGrace(10);
             this.context.player.isParalyzed = true;
         } else {
             enemy.count.paralyzed += 1;
@@ -289,7 +320,7 @@ export class CombatManager extends Phaser.Scene {
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
-            this.useGrace(15);
+            this.useGrace(10);
             this.context.player.isFeared = true;
         } else {
             enemy.isFeared = true;
@@ -325,7 +356,7 @@ export class CombatManager extends Phaser.Scene {
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.context.player.isStunned = true;
-            this.useStamina(15);
+            this.useStamina(10);
         } else {
             enemy.count.stunned += 1;
             enemy.isStunned = true;
@@ -336,13 +367,14 @@ export class CombatManager extends Phaser.Scene {
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
             this.context.player.isStunned = true;
-            this.useStamina(15);
+            this.useStamina(10);
         } else {
             enemy.count.stunned += 1;
             enemy.isStunned = true;
         };
     };
     tendril = (id: string, _enemyID: string): void => {
+        // TODO:FIXME: This only accounts for either a Player using it or an enemy attacking the player
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
@@ -354,6 +386,7 @@ export class CombatManager extends Phaser.Scene {
         };
     };
     writhe = (id: string, enemyID?: string): void => {
+        // TODO:FIXME: This only accounts for either a Player using it or an enemy attacking the player
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {

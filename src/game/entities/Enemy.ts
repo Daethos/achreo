@@ -32,7 +32,7 @@ const PHYSICAL_ACTIONS = {
     ROLL: 'roll',
     THRUST: 'thrust',
 };
-type ENEMY = {id:string; threat:number};
+export type ENEMY = {id:string; threat:number};
 export default class Enemy extends Entity {
     enemyID: string;
     stateMachine: StateMachine;
@@ -278,7 +278,6 @@ export default class Enemy extends Entity {
             this.setVisible(true);
             this.spriteWeapon.setVisible(true);
         });
-        console.log(this.potentialEnemies, `${this.ascean.name}'s Potential Enemies`);
     };
 
     cleanUp() {
@@ -464,6 +463,8 @@ export default class Enemy extends Entity {
             if (enemy) this.checkComputerEnemyCombatEnter(enemy);
         };
         this.computerCombatSheet.newComputerHealth = this.health;
+        // TODO: Is this potentially unnecessary?
+        EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
     };
 
     computerHealing = (e: { healing: number; id: string; }) => {
@@ -514,6 +515,7 @@ export default class Enemy extends Entity {
         if (e.newComputerEnemyHealth <= 0 && e.computerWin === true) {
             this.clearComputerCombatWin(e.enemyID);
         };
+        EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
     };
     
     playerCombatUpdate = (e: Combat) => {
@@ -630,12 +632,13 @@ export default class Enemy extends Entity {
                     } else if (this.computerStatusCheck(other.gameObjectB) && !this.isAggressive) {
                         const newEnemy = this.isNewComputerEnemy(other.gameObjectB);
                         const realEnemy = this.potentialEnemies.includes(other.gameObjectB.ascean.name);
-                        if (newEnemy) {
-                            console.log(`${other.gameObjectB.ascean.name} has encountered ${this.ascean.name}. Is this a potential enemy? ${realEnemy ? 'Yes' : 'No'}.`);
+                        if (newEnemy && realEnemy) {
+                            console.log(`${other.gameObjectB.ascean.name} has encountered ${this.ascean.name}. This is an enemy!`);
+                            this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
+                            // this.enemies.push(other.gameObjectB);
+                            this.checkComputerEnemyCombatEnter(other.gameObjectB);
                         };
-                        this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
-                        // FIXME: Create new State for COMPUTER_AWARE
-                        this.stateMachine.setState(States.AWARE);
+                        // this.stateMachine.setState(States.AWARE);
                     };
                 };
             },
@@ -1296,7 +1299,10 @@ export default class Enemy extends Entity {
         const rangeMultiplier = this.rangedDistanceMultiplier(3);
         const direction = this.attacking.position.subtract(this.position);
         const distance = direction.length();
-        if (Math.abs(this.originPoint.x - this.position.x) > RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier || Math.abs(this.originPoint.y - this.position.y) > RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier || !this.inCombat || distance > RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier) {
+        if (Math.abs(this.originPoint.x - this.position.x) > RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier 
+            || Math.abs(this.originPoint.y - this.position.y) > RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier 
+            || (!this.inCombat && !this.inComputerCombat) 
+            || distance > RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier) {
             this.stateMachine.setState(States.LEASH);
             return;
         };  
@@ -1323,7 +1329,7 @@ export default class Enemy extends Entity {
     };
 
     onCombatEnter = () => {
-        if (this.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
+        if ((this.inCombat === false && this.inComputerCombat === false) || this.health <= 0 || (this.inCombat && this.scene.state.newPlayerHealth <= 0)) {
             this.inCombat = false;
             this.stateMachine.setState(States.LEASH);
             return;
@@ -1342,8 +1348,9 @@ export default class Enemy extends Entity {
     onCombatExit = () => this.evaluateCombatDistance();
 
     onContemplateEnter = () => {
-        if (this.inCombat === false || this.health <= 0) {
+        if ((this.inCombat === false && this.inComputerCombat === false) || this.health <= 0) {
             this.inCombat = false;
+            this.inComputerCombat = false;
             this.stateMachine.setState(States.LEASH);
             return;
         };
@@ -1895,7 +1902,17 @@ export default class Enemy extends Entity {
                             this.scene.combatManager.writhe(enemy.playerID, this.enemyID);
                             this.scene.combatManager.useStamina(5);
                         } else { // CvC
-                            this.scene.combatManager.writhe(enemy.enemyID, this.enemyID);
+                            this.scene.combatManager.computer({ type: 'Weapon', payload: { action: 'writhe', origin: this.enemyID, enemyID: enemy.enemyID } });
+                            /* 
+                                TODO:FIXME: This may need to funnel into a 'computerWrithe' in order to use their specific computerCombatSheets
+                                This will be more in depth as it needs to account for certain checks:
+                                    - Whether either computer is looking at the other
+                                    - Pulling in the proper concerns to perform correct combat data
+                                    - Flooding the rushed enemies data into the combat sheet if not the 'target'
+                                    - Accounting for damage performed, and emitting back to the rushed enemy
+                                    - Reconstituting the rushing enemy's computerCombatSheet in case it needs to reorient and keep target to a different enemy
+                            */ 
+                            // this.scene.combatManager.writhe(enemy.enemyID, this.enemyID);
                         };
                     });
                 };
@@ -1951,7 +1968,10 @@ export default class Enemy extends Entity {
         this.combatChecker(this.isCasting);
     };
     
-    onPolymorphingEnter = () => this.startCasting('Polymorphing', PLAYER.DURATIONS.POLYMORPH, 'cast');
+    onPolymorphingEnter = () => {
+        this.targetID = this.getTargetId();
+        this.startCasting('Polymorphing', PLAYER.DURATIONS.POLYMORPH, 'cast');
+    };
     onPolymorphingUpdate = (dt: number) => {
         this.counterCheck();
         if (this.isCasting === true) this.castbar.update(dt, 'cast');
@@ -1960,23 +1980,27 @@ export default class Enemy extends Entity {
         };
     };
     onPolymorphingExit = () => {
-        if (this.castingSuccess === true && this.checkPlayerResist() === true) {
-            this.scene.combatManager.polymorph(this.attacking?.enemyID);
-            this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });        
-            EventBus.emit('enemy-combat-text', {
-                computerSpecialDescription: `${this.ascean.name} polymorphs you into a rabbit!`
-            });
+        if (this.targetID === this.scene.player.playerID) {
+            if (this.castingSuccess === true && this.checkPlayerResist() === true) {
+                this.scene.combatManager.polymorph(this.targetID);
+                this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });        
+                EventBus.emit('enemy-combat-text', {
+                    computerSpecialDescription: `${this.ascean.name} polymorphs you into a rabbit!`
+                });
+            };
+        } else { // CvC
+            if (this.castingSuccess === true) this.scene.combatManager.polymorph(this.targetID);
         };
         this.stopCasting('Countered Polymorph');
         this.instincts();
     };
 
     onPursuitEnter = () => {
-        this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
-        if (this.scene.player.flipX) {
-            this.setPosition(this.scene.player.x + 16, this.scene.player.y);
+        if (this.inCombat) this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
+        if (this.attacking.flipX) {
+            this.setPosition(this.attacking.x + 16, this.attacking.y);
         } else {
-            this.setPosition(this.scene.player.x - 16, this.scene.player.y);
+            this.setPosition(this.attacking.x - 16, this.attacking.y);
         };
         if (this.isGlowing === false) {
             this.checkCaerenic(true);
@@ -2013,8 +2037,7 @@ export default class Enemy extends Entity {
         this.stopCasting('Countered Reconstitute');
     };
     reconstitute = () => {
-        // FIXME: Change the concerns to separate if it's 'inCombat' and/or 'inComputerCombat'
-        if (this.isCasting === false || this.scene.state.computerWin === true || this.scene.state.playerWin === true || this.health <= 0 || this.isCounterSpelled === true) {
+        if (this.isCasting === false || this.health <= 0 || this.isCounterSpelled === true) { // this.scene.state.computerWin === true || this.scene.state.playerWin === true ||
             this.isCasting = false;
             this.reconTimer?.remove(false);
             this.reconTimer = undefined;
@@ -2022,8 +2045,12 @@ export default class Enemy extends Entity {
         };
         const heal = Math.round(this.ascean.health.max * 0.15);
         const total = Math.min(this.health + heal, this.ascean.health.max);
-        this.scene.combatManager.combatMachine.action({ data: { key: 'enemy', value: total, id: this.enemyID }, type: 'Health' });
-        this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
+        if (this.inCombat) {
+            this.scene.combatManager.combatMachine.action({ data: { key: 'enemy', value: total, id: this.enemyID }, type: 'Health' });
+            this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
+        } else { // inComputerCombat
+            EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: total });
+        };
         this.channelCount++;
         if (this.channelCount >= 5) {
             this.isCasting = false;
@@ -2035,7 +2062,7 @@ export default class Enemy extends Entity {
         this.isCasting = true;
         this.isRushing = true;
         if (this.inCombat) this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });        
-        const target = new Phaser.Math.Vector2(this.scene.player.x, this.scene.player.y);
+        const target = new Phaser.Math.Vector2(this.attacking.x, this.attacking.y);
         const direction = target.subtract(this.position);
         this.flickerCarenic(500);
         direction.normalize();
@@ -2048,17 +2075,31 @@ export default class Enemy extends Entity {
             duration: 500,
             ease: 'Circ.easeOut',
             onComplete: () => {
-                // FIXME: Change the concerns to separate if it's 'inCombat' and/or 'inComputerCombat'
                 if (this.rushedEnemies.length > 0) {
                     this.rushedEnemies.forEach(enemy => {
-                        this.scene.combatManager.useStamina(5);
-                        this.scene.combatManager.writhe(enemy.playerID, this.enemyID);
+                        if (enemy.name === 'player') {
+                            this.scene.combatManager.useStamina(5);
+                            this.scene.combatManager.writhe(enemy.playerID, this.enemyID);
+                        } else { // CvC
+                            this.scene.combatManager.computer({ type: 'Weapon', payload: { action: 'rush', origin: this.enemyID, enemyID: enemy.enemyID } });
+                            /* 
+                                TODO:FIXME: This may need to funnel into a 'computerWrithe' in order to use their specific computerCombatSheets
+                                This will be more in depth as it needs to account for certain checks:
+                                    - Whether either computer is looking at the other
+                                    - Pulling in the proper concerns to perform correct combat data
+                                    - Flooding the rushed enemies data into the combat sheet if not the 'target'
+                                    - Accounting for damage performed, and emitting back to the rushed enemy
+                                    - Reconstituting the rushing enemy's computerCombatSheet in case it needs to reorient and keep target to a different enemy
+                            */ 
+                            // this.scene.combatManager.writhe(enemy.enemyID, this.enemyID);
+                        };
                     });
                 };
                 this.isRushing = false;
                 this.stateMachine.setState(States.CHASE);
             },
         });         
+        this.scrollingCombatText = this.scene.showCombatText('Rush', 900, 'cast', false, false, () => this.scrollingCombatText = undefined);
     };
     onRushUpdate = (_dt: number) => {};
     onRushExit = () => {
@@ -3242,39 +3283,61 @@ export default class Enemy extends Entity {
     };
 
     enemyActionSuccess = () => {
-        // FIXME: Account for whether this.attacking === PLAYER or ENEMY
-        if (this.isRanged) this.scene.combatManager.checkPlayerSuccess();
-        const shimmer = Math.random() * 101;
-        if (this.scene.player.isAbsorbing || this.scene.player.isEnveloping || this.scene.player.isShielding || (this.scene.player.isShimmering && shimmer > 50) || this.scene.player.isWarding) {
-            if (this.scene.player.isAbsorbing === true) this.scene.player.playerMachine.absorb();
-            if (this.scene.player.isEnveloping === true) this.scene.player.playerMachine.envelop();
-            if (this.scene.player.isShielding === true) this.scene.player.playerMachine.shield();
-            if (this.scene.player.isShimmering === true) this.scene.player.playerMachine.shimmer();
-            if (this.scene.player.isWarding === true) this.scene.player.playerMachine.ward(this.enemyID);
-            if (this.particleEffect) this.killParticle();
-            return;
-        };
-        if (this.particleEffect) {
-            if (this.isCurrentTarget) {
-                this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: COMPUTER_ACTION, value: this.particleEffect.action, id: this.enemyID } });
-            } else {
-                this.scene.combatManager.combatMachine.action({ type: 'Enemy', data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.particleEffect.action, parry: this.parryAction, id: this.enemyID }}});
+       if (this.attacking.name === 'player') {
+           if (this.isRanged) this.scene.combatManager.checkPlayerSuccess();
+           const shimmer = Math.random() * 101;
+            if (this.scene.player.isAbsorbing || this.scene.player.isEnveloping || this.scene.player.isShielding || (this.scene.player.isShimmering && shimmer > 50) || this.scene.player.isWarding) {
+                if (this.scene.player.isAbsorbing === true) this.scene.player.playerMachine.absorb();
+                if (this.scene.player.isEnveloping === true) this.scene.player.playerMachine.envelop();
+                if (this.scene.player.isShielding === true) this.scene.player.playerMachine.shield();
+                if (this.scene.player.isShimmering === true) this.scene.player.playerMachine.shimmer();
+                if (this.scene.player.isWarding === true) this.scene.player.playerMachine.ward(this.enemyID);
+                if (this.particleEffect) this.killParticle();
+                return;
             };
-            this.killParticle();
-        } else {
-            if (this.isCurrentTarget) {
+            if (this.particleEffect) {
+                if (this.isCurrentTarget) {
+                    this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: COMPUTER_ACTION, value: this.particleEffect.action, id: this.enemyID } });
+                } else {
+                    this.scene.combatManager.combatMachine.action({ type: 'Enemy', data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.particleEffect.action, parry: this.parryAction, id: this.enemyID }}});
+                };
+                this.killParticle();
+            } else {
+                if (this.isCurrentTarget) {
+                    if (this.currentAction === '') return;
+                    this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: COMPUTER_ACTION, value: this.currentAction, id: this.enemyID } });
+                } else {
+                    this.scene.combatManager.combatMachine.action({ type: 'Enemy', data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.currentAction, parry: this.parryAction, id: this.enemyID }}});
+                };
+            }; 
+            this.scene.combatManager.useStamina(1);
+            if (this.scene.player.isMenacing || this.scene.player.isModerating || this.scene.player.isMultifaring || this.scene.player.isMystifying) {
+                this.scene.player.reactiveTarget = this.enemyID;
+            };
+            if (this.scene.player.isShadowing === true) this.scene.player.playerMachine.pursue(this.enemyID);
+            if (this.scene.player.isTethering === true) this.scene.player.playerMachine.tether(this.enemyID);
+        } else { // CvC
+            const shimmer = Math.random() * 101;
+            if (this.attacking?.isAbsorbing || this.attacking?.isEnveloping || this.attacking?.isShielding || (this.attacking?.isShimmering && shimmer > 50) || this.attacking?.isWarding) {
+                if (this.attacking.isAbsorbing === true) this.attacking.absorb();
+                if (this.attacking.isEnveloping === true) this.attacking.envelop();
+                if (this.attacking.isShielding === true) this.attacking.shield();
+                if (this.attacking.isShimmering === true) this.attacking.shimmer();
+                if (this.attacking.isWarding === true) this.attacking.ward(this.enemyID);
+                if (this.particleEffect) this.killParticle();
+                return;
+            };
+            if (this.particleEffect) {
+                this.scene.combatManager.computer({ type: 'Weapon', payload: { action: this.particleEffect.action, origin: this.enemyID, enemyID: this.attacking.enemyID } });
+                this.killParticle();
+            } else {
                 if (this.currentAction === '') return;
-                this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: COMPUTER_ACTION, value: this.currentAction, id: this.enemyID } });
-            } else {
-                this.scene.combatManager.combatMachine.action({ type: 'Enemy', data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.currentAction, parry: this.parryAction, id: this.enemyID }}});
+                this.scene.combatManager.computer({ type: 'Weapon', payload: { action: this.currentAction, origin: this.enemyID, enemyID: this.attacking.enemyID } });
             };
-        }; 
-        this.scene.combatManager.useStamina(1);
-        if (this.scene.player.isMenacing || this.scene.player.isModerating || this.scene.player.isMultifaring || this.scene.player.isMystifying) {
-            this.scene.player.reactiveTarget = this.enemyID;
+            if (this.attacking?.isMenacing || this.attacking?.isModerating || this.attacking?.isMultifaring || this.attacking?.isMystifying) {
+                this.attacking.reactiveTarget = this.enemyID;
+            };
         };
-        if (this.scene.player.isShadowing === true) this.scene.player.playerMachine.pursue(this.enemyID);
-        if (this.scene.player.isTethering === true) this.scene.player.playerMachine.tether(this.enemyID);
     };
 
     enemyDodge = () => {
@@ -3376,8 +3439,7 @@ export default class Enemy extends Entity {
 
     evaluateCombatDistance = () => {
         if (this.isCasting === true || this.isSuffering() === true || this.isHurt === true || this.isContemplating === true) return;
-        // FIXME: ACCOUNT FOR THIS.INCOMPUTERCOMBAT, AND THE PLAYER HEALTH NOT MATTERING IF SO
-        if (this.attacking === undefined || this.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
+        if (this.attacking === undefined || (this.inCombat === false && this.inComputerCombat === false) || this.health <= 0 || (this.inCombat && this.scene.state.newPlayerHealth <= 0)) {
             this.stateMachine.setState(States.LEASH);
             return;
         };
@@ -3455,9 +3517,9 @@ export default class Enemy extends Entity {
     };
 
     isUnderRangedAttack = () => {
-        const part = this.getEnemyParticle();
-        if (!part) return false;
-        return (this.attacking.isRanged && this.checkEvasion(part) && !this.stateMachine.isCurrentState(States.EVADE));
+        const p = this.getEnemyParticle();
+        if (!p) return false;
+        return (this.attacking.isRanged && this.checkEvasion(p) && !this.stateMachine.isCurrentState(States.EVADE));
     };
 
     currentTargetCheck = () => {
@@ -3569,7 +3631,6 @@ export default class Enemy extends Entity {
         };
         if (this.actionSuccess === true) {
             this.actionSuccess = false;
-            // FIXME: CHECK IF THE THIS.ATTACKING IS THE PLAYER OR AN ENEMY OR PARTY
             this.enemyActionSuccess();
         };
         if (this.particleEffect) this.currentParticleCheck();

@@ -3,7 +3,7 @@ export const PARTICLES = ['achire', 'earth',  'fire',  'frost', 'hook', 'lightni
 const TIME = { quor: 3000, achire: 2000, attack: 1500, hook: 1750, thrust: 1150, posture: 1750, roll: 1500, special: 2000 };
 const VELOCITY = { quor: 4.5, achire: 6, attack: 5, hook: 5.5, thrust: 6, posture: 4, roll: 4, special: 5 }; // 7.5 || 9 || 6 || 6
 import Player from '../entities/Player';
-import Enemy from '../entities/Enemy';
+import Enemy, { ENEMY } from '../entities/Enemy';
 import Entity from '../entities/Entity';
 import { Play } from '../main';
 // @ts-ignore
@@ -128,6 +128,12 @@ export class Particle {
                     this.scene.particleManager.impactEffect(this);
                 };
                 if (other.bodyB.label === 'playerCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy' && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
+                    player.particleEffect.success = true;
+                    this.scene.particleManager.impactEffect(this);
+                };
+                if (other.bodyB.label === 'enemyCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && player.name === 'enemy') { // CvC
+                    const isEnemy = (player as Enemy).enemies.find((e: ENEMY) => e.id === other.gameObjectB.enemyID);
+                    if (!isEnemy) return;
                     player.particleEffect.success = true;
                     this.scene.particleManager.impactEffect(this);
                 };

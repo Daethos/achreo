@@ -428,6 +428,9 @@ export default class Enemy extends Entity {
     computerBroadcast = (e: { id: string; key: string; value: number; }) => {
         if (this.computerCombatSheet.enemyID !== e.id) return;
         (this.computerCombatSheet as any)[e.key] = e.value;
+        if (this.computerCombatSheet.newComputerEnemyHealth <= 0) {
+            this.clearComputerCombatWin(this.computerCombatSheet.enemyID);
+        };
     };
 
     // Broadcasting Multiple Changes? Seems Potentially Inefficient
@@ -441,7 +444,7 @@ export default class Enemy extends Entity {
 
     computerDamage = (e: { damage: number; id: string; origin: string; }) => {
         if (e.id !== this.enemyID) return;
-        this.health -= e.damage;
+        this.health = Math.max(this.health - e.damage, 0);
         this.updateHealthBar(this.health);
         this.scrollingCombatText = this.scene.showCombatText(`${e.damage}`, 1500, 'damage', false, false, () => this.scrollingCombatText = undefined);
         if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
@@ -478,7 +481,7 @@ export default class Enemy extends Entity {
 
     computerCombatUpdate = (e: ComputerCombat) => {
         if (this.enemyID !== e.personalID) return;
-        console.log(e, 'this is the combat update for', e.computer?.name);
+        // console.log(e, 'this is the combat update for', e.computer?.name);
         if (this.health > e.newComputerHealth) {
             let damage: number | string = Math.round(this.health - e.newComputerHealth);
             damage = e.criticalSuccess ? `${damage} (Critical)` : e.glancingBlow ? `${damage} (Glancing)` : damage;
@@ -515,7 +518,7 @@ export default class Enemy extends Entity {
         this.checkDamage(e.computerDamageType.toLowerCase()); 
         this.checkMeleeOrRanged(e.computerWeapons?.[0] as Equipment);
         this.currentRound = e.combatRound;
-        if (e.newComputerEnemyHealth <= 0 && e.computerWin === true) {
+        if (e.newComputerEnemyHealth <= 0) {
             console.log('clearComputerCombatWin');
             this.clearComputerCombatWin(e.enemyID);
         };
@@ -547,6 +550,10 @@ export default class Enemy extends Entity {
             if (this.isMalicing) this.maliceHit(this.scene.player.playerID);
             if (this.isMending) this.mendHit(this.scene.player.playerID);
             if (e.newComputerHealth <= 0) this.stateMachine.setState(States.DEFEATED);
+            /*
+                TODO:FIXME: Check what's going on here, this may be pushing the player into combat if circumstances line up:
+                The player is looking at them when they receive these state updates, which may make it 'think' it is being damaged by the player
+            */
             if (!this.inCombat && e.newComputerHealth > 0 && e.newPlayerHealth > 0) this.checkEnemyCombatEnter();
         } else if (this.health < e.newComputerHealth) { 
             let heal = Math.round(e.newComputerHealth - this.health);
@@ -753,14 +760,9 @@ export default class Enemy extends Entity {
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
         this.specialCombatText = this.scene.showCombatText('!', 1000, 'effect', true, true, () => this.specialCombatText = undefined);
         
-        const direction = this.attacking.position.subtract(this.position);
-        const distance = direction.length();
-
-        if (distance > 100) {
-            this.stateMachine.setState(States.CHASE);
-        } else {
-            this.stateMachine.setState(States.COMBAT);
-        }
+        const distance = this.attacking.position.subtract(this.position).length();
+        const state = distance > 75 ? States.CHASE : States.COMBAT;
+        this.stateMachine.setState(state);
     };
 
     setEnemyColor = () => {
@@ -910,8 +912,8 @@ export default class Enemy extends Entity {
             this.attacking = undefined;
             this.isTriumphant = true;
             this.isAggressive = false; // Added to see if that helps with post-combat losses for the player
-            this.health = this.ascean.health.max;
-            this.healthbar.setValue(this.ascean.health.max);
+            this.health = this.healthbar.getTotal();
+            this.healthbar.setValue(this.healthbar.getTotal());
             console.log('Leashing in clearComputerCombatWin');
             this.stateMachine.setState(States.LEASH); 
         } else {
@@ -1290,6 +1292,10 @@ export default class Enemy extends Entity {
             delay: 500,
             callback: () => {
                 // this.scene.navMesh.debugDrawClear();
+                if (!this.attacking) {
+                    this.path = [];
+                    return;
+                };
                 this.path = this.scene.navMesh.findPath(this.position, this.attacking.position);
                 if (this.path && this.path.length > 1) {
                     if (!this.isPathing) this.isPathing = true;
@@ -2456,7 +2462,8 @@ export default class Enemy extends Entity {
         };
 
         this.specialCombatText = this.scene.showCombatText('Mending', 500, 'tendril', false, true, () => this.specialCombatText = undefined);
-        const mend = Math.round(this.healthbar.getTotal() * 0.15);
+        // const mend = Math.round(this.healthbar.getTotal() * 0.15);
+        const mend = Phaser.Math.Between(this.healthbar.getTotal() * 0.1, this.healthbar.getTotal() * 0.15);
         const heal = Math.min(this.healthbar.getTotal(), this.health + mend);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 0) {
@@ -2468,11 +2475,14 @@ export default class Enemy extends Entity {
         } else if (id === this.scene.player.playerID) { // Non Targerted Player Combat
             this.health = heal;
             this.updateHealthBar(heal);
+            this.scrollingCombatText = this.scene.showCombatText(`${mend}`, 1500, 'heal', false, false, () => this.scrollingCombatText = undefined);
         } else { // Computer Combat
             this.health = heal;
             this.updateHealthBar(heal);
+            this.scrollingCombatText = this.scene.showCombatText(`${mend}`, 1500, 'heal', false, false, () => this.scrollingCombatText = undefined);
             EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: heal });
         };
+        this.computerCombatSheet.newComputerHealth = this.health;
     };
 
     onMultifariousEnter = () => {

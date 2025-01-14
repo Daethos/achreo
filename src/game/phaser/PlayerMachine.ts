@@ -174,6 +174,7 @@ export default class PlayerMachine {
             callback: () => {
                 // this.scene.navMesh.debugDrawClear();
                 if (!this.player.currentTarget || !this.player.currentTarget.body || !this.player.currentTarget.position) {
+                    this.player.path = [];
                     this.player.chaseTimer?.remove(false);
                     this.player.chaseTimer?.destroy();
                     this.player.chaseTimer = undefined;

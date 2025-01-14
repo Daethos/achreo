@@ -1173,8 +1173,8 @@ export default class Player extends Entity {
                     if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit(this.playerID);
                     return;
                 };
-                if (this.attackedTarget.isMenacing) this.attackedTarget.menace(); 
-                if (this.attackedTarget.isMultifaring) this.attackedTarget.multifarious(); 
+                if (this.attackedTarget.isMenacing) this.attackedTarget.menace(this.playerID); 
+                if (this.attackedTarget.isMultifaring) this.attackedTarget.multifarious(this.playerID); 
                 if (this.attackedTarget.isMystifying) this.attackedTarget.mystify(this.playerID); 
             };
             if (this.enemyIdMatch()) {

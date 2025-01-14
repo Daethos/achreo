@@ -252,8 +252,8 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
     computerTotalDamage = computerPhysicalDamage + computerMagicalDamage;
     if (computerTotalDamage < 0) computerTotalDamage = 0;
     combat.realizedComputerDamage = computerTotalDamage;
-    if (combat.action === ACTION_TYPES.ATTACK) combat.realizedComputerDamage *= DAMAGE.LOW;
-    if (combat.action === ACTION_TYPES.POSTURE) combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
+    if (computerAction === ACTION_TYPES.ATTACK) combat.realizedComputerDamage *= DAMAGE.LOW;
+    if (computerAction === ACTION_TYPES.POSTURE) combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
     // if (combat.isStalwart) combat.realizedComputerDamage *= DAMAGE.STALWART;
     // if (combat.isCaerenic) combat.realizedComputerDamage *= DAMAGE.CAERENEIC_NEG;
     // if (combat.berserk.active === true) combat.berserk.charges += 1;
@@ -290,6 +290,7 @@ function computerCombatSplitter(data: { computerOne: ComputerCombat, computerTwo
             attackCompiler(computerOne);
             computerTwo.newComputerHealth = computerOne.newComputerEnemyHealth;
             computerTwo.computerEnemyWin = computerOne.computerWin;
+            computerTwo.damagedID = computerOne.personalID;
         };
 
         return {computerOne, computerTwo};

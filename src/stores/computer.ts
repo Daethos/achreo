@@ -5,7 +5,6 @@ import StatusEffect from "../utility/prayer";
 
 export interface ComputerCombat {
     computer: Ascean | undefined;
-    action: string;
     computerAction: string;
     computerBlessing: string;
     computerHealth: number;
@@ -85,7 +84,6 @@ export interface ComputerCombat {
 
 export const initComputerCombat: ComputerCombat = {
     computer: undefined,
-    action: '',
     computerAction: '',
     computerBlessing: 'Buff',
     computerHealth: 0,

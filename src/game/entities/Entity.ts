@@ -61,6 +61,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     isCasting: boolean = false;
     isClimbing: boolean = false;
     inCombat: boolean = false;
+    inComputerCombat: boolean = false;
     isContemplating: boolean = false;
     isDefeated: boolean = false;
     isPosted: boolean = false;
@@ -622,7 +623,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.bowDamageType());
                     };
                 };
-                if (entity === 'enemy' && this.attacking && this.inCombat && this.isRanged) {
+                if (entity === 'enemy' && this.attacking && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
                     if (this.hasMagic) {
                         this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.currentDamageType);
                     } else if (this.hasBow) {
@@ -636,7 +637,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.frameCount += 1;
         } else if (this.isRolling) {
             if (this.frameCount === FRAME_COUNT.ROLL_LIVE) {
-                if (entity === 'enemy' && this.attacking && this.inCombat && this.isRanged) {
+                if (entity === 'enemy' && this.attacking && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
                     if (this.hasMagic) {
                         this.particleEffect = this.scene.particleManager.addEffect('roll', this, this.currentDamageType);
                     } else if (this.hasBow) {
@@ -660,7 +661,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.bowDamageType());
                     };
                 };
-                if (entity === 'enemy' && this.attacking && this.inCombat && this.isRanged) {
+                if (entity === 'enemy' && this.attacking && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
                     if (this.hasMagic) {
                         this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.currentDamageType);
                     } else if (this.hasBow) {
@@ -687,7 +688,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.bowDamageType());
                     };
                 };
-                if (entity === 'enemy' && this.attacking && this.inCombat && this.isRanged) {
+                if (entity === 'enemy' && this.attacking && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
                     if (this.hasMagic) {
                         this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.currentDamageType);
                     } else if (this.hasBow) {
@@ -934,7 +935,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     //                     this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.bowDamageType());
     //                 };
     //             };
-    //             if (entity === 'enemy' && this.attacking && this.inCombat && this.isRanged) {
+    //             if (entity === 'enemy' && this.attacking && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
     //                 if (this.hasMagic) {
     //                     this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.currentDamageType);
     //                 } else if (this.hasBow) {
@@ -965,7 +966,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     //         this.frameCount += 1; 
     //     } else if (this.isRolling) {
     //         if (this.frameCount === FRAME_COUNT.ROLL_LIVE) {
-    //             if (entity === 'enemy' && this.attacking && this.inCombat && this.isRanged) {
+    //             if (entity === 'enemy' && this.attacking && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
     //                 if (this.hasMagic) {
     //                     this.particleEffect = this.scene.particleManager.addEffect('roll', this, this.currentDamageType);
     //                 } else if (this.hasBow) {
@@ -986,7 +987,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     //                     this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.bowDamageType());
     //                 };
     //             };
-    //             if (entity === 'enemy' && this.attacking && this.inCombat && this.isRanged) {
+    //             if (entity === 'enemy' && this.attacking && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
     //                 if (this.hasMagic) {
     //                     this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.currentDamageType);
     //                 } else if (this.hasBow) {
@@ -1188,7 +1189,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     //                     this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.bowDamageType());
     //                 };
     //             };
-    //             if (entity === 'enemy' && this.attacking && this.inCombat && this.isRanged) {
+    //             if (entity === 'enemy' && this.attacking && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
     //                 if (this.hasMagic) {
     //                     this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.currentDamageType);
     //                 } else if (this.hasBow) {

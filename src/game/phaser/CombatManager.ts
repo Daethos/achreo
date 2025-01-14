@@ -43,7 +43,7 @@ export class CombatManager extends Phaser.Scene {
                 let computerTwo = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID).computerCombatSheet;
                 computerOne.computerAction = action;
                 computerOne.computerEnemyAction = computerTwo.computerAction;
-                computerTwo.computerEnemyAction = action;
+                // computerTwo.computerEnemyAction = action;
                 const result = computerCombatCompiler({computerOne, computerTwo});
                 EventBus.emit(UPDATE_COMPUTER_COMBAT, result?.computerOne);
                 EventBus.emit(UPDATE_COMPUTER_COMBAT, result?.computerTwo);

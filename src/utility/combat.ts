@@ -1,7 +1,6 @@
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { Combat } from "../stores/combat";
-import { ComputerCombat } from "../stores/computer";
 import { ARMOR_WEIGHT, ARMORS, ACTION_TYPES, ATTACKS, DAMAGE, ENEMY_ATTACKS, HOLD_TYPES, STRONG_ATTACKS, STRONG_TYPES, THRESHOLD, ATTACK_TYPES, DEFENSE_TYPES, DAMAGE_TYPES, MASTERY, WEAPON_TYPES, DEITIES, FAITH_RARITY } from "./combatTypes";
 import StatusEffect, { PRAYERS } from "./prayer";
 
@@ -2294,9 +2293,6 @@ function validate(combat: Combat): boolean {
     return (combat.player !== undefined && combat.computer !== undefined && combat.player !== undefined && combat.computer !== undefined);
 };
 
-function validateComputer(combat: ComputerCombat): boolean {
-    return combat.computer !== undefined;
-};
 // ================================= CONTROLLER - SERVICE ===================================== \\
 
 function instantActionCompiler(combat: Combat): Combat | undefined {

@@ -1,6 +1,6 @@
 import { Combat } from "../stores/combat";
 const ATTACKS = ['Attack', 'Posture', 'Roll', 'Parry', 'attack', 'posture', 'roll', 'parry', 'attacks', 'rolls', 'postures', 'parries', 'parried', 'rolled', 'attacked', 'defend', 'postured', 
-    'tshaer', 'tshaers', 'tshaering', 'leap', 'leaps', 'rush', 'rushes', 'writhe', 'writhes', 'devour', 'devours','thrust','thrusts'];
+    'tshaer', 'tshaers', 'tshaering', 'leap', 'leaps', 'rush', 'rushes', 'writhe', 'writhes', 'devour', 'devours', 'storm', 'storming', 'storms', 'thrust', 'thrusts'];
 const CAST = ['confuse', 'confusing', 'fear', 'fearing', 'paralyze', 'polymorph', 'polymorphs', 'polymorphing', 'slow', 'slowing', 'snare', 'snaring'];
 const COLORS = { BONE: '#fdf6d8', GREEN: 'green', HEAL: '#0BDA51', GOLD: 'gold', PURPLE: 'purple', TEAL: 'teal', RED: 'red', BLUE: 'blue', LIGHT_BLUE: 'lightblue', FUCHSIA: 'fuchsia' };
 const DAMAGE = ['Blunt', 'Pierce',  'Slash',  'Earth',  'Fire',  'Frost',  'Lightning', 'Righteous', 'Sorcery', 'Spooky',  'Wild', 'Wind' ];

@@ -65,14 +65,14 @@ export interface ComputerCombat {
     combatRound: number;
 
     weather: string;
-    astrication: { active: boolean; charges: number; };
-    berserk: { active: boolean; charges: number; };
-    conviction: { active: boolean; charges: number; };
-    isStalwart: boolean;
-    isCaerenic: boolean;
-    isStealth: boolean; //
-    isSeering: boolean;
-    isInsight: boolean;
+    // astrication: { active: boolean; charges: number; };
+    // berserk: { active: boolean; charges: number; };
+    // conviction: { active: boolean; charges: number; };
+    // isStalwart: boolean;
+    // isCaerenic: boolean;
+    // isStealth: boolean;
+    // isSeering: boolean;
+    // isInsight: boolean;
     enemyID: string;
     damagedID: string;
     personalID: string;
@@ -144,14 +144,14 @@ export const initComputerCombat: ComputerCombat = {
     combatRound: 0,
 
     weather: '',
-    astrication: { active: false, charges: 0 },
-    berserk: { active: false, charges: 0 },
-    conviction: { active: false, charges: 0 },
-    isStalwart: false,
-    isCaerenic: false,
-    isStealth: false,
-    isSeering: false,
-    isInsight: false,
+    // astrication: { active: false, charges: 0 },
+    // berserk: { active: false, charges: 0 },
+    // conviction: { active: false, charges: 0 },
+    // isStalwart: false,
+    // isCaerenic: false,
+    // isStealth: false,
+    // isSeering: false,
+    // isInsight: false,
     enemyID: '',
     damagedID: '',
     personalID: '',

@@ -4,18 +4,11 @@ import { EventBus } from '../EventBus';
 import Player from '../entities/Player';
 import { Play } from '../main';
 import StatusEffect, { PRAYERS } from '../../utility/prayer';
-import ComputerMachine from './ComputerMachine';
 import { COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from '../../utility/enemy';
 import { computerCombatCompiler } from '../../utility/computerCombat';
 
-/*
-    TODO:FIXME:
-    Many of these function correctly without needing to redress because they are agnostic with respect toward who triggered the effect
-*/
-
 export class CombatManager extends Phaser.Scene {
     combatMachine: CombatMachine;
-    computerMachine: ComputerMachine;
     context: Play;
 
     constructor(scene: Play) {
@@ -34,7 +27,6 @@ export class CombatManager extends Phaser.Scene {
 
     // ============================ Computer Combat ============================= \\
     computer = (combat: { type: string; payload: { action: string; origin: string; enemyID: string; } }) => {
-        // FIXME: Decide if CvC Weapon Based Combat should be set liket his or in computerMelee
         const { type, payload } = combat;
         const { action, origin, enemyID } = payload;
         switch (type) {
@@ -140,7 +132,6 @@ export class CombatManager extends Phaser.Scene {
         };
     };
     blind = (id: string): void => {
-        // FIXME: Change to be id agnostic, it first attempts to find ENEMY, then PLAYER, then PARTY ?
         if (!id) return;
         let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
         if (enemy && enemy.health > 0) {
@@ -154,7 +145,6 @@ export class CombatManager extends Phaser.Scene {
         };
     };
     caerenesis = (id: string): void => {
-        // FIXME: Change to be id agnostic, it first attempts to find ENEMY, then PLAYER, then PARTY ?
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (enemy && enemy.health > 0) {
@@ -229,15 +219,18 @@ export class CombatManager extends Phaser.Scene {
         };
     };
     howl = (id: string): void => {
-        // TODO:FIXME: This only accounts for either a Player using it or an enemy attacking the player
         if (!id) return;
         this.stunned(id);
-        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.75);
-            const health = enemy.health - damage;
-            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
-        };
+        
+        /*
+            Issue: It's agnostic for who is stunned, so having it hard coded that the player must have hit an 'enemy' is poor design and needs to be removed. Sorry, Str/Agi!
+        */
+        // let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
+        // if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
+        //     const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.75);
+        //     const health = enemy.health - damage;
+        //     this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
+        // };
     };
     kynisos = (id: string): void => {
         // TODO:FIXME: This only accounts for either a Player using it or an enemy attacking the player
@@ -280,9 +273,17 @@ export class CombatManager extends Phaser.Scene {
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) return;
-        const heal = enemy.ascean.health.max * 0.1;
-        const health = Math.min(enemy.health + heal, enemy.ascean.health.max);
-        this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
+        const heal = enemy.healthbar.getTotal() * 0.1;
+        const health = Math.min(enemy.health + heal, enemy.healthbar.getTotal());
+        if (enemy.inCombat) {
+            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
+        } else { // CvC
+            enemy.health = health;
+            enemy.updateHealthBar(health);
+            enemy.computerCombatSheet.newComputerHealth = health;
+            enemy.scrollingCombatText = this.context.showCombatText(`${heal}`, 1500, 'heal', false, false, () => enemy.scrollingCombatText = undefined);
+            EventBus.emit(COMPUTER_BROADCAST, { id, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });    
+        };
     };
     root = (id: string): void => {
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
@@ -373,20 +374,25 @@ export class CombatManager extends Phaser.Scene {
             enemy.isStunned = true;
         };
     };
-    tendril = (id: string, _enemyID: string): void => {
-        // TODO:FIXME: This only accounts for either a Player using it or an enemy attacking the player
+    tendril = (id: string, enemyID?: string): void => {
         if (!id) return;
-        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-            const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.3);
-            const total = Math.max(0, enemy.health - damage);
-            this.combatMachine.action({ data: { key: 'enemy', value: total, id }, type: 'Health' });
-        } else if (id === this.context.player.playerID) {
-            this.combatMachine.action({ data: 10, type: 'Enemy Chiomic' });
+        if (!enemyID) {
+            let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
+            if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
+                const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.3);
+                const total = Math.max(0, enemy.health - damage);
+                this.combatMachine.action({ data: { key: 'enemy', value: total, id }, type: 'Health' });
+            } else if (id === this.context.player.playerID) {
+                this.combatMachine.action({ data: 10, type: 'Enemy Chiomic' });
+            };
+        } else { // CvC
+            const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
+            const damage = Math.round(origin.ascean[origin.ascean.mastery as keyof typeof origin.ascean] * 0.3);
+            origin.computerCombatSheet.newComputerEnemyHealth -= damage;
+            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: enemyID });
         };
     };
     writhe = (id: string, enemyID?: string): void => {
-        // TODO:FIXME: This only accounts for either a Player using it or an enemy attacking the player
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
@@ -403,20 +409,24 @@ export class CombatManager extends Phaser.Scene {
                 this.useGrace(10);
             };
         } else {
-            const match = this.context.isStateEnemy(id);
-            if (match) { // Target Player Attack
-                this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: 'writhe' } });
-            } else { // Blind Player Attack
-                this.combatMachine.action({ type: 'Player', data: { 
-                    playerAction: { action: 'writhe', parry: this.context.state.parryGuess }, 
-                    enemyID: enemy.enemyID, 
-                    ascean: enemy.ascean, 
-                    damageType: enemy.currentDamageType, 
-                    combatStats: enemy.combatStats, 
-                    weapons: enemy.weapons, 
-                    health: enemy.health, 
-                    actionData: { action: enemy.currentAction, parry: enemy.parryAction }
-                }});
+            if (!enemyID) { // Player Combat
+                const match = this.context.isStateEnemy(id);
+                if (match) { // Target Player Attack
+                    this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: 'writhe' } });
+                } else { // Blind Player Attack
+                    this.combatMachine.action({ type: 'Player', data: { 
+                        playerAction: { action: 'writhe', parry: this.context.state.parryGuess }, 
+                        enemyID: enemy.enemyID, 
+                        ascean: enemy.ascean, 
+                        damageType: enemy.currentDamageType, 
+                        combatStats: enemy.combatStats, 
+                        weapons: enemy.weapons, 
+                        health: enemy.health, 
+                        actionData: { action: enemy.currentAction, parry: enemy.parryAction }
+                    }});
+                };
+            } else { // CvC
+                this.computer({ type: 'Weapon', payload: { action: 'writhe', origin: enemyID, enemyID: id } });
             };
         };
     };

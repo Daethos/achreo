@@ -115,11 +115,10 @@ export class Tutorial extends Phaser.Scene {
                 context: this
             });
         });
-
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 12; i++) {
             const e = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: undefined });
             this.enemies.push(e);
-            e.setPosition(Phaser.Math.Between(50, 900), Phaser.Math.Between(50, 900));
+            e.setPosition(Phaser.Math.Between(300, 700), Phaser.Math.Between(300, 700));
         };
 
         let camera = this.cameras.main;

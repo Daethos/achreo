@@ -233,7 +233,7 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
     const criticalClearance = Math.floor(Math.random() * 101);
     let criticalChance = computerWeapon.criticalChance;
     criticalChance -= (combat.computerEnemyAttributes?.kyosirMod as number / 2);
-    if (combat.weather === 'Astralands') criticalChance += 10;
+    // if (combat.weather === 'Astralands') criticalChance += 10;
     const criticalResult = criticalCompiler(false, combat.computer as Ascean, criticalChance, criticalClearance, computerWeapon, computerPhysicalDamage, computerMagicalDamage, combat.weather, combat.glancingBlow, combat.criticalSuccess);
     combat.glancingBlow = criticalResult.glancingBlow;
     combat.criticalSuccess = criticalResult.criticalSuccess;

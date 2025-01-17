@@ -238,7 +238,7 @@ export class Game extends Scene {
         this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
 
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
         };
         EventBus.emit('current-scene-ready', this);

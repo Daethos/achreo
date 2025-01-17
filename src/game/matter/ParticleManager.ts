@@ -128,12 +128,17 @@ export class Particle {
                     this.scene.particleManager.impactEffect(this);
                 };
                 if (other.bodyB.label === 'playerCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy' && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
+                    player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
                     this.scene.particleManager.impactEffect(this);
                 };
-                if (other.bodyB.label === 'enemyCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && player.name === 'enemy') { // CvC
+                if (other.bodyB.label === 'enemyCollider' && other.gameObjectB && player.particleEffect 
+                    && other.gameObjectB.name === 'enemy' && player.name === 'enemy' 
+                    && other.gameObjectB.enemyID !== (player as Enemy).enemyID) 
+                { // CvC
                     const isEnemy = (player as Enemy).enemies.find((e: ENEMY) => e.id === other.gameObjectB.enemyID);
                     if (!isEnemy) return;
+                    player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
                     this.scene.particleManager.impactEffect(this);
                 };

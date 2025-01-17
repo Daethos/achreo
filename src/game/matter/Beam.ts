@@ -112,7 +112,7 @@ export default class Beam {
         this.updateEnemyEmitter(enemy, color);
         this.scene.time.addEvent({
             delay: time / 20,
-            callback: () => {if (enemy && this.player.body) this.updateEnemyEmitter(enemy, color);},
+            callback: () => {if (enemy && enemy.body && this.player.body) this.updateEnemyEmitter(enemy, color);},
             callbackScope: this,
             repeat: 19
         });
@@ -148,6 +148,7 @@ export default class Beam {
     };
 
     updateEnemyEmitter = (enemy: any, color: number) => {
+        if (!enemy || !enemy.body) return;
         const dynamicConfig = {
             color: [color],
             moveToX: enemy.x - this.xOffset,

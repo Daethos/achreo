@@ -499,7 +499,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if (entity === 'enemy' && target) {
             const direction = target.position.subtract(this.position);
             const distance = direction.length();
-            if (distance < FRAME_COUNT.DISTANCE_CLEAR && !target.isProtecting) this.actionSuccess = true;
+            if (distance < FRAME_COUNT.DISTANCE_CLEAR && !target.isProtecting && target.health > 0) {
+                this.attackedTarget = target;
+                this.actionSuccess = true;
+            };
         };
     };
     checkBow = (type: string) => type === 'Bow' || type === 'Greatbow';

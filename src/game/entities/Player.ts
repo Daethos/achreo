@@ -14,6 +14,7 @@ import Equipment from "../../models/equipment";
 import { Compiler } from "../../utility/ascean";
 import { ActionButton } from "../phaser/ActionButtons";
 import { Combat } from "../../stores/combat";
+import { COMPUTER_BROADCAST } from "../../utility/enemy";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const DURATION = {
@@ -304,10 +305,19 @@ export default class Player extends Entity {
         return asset.imgUrl.split('/')[3].split('.')[0];
     };
 
+    computerBroadcast = (e: any) => {
+        if (this.currentTarget?.enemyID !== e.id) return;
+        if (e.key === 'newComputerEnemyHealth') {
+            EventBus.emit('update-combat-state', { key: 'newComputerHealth', value: e.value });
+            // EventBus.emit('initiate-combat', { type: 'Health', data: { id: e.id, key: 'enemy', value: e.value } });
+        };
+    };
+
     playerStateListener = () => {
         EventBus.on('set-player', this.setPlayer)
-        EventBus.on('combat', this.constantUpdate); 
+        EventBus.on('combat', this.constantUpdate);
         EventBus.on('update-combat', this.eventUpdate);
+        EventBus.on(COMPUTER_BROADCAST, this.computerBroadcast);
         EventBus.on('disengage', this.disengage); 
         EventBus.on('engage', this.engage);
         EventBus.on('speed', this.speedUpdate);
@@ -476,7 +486,9 @@ export default class Player extends Entity {
             this.currentRound = e.combatRound;
             if (e.computerDamaged || e.playerDamaged || e.rollSuccess || e.parrySuccess || e.computerRollSuccess || e.computerParrySuccess) this.soundEffects(e);
         };
-        if (e.newComputerHealth <= 0 && e.playerWin === true) this.defeatedEnemyCheck(e.enemyID);
+        if (e.newComputerHealth <= 0 && e.playerWin === true) {
+            this.defeatedEnemyCheck(e.enemyID);
+        };
         if (e.newPlayerHealth <= 0) {
             this.isDefeated = true;
             this.disengage();
@@ -716,13 +728,12 @@ export default class Player extends Entity {
     defeatedEnemyCheck = (id: string) => {
         this.currentTarget = undefined;
         this.removeHighlight();
-        const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === id && e.health <= 0);
-        if (enemy) {
-            this.targets = this.targets.filter(target => target.enemyID !== id);
-            this.sendEnemies(this.targets);
-            if (this.highlight.visible) this.removeHighlight();
-            this.scene.combatManager.combatMachine.clear(id);
-        };
+        // const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === id && e.health <= 0);
+        // if (enemy) {
+        this.targets = this.targets.filter(target => target.enemyID !== id);
+        this.sendEnemies(this.targets);
+        this.scene.combatManager.combatMachine.clear(id);
+        // };
         const enemyInCombat = this.targets.find(obj => obj.inCombat && obj.health > 0);
         if (enemyInCombat) {
             this.scene.hud.setupEnemy(enemyInCombat);

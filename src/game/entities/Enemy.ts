@@ -102,7 +102,7 @@ export default class Enemy extends Entity {
     enemies: ENEMY[] | any[] = [];
     potentialEnemies: string[] = [];
     targetID: string = '';
-    defeatedTime: number = 90000;
+    defeatedTime: number = 150000;
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: "enemy", ascean: undefined, health: 1 }); 
@@ -571,7 +571,6 @@ export default class Enemy extends Entity {
             if ((!this.inComputerCombat || !this.attacking) && e.newComputerHealth > 0 && e.enemyID !== this.enemyID) {
                 const enemy = this.scene.enemies.find((en) => en.enemyID === e.damagedID);
                 if (enemy) {
-                    // console.log('checkComputerEnemyCombatEnter in computerCombatUpdate');
                     this.checkComputerEnemyCombatEnter(enemy);
                 };
             };
@@ -731,7 +730,6 @@ export default class Enemy extends Entity {
                         // ===== TEMPORARY FOR TESTING ===== \\
                         if (this.inCombat || this.inComputerCombat || other.gameObjectB.health <= 0 || this.health <= 0) return; 
                         
-                        // console.log(`${other.gameObjectB.ascean.name} has encountered an enemy of theirs: ${this.ascean.name}!`);
                         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
                         // this.enemies.push(other.gameObjectB);
                         this.checkComputerEnemyCombatEnter(other.gameObjectB);
@@ -933,7 +931,7 @@ export default class Enemy extends Entity {
             this.attacking = undefined;
             this.isAggressive = false; // Added to see if that helps with post-combat losses for the player
             this.enemies = [];
-            this.stateMachine.setState(States.LEASH); 
+            // this.stateMachine.setState(States.LEASH); 
         } else {
             this.enemies = this.enemies.filter((e) => e.id !== this.scene.player.playerID);
             const newId = this.enemies[0].id;
@@ -1008,7 +1006,6 @@ export default class Enemy extends Entity {
             const newId = this.enemies[0].id;
             const newEnemy = this.scene.enemies.find((e) => newId === e.enemyID);
             if (newEnemy && newEnemy.health > 0) {
-                // console.log(`New Enemy: ${newEnemy.ascean.name}`);
                 this.attacking = newEnemy;
             } else {
                 this.clearComputerCombatWin(newId);
@@ -1291,13 +1288,15 @@ export default class Enemy extends Entity {
         this.enemies = [];
     };
     onDefeatedUpdate = (dt: number) => {
+        if (this.isDeleting) return;
         this.defeatedTime -= dt;
         if (this.defeatedTime <= 0 && !this.stateMachine.isCurrentState(States.IDLE)) this.stateMachine.setState(States.IDLE);
     };
     onDefeatedExit = () => {
+        if (this.isDeleting) return;
         this.anims.playReverse('player_death');
         this.isDefeated = false;
-        this.defeatedTime = 90000;
+        this.defeatedTime = 150000;
         this.health = this.ascean.health.max;
         this.updateHealthBar(this.ascean.health.max);
         this.computerCombatSheet.newComputerHealth = this.ascean.health.max;
@@ -1308,7 +1307,10 @@ export default class Enemy extends Entity {
     };
 
 
-    onDeathEnter = () => {this.clearTint(); this.setStatic(true)};
+    onDeathEnter = () => {
+        this.clearTint(); 
+        this.setStatic(true);
+    };
     onDeathUpdate = () => this.anims.play('player_hurt', true);
 
     onIdleEnter = () => {
@@ -1322,7 +1324,6 @@ export default class Enemy extends Entity {
         if (this.inComputerCombat || this.attacking) {
             const id = this.scene.enemies.find((e) => e.attacking?.enemyID === this.enemyID);
             if (id) {
-                // console.log('checkComputerEnemyCombatEnter in onIdleEnter');
                 this.checkComputerEnemyCombatEnter(id);
                 return;
             } else {
@@ -1333,15 +1334,6 @@ export default class Enemy extends Entity {
     };
     onIdleUpdate = (dt: number) => {
         this.idleWait -= dt;
-        // if (this.inComputerCombat) {
-        //     const id = this.scene.enemies.find((e) => e.attacking?.enemyID === this.enemyID);
-        //     if (id) {
-        //         this.checkComputerEnemyCombatEnter(id);
-        //         return;
-        //     } else {
-        //         this.inComputerCombat = false;
-        //     };
-        // };
         if (this.idleWait <= 0) {
             this.idleWait = Phaser.Math.RND.between(4000, 6000);
             if (this.stateMachine.isCurrentState(States.IDLE) && !this.isDeleting) this.stateMachine.setState(States.PATROL);
@@ -1462,7 +1454,7 @@ export default class Enemy extends Entity {
             delay: 500,
             callback: () => {
                 // this.scene.navMesh.debugDrawClear();
-                if (!this.attacking) {
+                if (!this.attacking || !this.scene.navMesh) {
                     this.path = [];
                     return;
                 };
@@ -1761,7 +1753,6 @@ export default class Enemy extends Entity {
         if (this.inComputerCombat || this.attacking) {
             const id = this.scene.enemies.find((e) => e.attacking?.enemyID === this.enemyID);
             if (id) {
-                // console.log('checkComputerEnemyCombatEnter in onLeashEnter');
                 this.checkComputerEnemyCombatEnter(id);
                 return;
             };
@@ -3681,7 +3672,6 @@ export default class Enemy extends Entity {
             if (this.inComputerCombat || this.attacking) {
                 const id = this.scene.enemies.find((e) => e.attacking?.enemyID === this.enemyID);
                 if (id) {
-                    // console.log('checkComputerEnemyCombatEnter in evaluateCombatDistance');
                     this.checkComputerEnemyCombatEnter(id);
                     return;
                 };

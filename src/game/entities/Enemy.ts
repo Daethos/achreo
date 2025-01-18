@@ -1474,7 +1474,7 @@ export default class Enemy extends Entity {
     }; 
     onChaseUpdate = (_dt: number) => {
         if (!this.attacking) {
-            console.log(`${this.ascean.name} LEASHING in onChaseUpdate !THIS.ATTACKING`);
+            // console.log(`${this.ascean.name} LEASHING in onChaseUpdate !THIS.ATTACKING`);
             this.stateMachine.setState(States.LEASH);
             return;
         };
@@ -1486,7 +1486,7 @@ export default class Enemy extends Entity {
             || (!this.inCombat && !this.inComputerCombat)
             || distance > RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier) 
         {
-            console.log(`${this.ascean.name} LEASHING in onChaseUpdate RANGE`);
+            // console.log(`${this.ascean.name} LEASHING in onChaseUpdate RANGE`);
             this.stateMachine.setState(States.LEASH);
             return;
         };  
@@ -1522,7 +1522,7 @@ export default class Enemy extends Entity {
         {
             this.inCombat = false;
             this.inComputerCombat = false;
-            console.log(`${this.ascean.name} SHOULD NO LONGER BE IN COMBAT`);
+            // console.log(`${this.ascean.name} SHOULD NO LONGER BE IN COMBAT`);
             return;
         };
         this.frameCount = 0;
@@ -1561,7 +1561,7 @@ export default class Enemy extends Entity {
         this.isContemplating = false;
         this.currentAction = '';
         if (this.inCombat === false && this.inComputerCombat === false) {
-            console.log(`${this.ascean.name} LEASHING in onContemplateExit`);
+            // console.log(`${this.ascean.name} LEASHING in onContemplateExit`);
             this.stateMachine.setState(States.LEASH);
             return;
         };
@@ -3658,7 +3658,7 @@ export default class Enemy extends Entity {
                 };
             };
             if (this.health > 0 && !this.stateMachine.isCurrentState(States.LEASH)) {
-                console.log(`${this.ascean.name} LEASHING in evaluateCombatDistance with current state ${this.stateMachine.getCurrentState()?.toUpperCase()}`);
+                // console.log(`${this.ascean.name} LEASHING in evaluateCombatDistance with current state ${this.stateMachine.getCurrentState()?.toUpperCase()}`);
                 this.stateMachine.setState(States.LEASH);
             };
             this.inCombat = false;

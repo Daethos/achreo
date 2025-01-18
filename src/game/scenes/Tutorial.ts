@@ -115,11 +115,11 @@ export class Tutorial extends Phaser.Scene {
                 context: this
             });
         });
-        for (let i = 0; i < 12; i++) {
-            const e = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: undefined });
-            this.enemies.push(e);
-            e.setPosition(Phaser.Math.Between(250, 750), Phaser.Math.Between(250, 750));
-        };
+        // for (let i = 0; i < 12; i++) {
+        //     const e = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: undefined });
+        //     this.enemies.push(e);
+        //     e.setPosition(Phaser.Math.Between(250, 750), Phaser.Math.Between(250, 750));
+        // };
 
         let camera = this.cameras.main;
         camera.zoom = this.hud.settings.positions?.camera?.zoom;
@@ -588,7 +588,7 @@ export class Tutorial extends Phaser.Scene {
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(delta);
-            // if ((this.enemies[i].isDefeated || this.enemies[i].isTriumphant) && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
+            if ((this.enemies[i].isDefeated || this.enemies[i].isTriumphant) && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
         };
         for (let i = 0; i < this.dms.length; i++) {
             this.dms[i].update(delta);

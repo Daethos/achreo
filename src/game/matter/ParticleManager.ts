@@ -230,7 +230,7 @@ export default class ParticleManager extends Phaser.Scene {
 
     createImpacts(scene: Play) {
         let count = 0, collection = [];
-        while (count < 50) {
+        while (count < 100) {
             const impact = scene.add.sprite(0, 0, 'impact').setActive(false).setDepth(9).setOrigin(0.5).setScale(0.25).setVisible(false); // Add it to the scene
             collection.push(impact);
             count++;

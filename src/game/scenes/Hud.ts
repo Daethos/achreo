@@ -12,7 +12,7 @@ import Logger, { ConsoleLogger } from '../../utility/Logger';
 import { roundToTwoDecimals } from "../../utility/combat";
 import { Play } from "../main";
 import { Tutorial } from "./Tutorial";
-import { Arena, ArenaView } from "./Arena";
+import { Arena } from "./Arena";
 import { Underground } from "./Underground";
 import { EnemySheet } from "../../utility/enemy";
 const dimensions = useResizeListener();

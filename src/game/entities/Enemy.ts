@@ -13,7 +13,7 @@ import { roundToTwoDecimals } from "../../utility/combat";
 import { Underground } from "../scenes/Underground";
 import { Combat } from "../../stores/combat";
 import Player from "./Player";
-import Equipment from "../../models/equipment";
+import Equipment, { randomFloatFromInterval } from "../../models/equipment";
 import { Particle } from "../matter/ParticleManager";
 import { Compiler } from "../../utility/ascean";
 import { Arena } from "../scenes/Arena";
@@ -1048,7 +1048,7 @@ export default class Enemy extends Entity {
         this.stateMachine.setState(States.CHASE);
     };
 
-    setSpecialCombat = (bool: boolean, mult = 1) => {
+    setSpecialCombat = (bool: boolean, mult = randomFloatFromInterval(0.75, 1.25)) => {
         if (this.isSpecial === false) return;
         if (bool === true) {
             const mastery = this.ascean.mastery;
@@ -2385,13 +2385,11 @@ export default class Enemy extends Entity {
 
     onDevourEnter = () => {
         this.startCasting('Devouring', PLAYER.DURATIONS.TSHAERAL, 'damage', true);
+        this.targetID = this.getTargetId();
         if (this.attacking?.name === 'player') {
             if (this.checkPlayerResist() === false) return;
-            this.targetID = this.attacking.playerID;
             this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(15);
-        } else {
-            this.targetID = this.attacking.enemyID;
         };
         this.channelCount = 0;
         this.devourTimer = this.scene.time.addEvent({
@@ -2950,7 +2948,7 @@ export default class Enemy extends Entity {
 
     onWritheEnter = () => {
         this.aoe = new AoE(this.scene, 'writhe', 1, true, this);    
-        this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
+        if (this.inCombat) this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
         this.specialCombatText = this.scene.showCombatText('Writhing', 750, 'tendril', false, true, () => this.specialCombatText = undefined);
         this.isWrithing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.WRITHE, () => {
@@ -2993,7 +2991,7 @@ export default class Enemy extends Entity {
             clearStealth(this.spriteShield);
             this.setTint(ENEMY_COLOR);
         };
-        this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });
+        if (this.inCombat) this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });
     };
 
     // ========================== STATUS EFFECT STATES ========================== \\
@@ -3644,7 +3642,7 @@ export default class Enemy extends Entity {
     };
 
     evaluateCombatDistance = () => {
-        if (this.isCasting === true || this.isSuffering() === true || this.isHurt === true || this.isContemplating === true) return;
+        if (this.isCasting === true || this.isSuffering() === true || this.isHurt === true || this.isContemplating === true || this.isDeleting || this.isDefeated) return;
         if (this.attacking === undefined || this.attacking.body === undefined
             || (this.inCombat === false && this.inComputerCombat === false)
             || (this.inCombat && this.scene.state.newPlayerHealth <= 0)

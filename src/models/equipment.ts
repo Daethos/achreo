@@ -18,11 +18,11 @@ const DAMAGE = ['physicalDamage', 'magicalDamage'];
 const DEFENSE = ['physicalResistance', 'magicalResistance'];
 const CRITICAL = ['criticalDamage'];
 
-function randomIntFromInterval(min: number, max: number): number {
+export function randomIntFromInterval(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-function randomFloatFromInterval(min: number, max: number): number {
+export function randomFloatFromInterval(min: number, max: number): number {
     return parseFloat((Math.random() * (max - min) + min).toFixed(2));
 };
 

@@ -1,4 +1,6 @@
 import { masteryNumber } from "../../utility/styling";
+import Enemy from "../entities/Enemy";
+import Player from "../entities/Player";
 import { Play } from "../main";
 const CONVERSION = {
     Arena: {
@@ -60,7 +62,7 @@ export default class Beam {
     scene: Play;
     emitter: Phaser.GameObjects.Particles.ParticleEmitter;
     enemyEmitters: any;
-    target: any;
+    target: Player | Enemy | undefined;
     settings: any;
     xOffset: number;
     yOffset: number;
@@ -94,13 +96,11 @@ export default class Beam {
         this.enemyEmitters = {};
     };
 
-    // Get the player's position in the world
     getPlayerWorldPosition = () => {
         const worldPoint = this.scene.cameras.main.getWorldPoint(this.player.x, this.player.y);
         return { x: worldPoint.x, y: worldPoint.y };
     };
 
-    // Get the target's position in the world
     getTargetWorldPosition = (target: any) => {
         const worldPoint = this.scene.cameras.main.getWorldPoint(target.x, target.y);
         return { x: worldPoint.x, y: worldPoint.y };
@@ -111,10 +111,10 @@ export default class Beam {
         this.emitter.start();
         this.updateEnemyEmitter(enemy, color);
         this.scene.time.addEvent({
-            delay: time / 20,
-            callback: () => {if (enemy && enemy.body && this.player.body) this.updateEnemyEmitter(enemy, color);},
+            delay: time / 30,
+            callback: () => {if (enemy && this.player.body) this.updateEnemyEmitter(enemy, color);},
             callbackScope: this,
-            repeat: 19
+            repeat: 29
         });
     };
     startEmitter = (target: any, time: number) => {
@@ -122,14 +122,14 @@ export default class Beam {
         this.target = target;
         this.updateEmitter(target);
         this.scene.time.addEvent({
-            delay: time / 20,
+            delay: time / 30,
             callback: () => {if (this.target !== undefined) this.updateEmitter(this.target);},
             callbackScope: this,
-            repeat: 19
+            repeat: 29
         });
     };
 
-    updateEmitter = (target: any) => {
+    updateEmitter = (target: Player | Enemy) => {
         let dynamicConfig = {};
         if (this.player === target) {
             dynamicConfig = {

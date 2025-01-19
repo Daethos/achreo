@@ -254,19 +254,19 @@ export const PLAYER = {
 // [4]: Casual Damage
 // [5]: Starter Damage
 
-// [6]: Melee < 100 Distance
-// [7]: Ranged < 100 Distance
+// [6]: Melee < 75 Distance
+// [7]: Ranged < 75 Distance
 
-// [8]: Melee > 100 && < 200 Distance
-// [9]: Ranged > 100 && < 200 Distance
+// [8]: Melee > 75 && < 150 Distance
+// [9]: Ranged > 75 && < 150 Distance
 
-// [10]: Melee > 200 Distance && Distance < 300
-// [11]: Ranged > 200 Distance && Distance < 300
+// [10]: Melee > 150 Distance && Distance < 225
+// [11]: Ranged > 150 Distance && Distance < 225
 
-// [12]: Melee > 300 Distance
-// [13]: Ranged > 300 Distance
+// [12]: Melee > 225 Distance
+// [13]: Ranged > 225 Distance
 
-// Currently 10 'Instincts' and 16 Options + Invoke
+// Currently 14 'Instincts' and 16 Options + Invoke
 
 const STATE = "stateMachine";
 const POSITIVE = "positiveMachine";

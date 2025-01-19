@@ -146,7 +146,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         if (positive === true) {
             scene.time.delayedCall(975, () => {
                 this.hit.forEach((hit) => {
-                    // FIXME: Needs to be agnostic for whether it's the PLAYER or an ENEMY or PARTY
                     if (hit.name === 'player') {
                         if (scene.player.checkPlayerResist() === true) {
                             (scene.combatManager as any)[type](hit.playerID, enemy.enemyID);

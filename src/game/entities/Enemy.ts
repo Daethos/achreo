@@ -293,7 +293,6 @@ export default class Enemy extends Entity {
     };
 
     cleanUp() {
-        // EventBus.off('combat', this.playerCombatUpdate);
         EventBus.off('update-combat', this.playerCombatUpdate); 
         EventBus.off(COMPUTER_BROADCAST, this.computerBroadcast);
         EventBus.off(UPDATE_COMPUTER_COMBAT, this.computerCombatUpdate);
@@ -318,9 +317,8 @@ export default class Enemy extends Entity {
     };
 
     enemyStateListener() {
-        // EventBus.on('combat', this.playerCombatUpdate);
+        EventBus.on('update-combat', this.playerCombatUpdate);
         EventBus.on(COMPUTER_BROADCAST, this.computerBroadcast);
-        EventBus.on('update-combat', this.playerCombatUpdate); 
         EventBus.on(UPDATE_COMPUTER_COMBAT, this.computerCombatUpdate);
         EventBus.on(UPDATE_COMPUTER_DAMAGE, this.computerDamage);
         EventBus.on('personal-update', this.personalUpdate);
@@ -368,6 +366,7 @@ export default class Enemy extends Entity {
             this.scrollingCombatText = this.scene.showCombatText(`${heal}`, 1500, 'heal', false, false, () => this.scrollingCombatText = undefined);
         };
         this.health = e.health;
+        this.computerCombatSheet.newComputerHealth = this.health;
         this.updateHealthBar(e.health);
         if (e.health <= 0 && !this.isDeleting) {
             this.isDefeated = true;
@@ -631,6 +630,7 @@ export default class Enemy extends Entity {
             this.scrollingCombatText = this.scene.showCombatText(`${heal}`, 1500, 'heal', false, false, () => this.scrollingCombatText = undefined);
         }; 
         this.health = e.newComputerHealth;
+        this.computerCombatSheet.newComputerHealth = this.health;
         if (this.healthbar.getTotal() < e.computerHealth) this.healthbar.setTotal(e.computerHealth);
         this.updateHealthBar(e.newComputerHealth);
         this.weapons = e.computerWeapons;
@@ -1266,6 +1266,7 @@ export default class Enemy extends Entity {
     };
 
     onDefeatedEnter = () => {
+        if (this.isDeleting) return;
         this.scene.hud.logger.log(`Console: ${this.ascean.name} has been defeated by ${this.attacking?.ascean?.name ? this.attacking.ascean.name : 'someone in this world'}.`);
         this.anims.play('player_death', true);
         if (this.isShimmering) {

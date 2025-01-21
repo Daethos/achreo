@@ -143,6 +143,14 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         });
     };
     setupEnemyCount = (scene: Play, type: string, positive: boolean, enemy: Enemy) => {
+        if (enemy.isDeleting) {
+            scene.glowFilter.remove(this);
+            this.hit = [];
+            this.timer.destroy();
+            this.timer.remove(false);
+            this.timer = undefined;
+            this.destroy();
+        };
         if (positive === true) {
             scene.time.delayedCall(975, () => {
                 this.hit.forEach((hit) => {

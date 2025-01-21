@@ -369,7 +369,7 @@ export default class Enemy extends Entity {
         };
         this.health = e.health;
         this.updateHealthBar(e.health);
-        if (e.health <= 0) {
+        if (e.health <= 0 && !this.isDeleting) {
             this.isDefeated = true;
             this.stateMachine.setState(States.DEFEATED);
         };
@@ -474,7 +474,7 @@ export default class Enemy extends Entity {
             this.updateThreat(e.origin, calculateThreat(e.damage, this.health, this.ascean.health.max));
         };
         EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
-        if (this.health <= 0) this.stateMachine.setState(States.DEFEATED);
+        if (this.health <= 0 && !this.isDeleting) this.stateMachine.setState(States.DEFEATED);
     };
 
     computerHealing = (e: { healing: number; id: string; }) => {
@@ -591,7 +591,7 @@ export default class Enemy extends Entity {
             this.clearComputerCombatWin(e.enemyID);
         };
         EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
-        if (this.health <= 0) this.stateMachine.setState(States.DEFEATED);
+        if (this.health <= 0 && !this.isDeleting) this.stateMachine.setState(States.DEFEATED);
     };
     
     playerCombatUpdate = (e: Combat) => {
@@ -618,7 +618,7 @@ export default class Enemy extends Entity {
             if (this.isPolymorphed) this.isPolymorphed = false;
             if (this.isMalicing) this.maliceHit(this.scene.player.playerID);
             if (this.isMending) this.mendHit(this.scene.player.playerID);
-            if (e.newComputerHealth <= 0) this.stateMachine.setState(States.DEFEATED);
+            if (e.newComputerHealth <= 0 && !this.isDeleting) this.stateMachine.setState(States.DEFEATED);
             if (!this.inCombat && e.newComputerHealth > 0 && e.newPlayerHealth > 0) {
                 this.checkEnemyCombatEnter();
             };

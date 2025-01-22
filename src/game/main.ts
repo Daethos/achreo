@@ -2,6 +2,7 @@ import PhaserMatterCollisionPlugin from 'phaser-matter-collision-plugin';
 import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-plugin.js';
 import GlowFilterPipelinePlugin from 'phaser3-rex-plugins/plugins/glowfilter2pipeline-plugin.js';
 import HorrifiPipelinePlugin from 'phaser3-rex-plugins/plugins/horrifipipeline-plugin.js';
+import WarpPipelinePlugin from 'phaser3-rex-plugins/plugins/warppipeline-plugin.js';
 // @ts-ignore
 import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 import { Boot } from './scenes/Boot';
@@ -47,6 +48,10 @@ const config: Phaser.Types.Core.GameConfig = {
         }, {
             key: 'rexGlowFilterPipeline',
             plugin: GlowFilterPipelinePlugin,
+            start: true
+        }, {
+            key: 'rexWarpPipeline',
+            plugin: WarpPipelinePlugin,
             start: true
         }],
         scene: [{

@@ -12,7 +12,7 @@ void main(void) {
     vec2 uv = outTexCoord;
 
     // Calculate wind displacement using a sine wave
-    float wave = sin(uv.y * 20.0 + time * intensity) * 0.001; // Adjust frequency & strength
+    float wave = sin(uv.y * 20.0 + time * intensity) * 0.0005; // Adjust frequency & strength
     uv.x = clamp(uv.x + wave, 0.0, 1.0);              // Clamp to avoid wrapping artifacts
 
     // Sample the displaced texture

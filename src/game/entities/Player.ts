@@ -591,19 +591,26 @@ export default class Player extends Entity {
             onLoop: () => {
                 this.frameCount = 0;
                 this.clearAnimations();
+                if (this.isSuffering()) return;
                 this.isAttacking = true;
                 screenShake(this.scene);
                 this.specialCombatText = this.scene.showCombatText('Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined);
                 if (this.touching.length > 0) {
                     this.touching.forEach((enemy) => {
-                        if (enemy.health === 0) return;
+                        if (enemy.health <= 0) return;
+                        if (enemy.isWarding || enemy.isShielding || enemy.isProtecting) {
+                            if (enemy.isShielding) enemy.shieldHit(this.playerID);
+                            if (enemy.isWarding) enemy.wardHit(this.playerID);
+                            return;
+                        };
+                        if (enemy.isMenacing) enemy.menace(this.playerID);
+                        if (enemy.isMultifaring) enemy.multifarious(this.playerID);
+                        if (enemy.isMystifying) enemy.mystify(this.playerID);    
                         this.scene.combatManager.playerMelee(enemy.enemyID, 'storm');
                     });
                 };
             },
-            onComplete: () => {
-                this.isStorming = false; 
-            },
+            onComplete: () => this.isStorming = false,
             loop: 3,
         });  
         EventBus.emit('special-combat-text', {
@@ -1221,8 +1228,8 @@ export default class Player extends Entity {
                     if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit(this.playerID);
                     return;    
                 };
-                if (this.attackedTarget?.isMenacing) this.attackedTarget?.menace();
-                if (this.attackedTarget?.isMultifaring) this.attackedTarget?.multifarious();
+                if (this.attackedTarget?.isMenacing) this.attackedTarget?.menace(this.playerID);
+                if (this.attackedTarget?.isMultifaring) this.attackedTarget?.multifarious(this.playerID);
                 if (this.attackedTarget?.isMystifying) this.attackedTarget?.mystify(this.playerID);
             };
             if (this.enemyIdMatch()) {

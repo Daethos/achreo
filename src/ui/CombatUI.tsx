@@ -130,11 +130,11 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
         </button> 
         </Show>
          
-        <Show when={instance.scene?.scene.key === 'Arena' && !state().combatEngaged}>
+        {/* <Show when={instance.scene?.scene.key === 'Arena' && !state().combatEngaged}>
         <button class='disengage highlight combatUiAnimation' style={{ top: '13vh', left: '24vw' }} onClick={() => leaveArena()}>
             <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>Leave Arena</div>
         </button>
-        </Show>
+        </Show> */}
 
         <Show when={prayerShow()}>
             <PrayerModal prayer={effect as Accessor<StatusEffect>} show={prayerShow} setShow={setPrayerShow} />

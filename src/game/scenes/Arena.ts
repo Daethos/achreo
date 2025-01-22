@@ -471,8 +471,9 @@ export class Arena extends Phaser.Scene {
     clearArena = () => {
         if (this.enemies.length > 0) {
             for (let i = 0; i < this.enemies.length; i++) {
-                this.enemies[i].cleanUp();
-                this.enemies[i].destroy();
+                // this.enemies[i].cleanUp();
+                // this.enemies[i].destroy();
+                this.destroyEnemy(this.enemies[i]);
             };
             this.enemies = [];
         };
@@ -482,8 +483,8 @@ export class Arena extends Phaser.Scene {
     };
 
     computerDisengage = () => {
-        this.player.disengage();
         this.player.clearEnemies();
+        this.player.disengage();
         if (this.player.isComputer) (this.player as PlayerComputer).completeReset();
     };
 

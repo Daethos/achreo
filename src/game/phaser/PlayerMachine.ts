@@ -894,6 +894,15 @@ export default class PlayerMachine {
         } else if (this.player.velocity?.y as number < 0) {
             this.player.setPosition(this.player.x, Math.max(this.player.y - PLAYER.SPEED.BLINK, 0));
         };
+        const mapBounds = {
+            minX: 32,
+            maxX: this.scene.map.widthInPixels - 32,
+            minY: 32,
+            maxY: this.scene.map.heightInPixels - 32
+        };
+        const clampedX = Phaser.Math.Clamp(this.player.x, mapBounds.minX, mapBounds.maxX);
+        const clampedY = Phaser.Math.Clamp(this.player.y, mapBounds.minY, mapBounds.maxY);
+        this.player.setPosition(clampedX, clampedY);
         if (this.player.moving()) {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.BLINK);
             screenShake(this.scene);

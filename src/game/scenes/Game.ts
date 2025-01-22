@@ -22,37 +22,9 @@ import { ObjectPool } from '../phaser/ObjectPool';
 import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
+import { WindPipeline } from '../shaders/Wind';
 const dimensions = useResizeListener();
-// class WindPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline {
-//     private time: number;
-//     private intensity: number;
-//     // private resolution: Float32Array;
-//     constructor(game: Phaser.Game) {
-//         super({
-//             game,
-//             fragShader: game.cache.shader.get('windShader').fragmentSrc,
-//             vertShader: game.cache.shader.get('windShader').vertShader
-//         });
-//         this.time = 0.0;
-//         this.intensity = 1.0;
-//         // this.resolution = new Float32Array([game.scale.width, game.scale.height]);
-//     };
 
-//     onBind(gameObject: Phaser.GameObjects.GameObject) {
-//         super.onBind();
-//         this.set1f('time', this.time);
-//         this.set1f('intensity', this.intensity);
-//     };
-//     onBatch(gameObject: Phaser.GameObjects.GameObject) {
-//         if (gameObject) this.flush();
-//     };
-//     updateTime(time: number) {
-//         this.time = time;
-//     };
-//     setIntensity(intensity: number) {
-//         this.intensity = intensity;
-//     };
-// };
 
 // class DayPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline {
 //     private time: number = 0.0;
@@ -178,10 +150,48 @@ export class Game extends Scene {
         this.overlay.setDepth(99);
         this.startDayCycle();
 
-        // const windPipeline = new WindPipeline(this.game);
+        // var windPipeline = this.plugins.get('rexWarpPipeline');
+        
+        // (windPipeline as any).add(this.flowers, {
+        //     frequencyX: 10,
+        //     frequencyY: 10,
+
+        //     amplitudeX: 2,
+        //     amplitudeY: 2,
+
+        //     speedX: 0.5,
+        //     speedY: 0.5
+        // });
+
+        // (windPipeline as any).add(this.plants, {
+        //     frequencyX: 10,
+        //     frequencyY: 10,
+
+        //     amplitudeX: 2,
+        //     amplitudeY: 2,
+
+        //     speedX: 0.5,
+        //     speedY: 0.5
+        // });
+
+        // Identify clusters and create composite textures
+        // this.createCompositeTextures(this.flowers);
+        // this.createCompositeTextures(this.plants);
+
+        // var windPipeline = new WindPipeline(this.game);
         // (this.game.renderer as any).pipelines.add('Wind', windPipeline);
         // layer2?.setPipeline('Wind');
         // layer3?.setPipeline('Wind');
+        // layer4?.setPipeline('Wind');
+        // layer5?.setPipeline('Wind');
+        // this.time.addEvent({
+        //     delay: 100,
+        //     loop: true,
+        //     callback: () => {
+        //         windPipeline.updateTime(this.time.now / 1000);
+        //     },
+        //     callbackScope: this
+        // });
         // const dayPipeline = new WindPipeline(this.game);
         // (this.game.renderer as any).pipelines.add('Day', dayPipeline);
 
@@ -238,10 +248,43 @@ export class Game extends Scene {
         this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
 
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 200; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
         };
         EventBus.emit('current-scene-ready', this);
+    };
+
+    createCompositeTextures(layer: Phaser.Tilemaps.TilemapLayer) {
+        const tiles = layer.getTilesWithin(0, 0, layer.width, layer.height);
+        const tileset = layer.tileset[0];
+
+        let clusters: { x: number, y: number, tiles: Phaser.Tilemaps.Tile[] }[] = [];
+        tiles.forEach(tile => {
+            if (tile.index > -1) {
+                let cluster = clusters.find(c => c.x === tile.x && c.y === tile.y);
+                if (!cluster) {
+                    cluster = { x: tile.x, y: tile.y, tiles: [] };
+                    clusters.push(cluster);
+                }; 
+                cluster.tiles.push(tile);
+            };
+        });
+
+        clusters.forEach(cluster => {
+            const compositeTexture = this.add.renderTexture(cluster.x * 32, cluster.y * 32, 32, 32);
+            cluster.tiles.forEach(tile => {
+                // console.log(tile, 'Is there a tile here?');
+                const tileTexture = tileset?.image?.key;
+                const frame = tile.index;
+                
+                // compositeTexture.draw(tile.getTileTexture(), tile.pixelX - (cluster.x * 32), tile.pixelY - (cluster.y * 32));
+
+                if (tileTexture && frame) {   
+                    compositeTexture.draw(tileTexture, tile.pixelX - (cluster.x * 32), tile.pixelY - (cluster.y * 32));    
+                };
+            });
+            compositeTexture.setPipeline('Wind');
+        });
     };
 
     startDayCycle() {

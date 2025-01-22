@@ -379,7 +379,6 @@ export default class Enemy extends Entity {
         this.health = e.health;
         this.computerCombatSheet.newComputerHealth = this.health;
         this.updateHealthBar(e.health);
-        // if (this.health <= 0 && !this.isDeleting) this.stateMachine.setState(States.DEFEATED);
     };
 
     checkCaerenic = (caerenic: boolean) => {
@@ -474,7 +473,6 @@ export default class Enemy extends Entity {
         const id = this.enemies.find((en: ENEMY) => en.id === e.origin && e.origin !== this.enemyID);
         if (id && this.health > 0) this.updateThreat(e.origin, calculateThreat(e.damage, this.health, this.ascean.health.max));
         EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
-        // if (this.health <= 0 && !this.isDeleting) this.stateMachine.setState(States.DEFEATED);
     };
 
     computerHealing = (e: { healing: number; id: string; }) => {
@@ -573,7 +571,7 @@ export default class Enemy extends Entity {
         if (this.enemyID !== e.personalID) return;
         if (this.health > e.newComputerHealth) {
             let damage: number | string = Math.round(this.health - e.newComputerHealth);
-            damage = e.computerEnemyCriticalSuccess ? `${damage} (Critical)` : e.glancingBlow ? `${damage} (Glancing)` : damage;
+            damage = e.computerEnemyCriticalSuccess ? `${damage} (Critical)` : e.computerEnemyGlancingBlow ? `${damage} (Glancing)` : damage;
             this.scrollingCombatText = this.scene.showCombatText(`${damage}`, 1500, 'damage', e.computerEnemyCriticalSuccess, false, () => this.scrollingCombatText = undefined);
             if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
             if (this.isFeared) {
@@ -671,6 +669,7 @@ export default class Enemy extends Entity {
             this.isTriumphant = true;
             this.clearCombatWin();
         };
+        // EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
     };
 
     persuasionUpdate = (e: any) => {
@@ -1423,7 +1422,7 @@ export default class Enemy extends Entity {
         let pathPosition;
         let pathFound = false;
         while (pathFound === false) {
-            const point = new Phaser.Math.Vector2(Phaser.Math.RND.between(this.x - 375, this.x + 375), Phaser.Math.RND.between(this.y - 375, this.y + 375));
+            const point = new Phaser.Math.Vector2(Phaser.Math.RND.between(this.x - 250, this.x + 250), Phaser.Math.RND.between(this.y - 250, this.y + 250));
             if (this.scene.navMesh.isPointInMesh(point)) {
                 pathPosition = point;
                 pathFound = true;
@@ -1442,7 +1441,6 @@ export default class Enemy extends Entity {
                 this.pathDirection = new Phaser.Math.Vector2(this.nextPatrolPoint.x, this.nextPatrolPoint.y).subtract(this.position).normalize();
                 const distanceToNextPoint = this.calculateDistance(this.position, this.nextPatrolPoint);
                 this.patrolDelay = this.calculatePatrolDelay(distanceToNextPoint, this.speed);
-                
                 this.patrolTimer = this.scene.time.delayedCall(this.patrolDelay, this.patrolNextPoint, undefined, this);
             } else {
                 this.stateMachine.setState(States.IDLE);

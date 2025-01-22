@@ -16,33 +16,12 @@ import ParticleManager from '../matter/ParticleManager';
 import { Hud } from './Hud';
 import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import { ObjectPool } from '../phaser/ObjectPool';
-// import { Rain } from '../shaders/Rain';
-// import { Wind } from '../shaders/Wind';
 // @ts-ignore
 import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
-import { WindPipeline } from '../shaders/Wind';
+// import { WindPipeline } from '../shaders/Wind';
 const dimensions = useResizeListener();
-
-
-// class DayPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline {
-//     private time: number = 0.0;
-//     constructor(game: Phaser.Game) {
-//         super({
-//             game,
-//             fragShader: game.cache.shader.get('dayNightShader').fragmentSrc,
-//             vertShader: game.cache.shader.get('dayNightShader').vertShader
-//         });
-//     };
-//     onBind() {
-//         super.onBind();
-//         this.set1f('time', this.time);
-//     };
-//     updateTime(time: number) {
-//         this.time = time;
-//     };
-// };
 
 export class Game extends Scene {
     overlay: Phaser.GameObjects.Graphics;
@@ -95,7 +74,6 @@ export class Game extends Scene {
     preload() {
         this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
         // this.load.glsl('windShader', './src/game/shaders/Wind.glsl');
-        // this.load.glsl('dayNightShader', './src/game/shaders/DayNight.glsl');
         // this.load.glsl('rainShadow', './src/game/shaders/Rain.glsl');
     };
 
@@ -275,12 +253,14 @@ export class Game extends Scene {
             cluster.tiles.forEach(tile => {
                 // console.log(tile, 'Is there a tile here?');
                 const tileTexture = tileset?.image?.key;
-                const frame = tile.index;
+                const tileCoord = tileset.getTileTextureCoordinates(tile.index);
                 
                 // compositeTexture.draw(tile.getTileTexture(), tile.pixelX - (cluster.x * 32), tile.pixelY - (cluster.y * 32));
 
-                if (tileTexture && frame) {   
-                    compositeTexture.draw(tileTexture, tile.pixelX - (cluster.x * 32), tile.pixelY - (cluster.y * 32));    
+                if (tileTexture && tileCoord) {   
+                    compositeTexture.draw(tileTexture,(tileCoord as any).x,(tileCoord as any).y);
+                    compositeTexture.setDepth(3);
+                    // compositeTexture.drawFrame(tileTexture, frame, tile.pixelX - (cluster.x * 32), tile.pixelY - (cluster.y * 32));    
                 };
             });
             compositeTexture.setPipeline('Wind');

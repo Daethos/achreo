@@ -71,11 +71,12 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
             default: return '3vh';
         };
     };
-    function leaveArena() {
-        if (instance.scene) {
-            (instance.scene as any).clearArena();
-        };
-    };
+    // function leaveArena() {
+    //     if (instance.scene) {
+    //         (instance.scene as any).clearArena();
+    //     };
+    // };
+    
     // function createPrayer() {
     //     const computer = initAscean;
     //     const exists = new StatusEffect(

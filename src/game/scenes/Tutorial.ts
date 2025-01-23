@@ -94,7 +94,7 @@ export class Tutorial extends Phaser.Scene {
                 type === 'movement' ? `The game starts with mobile in mind; twin joysticks for movement and aiming (ranged and specials). \n\n The left joystick allows you to move your character, and the right is used for certain special abilities and manual targeting if you have it enabled in the settings menu. \n\n However, in desktop, the keyboard and mouse are both modular and can be used for either movement or actions.` :
                 type === 'combat' ? `The Physical and Special action buttons allow you to perform damage in combat. \n\n Physically, everyone is capable of swinging their weapon and/or shooting projectiles, in addition to forms of evasion with dodge and roll. \n\n With Specials, you are restricted to your current 'mastery', and perform specialized abilities that can heal yourself, directly damage the enemy, or control them via magical effects.` :
                 type === 'settings' ? `Clicking on your name, your character in-game, or toggling the book menu and clicking on the first 'player' icon will all lead you to the main settings menu. \n\n From here, you can tab and change multiple options for gameplay concerns, including but not limited to: enemy aggression, special capability, and movement speed.` :
-                type === 'improvement' ? `Defeated enemies drop loot, and chances are that it may be an improvment of your current garb. \n\n Merchants also sell multitudes of armor, shields, and weapons, with some being able to forge greater qualities from lesser ones. \n\n You can compare and contrast the different peculiarities of each item and decide how to augment and enhance your character, even in combat.` :
+                type === 'improvement' ? `Defeated enemies drop loot, and chances are that it may be an improvement of your current garb. \n\n Merchants also sell multitudes of armor, shields, and weapons, with some being able to forge greater qualities from lesser ones. \n\n You can compare and contrast the different peculiarities of each item and decide how to augment and enhance your character, even in combat.` :
                 type === "exit" ? "If you feel comfortable with what you've learned and have a fair understanding of what this game asks of you, feel free to enter the world and explore!" : "";
             const extra = 
                 type === 'movement' ? "Movement" :
@@ -231,7 +231,6 @@ export class Tutorial extends Phaser.Scene {
         EventBus.on('update-enemy-aggression', (aggression: number) => {
             for (let i = 0; i < this.enemies.length; i++) {
                 this.enemies[i].isAggressive = aggression >= Math.random();
-
             };
         });
         EventBus.on('update-enemy-special', (special: number) => {

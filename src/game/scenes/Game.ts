@@ -58,7 +58,8 @@ export class Game extends Scene {
     navMesh: any;
     navMeshPlugin: PhaserNavMeshPlugin;
     postFxPipeline: any;
-    musicBackground: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+    musicDay: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+    musicNight: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicCombat: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicCombat2: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicStealth: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
@@ -75,6 +76,7 @@ export class Game extends Scene {
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
     daytime: number = 0.0;
     compositeTextures: any;
+    day: boolean = true;
 
     constructor () {
         super('Game');
@@ -135,7 +137,6 @@ export class Game extends Scene {
         this.overlay.fillStyle(0x000000, 1); // Start Full
         this.overlay.fillRect(0, 0, 4096, 4096);
         this.overlay.setDepth(99);
-        this.startDayCycle();
 
         // Identify clusters and create composite textures
         // this.createCompositeTextures(layer2!);
@@ -195,11 +196,12 @@ export class Game extends Scene {
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 150, 0.05, 0.05);
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-        this.musicBackground = this.sound.add(Math.random() > 0.5 ? 'background' : 'background2', { volume: this?.hud?.settings?.volume / 2 || 0.1, loop: true });
+        this.musicDay = this.sound.add('background2', { volume: this?.hud?.settings?.volume / 2, loop: true });
+        this.musicNight = this.sound.add('background', { volume: this?.hud?.settings?.volume / 2, loop: true });
         this.musicCombat = this.sound.add('combat', { volume: this?.hud?.settings?.volume, loop: true });
         this.musicCombat2 = this.sound.add('combat2', { volume: this?.hud?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
-        if (this.hud.settings?.music === true) this.musicBackground.play();
+        // if (this.hud.settings?.music === true) this.musicDay.play();
 
         this.postFxEvent();
         this.particleManager = new ParticleManager(this);
@@ -207,6 +209,8 @@ export class Game extends Scene {
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
+
+        this.startDayCycle();
 
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 200; i++) {
@@ -254,6 +258,22 @@ export class Game extends Scene {
     };
 
     startDayCycle() {
+        if (this.hud.settings?.music === true) {
+            if (this.musicNight.isPlaying) {
+                this.tweens.add({
+                    targets: this.musicNight,
+                    volume: 0,
+                    duration: 2000,
+                    onComplete: () => {
+                        this.musicNight.stop();
+                        this.musicDay.play("", { volume: this.hud.settings.volume });
+                    }
+                });
+            } else {
+                this.musicDay.play();
+            };
+        };
+        this.day = true;
         this.sound.play('day', { volume: this?.hud?.settings?.volume * 3 });
         const duration = 80000;
         this.tweens.add({
@@ -277,6 +297,22 @@ export class Game extends Scene {
     };
 
     transitionToNight() {
+        if (this.hud.settings?.music === true) {
+            if (this.musicDay.isPlaying) {
+                this.tweens.add({
+                    targets: this.musicDay,
+                    volume: 0,
+                    duration: 2000,
+                    onComplete: () => {
+                        this.musicDay.stop();
+                        this.musicNight.play("", { volume: this.hud.settings.volume });
+                    }
+                });
+            } else {
+                this.musicNight.play();
+            };
+        };
+        this.day = false;
         this.sound.play('night', { volume: this?.hud?.settings?.volume });
         const duration = 40000;
         this.tweens.add({
@@ -586,7 +622,8 @@ export class Game extends Scene {
             } else {
                 this.musicCombat2.play();
             };
-            if (this.musicBackground.isPlaying) this.musicBackground.pause();
+            if (this.musicDay.isPlaying) this.musicDay.pause();
+            if (this.musicNight.isPlaying) this.musicNight.pause();
             if (this.musicStealth.isPlaying) this.musicStealth.stop();
             this.startCombatTimer();
         } else if (bool === false) {
@@ -600,7 +637,11 @@ export class Game extends Scene {
                     this.musicStealth.play();
                 };
             } else {
-                this.musicBackground.resume();
+                if (this.day) {
+                    this.musicDay.resume();
+                } else {
+                    this.musicNight.resume();
+                };
             };
             this.stopCombatTimer();    
         };
@@ -609,8 +650,10 @@ export class Game extends Scene {
     };
     stealthEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
+        if (this.hud.settings?.music === false) return;
         if (bool) {
-            if (this.musicBackground.isPlaying) this.musicBackground.pause();
+            if (this.musicDay.isPlaying) this.musicDay.pause();
+            if (this.musicNight.isPlaying) this.musicNight.pause();
             if (this.musicCombat.isPlaying) this.musicCombat.pause();
             if (this.musicCombat2.isPlaying) this.musicCombat2.pause();
             if (this.musicStealth.isPaused) {
@@ -627,13 +670,18 @@ export class Game extends Scene {
                     this.musicCombat2.play();
                 };
             } else {
-                this.musicBackground.resume();
+                if (this.day) {
+                    this.musicDay.resume();
+                } else {
+                    this.musicNight.resume();
+                };
             };
         };
     };
     pauseMusic = (): void => {
         if (this.scene.isSleeping(this.scene.key)) return;
-        if (this.musicBackground.isPlaying) this.musicBackground.pause();
+        if (this.musicDay.isPlaying) this.musicDay.pause();
+        if (this.musicNight.isPlaying) this.musicNight.pause();
         if (this.musicCombat.isPlaying) this.musicCombat.pause();
         if (this.musicCombat2.isPlaying) this.musicCombat2.pause();
         if (this.musicStealth.isPlaying) this.musicStealth.pause();
@@ -648,10 +696,21 @@ export class Game extends Scene {
                 } else {
                     this.musicStealth.play();
                 };
-            } else if (this.musicBackground.isPaused) {
-                this.musicBackground.resume();
             } else {
-                this.musicBackground.play();
+                if (this.day) {
+                    if (this.musicDay.isPaused) {
+                        this.musicDay.resume();
+                    } else {
+                        this.musicDay.play();
+                    };
+
+                } else {
+                    if (this.musicNight.isPaused) {
+                        this.musicNight.resume();
+                    } else {
+                        this.musicNight.play();
+                    };
+                };
             };
         } else {
             if (this.musicCombat.isPaused) {

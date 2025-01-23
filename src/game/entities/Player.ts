@@ -287,6 +287,7 @@ export default class Player extends Entity {
     };
 
     highlightTarget = (sprite: Enemy | NPC) => {
+        if (!sprite || !sprite.body) return;
         if (this.highlightAnimation === false) {
             this.highlightAnimation = true;
             this.animateTarget();

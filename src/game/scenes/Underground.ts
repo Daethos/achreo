@@ -439,14 +439,19 @@ export class Underground extends Scene {
                 return;    
             };
         };
-    };
+    };    
     clearAggression = () => {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
-                this.enemies[i].clearCombat();
+                if (this.player.health <= 0) {
+                    this.enemies[i].clearArenaWin();
+                } else {
+                    this.enemies[i].clearArenaLoss();
+                };
             };
         };
     };
+
     combatEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (bool === true) {

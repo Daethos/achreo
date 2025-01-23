@@ -231,7 +231,8 @@ export class Hud extends Phaser.Scene {
         const data: EnemySheet = { 
             id: enemy.enemyID, 
             game: enemy.ascean, 
-            enemy: enemy.combatStats, 
+            enemy: enemy.combatStats,
+            weapons: enemy.weapons,
             health: enemy.health, 
             isAggressive: enemy.isAggressive, 
             startedAggressive: enemy.startedAggressive, 

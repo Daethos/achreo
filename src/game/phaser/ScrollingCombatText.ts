@@ -100,6 +100,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     private release(): void {
         this.active = false;
         this.visible = false;
+        this.setPosition(0,0);
         this.text.setAlpha(1).setScale(1); // Reset visual state
         this.pool.release(this); // Return to the pool
     };

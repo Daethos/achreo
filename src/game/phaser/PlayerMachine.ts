@@ -301,12 +301,12 @@ export default class PlayerMachine {
     };
 
     onDefeatedEnter = () => {
-        // this.player.anims.play('player_pray', true).on('animationcomplete', () => this.player.anims.play('player_idle', true));
         this.player.anims.play('player_death', true);
         this.player.setVelocity(0);
         this.player.clearEnemies();
         this.player.disengage();
         this.player.health = 0;
+        this.player.isDefeated = true;
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
         if (!this.player.isComputer) {
@@ -323,11 +323,8 @@ export default class PlayerMachine {
     };
     onDefeatedUpdate = (dt: number) => {
         this.player.defeatedDuration -= dt;
-        // if (this.player.defeatedDuration <= 0) this.stateMachine.setState(States.CLEAN);
-
         if (this.player.defeatedDuration <= 0) {
-            // this.player.combatChecker(false);
-            this.player.isDefeated = false;
+            this.player.anims.playReverse('player_death', true).once('animationcomplete', () => this.player.isDefeated = false, this.player);
         };
         this.player.combatChecker(this.player.isDefeated);
     };
@@ -344,10 +341,6 @@ export default class PlayerMachine {
         this.player.spriteWeapon.setVisible(true);
         if (this.player.isStalwart) this.player.spriteShield.setVisible(true);
         this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 10, id: this.player.playerID }, type: 'Health' });
-        this.player.anims.playReverse('player_death')
-        // .on('animationcomplete', () => {
-        //     this.player.isDefeated = false;
-        // });
     };
 
     onEvasionEnter = () => {

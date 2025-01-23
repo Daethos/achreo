@@ -110,11 +110,11 @@ export class Tutorial extends Phaser.Scene {
                 context: this
             });
         });
-        for (let i = 0; i < 12; i++) {
-            const e = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: undefined });
-            this.enemies.push(e);
-            e.setPosition(Phaser.Math.Between(200, 800), Phaser.Math.Between(200, 800));
-        };
+        // for (let i = 0; i < 12; i++) {
+        //     const e = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: undefined });
+        //     this.enemies.push(e);
+        //     e.setPosition(Phaser.Math.Between(200, 800), Phaser.Math.Between(200, 800));
+        // };
 
         let camera = this.cameras.main;
         camera.zoom = this.hud.settings.positions?.camera?.zoom;
@@ -152,7 +152,7 @@ export class Tutorial extends Phaser.Scene {
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 250; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
         };
 
@@ -411,8 +411,8 @@ export class Tutorial extends Phaser.Scene {
             if (this.enemies[i].inCombat === true) {
                 if (this.player.health <= 0) {
                     this.enemies[i].clearCombatWin();
-                } else {
-                    this.enemies[i].clearCombat();
+                } else if (this.enemies[i].health <= 0) {
+                    this.enemies[i].clearCombatLoss();
                 };
             };
         };
@@ -582,7 +582,7 @@ export class Tutorial extends Phaser.Scene {
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(delta);
-            // if ((this.enemies[i].isDefeated || this.enemies[i].isTriumphant) && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
+            if ((this.enemies[i].isDefeated || this.enemies[i].isTriumphant) && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
         };
         for (let i = 0; i < this.dms.length; i++) {
             this.dms[i].update(delta);

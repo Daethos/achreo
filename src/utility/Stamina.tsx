@@ -1,6 +1,6 @@
 import { Accessor, createSignal, onCleanup, onMount } from "solid-js";
 import { EventBus } from "../game/EventBus";
-const STAMINA = { TICK: 100, UPDATE: 750, HALF: 375 };
+const STAMINA = { TICK: 100, UPDATE: 500, HALF: 375 };
 export default function createStamina(stam: Accessor<number>) {
     const [stamina, setStamina] = createSignal(stam());
     const [staminaPercentage, setStaminaPercentage] = createSignal(0);
@@ -21,8 +21,8 @@ export default function createStamina(stam: Accessor<number>) {
         interval = setInterval(recover, STAMINA.TICK);
     };
     const updateStamina = (e: number = 0) => {
-        if (e > 1) remaining += STAMINA.UPDATE;
-        if (e === 1) remaining += STAMINA.HALF;
+        if (e > 0) remaining += STAMINA.UPDATE;
+        // if (e === 1) remaining += STAMINA.HALF;
         if (interval === undefined) {startRecovery();};
         const oldStamina = stamina() * staminaPercentage() / 100;
         const newStamina = Math.max(0, oldStamina - e);

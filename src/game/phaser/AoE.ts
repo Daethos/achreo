@@ -146,9 +146,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         if (enemy.isDeleting) {
             scene.glowFilter.remove(this);
             this.hit = [];
-            this.timer.destroy();
-            this.timer.remove(false);
-            this.timer = undefined;
+            if (this.timer) {
+                this.timer.destroy();
+                this.timer.remove(false);
+                this.timer = undefined;
+            };
             this.destroy();
         };
         if (positive === true) {
@@ -166,9 +168,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 if (this.count === 0) {
                     scene.glowFilter.remove(this);
                     this.hit = [];
-                    this.timer.destroy();
-                    this.timer.remove(false);
-                    this.timer = undefined;
+                    if (this.timer) {
+                        this.timer.destroy();
+                        this.timer.remove(false);
+                        this.timer = undefined;
+                    };
                     this.destroy();
                 } else {
                     this.setupEnemyCount(scene, type, positive, enemy);
@@ -184,9 +188,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 if (this.count === 0) {
                     scene.glowFilter.remove(this);
                     this.bless = [];
-                    this.timer.destroy();
-                    this.timer.remove(false);
-                    this.timer = undefined;
+                    if (this.timer) {
+                        this.timer.destroy();
+                        this.timer.remove(false);
+                        this.timer = undefined;
+                    };
                     this.destroy();    
                 } else {
                     this.setupEnemyCount(scene, type, false, enemy);

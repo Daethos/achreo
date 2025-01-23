@@ -149,12 +149,24 @@ export class Particle {
 
     setTarget(player: Player | Enemy | Entity, scene: Play, special = false): Phaser.Math.Vector2 {
         if (player.name === 'enemy') {
-            const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y);
-            const direction = target.subtract(player.position);
-            direction.normalize();
-            return direction;
+            if (!player.attacking || !player.attacking.body) {
+                if (player.flipX) {
+                    const target = new Phaser.Math.Vector2(player.x - 100, Phaser.Math.Between(player.y - 100, player.y + 100));
+                    const direction = target.subtract(player.position);
+                    return direction;
+                } else {
+                    const target = new Phaser.Math.Vector2(player.x + 100, Phaser.Math.Between(player.y - 100, player.y + 100));
+                    const direction = target.subtract(player.position);
+                    return direction;    
+                };
+            } else {
+                const target = new Phaser.Math.Vector2(player.attacking.body.position.x, player.attacking.body.position.y);
+                const direction = target.subtract(player.position);
+                direction.normalize();
+                return direction;
+            };
         } else {
-            if (!(player as Player).isComputer && (scene.hud.settings.difficulty.aim === true || !(player as Player).currentTarget || special === true)) {
+            if (!(player as Player).isComputer && (scene.hud.settings.difficulty.aim === true || !(player as Player).currentTarget || !(player as Player).currentTarget?.body || special === true)) {
                 const target = scene.getWorldPointer();
                 const direction = target.subtract(player.position);
                 direction.normalize();

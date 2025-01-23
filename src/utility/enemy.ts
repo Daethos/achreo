@@ -3,6 +3,7 @@ import { EventBus } from "../game/EventBus";
 import Ascean from "../models/ascean";
 import { States } from "../game/phaser/StateMachine";
 import { Compiler, asceanCompiler } from "./ascean";
+import Equipment from "../models/equipment";
 
 export const COMPUTER_BROADCAST = 'computer-broadcast';
 export const NEW_COMPUTER_ENEMY_HEALTH = 'newComputerEnemyHealth';
@@ -301,6 +302,7 @@ export type EnemySheet = {
     id: string;
     game: Ascean;
     enemy: Compiler;
+    weapons: Equipment[];
     health: number;
     isAggressive: boolean;
     startedAggressive: boolean;

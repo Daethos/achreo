@@ -455,7 +455,11 @@ export class Arena extends Phaser.Scene {
     clearAggression = () => {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
-                this.enemies[i].clearCombat();
+                if (this.player.health <= 0) {
+                    this.enemies[i].clearArenaWin();
+                } else {
+                    this.enemies[i].clearArenaLoss();
+                };
             };
         };
     };

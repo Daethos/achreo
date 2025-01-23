@@ -604,7 +604,7 @@ export class Game extends Scene {
                 if (this.player.health <= 0) {
                     this.enemies[i].clearCombatWin();
                 } else {
-                    this.enemies[i].clearCombat();
+                    this.enemies[i].clearCombatLoss();
                 };
             };
         };

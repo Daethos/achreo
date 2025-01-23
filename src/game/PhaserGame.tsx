@@ -443,7 +443,8 @@ export default function PhaserGame (props: IProps) {
     function recordSkills(skills: string[]) {
         let newSkills = { ...props.ascean().skills };
         skills.forEach((skill: string, index: number) => {
-            if (index % 3 !== 0) return;
+            const value = newSkills[skill as keyof typeof newSkills];    
+            if (index % 3 !== 0 || value === props.ascean().level * 100) return;
             newSkills[skill as keyof typeof newSkills] += 1;
             newSkills[skill as keyof typeof newSkills] = Math.min(newSkills[skill as keyof typeof newSkills], props.ascean().level * 100);
             if (newSkills[skill as keyof typeof newSkills] % 10 === 0) {
@@ -829,14 +830,14 @@ export default function PhaserGame (props: IProps) {
                 computer: e.game,
                 computerHealth: e.enemy.attributes.healthTotal,
                 newComputerHealth: e.health,
-                computerWeapons: [e.enemy.combatWeaponOne, e.enemy.combatWeaponTwo, e.enemy.combatWeaponThree],
-                computerWeaponOne: e.enemy.combatWeaponOne,
-                computerWeaponTwo: e.enemy.combatWeaponTwo,
-                computerWeaponThree: e.enemy.combatWeaponThree,
+                computerWeapons: e.weapons, // [e.enemy.combatWeaponOne, e.enemy.combatWeaponTwo, e.enemy.combatWeaponThree],
+                computerWeaponOne: e.weapons[0], // e.enemy.combatWeaponOne,
+                computerWeaponTwo: e.weapons[1], // e.enemy.combatWeaponTwo,
+                computerWeaponThree: e.weapons[2], // e.enemy.combatWeaponThree,
                 computerAttributes: e.enemy.attributes,
                 computerDefense: e.enemy.defense,
                 computerDefenseDefault: e.enemy.defense,
-                computerDamageType: e.enemy.combatWeaponOne.damageType[0],
+                computerDamageType: e.weapons[0].damageType[0], //e.enemy.combatWeaponOne.damageType[0],
                 isEnemy: true,
                 npcType: '',
                 isAggressive: e.isAggressive,

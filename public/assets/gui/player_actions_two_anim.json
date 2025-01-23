@@ -4,7 +4,7 @@
             "key": "player_death",
             "type": "frames",
             "repeat": 0,
-            "frameRate": 5,
+            "frameRate": 4,
             "frames": [
                 {
                     "key": "player_actions_two",

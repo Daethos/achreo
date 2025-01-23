@@ -23,6 +23,14 @@ import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.mi
 // import { WindPipeline } from '../shaders/Wind';
 const dimensions = useResizeListener();
 
+// interface TileCluster {
+//     x: number;
+//     y: number;
+//     tiles: Phaser.Tilemaps.Tile[];
+//     width: number;
+//     height: number;
+// };
+
 export class Game extends Scene {
     overlay: Phaser.GameObjects.Graphics;
     animatedTiles: any[];
@@ -66,6 +74,7 @@ export class Game extends Scene {
     hud: Hud;
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
     daytime: number = 0.0;
+    compositeTextures: any;
 
     constructor () {
         super('Game');
@@ -101,8 +110,8 @@ export class Game extends Scene {
         let layer6 = map.createLayer('Tile Layer 6 - Camps', camps as Tilemaps.Tileset, 0, 0);
         this.baseLayer = layer0 as Phaser.Tilemaps.TilemapLayer;
         this.climbingLayer = layer1 as Phaser.Tilemaps.TilemapLayer;
-        const layer2 =  map.createLayer('Tile Layer 2 - Flowers', decorations as Tilemaps.Tileset, 0, 0);
-        const layer3 =  map.createLayer('Tile Layer 3 - Plants', decorations as Tilemaps.Tileset, 0, 0);
+        const layer2 =  map.createLayer('Tile Layer 2 - Flowers', decorations as Tilemaps.Tileset, 0, 0)//?.setVisible(false);
+        const layer3 =  map.createLayer('Tile Layer 3 - Plants', decorations as Tilemaps.Tileset, 0, 0)//?.setVisible(false);
         this.flowers = layer2 as Phaser.Tilemaps.TilemapLayer;
         this.plants = layer3 as Phaser.Tilemaps.TilemapLayer;
         map.createLayer('Tile Layer - Campfire', campfire as Tilemaps.Tileset, 0, 0);
@@ -128,40 +137,16 @@ export class Game extends Scene {
         this.overlay.setDepth(99);
         this.startDayCycle();
 
-        // var windPipeline = this.plugins.get('rexWarpPipeline');
-        
-        // (windPipeline as any).add(this.flowers, {
-        //     frequencyX: 10,
-        //     frequencyY: 10,
-
-        //     amplitudeX: 2,
-        //     amplitudeY: 2,
-
-        //     speedX: 0.5,
-        //     speedY: 0.5
-        // });
-
-        // (windPipeline as any).add(this.plants, {
-        //     frequencyX: 10,
-        //     frequencyY: 10,
-
-        //     amplitudeX: 2,
-        //     amplitudeY: 2,
-
-        //     speedX: 0.5,
-        //     speedY: 0.5
-        // });
-
         // Identify clusters and create composite textures
-        // this.createCompositeTextures(this.flowers);
-        // this.createCompositeTextures(this.plants);
+        // this.createCompositeTextures(layer2!);
+        // this.createCompositeTextures(layer3!);
 
         // var windPipeline = new WindPipeline(this.game);
         // (this.game.renderer as any).pipelines.add('Wind', windPipeline);
         // layer2?.setPipeline('Wind');
         // layer3?.setPipeline('Wind');
         // layer4?.setPipeline('Wind');
-        // layer5?.setPipeline('Wind');
+        // // layer5?.setPipeline('Wind');
         // this.time.addEvent({
         //     delay: 100,
         //     loop: true,
@@ -170,8 +155,6 @@ export class Game extends Scene {
         //     },
         //     callbackScope: this
         // });
-        // const dayPipeline = new WindPipeline(this.game);
-        // (this.game.renderer as any).pipelines.add('Day', dayPipeline);
 
         // const debugGraphics = this.add.graphics().setAlpha(0.75);
         // this.navMesh.enableDebug(debugGraphics); 
@@ -235,7 +218,7 @@ export class Game extends Scene {
     createCompositeTextures(layer: Phaser.Tilemaps.TilemapLayer) {
         const tiles = layer.getTilesWithin(0, 0, layer.width, layer.height);
         const tileset = layer.tileset[0];
-
+        console.log(tileset, 'Image');
         let clusters: { x: number, y: number, tiles: Phaser.Tilemaps.Tile[] }[] = [];
         tiles.forEach(tile => {
             if (tile.index > -1) {
@@ -247,23 +230,26 @@ export class Game extends Scene {
                 cluster.tiles.push(tile);
             };
         });
-
+        
         clusters.forEach(cluster => {
             const compositeTexture = this.add.renderTexture(cluster.x * 32, cluster.y * 32, 32, 32);
             cluster.tiles.forEach(tile => {
-                // console.log(tile, 'Is there a tile here?');
                 const tileTexture = tileset?.image?.key;
                 const tileCoord = tileset.getTileTextureCoordinates(tile.index);
-                
-                // compositeTexture.draw(tile.getTileTexture(), tile.pixelX - (cluster.x * 32), tile.pixelY - (cluster.y * 32));
-
                 if (tileTexture && tileCoord) {   
-                    compositeTexture.draw(tileTexture,(tileCoord as any).x,(tileCoord as any).y);
-                    compositeTexture.setDepth(3);
-                    // compositeTexture.drawFrame(tileTexture, frame, tile.pixelX - (cluster.x * 32), tile.pixelY - (cluster.y * 32));    
+                    // const frameX = (tileCoord as any).x / tileset.tileWidth;
+                    // const frameY = (tileCoord as any).y / tileset.tileHeight;
+                    // const index = tile.index - tileset.firstgid;
+                    // const frameIndex = frameY * tileset.columns + frameX * tileset.rows;
+                    // console.log(`Frame X: ${frameX} / Frame Y: ${frameY} / Frame Index: ${frameIndex} / Index: ${index}`);
+                    // console.log(this.textures.getFrame(tileTexture, frameIndex));
+                    compositeTexture.drawFrame(tileTexture,0,tile.pixelX - compositeTexture.x,tile.pixelY - compositeTexture.y);
                 };
             });
-            compositeTexture.setPipeline('Wind');
+            compositeTexture.setDepth(10);
+            compositeTexture.fill(0xff0000,0.2);
+            compositeTexture.setOrigin(0);
+            // compositeTexture.setPipeline('Wind');
         });
     };
 

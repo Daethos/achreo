@@ -1,7 +1,6 @@
 export class WindPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline {
     private time: number;
     private intensity: number;
-    // private resolution: Float32Array;
     constructor(game: Phaser.Game) {
         super({
             game,
@@ -9,8 +8,6 @@ export class WindPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline
             vertShader: game.cache.shader.get('windShader').vertShader
         });
         this.time = 0.0;
-        this.intensity = 1.0;
-        // this.resolution = new Float32Array([game.scale.width, game.scale.height]);
     };
 
     onBind(gameObject: Phaser.GameObjects.GameObject) {
@@ -23,8 +20,5 @@ export class WindPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline
     };
     updateTime(time: number) {
         this.time = time;
-    };
-    setIntensity(intensity: number) {
-        this.intensity = intensity;
     };
 };

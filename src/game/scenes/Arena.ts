@@ -505,8 +505,9 @@ export class Arena extends Phaser.Scene {
             if (this.musicStealth.isPlaying) this.musicStealth.stop();
             this.startCombatTimer();
         } else if (bool === false) {
-            this.musicCombat.stop();
-            this.musicCombat2.stop();
+            this.clearAggression();            
+            if (this.musicCombat.isPlaying) this.musicCombat.pause();
+            if (this.musicCombat2.isPlaying) this.musicCombat2.pause();
             if (this.player.isStealthing) {
                 if (this.musicStealth.isPaused) {
                     this.musicStealth.resume();

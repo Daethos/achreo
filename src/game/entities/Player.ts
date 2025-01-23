@@ -73,6 +73,7 @@ export default class Player extends Entity {
     isCounterSpelling: boolean = false;
     isCaerenic: boolean = false;
     slowDuration: number = DURATION.SLOWED;
+    defeatedDuration: number = PLAYER.DURATIONS.DEFEATED;
     highlight: Phaser.GameObjects.Graphics;
     highlightAnimation: boolean = false;
     mark: Phaser.GameObjects.Graphics;
@@ -1323,6 +1324,7 @@ export default class Player extends Entity {
         } else if (this.highlight.visible) {
             this.removeHighlight();
         };
+        if (this.isDefeated) return;
         if (this.scene.hud.settings.desktop === true && !this.isSuffering()) {
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.tab.TAB)) {
                 this.tabEnemyNext();
@@ -1379,6 +1381,7 @@ export default class Player extends Entity {
     };
 
     handleAnimations = () => {
+        if (this.isDefeated) return;
         if (this.isPolymorphed) {
             this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
         } else if (this.isConfused || this.isFeared) {
@@ -1465,6 +1468,10 @@ export default class Player extends Entity {
                 this.scene.particleManager.updateParticle(this.particleEffect);
             };
         };
+        if (this.isDefeated && !this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) {
+            this.playerMachine.stateMachine.setState(States.DEFEATED);
+            return;
+        }
         if (this.isConfused && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
             this.playerMachine.stateMachine.setState(States.CONFUSED);
             return;
@@ -1504,6 +1511,7 @@ export default class Player extends Entity {
     };
 
     handleMovement = () => {
+        if (this.isDefeated) return;
         let speed = this.speed;
         const suffering = this.isSuffering();
         const isDesktop = this.scene.hud.settings.desktop === true;

@@ -461,7 +461,7 @@ export class Underground extends Scene {
             this.startCombatTimer();
         } else if (bool === false) {
             this.clearAggression();
-            this.musicCombat.stop();
+            this.musicCombat.pause();
             if (this.player.isStealthing) {
                 if (this.musicStealth.isPaused) {
                     this.musicStealth.resume();

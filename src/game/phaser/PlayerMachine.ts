@@ -50,7 +50,7 @@ export default class PlayerMachine {
             .addState(States.LULL, { onEnter: this.onLullEnter, onExit: this.onLullExit }) // onUpdate: this.onLullUpdate
             .addState(States.CHASE, { onEnter: this.onChaseEnter, onUpdate: this.onChaseUpdate, onExit: this.onChaseExit })
             .addState(States.LEASH, { onEnter: this.onLeashEnter, onUpdate: this.onLeashUpdate, onExit: this.onLeashExit })
-            .addState(States.DEFEATED, { onEnter: this.onDefeatedEnter })
+            .addState(States.DEFEATED, { onEnter: this.onDefeatedEnter, onUpdate: this.onDefeatedUpdate, onExit: this.onDefeatedExit })
             .addState(States.EVADE, { onEnter: this.onEvasionEnter, onUpdate: this.onEvasionUpdate, onExit: this.onEvasionExit })
             .addState(States.CONTEMPLATE, { onEnter: this.onContemplateEnter, onUpdate: this.onContemplateUpdate, onExit: this.onContemplateExit })
             .addState(States.ATTACK, { onEnter: this.onAttackEnter, onUpdate: this.onAttackUpdate, onExit: this.onAttackExit })
@@ -301,10 +301,53 @@ export default class PlayerMachine {
     };
 
     onDefeatedEnter = () => {
-        this.player.anims.play('player_pray', true).on('animationcomplete', () => this.player.anims.play('player_idle', true));
+        // this.player.anims.play('player_pray', true).on('animationcomplete', () => this.player.anims.play('player_idle', true));
+        this.player.anims.play('player_death', true);
         this.player.setVelocity(0);
         this.player.clearEnemies();
         this.player.disengage();
+        this.player.health = 0;
+        this.player.spriteWeapon.setVisible(false);
+        this.player.spriteShield.setVisible(false);
+        if (!this.player.isComputer) {
+            if (this.scene.hud.settings.desktop === false) {
+                this.scene.hud.joystick.joystick.setVisible(false);
+                this.scene.hud.rightJoystick.joystick.setVisible(false);
+            };
+            this.scene.hud.actionBar.setVisible(false);
+        };
+        this.player.specialCombatText = this.scene.showCombatText('Defeated', 3000, 'damage', false, true, () => this.player.specialCombatText = undefined);
+        this.player.defeatedDuration = PLAYER.DURATIONS.DEFEATED;
+        this.player.setCollisionCategory(0);
+        screenShake(this.scene, 120, 0.005);
+    };
+    onDefeatedUpdate = (dt: number) => {
+        this.player.defeatedDuration -= dt;
+        // if (this.player.defeatedDuration <= 0) this.stateMachine.setState(States.CLEAN);
+
+        if (this.player.defeatedDuration <= 0) {
+            // this.player.combatChecker(false);
+            this.player.isDefeated = false;
+        };
+        this.player.combatChecker(this.player.isDefeated);
+    };
+    onDefeatedExit = () => {
+        if (!this.player.isComputer) {        
+            if (this.scene.hud.settings.desktop === false) {
+                this.scene.hud.joystick.joystick.setVisible(true);
+                this.scene.hud.rightJoystick.joystick.setVisible(true);
+            };
+            this.scene.hud.actionBar.setVisible(true);
+        };
+        this.player.defeatedDuration = PLAYER.DURATIONS.DEFEATED;
+        this.player.setCollisionCategory(1);
+        this.player.spriteWeapon.setVisible(true);
+        if (this.player.isStalwart) this.player.spriteShield.setVisible(true);
+        this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 10, id: this.player.playerID }, type: 'Health' });
+        this.player.anims.playReverse('player_death')
+        // .on('animationcomplete', () => {
+        //     this.player.isDefeated = false;
+        // });
     };
 
     onEvasionEnter = () => {

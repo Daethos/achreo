@@ -346,8 +346,7 @@ export function criticalCompiler(player: boolean, ascean: Ascean, critChance: nu
             physicalDamage *= weapon.criticalDamage;
             magicalDamage *= weapon.criticalDamage;
             criticalSuccess = true;
-        };
-        if (critClearance > critChance + ascean.level + 80) {
+        } else if (critClearance > critChance + ascean.level + 80) {
             physicalDamage *= 0.1;
             magicalDamage *= 0.1;
             glancingBlow = true;

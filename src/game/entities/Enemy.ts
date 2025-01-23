@@ -612,6 +612,8 @@ export default class Enemy extends Entity {
         this.checkDamage(e.computerDamageType.toLowerCase()); 
         this.checkMeleeOrRanged(e.computerWeapons?.[0] as Equipment);
         this.currentRound = e.combatRound;
+        this.computerCombatSheet.criticalSuccess = false;
+        this.computerCombatSheet.glancingBlow = false;
         this.computerCombatSheet.computerWin = e.computerWin;
         if (e.newComputerEnemyHealth <= 0 && this.computerCombatSheet.computerWin) {
             this.computerCombatSheet.computerWin = false;

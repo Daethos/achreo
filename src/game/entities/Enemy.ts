@@ -432,7 +432,7 @@ export default class Enemy extends Entity {
             computerWeaponThree: e.combatWeaponThree,
             computerAttributes: e.attributes,
             computerDefense: e.defense,
-            computerDefenseDefault: e.defense,
+            // computerDefenseDefault: e.defense,
             computerDamageType: e.combatWeaponOne.damageType?.[0] as string,
             personalID: this.enemyID,
         };
@@ -516,7 +516,7 @@ export default class Enemy extends Entity {
         this.computerCombatSheet = {
             ...this.computerCombatSheet,
             computerEnemy: target.ascean,
-            computerEnemyBlessing: target.computerCombatSheet.computerBlessing,
+            // computerEnemyBlessing: target.computerCombatSheet.computerBlessing,
             computerEnemyHealth: target.ascean.health.max,
             newComputerEnemyHealth: target.health,
             computerEnemyWeapons: target.computerCombatSheet.computerWeapons as Equipment[],
@@ -526,11 +526,9 @@ export default class Enemy extends Entity {
             computerEnemyAttributes: target.computerCombatSheet.computerAttributes,
             computerEnemyDamageType: target.computerCombatSheet.computerDamageType,
             computerEnemyDefense: target.computerCombatSheet.computerDefense,
-            computerEnemyDefenseDefault: target.computerCombatSheet.computerDefenseDefault,
-            computerEnemyEffects: target.computerCombatSheet.computerEffects,
+            // computerEnemyDefenseDefault: target.computerCombatSheet.computerDefenseDefault,
+            // computerEnemyEffects: target.computerCombatSheet.computerEffects,
             enemyID: target.enemyID,
-            isAggressive: target.isAggressive,
-            startedAggressive: target.startedAggressive,
         };
         if (this.healthbar.visible === false) this.healthbar.setVisible(true);
         this.specialCombatText = this.scene.showCombatText(`New Target: ${target.ascean.name}`, 1500, 'effect', false, true, () => this.specialCombatText = undefined);
@@ -837,7 +835,7 @@ export default class Enemy extends Entity {
         this.computerCombatSheet = {
             ...this.computerCombatSheet,
             computerEnemy: enemy.ascean,
-            computerEnemyBlessing: enemy.computerCombatSheet.computerBlessing,
+            // computerEnemyBlessing: enemy.computerCombatSheet.computerBlessing,
             computerEnemyHealth: enemy.ascean.health.max,
             newComputerEnemyHealth: enemy.health,
             computerEnemyWeapons: enemy.computerCombatSheet.computerWeapons as Equipment[],
@@ -847,11 +845,9 @@ export default class Enemy extends Entity {
             computerEnemyAttributes: enemy.computerCombatSheet.computerAttributes,
             computerEnemyDamageType: enemy.computerCombatSheet.computerDamageType,
             computerEnemyDefense: enemy.computerCombatSheet.computerDefense,
-            computerEnemyDefenseDefault: enemy.computerCombatSheet.computerDefenseDefault,
-            computerEnemyEffects: enemy.computerCombatSheet.computerEffects,
+            // computerEnemyDefenseDefault: enemy.computerCombatSheet.computerDefenseDefault,
+            // computerEnemyEffects: enemy.computerCombatSheet.computerEffects,
             enemyID: enemy.enemyID,
-            isAggressive: enemy.isAggressive,
-            startedAggressive: enemy.startedAggressive,
         };
         const newEnemy = this.isNewComputerEnemy(enemy);
         if (newEnemy) {

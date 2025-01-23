@@ -2,12 +2,12 @@ import Ascean from "../models/ascean";
 import { ComputerCombat } from "../stores/computer";
 import { criticalCompiler, damageTypeCompiler } from "./combat";
 import { ACTION_TYPES, ARMOR_WEIGHT, ATTACK_TYPES, DAMAGE, HOLD_TYPES, MASTERY, STRONG_TYPES, THRESHOLD, WEAPON_TYPES } from "./combatTypes";
-import { PRAYERS } from "./prayer";
+// import { PRAYERS } from "./prayer";
 
 function computerWeaponMaker(combat: ComputerCombat): ComputerCombat {
-    let prayers = [PRAYERS.BUFF, PRAYERS.DAMAGE, PRAYERS.DEBUFF, PRAYERS.HEAL];
-    let newPrayer = Math.floor(Math.random() * prayers.length);
-    combat.computerBlessing = prayers[newPrayer];
+    // let prayers = [PRAYERS.BUFF, PRAYERS.DAMAGE, PRAYERS.DEBUFF, PRAYERS.HEAL];
+    // let newPrayer = Math.floor(Math.random() * prayers.length);
+    // combat.computerBlessing = prayers[newPrayer];
     const change = Math.floor(Math.random() * 101);
     if (change < 50) {
         combat.computerWeapons = [combat.computerWeapons[1], combat.computerWeapons[2], combat.computerWeapons[0]];
@@ -65,8 +65,12 @@ function doubleRollCompiler(combat: ComputerCombat, combatTwo: ComputerCombat, c
 
     if (combatOneInitiative >= combatTwoInitiative) { // Computer One Higher Initiative
         if (computerOneRoll >= computerTwoRollCatch) { // Computer One Succeeds the Roll
+            combat.rollSuccess = true;
+            combatTwo.computerEnemyRollSuccess = true;
             attackCompiler(combat);
         } else if (computerTwoRoll >= computerTwoRollCatch) { // Computer One Fails the Roll and the Computer Succeeds
+            combatTwo.rollSuccess = true;
+            combat.computerEnemyRollSuccess = true;
             attackCompiler(combatTwo);
         } else { // Neither Player nor Computer Succeed
             attackCompiler(combat);
@@ -74,9 +78,13 @@ function doubleRollCompiler(combat: ComputerCombat, combatTwo: ComputerCombat, c
         };
     } else { // Computer Two has Higher Initiative
         if (computerTwoRoll >= computerRollCatch) { // Computer Two Succeeds the Roll
+            combatTwo.rollSuccess = true;
+            combat.computerEnemyRollSuccess = true;
             attackCompiler(combatTwo);
         } else if (computerOneRoll >= computerRollCatch) { // Computer Two Fails the Roll and the Player Succeeds
-            attackCompiler(combatTwo);
+            combat.rollSuccess = true;
+            combatTwo.computerEnemyRollSuccess = true;
+            attackCompiler(combat);
         } else { // Neither Computer nor Player Succeed
             attackCompiler(combatTwo);
             if (!combatTwo.computerWin) attackCompiler(combat);
@@ -286,12 +294,24 @@ function computerCombatSplitter(data: { computerOne: ComputerCombat, computerTwo
             computerTwo.newComputerHealth = computerOne.newComputerEnemyHealth;
             computerOne.computerEnemyWin = computerTwo.computerWin;
             computerTwo.computerEnemyWin = computerOne.computerWin;
+            computerOne.damagedID = computerTwo.personalID;
+            computerTwo.damagedID = computerOne.personalID;
         } else { // Only computerOne performs an action
             attackCompiler(computerOne);
             computerTwo.newComputerHealth = computerOne.newComputerEnemyHealth;
             computerTwo.computerEnemyWin = computerOne.computerWin;
             computerTwo.damagedID = computerOne.personalID;
         };
+
+        computerOne.computerEnemyDamageType = computerTwo.computerDamageType;
+        computerOne.computerEnemyCriticalSuccess = computerTwo.criticalSuccess;
+        computerOne.computerEnemyGlancingBlow = computerTwo.glancingBlow;
+        computerOne.computerEnemyParrySuccess = computerTwo.parrySuccess;
+        
+        computerTwo.computerEnemyDamageType = computerOne.computerDamageType;
+        computerTwo.computerEnemyCriticalSuccess = computerOne.criticalSuccess;
+        computerTwo.computerEnemyGlancingBlow = computerOne.glancingBlow;
+        computerTwo.computerEnemyParrySuccess = computerOne.parrySuccess;
 
         return {computerOne, computerTwo};
     } catch (err) {
@@ -339,9 +359,11 @@ function dualComputerActionSplitter(combat: ComputerCombat, combatTwo: ComputerC
     };
     if (computerOneAction === ACTION_TYPES.ROLL && computerTwoAction !== ACTION_TYPES.ROLL) {
         rollCompiler(combat);
+        combatTwo.computerEnemyRollSuccess = combat.rollSuccess;
     };
     if (computerTwoAction === ACTION_TYPES.ROLL && computerOneAction !== ACTION_TYPES.ROLL) {
         rollCompiler(combatTwo);
+        combat.computerEnemyRollSuccess = combatTwo.rollSuccess;
     };
 
     // ==================== OTHER ==================== \\

@@ -6,7 +6,7 @@ import StatusEffect from "../utility/prayer";
 export interface ComputerCombat {
     computer: Ascean | undefined;
     computerAction: string;
-    computerBlessing: string;
+    // computerBlessing: string;
     computerHealth: number;
     newComputerHealth: number;
     
@@ -18,23 +18,23 @@ export interface ComputerCombat {
     computerAttributes: CombatAttributes | undefined;
     computerDamageType: string;
     computerDefense: Defense | undefined;
-    computerDefenseDefault: Defense | undefined;
+    // computerDefenseDefault: Defense | undefined;
     computerEffects: StatusEffect[];
     potentialComputerDamage: number;
     realizedComputerDamage: number;
-    computerDamaged: boolean;
+    // computerDamaged: boolean;
 
     criticalSuccess: boolean;
     parrySuccess: boolean;
     dualWielding: boolean;
     glancingBlow: boolean;
-    religiousSuccess: boolean;
+    // religiousSuccess: boolean;
     rollSuccess: boolean;
     computerWin: boolean;
 
     computerEnemy: Ascean | undefined;
     computerEnemyAction: string;
-    computerEnemyBlessing: string;
+    // computerEnemyBlessing: string;
     computerEnemyHealth: number;
     newComputerEnemyHealth: number;
 
@@ -46,8 +46,8 @@ export interface ComputerCombat {
     computerEnemyAttributes: CombatAttributes | undefined;
     computerEnemyDamageType: string;
     computerEnemyDefense: Defense | undefined;
-    computerEnemyDefenseDefault: Defense | undefined;
-    computerEnemyEffects: StatusEffect[];
+    // computerEnemyDefenseDefault: Defense | undefined;
+    // computerEnemyEffects: StatusEffect[];
     potentialComputerEnemyDamage: number;
     realizedComputerEnemyDamage: number;
     computerEnemyDamaged: boolean;
@@ -56,12 +56,12 @@ export interface ComputerCombat {
     computerEnemyParrySuccess: boolean;
     computerEnemyDualWielding: boolean;
     computerEnemyGlancingBlow: boolean;
-    computerEnemyReligiousSuccess: boolean;
+    // computerEnemyReligiousSuccess: boolean;
     computerEnemyRollSuccess: boolean;
     computerEnemyWin: boolean;
 
-    combatInitiated: boolean;
-    combatEngaged: boolean;
+    // combatInitiated: boolean;
+    // combatEngaged: boolean;
     combatRound: number;
 
     weather: string;
@@ -76,16 +76,13 @@ export interface ComputerCombat {
     enemyID: string;
     damagedID: string;
     personalID: string;
-    combatTimer: number;
-
-    isAggressive: boolean;
-    startedAggressive: boolean;
+    // combatTimer: number;
 };
 
 export const initComputerCombat: ComputerCombat = {
     computer: undefined,
     computerAction: '',
-    computerBlessing: 'Buff',
+    // computerBlessing: 'Buff',
     computerHealth: 0,
     newComputerHealth: 0,
     
@@ -98,22 +95,22 @@ export const initComputerCombat: ComputerCombat = {
     computerDamageType: '',
     computerDefense: undefined,
     computerAttributes: undefined,
-    computerDefenseDefault: undefined,
+    // computerDefenseDefault: undefined,
     potentialComputerDamage: 0,
     realizedComputerDamage: 0,
-    computerDamaged: false,
+    // computerDamaged: false,
 
     criticalSuccess: false,
     parrySuccess: false,
     dualWielding: false,
     glancingBlow: false,
-    religiousSuccess: false,
+    // religiousSuccess: false,
     rollSuccess: false,
     computerWin: false,
 
     computerEnemy: undefined,
     computerEnemyAction: '',
-    computerEnemyBlessing: '',
+    // computerEnemyBlessing: '',
     computerEnemyHealth: 0,
     newComputerEnemyHealth: 0,
 
@@ -122,11 +119,11 @@ export const initComputerCombat: ComputerCombat = {
     computerEnemyWeaponTwo: undefined,
     computerEnemyWeaponThree: undefined,
     
-    computerEnemyEffects: [],
+    // computerEnemyEffects: [],
     computerEnemyDamageType: '',
     computerEnemyDefense: undefined,
     computerEnemyAttributes: undefined,
-    computerEnemyDefenseDefault: undefined,
+    // computerEnemyDefenseDefault: undefined,
     potentialComputerEnemyDamage: 0,
     realizedComputerEnemyDamage: 0,
     computerEnemyDamaged: false,
@@ -135,12 +132,12 @@ export const initComputerCombat: ComputerCombat = {
     computerEnemyParrySuccess: false,
     computerEnemyDualWielding: false,
     computerEnemyGlancingBlow: false,
-    computerEnemyReligiousSuccess: false,
+    // computerEnemyReligiousSuccess: false,
     computerEnemyRollSuccess: false,
     computerEnemyWin: false,
 
-    combatInitiated: false,
-    combatEngaged: false,
+    // combatInitiated: false,
+    // combatEngaged: false,
     combatRound: 0,
 
     weather: '',
@@ -155,8 +152,5 @@ export const initComputerCombat: ComputerCombat = {
     enemyID: '',
     damagedID: '',
     personalID: '',
-    combatTimer: 0,
-
-    isAggressive: false,
-    startedAggressive: false,
+    // combatTimer: 0,
 };

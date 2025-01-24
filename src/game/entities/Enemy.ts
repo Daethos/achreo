@@ -1567,12 +1567,7 @@ export default class Enemy extends Entity {
     };
 
     onCombatEnter = () => {
-        if ((this.inCombat === false && this.inComputerCombat === false)
-            || !this.attacking
-            || this.health <= 0
-            || (this.inCombat && this.scene.state.newPlayerHealth <= 0)
-            || (this.inComputerCombat && this.attacking?.health <= 0))
-        {
+        if ((this.inCombat === false && this.inComputerCombat === false) || !this.attacking || this.health <= 0 || (this.inCombat && this.scene.state.newPlayerHealth <= 0) || (this.inComputerCombat && this.attacking?.health <= 0)) {
             this.inCombat = false;
             this.inComputerCombat = false;
             return;
@@ -1894,6 +1889,7 @@ export default class Enemy extends Entity {
             let player = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
             if (!this.attacking || !this.attacking.body) {
                 this.stateMachine.setState(States.COMBAT);
+                return;
             };
             const direction = this.attacking?.position?.subtract(this.position);
             const distance = direction?.length() || 0;

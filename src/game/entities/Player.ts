@@ -311,7 +311,6 @@ export default class Player extends Entity {
         if (this.currentTarget?.enemyID !== e.id) return;
         if (e.key === 'newComputerEnemyHealth') {
             EventBus.emit('update-combat-state', { key: 'newComputerHealth', value: e.value });
-            // EventBus.emit('initiate-combat', { type: 'Health', data: { id: e.id, key: 'enemy', value: e.value } });
         };
     };
 

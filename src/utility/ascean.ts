@@ -626,11 +626,11 @@ function gripCompiler(weapon: Equipment, attributes: CombatAttributes, ascean: A
     let physicalMultiplier: number = 1;
     let magicalMultiplier: number = 1; 
     if (weapon.grip === 'One Hand' || weapon.type === 'Bow') {
-        weapon.physicalDamage += 
+        weapon.physicalDamage +=
             ((weapon.agility / WEIGHTS.MODIFIER + attributes.agilityMod) 
-            + (weapon.strength / WEIGHTS.MINOR + attributes.strengthMod / WEIGHTS.MAJOR)) 
+            + (weapon.strength / WEIGHTS.MINOR + attributes.strengthMod / WEIGHTS.MAJOR))
             * physicalMultiplier;
-        weapon.magicalDamage += 
+        weapon.magicalDamage +=
             ((weapon.achre / WEIGHTS.MODIFIER + attributes.achreMod) 
             + (weapon.caeren / WEIGHTS.MINOR + attributes.caerenMod / WEIGHTS.MAJOR)) 
             * magicalMultiplier;
@@ -656,7 +656,7 @@ function gripCompiler(weapon: Equipment, attributes: CombatAttributes, ascean: A
 
         weapon.physicalDamage *= 1 
             + ((weapon.strength / WEIGHTS.MODIFIER + attributes.strengthMod) 
-            + (weapon.agility / WEIGHTS.MINOR + attributes.agilityMod / WEIGHTS.MAJOR)) 
+            + (weapon.agility / WEIGHTS.MINOR + attributes.agilityMod / WEIGHTS.MAJOR))
             / (100 + (20 / ascean.level));
         weapon.magicalDamage *= 1 
             + ((weapon.caeren / WEIGHTS.MODIFIER + attributes.caerenMod) 

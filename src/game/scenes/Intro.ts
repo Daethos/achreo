@@ -43,15 +43,15 @@ export class Intro extends Scene {
                     useAdvancedWrap: true
                 }
             });
-        this.introText.setPosition(this.game.canvas.width * 0.1, this.game.canvas.height * 0.2).setOrigin(0, 0).setScrollFactor(0);
+        this.introText.setPosition(this.game.canvas.width * 0.1, this.game.canvas.height * 0.15).setOrigin(0, 0).setScrollFactor(0);
 
         this.introTextBorder = new Phaser.GameObjects.Rectangle(this,
             1, // this.introText.x * 0.9,
-            0, // this.introText.y * 0.9,
-            this.game.canvas.width,
-            this.game.canvas.height,
+            1, // this.introText.y * 0.9,
+            this.game.canvas.width - 4,
+            this.game.canvas.height - 4,
         );
-        this.introTextBorder.setStrokeStyle(4, 0xfdf6d8);
+        this.introTextBorder.setStrokeStyle(3, 0xfdf6d8);
         this.introTextBorder.setOrigin(0);
 
         this.introContainer = new Phaser.GameObjects.Container(this, 0, 0, [this.introTextBorder, this.introText]);

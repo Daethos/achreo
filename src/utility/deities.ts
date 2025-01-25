@@ -10,7 +10,7 @@ export const DEITIES = {
         origin: "Thought to be Licivitas as the Good Lorian founded the Seyr in the city of his namesake. However, the origin of its herald and prophet, Laetrois Ath'Shaorah, is unknown.",
         favor: "Caeren",
         worship: "Charity and Penance. For whether born bastard or regal, man or woman, gifted or afflicted, it is the duty in what one can bear and manifest greater that will carry forward in his lineage and those around him. The Good instantiated may only be birthed through the individual, his ascertainment of truth evidenced through the perception of the world around him, and for that right may it converge and coalesce to his brothers on the whole.",
-    },
+    }, 
     "Achreo": {
         name: "Achreo, the Wild Ancient",
         description: "Not much is known or remembered of Achreo in his ways with humans, nor how the title came to suit him. It is currently believed that he were apathetic towards human struggle and resigned to his own meditations. Associated with a multitude of human-like entities: the Anashtre, Aphyero, Chyrolus, Draochre, Fyerash, and Quor'eo.",

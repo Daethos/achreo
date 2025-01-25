@@ -171,7 +171,9 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
             start.sort();
             setSpecials(start);
         } else {
-            setSpecials([...mastery]);
+            let start = [...mastery];
+            start.sort();
+            setSpecials(start);
         };
     };
 
@@ -482,7 +484,7 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
     };
 
     function info(item: Equipment) {
-        setDeity(item?.influences?.[0])
+        setDeity(item?.influences?.[0]);
     };
 
     return (

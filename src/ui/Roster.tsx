@@ -93,9 +93,8 @@ export default function Roster({ arena, ascean, setArena, base, game, settings }
             silver -= arena().wager.silver;
             gold -= arena().wager.gold;
         };
-        let currency = rebalanceCurrency({ silver, gold });
-        const update = { ...ascean(), currency };
-        EventBus.emit('update-ascean', update);
+        const currency = rebalanceCurrency({ silver, gold });
+        EventBus.emit('update-currency', currency);
         setArena({ ...arena(), enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, win: false, show: false, result: false });
         if (switchScene()) EventBus.emit('switch-arena');
     };

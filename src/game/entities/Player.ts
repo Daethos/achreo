@@ -291,7 +291,7 @@ export default class Player extends Entity {
         } else {
             this.scene.tweens.add({
                 targets: this.scene.cameras.main,
-                zoom: this.scene.cameras.main.zoom * 2,
+                zoom: this.scene.cameras.main.zoom * 1.5,
                 ease: Phaser.Math.Easing.Quintic.InOut,
                 duration: 1000,
                 yoyo: true
@@ -1339,11 +1339,12 @@ export default class Player extends Entity {
         };
         if (this.isStealthing) {
             this.scene.combatManager.paralyze(this.attackedTarget.enemyID);
-            this.isStealthing = false;
+            // this.isStealthing = false;
             this.scene.combatEngaged(true);
             this.inCombat = true;
             this.attackedTarget.jumpIntoCombat();
-            EventBus.emit('update-stealth');
+            // EventBus.emit('update-stealth');
+            this.stealthUpdate();
         };
     };
 

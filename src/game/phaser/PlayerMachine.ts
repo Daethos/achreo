@@ -2567,10 +2567,12 @@ export default class PlayerMachine {
             playerSpecialDescription: `You step halfway into the land of hush and tendril.`
         });
     };
-    onStealthUpdate = (_dt: number) => {if (!this.player.isStealthing || this.player.currentRound > 1 || this.scene.combat) this.positiveMachine.setState(States.CLEAN);};
-    onStealthExit = () => { 
+    onStealthUpdate = (_dt: number) => {if (!this.player.isStealthing || this.scene.combat) this.positiveMachine.setState(States.CLEAN);};
+    onStealthExit = () => {
         this.player.isStealthing = false;
         this.stealthEffect(false);
+        // this.scene.stealthEngaged(false);
+        // EventBus.emit('outside-stance', 'stealth');
     };
 
     stealthEffect = (stealth: boolean) => {
@@ -2603,6 +2605,9 @@ export default class PlayerMachine {
             clearStealth(this.player.spriteWeapon);
             clearStealth(this.player.spriteShield);
             this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
+            if (this.scene.hud.smallHud.switches.stealth) { // Stealth Button Depressed
+                EventBus.emit('outside-stance', 'stealth');
+            };
         };
         this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });
     };

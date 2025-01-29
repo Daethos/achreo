@@ -748,12 +748,11 @@ export default class Enemy extends Entity {
                         // const newEnemy = this.isNewComputerEnemy(other.gameObjectB);
                         // const realEnemy = this.potentialEnemies.includes(other.gameObjectB.ascean.name);
                         
-                        // ===== TEMPORARY FOR TESTING ===== \\
-                        if (this.inCombat || this.inComputerCombat || other.gameObjectB.health <= 0 || this.health <= 0) return; 
-                        
-                        this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
-                        // this.enemies.push(other.gameObjectB);
-                        this.checkComputerEnemyCombatEnter(other.gameObjectB);
+                    // ===== TEMPORARY FOR TESTING ===== \\
+                    if (this.inCombat || this.inComputerCombat || other.gameObjectB.health <= 0 || this.health <= 0) return;                     
+                    this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
+                    this.checkComputerEnemyCombatEnter(other.gameObjectB);
+
                         // if (newEnemy && realEnemy) {
                         // };
                         // this.stateMachine.setState(States.AWARE);
@@ -2703,7 +2702,7 @@ export default class Enemy extends Entity {
         };
 
         this.specialCombatText = this.scene.showCombatText('Mending', 500, 'tendril', false, true, () => this.specialCombatText = undefined);
-        const mend = Phaser.Math.Between(this.healthbar.getTotal() * 0.1, this.healthbar.getTotal() * 0.15);
+        const mend = Phaser.Math.Between(this.healthbar.getTotal() * 0.075, this.healthbar.getTotal() * 0.125);
         const heal = Math.min(this.healthbar.getTotal(), this.health + mend);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 0) {

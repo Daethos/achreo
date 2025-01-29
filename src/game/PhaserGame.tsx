@@ -1037,6 +1037,17 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('save-health', saveHealth);
         EventBus.on('enemy-combat-text', (e: { computerSpecialDescription: string; }) => EventBus.emit('add-combat-logs', { ...combat(), computerActionDescription: e.computerSpecialDescription }));
         EventBus.on('special-combat-text', (e: { playerSpecialDescription: string; }) => EventBus.emit('add-combat-logs', { ...combat(), playerActionDescription: e.playerSpecialDescription }));
+        EventBus.on('update-currency', (currency: { silver: number; gold: number; }) => {
+            const update = {
+                ...props.ascean(),
+                currency,
+                health: {
+                    current: combat().newPlayerHealth,
+                    max: combat().playerHealth
+                }
+            };
+            EventBus.emit('update-ascean', update);
+        });
 
         onCleanup(() => {
             if (instance.game) {
@@ -1104,6 +1115,7 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener('update-combat-player');
             EventBus.removeListener('update-combat-state');
             EventBus.removeListener('update-combat-timer');
+            EventBus.removeListener('update-currency');
             EventBus.removeListener('update-health');
             EventBus.removeListener('update-lootdrops');
             EventBus.removeListener('update-caerenic');

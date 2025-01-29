@@ -450,7 +450,6 @@ export class Underground extends Scene {
                 };
             };
         };
-        this.hud.clearNonAggressiveEnemy();
     };
 
     combatEngaged = (bool: boolean) => {
@@ -586,6 +585,7 @@ export class Underground extends Scene {
                 };
                 this.wager = { silver: 0, gold: 0, multiplier: 0 };
                 this.player.clearEnemies();
+                this.hud.clearNonAggressiveEnemy();
             };
             enemy.cleanUp();
             enemy.destroy();

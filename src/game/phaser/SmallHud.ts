@@ -1,4 +1,5 @@
 import { EventBus } from "../EventBus";
+import { Play } from "../main";
 import { Arena } from "../scenes/Arena";
 import { Game } from "../scenes/Game";
 import { Hud } from "../scenes/Hud";
@@ -143,7 +144,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                 item.setVisible(loot);
                 item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
             };
-            item.on('pointerdown', () => {
+            item.on('pointerup', () => {
                 this.pressButton(item);
             });
         });
@@ -162,7 +163,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             item.setScale(this.scene.settings.positions.leftHud.scale); // || 0.095
             item.setVisible(true);
             item.x = leftXModifier(this.leftX, Math.min(index, 4), this.scene.settings.positions.leftHud.offset); // || 43.75
-            item.on('pointerdown', () => {
+            item.on('pointerup', () => {
                 this.pressStance(item);
             });
         });
@@ -240,6 +241,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
 
     listener = () => {
         EventBus.on('outside-press', this.outsidePress);
+        EventBus.on('outside-stance', this.outsideStance);
         EventBus.on('smallhud-deactivate', this.deactivate);
         EventBus.on('update-hud-position', (data: {x: number, y: number}) => {
             const { x, y } = data;
@@ -330,6 +332,11 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.pressButton(button as Phaser.GameObjects.Image);
     };
 
+    outsideStance = (key: string) => {
+        const button = this.getButton(key);
+        this.pressStance(button as Phaser.GameObjects.Image);
+    };
+
     pressButton = (item: Phaser.GameObjects.Image) => {
         this.bar.forEach((button) => {
             if (button !== item) return;
@@ -407,22 +414,14 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             if (button === stance) {
                 switch (button.texture.key) { 
                     case 'stealth':
-                        if (this.scene.registry.get("combat").combatEngaged === true) return;
-                        // if (this.scene.combat === true) return;
-                        this.switches.stealth = !this.switches.stealth;
-                        if (this.scene.scene.isActive('Game')) {
-                            const game = this.scene.scene.get('Game') as Game;
-                            game.stealthEngaged(!this.switches.stealth);
-                        } else if (this.scene.scene.isActive('Underground')) {
-                            const game = this.scene.scene.get('Underground') as Underground;
-                            game.stealthEngaged(!this.switches.stealth);
-                        } else if (this.scene.scene.isActive('Arena')) {
-                            const game = this.scene.scene.get('Arena') as Arena;
-                            game.stealthEngaged(!this.switches.stealth);
-                        } else if (this.scene.scene.isActive('Tutorial')) {
-                            const game = this.scene.scene.get('Tutorial') as Tutorial;
-                            game.stealthEngaged(!this.switches.stealth);
+                        const currentScene = this.scene.scene.get(`${this.scene.currScene}`) as Play;
+                        if (currentScene.combat) {
+                            if (this.switches.stealth) {
+                                this.switches.stealth = false;
+                            };
+                            break;
                         };
+                        this.switches.stealth = !this.switches.stealth;
                         EventBus.emit('update-stealth');
                         break;
                     case 'stalwart':

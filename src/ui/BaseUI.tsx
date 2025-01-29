@@ -94,6 +94,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 computerMastery: number = validateMastery(combat().computer?.[combat().computer?.mastery as string]),
                 playerMastery: number = validateMastery(combat().player?.[combat().player?.mastery as string]),
                 affectsHealth: boolean = true,
+                affectsStealth: boolean = true,
                 caerenic: number = combat().isCaerenic ? 1.15 : 1,
                 caerenicVulnerable: number = combat().isCaerenic ? 1.25 : 1,
                 stalwart: number = combat().isStalwart ? 0.85 : 1;
@@ -145,6 +146,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     res = { ...combat(), ...remove, playerActionDescription };
                     EventBus.emit('blend-combat', remove);
                     affectsHealth = false;
+                    affectsStealth = false;
                     break;
                 case 'Player': // Blind Player Attack i.e. hitting a non targeted enemy
                     const { playerAction, enemyID, ascean, damageType, combatStats, weapons, health, actionData } = data;
@@ -253,6 +255,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                                 : `You are damaged for ${Math.abs(healed)}, down to ${Math.round(newPlayerHealth)}`;
                             res = { ...combat(), newPlayerHealth, playerActionDescription, damagedID: id };
                             EventBus.emit('blend-combat', { newPlayerHealth, computerWin, damagedID: id });
+                            affectsStealth = false;
                             break;
                         case 'enemy':
                             computerActionDescription = value > newComputerHealth ? 
@@ -268,6 +271,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                                 EventBus.emit('update-enemy-health', { id, health: newComputerHealth, glancing: false, critical: false });
                             };
                             affectsHealth = false;
+                            affectsStealth = false;
                             break;
                         default:
                             break;
@@ -281,6 +285,7 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                     newPlayerHealth = data.value;
                     res = { ...combat(), computerWin, newPlayerHealth, damagedID: data.id };
                     EventBus.emit('blend-combat', { computerWin, newPlayerHealth: data.value, damagedID: data.id });
+                    affectsStealth = false;
                     break;
                 case 'Enemy': // Blind Enemy Attack i.e. an enemy not targeted hitting the player
                     if (!data.ascean) return;
@@ -365,6 +370,9 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
                 resolveCombat(res);
             } else if (affectsHealth === true) {
                 adjustTime(1000, res.combatEngaged, res.newPlayerHealth);
+            };
+            if (affectsStealth && combat().isStealth) {
+                EventBus.emit('update-stealth');
             };
             screenShake(instance.scene as Phaser.Scene); // [250, 150, 250]
         } catch (err: any) {

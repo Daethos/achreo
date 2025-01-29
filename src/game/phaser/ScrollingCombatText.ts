@@ -49,8 +49,8 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         this.timerTime = 0;
         this.duration = duration;
         this.constant = constant;
-        this.active = true;
-        this.visible = true;
+        // this.active = true;
+        // this.visible = true;
         this.onDestroyCallback = onDestroyCallback;
 
         this.scene.tweens.add({
@@ -59,6 +59,10 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
             ease: critical ? Phaser.Math.Easing.Elastic.Out : Phaser.Math.Easing.Sine.Out,
             alpha: { from: 0.65, to: 1 },
             scale: { from: 0.65, to: 1 },
+            onStart: () => {
+                this.active = true;
+                this.visible = true;
+            },
             onComplete: () => {
                 this.onDestroyCallback();
                 this.release(); // Release back to the pool instead of destroying

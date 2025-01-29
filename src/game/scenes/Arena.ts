@@ -462,11 +462,12 @@ export class Arena extends Phaser.Scene {
                 };
             };
         };
-        this.hud.clearNonAggressiveEnemy();
     };
 
     switchArena = () => {
         this.wager = { silver: 0, gold: 0, multiplier: 0 };
+        this.player.defeatedDuration = 0;
+        // this.player.playerMachine.stateMachine.setState(States.IDLE);
         EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
         this.time.delayedCall(3000, () => {
             EventBus.emit("scene-switch", {current:"Arena", next:"Underground"});
@@ -643,6 +644,7 @@ export class Arena extends Phaser.Scene {
                     EventBus.emit('settle-wager', { wager: this.wager, win: false });
                 };
                 this.computerDisengage();
+                this.hud.clearNonAggressiveEnemy();
             };
             enemy.cleanUp();
             enemy.destroy();

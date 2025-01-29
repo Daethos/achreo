@@ -253,6 +253,7 @@ export class Hud extends Phaser.Scene {
     startGameScene = () => {
         if (!this.settings.tutorial?.boot) return;
         const scene = this.settings?.map ? this.settings.map : 'Tutorial';
+        this.currScene = scene;
         this.scene.launch(scene, this);
     };
 

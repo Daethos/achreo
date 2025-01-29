@@ -116,7 +116,7 @@ const Character = ({ reputation, settings, setSettings, statistics, talents, asc
     const [ringCompared, setRingCompared] = createSignal<string>('');
     const [removeModalShow, setRemoveModalShow] = createSignal<boolean>(false);
     const [weaponCompared, setWeaponCompared] = createSignal<string>('');
-    const [showTalent, setShowTalent] = createSignal<any>({show:false,special:undefined});
+    const [showTalent, setShowTalent] = createSignal<any>({show:false,talent:undefined});
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [showInventory, setShowInventory] = createSignal<boolean>(false);
     const [tutorial, setTutorial] = createSignal<string>('');
@@ -298,7 +298,7 @@ const Character = ({ reputation, settings, setSettings, statistics, talents, asc
                     <h1 style={{color:'#fdf6d8'}}>{talents().points.spent} / {talents().points.total}</h1>
                     <For each={specials()}>{(special, index) => {
                         const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
-                        return <div class='border row juice' onClick={() => setShowTalent({show:true,special:spec})} style={{ margin: '1em auto', 'border-color': masteryColor(ascean().mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
+                        return <div class='border row juice' onClick={() => setShowTalent({show:true,talent:spec})} style={{ margin: '1em auto', 'border-color': masteryColor(ascean().mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
                             <div style={{ padding: '1em' }}>
                             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
                                 {svg(spec?.svg)} {special} <br />
@@ -514,10 +514,6 @@ const Character = ({ reputation, settings, setSettings, statistics, talents, asc
     function info(item: Equipment) {
         setDeity(item?.influences?.[0]);
     };
-
-    /*
-        TODO: Talent Section!
-    */
 
     return (
         <div style={{ 'z-index': 1, position: 'fixed', top: 0, left: 0 }}>
@@ -864,6 +860,29 @@ const Character = ({ reputation, settings, setSettings, statistics, talents, asc
         <Suspense fallback={<Puff color="gold"/>}>
             <TutorialOverlay ascean={ascean} settings={settings} tutorial={tutorial} show={showInventory} setShow={setShowInventory} /> 
         </Suspense>
+        </Show>
+        <Show when={showTalent().show}>
+            <div class='modal'>
+                <div class='superCenter' style={{ width:'50%' }}>
+                <div class='border row juice' style={{ margin: '1em auto', 'border-color': masteryColor(ascean().mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
+                    <div style={{ padding: '1em' }}>
+                    <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                        {svg(showTalent()?.talent.svg)} {showTalent()?.talent.name} <br />
+                    </p>
+                    <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>
+                        {showTalent()?.talent.description}
+                    </p>
+                    <p style={{ color: 'aqua' }}>
+                        {showTalent()?.talent.time} {showTalent()?.talent.special} <br />
+                        {showTalent()?.talent.cost}. {showTalent()?.talent.cooldown} Cooldown <br />
+                    </p>
+                    </div>
+                <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '0', right: '0', 'background-color': 'red' }} onClick={() => setShowTalent({ show: false, talent: undefined })}>
+                    <p style={font('0.5em')}>X</p>
+                </button>
+                </div>
+                </div>
+            </div>
         </Show>
         </div>
     );

@@ -11,7 +11,7 @@ import { EventBus } from '../game/EventBus';
 import { GameState } from '../stores/game';
 import { Combat } from '../stores/combat';
 import { Modal } from '../utility/buttons';
-import { font, getRarityColor } from '../utility/styling';
+import { font, getRarityColor, masteryColor } from '../utility/styling';
 import { useResizeListener } from '../utility/dimensions';
 import { Attributes } from '../utility/attributes';
 import { Reputation, faction } from '../utility/player';
@@ -23,6 +23,8 @@ import PhaserSettings from './PhaserSettings';
 import Statistics from '../utility/statistics';
 import { FAITH_RARITY } from '../utility/combatTypes';
 import Talents from '../utility/talents';
+import { ACTION_ORIGIN } from '../utility/actions';
+import { svg } from '../utility/settings';
 const AsceanImageCard = lazy(async () => await import('../components/AsceanImageCard'));
 const ExperienceBar = lazy(async () => await import('./ExperienceBar'));
 const Firewater = lazy(async () => await import('./Firewater'));
@@ -44,6 +46,7 @@ const CHARACTERS = {
     REPUTATION: 'Reputation',
     SKILLS: 'Skills',
     STATISTICS: 'Statistics',
+    TALENTS: 'Talents',
     TRAITS: 'Traits',
 };
 const VIEWS = {
@@ -113,6 +116,7 @@ const Character = ({ reputation, settings, setSettings, statistics, talents, asc
     const [ringCompared, setRingCompared] = createSignal<string>('');
     const [removeModalShow, setRemoveModalShow] = createSignal<boolean>(false);
     const [weaponCompared, setWeaponCompared] = createSignal<string>('');
+    const [showTalent, setShowTalent] = createSignal<any>({show:false,special:undefined});
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [showInventory, setShowInventory] = createSignal<boolean>(false);
     const [tutorial, setTutorial] = createSignal<string>('');
@@ -288,6 +292,28 @@ const Character = ({ reputation, settings, setSettings, statistics, talents, asc
                         Favored Deity: <span class='gold'>{highestDeity[0]}</span><br />
                         Blessings: <span class='gold'>{highestDeity[1]}</span>
                 </div>;
+            case CHARACTERS.TALENTS:
+                return <div class='creature-heading'>
+                    <h1>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</h1>
+                    <h1 style={{color:'#fdf6d8'}}>{talents().points.spent} / {talents().points.total}</h1>
+                    <For each={specials()}>{(special, index) => {
+                        const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
+                        return <div class='border row juice' onClick={() => setShowTalent({show:true,special:spec})} style={{ margin: '1em auto', 'border-color': masteryColor(ascean().mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
+                            <div style={{ padding: '1em' }}>
+                            <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
+                                {svg(spec?.svg)} {special} <br />
+                            </p>
+                            <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>
+                                {spec?.description}
+                            </p>
+                            <p  style={{ color: 'aqua' }}>
+                                {spec?.time} {spec?.special} <br />
+                                {spec?.cost}. {spec?.cooldown} Cooldown <br />
+                            </p>
+                            </div>
+                        </div>
+                    }}</For>
+                </div>
             case CHARACTERS.TRAITS:
                 return <div class='creature-heading'>
                     <h1>{playerTraitWrapper()?.primary?.name}</h1>
@@ -509,8 +535,12 @@ const Character = ({ reputation, settings, setSettings, statistics, talents, asc
                         <div>Skills</div>
                     </button>
                 ) : settings().characterViews === CHARACTERS.STATISTICS ? (
-                    <button class='highlight menuButton' onClick={() => currentCharacterView(CHARACTERS.TRAITS)}>
+                    <button class='highlight menuButton' onClick={() => currentCharacterView(CHARACTERS.TALENTS)}>
                         <div>Statistics</div>
+                    </button>
+                ) : settings().characterViews === CHARACTERS.TALENTS ? (
+                    <button class='highlight menuButton' onClick={(() => currentCharacterView(CHARACTERS.TRAITS))}>
+                        <div>Talents</div>
                     </button>
                 ) : (
                     <button class='highlight menuButton' onClick={() => currentCharacterView(CHARACTERS.REPUTATION)}>

@@ -1,5 +1,9 @@
 export default class Talents {
     _id: string;
+    points: {
+        spent: number;
+        total: number;
+    };
     talents: {
         caerenic: boolean;
         stalwart: boolean;
@@ -75,6 +79,10 @@ export default class Talents {
 
     constructor(id: string) {
         this._id = id;
+        this.points = {
+            spent: 0,
+            total: 0
+        };
         this.talents = {
             caerenic: false,
             stalwart: false,

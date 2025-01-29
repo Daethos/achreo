@@ -7,7 +7,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.ATTACK} Stamina`,
         time: 'Instant',
         special: '(Physical)',
-        svg: 'ATTACK'
+        svg: 'ATTACK',
+        talent: '',
     },
     DODGE: {
         description: "A pure and quick(est) evasive maneuver.",
@@ -15,7 +16,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.DODGE} Stamina`,
         time: 'Instant',
         special: '(Physical)',
-        svg: 'DODGE'
+        svg: 'DODGE',
+        talent: '',
     },
     PARRY: {
         description: "If melee, can parry enemy strikes and projectiles. If ranged, can counterspell the casting and channeling of enemies.",
@@ -23,7 +25,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.PARRY} Stamina`,
         time: 'Instant',
         special: '(Physical)',
-        svg: 'PARRY'
+        svg: 'PARRY',
+        talent: '',
     },
     POSTURE: {
         description: "A defensive strike. Raises your shield and adds to your defense.",
@@ -31,7 +34,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.POSTURE} Stamina`,
         time: 'Instant',
         special: '(Physical)',
-        svg: 'POSTURE'
+        svg: 'POSTURE',
+        talent: '',
     },
     ROLL: {
         description: "An evasive maneuever. Can strike enemies when melee.",
@@ -39,7 +43,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.ROLL} Stamina`,
         time: 'Instant',
         special: '(Physical)',
-        svg: 'ROLL'
+        svg: 'ROLL',
+        talent: '',
     },
     THRUST: {
         description: "A quick strike that is difficult to evade or parry. Deals reduced damage.",
@@ -47,7 +52,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.THRUST} Stamina`,
         time: 'Instant',
         special: '(Physical)',
-        svg: 'THRUST'
+        svg: 'THRUST',
+        talent: '',
     },
 
 
@@ -57,7 +63,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.INVOKE} Grace`,
         time: 'Prayer',
         special: '(Targeted)',
-        svg: 'INVOKE'
+        svg: 'INVOKE',
+        talent: '',
     },
     CONSUME: {
         description: "Consume a prayer during combat to get receive steps into the land of hush and tendril tendril of its essence.",
@@ -65,7 +72,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.CONSUME} Grace`,
         time: 'Instant',
         special: '(Targeted)',
-        svg: 'SHIELD'
+        svg: 'SHIELD',
+        talent: '',
     },
     ABSORB: {
         description: "A warped tendril wrapped round you that protects the player from melee and ranged attacks at the cost of grace.",
@@ -73,7 +81,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.ABSORB} Grace`,
         time: 'Instant',
         special: 'Negation Bubble',
-        svg: 'CONSUME'
+        svg: 'CONSUME',
+        talent: '',
     },
     ACHIRE: {
         description: "Entwine your achre and caer through your weapon to release a powerful projectile.",
@@ -81,7 +90,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.ACHIRE} Grace`,
         time: '1.5s',
         special: 'Cast. Projectile',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: 'Stuns the Enemy on Hit',
     },
     ARC: {
         description: "Power up into an attack, hitting with four times the potential.",
@@ -89,7 +99,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.ARC} Grace`,
         time: '3s',
         special: 'Channel. Attack',
-        svg: 'WEAPONS'
+        svg: 'WEAPONS',
+        talent: '',
     },
     ASTRAVE: {
         description: "Uproot tendrils, damaging and stunning all caught in its grasp.",
@@ -97,7 +108,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.ASTRAVE} Grace`,
         time: '1.5s',
         special: 'Cast. AoE (Manual)',
-        svg: 'AOE'
+        svg: 'AOE',
+        talent: '',
     },
     ASTRICATION: {
         description: "Strikes cannot be evaded.",
@@ -105,7 +117,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.ASTRICATION} Grace`,
         time: 'Instant',
         special: '(Buff)',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     BERSERK: {
         description: "Strikes grow stronger the more you are attacked.",
@@ -113,7 +126,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.BERSERK} Grace`,
         time: 'Instant',
         special: '(Buff)',
-        svg: 'CONSUME'
+        svg: 'CONSUME',
+        talent: '',
     },
     BLIND: {
         description: "Your brilliance blinds all who are impure.",
@@ -121,7 +135,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.INVOKE} Grace`,
         time: 'Instant',
         special: 'AoE (Self)',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     BLINK: {
         description: "Use your caeren to teleport a short distance forward, if you are moving.",
@@ -129,7 +144,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.BLINK} Grace`,
         time: 'Instant',
         special: 'Movement',
-        svg: 'INVOKE'
+        svg: 'INVOKE',
+        talent: '',
     },
     CAERENESIS: {
         description: "Uproot tendrils, damaging and fearing all caught in its grasp.",
@@ -137,7 +153,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.CAERENESIS} Grace`,
         time: 'Instant',
         special: 'AoE (Target)',
-        svg: 'AOE'
+        svg: 'AOE',
+        talent: '',
     },
     CHIOMIC: {
         description: "A hush steps into the land of hush and tendril proliferates, confusing enemies caught in its mocking blast.",
@@ -145,7 +162,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.CHIOMIC} Grace`,
         time: 'Instant',
         special: 'AoE (Self)',
-        svg: 'CONSUME'
+        svg: 'CONSUME',
+        talent: '',
     },
     CONFUSE: {
         description: "Inspire confusion in your opponent for several seconds. Damage may break this effect.",
@@ -153,7 +171,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.CONFUSE} Grace`,
         time: '1.5s',
         special: 'Cast. Targeted',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     CONVICTION: {
         description: "Strikes grow stronger in succession.",
@@ -161,7 +180,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.CONVICTION} Grace`,
         time: 'Instant',
         special: '(Buff)',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     DESPERATION: {
         description: "Heals you for a dramatic amount (50%).",
@@ -169,7 +189,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.DESPERATION} Grace`,
         time: 'Instant',
         special: '(Self)',
-        svg: 'INVOKE'
+        svg: 'INVOKE',
+        talent: '',
     },
     DEVOUR: {
         description: "Lifedrain your opponent of their caer, restoring your own.",
@@ -177,7 +198,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.DEVOUR} Grace`,
         time: 'Instant',
         special: 'Physical',
-        svg: 'VOICE'
+        svg: 'VOICE',
+        talent: '',
     },
     DISEASE: {
         description: "A hush that proliferates, damaging enemies caught in its malice every second.",
@@ -185,7 +207,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.DISEASE} Grace`,
         time: 'Instant',
         special: 'AoE (Self)',
-        svg: 'AOE'
+        svg: 'AOE',
+        talent: '',
     },
     DISPEL: {
         description: "Removes the enemies defensive shields.",
@@ -193,7 +216,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.DISPEL} Grace`,
         time: 'Instant',
         special: '(Targeted)',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     ENDURANCE: {
         description: "Pour your caeren back into your physical form, dramatically recovering stamina.",
@@ -201,7 +225,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.ENDURANCE} Grace`,
         time: 'Instant',
         special: '(Buff)',
-        svg: 'BEAM'
+        svg: 'BEAM',
+        talent: '',
     },
     ENVELOP: {
         description: "A warped tendril wrapped round you that protects the player from melee and ranged attacks at the cost of stamina.",
@@ -209,7 +234,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.ENVELOP} Grace`,
         time: 'Instant',
         special: 'Negation Bubble',
-        svg: 'SHIELD'
+        svg: 'SHIELD',
+        talent: '',
     },
     FEAR: {
         description: "Inspire fear in your opponent, causing them to run in terror for several seconds. Damage may break this effect.",
@@ -217,7 +243,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.FEAR} Grace`,
         time: '1.5s',
         special: 'Cast. Targeted',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     FREEZE: {
         description: "A hush that proliferates, freezing enemies caught in its grasp for several seconds.",
@@ -225,7 +252,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.FREEZE} Grace`,
         time: 'Instant',
         special: 'AoE (Self)',
-        svg: 'AOE'
+        svg: 'AOE',
+        talent: '',
     },
     FYERUS: {
         description: "Uprooted tendrils, damaging enemies and snaring enemies caught in their grasp.",
@@ -233,7 +261,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.FYERUS} Grace`,
         time: '6s',
         special: 'Channel. AoE (Manual)',
-        svg: 'BEAM'
+        svg: 'BEAM',
+        talent: '',
     },
     HEALING: {
         description: "Heals for a moderate amount (25%).",
@@ -241,7 +270,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.HEALING} Grace`,
         time: '1.5s',
         special: 'Cast',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     HOOK: {
         description: "You rip a tendril through this world, hungry for caer and the flesh.",
@@ -249,7 +279,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.HOOK} Grace`,
         time: 'Instant',
         special: 'Physical',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     HOWL: {
         description: "A hush that proliferates, stunning enemies caught in its piercing blast for several seconds.",
@@ -257,7 +288,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.HOWL} Grace`,
         time: 'Instant',
         special: 'AoE (Self)',
-        svg: 'VOICE'
+        svg: 'VOICE',
+        talent: '',
     },
     ILIRECH: {
         description: "You rip into this world with Ilian tendrils.",
@@ -265,7 +297,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.ILIRECH} Grace`,
         time: '1.5s',
         special: 'Cast. Targeted',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     IMPERMANENCE: {
         description: "Your evasion becomes ethereal.",
@@ -273,7 +306,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.IMPERMANENCE} Grace`,
         time: 'Instant',
         special: '(Buff)',
-        svg: 'BEAM'
+        svg: 'BEAM',
+        talent: '',
     },
     KYNISOS: {
         description: "Uprooted tendrils, rooting enemies caught in their grasp for several seconds.",
@@ -281,7 +315,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.KYNISOS} Grace`,
         time: '1s Cast',
         special: 'AoE (Manual)',
-        svg: 'AOE'
+        svg: 'AOE',
+        talent: '',
     },
     KYRNAICISM: {
         description: "Belittle and mock your opponent of their caer, damaging and slowing them.",
@@ -289,7 +324,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.KYRNAICISM} Grace`,
         time: '3s',
         special: 'Channel. Targeted',
-        svg: 'BEAM'
+        svg: 'BEAM',
+        talent: '',
     },
     LEAP: {
         description: "Use your strength to leap a short distance, damaging enemies on impact.",
@@ -297,7 +333,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.LEAP} Grace`,
         time: 'Instant',
         special: 'Combat Movement',
-        svg: 'WEAPONS'
+        svg: 'WEAPONS',
+        talent: '',
     },
     MAIERETH: {
         description: "You bleed and strike with tendrils of Ma'anre.",
@@ -305,7 +342,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.MAIERETH} Grace`,
         time: '1s',
         special: 'Cast. (Targeted)',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     MALICE: {
         description: "A warped tendril wrapped round you that damages the enemy through 6 successful attacks from them.",
@@ -313,7 +351,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.MALICE} Grace`,
         time: 'Instant',
         special: 'Reactive Bubble',
-        svg: 'SHIELD'
+        svg: 'SHIELD',
+        talent: '',
     },
     MARK: {
         description: "A sliver of a tendril wraps round the ground at your feet, awaiting your return.",
@@ -321,7 +360,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.MARK} Grace`,
         time: 'Prayer',
         special: 'Physical',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     MENACE: {
         description: "A warped tendril wrapped round you that protects the player through 3 melee and ranged attacks, fearing the enemy.",
@@ -329,7 +369,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.MENACE} Grace`,
         time: 'Instant',
         special: 'Reactive Bubble',
-        svg: 'SHIELD'
+        svg: 'SHIELD',
+        talent: '',
     },
     MEND: {
         description: "A warped tendril wrapped round you that heal through 6 successful attacks from the enemy.",
@@ -337,7 +378,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.MEND} Grace`,
         time: 'Instant',
         special: 'Reactive Bubble',
-        svg: 'SHIELD'
+        svg: 'SHIELD',
+        talent: '',
     },
     MODERATE: {
         description: "A warped tendril wrapped round you that protects through 6 successful melee and ranged attacks, slowing the enemy.",
@@ -345,7 +387,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.MODERATE} Grace`,
         time: 'Instant',
         special: 'Reactive Bubble',
-        svg: 'SHIELD'
+        svg: 'SHIELD',
+        talent: '',
     },
     MULTIFARIOUS: {
         description: "A warped tendril wrapped round you that protects through 3 successful melee and ranged attacks, polymorphing the enemy.",
@@ -353,7 +396,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.MULTIFARIOUS} Grace`,
         time: 'Instant',
         special: 'Reactive Bubble',
-        svg: 'SHIELD'
+        svg: 'SHIELD',
+        talent: '',
     },
     MYSTIFY: {
         description: "A warped tendril wrapped round you that protects through 3 successful melee and ranged attacks, confusing the enemy.",
@@ -361,7 +405,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.MYSTIFY} Grace`,
         time: 'Instant',
         special: 'Reactive Bubble',
-        svg: 'SHIELD'
+        svg: 'SHIELD',
+        talent: '',
     },
     NETHERSWAP: {
         description: "Say a little prayer to swap places with your target.",
@@ -369,7 +414,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.NETHERSWAP} Grace`,
         time: 'Prayer',
         special: 'Physical',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     PARALYZE: {
         description: "Paralyze your opponent for several seconds, causing them to be disabled for the duration.",
@@ -377,7 +423,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.PARALYZE} Grace`,
         time: '1.5s',
         special: 'Cast. Targeted',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     POLYMORPH: {
         description: "Turn your opponent into a fluffy bunny for several seconds. Damage may break this effect.",
@@ -385,7 +432,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.POLYMORPH} Grace`,
         time: '1.5s',
         special: 'Cast. Targeted',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     PROTECT: {
         description: "A warped tendril wrapped round you that protects the player from melee and ranged attacks for several seconds.",
@@ -393,7 +441,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.PROTECT} Grace`,
         time: 'Instant',
         special: 'Negation Bubble',
-        svg: 'SHIELD'
+        svg: 'SHIELD',
+        talent: '',
     },
     PURSUIT: {
         description: "Step into the land of hush and tendril, reentering this world at the foot of your foe.",
@@ -401,7 +450,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.PURSUIT} Grace`,
         time: 'Instant',
         special: 'Physical',
-        svg: 'CONSUME'
+        svg: 'CONSUME',
+        talent: '',
     },
     QUOR: {
         description: "Entwine your achre and caer through your weapon to release an immensely powerful projectile.",
@@ -409,7 +459,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.QUOR} Grace`,
         time: '3s',
         special: 'Cast. Projectile',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     RECALL: {
         description: "Say a little prayer to recall toward that sliver of tendril you left behind.",
@@ -417,7 +468,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.RECALL} Grace`,
         time: 'Prayer',
         special: 'Physical',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     RECONSTITUTE: {
         description: "Heals for a light amount (15%) every tick.",
@@ -425,7 +477,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.RECONSTITUTE} Grace`,
         time: '5s',
         special: 'Channel',
-        svg: 'BEAM'
+        svg: 'BEAM',
+        talent: '',
     },
     RECOVER: {
         description: "A warped tendril wrapped round you that recovers stamina from melee and ranged attacks.",
@@ -433,7 +486,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.RECOVER} Grace`,
         time: 'Instant',
         special: 'Reactive Bubble',
-        svg: 'SHIELD'
+        svg: 'SHIELD',
+        talent: '',
     },
     REIN: {
         description: "A warped tendril wrapped round you that recovers grace from melee and ranged attacks.",
@@ -441,7 +495,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.REIN} Grace`,
         time: 'Instant',
         special: 'Reactive Bubble',
-        svg: 'SHIELD'
+        svg: 'SHIELD',
+        talent: '',
     },
     RENEWAL: {
         description: "A hush that proliferates, healing you every second.",
@@ -449,7 +504,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.RENEWAL} Grace`,
         time: 'Instant',
         special: 'AoE (Self)',
-        svg: 'AOE'
+        svg: 'AOE',
+        talent: '',
     },
     ROOT: {
         description: "Ensorcel your opponent in a magic root, preventing them from moving for several seconds.",
@@ -457,7 +513,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.ROOT} Grace`,
         time: 'Prayer',
         special: '(Targeted)',
-        svg: 'AOE'
+        svg: 'AOE',
+        talent: '',
     },
     RUSH: {
         description: "Use your agility to rush a short distance toward your cursor, if you are moving, damaging enemies in the path.",
@@ -465,7 +522,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.RUSH} Grace`,
         time: 'Instant',
         special: 'Combat Movement',
-        svg: 'WEAPONS'
+        svg: 'WEAPONS',
+        talent: '',
     },
     SACRIFICE: {
         description: "Rip the caeren from yourself and blend it into your enemy, damaging them for twice the portion of damage done to you.",
@@ -473,7 +531,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.SACRIFICE} Grace`,
         time: 'Instant',
         special: '(Targeted)',
-        svg: 'SACRIFICE'
+        svg: 'SACRIFICE',
+        talent: '',
     },
     SCREAM: {
         description: "A hush that proliferates, fearing enemies caught in its piercing shriek for several seconds.",
@@ -481,7 +540,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.SCREAM} Grace`,
         time: 'Instant',
         special: 'AoE (Self)',
-        svg: 'VOICE'
+        svg: 'VOICE',
+        talent: '',
     },
     SEER: {
         description: "Your next strike is critical.",
@@ -489,7 +549,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.SEER} Grace`,
         time: 'Instant',
         special: '(Buff)',
-        svg: 'INVOKE'
+        svg: 'INVOKE',
+        talent: '',
     },
     SHADOW: {
         description: "When hit with worldy devises, your caeren pursues the enemy.",
@@ -497,7 +558,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.SHADOW} Grace`,
         time: 'Instant',
         special: 'Physical',
-        svg: 'CONSUME'
+        svg: 'CONSUME',
+        talent: '',
     },
     SHIELD: {
         description: "A warped tendril wrapped round you that absorbs 6 successful attacks from the enemy.",
@@ -505,7 +567,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.SHIELD} Grace`,
         time: 'Instant',
         special: 'Negation Bubble',
-        svg: 'SHIELD'
+        svg: 'SHIELD',
+        talent: '',
     },
     SHIMMER: {
         description: "You step into the land of hush and tendril, attemping to evade the enemy attacks.",
@@ -513,7 +576,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.SHIMMER} Grace`,
         time: 'Instant',
         special: '(Buff)',
-        svg: 'SHIELD'
+        svg: 'SHIELD',
+        talent: '',
     },
     SHIRK: {
         description: "Your caeren wraps round your physical body harmonize it from burdens.",
@@ -521,7 +585,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.SHIRK} Grace`,
         time: 'Instant',
         special: 'Negation (Self)',
-        svg: 'INVOKE'
+        svg: 'INVOKE',
+        talent: '',
     },
     SLOW: {
         description: "Weigh down your opponent's caer, slowing their movement speed moderately for several seconds.",
@@ -529,7 +594,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.SLOW} Grace`,
         time: 'Instant',
         special: '(Targeted)',
-        svg: 'INVOKE'
+        svg: 'INVOKE',
+        talent: '',
     },
     SNARE: {
         description: "Weigh down your opponent's caer, slowing their movement speed dramatically for several seconds.",
@@ -537,7 +603,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.SNARE} Grace`,
         time: '1.5s',
         special: 'Cast. Targeted',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     SPRINT: {
         description: "Step into the land of hush and tendril, dramatically increasing your movement for several seconds.",
@@ -545,7 +612,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.SPRINT} Grace`,
         time: 'Instant',
         special: 'Movement',
-        svg: 'INVOKE'
+        svg: 'INVOKE',
+        talent: '',
     },
     STIMULATE: {
         description: "Your caeren taps into your physical form, refreshing its ability to host its othernature.",
@@ -553,7 +621,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.STIMULATE} Grace`,
         time: 'Instant',
         special: '(Refresh)',
-        svg: 'INVOKE'
+        svg: 'INVOKE',
+        talent: '',
     },
     STORM: {
         description: "Storm through enemies caught in your contortions with your weapon every second.",
@@ -561,7 +630,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.STORM} Grace`,
         time: '3s',
         special: 'Channel',
-        svg: 'SACRIFICE'
+        svg: 'SACRIFICE',
+        talent: '',
     },
     SUTURE: {
         description: "Rip the caeren from the enemy and blend it into you, healing for a portion of damage done.",
@@ -569,7 +639,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.SUTURE} Grace`,
         time: 'Instant',
         special: '(Targeted)',
-        svg: 'CONSUME'
+        svg: 'CONSUME',
+        talent: '',
     },
     TETHER: {
         description: "When hit with worldly devises, your caeren rips and hooks the enemy.",
@@ -577,7 +648,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.TETHER} Grace`,
         time: 'Instant',
         special: 'Physical',
-        svg: 'CAST'
+        svg: 'CAST',
+        talent: '',
     },
     WARD: {
         description: "A warped tendril wrapped round you that protects the player from melee and ranged attacks, stunning the enemy.",
@@ -585,7 +657,8 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.WARD} Grace`,
         time: 'Instant',
         special: 'Negation Bubble',
-        svg: 'SHIELD'
+        svg: 'SHIELD',
+        talent: '',
     },
     WRITHE: {
         description: "A hush that proliferates, damaging enemies caught in your contortions with your weapon.",
@@ -593,6 +666,7 @@ export const ACTION_ORIGIN = {
         cost: `${PLAYER.STAMINA.WRITHE} Grace`,
         time: 'Instant',
         special: 'AoE (Self)',
-        svg: 'WEAPONS'
+        svg: 'WEAPONS',
+        talent: '',
     },
 };

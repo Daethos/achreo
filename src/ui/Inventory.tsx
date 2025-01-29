@@ -124,7 +124,7 @@ export default function Inventory({ ascean, inventory, setInventoryType, setRing
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
             'border': `0.15em solid ${getRarityColor(rarity)}`,
-            'background-color': getBackgroundStyle(),
+            'background-color': getBackgroundStyle(), 
         };
     };
 

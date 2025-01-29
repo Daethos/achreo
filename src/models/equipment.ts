@@ -245,7 +245,7 @@ async function getOneRandom(level: number = 1) {
         if ((type === 'Amulet' || type === 'Ring' || type === 'Trinket') && rarity === 'Common') rarity = 'Uncommon';
         if (level < 4) {
             rarity = 'Common';
-            if (eqpCheck > 75) {
+            if (eqpCheck > 70) {
                 type = 'Weapon';
             } else if (eqpCheck > 60) {
                 type = 'Shield';

@@ -110,6 +110,78 @@ export default class Player extends Entity {
     evasionTime: number = 0;
     prevInstinct: number = 0;
     currentEnemies: string[] | [] = [];
+    talents: {
+        caerenic: false;
+        stalwart: false;
+        stealth: false;
+
+        invoke: false;
+        absorb: false;
+        achire: false;
+        astrave: false;
+        astrication: false;
+        arc: false;
+        berserk: false;
+        blind: false;
+        chiomic: false;
+        caerenesis: false;
+        confuse: false;
+        conviction: false;
+        desperation: false;
+        devour: false;
+        disease: false;
+        dispel: false;
+        endurance: false;
+        envelop: false;
+        fear: false;
+        freeze: false;
+        fyerus: false;
+        healing: false;
+        hook: false;
+        howl: false;
+        ilirech: false;
+        impermanence: false;
+        kynisos: false;
+        kyrnaicism: false;
+        leap: false;
+        maiereth: false;
+        malice: false;
+        mark: false;
+        menace: false;
+        mend: false;
+        moderate: false;
+        multifarious: false;
+        mystify: false;
+        netherswap: false;
+        paralyze: false;
+        polymorph: false;
+        protect: false;
+        pursuit: false;
+        recall: false;
+        quor: false;
+        reconstitute: false;
+        recover: false;
+        rein: false;
+        renewal: false;
+        root: false;
+        rush: false;
+        sacrifice: false;
+        scream: false;
+        seer: false;
+        shadow: false;
+        shield: false;
+        shimmer: false;
+        shirk: false;
+        slow: false;
+        snare: false;
+        sprint: false;
+        stimulate: false;
+        storm: false;
+        suture: false;
+        tether: false;
+        ward: false;
+        writhe: false;    
+    };
 
     constructor(data: any) {
         const { scene } = data;
@@ -217,6 +289,13 @@ export default class Player extends Entity {
         if (this.isStealthing) {
             this.isStealthing = false;
         } else {
+            this.scene.tweens.add({
+                targets: this.scene.cameras.main,
+                zoom: this.scene.cameras.main.zoom * 2,
+                ease: Phaser.Math.Easing.Quintic.InOut,
+                duration: 1000,
+                yoyo: true
+            });    
             this.playerMachine.positiveMachine.setState(States.STEALTH);
         };
     };
@@ -225,6 +304,14 @@ export default class Player extends Entity {
         this.isCaerenic = this.isCaerenic ? false : true;
         this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume / 3 });
         if (this.isCaerenic) {
+            screenShake(this.scene, 96);
+            this.scene.tweens.add({
+                targets: this.scene.cameras.main,
+                zoom: this.scene.cameras.main.zoom * 2,
+                ease: Phaser.Math.Easing.Elastic.InOut,
+                duration: 500,
+                yoyo: true
+            });
             this.setGlow(this, true);
             this.setGlow(this.spriteWeapon, true, 'weapon');
             this.setGlow(this.spriteShield, true, 'shield'); 
@@ -474,6 +561,7 @@ export default class Player extends Entity {
             this.specialCombatText = this.scene.showCombatText('Roll', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
+            this.scene.combatManager.useStamina(-5);
         };
         if (e.parrySuccess === true) {
             this.specialCombatText = this.scene.showCombatText('Parry', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
@@ -481,6 +569,7 @@ export default class Player extends Entity {
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'parry');
             this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
+            this.scene.combatManager.useStamina(-5);
         };
         if (e.computerRollSuccess === true) this.resistCombatText = this.scene.showCombatText('Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.resistCombatText = undefined);
         if (this.currentRound !== e.combatRound && this.scene.combat === true) {
@@ -1248,7 +1337,6 @@ export default class Player extends Entity {
                 }});
             };
         };
-        // this.knockback(this.attackedTarget.enemyID);
         if (this.isStealthing) {
             this.scene.combatManager.paralyze(this.attackedTarget.enemyID);
             this.isStealthing = false;
@@ -1279,7 +1367,6 @@ export default class Player extends Entity {
             if (moveX) this.setVelocityX(moveY ? dirX * 0.7 : dirX);
             if (moveY) this.setVelocityY(moveX ? dirY * 0.7 : dirY);
             currentDistance += Math.abs(PLAYER.DODGE.MULTIPLIER); // Math.abs(PLAYER.DODGE.DISTANCE / PLAYER.DODGE.DURATION);
-            // console.log(`%c Current Distance: ${currentDistance}`, 'color:gold');
             requestAnimationFrame(dodgeLoop);
         };
         let startTime: any = undefined;
@@ -1306,7 +1393,6 @@ export default class Player extends Entity {
             if (moveX) this.setVelocityX(moveY ? dirX * 0.7 : dirX);
             if (moveY) this.setVelocityY(moveX ? dirY * 0.7 : dirY);
             currentDistance += Math.abs(PLAYER.ROLL.MULTIPLIER); // Math.abs(PLAYER.ROLL.DISTANCE / PLAYER.ROLL.DURATION);
-            // console.log(`%c Current Distance: ${currentDistance}`, 'color:gold');
             requestAnimationFrame(rollLoop);
         };
         let startTime: any = undefined;

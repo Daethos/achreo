@@ -20,6 +20,7 @@ import { checkDeificConcerns } from '../utility/deities';
 import { STARTING_SPECIALS } from '../utility/abilities';
 import { Inventory, Reputation, faction } from '../utility/player';
 import { Puff } from 'solid-spinner';
+import Talents from '../utility/talents';
 const BaseUI = lazy(async () => await import('../ui/BaseUI'));
 const rarityGoldMap = {
     'Uncommon': 1,
@@ -71,6 +72,7 @@ interface IProps {
     setSettings: Setter<Settings>;
     statistics: Accessor<Statistics>;
     scene: Accessor<any>;
+    talents: Accessor<Talents>;
 };
 
 export default function PhaserGame (props: IProps) {
@@ -1119,7 +1121,7 @@ export default function PhaserGame (props: IProps) {
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
         <Show when={live() && checkUi()}>
             <Suspense fallback={<Puff color="gold" />}>
-                <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} statistics={props.statistics} stamina={stamina} grace={grace} tutorial={tutorial} showDeity={showDeity} showTutorial={showTutorial} setShowTutorial={setShowTutorial} />
+                <BaseUI instance={instance} ascean={props.ascean} combat={combat} game={game} reputation={props.reputation} settings={props.settings} setSettings={props.setSettings} statistics={props.statistics} talents={props.talents} stamina={stamina} grace={grace} tutorial={tutorial} showDeity={showDeity} showTutorial={showTutorial} setShowTutorial={setShowTutorial} />
             </Suspense>
         </Show>
     </>;

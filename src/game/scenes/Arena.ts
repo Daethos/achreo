@@ -462,6 +462,7 @@ export class Arena extends Phaser.Scene {
                 };
             };
         };
+        this.hud.clearNonAggressiveEnemy();
     };
 
     switchArena = () => {
@@ -484,6 +485,7 @@ export class Arena extends Phaser.Scene {
         this.player.disengage();
         this.player.clearEnemies();
         if (this.player.isComputer) (this.player as PlayerComputer).completeReset();
+        this.hud.clearNonAggressiveEnemy();
     };
 
     computerDisengage = () => {

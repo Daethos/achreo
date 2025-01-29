@@ -9,6 +9,7 @@ import { Asceans } from './ascean';
 import Equipment, { getOneRandom } from '../../models/equipment';
 import { Inventory, Reputation } from '../../utility/player';
 import Statistics from '../../utility/statistics';
+import Talents, { createTalents } from '../../utility/talents';
 var db = new PseudoBase('db');
 const EQUIPMENT = 'Equipment';
 const ASCEANS = 'Asceans';
@@ -16,6 +17,7 @@ const SETTINGS = 'Settings';
 const REPUTATION = 'Reputation';
 const INVENTORY = 'Inventory';
 const STATISTICS = 'Statistics';
+const TALENTS = 'Talents';
 const PARTY = 'Party';
 
 export const getParty = async (id: string) => await db.collection(PARTY).doc({ _id: id }).get();
@@ -40,6 +42,8 @@ export const deleteAscean = async (id: string) => {
     if (inventory) await db.collection(INVENTORY).doc({ _id: id }).delete();
     const statistics = await db.collection(STATISTICS).doc({ _id: id }).get();
     if (statistics) await db.collection(STATISTICS).doc({ _id: id }).delete();
+    const talents = await db.collection(TALENTS).doc({ _id: id }).get();
+    if (talents) await db.collection(TALENTS).doc({ _id: id }).delete();
 };
 
 export const blessAscean = async (id: string, entry: any): Promise<any> => {
@@ -271,6 +275,22 @@ export const getStatistics = async (id: string): Promise<Statistics> => {
 
 export const updateStatistics = async (stats: Statistics) => {
     const update = await db.collection(STATISTICS).doc({ _id: stats._id }).update(stats);
+    return update;
+};
+
+export const getTalents = async (id: string): Promise<Talents> => {
+    const talents = await db.collection(TALENTS).doc({ _id: id }).get();
+    if (talents) {
+        return talents;
+    } else {
+        const newTalents = createTalents(id);
+        await db.collection(TALENTS).add(newTalents);
+        return newTalents;
+    };
+};
+
+export const updateTalents = async (talents: Talents) => {
+    const update = await db.collection(TALENTS).doc({ _id: talents._id }).update(talents);
     return update;
 };
 

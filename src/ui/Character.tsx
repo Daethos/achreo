@@ -22,6 +22,7 @@ import { Puff } from 'solid-spinner';
 import PhaserSettings from './PhaserSettings';
 import Statistics from '../utility/statistics';
 import { FAITH_RARITY } from '../utility/combatTypes';
+import Talents from '../utility/talents';
 const AsceanImageCard = lazy(async () => await import('../components/AsceanImageCard'));
 const ExperienceBar = lazy(async () => await import('./ExperienceBar'));
 const Firewater = lazy(async () => await import('./Firewater'));
@@ -86,13 +87,14 @@ interface Props {
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
     statistics: Accessor<Statistics>;
+    talents: Accessor<Talents>;
     ascean: Accessor<Ascean>; 
     asceanState: Accessor<any>;
     game: Accessor<GameState>;
     combat: Accessor<Combat>;
 };
 
-const Character = ({ reputation, settings, setSettings, statistics, ascean, asceanState, game, combat }: Props) => {
+const Character = ({ reputation, settings, setSettings, statistics, talents, ascean, asceanState, game, combat }: Props) => {
     const [playerTraitWrapper, setPlayerTraitWrapper] = createSignal<any>({});
     const [dragAndDropInventory, setDragAndDropInventory] = createSignal(game()?.inventory.inventory);
     const [canUpgrade, setCanUpgrade] = createSignal<boolean>(false);
@@ -486,6 +488,10 @@ const Character = ({ reputation, settings, setSettings, statistics, ascean, asce
     function info(item: Equipment) {
         setDeity(item?.influences?.[0]);
     };
+
+    /*
+        TODO: Talent Section!
+    */
 
     return (
         <div style={{ 'z-index': 1, position: 'fixed', top: 0, left: 0 }}>

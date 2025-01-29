@@ -1115,7 +1115,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     const criticalClearance = Math.floor(Math.random() * 101);
     let criticalChance = combat.computerWeapons[0].criticalChance;
     criticalChance -= (combat.playerAttributes?.kyosirMod as number / 2);
-    if (combat.weather === 'Astralands') criticalChance += 10;
+    // if (combat.weather === 'Astralands') criticalChance += 10;
     const criticalResult = criticalCompiler(false, combat.computer as Ascean, criticalChance, criticalClearance, combat.computerWeapons[0], computerPhysicalDamage, computerMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
     combat.computerGlancingBlow = criticalResult.glancingBlow;
     combat.computerCriticalSuccess = criticalResult.criticalSuccess;
@@ -1159,15 +1159,15 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
 function computerRollCompiler(combat: Combat, playerAction: string, computerAction: string): Combat {
     let computerRoll = combat.computerWeapons[0].roll;
     let rollCatch = Math.floor(Math.random() * 101) + (combat.playerAttributes?.kyosirMod as number);
-    if (combat.weather === 'Alluring Isles') {
-        computerRoll -= 10;
-    };
-    if (combat.weather === 'Kingdom' || combat.weather === 'Sedyrus') {
-        computerRoll -= 5;
-    };
-    if (combat.weather === 'Fangs' || combat.weather === 'Roll') {
-        computerRoll += 5;
-    };
+    // if (combat.weather === 'Alluring Isles') {
+    //     computerRoll -= 10;
+    // };
+    // if (combat.weather === 'Kingdom' || combat.weather === 'Sedyrus') {
+    //     computerRoll -= 5;
+    // };
+    // if (combat.weather === 'Fangs' || combat.weather === 'Roll') {
+    //     computerRoll += 5;
+    // };
     if (computerRoll > rollCatch && !combat.astrication.active) {
         combat.computerRollSuccess = true;
         combat.computerSpecialDescription = `${combat.computer?.name} successfully rolls against you, avoiding your ${playerAction === ACTION_TYPES.ATTACK ? 'focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack.`
@@ -1539,15 +1539,15 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
 function playerRollCompiler(combat: Combat, playerAction: string, computerAction: string): Combat { 
     let playerRoll = combat.weapons[0]?.roll as number;
     let rollCatch = Math.floor(Math.random() * 101) + (combat.computerAttributes?.kyosirMod as number / 2);
-    if (combat.weather === 'Alluring Isles') {
-        playerRoll -= 10;
-    };
-    if (combat.weather === 'Kingdom' || combat.weather === 'Sedyrus') {
-        playerRoll -= 5;
-    };
-    if (combat.weather === 'Fangs' || combat.weather === 'Roll') {
-        playerRoll += 5;
-    };
+    // if (combat.weather === 'Alluring Isles') {
+    //     playerRoll -= 10;
+    // };
+    // if (combat.weather === 'Kingdom' || combat.weather === 'Sedyrus') {
+    //     playerRoll -= 5;
+    // };
+    // if (combat.weather === 'Fangs' || combat.weather === 'Roll') {
+    //     playerRoll += 5;
+    // };
     if (playerRoll > rollCatch) {
         combat.rollSuccess = true;
         combat.playerSpecialDescription = 
@@ -1566,18 +1566,18 @@ function doubleRollCompiler(combat: Combat, playerInitiative: number, computerIn
     let playerRoll: number = combat.weapons[0]?.roll as number;
     let computerRoll: number = combat.computerWeapons[0].roll;
     let rollCatch: number = Math.floor(Math.random() * 101) + (combat.computerAttributes?.kyosirMod as number / 2);
-    if (combat.weather === 'Alluring Isles') {
-        playerRoll -= 10;
-        computerRoll -= 10;
-    };
-    if (combat.weather === 'Kingdom' || combat.weather === 'Sedyrus') {
-        playerRoll -= 5;
-        computerRoll -= 5;
-    };
-    if (combat.weather === 'Fangs' || combat.weather === 'Roll') {
-        playerRoll += 5;
-        computerRoll += 5;
-    };
+    // if (combat.weather === 'Alluring Isles') {
+    //     playerRoll -= 10;
+    //     computerRoll -= 10;
+    // };
+    // if (combat.weather === 'Kingdom' || combat.weather === 'Sedyrus') {
+    //     playerRoll -= 5;
+    //     computerRoll -= 5;
+    // };
+    // if (combat.weather === 'Fangs' || combat.weather === 'Roll') {
+    //     playerRoll += 5;
+    //     computerRoll += 5;
+    // };
     if (playerInitiative > computerInitiative) { // You have Higher Initiative
         if (playerRoll > rollCatch) { // The Player Succeeds the Roll
             combat.playerSpecialDescription = 

@@ -17,7 +17,6 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
     const originArticle = ['a', 'e', 'i', 'o', 'u'].includes(newAscean()?.origin[0].toLowerCase()) ? 'an' : 'a';
     const descArticle = ['a', 'e', 'i', 'o', 'u'].includes(newAscean()?.description[0].toLowerCase()) ? 'an' : 'a';
     const land = LANDS[newAscean()?.origin as keyof typeof LANDS];
-    // console.log(land, 'Land');
     const [name, setName] = createSignal('');
     const [character, setCharacter] = createSignal('');
     const dimensions = useResizeListener();

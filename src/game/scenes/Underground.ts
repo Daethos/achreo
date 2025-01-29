@@ -450,6 +450,7 @@ export class Underground extends Scene {
                 };
             };
         };
+        this.hud.clearNonAggressiveEnemy();
     };
 
     combatEngaged = (bool: boolean) => {

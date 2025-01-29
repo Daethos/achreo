@@ -210,14 +210,27 @@ export default class PlayerMachine {
             !this.player.inCombat || distance > RANGE.LEASH * rangeMultiplier) {
             this.stateMachine.setState(States.IDLE);
             return;
-        };  
-        if (distance >= 60 * rangeMultiplier) { // was 75 || 100
+        };
+        if (distance >= 150 * rangeMultiplier) { // was 75 || 100
             if (this.player.path && this.player.path.length > 1) {
                 this.player.setVelocity(this.player.pathDirection.x * this.player.speed, this.player.pathDirection.y * this.player.speed);
             } else {
                 if (this.player.isPathing) this.player.isPathing = false;
                 direction.normalize();
                 this.player.setVelocity(direction.x * this.player.speed, direction.y * this.player.speed);
+            };
+        } else if (distance >= 75 * rangeMultiplier) { // was 75 || 100
+            if (this.player.path && this.player.path.length > 1) {
+                this.player.setVelocity(this.player.pathDirection.x * this.player.speed, this.player.pathDirection.y * this.player.speed);
+            } else {
+                if (this.player.isPathing) this.player.isPathing = false;
+                direction.normalize();
+                this.player.setVelocity(direction.x * this.player.speed, direction.y * this.player.speed);
+            };
+            if (Math.random() > 0.5 && !this.player.isRolling && !this.player.isDodging) {
+                this.player.isRolling = true;
+            } else if (!this.player.isDodging && !this.player.isRolling) {
+                this.player.isDodging = true;
             };
         } else {
             this.stateMachine.setState(States.COMPUTER_COMBAT);
@@ -1369,7 +1382,7 @@ export default class PlayerMachine {
         } else {
             const chiomic = Math.round(this.mastery() * (1 + (this.player.entropicMultiplier(20) / 100)) * this.caerenicDamage() * this.levelModifier());
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
-            const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
+            const playerActionDescription = `Your wreathing tendrils rip ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
             this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.player.spellTarget } });
         };

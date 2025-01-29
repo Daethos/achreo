@@ -9,7 +9,7 @@ import Ascean, { createAscean } from './models/ascean';
 import { CharacterSheet, Compiler, asceanCompiler, initCharacterSheet } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
 import { EventBus } from './game/EventBus';
-import { deleteAscean, getAscean, getAsceans, getInventory, getReputation, getSettings, getStatistics, populate, scrub, updateInventory, updateReputation, updateSettings, updateStatistics } from './assets/db/db'; 
+import { deleteAscean, getAscean, getAsceans, getInventory, getReputation, getSettings, getStatistics, getTalents, populate, scrub, updateInventory, updateReputation, updateSettings, updateStatistics } from './assets/db/db'; 
 import { TIPS } from './utility/tips';
 import { Inventory, Reputation, initInventory, initReputation } from './utility/player';
 import { Puff } from 'solid-spinner';
@@ -17,6 +17,7 @@ import type { IRefPhaserGame } from './game/PhaserGame';
 import Statistics, { initStatistics } from './utility/statistics';
 import LoadAscean from './components/LoadAscean';
 import { Tutorial } from './game/scenes/Tutorial';
+import Talents, { initTalents } from './utility/talents';
 const AsceanBuilder = lazy(async () => await import('./components/AsceanBuilder'));
 const AsceanView = lazy(async () => await import('./components/AsceanView'));
 const MenuAscean = lazy(async () => await import('./components/MenuAscean'));
@@ -37,6 +38,7 @@ export default function App() {
     const [inventory, setInventory] = createSignal<Inventory>(initInventory);
     const [reputation, setReputation] = createSignal<Reputation>(initReputation);
     const [statistics, setStatistics] = createSignal<Statistics>(initStatistics);
+    const [talents, setTalents] = createSignal<Talents>(initTalents);
     const [scene, setScene] = createSignal<string>('');
     const [settings, setSettings] = createSignal<Settings>(initSettings);
     const [show, setShow] = createSignal<boolean>(false);
@@ -109,9 +111,11 @@ export default function App() {
             const comp = asceanCompiler(pop);
             const full = { ...comp?.ascean }; // , inventory: inv
             const stats = await getStatistics(id);
+            const talents = await getTalents(id);
             setAscean(full as Ascean);
             setInventory(inv);
             setStatistics(stats);
+            setTalents(talents);
         } catch (err: any) {
             console.warn('Error fetching Ascean:', err);
         };
@@ -133,10 +137,12 @@ export default function App() {
             const rep = await getReputation(id);
             const set = await getSettings(id);
             const stat = await getStatistics(id);
+            const tal = await getTalents(id);
             setInventory(inv);
             setReputation(rep);
             setSettings(set);
             setStatistics(stat);
+            setTalents(tal);
             if (set.difficulty.tidbits === true) setTips(true);
             setMenu({ ...menu(), choosingCharacter: false, gameRunning: true, playModal: false });
             setStartGame(true);
@@ -261,6 +267,14 @@ export default function App() {
             console.warn('Error updating Statistics:', err);
         };
     };
+    const updateTalents = async (talents: Talents): Promise<void> => {
+        try {
+            await updateTalents(talents);
+            setTalents(talents);
+        } catch (err) {
+            console.warn('Error Updating Talents', err);
+        };
+    };
     async function viewAscean(id: string): Promise<void> {
         click.play();
         if (ascean()?._id === id) {
@@ -275,10 +289,12 @@ export default function App() {
         const rep = await getReputation(id);
         const set = await getSettings(id);
         const stat = await getStatistics(id);
+        const tal = await getTalents(id);
         setInventory(inv);
         setReputation(rep);
         setSettings(set);
         setStatistics(stat);
+        setTalents(tal);
     };
     function enterMenu(): void {
         if (menu()?.asceans?.length > 0) {
@@ -337,8 +353,10 @@ export default function App() {
     usePhaserEvent('update-pause', togglePause);
     usePhaserEvent('request-reputation', () => EventBus.emit('reputation', reputation()));
     usePhaserEvent('request-statistics', () => EventBus.emit('statistics', statistics()));
+    usePhaserEvent('request-talents', () => EventBus.emit('talents', talents()));
     usePhaserEvent('update-reputation', updateRep);
     usePhaserEvent('update-statistics', updateStat);
+    usePhaserEvent('update-talents', updateTalents);
     usePhaserEvent('request-settings', () => EventBus.emit('settings', settings()));
     usePhaserEvent('save-settings', saveSettings);
     usePhaserEvent('save-this-setting', saveThisSetting);
@@ -484,7 +502,7 @@ export default function App() {
             </Suspense>
         )}
         </>}>
-            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} inventory={inventory} setInventory={setInventory} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} statistics={statistics} scene={scene} />
+            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} inventory={inventory} setInventory={setInventory} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} statistics={statistics} scene={scene} talents={talents} />
         </Show>
         <Show when={show()}>
         <Suspense fallback={<Puff color="gold"/>}>

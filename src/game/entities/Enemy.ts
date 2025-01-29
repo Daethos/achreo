@@ -1118,12 +1118,12 @@ export default class Enemy extends Entity {
                     const special = ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL][Math.floor(Math.random() * ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL].length)].toLowerCase();
                     this.specialAction = special;
                     // this.currentAction = 'special';
-                    // const specific = ['rush'];
-                    // const test = specific[Math.floor(Math.random() * specific.length)];
-                    if (this.stateMachine.isState(special)) {
-                        this.stateMachine.setState(special);
-                    } else if (this.positiveMachine.isState(special)) {
-                        this.positiveMachine.setState(special);
+                    const specific = ['disease'];
+                    const test = specific[Math.floor(Math.random() * specific.length)];
+                    if (this.stateMachine.isState(test)) {
+                        this.stateMachine.setState(test);
+                    } else if (this.positiveMachine.isState(test)) {
+                        this.positiveMachine.setState(test);
                     };
                     this.setSpecialCombat(true);
                 },
@@ -3021,7 +3021,6 @@ export default class Enemy extends Entity {
 
     onWritheEnter = () => {
         this.aoe = new AoE(this.scene, 'writhe', 1, true, this);    
-        // if (this.inCombat) this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
         this.specialCombatText = this.scene.showCombatText('Writhing', 750, 'tendril', false, true, () => this.specialCombatText = undefined);
         this.isWrithing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.WRITHE, () => {
@@ -3067,7 +3066,6 @@ export default class Enemy extends Entity {
             clearStealth(this.spriteShield);
             this.setTint(ENEMY_COLOR);
         };
-        // if (this.inCombat) this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });
         this.enemySound('stealth', true);
     };
 

@@ -25,6 +25,9 @@ export class CombatManager extends Phaser.Scene {
         return this.context.player[concern];
     };
 
+    playerCaerenicNeg = () => this.context.player.isCaerenic ? 1.25 : 1;
+    playerCaerenicPro = () => this.context.player.isCaerenic ? 1.15 : 1;
+
     // ============================ Computer Combat ============================= \\
     computer = (combat: { type: string; payload: { action: string; origin: string; enemyID: string; } }) => {
         const { type, payload } = combat;
@@ -377,23 +380,46 @@ export class CombatManager extends Phaser.Scene {
             enemy.isStunned = true;
         };
     };
-    tendril = (id: string, enemyID?: string): void => {
-        if (!id) return;
-        if (!enemyID) {
-            let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-            if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-                const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.3);
-                const total = Math.max(0, enemy.health - damage);
-                this.combatMachine.action({ data: { key: 'enemy', value: total, id }, type: 'Health' });
-            } else if (id === this.context.player.playerID) {
-                this.combatMachine.action({ data: 10, type: 'Enemy Chiomic' });
+    tendril = (combatID: string, enemySpecialID?: string): void => {
+        if (!combatID) return;
+        if (combatID === this.context.player.playerID && enemySpecialID) { // Enemy Special is Damaging Player
+            const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
+            if (origin.checkPlayerResist()) {
+                origin.chiomic(10, combatID);
             };
+        } else if (!enemySpecialID) { // Player Special is Damaging Enemy
+            // this.context.player.playerMachine.kyrnaicism();
+            if (this.context.player.spellTarget === this.context.player.getEnemyId()) {
+                this.combatMachine.action({ type: 'Chiomic', data: this.context.player.entropicMultiplier(20) }); 
+            } else {
+                const enemy = this.context.enemies.find((e: Enemy) => e.enemyID === combatID);
+                if (!enemy || enemy.health <= 0 || enemy.isDefeated) return;
+                const tendril = Math.round(this.context.player.mastery() * (1 + (this.context.player.entropicMultiplier(20) / 100)) * this.context.player.caerenicDamage() * this.context.player.levelModifier());
+                const newComputerHealth = enemy.health - tendril < 0 ? 0 : enemy.health - tendril;
+                const playerActionDescription = `Your wreathing tendrils rip ${tendril} health from ${enemy.ascean?.name}.`;
+                EventBus.emit('add-combat-logs', { ...this.context, playerActionDescription });
+                this.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.context.player.spellTarget } });
+            };
+            // const enemy = this.context.enemies.find((e: Enemy) => e.enemyID === combatID);
+            // if (enemy && enemy.health > 0 && enemy.isDefeated !== true) {
+            //     if (enemy.enemyID === this.context.state.enemyID) {
+
+            //     } else {
+
+            //     };
+            //     // const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.3);
+            //     // const total = Math.max(0, enemy.health - damage);
+            //     // this.combatMachine.action({ data: { key: 'enemy', value: total, id: combatID }, type: 'Health' });
+            // };
         } else { // CvC
-            const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
+            const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
             const damage = Math.round(origin.ascean[origin.ascean.mastery as keyof typeof origin.ascean] * 0.3);
             origin.computerCombatSheet.newComputerEnemyHealth -= damage;
-            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: enemyID });
+            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id: combatID, origin: enemySpecialID });
         };
+        
+
+
     };
     writhe = (id: string, enemyID?: string): void => {
         if (!id) return;

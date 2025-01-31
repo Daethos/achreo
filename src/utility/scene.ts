@@ -99,10 +99,8 @@ export const INTRO_NODES = {
         key: 0,
         prev: undefined, // undefined
         next: 1,
-        text: `This world, a menagerie of beauty and horror, its reach cruel and wild. 
-        Marred and mutated, this jungle is rife with the blood of Ancients;
-        worldly beings of fantastic might and worship a thousand years past
-        who grew civilization and genius from their worshipers. \n
+        text: `This world is a menagerie of beauty and horror, its jungle's reach cruel and wild; marred and mutated with the blood of Ancients. \n
+        These Worldly beings of fantastic might and worship a thousand years past grew civilization and genius from their worshipers. \n
         The Sundering eclipsed such flourishing--a War of the Ancients.`,
     },
     1: {

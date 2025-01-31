@@ -969,13 +969,6 @@ export default class PlayerMachine {
         if (this.player.moving()) {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.BLINK);
             screenShake(this.scene);
-            this.scene.tweens.add({
-                targets: this.scene.cameras.main,
-                zoom: this.scene.cameras.main.zoom * 1.5,
-                ease: Phaser.Math.Easing.Quintic.InOut,
-                duration: 750,
-                yoyo: true
-            });
         };
         if (!this.player.isComputer) this.player.setTimeEvent('blinkCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);
         this.player.flickerCarenic(750); 

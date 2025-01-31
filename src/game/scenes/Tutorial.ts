@@ -110,7 +110,7 @@ export class Tutorial extends Phaser.Scene {
                 context: this
             });
         });
-        // for (let i = 0; i < 24; i++) {
+        // for (let i = 0; i < 12; i++) {
         //     const e = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: undefined });
         //     this.enemies.push(e);
         //     e.setPosition(Phaser.Math.Between(200, 800), Phaser.Math.Between(200, 800));
@@ -528,6 +528,9 @@ export class Tutorial extends Phaser.Scene {
         const saying = enemy.isDefeated ? `I'll have my revenge in this world!` : `I'll be seeing you, ${this.state.player?.name}.`;
         enemy.specialCombatText = this.showCombatText(saying, 1500, 'bone', false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DEATH);
+        if (enemy.isCurrentTarget) {
+            this.player.disengage();
+        };
         this.time.delayedCall(2000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
             enemy.cleanUp();

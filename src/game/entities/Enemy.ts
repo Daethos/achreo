@@ -124,7 +124,7 @@ export default class Enemy extends Entity {
             this.createWeapon(data.data.ascean.weaponOne); 
             this.createShield(data.data.ascean.shield);
             this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health);
-            this.castbar = new CastingBar(this.scene.hud, this.x, this.y, 0, this);
+            this.castbar = new CastingBar(this.scene, this.x, this.y, 0, this);
             this.computerCombatSheet = this.createComputerCombatSheet(data.data);
             this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES];
         };
@@ -910,7 +910,7 @@ export default class Enemy extends Entity {
         this.createWeapon(e.enemy.weaponOne); 
         this.createShield(e.enemy.shield);
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health);
-        this.castbar = new CastingBar(this.scene.hud, this.x, this.y, 0, this);
+        this.castbar = new CastingBar(this.scene, this.x, this.y, 0, this);
         this.computerCombatSheet = this.createComputerCombatSheet(e.combat as Compiler);
         this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES];
     };
@@ -1102,7 +1102,7 @@ export default class Enemy extends Entity {
         this.stateMachine.setState(States.CHASE);
     };
 
-    setSpecialCombat = (bool: boolean, mult = randomFloatFromInterval(0.75, 1.25)) => {
+    setSpecialCombat = (bool: boolean, mult = randomFloatFromInterval(0.25, 0.5)) => { // 0.75, 1.25
         if (this.isSpecial === false) return;
         if (bool === true) {
             const mastery = this.ascean.mastery;
@@ -1122,7 +1122,7 @@ export default class Enemy extends Entity {
                     const special = ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL][Math.floor(Math.random() * ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL].length)].toLowerCase();
                     this.specialAction = special;
                     // this.currentAction = 'special';
-                    // const specific = ['disease'];
+                    // const specific = ['snare'];
                     // const test = specific[Math.floor(Math.random() * specific.length)];
                     if (this.stateMachine.isState(special)) {
                         this.stateMachine.setState(special);
@@ -1264,6 +1264,8 @@ export default class Enemy extends Entity {
     
     startCasting = (name: string, duration: number, style: string, channel = false) => {
         this.castbar.reset();
+        this.castbar.setVisible(true); // Added
+        this.castbar.setup(this.x, this.y);
         this.isCasting = true;
         this.specialCombatText = this.scene.showCombatText(name, duration / 2, style, false, true, () => this.specialCombatText = undefined);
         this.castbar.setTotal(duration);

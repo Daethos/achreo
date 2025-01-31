@@ -2,6 +2,12 @@ import { Scene } from "phaser";
 import TextTyping from 'phaser3-rex-plugins/plugins/texttyping.js';
 import { EventBus } from "../EventBus";
 import { INTRO_NODES } from "../../utility/scene";
+import { useResizeListener } from "../../utility/dimensions";
+const dimensions = useResizeListener();
+const WRAP = {
+    HEIGHT: 0.7,
+    WIDTH: 0.8
+};
 
 export class Intro extends Scene {
     private background: Phaser.GameObjects.Graphics;
@@ -16,47 +22,51 @@ export class Intro extends Scene {
     constructor() {super('Intro');};
     preload() {};
     create() {
+        const height = dimensions()?.HEIGHT;
+        const width = dimensions()?.WIDTH;
+        const fontSize = width > 1024 ? '32px' : width > 886 ? '28px' : width > 768 ? '24px' : '20px';
+        
         this.scene.sleep('Hud');
-        this.scene.sleep('Game');
+        // this.scene.sleep('Game');
         this.node = INTRO_NODES[0];
         this.background = new Phaser.GameObjects.Graphics(this, {
             x: 0,
             y: 0,
             fillStyle: { color: 0x000000 },
         });
-        this.background.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height);
+        this.background.fillRect(0, 0, width, height);
         this.introText = this.add.text(
-            0, // this.game.canvas.width * 0.15 
-            0, // this.game.canvas.height * 0.2 
+            0, // width * 0.15 
+            0, // height * 0.2 
             this.node.text, {
                 color: '#fdf6d8',
                 fontFamily: 'Cinzel Regular',
-                fontSize: '24px',
+                fontSize,
                 stroke: 'black',
                 strokeThickness: 2,
                 align: 'center',
-                // fixedWidth: this.game.canvas.width * 0.8,
+                // fixedWidth: width * WRAP.WIDTH,
                 wordWrap: {
-                    width: this.game.canvas.width * 0.8,
+                    width: width * WRAP.WIDTH,
                     callback: undefined,
                     callbackScope: undefined,
                     useAdvancedWrap: true
                 }
             });
-        this.introText.setPosition(this.game.canvas.width * 0.1, this.game.canvas.height * 0.15).setOrigin(0, 0).setScrollFactor(0);
+        this.introText.setPosition(width * (1 - WRAP.WIDTH) / 2, height * 0.15).setOrigin(0, 0).setScrollFactor(0);
 
         this.introTextBorder = new Phaser.GameObjects.Rectangle(this,
             1, // this.introText.x * 0.9,
             1, // this.introText.y * 0.9,
-            this.game.canvas.width - 4,
-            this.game.canvas.height - 4,
+            width - 4,
+            height - 4,
         );
         this.introTextBorder.setStrokeStyle(3, 0xfdf6d8);
         this.introTextBorder.setOrigin(0);
 
         this.introContainer = new Phaser.GameObjects.Container(this, 0, 0, [this.introTextBorder, this.introText]);
-        this.introContainer.width = this.game.canvas.width * 0.8;
-        this.introContainer.height = this.game.canvas.height * 0.6;
+        this.introContainer.width = width * WRAP.WIDTH;
+        this.introContainer.height = height * WRAP.HEIGHT;
         this.add.existing(this.introContainer);
 
         this.node = INTRO_NODES[0];
@@ -70,7 +80,7 @@ export class Intro extends Scene {
             setTextCallbackScope: undefined,
         });
         typing.start(this.node.text);
-        this.nextText = this.add.text(this.game.canvas.width * 0.9, this.game.canvas.height * 0.85, 'Next', {
+        this.nextText = this.add.text(width * 0.9, height * 0.85, 'Next', {
             color: '#fdf6d8',
             fontFamily: 'Cinzel',
             fontSize: '18px',
@@ -79,7 +89,7 @@ export class Intro extends Scene {
             align: 'center',
         });
         this.nextText.setOrigin(0);
-        this.prevText = this.add.text(this.game.canvas.width * 0.075, this.game.canvas.height * 0.85, 'Previous', {
+        this.prevText = this.add.text(width * 0.075, height * 0.85, 'Previous', {
             color: '#fdf6d8',
             fontFamily: 'Cinzel',
             fontSize: '18px',
@@ -88,7 +98,7 @@ export class Intro extends Scene {
             align: 'center',
         });
         this.prevText.setOrigin(0); 
-        this.fullText = this.add.text(this.game.canvas.width * 0.475, this.game.canvas.height * 0.85, 'Reveal', {
+        this.fullText = this.add.text(width * 0.475, height * 0.85, 'Reveal', {
             color: '#fdf6d8',
             fontFamily: 'Cinzel',
             fontSize: '18px',
@@ -164,6 +174,7 @@ export class Intro extends Scene {
                     typing.stop(true);
                     return;
                 };
+                this.fullText.setColor('#fdf6d8');
             });
         EventBus.emit('current-scene-ready', this);
     };

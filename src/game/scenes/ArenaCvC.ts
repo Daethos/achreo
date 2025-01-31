@@ -121,7 +121,9 @@ export class ArenaCvC extends Phaser.Scene {
             intensity: 0.005,
         });
         this.highlight.setVisible(false);
-        this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
+        this.player = new Player({ scene: this, x: 0, y: 0, texture: 'player_actions', frame: 'player_idle_0' });
+        this.player.setActive(false);
+        this.player.setVisible(false);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
         camera.startFollow(this.highlight, false, 0.1, 0.1);
         camera.setLerp(0.1, 0.1);

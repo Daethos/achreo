@@ -24,17 +24,14 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     private timeText: Phaser.GameObjects.Text;
     private barY: number;
 
-    constructor(scene: Hud, x: number, y: number, time: number, entity: any) {
+    constructor(scene: Phaser.Scene, x: number, y: number, time: number, entity: any) {
         super(scene, x, y);
         this.total = time;
         this.time = 0;
         this.create(entity, scene);
         scene.add.existing(this);
         this.setDepth(5);
-        this.setScrollFactor(0);
         this.visible = false;
-        this.barY = scene.settings.positions.castbar.barY;
-        this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - 40 - this.barY);
     };
 
     public cleanUp = () => {
@@ -45,11 +42,12 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.destroy();
     };
 
-    private create = (entity: any, scene: Hud): void => {
+    private create = (entity: any, scene: Phaser.Scene): void => {
         if (entity.name === 'player') {
-            this.barHeight = scene.settings.positions.castbar.barHeight;
-            this.barWidth = scene.settings.positions.castbar.barWidth;
-
+            this.barY = (scene as Hud).settings.positions.castbar.barY;
+            this.barHeight = (scene as Hud).settings.positions.castbar.barHeight;
+            this.barWidth = (scene as Hud).settings.positions.castbar.barWidth;
+            this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - 40 - this.barY);
             this.borderColor = 0x000000;
             this.fillColor = COLORS.CAST;
             this.bar = new Phaser.GameObjects.Graphics(scene);
@@ -68,30 +66,28 @@ export default class CastingBar extends Phaser.GameObjects.Container {
             this.add(this.timeText);
             this.timeText.setOrigin(0.5);
             this.timeText.setDepth(10);
-            this.timeText.setScrollFactor(0);
             this.castbarListener();
         } else {
             this.barHeight = 12;
-            this.barWidth = 100;
+            this.barWidth = 72;
             this.borderColor = 0x000000;
             this.fillColor = COLORS.CAST;
             this.bar = new Phaser.GameObjects.Graphics(scene);
             this.bar.fillStyle(this.fillColor);
             this.bar.fillRect(-this.barWidth / 2, -this.barHeight / 2, this.barWidth, this.barHeight);
             this.add(this.bar);
-
+            
             this.border = new Phaser.GameObjects.Graphics(scene);
-            this.border.lineStyle(4, this.borderColor);
+            this.border.lineStyle(2, this.borderColor);
             this.border.strokeRect(-this.barWidth / 2, -this.barHeight / 2, this.barWidth, this.barHeight);
             this.add(this.border);
-
+            
             this.timeText = new Phaser.GameObjects.Text(this.scene, 0, 0, `${Math.round(this.time)} / ${this.total}`, { 
-                color: '#fdf6d8', fontSize: '1.75em', stroke: '#000', strokeThickness: 3, align: 'center' 
+                color: '#fdf6d8', fontSize: '1.15em', stroke: '#000', strokeThickness: 3, align: 'center' 
             });
             this.add(this.timeText);
             this.timeText.setOrigin(0.5);
             this.timeText.setDepth(10);
-            this.timeText.setScrollFactor(0);
         };
     };
 
@@ -120,6 +116,11 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     public setTotal = (total: number, color?: string): void => {
         this.total = total;
         this.draw(COLORS[color as string as keyof typeof COLORS] || COLORS.CAST);
+    };
+
+    public setup = (x: number, y: number) => {
+        this.setPosition(x, y + 40);
+        this.setVisible(true);
     };
 
     private castbarListener = () => {

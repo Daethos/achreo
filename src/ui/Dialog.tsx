@@ -89,13 +89,20 @@ interface DialogTreeProps {
     actions: any;
     setPlayerResponses: Setter<string[]>;
     setKeywordResponses: Setter<string[]>;
+    styling?: any;
 };
 
-export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlayerResponses, setKeywordResponses }: DialogTreeProps) => {
+export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlayerResponses, setKeywordResponses, styling }: DialogTreeProps) => {
     const [showDialogOptions, setShowDialogOptions] = createSignal<boolean>(false);
     const [renderedText, setRenderedText] = createSignal<string>('');
     const [renderedOptions, setRenderedOptions] = createSignal<any>(undefined);
     const [currentIndex, setCurrentIndex] = createSignal<number>(0);
+    const [style, setStyle] = createSignal({
+        'overflow-y': 'auto',
+        'scrollbar-width' : 'none',
+        'text-align': 'left',
+        ...styling
+    });
 
     const processText = (text: string, context: any): string => {
         if (!text) return '';
@@ -208,7 +215,7 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
   
     return (
         <div class='wrap' style={{ 'text-align':'left' }}> 
-            <Typewriter stringText={renderedText} styling={{ 'overflow-y': 'auto', 'scrollbar-width':'none', 'text-align': 'left' }} performAction={handleOptionClick} main={true} />
+            <Typewriter stringText={renderedText} styling={style()} performAction={handleOptionClick} main={true} />
             <br />
             {renderedOptions()?.map((option: DialogNodeOption) => (
                 <DialogOption currentIndex={currentIndex} dialogNodes={dialogNodes} option={option} onClick={handleOptionClick} actions={actions} setPlayerResponses={setPlayerResponses} setKeywordResponses={setKeywordResponses} setShowDialogOptions={setShowDialogOptions} showDialogOptions={showDialogOptions} />
@@ -825,7 +832,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
                 <div style={{ 'font-size': '0.75em' }}>
                     <DialogTree 
                         game={game} combat={combat} ascean={ascean() as Ascean} enemy={combat().computer} dialogNodes={getNodesForEnemy(combat()?.computer as Ascean) as DialogNode[]} 
-                        setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions}
+                        setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} styling={{'white-space':'pre-wrap'}}
                     />
                 { game().currentIntent === 'challenge' ? (
                     <>
@@ -1011,7 +1018,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
             ) : combat().computer && combat().npcType !== 'Merchant-Alchemy' && combat().npcType !== 'Merchant-Smith' ? (
                 <DialogTree 
                     game={game} combat={combat} ascean={ascean()} enemy={combat().computer} dialogNodes={getNodesForNPC(npcIds[combat().npcType])} 
-                    setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions}
+                    setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} styling={{'white-space':'pre-wrap'}}
                 />
             ) : ( '' ) } 
                 <Show when={merchantTable()?.length > 0}> 

@@ -1,4 +1,4 @@
-import Entity, { SWING_TIME } from "./Entity";  
+import Entity, { Player_Scene, SWING_TIME } from "./Entity";  
 import { screenShake, sprint, vibrate, walk } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
@@ -39,15 +39,6 @@ const ORIGIN = {
     CHEST: { X: 0.5, Y: 0.25 },
     LEGS: { X: 0.5, Y: -0.5 },
 };
-
-/* 
-FIXME:
-
-Need to create an array of IDs of every enemy currently in combat WITH (i.e. against) the PLAYER
-
-FIXME:
-*/
- 
 export default class Player extends Entity {
     playerID: string;
     computerAction: boolean = false;
@@ -295,7 +286,7 @@ export default class Player extends Entity {
                 ease: Phaser.Math.Easing.Quintic.InOut,
                 duration: 1000,
                 yoyo: true
-            });    
+            });
             this.playerMachine.positiveMachine.setState(States.STEALTH);
         };
     };
@@ -327,6 +318,7 @@ export default class Player extends Entity {
     stalwartUpdate = (stalwart: boolean) => {
         this.isStalwart = stalwart;
         this.spriteShield.setVisible(this.isStalwart);
+        screenShake(this.scene);
         this.scene.sound.play('stalwart', { volume: this.scene.hud.settings.volume });
         EventBus.emit('stalwart-buttons', this.isStalwart);
     };
@@ -466,13 +458,13 @@ export default class Player extends Entity {
         };
         const first = this.scene.state.enemyID;
         if (first === '') {
-            this.scene.quickCombat();
+            (this.scene as Player_Scene).quickCombat();
         } else {
             const enemy = this.scene.getEnemy(first);
             if (enemy === undefined) {
                 this.disengage();
             } else if (!enemy.inCombat) {
-                this.scene.quickCombat();
+                (this.scene as Player_Scene).quickCombat();
             } else {
                 this.quickTarget(enemy);
             };
@@ -605,6 +597,13 @@ export default class Player extends Entity {
         direction.normalize();
         this.flipX = direction.x < 0;
         this.scene.tweens.add({
+            targets: this.scene.cameras.main,
+            zoom: this.scene.cameras.main.zoom * 2,
+            ease: Phaser.Math.Easing.Elastic.InOut,
+            duration: 900,
+            yoyo: true
+        });
+        this.scene.tweens.add({
             targets: this,
             x: this.x + (direction.x * 200),
             y: this.y + (direction.y * 200),
@@ -642,6 +641,13 @@ export default class Player extends Entity {
         direction.normalize();
         this.flipX = direction.x < 0;
         this.scene.tweens.add({
+            targets: this.scene.cameras.main,
+            zoom: this.scene.cameras.main.zoom * 1.5,
+            ease: Phaser.Math.Easing.Quintic.InOut,
+            duration: 600,
+            yoyo: true
+        });
+        this.scene.tweens.add({
             targets: this,
             x: this.x + (direction.x * 300),
             y: this.y + (direction.y * 300),
@@ -673,6 +679,13 @@ export default class Player extends Entity {
         this.specialCombatText = this.scene.showCombatText('Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined); 
         this.isAttacking = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.STORM);
+        this.scene.tweens.add({
+            targets: this.scene.cameras.main,
+            zoom: this.scene.cameras.main.zoom * 2,
+            ease: Phaser.Math.Easing.Elastic.InOut,
+            duration: 800,
+            yoyo: true
+        });
         this.scene.tweens.add({
             targets: this,
             angle: 360,

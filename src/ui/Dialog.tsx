@@ -139,14 +139,11 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
         let currentNode = dialogNodes?.[index];
         if (currentNode === undefined) return;
         const { text, options } = currentNode as DialogNode;
-        // console.log(text, options, 'Text and Options')
         if (typeof text === 'string') {
             newText = (text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
         } else if (Array.isArray(text)) {
             const npcOptions = text.filter((option: any) => {
-                // const id = getNpcId(combat().npcType || enemy.name);
                 const id = npcIds[combat().npcType];
-                // console.log(id, id, combat().npcType, 'Current ID of nPC')
                 const included = (option as DialogNodeOption)?.npcIds?.includes(id);
                 let condition = true;
                 if (option?.conditions?.length > 0) {
@@ -173,14 +170,12 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
                             break;        
                     };
                 };
-                // console.log(included, condition, option, 'Included and Condition')
                 return included && condition;
             });
             newText = (npcOptions[0]?.text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
         };
         newText = processText(newText, { ascean, enemy, combat });
         newOptions = processOptions(options, { ascean, enemy, combat });
-        // console.log(newText, 'Text')
         setRenderedOptions(newOptions);
         setRenderedText(newText);
         setCurrentIndex(index || 0);
@@ -737,7 +732,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
             return;
         };
         try {
-            // console.log(`Upgrading ${forge()?.name} of ${forge()?.rarity} quality.`);
             let match = JSON.parse(JSON.stringify(game().inventory.inventory));
             match = match.filter((item: Equipment) => item.name === forge()?.name && item?.rarity === forge()?.rarity);
             const data = {

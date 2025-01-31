@@ -472,7 +472,18 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             this.repositionButtons({ type: 'special', x: this.scene.settings.positions.specialButtons.x, y: this.scene.settings.positions.specialButtons.y });    
             return button;    
         });
-    };    
+    };
+
+    public resizeScale = (scale: number) => {
+        this.actionButtons = this.actionButtons.map((button: ActionButton) => {
+            this.scaleButton(button, scale * this.scene.settings.positions.actionButtons.width, this.scene.settings.positions.actionButtons.opacity, this.scene.settings.positions.actionButtons.border);
+            return button;
+        });
+        this.specialButtons = this.specialButtons.map((button: ActionButton) => {
+            this.scaleButton(button, SETTINGS.SCALE_SPECIAL * scale * this.scene.settings.positions.specialButtons.width, this.scene.settings.positions.specialButtons.opacity, this.scene.settings.positions.specialButtons.border);
+            return button;
+        });
+    };
 
     private positionListen = (): void => {
         EventBus.on('reposition-buttons', this.repositionButtons);

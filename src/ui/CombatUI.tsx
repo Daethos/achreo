@@ -71,11 +71,6 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
             default: return '3vh';
         };
     };
-    // function leaveArena() {
-    //     if (instance.scene) {
-    //         (instance.scene as any).clearArena();
-    //     };
-    // };
     
     // function createPrayer() {
     //     const computer = initAscean;
@@ -91,12 +86,12 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
     // }; // , 'text-shadow': `0.025em 0.025em 0.025em ${state().isStealth ? '#000' : '#800080'}`
     // top(state().player?.name.length as number)
     return <div class='playerCombatUi' style={{ position: 'fixed' }}> 
-        <div class='playerHealthBar' style={{ position: 'absolute', 'z-index': 0, 'max-height': '24px', width: '20.75vw', left: '4%' }}>
-            <div class='playerPortrait' style={{ 'font-size': '1.15em', 'font-weight': 'bold', color: state().isStealth ? '#fdf6d8' : '#000', 'margin-top': '-0.5%', 'z-index': 1, 'text-shadow': `0.025em 0.025em 0.025em ${state().isStealth ? '#000' : '#fdf6d8'}` }}>{healthDisplay()}</div>
+        <div class='playerHealthBar' style={{ position: 'absolute', 'z-index': 0, 'max-height': '5vh', width: '20.75vw', left: '4%' }}>
+            <div class='playerPortrait' style={{ 'font-size': '1.15em', 'font-weight': 'bold', color: state().isStealth ? '#fdf6d8' : '#000', 'margin': 'auto', 'z-index': 1, 'text-shadow': `0.025em 0.025em 0.025em ${state().isStealth ? '#000' : '#fdf6d8'}` }}>{healthDisplay()}</div>
             <div class='healthbarPosition' style={{ width: `100%`, 'background': 'linear-gradient(#aa0000, red)' }}></div>
             <div class='healthbarPosition' style={{ width: `${healthPercentage()}%`, 'background': state()?.isStealth ? 'linear-gradient(#000, #444)' : 'linear-gradient(gold, #fdf6d8)', transition: 'width 0.5s ease-out' }}></div>
         </div>
-        <p class='playerName' style={{ position: 'absolute', 'left': '4.5vw', 'margin': '0 auto', top: top(state().player?.name.length as number), 'color': `${state().isStealth ? '#fdf6d8' : 'gold'}`, 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#444' : '#000'}`, 'z-index': 1, 'max-height': '40px', 'font-size': size(state().player?.name.length as number) }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
+        <p class='playerName' style={{ position: 'absolute', 'left': '4.5vw', 'margin': 'auto', top: top(state().player?.name.length as number), 'color': `${state().isStealth ? '#fdf6d8' : 'gold'}`, 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#444' : '#000'}`, 'z-index': 1, 'max-height': '40px', 'font-size': size(state().player?.name.length as number) }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
         <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar" onClick={changeDisplay} style={{ 'max-height': '74px' }}/>
         <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} settings={settings} />
         <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} settings={settings} />
@@ -130,13 +125,6 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
             <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>Disengage</div>
         </button> 
         </Show>
-         
-        {/* <Show when={instance.scene?.scene.key === 'Arena' && !state().combatEngaged}>
-        <button class='disengage highlight combatUiAnimation' style={{ top: '13vh', left: '24vw' }} onClick={() => leaveArena()}>
-            <div style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>Leave Arena</div>
-        </button>
-        </Show> */}
-
         <Show when={prayerShow()}>
             <PrayerModal prayer={effect as Accessor<StatusEffect>} show={prayerShow} setShow={setPrayerShow} />
         </Show>

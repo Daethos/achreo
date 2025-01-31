@@ -902,6 +902,13 @@ export default class PlayerMachine {
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You begin arcing with your ${this.scene.state.weapons[0]?.name}.`
         });
+        this.scene.tweens.add({
+            targets: this.scene.cameras.main,
+            zoom: this.scene.cameras.main.zoom * 2,
+            ease: Phaser.Math.Easing.Elastic.InOut,
+            duration: 500,
+            yoyo: true
+        });
     };
     onArcUpdate = (dt: number) => {
         this.player.combatChecker(this.player.isArcing);
@@ -916,6 +923,13 @@ export default class PlayerMachine {
     };
     onArcExit = () => {
         if (this.player.castingSuccess === true) {
+            this.scene.tweens.add({
+                targets: this.scene.cameras.main,
+                zoom: this.scene.cameras.main.zoom * 2,
+                ease: Phaser.Math.Easing.Elastic.InOut,
+                duration: 500,
+                yoyo: true
+            });
             screenShake(this.scene, 120, 0.005);
             if (!this.player.isComputer) this.player.setTimeEvent('arcCooldown', PLAYER.COOLDOWNS.SHORT);  
             this.player.castingSuccess = false;
@@ -955,6 +969,13 @@ export default class PlayerMachine {
         if (this.player.moving()) {
             this.scene.combatManager.useGrace(PLAYER.STAMINA.BLINK);
             screenShake(this.scene);
+            this.scene.tweens.add({
+                targets: this.scene.cameras.main,
+                zoom: this.scene.cameras.main.zoom * 1.5,
+                ease: Phaser.Math.Easing.Quintic.InOut,
+                duration: 750,
+                yoyo: true
+            });
         };
         if (!this.player.isComputer) this.player.setTimeEvent('blinkCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);
         this.player.flickerCarenic(750); 
@@ -1485,6 +1506,14 @@ export default class PlayerMachine {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.HOOK);
         this.player.beam.startEmitter(this.player.particleEffect.effect, 1500);
         this.player.hookTime = 0;
+        screenShake(this.scene);
+        this.scene.tweens.add({
+            targets: this.scene.cameras.main,
+            zoom: this.scene.cameras.main.zoom * 1.5,
+            ease: Phaser.Math.Easing.Elastic.InOut,
+            duration: 750,
+            yoyo: true
+        });
     };
     onHookUpdate = (dt: number) => {
         this.player.hookTime += dt;
@@ -1687,7 +1716,15 @@ export default class PlayerMachine {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.PURSUIT);
         const pursuitCooldown = this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
         if (!this.player.isComputer) this.player.setTimeEvent('pursuitCooldown', pursuitCooldown);
-        this.player.flickerCarenic(750); 
+        this.player.flickerCarenic(750);
+        screenShake(this.scene, 96);
+        this.scene.tweens.add({
+            targets: this.scene.cameras.main,
+            zoom: this.scene.cameras.main.zoom * 1.5,
+            ease: Phaser.Math.Easing.Quintic.InOut,
+            duration: 750,
+            yoyo: true
+        });
     };
     onPursuitUpdate = (_dt: number) => this.player.combatChecker(this.player.isPursuing);
     onPursuitExit = () => {
@@ -2533,6 +2570,13 @@ export default class PlayerMachine {
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You shimmer, fading in and out of this world.`
         });
+        this.scene.tweens.add({
+            targets: this.scene.cameras.main,
+            zoom: this.scene.cameras.main.zoom * 1.5,
+            ease: Phaser.Math.Easing.Quintic.InOut,
+            duration: 750,
+            yoyo: true
+        });
     };
     onShimmerUpdate = (_dt: number) => {if (!this.player.isShimmering) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2556,6 +2600,14 @@ export default class PlayerMachine {
         }, undefined, this);
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You tap into your caeren, bursting into an otherworldly sprint.`
+        });
+        screenShake(this.scene);
+        this.scene.tweens.add({
+            targets: this.scene.cameras.main,
+            zoom: this.scene.cameras.main.zoom * 1.5,
+            ease: Phaser.Math.Easing.Elastic.InOut,
+            duration: 750,
+            yoyo: true
         });
     };
     onSprintUpdate = (_dt: number) => {if (!this.player.isSprinting) this.positiveMachine.setState(States.CLEAN);};
@@ -2985,7 +3037,8 @@ export default class PlayerMachine {
             },
             callbackScope: this,
             repeat: 6,
-        }); 
+        });
+        screenShake(this.scene);
     };
     onConfusedUpdate = (_dt: number) => {
         if (!this.player.isConfused) this.player.combatChecker(this.player.isConfused);
@@ -3057,6 +3110,7 @@ export default class PlayerMachine {
             callbackScope: this,
             repeat: 4,
         }); 
+        screenShake(this.scene);
     };
     onFearedUpdate = (_dt: number) => {
         if (!this.player.isFeared) this.player.combatChecker(this.player.isFeared);
@@ -3095,6 +3149,7 @@ export default class PlayerMachine {
             callbackScope: this,
             loop: false,
         });
+        screenShake(this.scene);
     };
     onFrozenExit = () => this.player.setStatic(false);
 
@@ -3157,6 +3212,7 @@ export default class PlayerMachine {
             callbackScope: this,
             repeat: 5,
         }); 
+        screenShake(this.scene);
     };
     onPolymorphedUpdate = (_dt: number) => {
         if (!this.player.isPolymorphed) this.player.combatChecker(this.player.isPolymorphed);
@@ -3189,6 +3245,7 @@ export default class PlayerMachine {
             this.player.isSlowed = false;
             this.negativeMachine.setState(States.CLEAN);
         }, undefined, this);
+        screenShake(this.scene);
     };
 
     onSlowedExit = () => {
@@ -3206,6 +3263,7 @@ export default class PlayerMachine {
             this.player.isSnared = false;
             this.negativeMachine.setState(States.CLEAN);
         }, undefined, this);
+        screenShake(this.scene);
     };
     onSnaredExit = () => { 
         this.player.clearTint(); 
@@ -3230,7 +3288,7 @@ export default class PlayerMachine {
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You've been stunned.`
         });
-        screenShake(this.scene);
+        screenShake(this.scene, 96);
     };
     onStunnedUpdate = (dt: number) => {
         this.player.setVelocity(0);

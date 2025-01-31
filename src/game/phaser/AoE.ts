@@ -2,6 +2,10 @@ import Player from '../entities/Player';
 import Enemy from '../entities/Enemy';
 import { Particle } from "../matter/ParticleManager";
 import { Play } from "../main";
+import { Underground } from '../scenes/Underground';
+import { Tutorial } from '../scenes/Tutorial';
+import { Arena } from '../scenes/Arena';
+import { Game } from '../scenes/Game';
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 
@@ -30,6 +34,7 @@ const COLORS = {
     'wild': 0x50C878,
     'wind': 0x00FFFF
 };
+type Player_Scene = Arena | Underground | Game | Tutorial; 
 export default class AoE extends Phaser.Physics.Matter.Sprite {
     count: number;
     hit: any[];
@@ -38,7 +43,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     sensor: any;
 
     constructor(scene: Play, type: string, count = 1, positive = false, enemy: undefined | Enemy = undefined, manual: boolean = false, target: undefined | any = undefined, particle: undefined | {effect: Particle; entity: Player | Enemy } = undefined) {
-        super(scene.matter.world, scene.player.x, scene.player.y + 6, 'target');
+        super(scene.matter.world, 0, 6, 'target');
         this.name = type;
         this.setAngle(0);
         this.setVisible(false);
@@ -66,7 +71,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             this.setupParticleListener(scene);
             this.setParticleTimer(scene, particle.effect);
             this.setParticleCount(particle.entity, scene);
-        } else {
+        } else if ((scene as Arena | Underground | Game | Tutorial).player) {
             this.setupSensor(scene, manual, target);
             this.setupListener(scene);
             this.setTimer(scene, manual, target);
@@ -78,7 +83,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     };
     setCount = (scene: Play, type: string, positive: boolean) => {
         if (type === 'fyerus') {
-            if (scene.player.isMoving) {
+            if ((scene as Player_Scene).player.isMoving) {
                 scene.glowFilter.remove(this);
                 this.bless = [];
                 this.timer.destroy();
@@ -157,7 +162,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             scene.time.delayedCall(975, () => {
                 this.hit.forEach((hit) => {
                     if (hit.name === 'player') {
-                        if (scene.player.checkPlayerResist() === true) {
+                        if ((scene as Player_Scene).player.checkPlayerResist() === true) {
                             (scene.combatManager as any)[type](hit.playerID, enemy.enemyID);
                         };
                     } else if (hit.name === 'enemy') {
@@ -246,7 +251,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         let scale = 0.01875;
         this.setScale(scale);
         let count = 0;
-        let targ = target !== undefined ? target : manual === true ? scene.getWorldPointer() : scene.player;
+        let targ = target !== undefined ? target : manual === true ? scene.getWorldPointer() : (scene as Player_Scene).player;
         if (manual === true) {
             const centerX = scene.cameras.main.width / 2;
             const centerY = scene.cameras.main.height / 2;
@@ -300,7 +305,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         } else if (manual === true) {
             targ = scene.getWorldPointer();
         } else {
-            targ = scene.player;
+            targ = (scene as Player_Scene).player;
         };
         if (manual === true) {
             const centerX = scene.cameras.main.width / 2;

@@ -15,6 +15,7 @@ import { Tutorial } from "./Tutorial";
 import { Arena } from "./Arena";
 import { Underground } from "./Underground";
 import { EnemySheet } from "../../utility/enemy";
+// import { ArenaCvC, ArenaView } from "./ArenaCvC";
 const dimensions = useResizeListener();
 
 export class Hud extends Phaser.Scene {
@@ -36,9 +37,8 @@ export class Hud extends Phaser.Scene {
     prevDiff: number = -1;
     prevScene: string = '';
     currScene: string = '';
-    // private arenaContainers: Phaser.GameObjects.Container[] = []; 
-    // private arenaButton: Phaser.GameObjects.Image; 
-    // private updateInterval: any;
+    // private arenaContainers: Phaser.GameObjects.Container[] = [];
+    // private arenaButton: Phaser.GameObjects.Image;
     // private borders: Phaser.GameObjects.Graphics[] = [];
 
     constructor() {
@@ -72,6 +72,8 @@ export class Hud extends Phaser.Scene {
         this.rightJoystick.joystick.thumb.setAlpha(this.settings.positions.rightJoystick.opacity);
         this.rightJoystick.createPointer(this); 
         this.joystickKeys = this.joystick.createCursorKeys();    
+
+        // [this.smallHud, this.actionBar, this.joystick, this.rightJoystick].forEach(container => this.containers.main.add(container));
 
         this.logger = new Logger();
         this.logger.add('console', new ConsoleLogger());
@@ -139,15 +141,21 @@ export class Hud extends Phaser.Scene {
                 }
             };
             EventBus.emit('save-settings', newSettings);
+
         });
-        // this.arenaButton = this.add.image(this.cameras.main.width / 2, 50, 'toggleButton').setDepth(10).setInteractive(); 
+        // this.arenaButton = this.add.image(this.cameras.main.width - 20, this.cameras.main.height - 50, 'toggleButton').setDepth(10).setInteractive(); 
         // this.arenaButton.on('pointerdown', this.toggleArenaView, this);
-        // // Create a 3x3 grid of containers 
-        // const gridSize = 3; const containerWidth = this.cameras.main.width / gridSize; const containerHeight = (this.cameras.main.height - 100) / gridSize; 
+        // // Create a gridSize squared grid of containers 
+        // const gridSize = 3; 
+        // const containerWidth = (this.gameWidth) / gridSize - 50;
+        // const containerHeight = (this.gameHeight) / gridSize; 
         // const colors = [0xfdf6d8,0xff0000,0x00ff00,0x0000ff,0x800080,0xffc700];
         // for (let i = 0; i < gridSize; i++) { 
         //     for (let j = 0; j < gridSize; j++) { 
-        //         const container = this.add.container(i * containerWidth, 100 + j * containerHeight); 
+        //         const x = Math.round(i * containerWidth + 50);
+        //         const y = Math.round(j * containerHeight);
+        //         console.log(x, y, 'X and Y Position');
+        //         const container = this.add.container(x, y); 
         //         container.setSize(containerWidth, containerHeight); 
         //         this.arenaContainers.push(container); 
         //         const arenaIndex = i * gridSize + j;
@@ -157,13 +165,11 @@ export class Hud extends Phaser.Scene {
         //         // Start the scene and configure its camera
         //         this.scene.launch(sceneKey); // Start the scene
         //         const sceneInstance = this.scene.get(sceneKey) as ArenaView;
-        //         const x = i * containerWidth;
-        //         const y = 100 + j * containerHeight;
         //         // Configure the viewport of the scene's camera
         //         const camera = sceneInstance.cameras.main;
-        //         camera.setViewport(x, y, containerWidth, containerHeight);
+        //         camera.setViewport(x, y, containerWidth - 2, containerHeight - 2);
         //         // Optionally scale the scene within the viewport
-        //         camera.setZoom(0.125);
+        //         camera.setZoom(0.625);
 
         //         // Create and style the border around the viewport 
         //         const border = this.add.graphics();
@@ -173,6 +179,7 @@ export class Hud extends Phaser.Scene {
         //         this.borders.push(border);
         //     };
         // };
+        this.game.scale.on('resize', this.resize, this);
         this.startGameScene();
     };
     // toggleArenaView() { 
@@ -180,22 +187,21 @@ export class Hud extends Phaser.Scene {
     //     const isVisible = this.arenaContainers[0].visible; 
     //     this.arenaContainers.forEach(container => container.setVisible(!isVisible)); 
     //     this.borders.forEach(border => border.setVisible(!isVisible));
-    //     if (!isVisible) { 
-    //         // Start updating the arenas 
-    //         this.updateArenas(); 
-    //         this.updateInterval = setInterval(() => this.updateArenas(), 6000); 
-    //     } else { 
-    //         // Stop updating the arenas 
-    //         clearInterval(this.updateInterval); 
-    //     }; 
+    //     this.updateArenas(!isVisible);
     // }; 
-    // updateArenas() { 
+    // updateArenas(visible: boolean) { 
     //     // Fetch new arena data and update each container 
     //     this.arenaContainers.forEach((_container, index) => { 
     //         const sceneKey = `ArenaView${index}`;
-    //         const sceneInstance = this.scene.get(sceneKey) as ArenaView;
-    //         if (sceneInstance && this.scene.isSleeping(sceneKey)) {
-    //             sceneInstance.resumeScene();
+    //         const sceneInstance = this.scene.get(sceneKey) as ArenaCvC;
+    //         if (visible) {
+    //             if (sceneInstance && this.scene.isSleeping(sceneKey)) {
+    //                 sceneInstance.resumeScene();
+    //             };
+    //         } else {
+    //             if (sceneInstance && this.scene.isActive(sceneKey)) {
+    //                 sceneInstance.sleepScene();
+    //             };
     //         };
     //     }); 
     // };
@@ -209,6 +215,28 @@ export class Hud extends Phaser.Scene {
         this.rightJoystick.destroy();
         this.smallHud.cleanUp();
         this.smallHud.destroy();
+    };
+
+    resize(_gameSize: Phaser.Structs.Size, _: Phaser.Structs.Size, displaySize: Phaser.Structs.Size, previousWidth: number, previousHeight: number) {
+        this.actionBar.resizeScale(displaySize.width / previousWidth * displaySize.height / previousHeight);
+        
+        EventBus.emit('update-small-hud-scale', (this.settings.positions.smallHud.scale * displaySize.width / previousWidth));
+        EventBus.emit('update-left-hud-scale', (this.settings.positions.leftHud.scale * displaySize.height / previousHeight));
+        
+        this.joystick.scaleX = displaySize.width / previousWidth;
+        this.joystick.scaleY = displaySize.height / previousHeight;
+        
+        this.rightJoystick.scaleX = displaySize.width / previousWidth;
+        this.rightJoystick.scaleY = displaySize.height / previousHeight;
+        
+        this.actionBar.draw();
+        EventBus.emit('update-hud-position', ({ x: this.settings.positions.smallHud.x, y: this.settings.positions.smallHud.y }));
+        EventBus.emit('update-left-hud-position', ({ x: this.settings.positions.leftHud.x, y: this.settings.positions.leftHud.y }));
+        this.joystick.setPosition(displaySize.width * this.settings.positions.leftJoystick.x, this.gameHeight * this.settings.positions.leftJoystick.y);
+        this.rightJoystick.setPosition(displaySize.width * this.settings.positions.rightJoystick.x, this.gameHeight * this.settings.positions.rightJoystick.y);
+        
+        this.gameWidth = displaySize.width;
+        this.gameHeight = displaySize.height;
     };
 
     horizontal = () => {

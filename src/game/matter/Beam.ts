@@ -2,55 +2,28 @@ import { masteryNumber } from "../../utility/styling";
 import Enemy from "../entities/Enemy";
 import Player from "../entities/Player";
 import { Play } from "../main";
+interface Dimension {
+    X: number;
+    Y: number;
+};
+const Default: Dimension = {
+    X: 265,
+    Y: 165
+};
 const CONVERSION = {
-    Arena: {
-        X: 265,
-        Y: 165
-    },
-    ArenaView0: {
-        X: 265,
-        Y: 165
-    },
-    ArenaView1: {
-        X: 265,
-        Y: 165
-    },
-    ArenaView2: {
-        X: 265,
-        Y: 165
-    },
-    ArenaView3: {
-        X: 265,
-        Y: 165
-    },
-    ArenaView4: {
-        X: 265,
-        Y: 165
-    },
-    ArenaView5: {
-        X: 265,
-        Y: 165
-    },
-    ArenaView6: {
-        X: 265,
-        Y: 165
-    },
-    ArenaView7: {
-        X: 265,
-        Y: 165
-    },
-    ArenaView8: {
-        X: 265,
-        Y: 165
-    },
-    Game: {
-        X: 265,
-        Y: 165
-    },
-    Tutorial: {
-        X: 265,
-        Y: 165
-    },
+    Arena: Default,
+    ArenaCvC: Default,
+    ArenaView0: Default,
+    ArenaView1: Default,
+    ArenaView2: Default,
+    ArenaView3: Default,
+    ArenaView4: Default,
+    ArenaView5: Default,
+    ArenaView6: Default,
+    ArenaView7: Default,
+    ArenaView8: Default,
+    Game: Default,
+    Tutorial: Default,
     Underground: {
         X: 500, // 500
         Y: 35 // 35

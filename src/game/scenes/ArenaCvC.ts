@@ -1,46 +1,37 @@
-import { Combat, initCombat } from '../../stores/combat';
-import { EventBus } from '../EventBus';
-import LootDrop from '../matter/LootDrop';
-import { GameState } from '../../stores/game';
-import Equipment from '../../models/equipment';
-import { States } from '../phaser/StateMachine';
-import Fov from '../phaser/Fov';
-import { Reputation, initReputation } from '../../utility/player';
-import Player from '../entities/Player';
-import Enemy from '../entities/Enemy';
+import Enemy from "../entities/Enemy";
+import { EventBus } from "../EventBus";
+import ParticleManager from "../matter/ParticleManager";
+import { CombatManager } from "../phaser/CombatManager";
+import Fov from "../phaser/Fov";
+import { ObjectPool } from "../phaser/ObjectPool";
+import ScrollingCombatText from "../phaser/ScrollingCombatText";
+import Tile from "../phaser/Tile";
+import { Hud } from "./Hud";
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
-import Tile from '../phaser/Tile';
-import { CombatManager } from '../phaser/CombatManager';
-import MiniMap from '../phaser/MiniMap';
-import ParticleManager from '../matter/ParticleManager';
-import { screenShake } from '../phaser/ScreenShake';
-import { Hud } from './Hud';
-import { Compiler } from '../../utility/ascean';
-import PlayerComputer from '../entities/PlayerComputer';
-import MovingPlatform from '../matter/MovingPlatform';
-import { ObjectPool } from '../phaser/ObjectPool';
-import ScrollingCombatText from '../phaser/ScrollingCombatText';
+import { States } from "../phaser/StateMachine";
+import { screenShake } from "../phaser/ScreenShake";
+import { Combat } from "../../stores/combat";
+import { v4 as uuidv4 } from 'uuid';
+import { ARENA_ENEMY, fetchArena } from '../../utility/enemy';
+import Player from "../entities/Player";
+import { Compiler } from "../../utility/ascean";
 
-export class Arena extends Phaser.Scene {
+export class ArenaCvC extends Phaser.Scene {
+    player: Player;
     sceneKey: string = '';
+    state: Combat;
     animatedTiles: any[];
     offsetX: number;
     offsetY: number;
-    gameState: GameState | undefined;
-    state: Combat = initCombat;
-    reputation: Reputation = initReputation;
-    player: any;
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
     enemies: Enemy[] | any[] = [];
     focus: any;
     target: any;
+    targetLight: any;
     targetTarget: any;
-    playerLight: any;
-    lootDrops: LootDrop[] = [];
     combat: boolean = false;
-    stealth: boolean = false;
     combatTime: number = 0;
     combatTimer: Phaser.Time.TimerEvent;
     tweenManager: any;
@@ -48,14 +39,9 @@ export class Arena extends Phaser.Scene {
     map: Phaser.Tilemaps.Tilemap;
     background: Phaser.GameObjects.Image;
     camera: Phaser.Cameras.Scene2D.Camera;
-    minimap: MiniMap;
     navMesh: any;
     navMeshPlugin: any;
     postFxPipeline: any;
-    musicBackground: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
-    musicCombat: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
-    musicCombat2: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
-    musicStealth: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     volumeEvent: () => void;
     matterCollision: any;
     combatManager: CombatManager;
@@ -71,14 +57,16 @@ export class Arena extends Phaser.Scene {
     markers: any;
     glowFilter: any;
     hud: Hud;
-    platform: MovingPlatform;
-    platform2: MovingPlatform;
-    platform3: MovingPlatform;
+    // platform: MovingPlatform;
+    // platform2: MovingPlatform;
+    // platform3: MovingPlatform;
     wager = { silver: 0, gold: 0, multiplier: 0 };
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
+    highlight: Phaser.GameObjects.Graphics;
+    highlightAnimation: boolean = false;
 
     constructor (view?: string) {
-        const key = view || 'Arena';
+        const key = view || 'ArenaCvC';
         super(key);
         this.sceneKey = key;
     };
@@ -89,16 +77,14 @@ export class Arena extends Phaser.Scene {
 
     create (hud: Hud) {
         this.cameras.main.fadeIn();
+        this.state = this.registry.get("combat");
         this.hud = hud;
         this.gameEvent();
-        this.state = this.registry.get("combat");
-        this.reputation = this.getReputation();
         this.offsetX = 0;
         this.offsetY = 0;
         this.tweenManager = {};
         this.markers = [];
         let camera = this.cameras.main;
-        camera.zoom = this.hud.settings.positions?.camera?.zoom || 1;
         const map = this.make.tilemap({ key: 'arena' });
         this.map = map;
         this.add.rectangle(0, 0, 4096, 4096, 0x000000);
@@ -125,18 +111,19 @@ export class Arena extends Phaser.Scene {
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
         (this.sys as any).animatedTiles.init(this.map);
         map?.getObjectLayer('summons')?.objects.forEach((summon: any) => this.markers.push(summon));
-        const random = this.markers[Math.floor(Math.random() * this.markers.length)];        
-        if (this.hud.settings.difficulty.arena) {
-            this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
-        } else {
-            this.player = new PlayerComputer({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
-            this.hud.actionBar.setVisible(false);
-            this.hud.joystick.joystick.setVisible(false);
-            this.hud.rightJoystick.joystick.setVisible(false);
-        };
-        this.player.setPosition(random.x,random.y);
 
-        camera.startFollow(this.player, false, 0.1, 0.1);
+        this.highlight = this.add.graphics()
+            .lineStyle(4, 0xFFc700)
+            .setScale(0.2)
+            .strokeCircle(0, 0, 12)
+            .setDepth(99);
+        (this.plugins?.get?.('rexGlowFilterPipeline') as any)?.add(this.highlight, {
+            intensity: 0.005,
+        });
+        this.highlight.setVisible(false);
+        this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
+        this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
+        camera.startFollow(this.highlight, false, 0.1, 0.1);
         camera.setLerp(0.1, 0.1);
         camera.setRoundPixels(true);
 
@@ -144,30 +131,11 @@ export class Arena extends Phaser.Scene {
         this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
         this.setPostFx(this.hud.settings?.postFx, this.hud.settings?.postFx.enable);
         this.particleManager = new ParticleManager(this);
-        this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
 
-        this.player.inputKeys = {
-            up: this?.input?.keyboard?.addKeys('W,UP'),
-            down: this?.input?.keyboard?.addKeys('S,DOWN'),
-            left: this?.input?.keyboard?.addKeys('A,LEFT'),
-            right: this?.input?.keyboard?.addKeys('D,RIGHT'),
-            action: this?.input?.keyboard?.addKeys('ONE,TWO,THREE,FOUR,FIVE'),
-            strafe: this?.input?.keyboard?.addKeys('E,Q'),
-            shift: this?.input?.keyboard?.addKeys('SHIFT'),
-            firewater: this?.input?.keyboard?.addKeys('T'),
-            tab: this?.input?.keyboard?.addKeys('TAB'),
-            escape: this?.input?.keyboard?.addKeys('ESC'),
-        };
         this.lights.enable();
-        this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 100, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
+        // this.targetLight = this.add.pointlight(this.target.x, this.target.y, 0xDAA520, 100, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
         this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
-        this.musicBackground = this.sound.add('isolation', { volume: this?.hud?.settings?.volume || 0.1, loop: true });
-        if (this.hud.settings?.music === true) this.musicBackground.play();
-        this.musicCombat = this.sound.add('industrial', { volume: this?.hud?.settings?.volume, loop: true });
-        this.musicCombat2 = this.sound.add('combat2', { volume: this?.hud?.settings?.volume, loop: true });
-        this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
-        
         // this.platform = new MovingPlatform(this, 1440, 640, 'player-castbar', { isStatic: true });
         // this.platform.vertical(0, 1320, 12000);
         
@@ -184,7 +152,6 @@ export class Arena extends Phaser.Scene {
             this.input.setDefaultCursor('url(assets/images/cursor.png), pointer');
         };
         this.combatManager = new CombatManager(this);
-        this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
         
@@ -209,54 +176,16 @@ export class Arena extends Phaser.Scene {
         EventBus.off('minimap');
         EventBus.off('update-postfx');
         EventBus.off('game-map-load');
-        EventBus.off('update-camera-zoom');
         EventBus.off('update-speed');
         EventBus.off('update-enemy-special');
         EventBus.off('resetting-game');
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].cleanUp();
         };
-        this.player.cleanUp();
     };
 
     gameEvent = (): void => {
-        EventBus.on('combat', (combat: any) => this.state = combat); 
-        EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
         EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
-        EventBus.on('enemyLootDrop', (drops: any) => {
-            if (drops.scene !== this.sceneKey) return;
-            drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
-        });    
-        EventBus.on('minimap', () => {
-            if (this.minimap.minimap.visible === true) {
-                this.minimap.minimap.setVisible(false);
-                this.minimap.border.setVisible(false);
-                this.minimap.reset.setVisible(false);
-            } else {
-                this.minimap.minimap.setVisible(true);
-                this.minimap.border.setVisible(true);
-                this.minimap.minimap.startFollow(this.player);
-            };
-        });
-        EventBus.on('check-stealth', (stealth: boolean) => {
-            this.stealth = stealth;
-        });
-        EventBus.on('update-camera-zoom', (zoom: number) => {
-            let camera = this.cameras.main;
-            camera.zoom = zoom;
-        });
-        EventBus.on('update-speed', (data: { speed: number, type: string }) => {
-            switch (data.type) {
-                case 'playerSpeed':
-                    this.player.adjustSpeed(data.speed);
-                    break;
-                case 'enemySpeed':
-                    for (let i = 0; i < this.enemies.length; i++) {
-                        this.enemies[i].adjustSpeed(data.speed);
-                    };
-                    break;
-            };
-        });
         EventBus.on('update-enemy-special', (special: number) => {
             for (let i = 0; i < this.enemies.length; i++) {
                 this.enemies[i].isSpecial = special >= Math.random();
@@ -273,40 +202,20 @@ export class Arena extends Phaser.Scene {
 
     resumeScene = () => {
         this.cameras.main.fadeIn();
-        this.resumeMusic();
-        this.state = this.registry.get("combat");
-        this.player.health = this.state.newPlayerHealth;
-        this.player.healthbar.setValue(this.state.newPlayerHealth);
-        this.player.healthbar.setTotal(this.state.playerHealth);
-        this.registry.set("player", this.player);
-        if (this.state.isStealth) {
-            this.player.playerMachine.positiveMachine.setState(States.STEALTH);
-            this.stealthEngaged(true);
+        if (this.enemies.length === 0) {
+            this.createArenaEnemy();
         };
-        const random = this.markers[Math.floor(Math.random() * this.markers.length)];
-        this.player.setPosition(random.x, random.y);
-        if (this.player.isComputer) {
-            this.hud.actionBar.setVisible(false);
-            this.hud.joystick.joystick.setVisible(false);
-            this.hud.rightJoystick.joystick.setVisible(false);
-        };
-        this.createArenaEnemy();
         this.scene.wake();
-        EventBus.emit('current-scene-ready', this);
+    };
+
+    sleepScene = () => {
+        this.cameras.main.fadeOut(500).once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
+            this.scene.sleep(this);
+        });
     };
 
     switchScene = (current: string) => {
         this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
-            this.registry.set("combat", this.state);
-            this.registry.set("ascean", this.state.player);
-            this.hud.actionBar.setVisible(true);
-            if (!this.hud.settings.desktop) {
-                this.hud.joystick?.joystick?.setVisible(true);
-                this.hud.rightJoystick?.joystick?.setVisible(true);
-                this.hud.rightJoystick?.pointer?.setVisible(true);
-            };
-            this.player.disengage();
-            this.pauseMusic();
             this.scene.sleep(current);
         });
     };
@@ -402,11 +311,6 @@ export class Arena extends Phaser.Scene {
 
     };
 
-    getReputation = (): Reputation => {
-        EventBus.emit('request-reputation');
-        return this.reputation;
-    };
-
     getEnemy = (id: string): Enemy => {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };
@@ -439,21 +343,12 @@ export class Arena extends Phaser.Scene {
         };
     };
     
-    isStateEnemy = (id: string): boolean => id === this.state.enemyID;
-
-    quickCombat = () => {
-        for (let i = 0; i < this.enemies.length; i++) {
-            if (this.enemies[i].inCombat === true) {
-                this.player.quickTarget(this.enemies[i]);
-                return;    
-            };
-        };
-    };
+    isStateEnemy = (_id: string): boolean => false;
 
     clearAggression = () => {
         for (let i = 0; i < this.enemies.length; i++) {
-            if (this.enemies[i].inCombat === true) {
-                if (this.player.health <= 0) {
+            if (this.enemies[i].inComputerCombat === true) {
+                if (this.enemies[i].attacking?.health <= 0 || this.enemies[i].isTriumphant) {
                     this.enemies[i].clearArenaWin();
                 } else {
                     this.enemies[i].clearArenaLoss();
@@ -464,11 +359,6 @@ export class Arena extends Phaser.Scene {
 
     switchArena = () => {
         this.wager = { silver: 0, gold: 0, multiplier: 0 };
-        this.player.defeatedDuration = 0;
-        EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
-        this.time.delayedCall(3000, () => {
-            EventBus.emit("scene-switch", {current:"Arena", next:"Underground"});
-        }, undefined, this);
     };
 
     clearArena = () => {
@@ -478,16 +368,7 @@ export class Arena extends Phaser.Scene {
             };
             this.enemies = [];
         };
-        this.player.disengage();
-        this.player.clearEnemies();
-        if (this.player.isComputer) (this.player as PlayerComputer).completeReset();
         this.hud.clearNonAggressiveEnemy();
-    };
-
-    computerDisengage = () => {
-        this.player.clearEnemies();
-        this.player.disengage();
-        if (this.player.isComputer) (this.player as PlayerComputer).completeReset();
     };
 
     combatEngaged = (bool: boolean) => {
@@ -496,123 +377,44 @@ export class Arena extends Phaser.Scene {
             screenShake(this);
             this.cameras.main.flash(60, 156, 163, 168, false, undefined, this);
         };
-        if (bool === true && this.combat === false) {
-            this.player.startCombat();
-            if (Math.random() > 0.5) {
-                this.musicCombat.play();
-            } else {
-                this.musicCombat2.play();
-            };
-            if (this.musicBackground.isPlaying) this.musicBackground.pause();
-            if (this.musicStealth.isPlaying) this.musicStealth.stop();
-            this.startCombatTimer();
-        } else if (bool === false) {
-            this.clearAggression();            
-            if (this.musicCombat.isPlaying) this.musicCombat.pause();
-            if (this.musicCombat2.isPlaying) this.musicCombat2.pause();
-            if (this.player.isStealthing) {
-                if (this.musicStealth.isPaused) {
-                    this.musicStealth.resume();
-                } else {
-                    this.musicStealth.play();
-                };
-            } else {
-                this.musicBackground.resume();
-            };
-            this.stopCombatTimer();
-        };
         this.combat = bool;
         EventBus.emit('combat-engaged', bool);
     };
 
-    stealthEngaged = (bool: boolean) => {
-        if (this.scene.isSleeping(this.scene.key)) return;
-        if (bool) {
-            if (this.musicBackground.isPlaying) this.musicBackground.pause();
-            if (this.musicCombat.isPlaying) this.musicCombat.pause();
-            if (this.musicCombat2.isPlaying) this.musicCombat2.pause();
-            if (this.musicStealth.isPaused) {
-                this.musicStealth.resume();
-            } else {
-                this.musicStealth.play();
-            };
-        } else {
-            this.musicStealth.stop();
-            if (this.combat) {
-                this.musicCombat.play();
-            } else {
-                this.musicBackground.resume();
-            };
-        };
-    };
+    stealthEngaged = (_bool: boolean) => {};
 
-    pauseMusic = (): void => {
-        if (this.scene.isSleeping(this.scene.key)) return;
-        if (this.musicBackground.isPlaying) this.musicBackground.pause();
-        if (this.musicCombat.isPlaying) this.musicCombat.pause();
-        if (this.musicCombat2.isPlaying) this.musicCombat2.pause();
-        if (this.musicStealth.isPlaying) this.musicStealth.pause();
-    };
-
-    resumeMusic = (): void => {
-        if (this.scene.isSleeping(this.scene.key)) return;
-        if (this.hud.settings?.music === false) return;
-        if (!this.combat) {
-            if (this.player.isStealthing) {
-                if (this.musicStealth.isPaused) {
-                    this.musicStealth.resume();
-                } else {
-                    this.musicStealth.play();
-                };
-            } else if (this.musicBackground.isPaused) {
-                this.musicBackground.resume();
-            } else {
-                this.musicBackground.play();
-            };
-        } else {
-            if (this.musicCombat.isPaused) {
-                this.musicCombat.resume();
-            } else {
-                this.musicCombat2.resume();
-            };
-        };
-    };
+    resumeMusic = (): void => {};
 
     drinkFlask = (): boolean => EventBus.emit('drink-firewater');
 
     createArenaEnemy = () => {
-        EventBus.emit('alert', { header: "Prepare!", body: "The enemies are being summoned. Prepare for the Eulex.", key: "Close" });
         this.time.delayedCall(1500, () => {
-            let data: Compiler[] = this.registry.get("enemies");
+            let data: Compiler[] = this.registry.get(`enemies${this.sceneKey}`);
             if (!data) {
                 this.switchArena();
                 return;
             };
-            let marker: any, markers: any[] = [], count = data.length - 1;
-            for (let i = 0; i < this.markers.length; i++) {
-                const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
-                const direction = position.subtract(this.player.position);
-                if (direction.length() < 1250) {
-                    markers.push(this.markers[i]);
-                };
-            };
             for (let j = 0; j < data.length; j++) {
-                marker = markers[Math.floor(Math.random() * markers.length)];
+                let marker = this.markers[Math.floor(Math.random() * this.markers.length)];
                 const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: data[j] });
                 this.enemies.push(enemy);
                 enemy.setPosition(marker.x, marker.y);
-                this.time.delayedCall(1500, () => {
-                    enemy.checkEnemyCombatEnter();
-                    this.player.targets.push(enemy);
-                    if (count === j) {
-                        if (this.player.isComputer) {
-                            this.player.computerEngagement(enemy.enemyID);
-                        } else {
-                            this.player.targetEngagement(enemy.enemyID);
+                if (j === 0) {
+                    // this.cameras.main.startFollow(enemy, false, 0.1, 0.1);
+                    this.targetTarget = enemy;
+                    this.highlightTarget(enemy);
+                };
+                if (j > 0) {
+                    for (let i = 0; i < this.enemies.length; i++) {
+                        if (this.enemies[i].enemyID !== enemy.enemyID) {
+                            if (i === j - 1) {
+                                enemy.checkComputerEnemyCombatEnter(this.enemies[i]);
+                            } else {
+                                enemy.enemies.push({id:this.enemies[i].enemyID,threat:0});
+                            };
                         };
                     };
-                    if (this.player.isComputer || !this.hud.settings.difficulty.arena) this.player.playerMachine.stateMachine.setState(States.CHASE);
-                }, undefined, this);
+                };
             };
         }, undefined, this);
         this.wager = this.registry.get("wager");
@@ -621,11 +423,11 @@ export class Arena extends Phaser.Scene {
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
         const defeated = ["Something is tearing into me. Please, help!", "Noooooooo! This wasn't supposed to happen.", 
-            `Curse you, ${this.state.player?.name}! I'll be back for your head.`, `Well fought, ${this.state.player?.name}.`,
+            `Curse you! I'll be back for your head.`, `Well fought.`,
             `Can't believe I lost to you. I'm in utter digust with myself.`, "Why did it have to be you?"
         ];
-        const victorious = [`I'll be seeing you, ${this.state.player?.name}.`, "Perhaps try fighting someone of a different mastery, may be easier for you.",
-            "You're joking?", "Why did you even bother me with this.", `Well fought, ${this.state.player?.name}.`, "Very good! May we meet again."
+        const victorious = [`I'll be seeing you.`, "Perhaps try fighting someone of a different mastery, may be easier for you.",
+            "You're joking?", "Why did you even bother me with this.", `Well fought.`, "Very good! May we meet again."
         ];
         const saying = enemy.isDefeated ? defeated[Math.floor(Math.random() * defeated.length)] : victorious[Math.floor(Math.random() * victorious.length)];
         enemy.specialCombatText = this.showCombatText(saying, 1500, 'bone', false, true, () => enemy.specialCombatText = undefined);
@@ -638,30 +440,25 @@ export class Arena extends Phaser.Scene {
                 } else if (enemy.isTriumphant) {
                     EventBus.emit('settle-wager', { wager: this.wager, win: false });
                 };
-                this.computerDisengage();
                 this.hud.clearNonAggressiveEnemy();
+                this.registry.set(`enemies${this.sceneKey}`, []);
             };
+            this.removeHighlight();
+            // this.cameras.main.setPosition(this.cameras.main.width / 2, this.cameras.main.height / 2);
             enemy.cleanUp();
             enemy.destroy();
         }, undefined, this);
     };
-    playerUpdate = (delta: number): void => {
-        this.player.update(delta); 
-        this.combatManager.combatMachine.process();
-        this.playerLight.setPosition(this.player.x, this.player.y);
-        this.setCameraOffset();
-        if (!this.hud.settings.desktop) this.hud.rightJoystick.update();
-    };
     setCameraOffset = () => {
         const { width, height } = this.cameras.main.worldView;
-        if (this.player.flipX === true) {
+        if (this.targetTarget.flipX === true) {
             this.offsetX = Math.min((width / 12.5), this.offsetX + 2);
         } else {
             this.offsetX = Math.max(this.offsetX - 2, -(width / 12.5));
         };
-        if (this.player.velocity?.y as number > 0) {
+        if (this.targetTarget.velocity?.y as number > 0) {
             this.offsetY = Math.max(this.offsetY - 1.5, -(height / 9));
-        } else if (this.player.velocity?.y as number < 0) {
+        } else if (this.targetTarget.velocity?.y as number < 0) {
             this.offsetY = Math.min((height / 9), this.offsetY + 1.5);
         };
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
@@ -684,33 +481,105 @@ export class Arena extends Phaser.Scene {
         this.combatTime = 0;
         EventBus.emit('update-combat-timer', this.combatTime);
     };
+    animateTarget = () => {
+        this.tweens.add({
+            targets: this.highlight,
+            scale: 0.45,
+            duration: 250,
+            yoyo: true
+        });
+    };
+    highlightTarget = (sprite: Enemy) => {
+        if (!sprite || !sprite.body) return;
+        if (this.highlightAnimation === false) {
+            this.highlightAnimation = true;
+            this.animateTarget();
+        };
+        this.highlight.setPosition(sprite.x, sprite.y);
+        this.highlight.setVisible(true);
+        this.targetTarget = sprite;
+        if (this.target.visible === true) this.target.setPosition(this.targetTarget.x, this.targetTarget.y);
+    };
+    removeHighlight() {
+        this.highlight.setVisible(false);
+        this.highlightAnimation = false;
+    };
     update(_time: number, delta: number): void {
-        this.playerUpdate(delta);
+        this.combatManager.combatMachine.process();
+        if (this.targetTarget && this.targetTarget.body) {
+            this.highlightTarget(this.targetTarget); 
+            this.setCameraOffset();
+        } else if (this.highlight.visible) {
+            this.removeHighlight();
+        };
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(delta);
             if ((this.enemies[i].isDefeated || this.enemies[i].isTriumphant) && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
         };
-        const camera = this.cameras.main;
-        const bounds = new Phaser.Geom.Rectangle(
-            this.map.worldToTileX(camera.worldView.x) as number - 2,
-            this.map.worldToTileY(camera.worldView.y) as number - 2,
-            this.map.worldToTileX(camera.worldView.width) as number + 6,
-            this.map.worldToTileX(camera.worldView.height) as number + 6
-        );
-        const player = new Phaser.Math.Vector2({
-            x: this.map.worldToTileX(this.player.x) as number,
-            y: this.map.worldToTileY(this.player.y) as number
-        });
-        this.fov!.update(player, bounds, delta);
+        // const camera = this.cameras.main;
+        // const bounds = new Phaser.Geom.Rectangle(
+        //     this.map.worldToTileX(camera.worldView.x) as number - 2,
+        //     this.map.worldToTileY(camera.worldView.y) as number - 2,
+        //     this.map.worldToTileX(camera.worldView.width) as number + 6,
+        //     this.map.worldToTileX(camera.worldView.height) as number + 6
+        // );
+        // const target = new Phaser.Math.Vector2({
+        //     x: this.map.worldToTileX(this.target.x) as number,
+        //     y: this.map.worldToTileY(this.target.y) as number
+        // });
+        // this.fov!.update(target, bounds, delta);
     };
     pause(): void {
         this.scene.pause();
         this.matter.pause();
-        this.pauseMusic();
     };
     resume(): void {
         this.scene.resume();
         this.matter.resume();
-        this.resumeMusic();
+    };
+};
+
+export class ArenaView extends ArenaCvC {
+    private arenaIndex: number;
+    private hudScene: Hud;
+
+    constructor(data: {scene: Hud; arenaIndex: number;}) {
+        super(`ArenaView${data.arenaIndex}`);
+        this.arenaIndex = data.arenaIndex;
+        this.hudScene = data.scene;
+    };
+
+    preload() {super.preload();};
+
+    create() {
+        // this.registry.set("wager", {silver:0,gold:0,multiplier:0});
+        super.create(this.hudScene);
+        this.add.text(10, 10, `Arena ${this.arenaIndex}`, { font: 'Arial', fontSize: '16px', color: '#fdf6d8' });
+        this.startArena();
+    };
+
+    reload() {
+        this.startArena();
+    };
+
+    setNewTarget = (enemy: Enemy) => {
+        this.removeHighlight();
+        this.targetTarget = enemy;
+        this.highlightTarget(enemy);
+    };
+
+    startArena = () => {
+        const masteries = ['constitution', 'strength', 'agility', 'achre', 'caeren', 'kyosir'];
+        // const rand = Phaser.Math.Between(2,4);
+        let level = this.registry.get("combat")?.player?.level;
+        if (level % 2 !== 0) level += 1; 
+        let enemies: ARENA_ENEMY[] = [];
+        for (let i = 0; i < 2; i++) {
+            const mastery = masteries[Math.floor(Math.random() * masteries.length)];
+            const enemy = { level, mastery, id: uuidv4() };
+            enemies.push(enemy);
+        };
+        const fetch = fetchArena(enemies);
+        this.registry.set(`enemies${this.sceneKey}`, fetch);
     };
 };

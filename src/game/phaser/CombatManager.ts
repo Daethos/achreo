@@ -131,7 +131,7 @@ export class CombatManager extends Phaser.Scene {
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
             enemy.count.stunned += 1;    
             enemy.isStunned = true;
-        } else if (id === this.context.player.playerID) {
+        } else if (id === this.context?.player?.playerID) {
             let caster = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
             caster.chiomic(15);
             this.context.player.isStunned = true;
@@ -146,7 +146,7 @@ export class CombatManager extends Phaser.Scene {
             const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 1);
             const health = enemy.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
-        } else if (id === this.context.player.playerID) {
+        } else if (id === this.context?.player?.playerID) {
 
         };
     };
@@ -163,7 +163,7 @@ export class CombatManager extends Phaser.Scene {
                 const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
                 const tshaeralDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
                 EventBus.emit('add-combat-logs', { ...this.context.state, playerActionDescription: tshaeralDescription });
-                this.combatMachine.action({ type: 'Health', data: { key: 'player', value: newPlayerHealth, id: this.context.player.playerID } });
+                this.combatMachine.action({ type: 'Health', data: { key: 'player', value: newPlayerHealth, id: this.context?.player?.playerID } });
                 this.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newHealth, id: enemy.enemyID } });
             };
         };
@@ -273,7 +273,7 @@ export class CombatManager extends Phaser.Scene {
         };
     };
     renewal = () => {
-        this.combatMachine.action({ data: { key: 'player', value: 10, id: this.context.player.playerID }, type: 'Health' });
+        this.combatMachine.action({ data: { key: 'player', value: 10, id: this.context?.player?.playerID }, type: 'Health' });
     };
     enemyRenewal = (id: string): void => {
         if (!id) return;
@@ -382,7 +382,7 @@ export class CombatManager extends Phaser.Scene {
     };
     tendril = (combatID: string, enemySpecialID?: string): void => {
         if (!combatID) return;
-        if (combatID === this.context.player.playerID && enemySpecialID) { // Enemy Special is Damaging Player
+        if (combatID === this.context?.player?.playerID && enemySpecialID) { // Enemy Special is Damaging Player
             const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
             if (origin.checkPlayerResist()) {
                 origin.chiomic(10, combatID);
@@ -425,7 +425,7 @@ export class CombatManager extends Phaser.Scene {
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
-            if (id === this.context.player.playerID) {
+            if (id === this.context?.player?.playerID) {
                 let en = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
                 if (!en) return;
                 if (en.isCurrentTarget) {

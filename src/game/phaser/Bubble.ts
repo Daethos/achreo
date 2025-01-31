@@ -112,5 +112,4 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
     update(x: number, y: number) {
         this.setPosition(x, y + 6);
     };
-
 };

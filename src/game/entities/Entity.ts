@@ -15,6 +15,9 @@ import { Underground } from '../scenes/Underground';
 import { States } from '../phaser/StateMachine';
 import { Arena } from '../scenes/Arena';
 import { applyWeaponFrameSettings, WEAPON_FRAME_CONFIG } from '../../utility/rotations';
+import { Play } from '../main';
+import { Tutorial } from '../scenes/Tutorial';
+export type Player_Scene = Game | Underground | Tutorial | Arena;  
 export const FRAME_COUNT = {
     ATTACK_LIVE: 16,
     ATTACK_SUCCESS: 39,
@@ -38,7 +41,7 @@ const ACCELERATION_FRAMES = 10;
 const DAMPENING_FACTOR = 0.9; 
 const KNOCKBACK_DURATION = 128;
 export default class Entity extends Phaser.Physics.Matter.Sprite {
-    declare scene: Game | Underground | Arena;
+    declare scene: Play;
     ascean: Ascean;
     attacking: any = undefined;
     health: number;
@@ -523,9 +526,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.hasBow = this.checkBow(weapon.type);
     };
     checkPlayerResist = () => {
-        if (this.scene.player.isShirking) {
+        if ((this.scene as Player_Scene).player.isShirking) {
             this.isCasting = false;
-            this.scene.player.resist();
+            (this.scene as Player_Scene).player.resist();
             return false;
         };
         const chance = Math.random() * 101;
@@ -537,7 +540,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             return true;
         } else {
             this.isCasting = false;
-            this.scene.player.resist();
+            (this.scene as Player_Scene).player.resist();
             return false;
         };
     };

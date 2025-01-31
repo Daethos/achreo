@@ -103,7 +103,6 @@ export const INTRO_NODES = {
         Marred and mutated, this jungle is rife with the blood of Ancients;
         worldly beings of fantastic might and worship a thousand years past
         who grew civilization and genius from their worshipers. \n
-        Such peacable time could not last, an Ancient or otherwise curious of limitation, be it themself or another. \n
         The Sundering eclipsed such flourishing--a War of the Ancients.`,
     },
     1: {
@@ -113,7 +112,6 @@ export const INTRO_NODES = {
         text: `Most humans died. Those who lived did so from the brilliance of the herald and prophet of Daethos, Laetrois Ath'Shaorah, 
         who warred against the Ancients on behalf of humanity. \n
         At its end, humans were freed from the Ancients, from each other, and from their homes; the Sundering's last gift to the world.
-        Misery wrought from rebuilding gave way to more warring. \n 
         For a thousand years since, strange people from stranger lands clashed. Few coalesced.`,
     },
     2: {
@@ -161,3 +159,5 @@ export const INTRO_NODES = {
     },
 };
 // There grows a concern when great sons of great men come of an age where the world sits idle, listless, waiting to stir. \n NODE 3
+// Such peacable time could not last, an Ancient or otherwise curious of limitation, be it themself or another. \n NODE 1
+// Misery wrought from rebuilding gave way to more warring. \n NODE 2

@@ -8,7 +8,7 @@ const font = { 'font-size': '1em', margin: '0' };
 
 export default function AttributeModal({ attribute }: { attribute: any }) {
     const dimensions = useResizeListener();
-    return <div class="border superCenter" style={dimensions()?.ORIENTATION === 'landscape' ? { width: '50%', padding: '1%' } : { width: '75%' }}>
+    return <div class="border superCenter" style={dimensions()?.ORIENTATION === 'landscape' ? { width: '60%', padding: '1%' } : { width: '75%' }}>
         <div class="creature-heading wrap" style={{ 'text-wrap': 'balance', 'white-space': 'pre-wrap' }}>
             <h1>{attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)}</h1>
             <br />

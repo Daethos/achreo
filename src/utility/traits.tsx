@@ -2,6 +2,8 @@ import { Accessor, Setter, Show } from 'solid-js';
 import Ascean from '../models/ascean';
 import { GameState } from '../stores/game';
 import Quest from './quests';
+import { font } from './styling';
+import { EventBus } from '../game/EventBus';
 
 const ATTRIBUTE_TRAITS = {
     constitution: {
@@ -446,12 +448,12 @@ export const PersuasionModal = ({ traits, callback, name, influence, show, setSh
     );
 };
 
-export const QuestModal = ({ quests, show, setShow }: { quests: Accessor<Quest[]>, show: Accessor<boolean>, setShow: Setter<boolean> }) => {
-    return (
+export const QuestModal = ({ quests, show, setShow, enemy }: { quests: Accessor<Quest[]>, show: Accessor<boolean>, setShow: Setter<boolean>; enemy: Ascean }) => {
+    return ( // onClick={() => setShow(!show())}
         <>
         <Show when={show()}>
-        <div class='modal' onClick={() => setShow(!show())}>
-            <div class='border superCenter' style={{ 'font-size': "1.25em" }}>
+        <div class='modal'>
+            <div class='border superCenter' style={{ 'font-size': "1.25em", overflow: 'auto', 'scrollbar-width': 'none', width: '60%' }}>
             <div class='creature-heading wrap'>
                 <h1 style={{ margin: '3%' }}>Quests</h1>
                 <svg height="5" width="100%" class="tapered-rule mt-2">
@@ -459,17 +461,19 @@ export const QuestModal = ({ quests, show, setShow }: { quests: Accessor<Quest[]
                 </svg>
                 <h2>These are the quests you have available to you. Each quest has its own requirements and rewards. 
                 Quests may be shared between multiple enemies, but the player may only choose one quest giver.</h2>
-                <div style={{ 'font-size': "1em", margin: "5%" }}>
+                <div style={{ 'font-size': "0.75em", margin: "5%" }}>
                 {quests().map((quest: Quest, index: number) => {
-                    return (
-                        <div style={{ margin: '3%' }}>
-                            <button class='dialog-buttons inner' style={{ color: index % 2 === 0 ? 'gold' : 'white', 'font-size': "1em", background: '#000' }}>[{quest.title}]: {quest.description}</button>
-                        </div>
-                    )
+                    return <div class='' style={{ margin: '3%' }}>
+                        <div class='dialog-buttons inner juiceNB' style={{ color: index % 2 === 0 ? 'gold' : 'white', 'font-size': "1em", background: '#000' }}>[{quest.title}]: {quest.description}</div>
+                        <button class='highlight' onClick={() => {EventBus.emit('add-quest', {title:quest.title,enemy}); }} style={font('1em', 'green')}>Accept {quest.title}</button>
+                    </div>
                 })}
+                [Note: Your decisions have granted this avenue of gameplay experience. There are more to discover.]
                 </div>
-                [Note: Your decisions have granted this avenue of gameplay experience. There are more to discover.]<br /><br />
             </div>
+            <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '0', right: '0', 'background-color': 'red' }} onClick={() => setShow(!show())}>
+                <p style={font('0.5em')}>X</p>
+            </button>
             </div>
         </div>
         </Show>

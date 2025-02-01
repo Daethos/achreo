@@ -9,7 +9,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Physical)',
         svg: 'ATTACK',
-        talents: ['', '', ''],
+        talent: '',
     },
     DODGE: {
         name: 'Dodge',
@@ -19,7 +19,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Physical)',
         svg: 'DODGE',
-        talents: ['', '', ''],
+        talent: '',
     },
     PARRY: {
         name: 'Parry',
@@ -29,7 +29,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Physical)',
         svg: 'PARRY',
-        talents: ['', '', ''],
+        talent: '',
     },
     POSTURE: {
         name: 'Posture',
@@ -39,7 +39,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Physical)',
         svg: 'POSTURE',
-        talents: ['', '', ''],
+        talent: '',
     },
     ROLL: {
         name: 'Roll',
@@ -49,7 +49,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Physical)',
         svg: 'ROLL',
-        talents: ['', '', ''],
+        talent: '',
     },
     THRUST: {
         name: 'Thrust',
@@ -59,7 +59,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Physical)',
         svg: 'THRUST',
-        talents: ['', '', ''],
+        talent: '',
     },
 
 
@@ -71,7 +71,7 @@ export const ACTION_ORIGIN = {
         time: 'Prayer',
         special: '(Targeted)',
         svg: 'INVOKE',
-        talents: ['', '', ''],
+        talent: '',
     },
     CONSUME: {
         name: 'Consume',
@@ -81,7 +81,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Targeted)',
         svg: 'SHIELD',
-        talents: ['', '', ''],
+        talent: '',
     },
     ABSORB: {
         name: 'Absorb',
@@ -91,7 +91,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Negation Bubble',
         svg: 'CONSUME',
-        talents: ['', '', ''],
+        talent: '',
     },
     ACHIRE: {
         name: 'Achire',
@@ -101,7 +101,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Projectile',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: 'Stuns enemy on hit.',
     },
     ARC: {
         name: 'Arc',
@@ -111,7 +111,7 @@ export const ACTION_ORIGIN = {
         time: '3s',
         special: 'Channel. Attack',
         svg: 'WEAPONS',
-        talents: ['', '', ''],
+        talent: 'Creates Shockwave. Larger Radius.',
     },
     ASTRAVE: {
         name: 'Astrave',
@@ -121,7 +121,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. AoE (Manual)',
         svg: 'AOE',
-        talents: ['', '', ''],
+        talent: '',
     },
     ASTRICATION: {
         name: 'Astrication',
@@ -131,7 +131,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     BERSERK: {
         name: 'Berserk',
@@ -141,7 +141,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'CONSUME',
-        talents: ['', '', ''],
+        talent: '',
     },
     BLIND: {
         name: 'Blind',
@@ -151,7 +151,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     BLINK: {
         name: 'Blink',
@@ -161,7 +161,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Movement',
         svg: 'INVOKE',
-        talents: ['', '', ''],
+        talent: 'Increases Speed for 3 Seconds.',
     },
     CAERENESIS: {
         name: 'Caerenesis',
@@ -171,7 +171,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Target)',
         svg: 'AOE',
-        talents: ['', '', ''],
+        talent: '',
     },
     CHIOMIC: {
         name: 'Chiomic',
@@ -181,7 +181,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'CONSUME',
-        talents: ['', '', ''],
+        talent: 'Increased Radius.',
     },
     CONFUSE: {
         name: 'Confuse',
@@ -191,7 +191,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: 'May not break from damage.',
     },
     CONVICTION: {
         name: 'Conviction',
@@ -201,7 +201,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: 'Costs 0 Grace.',
     },
     DESPERATION: {
         name: 'Desperation',
@@ -211,7 +211,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Self)',
         svg: 'INVOKE',
-        talents: ['', '', ''],
+        talent: 'Increases healing to 75%.',
     },
     DEVOUR: {
         name: 'Devour',
@@ -221,7 +221,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Physical',
         svg: 'VOICE',
-        talents: ['', '', ''],
+        talent: '',
     },
     DISEASE: {
         name: 'Disease',
@@ -231,7 +231,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'AOE',
-        talents: ['', '', ''],
+        talent: '',
     },
     DISPEL: {
         name: 'Dispel',
@@ -241,7 +241,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Targeted)',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     ENDURANCE: {
         name: 'Endurance',
@@ -251,7 +251,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'BEAM',
-        talents: ['', '', ''],
+        talent: '',
     },
     ENVELOP: {
         name: 'Envelop',
@@ -261,7 +261,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Negation Bubble',
         svg: 'SHIELD',
-        talents: ['', '', ''],
+        talent: '',
     },
     FEAR: {
         name: 'Fear',
@@ -271,7 +271,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     FREEZE: {
         name: 'Freeze',
@@ -281,7 +281,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'AOE',
-        talents: ['', '', ''],
+        talent: '',
     },
     FYERUS: {
         name: 'Fyerus',
@@ -291,7 +291,7 @@ export const ACTION_ORIGIN = {
         time: '6s',
         special: 'Channel. AoE (Manual)',
         svg: 'BEAM',
-        talents: ['', '', ''],
+        talent: '',
     },
     HEALING: {
         name: 'Healing',
@@ -301,7 +301,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     HOOK: {
         name: 'Hook',
@@ -311,7 +311,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Physical',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     HOWL: {
         name: 'Howl',
@@ -321,7 +321,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'VOICE',
-        talents: ['', '', ''],
+        talent: '',
     },
     ILIRECH: {
         name: 'Ilirech',
@@ -331,7 +331,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     IMPERMANENCE: {
         name: 'Impermanence',
@@ -341,7 +341,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'BEAM',
-        talents: ['', '', ''],
+        talent: '',
     },
     KYNISOS: {
         name: 'Kynisos',
@@ -351,7 +351,7 @@ export const ACTION_ORIGIN = {
         time: '1s Cast',
         special: 'AoE (Manual)',
         svg: 'AOE',
-        talents: ['', '', ''],
+        talent: '',
     },
     KYRNAICISM: {
         name: 'Kyrnaicism',
@@ -361,7 +361,7 @@ export const ACTION_ORIGIN = {
         time: '3s',
         special: 'Channel. Targeted',
         svg: 'BEAM',
-        talents: ['', '', ''],
+        talent: '',
     },
     LEAP: {
         name: 'Leap',
@@ -371,7 +371,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Combat Movement',
         svg: 'WEAPONS',
-        talents: ['', '', ''],
+        talent: '',
     },
     MAIERETH: {
         name: 'Maiereth',
@@ -381,7 +381,7 @@ export const ACTION_ORIGIN = {
         time: '1s',
         special: 'Cast. (Targeted)',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     MALICE: {
         name: 'Malice',
@@ -391,7 +391,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talents: ['', '', ''],
+        talent: '',
     },
     MARK: {
         name: 'Mark',
@@ -401,7 +401,7 @@ export const ACTION_ORIGIN = {
         time: 'Prayer',
         special: 'Physical',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     MENACE: {
         name: 'Menace',
@@ -411,7 +411,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talents: ['', '', ''],
+        talent: '',
     },
     MEND: {
         name: 'Mend',
@@ -421,7 +421,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talents: ['', '', ''],
+        talent: '',
     },
     MODERATE: {
         name: 'Moderate',
@@ -431,7 +431,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talents: ['', '', ''],
+        talent: '',
     },
     MULTIFARIOUS: {
         name: 'Multifarious',
@@ -441,7 +441,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talents: ['', '', ''],
+        talent: '',
     },
     MYSTIFY: {
         name: 'Mystify',
@@ -451,7 +451,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talents: ['', '', ''],
+        talent: '',
     },
     NETHERSWAP: {
         name: 'Netherswap',
@@ -461,7 +461,7 @@ export const ACTION_ORIGIN = {
         time: 'Prayer',
         special: 'Physical',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     PARALYZE: {
         name: 'Paralyze',
@@ -471,7 +471,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     POLYMORPH: {
         name: 'Polymorph',
@@ -481,7 +481,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     PROTECT: {
         name: 'Protect',
@@ -491,7 +491,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Negation Bubble',
         svg: 'SHIELD',
-        talents: ['', '', ''],
+        talent: '',
     },
     PURSUIT: {
         name: 'Pursuit',
@@ -501,7 +501,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Physical',
         svg: 'CONSUME',
-        talents: ['', '', ''],
+        talent: '',
     },
     QUOR: {
         name: 'Quor',
@@ -511,7 +511,7 @@ export const ACTION_ORIGIN = {
         time: '3s',
         special: 'Cast. Projectile',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     RECALL: {
         name: 'Recall',
@@ -521,7 +521,7 @@ export const ACTION_ORIGIN = {
         time: 'Prayer',
         special: 'Physical',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     RECONSTITUTE: {
         name: 'Reconstitute',
@@ -531,7 +531,7 @@ export const ACTION_ORIGIN = {
         time: '5s',
         special: 'Channel',
         svg: 'BEAM',
-        talents: ['', '', ''],
+        talent: '',
     },
     RECOVER: {
         name: 'Recover',
@@ -541,7 +541,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talents: ['', '', ''],
+        talent: '',
     },
     REIN: {
         name: 'Rein',
@@ -551,7 +551,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talents: ['', '', ''],
+        talent: '',
     },
     RENEWAL: {
         name: 'Renewal',
@@ -561,7 +561,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'AOE',
-        talents: ['', '', ''],
+        talent: '',
     },
     ROOT: {
         name: 'Root',
@@ -571,7 +571,7 @@ export const ACTION_ORIGIN = {
         time: 'Prayer',
         special: '(Targeted)',
         svg: 'AOE',
-        talents: ['', '', ''],
+        talent: '',
     },
     RUSH: {
         name: 'Rush',
@@ -581,7 +581,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Combat Movement',
         svg: 'WEAPONS',
-        talents: ['', '', ''],
+        talent: '',
     },
     SACRIFICE: {
         name: 'Sacrifice',
@@ -591,7 +591,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Targeted)',
         svg: 'SACRIFICE',
-        talents: ['', '', ''],
+        talent: '',
     },
     SCREAM: {
         name: 'Scream',
@@ -601,7 +601,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'VOICE',
-        talents: ['', '', ''],
+        talent: '',
     },
     SEER: {
         name: 'Seer',
@@ -611,7 +611,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'INVOKE',
-        talents: ['', '', ''],
+        talent: '',
     },
     SHADOW: {
         name: 'Shadow',
@@ -621,7 +621,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Physical',
         svg: 'CONSUME',
-        talents: ['', '', ''],
+        talent: '',
     },
     SHIELD: {
         name: 'Shield',
@@ -631,7 +631,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Negation Bubble',
         svg: 'SHIELD',
-        talents: ['', '', ''],
+        talent: '',
     },
     SHIMMER: {
         name: 'Shimmer',
@@ -641,7 +641,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'SHIELD',
-        talents: ['', '', ''],
+        talent: '',
     },
     SHIRK: {
         name: 'Shirk',
@@ -651,7 +651,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Negation (Self)',
         svg: 'INVOKE',
-        talents: ['', '', ''],
+        talent: '',
     },
     SLOW: {
         name: 'Slow',
@@ -661,7 +661,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Targeted)',
         svg: 'INVOKE',
-        talents: ['', '', ''],
+        talent: '',
     },
     SNARE: {
         name: 'Snare',
@@ -671,7 +671,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     SPRINT: {
         name: 'Sprint',
@@ -681,7 +681,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Movement',
         svg: 'INVOKE',
-        talents: ['', '', ''],
+        talent: '',
     },
     STIMULATE: {
         name: 'Stimulate',
@@ -691,7 +691,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Refresh)',
         svg: 'INVOKE',
-        talents: ['', '', ''],
+        talent: '',
     },
     STORM: {
         name: 'Storm',
@@ -701,7 +701,7 @@ export const ACTION_ORIGIN = {
         time: '3s',
         special: 'Channel',
         svg: 'SACRIFICE',
-        talents: ['', '', ''],
+        talent: '',
     },
     SUTURE: {
         name: 'Suture',
@@ -711,7 +711,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Targeted)',
         svg: 'CONSUME',
-        talents: ['', '', ''],
+        talent: '',
     },
     TETHER: {
         name: 'Tether',
@@ -721,7 +721,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Physical',
         svg: 'CAST',
-        talents: ['', '', ''],
+        talent: '',
     },
     WARD: {
         name: 'Ward',
@@ -731,7 +731,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Negation Bubble',
         svg: 'SHIELD',
-        talents: ['', '', ''],
+        talent: '',
     },
     WRITHE: {
         name: 'Writhe',
@@ -741,6 +741,6 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'WEAPONS',
-        talents: ['', '', ''],
+        talent: '',
     },
 };

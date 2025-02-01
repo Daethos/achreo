@@ -6,7 +6,7 @@ import { addEquipment } from '../assets/db/db';
 
 const ATTRIBUTE_RANGE = {
     Default: [0, 0, 0, 0, 0, 0, 0],
-    Common: [0, 1, 1, 1, 2, 2, 4],
+    Common: [0, 1, 1, 1, 2, 2, 3],
     Uncommon: [1, 1, 2, 2, 3, 4, 6],
     Rare: [2, 3, 4, 5, 6, 7, 10],
     Epic: [4, 5, 6, 7, 8, 10, 15],

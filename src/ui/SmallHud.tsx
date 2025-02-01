@@ -12,14 +12,16 @@ import { LevelSheet } from '../utility/ascean';
 import Settings from '../models/settings';
 import { text } from '../utility/text';
 import { svg } from '../utility/settings';
+import QuestManager from '../utility/quests';
 interface Props {
     ascean: Accessor<Ascean>;
     asceanState: Accessor<LevelSheet>;
     combat: Accessor<Combat>;
     game: Accessor<GameState>;
     settings: Accessor<Settings>; 
+    quests: Accessor<QuestManager>;
 };
-export default function SmallHud({ ascean, asceanState, combat, game, settings }: Props) { 
+export default function SmallHud({ ascean, asceanState, combat, game, settings, quests }: Props) { 
     const [alert, setAlert] = createSignal<{ header: string; body: string } | undefined>(undefined);
     const [toastShow, setToastShow] = createSignal<boolean>(false);
     const [experience, setExperience] = createSignal<number>(ascean()?.experience as number); // ascean().experience as number
@@ -110,7 +112,7 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings }
             <CombatText settings={settings} combat={combat} combatHistory={combatHistory} editShow={editTextShow} setEditShow={setEditTextShow} />
         </Show>
         <Show when={game().showDialog}>
-            <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} settings={settings} />
+            <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} settings={settings} quests={quests} />
         </Show>
     </>;
 };

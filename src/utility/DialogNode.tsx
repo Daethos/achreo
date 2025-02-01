@@ -283,7 +283,7 @@ export function getNodesForNPC(npcId: number): DialogNode[] {
         // console.log(npcOptions, 'NPC Options');
         // if (npcOptions.length > 0) {
             const updatedNode = { ...node, options: npcOptions };
-            matchingNodes.push(updatedNode);
+            matchingNodes.push(updatedNode as DialogNode);
         // };
     };
     return matchingNodes;

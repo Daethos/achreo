@@ -9,7 +9,7 @@ import Ascean, { createAscean } from './models/ascean';
 import { CharacterSheet, Compiler, asceanCompiler, initCharacterSheet } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
 import { EventBus } from './game/EventBus';
-import { deleteAscean, getAscean, getAsceans, getInventory, getReputation, getSettings, getStatistics, getTalents, populate, scrub, updateInventory, updateReputation, updateSettings, updateStatistics } from './assets/db/db'; 
+import { deleteAscean, getAscean, getAsceans, getInventory, getQuests, getReputation, getSettings, getStatistics, getTalents, populate, scrub, updateInventory, updateQuests, updateReputation, updateSettings, updateStatistics } from './assets/db/db'; 
 import { TIPS } from './utility/tips';
 import { Inventory, Reputation, initInventory, initReputation } from './utility/player';
 import { Puff } from 'solid-spinner';
@@ -18,6 +18,7 @@ import Statistics, { initStatistics } from './utility/statistics';
 import LoadAscean from './components/LoadAscean';
 import { Tutorial } from './game/scenes/Tutorial';
 import Talents, { initTalents } from './utility/talents';
+import QuestManager, { getQuest, initQuests, Quest } from './utility/quests';
 const AsceanBuilder = lazy(async () => await import('./components/AsceanBuilder'));
 const AsceanView = lazy(async () => await import('./components/AsceanView'));
 const MenuAscean = lazy(async () => await import('./components/MenuAscean'));
@@ -36,6 +37,7 @@ export default function App() {
     const [loading, setLoading] = createSignal<boolean>(false);
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>(initCharacterSheet);
     const [inventory, setInventory] = createSignal<Inventory>(initInventory);
+    const [quests, setQuests] = createSignal<QuestManager>(initQuests);
     const [reputation, setReputation] = createSignal<Reputation>(initReputation);
     const [statistics, setStatistics] = createSignal<Statistics>(initStatistics);
     const [talents, setTalents] = createSignal<Talents>(initTalents);
@@ -111,11 +113,13 @@ export default function App() {
             const comp = asceanCompiler(pop);
             const full = { ...comp?.ascean }; // , inventory: inv
             const stats = await getStatistics(id);
-            const talents = await getTalents(id);
+            const tal = await getTalents(id);
+            const quest = await getQuests(id);
             setAscean(full as Ascean);
             setInventory(inv);
             setStatistics(stats);
-            setTalents(talents);
+            setTalents(tal);
+            setQuests(quest);
         } catch (err: any) {
             console.warn('Error fetching Ascean:', err);
         };
@@ -138,11 +142,13 @@ export default function App() {
             const set = await getSettings(id);
             const stat = await getStatistics(id);
             const tal = await getTalents(id);
+            const quest = await getQuests(id);
             setInventory(inv);
             setReputation(rep);
             setSettings(set);
             setStatistics(stat);
             setTalents(tal);
+            setQuests(quest);
             if (set.difficulty.tidbits === true) setTips(true);
             setMenu({ ...menu(), choosingCharacter: false, gameRunning: true, playModal: false });
             setStartGame(true);
@@ -251,6 +257,37 @@ export default function App() {
             console.warn('Error updating Ascean:', err);
         };
     };
+    const addQuest = async (quest:{title: string, enemy: Ascean}): Promise<void> => {
+        try {
+            const { title, enemy } = quest;
+            console.log(title, enemy, 'title and enemy');
+            const newQuest = getQuest(title, enemy, reputation());
+            console.log(newQuest, 'New Quest?')
+            const newQuestManager: QuestManager = { 
+                ...quests(),
+                quests: quests().quests.length > 0 
+                    ? [...JSON.parse(JSON.stringify(quests().quests)), newQuest]
+                    : [newQuest]
+            };
+            await updateQuests(newQuestManager);
+            setQuests(newQuestManager);
+        } catch (err) {
+            console.warn(err, 'Error Adding Quest');
+        };
+    };
+    const removeQuest = async (quest: Quest) => {
+        try {
+            const newQuests = quests().quests.filter(q => q.title !== quest.title);
+            const newQuestManager: QuestManager = {
+                ...quests(),
+                quests: newQuests
+            };
+            await updateQuests(newQuestManager);
+            setQuests(newQuestManager);
+        } catch (err) {
+            console.warn(err, 'Error Removing Quest');
+        };
+    };
     const updateRep = async (rep: Reputation): Promise<void> => {
         try {
             await updateReputation(rep);
@@ -354,6 +391,8 @@ export default function App() {
     usePhaserEvent('request-reputation', () => EventBus.emit('reputation', reputation()));
     usePhaserEvent('request-statistics', () => EventBus.emit('statistics', statistics()));
     usePhaserEvent('request-talents', () => EventBus.emit('talents', talents()));
+    usePhaserEvent('add-quest', addQuest);
+    usePhaserEvent('remove-quest', removeQuest);
     usePhaserEvent('update-reputation', updateRep);
     usePhaserEvent('update-statistics', updateStat);
     usePhaserEvent('update-talents', updateTalents);
@@ -502,7 +541,7 @@ export default function App() {
             </Suspense>
         )}
         </>}>
-            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} inventory={inventory} setInventory={setInventory} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} statistics={statistics} scene={scene} talents={talents} />
+            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} inventory={inventory} setInventory={setInventory} quests={quests} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} statistics={statistics} scene={scene} talents={talents} />
         </Show>
         <Show when={show()}>
         <Suspense fallback={<Puff color="gold"/>}>

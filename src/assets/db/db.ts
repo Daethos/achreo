@@ -10,10 +10,12 @@ import Equipment, { getOneRandom } from '../../models/equipment';
 import { Inventory, Reputation } from '../../utility/player';
 import Statistics from '../../utility/statistics';
 import Talents, { createTalents } from '../../utility/talents';
+import Quest, { createQuests } from '../../utility/quests';
 var db = new PseudoBase('db');
 const EQUIPMENT = 'Equipment';
 const ASCEANS = 'Asceans';
 const SETTINGS = 'Settings';
+const QUESTS = 'Quests';
 const REPUTATION = 'Reputation';
 const INVENTORY = 'Inventory';
 const STATISTICS = 'Statistics';
@@ -259,6 +261,22 @@ export const getSettings = async (id: string): Promise<Settings> => {
 
 export const updateSettings = async (settings: Settings) => {
     await db.collection(SETTINGS).doc({ _id: settings._id }).update(settings);
+};
+
+export const getQuests = async (id: string): Promise<Quest> => {
+    const quests = await db.collection(QUESTS).doc({ _id: id }).get();
+    if (quests) {
+        return quests;
+    } else {
+        const quests = createQuests(id);
+        await db.collection(QUESTS).add(quests);
+        return quests;
+    };
+};
+
+export const updateQuests = async (talents: Quest) => {
+    const update = await db.collection(QUESTS).doc({ _id: talents._id }).update(talents);
+    return update;
 };
 
 export const getStatistics = async (id: string): Promise<Statistics> => {

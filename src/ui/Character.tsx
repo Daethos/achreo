@@ -25,6 +25,7 @@ import { FAITH_RARITY } from '../utility/combatTypes';
 import Talents from '../utility/talents';
 import { ACTION_ORIGIN } from '../utility/actions';
 import { svg } from '../utility/settings';
+import QuestManager from '../utility/quests';
 const AsceanImageCard = lazy(async () => await import('../components/AsceanImageCard'));
 const ExperienceBar = lazy(async () => await import('./ExperienceBar'));
 const Firewater = lazy(async () => await import('./Firewater'));
@@ -43,6 +44,7 @@ export const viewCycleMap = {
     Faith: 'Character',
 };
 const CHARACTERS = {
+    QUESTS: 'Quests',
     REPUTATION: 'Reputation',
     SKILLS: 'Skills',
     STATISTICS: 'Statistics',
@@ -89,6 +91,7 @@ interface Props {
     reputation: Accessor<Reputation>;
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
+    quests: Accessor<QuestManager>;
     statistics: Accessor<Statistics>;
     talents: Accessor<Talents>;
     ascean: Accessor<Ascean>; 
@@ -97,7 +100,7 @@ interface Props {
     combat: Accessor<Combat>;
 };
 
-const Character = ({ reputation, settings, setSettings, statistics, talents, ascean, asceanState, game, combat }: Props) => {
+const Character = ({ quests, reputation, settings, setSettings, statistics, talents, ascean, asceanState, game, combat }: Props) => {
     const [playerTraitWrapper, setPlayerTraitWrapper] = createSignal<any>({});
     const [dragAndDropInventory, setDragAndDropInventory] = createSignal(game()?.inventory.inventory);
     const [canUpgrade, setCanUpgrade] = createSignal<boolean>(false);
@@ -117,6 +120,7 @@ const Character = ({ reputation, settings, setSettings, statistics, talents, asc
     const [removeModalShow, setRemoveModalShow] = createSignal<boolean>(false);
     const [weaponCompared, setWeaponCompared] = createSignal<string>('');
     const [showTalent, setShowTalent] = createSignal<any>({show:false,talent:undefined});
+    const [showQuest, setShowQuest] = createSignal<any>({show:false,quest:undefined});
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [showInventory, setShowInventory] = createSignal<boolean>(false);
     const [tutorial, setTutorial] = createSignal<string>('');
@@ -232,6 +236,16 @@ const Character = ({ reputation, settings, setSettings, statistics, talents, asc
 
     const createCharacterInfo = (character: string): JSX.Element | "" => {
         switch (character) {
+            case CHARACTERS.QUESTS:
+                return <div class='creature-heading'>
+                    <h1 style={{ 'margin-bottom': '3%' }}>Quests</h1>
+                    <For each={quests().quests}>{(quest, index) => {
+                        return <div class='border juice wrap' onClick={() => setShowQuest({show:true,quest})} style={{ 'min-height': '100%', margin: '5% auto', 'text-align': 'center', 'border-color': masteryColor(quest.mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em` }}>
+                            <h2 style={{ color: 'gold' }}>{quest.title}</h2>
+                            <p class='' style={{'margin-left': '10%', width: '80%' }}>{quest.description}</p>    
+                        </div>
+                    }}</For>
+                </div>;
             case CHARACTERS.REPUTATION:
                 const unnamed = reputation().factions.filter((faction) => faction.named === false);
                 return <div class='creature-heading'>
@@ -515,6 +529,16 @@ const Character = ({ reputation, settings, setSettings, statistics, talents, asc
         setDeity(item?.influences?.[0]);
     };
 
+    function replaceChar(str: string, rep: string): string {
+        const yes = str?.split('').find((char: string) => char === '{');
+        if (yes) {
+            const replace = str?.replace('{name}', rep);
+            return replace; 
+        };
+        return str;
+        // ? showQuest()?.quest?.requirements.description?.replace('{name}', showQuest()?.quest?.giver.name) 
+        // : showQuest()?.quest?.requirements.description}
+    };
     return (
         <div style={{ 'z-index': 1, position: 'fixed', top: 0, left: 0 }}>
         { settings().asceanViews === VIEWS.CHARACTER ? ( <>
@@ -522,7 +546,11 @@ const Character = ({ reputation, settings, setSettings, statistics, talents, asc
                 <div class='playerMenuHeading'>Character</div>
             </button>
             <div class='playerSettingSelect' style={{ position: 'fixed', top: '-1vh', right: '0.5vh', 'z-index': 1, 'font-size': '1.25em' }}>
-                { settings().characterViews === CHARACTERS.REPUTATION ? (
+                { settings().characterViews === CHARACTERS.QUESTS ? (
+                    <button class='highlight menuButton' onClick={() => currentCharacterView(CHARACTERS.REPUTATION)}>
+                        <div>Quests</div>
+                    </button> 
+                ) : settings().characterViews === CHARACTERS.REPUTATION ? (
                     <button class='highlight menuButton' onClick={() => currentCharacterView(CHARACTERS.SKILLS)}>
                         <div>Reputation</div>
                     </button>
@@ -539,7 +567,7 @@ const Character = ({ reputation, settings, setSettings, statistics, talents, asc
                         <div>Talents</div>
                     </button>
                 ) : (
-                    <button class='highlight menuButton' onClick={() => currentCharacterView(CHARACTERS.REPUTATION)}>
+                    <button class='highlight menuButton' onClick={() => currentCharacterView(CHARACTERS.QUESTS)}>
                         <div>Traits</div>
                     </button>
                 ) }     
@@ -774,9 +802,9 @@ const Character = ({ reputation, settings, setSettings, statistics, talents, asc
             </div>
         </Show>
         <Show when={levelUpModalShow()}>
-        <Suspense fallback={<Puff color="gold"/>}>
-            <LevelUp ascean={ascean} asceanState={asceanState} show={levelUpModalShow} setShow={setLevelUpModalShow} />
-        </Suspense>
+            <Suspense fallback={<Puff color="gold"/>}>
+                <LevelUp ascean={ascean} asceanState={asceanState} show={levelUpModalShow} setShow={setLevelUpModalShow} />
+            </Suspense>
         </Show>
         <Show when={show()}>
             <div class='modal' onClick={() => setShow(!show)}>
@@ -861,13 +889,65 @@ const Character = ({ reputation, settings, setSettings, statistics, talents, asc
             <TutorialOverlay ascean={ascean} settings={settings} tutorial={tutorial} show={showInventory} setShow={setShowInventory} /> 
         </Suspense>
         </Show>
+        {/* setShowQuest */}
+        <Show when={showQuest().show}>
+            <div class='modal'>
+                <div class='superCenter' style={{ width:'50%' }}>
+                <div class='border  juice' style={{ margin: '1em auto', 'border-color': masteryColor(showQuest()?.quest?.mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(showQuest()?.quest?.mastery)} 0 0 0 0.3em` }}>
+                    <div class='creature-heading' style={{ padding: '1em' }}>
+                    <h1 class='center' style={{ margin: '3%' }}>
+                        {showQuest()?.quest.title} <br />
+                    </h1>
+                    <h2 class='center' style={{ color: 'gold' }}>
+                        Quest Giver: {showQuest()?.quest.giver}, Level {showQuest()?.quest.level} ({showQuest()?.quest?.mastery}) <br />
+                    </h2>
+                    <p class='wrap' style={{ 'color':'#fdf6d8', 'font-size':'1em', margin: '3%' }}>
+                        {showQuest()?.quest.description}
+                    </p>
+                    <div class='row' style={{ display: 'block' }}>
+                    <h4 class='' style={{margin: '1% 0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '7.5%'}}>
+                        Requirements
+                    </h4>
+                    <h4 class='' style={{margin: '1% 0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '7.5%'}}>
+                        Rewards
+                    </h4>
+                    <br />
+                    <p style={{ color: 'gold', display: 'inline-block', width: '40%', 'margin-left': '7.5%' }}>
+                        Level: {showQuest()?.quest?.requirements.level}<br />
+                        Reputation: {showQuest()?.quest?.requirements.reputation}<br />
+                    </p>
+                    <p style={{ color: 'gold', display: 'inline-block', width: '40%', 'margin-left': '7.5%' }}>
+                        Currency: {showQuest()?.quest?.reward?.currency?.gold}g {showQuest()?.quest.reward?.currency?.silver}s.<br />
+                        Experience: {showQuest()?.quest?.reward?.experience}<br />
+                        Items: <For each={showQuest()?.quest?.reward?.items}>{(item, index) => {
+                            const length = showQuest()?.quest?.reward?.items.length;
+                            return <div class='' style={{ display: 'inline-block' }}>
+                                {item}{length === 0 ? '' : ', '}
+                            </div>
+                        }}</For>
+                    </p>
+                    </div>
+                    <h2 >
+                        {replaceChar(showQuest()?.quest?.requirements.description, showQuest()?.quest?.giver)}
+                    </h2>
+                    </div>
+                </div>
+                </div>
+                <button class='highlight cornerTR' style={{ transform: 'scale(0.85)', right: '0', 'color': 'red' }} onClick={() => {EventBus.emit('remove-quest', showQuest().quest); setShowQuest({ show: false, quest: undefined });}}>
+                    <p style={font('0.75em')}>Remove Quest</p>
+                </button>
+                <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '0', right: '0', 'color': 'red' }} onClick={() => setShowQuest({ show: false, quest: undefined })}>
+                    <p style={font('0.75em')}>X</p>
+                </button>
+            </div>
+        </Show>
         <Show when={showTalent().show}>
             <div class='modal'>
                 <div class='superCenter' style={{ width:'50%' }}>
                 <div class='border row juice' style={{ margin: '1em auto', 'border-color': masteryColor(ascean().mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
                     <div style={{ padding: '1em' }}>
                     <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-                        {svg(showTalent()?.talent.svg)} {showTalent()?.talent.name} <br />
+                        {svg(showTalent()?.talent.svg)} {showTalent()?.talent.name} {talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] ? '(Talented)' : '(Talentless)'} <br />
                     </p>
                     <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>
                         {showTalent()?.talent.description}

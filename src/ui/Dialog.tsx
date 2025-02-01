@@ -13,7 +13,7 @@ import Equipment, { getArmorEquipment, getClothEquipment, getJewelryEquipment, g
 import { LevelSheet } from '../utility/ascean';
 import { getRarityColor, sellRarity } from '../utility/styling';
 import ItemModal from '../components/ItemModal';
-import { getQuests } from '../utility/quests';
+import QuestManager, { getQuests, Quest } from '../utility/quests';
 import { namedNameCheck } from '../utility/player';
 import Thievery from './Thievery';
 import Merchant from './Merchant';
@@ -258,9 +258,10 @@ interface StoryDialogProps {
     combat: Accessor<Combat>;
     game: Accessor<GameState>;
     settings: Accessor<Settings>;
+    quests: Accessor<QuestManager>;
 };
 
-export default function Dialog({ ascean, asceanState, combat, game, settings }: StoryDialogProps) {
+export default function Dialog({ ascean, asceanState, combat, game, settings, quests }: StoryDialogProps) {
     const [forgeModalShow, setForgeModalShow] = createSignal(false); 
     const [influence, setInfluence] = createSignal(combat()?.weapons[0]?.influences?.[0]);
     const [persuasionString, setPersuasionString] = createSignal<string>('');
@@ -284,7 +285,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
     const [sellItem, setSellItem] = createSignal<Equipment | undefined>(undefined);
     const [showItem, setShowItem] = createSignal<boolean>(false);
     const [showBuy, setShowBuy] = createSignal<boolean>(false);
-    const [quests, setQuests] = createSignal<any[]>([]);
+    const [prospectiveQuests, setProspectiveQuests] = createSignal<any[]>([]);
     const [showQuests, setShowQuests] = createSignal<boolean>(false);
     const [forge, setForge] = createSignal<Equipment | undefined>(undefined);
     const [forgeSee, setForgeSee] = createSignal<boolean>(false);
@@ -301,7 +302,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
     };
 
     createEffect(() => { 
-        checkEnemy(combat()?.computer as Ascean);
+        checkEnemy(combat()?.computer as Ascean, quests());
         checkLuckout(game());
         checkPersuasion(game());
         checkInfluence(ascean);
@@ -367,37 +368,30 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
         };
     };
 
-    const checkEnemy = (enemy: Ascean) => {
+    const checkEnemy = (enemy: Ascean, manager: QuestManager) => {
         if (!enemy) return;
-        checkQuests(enemy);
+        checkQuests(enemy, manager.quests);
         setNamedEnemy(namedNameCheck(enemy.name));
         setEnemyArticle(() => ['a', 'e', 'i', 'o', 'u'].includes(enemy.name.charAt(0).toLowerCase()) ? 'an' : 'a');
     };
 
     const checkInfluence = (a: Accessor<Ascean>) => setInfluence(a()?.weaponOne?.influences?.[0]);
     
-    const checkQuests = (enemy: Ascean) => {
+    const checkQuests = (enemy: Ascean, quest: Quest[]) => {
         const enemyQuests = getQuests(enemy.name);
         const prospectiveQuests = [];
         if (enemyQuests.length === 0) return;        
-        if (ascean()?.quests?.length === 0) {
-            setQuests(enemyQuests);
+        if (quest.length === 0) {
+            setProspectiveQuests(enemyQuests);
             return;
         };
-        for (const playerQuest of ascean()?.quests) {
-            for (const quest of enemyQuests) {
-                if (quest.title === playerQuest.title) {
-                    if (playerQuest.completed) {
-                        continue;
-                    };
-                } else {
-                    prospectiveQuests.push(quest);
-                };
+        const playerQuests = new Set(quest.map(q => q.title)); // Convert player quests to a set for easy lookup
+        for (const enemyQuest of enemyQuests) {
+            if (!playerQuests.has(enemyQuest.title)) {
+                prospectiveQuests.push(enemyQuest);
             };
-        };
-        if (prospectiveQuests.length > 0) {
-            setQuests(prospectiveQuests);
-        };    
+        };        
+        setProspectiveQuests(prospectiveQuests);
     };
     
     const hollowClick = () => console.log('Hollow Click');
@@ -991,7 +985,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings }: 
                                 ) : ( '' ) }
                             </div>
                         ) : ( '' ) }
-                        <QuestModal quests={quests} show={showQuests} setShow={setShowQuests} />
+                        <QuestModal quests={prospectiveQuests} show={showQuests} setShow={setShowQuests} enemy={combat().computer as Ascean} />
                     </>
                 ) : game().currentIntent === 'provincialWhispers' ? (
                     <>

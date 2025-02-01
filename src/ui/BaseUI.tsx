@@ -17,6 +17,7 @@ import { adjustTime } from './Timer';
 import { Store } from 'solid-js/store';
 import { IRefPhaserGame } from '../game/PhaserGame';
 import Talents from '../utility/talents';
+import QuestManager from '../utility/quests';
 const Roster = lazy(async () => await import('./Roster'));
 const Character = lazy(async () => await import('./Character'));
 const CombatUI = lazy(async () => await import('./CombatUI'));
@@ -37,6 +38,7 @@ interface Props {
     ascean: Accessor<Ascean>;
     combat: Accessor<Combat>;
     game: Accessor<GameState>;
+    quests: Accessor<QuestManager>;
     reputation: Accessor<Reputation>;
     settings: Accessor<Settings>;
     setSettings: Setter<Settings>;
@@ -49,7 +51,7 @@ interface Props {
     setShowTutorial: Setter<boolean>;
     showDeity: Accessor<boolean>;
 };
-export default function BaseUI({ instance, ascean, combat, game, reputation, settings, setSettings, statistics, talents, stamina, grace, tutorial, showDeity, showTutorial, setShowTutorial }: Props) {
+export default function BaseUI({ instance, ascean, combat, game, quests, reputation, settings, setSettings, statistics, talents, stamina, grace, tutorial, showDeity, showTutorial, setShowTutorial }: Props) {
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [asceanState, setAsceanState] = createSignal<LevelSheet>({
         ascean: ascean(),
@@ -463,11 +465,11 @@ export default function BaseUI({ instance, ascean, combat, game, reputation, set
             </Show>
         </div>}>
             <Suspense fallback={<Puff color="gold" />}>
-                <Character reputation={reputation} settings={settings} setSettings={setSettings} statistics={statistics} talents={talents} ascean={ascean} asceanState={asceanState} game={game} combat={combat} />
+                <Character quests={quests} reputation={reputation} settings={settings} setSettings={setSettings} statistics={statistics} talents={talents} ascean={ascean} asceanState={asceanState} game={game} combat={combat} />
             </Suspense>
         </Show>
         <Suspense fallback={<Puff color="gold" />}>
-            <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} settings={settings} /> 
+            <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} settings={settings} quests={quests} /> 
         </Suspense>
         <Show when={showTutorial()}>
             <Suspense fallback={<Puff color="gold" />}>

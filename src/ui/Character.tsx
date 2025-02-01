@@ -901,14 +901,14 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     <h2 class='center' style={{ color: 'gold' }}>
                         Quest Giver: {showQuest()?.quest.giver}, Level {showQuest()?.quest.level} ({showQuest()?.quest?.mastery}) <br />
                     </h2>
-                    <p class='wrap' style={{ 'color':'#fdf6d8', 'font-size':'1em', margin: '3%' }}>
+                    <p class='wrap' style={{ 'color':'#fdf6d8', 'font-size':'1em', 'margin': '3%' }}>
                         {showQuest()?.quest.description}
                     </p>
                     <div class='row' style={{ display: 'block' }}>
-                    <h4 class='' style={{margin: '1% 0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '7.5%'}}>
+                    <h4 class='' style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '7.5%'}}>
                         Requirements
                     </h4>
-                    <h4 class='' style={{margin: '1% 0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '7.5%'}}>
+                    <h4 class='' style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '7.5%'}}>
                         Rewards
                     </h4>
                     <br />
@@ -922,12 +922,12 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         Items: <For each={showQuest()?.quest?.reward?.items}>{(item, index) => {
                             const length = showQuest()?.quest?.reward?.items.length;
                             return <div class='' style={{ display: 'inline-block' }}>
-                                {item}{length === 0 ? '' : ', '}
+                                {item}{length === 0 || length - 1 === index() ? '' : `,\xa0`}{' '}
                             </div>
                         }}</For>
                     </p>
                     </div>
-                    <h2 >
+                    <h2 style={{ 'text-align':'center' }}>
                         {replaceChar(showQuest()?.quest?.requirements.description, showQuest()?.quest?.giver)}
                     </h2>
                     </div>

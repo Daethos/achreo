@@ -1102,7 +1102,7 @@ export default class Enemy extends Entity {
         this.stateMachine.setState(States.CHASE);
     };
 
-    setSpecialCombat = (bool: boolean, mult = randomFloatFromInterval(0.25, 0.5)) => { // 0.75, 1.25
+    setSpecialCombat = (bool: boolean, mult = randomFloatFromInterval(0.75, 1.0)) => { // 0.75, 1.25
         if (this.isSpecial === false) return;
         if (bool === true) {
             const mastery = this.ascean.mastery;

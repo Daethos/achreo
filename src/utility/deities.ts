@@ -607,19 +607,23 @@ export async function evaluateDeity(data: { statistics: Accessor<Statistics>, as
         switch (behavior) {
             case 'Convicted':
                 ascean[keywords[ascean.mastery as keyof typeof keywords]] += 1;
+                ascean[ascean.mastery] += 1;
                 entry.footnote = `${ascean.name} seems convicted of their ${presentTense} ${deity}.`;
                 break;
             case 'Zealous':
-                entry.footnote = `${ascean.name} seems zealous in their ${presentTense} ${deity}.`;
                 ascean[keywords[ascean.mastery as keyof typeof keywords]] += 0.75;
+                ascean[ascean.mastery] += 1;
+                entry.footnote = `${ascean.name} seems zealous in their ${presentTense} ${deity}.`;
                 break;
             case 'Faithful':
-                entry.footnote = `${ascean.name} seems faithful to ${deity}.`;
+                ascean[ascean.mastery] += 1;
                 ascean[keywords[ascean.mastery as keyof typeof keywords]] += 0.5;
+                entry.footnote = `${ascean.name} seems faithful to ${deity}.`;
                 break;
             case 'Somewhat Faithful':
-                entry.footnote = `${ascean.name} seems somewhat faithful to ${deity}.`;
+                ascean[ascean.mastery] += 1;
                 ascean[keywords[ascean.mastery as keyof typeof keywords]] += 0.25;
+                entry.footnote = `${ascean.name} seems somewhat faithful to ${deity}.`;
                 break;
             case 'Compliant':
                 entry.footnote = `${ascean.name}'s ${pastTense} ${deity}.`;

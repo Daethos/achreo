@@ -165,27 +165,23 @@ export default function TutorialOverlay({ ascean, settings, tutorial, show, setS
                     <span class='super' style={{ color: '#fdf6d8' }}>[This Displays your Name, Health, Stamina, Grace and Weapon <br />
                         Click your name, weapon or something else to Display More Information]</span>
                 </p>
-                {/* <p class='verticalTop gold highlight' style={{ top: '2em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
-                   FPS {arrows.up} <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[Current Game FPS (Frames Per Second)</span>
-                </p> */}
-                <p class='cornerTR gold highlight' style={{ right: '0', top: '', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
-                    Specials (Black) {arrows.down} <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[Actions of an othernature that are only available during combat. <br />
-                        These abilities are much more varied than physical actions, augmented by your mastery.]</span>
+                <p class='cornerTR gold highlight' style={{ right: '0', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
+                    Specials Actions {arrows.down} <br />
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Actions of an othernature that are available during combat. <br />
+                        These abilities are much more varied than physical actions, augmented by your mastery. <br /> From crowd control, damage, and healing, to moving enemies and yourself.]</span>
                 </p>
                 <p class='verticalBottom gold highlight' style={{ bottom: '10%', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
-                    Actions (Purple) {arrows.right} <br />
+                    Physical Actions {arrows.right} <br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[Physical Actions that perform various attacks and movements. <br />
-                        Each action performs a similar but distinct behavior.]</span>
+                        Each action performs a similar but distinct behavior. <br /> Some range from full fledged attacks, to forms of evasion and movement.]</span>
                 </p>
                 <p class='middleRight gold highlight' style={{ right: '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                     Joystick (Aim) {arrows.down} <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[Manual Aim for Ranged Attacks and certain Specials]</span>
+                    <span class='super' style={{ color: '#fdf6d8' }}>[Manual Aim for Ranged Attacks. This grants a finer grain for projectiles. <br /> Certain specials must be manually aimed.]</span>
                 </p>
                 <p class='cornerBL gold highlight' style={{ bottom: '0', left: '1em', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                     Joystick (Movement) {arrows.up} <br />
-                    <span class='super' style={{ color: '#fdf6d8' }}>[This Joystick allows you to move your Character]</span>
+                    <span class='super' style={{ color: '#fdf6d8' }}>[This Joystick allows you to move your Character. <br /> Omnidirectional, and the main way you navigate this world.]</span>
                 </p>
             </div>}
             {tutorial() === 'death' && <div>

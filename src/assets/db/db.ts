@@ -24,7 +24,6 @@ const PARTY = 'Party';
 
 export const getParty = async (id: string) => await db.collection(PARTY).doc({ _id: id }).get();
 
-
 export const getAsceans = async () => await db.collection(ASCEANS).get();
 export const getAscean = async (id: string) => await db.collection(ASCEANS).doc({ _id: id }).get();
 export const addAscean = async (ascean: any) => await db.collection(ASCEANS).add(ascean);
@@ -36,6 +35,8 @@ export const deleteAscean = async (id: string) => {
     equipment.forEach(async (item: string) => await db.collection(EQUIPMENT).doc({ _id: item }).delete());
     items.forEach(async (item: string) => await db.collection(EQUIPMENT).doc({ _id: item }).delete());
     await db.collection(ASCEANS).doc({ _id: id }).delete();
+    const quests = await db.collection(QUESTS).doc({ _id: id }).get();
+    if (quests) await db.collection(QUESTS).doc({ _id: id }).delete();
     const reputation = await db.collection(REPUTATION).doc({ _id: id }).get();
     if (reputation) await db.collection(REPUTATION).doc({ _id: id }).delete();
     const settings = await db.collection(SETTINGS).doc({ _id: id }).get();
@@ -55,6 +56,7 @@ export const blessAscean = async (id: string, entry: any): Promise<any> => {
         ascean[blessing] += 1;
         ascean.health = { ...ascean.health, current: ascean.health.max };
         ascean.interactions.deity += 1;
+        ascean.capable += 1;
         ascean.journal.entries.push(entry);
 
         let statistics = await db.collection(STATISTICS).doc({ _id: id }).get();

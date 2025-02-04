@@ -1955,8 +1955,8 @@ export const Helmets = [
         constitution: 4,
         strength: 0,
         agility: 0,
-        achre: 4,
-        caeren: 4,
+        achre: 5,
+        caeren: 5,
         kyosir: 4,
         imgUrl: '../assets/images/dae-hood.png'
     },{
@@ -1972,12 +1972,12 @@ export const Helmets = [
         criticalDamage: 1.05,
         dodge: 1,
         roll: 3,
-        constitution: 7,
+        constitution: 6,
         strength: 0,
         agility: 0,
-        achre: 7,
-        caeren: 7,
-        kyosir: 7,
+        achre: 8,
+        caeren: 8,
+        kyosir: 6,
         imgUrl: '../assets/images/dae-hood.png'
     },{
         _id: '',
@@ -2153,10 +2153,10 @@ export const Helmets = [
         dodge: 0,
         roll: 5,
         constitution: 6,
-        strength: 0,
-        agility: 6,
-        achre: 6,
-        caeren: 0,
+        strength: 6,
+        agility: 0,
+        achre: 0,
+        caeren: 6,
         kyosir: 0,
         imgUrl: '../assets/images/wind-hood.png'
     },{
@@ -4199,8 +4199,8 @@ export const Chests = [
         constitution: 3,
         strength: 3,
         agility: 0,
-        achre: 3,
-        caeren: 0,
+        achre: 0,
+        caeren: 3,
         kyosir: 0,
         imgUrl: '../assets/images/wind-robes.png'
     },{

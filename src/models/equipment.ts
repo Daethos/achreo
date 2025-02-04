@@ -112,24 +112,106 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
         const range = ATTRIBUTE_RANGE[rarity as keyof typeof ATTRIBUTE_RANGE];
         for (const item of equipment) {
             item._id = uuidv4(); // uuidv4();
-            const attributeCount = ATTRIBUTES.filter(attribute => item[attribute] > 0).length;
+            // const attributeCount = ATTRIBUTES.filter(attribute => item[attribute] > 0).length;
             for (const attribute of ATTRIBUTES) {   
                 if (item[attribute] > 0) {
-                    if (attributeCount === 1) {
-                        item[attribute] = randomIntFromInterval(range[5], range[6]);
-                    } else if (attributeCount === 2) {
-                        item[attribute] = randomIntFromInterval(range[3], range[5]);
-                    } else if (attributeCount === 3) {
-                        item[attribute] = randomIntFromInterval(range[2], range[4]);
-                    } else if (attributeCount === 4) {
-                        item[attribute] = randomIntFromInterval(range[1], range[3]);
-                    } else if (attributeCount === 5) {
-                        item[attribute] = randomIntFromInterval(range[0], range[2]);
-                    } else {
-                        item[attribute] = randomIntFromInterval(range[0], range[1]);
+
+                    switch (item[attribute]) {
+                        case 1:
+                            item[attribute] = 1;
+                            break;
+                        case 2: 
+                            item[attribute] = randomIntFromInterval(1, 2);
+                            break;
+                        case 3: 
+                            item[attribute] = randomIntFromInterval(2, 3);
+                            break;
+                        case 4: 
+                            item[attribute] = randomIntFromInterval(2, 4);
+                            break;
+                        case 5: 
+                            item[attribute] = randomIntFromInterval(3, 5);
+                            break;
+                        case 6: 
+                            item[attribute] = randomIntFromInterval(4, 6);
+                            break;
+                        case 7: 
+                            item[attribute] = randomIntFromInterval(5, 7);
+                            break;
+                        case 8: 
+                            item[attribute] = randomIntFromInterval(5, 8);
+                            break;    
+                        case 9: 
+                            item[attribute] = randomIntFromInterval(6, 9);
+                            break;
+                        case 10: 
+                            item[attribute] = randomIntFromInterval(7, 10);
+                            break;
+                        case 11:
+                            item[attribute] = randomIntFromInterval(7, 11);
+                            break;
+                        case 12: 
+                            item[attribute] = randomIntFromInterval(8, 12);
+                            break;
+                        case 13:
+                            item[attribute] = randomIntFromInterval(9, 13);
+                            break;
+                        case 14: 
+                            item[attribute] = randomIntFromInterval(10, 14);
+                            break;
+                        case 15: 
+                            item[attribute] = randomIntFromInterval(11, 15);
+                            break;
+                        case 16: 
+                            item[attribute] = randomIntFromInterval(12, 16);
+                            break;
+                        case 17: 
+                            item[attribute] = randomIntFromInterval(13, 17);
+                            break;
+                        case 18: 
+                            item[attribute] = randomIntFromInterval(14, 18);
+                            break;    
+                        case 19: 
+                            item[attribute] = randomIntFromInterval(15, 19);
+                            break;
+                        case item[attribute] >= 20: 
+                            item[attribute] = item[attribute];
+                            break;
+                        default: break;
                     };
+                    // if (attributeCount === 1) {
+                    //     item[attribute] = randomIntFromInterval(range[5], range[6]);
+                    // } else if (attributeCount === 2) {
+                    //     item[attribute] = randomIntFromInterval(range[3], range[5]);
+                    // } else if (attributeCount === 3) {
+                    //     item[attribute] = randomIntFromInterval(range[2], range[4]);
+                    // } else if (attributeCount === 4) {
+                    //     item[attribute] = randomIntFromInterval(range[1], range[3]);
+                    // } else if (attributeCount === 5) {
+                    //     item[attribute] = randomIntFromInterval(range[0], range[2]);
+                    // } else {
+                    //     item[attribute] = randomIntFromInterval(range[0], range[1]);
+                    // };
                 };
             };
+
+            // for (const attribute of ATTRIBUTES) {   
+            //     if (item[attribute] > 0) {
+            //         if (attributeCount === 1) {
+            //             item[attribute] = randomIntFromInterval(range[5], range[6]);
+            //         } else if (attributeCount === 2) {
+            //             item[attribute] = randomIntFromInterval(range[3], range[5]);
+            //         } else if (attributeCount === 3) {
+            //             item[attribute] = randomIntFromInterval(range[2], range[4]);
+            //         } else if (attributeCount === 4) {
+            //             item[attribute] = randomIntFromInterval(range[1], range[3]);
+            //         } else if (attributeCount === 5) {
+            //             item[attribute] = randomIntFromInterval(range[0], range[2]);
+            //         } else {
+            //             item[attribute] = randomIntFromInterval(range[0], range[1]);
+            //         };
+            //     };
+            // };
             for (const attribute of CHANCE) {    
                 if (item[attribute] >= 24) { // 24+ +/- 2/0
                     item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 4);

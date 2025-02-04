@@ -101,6 +101,7 @@ export default class Player extends Entity {
     evasionTime: number = 0;
     prevInstinct: number = 0;
     currentEnemies: string[] | [] = [];
+    chasing: boolean = false;
     talents: {
         caerenic: false;
         stalwart: false;

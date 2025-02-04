@@ -9,7 +9,6 @@ export class WindPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline
         });
         this.time = 0.0;
     };
-
     onBind(gameObject: Phaser.GameObjects.GameObject) {
         super.onBind();
         this.set1f('time', this.time);

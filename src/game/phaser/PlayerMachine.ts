@@ -219,7 +219,7 @@ export default class PlayerMachine {
                 direction.normalize();
                 this.player.setVelocity(direction.x * this.player.speed, direction.y * this.player.speed);
             };
-        } else if (distance >= 75 * rangeMultiplier) { // was 75 || 100
+        } else if (distance >= 60 * rangeMultiplier) { // was 75 || 100
             if (this.player.path && this.player.path.length > 1) {
                 this.player.setVelocity(this.player.pathDirection.x * this.player.speed, this.player.pathDirection.y * this.player.speed);
             } else {
@@ -227,10 +227,16 @@ export default class PlayerMachine {
                 direction.normalize();
                 this.player.setVelocity(direction.x * this.player.speed, direction.y * this.player.speed);
             };
-            if (Math.random() > 0.5 && !this.player.isRolling && !this.player.isDodging) {
-                this.player.isRolling = true;
-            } else if (!this.player.isDodging && !this.player.isRolling) {
-                this.player.isDodging = true;
+            if (!this.player.chasing) {
+                this.player.chasing = true;
+                this.scene.time.delayedCall(1000, () => {
+                    this.player.chasing = false;
+                    if (Math.random() > 0.5 && !this.player.isRolling && !this.player.isDodging) {
+                        this.player.isRolling = true;
+                    } else if (!this.player.isDodging && !this.player.isRolling) {
+                        this.player.isDodging = true;
+                    };
+                }, undefined, this);
             };
         } else {
             this.stateMachine.setState(States.COMPUTER_COMBAT);

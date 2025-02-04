@@ -84,7 +84,7 @@ export class Game extends Scene {
 
     preload() {
         this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
-        // this.load.glsl('windShader', './src/game/shaders/Wind.glsl');
+        this.load.glsl('windShader', './src/game/shaders/Wind.glsl');
         // this.load.glsl('rainShadow', './src/game/shaders/Rain.glsl');
     };
 
@@ -138,16 +138,11 @@ export class Game extends Scene {
         this.overlay.fillRect(0, 0, 4096, 4096);
         this.overlay.setDepth(99);
 
-        // Identify clusters and create composite textures
-        // this.createCompositeTextures(layer2!);
-        // this.createCompositeTextures(layer3!);
-
         // var windPipeline = new WindPipeline(this.game);
         // (this.game.renderer as any).pipelines.add('Wind', windPipeline);
         // layer2?.setPipeline('Wind');
         // layer3?.setPipeline('Wind');
         // layer4?.setPipeline('Wind');
-        // // layer5?.setPipeline('Wind');
         // this.time.addEvent({
         //     delay: 100,
         //     loop: true,
@@ -219,51 +214,13 @@ export class Game extends Scene {
         EventBus.emit('current-scene-ready', this);
     };
 
-    createCompositeTextures(layer: Phaser.Tilemaps.TilemapLayer) {
-        const tiles = layer.getTilesWithin(0, 0, layer.width, layer.height);
-        const tileset = layer.tileset[0];
-        console.log(tileset, 'Image');
-        let clusters: { x: number, y: number, tiles: Phaser.Tilemaps.Tile[] }[] = [];
-        tiles.forEach(tile => {
-            if (tile.index > -1) {
-                let cluster = clusters.find(c => c.x === tile.x && c.y === tile.y);
-                if (!cluster) {
-                    cluster = { x: tile.x, y: tile.y, tiles: [] };
-                    clusters.push(cluster);
-                }; 
-                cluster.tiles.push(tile);
-            };
-        });
-        
-        clusters.forEach(cluster => {
-            const compositeTexture = this.add.renderTexture(cluster.x * 32, cluster.y * 32, 32, 32);
-            cluster.tiles.forEach(tile => {
-                const tileTexture = tileset?.image?.key;
-                const tileCoord = tileset.getTileTextureCoordinates(tile.index);
-                if (tileTexture && tileCoord) {   
-                    // const frameX = (tileCoord as any).x / tileset.tileWidth;
-                    // const frameY = (tileCoord as any).y / tileset.tileHeight;
-                    // const index = tile.index - tileset.firstgid;
-                    // const frameIndex = frameY * tileset.columns + frameX * tileset.rows;
-                    // console.log(`Frame X: ${frameX} / Frame Y: ${frameY} / Frame Index: ${frameIndex} / Index: ${index}`);
-                    // console.log(this.textures.getFrame(tileTexture, frameIndex));
-                    compositeTexture.drawFrame(tileTexture,0,tile.pixelX - compositeTexture.x,tile.pixelY - compositeTexture.y);
-                };
-            });
-            compositeTexture.setDepth(10);
-            compositeTexture.fill(0xff0000,0.2);
-            compositeTexture.setOrigin(0);
-            // compositeTexture.setPipeline('Wind');
-        });
-    };
-
     startDayCycle() {
         if (this.hud.settings?.music === true) {
             if (this.musicNight.isPlaying) {
                 this.tweens.add({
                     targets: this.musicNight,
                     volume: 0,
-                    duration: 2000,
+                    duration: 4000,
                     onComplete: () => {
                         this.musicNight.stop();
                         this.musicDay.play("", { volume: this.hud.settings.volume });
@@ -302,7 +259,7 @@ export class Game extends Scene {
                 this.tweens.add({
                     targets: this.musicDay,
                     volume: 0,
-                    duration: 2000,
+                    duration: 4000,
                     onComplete: () => {
                         this.musicDay.stop();
                         this.musicNight.play("", { volume: this.hud.settings.volume });

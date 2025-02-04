@@ -155,25 +155,18 @@ export default class PlayerComputer extends Player {
             this.playerMachine.stateMachine.setState(States.DEFEATED);
             return;
         };
-        if (this.playerMachine.stateMachine.isCurrentState(States.LEASH) || this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) {
-            return;
-        };
+        if (this.playerMachine.stateMachine.isCurrentState(States.LEASH) || this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) return;
         if (!this.inCombat || this.isCasting || this.isPraying || this.isContemplating || this.scene.state.newPlayerHealth <= 0) {
-            // console.log(`Casting: ${this.isCasting} | Contemplating: ${this.isContemplating}`);
             this.isMoving = false;
             this.setVelocity(0);
             return;    
         };
-        // console.log(`Suffering: ${this.isSuffering()} | Chase: ${this.playerMachine.stateMachine.isCurrentState(States.CHASE)} | Evasion: ${this.playerMachine.stateMachine.isCurrentState(States.EVADE)}`);
-        if (this.isSuffering() || !this.currentTarget || !this.currentTarget.body || this.playerMachine.stateMachine.isCurrentState(States.CHASE) || this.playerMachine.stateMachine.isCurrentState(States.EVADE)) {
-            return;
-        };
+        if (this.isSuffering() || !this.currentTarget || !this.currentTarget.body || this.playerMachine.stateMachine.isCurrentState(States.CHASE) || this.playerMachine.stateMachine.isCurrentState(States.EVADE)) return;
         
         let direction = this.currentTarget.position.subtract(this.position);
         const distanceY = Math.abs(direction.y);
         const multiplier = this.rangedDistanceMultiplier(PLAYER.DISTANCE.RANGED_MULTIPLIER);
         
-        // console.log('Entering EVADE Under Ranged Attack');
         if (this.isUnderRangedAttack()) { // Switch to EVADE the Enemy
             this.playerMachine.stateMachine.setState(States.EVADE);
             return;
@@ -212,7 +205,7 @@ export default class PlayerComputer extends Player {
                 direction.normalize();
                 this.setVelocityY(direction.y * this.speed + 0.5); // 2.25
             };
-        } else { // Melee || Contiually Maintaining Reach for MELEE ENEMIES.
+        } else { // Melee || Continually Maintaining Reach for MELEE ENEMIES.
             if (!this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) {
                 this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
                 return;

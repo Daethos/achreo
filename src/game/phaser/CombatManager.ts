@@ -50,7 +50,6 @@ export class CombatManager extends Phaser.Scene {
         };
     };
     computerMelee = (id: string, type: string): void => {
-        // FIXME: Change to be id agnostic, it first attempts to find ENEMY, then PLAYER, then PARTY ?
         if (!id) return;
         let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) return;
@@ -75,16 +74,17 @@ export class CombatManager extends Phaser.Scene {
     // ============================ Magic Impact ============================= \\
     magic = (entity: Player | Enemy, target: Player | Enemy): void => {
         if (target.health <= 0) return;
+        const ascean = entity.ascean;
         if (target.name === 'player') {
-            const damage = Math.round(entity.ascean?.[entity?.ascean?.mastery as keyof typeof entity.ascean] * 0.2);
+            const damage = Math.round(ascean[ascean?.mastery as keyof typeof ascean] * 0.2);
             const health = target.health - damage;
             this.combatMachine.action({ data: { key: 'player', value: health, id: (entity as Enemy).enemyID }, type: 'Set Health' });
         } else if (entity.name === 'player') {
-            const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.2);
+            const damage = Math.round(ascean[ascean.mastery as keyof typeof ascean] * 0.2);
             const health = target.health - damage;
             this.combatMachine.action({ data: { key: 'enemy', value: health, id: (target as Enemy).enemyID }, type: 'Health' });
         } else { // Computer Entity + Computer Target
-            const damage = Math.round(entity.ascean?.[entity.ascean?.mastery as keyof typeof entity.ascean] * 0.2);
+            const damage = Math.round(ascean?.[ascean?.mastery as keyof typeof ascean] * 0.2);
             const health = target.health - damage;
             (entity as Enemy).computerCombatSheet.newComputerEnemyHealth = health;
             (target as Enemy).computerCombatSheet.newComputerHealth = health;
@@ -227,19 +227,8 @@ export class CombatManager extends Phaser.Scene {
     howl = (id: string): void => {
         if (!id) return;
         this.stunned(id);
-        
-        /*
-            Issue: It's agnostic for who is stunned, so having it hard coded that the player must have hit an 'enemy' is poor design and needs to be removed. Sorry, Str/Agi!
-        */
-        // let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        // if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
-        //     const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.75);
-        //     const health = enemy.health - damage;
-        //     this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
-        // };
     };
     kynisos = (id: string): void => {
-        // TODO:FIXME: This only accounts for either a Player using it or an enemy attacking the player
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) {
@@ -297,31 +286,6 @@ export class CombatManager extends Phaser.Scene {
         this.context.targetTarget = enemy;
         enemy.isRooted = true;
         enemy.count.rooted += 1;
-        // let x = enemy.x; // this.rightJoystick.pointer.x;
-        // let x2 = window.innerWidth / 2;
-        // let y = enemy.y; // this.rightJoystick.pointer.y;
-        // let y2 = window.innerHeight / 2;
-        // const worldX = (x > x2 ? x : -x) + this.context.player.x;
-        // const worldY = (y > y2 ? y : -y) + this.context.player.y;
-        // const duration = Phaser.Math.Distance.Between(this.context.player.x, this.context.player.y, worldX, worldY);
-        // const rootTween = this.context.add.tween({
-        //     targets: this.context.target,
-        //     x: { from: this.context.player.x, to: worldX, duration: 1000 },
-        //     y: { from: this.context.player.y, to: worldY, duration: 1000 }, 
-        //     ease: 'Linear',
-        //     yoyo: false,
-        //     onStart: () => {
-        //         this.context.target.setVisible(true);
-        //         enemy.isRooted = true;
-        //         enemy.count.rooted += 1;
-        //     },    
-        //     onComplete: () => {
-        //         this.context.time.delayedCall(3000 - duration, () => {
-        //             this.context.target.setVisible(false);
-        //             rootTween.destroy();
-        //         }, undefined, this);
-        //     }, 
-        // });
     };
     scream = (id: string): void => {
         if (!id) return;
@@ -400,17 +364,6 @@ export class CombatManager extends Phaser.Scene {
                 EventBus.emit('add-combat-logs', { ...this.context, playerActionDescription });
                 this.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.context.player.spellTarget } });
             };
-            // const enemy = this.context.enemies.find((e: Enemy) => e.enemyID === combatID);
-            // if (enemy && enemy.health > 0 && enemy.isDefeated !== true) {
-            //     if (enemy.enemyID === this.context.state.enemyID) {
-
-            //     } else {
-
-            //     };
-            //     // const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.3);
-            //     // const total = Math.max(0, enemy.health - damage);
-            //     // this.combatMachine.action({ data: { key: 'enemy', value: total, id: combatID }, type: 'Health' });
-            // };
         } else { // CvC
             const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
             const damage = Math.round(origin.ascean[origin.ascean.mastery as keyof typeof origin.ascean] * 0.3);

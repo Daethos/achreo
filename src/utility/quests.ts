@@ -144,7 +144,7 @@ export const QUEST_TEMPLATES = [
     }, {
         name: [MAIER_OCCULTIST, OLD_LIIVI_OCCULTIST, EUGENES, GARRIS],
         title: "Blessed Hunt",
-        description: "Come frolicking with the Ma'ier in the merriment of the night to their mooon mother.",
+        description: "Come frolicking with the Ma'ier in the Merriment of the night to the Mother Moon",
         requirements: {
             completed: ["Mist of the Moon"],
             description: `Participate in a Blessed Hunt with the Ma'ier.`,
@@ -204,7 +204,7 @@ export const QUEST_TEMPLATES = [
         
         name: [TSHAERAL_SHAMAN, KYNGIAN_SHAMAN, DORIEN, MIRIO, RAHVREHCUR, OLD_LIIVI_OCCULTIST, FIEROUS],
         title: "Sleep",
-        description: "Take the poultice and drink deeply, allow us to entwine our minds and step into the otherland.",
+        description: "Take the poultice and drink deeply, allow us to entwine our minds and step into the otherland",
         requirements: {
             description: `Experience the otherland in your slumber.`,
             technical: ``

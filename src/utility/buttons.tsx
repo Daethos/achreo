@@ -108,10 +108,9 @@ export function Modal({ items, inventory, callback, show, setShow, forge, setFor
 
 export function PrayerModal({ prayer, show, setShow }: { prayer: Accessor<StatusEffect>, show: Accessor<boolean>, setShow: Setter<boolean> }) {
     const dimensions = useResizeListener();
-    console.log(prayer(), specialDescription[prayer().prayer as keyof typeof specialDescription], 'prayer');
+    // console.log(prayer(), specialDescription[prayer().prayer as keyof typeof specialDescription], 'prayer');
 
-    async function consume() {
-        // console.log(`Consuming ${prayer().prayer}...`);
+    function consume() {
         EventBus.emit('initiate-combat', { data: { prayerSacrificeId: prayer().id }, type: 'Consume' });
     };
     return (

@@ -239,7 +239,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             case CHARACTERS.QUESTS:
                 return <div class='creature-heading'>
                     <h1 style={{ 'margin-bottom': '3%' }}>Quests</h1>
-                    <For each={quests().quests}>{(quest, index) => {
+                    <For each={quests().quests}>{(quest, _index) => {
                         return <div class='border juice wrap' onClick={() => setShowQuest({show:true,quest})} style={{ 'min-height': '100%', margin: '5% auto', 'text-align': 'center', 'border-color': masteryColor(quest.mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em` }}>
                             <h2 style={{ color: 'gold' }}>{quest.title}</h2>
                             <p class='' style={{'margin-left': '10%', width: '80%' }}>{quest.description}</p>    
@@ -327,7 +327,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             </div>
                         </div>
                     }}</For>
-                </div>
+                </div>;
             case CHARACTERS.TRAITS:
                 return <div class='creature-heading'>
                     <h1>{playerTraitWrapper()?.primary?.name}</h1>
@@ -380,6 +380,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             <h4 class='gold cinzel'>{info?.favor}</h4>
             <h2>{info?.origin}</h2>
             <p class='gold'>{info?.description}</p>
+            <h2>{info?.worship}</h2>
         </div>;
     };
 
@@ -402,7 +403,6 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             <h1>{entry().title}</h1>
             <h4 style={{ margin: '4%' }}>{formattedDate}</h4>
             <h2>{entry().body}</h2>
-
             <h6 class='gold'>{entry().footnote}</h6>
             <h6>[Location: {entry().location || '???'}]</h6>
         </div>;

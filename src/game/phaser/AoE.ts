@@ -130,18 +130,25 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         };
     };
     setParticleCount = (entity: Player | Enemy, scene: Play) => {
-        scene.time.delayedCall(975, () => {
+        scene.time.delayedCall(1000, () => {
             this.hit.forEach((target) => {
                 (scene.combatManager as any).magic(entity, target);
             });
             this.count -= 1;
             if (this.count === 0) {
-                scene.glowFilter.remove(this);
-                this.hit = [];
-                this.timer.destroy();
-                this.timer.remove(false);
-                this.timer = undefined;
-                this.destroy();    
+                scene.tweens.add({
+                    targets: [this],
+                    alpha: 0,
+                    duration: 1000,
+                    onComplete: () => {
+                        scene.glowFilter.remove(this);
+                        this.hit = [];
+                        this.timer.destroy();
+                        this.timer.remove(false);
+                        this.timer = undefined;
+                        this.destroy();    
+                    }
+                });
             } else {
                 this.setParticleCount(entity, scene);
             };
@@ -336,7 +343,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 } else if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
                     const enemy = origin.enemies.find((e) => e.id === gameObjectB.enemyID);
                     if (enemy) {
-                        this.hit.push(gameObjectB)
+                        this.hit.push(gameObjectB);
                     } else {
                         this.bless.push(gameObjectB);
                     };
@@ -365,7 +372,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 const { gameObjectB, bodyB } = collision;
                 if ((gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') ||
                     (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider')) {
-                    this.hit.push(gameObjectB);    
+                    this.hit.push(gameObjectB);
                 };
             },
             context: scene

@@ -435,26 +435,27 @@ export default class PlayerMachine {
         this.player.setVelocity(0);
         let chance = [1, 2, 4, 5, (!this.player.isRanged ? 6 : 7), (!this.player.isRanged ? 8 : 9), (!this.player.isRanged ? 10 : 11), (!this.player.isRanged ? 12 : 13)][Math.floor(Math.random() * 8)];
         let mastery = this.player.ascean.mastery;
-        let health = this.player.health / this.player.ascean.health.max;
-        let enemy = this.scene.state.newComputerHealth / this.scene.state.computerHealth;
+        let pHealth = this.player.health / this.player.ascean.health.max;
+        let eHealth = this.scene.state.newComputerHealth / this.scene.state.computerHealth;
         const direction = this.player.currentTarget?.position.subtract(this.player.position);
         const distance = direction?.length() || 0;
         let instinct =
-            health <= 0.3 ? 0 :
-            health <= 0.6 ? 1 :
-            (health >= 0.75 && health <= 0.95) ? 2 :
-            enemy <= 0.3 ? 3 :
-            enemy <= 0.55 ? 4 :
-            enemy >= 0.8 ? 5 :
+            pHealth <= 0.25 ? 0 :
+            pHealth <= 0.5 ? 1 :
+            (pHealth >= 0.7 && pHealth <= 0.9)  ? 2 :
+
+            eHealth <= 0.35 ? 3 :
+            eHealth <= 0.6 ? 4 :
+            eHealth >= 0.85 ? 5 :
             
-            (distance <= 75 && !this.player.isRanged) ? 6 :
-            (distance <= 75 && this.player.isRanged) ? 7 :
-            (distance > 75 && distance <= 150 && !this.player.isRanged) ? 8 :
-            (distance > 75 && distance <= 150 && this.player.isRanged) ? 9 :
-            (distance > 150 && distance <= 225 && !this.player.isRanged) ? 10 :
-            (distance > 150 && distance <= 225 && this.player.isRanged) ? 11 :
-            (distance > 225 && !this.player.isRanged) ? 12 :
-            (distance > 225 && this.player.isRanged) ? 13 :
+            (distance <= 60 && !this.player.isRanged) ? 6 :
+            (distance <= 60 && this.player.isRanged) ? 7 :
+            (distance > 60 && distance <= 120 && !this.player.isRanged) ? 8 :
+            (distance > 60 && distance <= 120 && this.player.isRanged) ? 9 :
+            (distance > 120 && distance <= 180 && !this.player.isRanged) ? 10 :
+            (distance > 120 && distance <= 180 && this.player.isRanged) ? 11 :
+            (distance > 180 && !this.player.isRanged) ? 12 :
+            (distance > 180 && this.player.isRanged) ? 13 :
 
             chance;
 

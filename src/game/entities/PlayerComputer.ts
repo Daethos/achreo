@@ -244,6 +244,9 @@ export default class PlayerComputer extends Player {
         let check: {success: boolean; cost: number;} = staminaCheck(this.stamina, PLAYER.STAMINA[action.toUpperCase() as keyof typeof PLAYER.STAMINA]);
         if (check.success === true && this.playerMachine.stateMachine.isState(action)) {
             this.playerMachine.stateMachine.setState(action);
+        } else {
+            this.specialCombatText = this.scene.showCombatText('Catch Your Breath', 750, 'dread', false, true, () => this.specialCombatText = undefined);
+            this.scene.combatManager.useStamina(-5);    
         };
     };
 

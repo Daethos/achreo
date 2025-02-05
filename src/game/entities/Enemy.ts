@@ -1692,7 +1692,7 @@ export default class Enemy extends Entity {
         this.isParrying = false;
         this.currentAction = '';
         if (this.inComputerCombat) this.computerCombatSheet.computerAction = '';
-        if (this.scene.state.computerAction !== '' && this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, '', this.enemyID);
+        if (this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, '', this.enemyID);
         this.setTint(ENEMY_COLOR);
         this.frameCount = 0;
     };

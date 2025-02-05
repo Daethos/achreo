@@ -415,7 +415,7 @@ export const ACTION_ORIGIN = {
     },
     MEND: {
         name: 'Mend',
-        description: "A warped tendril wrapped round you that heal through 6 successful attacks from the enemy.",
+        description: "A warped tendril wrapped round you that heals through 6 successful attacks from the enemy.",
         cooldown: `${PLAYER.COOLDOWNS.LONG / 1000}s`,
         cost: `${PLAYER.STAMINA.MEND} Grace`,
         time: 'Instant',

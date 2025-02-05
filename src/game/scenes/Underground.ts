@@ -542,7 +542,7 @@ export class Underground extends Scene {
         return enemy;
     };
     createArenaEnemy = (data: Compiler[]) => {
-        let marker: any, markers: any[] = [];
+        let marker: any, markers: any[] = [], count = 0, current = 600;
         for (let i = 0; i < this.markers.length; i++) {
             const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
             const direction = position.subtract(this.player.position);
@@ -553,12 +553,20 @@ export class Underground extends Scene {
         for (let j = 0; j < data.length; j++) {
             marker = markers[Math.floor(Math.random() * markers.length)];
             const enemy = new Enemy({ scene: this, x: this.centerX, y: 64, texture: 'player_actions', frame: 'player_idle_0', data: data[j] });
-            enemy.setPosition(marker.x, marker.y);
             this.enemies.push(enemy);
+            enemy.setPosition(marker.x, marker.y);
+            const markerPosition = new Phaser.Math.Vector2(marker.x, marker.y);
+            const distance = markerPosition.subtract(this.player.position).length();
+            if (distance < current) {
+                count = j;
+                current = distance;
+            };
             this.time.delayedCall(3000, () => {
                 enemy.checkEnemyCombatEnter();
                 this.player.targets.push(enemy);
-                this.player.targetEngagement(enemy.enemyID);
+                if (count === j) {
+                    this.player.targetEngagement(enemy.enemyID);
+                };
             }, undefined, this);
         };
         this.wager = this.registry.get("wager");

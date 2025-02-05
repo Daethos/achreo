@@ -588,7 +588,7 @@ export class Arena extends Phaser.Scene {
                 this.switchArena();
                 return;
             };
-            let marker: any, markers: any[] = [], count = data.length - 1;
+            let marker: any, markers: any[] = [], count = 0, current: number = 1250;
             for (let i = 0; i < this.markers.length; i++) {
                 const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
                 const direction = position.subtract(this.player.position);
@@ -601,6 +601,12 @@ export class Arena extends Phaser.Scene {
                 const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: data[j] });
                 this.enemies.push(enemy);
                 enemy.setPosition(marker.x, marker.y);
+                const markerPosition = new Phaser.Math.Vector2(marker.x, marker.y);
+                const distance = markerPosition.subtract(this.player.position).length();
+                if (distance < current) {
+                    count = j;
+                    current = distance;
+                };
                 this.time.delayedCall(1500, () => {
                     enemy.checkEnemyCombatEnter();
                     this.player.targets.push(enemy);

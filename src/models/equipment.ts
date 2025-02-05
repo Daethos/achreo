@@ -84,7 +84,7 @@ export default class Equipment {
         this.achre = equipment.achre;
         this.caeren = equipment.caeren;
         this.kyosir = equipment.kyosir;
-        this.influences = influence(equipment?.influences);
+        this.influences = equipment?.influences;
         this.imgUrl = equipment.imgUrl;
     };
     [key: string]: any;
@@ -109,13 +109,14 @@ async function defaultMutate(equipment: Equipment[]) {
 
 async function mutate(equipment: Equipment[], rarity?: string | 'Common') { 
     try {
-        const range = ATTRIBUTE_RANGE[rarity as keyof typeof ATTRIBUTE_RANGE];
+        // const range = ATTRIBUTE_RANGE[rarity as keyof typeof ATTRIBUTE_RANGE];
         for (const item of equipment) {
             item._id = uuidv4(); // uuidv4();
+            item.influences = influence((equipment as any)?.influences);
             // const attributeCount = ATTRIBUTES.filter(attribute => item[attribute] > 0).length;
             for (const attribute of ATTRIBUTES) {   
                 if (item[attribute] > 0) {
-
+                    // console.log(attribute, item[attribute], 'Current Attribute Rating');
                     switch (item[attribute]) {
                         case 1:
                             item[attribute] = 1;
@@ -179,6 +180,7 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
                             break;
                         default: break;
                     };
+                    // console.log(attribute, item[attribute], 'Ending Attribute Rating');
                     // if (attributeCount === 1) {
                     //     item[attribute] = randomIntFromInterval(range[5], range[6]);
                     // } else if (attributeCount === 2) {
@@ -340,7 +342,7 @@ async function getOneRandom(level: number = 1) {
             };
         };
         equipment = await aggregate(rarity, type, 1) as Equipment[];
-        equipment.forEach(item => new Equipment(item));
+        equipment.forEach(item => new Equipment(deepClone(item)));
         return equipment;
     } catch (err) {
         console.warn(err, 'Error Getting One Equipment');
@@ -567,8 +569,9 @@ async function getPhysicalWeaponEquipment(level: number): Promise<Equipment[] | 
         for (let i = 0; i < 9; i++) {
             const rarity = determineRarityByLevel(level);
             let item = shuffleArray(Weapons.filter((eq) => (eq.rarity === rarity && eq.attackType === 'Physical')))[0];
-            let equipment = await mutate([item], rarity) as Equipment[];
-            equipment.forEach(item => new Equipment(item));
+            const cloneItem = deepClone(item);
+            let equipment = await mutate([cloneItem], rarity) as Equipment[];
+            equipment.forEach(it => new Equipment(it));
             const clone = deepClone(equipment[0]);
             merchantEquipment.push(clone);
         };
@@ -584,8 +587,9 @@ async function getMagicalWeaponEquipment(level: number): Promise<Equipment[] | u
         for (let i = 0; i < 9; i++) {
             const rarity = determineRarityByLevel(level);
             let item = shuffleArray(Weapons.filter((eq) => (eq.rarity === rarity && eq.attackType === 'Magic')))[0];
-            let equipment = await mutate([item], rarity) as Equipment[];
-            equipment.forEach(item => new Equipment(item));
+            const cloneItem = deepClone(item);
+            let equipment = await mutate([cloneItem], rarity) as Equipment[];
+            equipment.forEach(it => new Equipment(it));
             const clone = deepClone(equipment[0]);
             merchantEquipment.push(clone);
         };
@@ -626,8 +630,9 @@ async function getArmorEquipment(level: number): Promise<Equipment[] | undefined
             } else if (type === 'Legs') {
                 item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
             };
-            let equipment = await mutate([item as Equipment], rarity) as Equipment[];
-            equipment.forEach(item => new Equipment(item));
+            const cloneItem = deepClone(item);
+            let equipment = await mutate([cloneItem as Equipment], rarity) as Equipment[];
+            equipment.forEach(it => new Equipment(it));
             const clone = deepClone(equipment[0]);
             merchantEquipment.push(clone);
         };
@@ -658,8 +663,9 @@ async function getJewelryEquipment(level: number): Promise<Equipment[] | undefin
             } else if (type === 'Trinket') {
                 item = shuffleArray(Trinkets.filter((eq) => (eq.rarity === rarity)))[0]; 
             };
-            let equipment = await mutate([item as Equipment], rarity) as Equipment[];
-            equipment.forEach(item => new Equipment(item));
+            const cloneItem = deepClone(item);
+            let equipment = await mutate([cloneItem as Equipment], rarity) as Equipment[];
+            equipment.forEach(it => new Equipment(it));
             const clone = deepClone(equipment[0]);
             merchantEquipment.push(clone);
         };
@@ -702,8 +708,9 @@ async function getClothEquipment(level: number): Promise<Equipment[] | undefined
                 item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type === 'Leather-Cloth' )))[0]; 
             };
             if (item) {
-                let mutatedItems = await mutate([item], rarity) as Equipment[];
-                mutatedItems.forEach(item => new Equipment(item));
+                const clone = deepClone(item);
+                let mutatedItems = await mutate([clone], rarity) as Equipment[];
+                mutatedItems.forEach(it => new Equipment(it));
                 const clonedItem = deepClone(mutatedItems[0]);
                 merchantEquipment.push(clonedItem);
             };
@@ -711,6 +718,50 @@ async function getClothEquipment(level: number): Promise<Equipment[] | undefined
         return merchantEquipment;
     } catch (err) {
         console.warn(err, 'Error in Merchant Function');
+    };
+};
+
+async function getSpecificArmor(level: number, type: string) {
+    try {
+        let merchantEquipment = [];
+        for (let i = 0; i < 9; i++) {
+            let item: any = undefined,
+                armorType: string = '',
+                armorTypes: string[] = ["Helmet", "Chest", "Legs"],
+                rarity: string = '';
+            
+            const rand = randomIntFromInterval(0, 2);
+            rarity = determineRarityByLevel(level);
+            armorType = armorTypes[rand];
+
+            item = shuffleArray([armorType].filter((eq: any) => (eq.rarity === rarity && eq.type === type)))[0];
+            
+            if (item) {
+                console.log('the fully agnostic solution has worked');
+                let mutatedItems = await mutate([item], rarity) as Equipment[];
+                mutatedItems.forEach(item => new Equipment(item));
+                const clonedItem = deepClone(mutatedItems[0]);
+                merchantEquipment.push(clonedItem);
+            } else {
+                console.log('deterministic =[');
+                if (armorType === "Helmet") {
+                    item = shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity && eq.type === type)))[0];
+                } else if (armorType === "Chest") {
+                    item = shuffleArray(Chests.filter((eq) => (eq.rarity === rarity && eq.type === type)))[0];
+                } else if (armorType === "Legs") {
+                    item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type === type)))[0];
+                };
+                if (item) {
+                    let mutatedItems = await mutate([item], rarity) as Equipment[];
+                    mutatedItems.forEach(item => new Equipment(item));
+                    const clonedItem = deepClone(mutatedItems[0]);
+                    merchantEquipment.push(clonedItem);
+                };
+            };
+        };
+        return merchantEquipment;
+    } catch(err) {
+        console.warn(err, `Error Getting "${type}" Equipment`);
     };
 };
 
@@ -735,4 +786,4 @@ function deepClone<T>(obj: T): T {
     return objCopy;
 };
 
-export { create, defaultMutate, mutate, getOneRandom, upgradeEquipment, getPhysicalWeaponEquipment, getMagicalWeaponEquipment, getArmorEquipment, getJewelryEquipment, getMerchantEquipment, getClothEquipment, deepClone };
+export { create, defaultMutate, mutate, getOneRandom, upgradeEquipment, getPhysicalWeaponEquipment, getMagicalWeaponEquipment, getArmorEquipment, getJewelryEquipment, getMerchantEquipment, getClothEquipment, getSpecificArmor, deepClone };

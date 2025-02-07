@@ -1,4 +1,4 @@
-import Entity, { FRAME_COUNT, Player_Scene } from "./Entity"; 
+import Entity, { calculateThreat, ENEMY, FRAME_COUNT, Player_Scene } from "./Entity"; 
 import StateMachine, { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
 import { EventBus } from "../EventBus";
@@ -35,13 +35,6 @@ const PHYSICAL_ACTIONS = {
     POSTURE: 'posture',
     ROLL: 'roll',
     THRUST: 'thrust',
-};
-export type ENEMY = {id:string; threat:number};
-function calculateThreat(damage: number, currentHealth: number, totalHealth: number): number {
-    const damageRatio = damage / currentHealth;
-    const healthRatio = (totalHealth - currentHealth) / totalHealth;
-    const relative = damageRatio + healthRatio;
-    return relative ?? 0;
 };
 export default class Enemy extends Entity {
     enemyID: string;
@@ -498,11 +491,12 @@ export default class Enemy extends Entity {
         if (!this.attacking || this.health <= 0) return;
         if (this.attacking.name === 'player') {
             if (this.attacking.playerID !== topEnemy) this.updatePlayerTarget(this.scene.player);
-        } else {
-            if (this.attacking.enemyID !== topEnemy) {
-                const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === topEnemy);
-                if (enemy) this.updateEnemyTarget(enemy);
-            };
+        } else if (this.attacking && this.attacking.enemyID !== topEnemy && this.health >= 0) {
+            const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === topEnemy);
+            if (enemy) this.updateEnemyTarget(enemy);
+        } else if (!this.attacking && this.health >= 0) {
+            const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === topEnemy);
+            if (enemy) this.updateEnemyTarget(enemy);
         };
     };
 
@@ -741,7 +735,7 @@ export default class Enemy extends Entity {
                             this.stateMachine.setState(States.AWARE);
                         };
                     };
-                } else if (other.gameObjectB && other.gameObjectB.name === 'enemy') {
+                } else if (other.gameObjectB && (other.gameObjectB.name === 'enemy' || other.gameObjectB.name === 'party')) {
                     this.isValidComputerRushEnemy(other.gameObjectB);
                     this.touching.push(other.gameObjectB);
                     // if (this.ascean && this.computerEnemyAggressionCheck()) {
@@ -761,7 +755,7 @@ export default class Enemy extends Entity {
                         // };
                         // this.stateMachine.setState(States.AWARE);
                     // };
-                };
+                }
             },
             context: this.scene,
         });
@@ -782,7 +776,7 @@ export default class Enemy extends Entity {
                         };
                         if (this.isCurrentTarget === true && !this.inCombat) this.scene.hud.clearNonAggressiveEnemy();
                     };
-                } else if (other.gameObjectB && other.gameObjectB.name === 'enemy') {
+                } else if (other.gameObjectB && (other.gameObjectB.name === 'enemy' || other.gameObjectB.name === 'party')) {
                     this.touching = this.touching.filter((target) => target !== other.gameObjectB);
                 };
             },
@@ -1232,7 +1226,7 @@ export default class Enemy extends Entity {
                 EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
             };
         } else { // CvC
-            const suture = Math.round(this.mastery() * this.playerCaerenic() * this.playerStalwart() * ((this.ascean?.level + 9) / 10)) * (1 + power / 100) * 0.8;
+            const suture = Math.round(this.mastery() * ((this.ascean?.level + 9) / 10)) * (1 + power / 100) * 0.8;
             let newComputerHealth = Math.min(this.health + suture, this.combatStats.attributes.healthTotal);
             this.computerCombatSheet.newComputerEnemyHealth -= suture;
             this.computerCombatSheet.newComputerHealth = newComputerHealth;

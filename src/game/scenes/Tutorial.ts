@@ -16,6 +16,7 @@ import { Compiler } from '../../utility/ascean';
 import DM from '../entities/DM';
 // @ts-ignore
 import { PhaserNavMeshPlugin } from 'phaser-navmesh';
+import Party from '../entities/PartyComputer';
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 export class Tutorial extends Phaser.Scene {
@@ -27,7 +28,8 @@ export class Tutorial extends Phaser.Scene {
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
     enemies: Enemy[] = [];
-    dms: DM[] = [];
+    party: Party[] = [];
+    dms: DM[] = [];    
     lootDrops: LootDrop[] = [];
     target: Phaser.GameObjects.Sprite;
     playerLight: Phaser.GameObjects.PointLight;

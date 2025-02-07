@@ -22,6 +22,7 @@ import DM from '../entities/DM';
 import { Compiler } from '../../utility/ascean';
 import { ObjectPool } from '../phaser/ObjectPool';
 import ScrollingCombatText from '../phaser/ScrollingCombatText';
+import Party from '../entities/PartyComputer';
 
 export class Underground extends Scene {
     animatedTiles: any[];
@@ -34,6 +35,7 @@ export class Underground extends Scene {
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
     enemies: Enemy[] | any[] = [];
+    party: Party[] = [];
     focus: any;
     target: any;
     targetTarget: any;

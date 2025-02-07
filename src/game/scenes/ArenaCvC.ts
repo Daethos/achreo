@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ARENA_ENEMY, fetchArena } from '../../utility/enemy';
 import Player from "../entities/Player";
 import { Compiler } from "../../utility/ascean";
+import Party from "../entities/PartyComputer";
 
 export class ArenaCvC extends Phaser.Scene {
     player: Player;
@@ -27,6 +28,7 @@ export class ArenaCvC extends Phaser.Scene {
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
     enemies: Enemy[] | any[] = [];
+    party: Party[] = [];
     focus: any;
     target: any;
     targetLight: any;
@@ -491,7 +493,7 @@ export class ArenaCvC extends Phaser.Scene {
             yoyo: true
         });
     };
-    highlightTarget = (sprite: Enemy) => {
+    highlightTarget = (sprite: Enemy | Party) => {
         if (!sprite || !sprite.body) return;
         if (this.highlightAnimation === false) {
             this.highlightAnimation = true;
@@ -564,7 +566,7 @@ export class ArenaView extends ArenaCvC {
         this.startArena();
     };
 
-    setNewTarget = (enemy: Enemy) => {
+    setNewTarget = (enemy: Enemy | Party) => {
         this.removeHighlight();
         this.targetTarget = enemy;
         this.highlightTarget(enemy);

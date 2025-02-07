@@ -21,6 +21,7 @@ import PlayerComputer from '../entities/PlayerComputer';
 import MovingPlatform from '../matter/MovingPlatform';
 import { ObjectPool } from '../phaser/ObjectPool';
 import ScrollingCombatText from '../phaser/ScrollingCombatText';
+import Party from '../entities/PartyComputer';
 
 export class Arena extends Phaser.Scene {
     sceneKey: string = '';
@@ -34,6 +35,7 @@ export class Arena extends Phaser.Scene {
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
     enemies: Enemy[] | any[] = [];
+    party: Party[] = [];
     focus: any;
     target: any;
     targetTarget: any;

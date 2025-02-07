@@ -3,9 +3,10 @@ export const PARTICLES = ['achire', 'earth',  'fire',  'frost', 'hook', 'lightni
 const TIME = { quor: 3000, achire: 2000, attack: 1500, hook: 1750, thrust: 1150, posture: 1750, roll: 1500, special: 2000 };
 const VELOCITY = { quor: 4.5, achire: 6, attack: 5, hook: 5.5, thrust: 6, posture: 4, roll: 4, special: 5 }; // 7.5 || 9 || 6 || 6
 import Player from '../entities/Player';
-import Enemy, { ENEMY } from '../entities/Enemy';
-import Entity from '../entities/Entity';
+import Enemy from '../entities/Enemy';
+import Entity, { ENEMY } from '../entities/Entity';
 import { Play } from '../main';
+import Party from '../entities/PartyComputer';
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 const MAGIC = ['earth','fire','frost','lightning','righteous','sorcery','spooky','wild','wind'];
@@ -127,7 +128,19 @@ export class Particle {
                     player.particleEffect.success = true;
                     this.scene.particleManager.impactEffect(this);
                 };
+                if (other.bodyB.label === 'partyCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'party' && player.name === 'enemy' && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
+                    player.attackedTarget = other.gameObjectB;
+                    player.particleEffect.success = true;
+                    this.scene.particleManager.impactEffect(this);
+                };
                 if (other.bodyB.label === 'playerCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'player' && player.name === 'enemy' && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
+                    player.attackedTarget = other.gameObjectB;
+                    player.particleEffect.success = true;
+                    this.scene.particleManager.impactEffect(this);
+                };
+                if (other.bodyB.label === 'enemyCollider' && other.gameObjectB && player.particleEffect && other.gameObjectB.name === 'enemy' && player.name === 'party') { // Party v Computer
+                    const isEnemy = (player as Enemy).enemies.find((e: ENEMY) => e.id === other.gameObjectB.enemyID);
+                    if (!isEnemy) return;
                     player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
                     this.scene.particleManager.impactEffect(this);
@@ -147,7 +160,7 @@ export class Particle {
         });
     };
 
-    setTarget(player: Player | Enemy | Entity, scene: Play, special = false): Phaser.Math.Vector2 {
+    setTarget(player: Player | Enemy | Entity | Party, scene: Play, special = false): Phaser.Math.Vector2 {
         if (player.name === 'enemy') {
             if (!player.attacking || !player.attacking.body) {
                 if (player.flipX) {
@@ -191,7 +204,7 @@ export class Particle {
         return VELOCITY[action as keyof typeof VELOCITY];
     };
 
-    spriteMaker(scene: Play, player: Player | Enemy | Entity, key: string, particle: boolean, special: boolean): Phaser.Physics.Matter.Sprite {
+    spriteMaker(scene: Play, player: Player | Enemy | Entity | Party, key: string, particle: boolean, special: boolean): Phaser.Physics.Matter.Sprite {
         return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key)
             .setScale(this.scaler(particle, special, this.action))
             .setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    

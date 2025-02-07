@@ -20,6 +20,7 @@ import { ObjectPool } from '../phaser/ObjectPool';
 import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
+import Party from '../entities/PartyComputer';
 // import { WindPipeline } from '../shaders/Wind';
 const dimensions = useResizeListener();
 
@@ -42,6 +43,7 @@ export class Game extends Scene {
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
     enemies: Enemy[] = [];
+    party: Party[] = [];
     npcs: NPC[] = [];
     lootDrops: LootDrop[] = [];
     target: Phaser.GameObjects.Sprite;

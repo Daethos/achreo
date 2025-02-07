@@ -1,4 +1,4 @@
-import Entity, { Player_Scene, SWING_TIME } from "./Entity";  
+import Entity, { assetSprite, Player_Scene, SWING_TIME } from "./Entity";  
 import { screenShake, sprint, vibrate, walk } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
@@ -184,7 +184,7 @@ export default class Player extends Entity {
         this.playerID = this.ascean._id;
         const weapon = this.ascean.weaponOne;
         this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
-        this.currentWeaponSprite = this.assetSprite(weapon);
+        this.currentWeaponSprite = assetSprite(weapon);
         this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, this.currentWeaponSprite);
         if (weapon.grip === 'One Hand') {
             this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
@@ -205,7 +205,7 @@ export default class Player extends Entity {
         this.grace = scene?.state.playerAttributes?.grace || 0;
         this.maxGrace = scene?.state?.playerAttributes?.grace;
         this.isMoving = false;
-        this.currentShieldSprite = this.assetSprite(this.ascean?.shield);
+        this.currentShieldSprite = assetSprite(this.ascean?.shield);
         this.spriteShield = this.createSprite(this.currentShieldSprite, 0, 0, PLAYER.SCALE.SHIELD, ORIGIN.SHIELD.X, ORIGIN.SHIELD.Y);
         this.spriteShield.setVisible(false);
         this.playerVelocity = new Phaser.Math.Vector2();
@@ -331,7 +331,7 @@ export default class Player extends Entity {
         this.scene.add.existing(sprite);
         sprite.setDepth(this.depth + 1);
         return sprite;
-    }; 
+    };
 
     cleanUp() {
         EventBus.off('set-player', this.setPlayer);
@@ -383,9 +383,6 @@ export default class Player extends Entity {
         this.highlightAnimation = false;
     };
 
-    assetSprite(asset: Equipment) {
-        return asset.imgUrl.split('/')[3].split('.')[0];
-    };
 
     computerBroadcast = (e: any) => {
         if (this.currentTarget?.enemyID !== e.id) return;
@@ -410,6 +407,8 @@ export default class Player extends Entity {
         EventBus.on('updated-grace', this.updateGrace);
         EventBus.on('updated-stamina', this.updateStamina);
     }; 
+
+    
 
     updateGrace = (percentage: number) => {
         this.grace = Math.round(this.maxGrace * percentage / 100);
@@ -769,8 +768,8 @@ export default class Player extends Entity {
         this.hasMagic = this.checkDamageType(damage, 'magic');
         this.checkMeleeOrRanged(weapon);
         let staminaModifier = 0;
-        if (this.currentWeaponSprite !== this.assetSprite(weapon)) {
-            this.currentWeaponSprite = this.assetSprite(weapon);
+        if (this.currentWeaponSprite !== assetSprite(weapon)) {
+            this.currentWeaponSprite = assetSprite(weapon);
             this.spriteWeapon.setTexture(this.currentWeaponSprite);
             if (weapon.grip === 'One Hand') {
                 this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
@@ -779,8 +778,8 @@ export default class Player extends Entity {
                 this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
             };
         };
-        if (this.currentShieldSprite !== this.assetSprite(shield)) {
-            this.currentShieldSprite = this.assetSprite(shield);
+        if (this.currentShieldSprite !== assetSprite(shield)) {
+            this.currentShieldSprite = assetSprite(shield);
             this.spriteShield.setTexture(this.currentShieldSprite);
             if (shield.type === "Medium Shield") {
                 staminaModifier += 1;

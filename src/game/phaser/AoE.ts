@@ -6,6 +6,7 @@ import { Underground } from '../scenes/Underground';
 import { Tutorial } from '../scenes/Tutorial';
 import { Arena } from '../scenes/Arena';
 import { Game } from '../scenes/Game';
+import Party from '../entities/PartyComputer';
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 
@@ -42,7 +43,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     timer: any;
     sensor: any;
 
-    constructor(scene: Play, type: string, count = 1, positive = false, enemy: undefined | Enemy = undefined, manual: boolean = false, target: undefined | any = undefined, particle: undefined | {effect: Particle; entity: Player | Enemy } = undefined) {
+    constructor(scene: Play, type: string, count = 1, positive = false, enemy: Enemy | Party | undefined = undefined, manual: boolean = false, target: undefined | any = undefined, particle: undefined | {effect: Particle; entity: Player | Enemy } = undefined) {
         super(scene.matter.world, 0, 6, 'target');
         this.name = type;
         this.setAngle(0);
@@ -62,10 +63,17 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.bless = [];
         this.timer = undefined;    
         if (enemy !== undefined) {
-            this.setupEnemySensor(enemy, target);
-            this.setupEnemyListener(scene, enemy);
-            this.setEnemyTimer(scene, enemy, target);
-            this.setupEnemyCount(scene, type, positive, enemy);
+            if (enemy.name === 'enemy') {
+                this.setupEnemySensor(enemy as Enemy, target);
+                this.setupEnemyListener(scene, enemy as Enemy);
+                this.setEnemyTimer(scene, enemy as Enemy, target);
+                this.setupEnemyCount(scene, type, positive, enemy as Enemy);
+            } else if (enemy.name === 'party') {
+               this.setupPartySensor(enemy as Party, target);
+               this.setupPartyListener(scene);
+               this.setPartyTimer(scene, enemy as Party, target);
+               this.setPartyCount(scene, type, positive, enemy as Party);
+            };
         } else if (particle !== undefined) {
             this.setupParticleSensor(particle.effect);
             this.setupParticleListener(scene);
@@ -113,7 +121,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         } else {
             scene.time.delayedCall(975, () => {
                 this.hit.forEach((target) => {
-                    (scene.combatManager as any)[type](target.enemyID);
+                    (scene.combatManager as any)[type](target.enemyID, scene.player.playerID);
                 });
                 this.count -= 1;
                 if (this.count === 0) {
@@ -125,6 +133,56 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                     this.destroy();    
                 } else {
                     this.setCount(scene, type, false);
+                };
+            });
+        };
+    };
+
+    setPartyCount = (scene: Play, type: string, positive: boolean, origin: Party) => {
+        if (type === 'fyerus') {
+            if ((scene as Player_Scene).player.isMoving) {
+                scene.glowFilter.remove(this);
+                this.bless = [];
+                this.timer.destroy();
+                this.timer.remove(false);
+                this.timer = undefined;
+                this.destroy();
+                return;
+            };
+        };
+        if (positive === true) {
+            scene.time.delayedCall(975, () => {
+                const blessing = `party${type.charAt(0).toUpperCase() + type.slice(1)}`;
+                this.bless.forEach((blessed) => {
+                    (scene.combatManager as any)[blessing](blessed.playerID);
+                });
+                this.count -= 1;
+                if (this.count === 0) {
+                    scene.glowFilter.remove(this);
+                    this.bless = [];
+                    this.timer.destroy();
+                    this.timer.remove(false);
+                    this.timer = undefined;
+                    this.destroy();
+                } else {
+                    this.setPartyCount(scene, type, positive, origin);
+                };
+            });
+        } else {
+            scene.time.delayedCall(975, () => {
+                this.hit.forEach((hit) => {
+                    (scene.combatManager as any)[type](hit.enemyID, origin.enemyID);
+                });
+                this.count -= 1;
+                if (this.count === 0) {
+                    scene.glowFilter.remove(this);
+                    this.hit = [];
+                    this.timer.destroy();
+                    this.timer.remove(false);
+                    this.timer = undefined;
+                    this.destroy();    
+                } else {
+                    this.setPartyCount(scene, type, false, origin);
                 };
             });
         };
@@ -212,7 +270,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             });
         };
     };
-    setEnemyTimer = (scene: Play, enemy: Enemy, target: Player | Enemy) => {
+    setEnemyTimer = (scene: Play, enemy: Enemy, target: Player | Enemy | Party) => {
         let scale = 0;
         let count = 0;
         let targ = target !== undefined ? target : enemy;
@@ -247,6 +305,26 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                     scale += 0.0075;
                     this.setScale(scale);
                     this.setPosition(target.effect.x, y);
+                };
+                count++;
+            },
+            callbackScope: this,
+            repeat: 20,
+        });
+    };
+    setPartyTimer = (scene: Play, origin: Party, target: Enemy) => {
+        let scale = 0;
+        let count = 0;
+        let targ = target !== undefined ? target : origin;
+        this.setVisible(true);
+        this.timer = scene.time.addEvent({
+            delay: 50,
+            callback: () => {
+                if (count >= 20) return;
+                if (this && this.timer && targ) {
+                    scale += 0.01875;
+                    this.setScale(scale);
+                    this.setPosition(targ.x, targ.y + 6);
                 };
                 count++;
             },
@@ -332,6 +410,15 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setOrigin(0.5, 0.5);
         this.sensor = aoeSensor;
     };
+    setupPartySensor = (origin: Party, target: Enemy) => {
+        let targ = target ? target : origin;
+        const aoeSensor = Bodies.circle(targ.x, targ.y, 60, {
+            isSensor: true, label: 'aoeSensor'
+        });
+        this.setExistingBody(aoeSensor);
+        this.setStatic(true);
+        this.sensor = aoeSensor;
+    };
     setupEnemyListener = (scene: Play, origin: Enemy) => {
         scene.matterCollision.addOnCollideStart({
             objectA: [this.sensor],
@@ -409,6 +496,36 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
                     this.hit = this.hit.filter((target) => target.enemyID !== gameObjectB.enemyID);
                 } else if (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') {
+                    this.bless = this.bless.filter((target) => target !== gameObjectB);
+                };
+            },
+            context: scene
+        });
+    };
+    setupPartyListener = (scene: Play) => {
+        scene.matterCollision.addOnCollideStart({
+            objectA: [this.sensor],
+            callback: (collision: { gameObjectB: any; bodyB: any; }) => {
+                const { gameObjectB, bodyB } = collision;
+                if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
+                    this.hit.push(gameObjectB);    
+                } else if (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') {
+                    this.bless.push(gameObjectB);
+                } else if (gameObjectB?.name === 'party') {
+                    this.bless.push(gameObjectB);
+                };
+            },
+            context: scene
+        });
+        scene.matterCollision.addOnCollideEnd({
+            objectA: [this.sensor],
+            callback: (collision: { gameObjectB: any; bodyB: any; }) => {
+                const { gameObjectB, bodyB } = collision;
+                if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
+                    this.hit = this.hit.filter((target) => target.enemyID !== gameObjectB.enemyID);
+                } else if (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') {
+                    this.bless = this.bless.filter((target) => target !== gameObjectB);
+                } else if (gameObjectB?.name === 'party') {
                     this.bless = this.bless.filter((target) => target !== gameObjectB);
                 };
             },

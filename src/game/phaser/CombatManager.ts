@@ -139,7 +139,7 @@ export class CombatManager extends Phaser.Scene {
             }});
         };
     };
-    astrave = (id: string, enemyID?: string): void => {
+    astrave = (id: string, enemyID: string): void => {
         if (!id) return;
         if (id === this.context?.player?.playerID) {
             let caster = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);

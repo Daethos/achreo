@@ -799,7 +799,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     function changeEnemyToParty() {
         EventBus.emit('add-party', {name: combat().computer?.name, level: combat().computer?.level});
-        EventBus.emit('despawn-enemy', combat().enemyID);
+        EventBus.emit('despawn-enemy-to-party', combat().enemyID);
         EventBus.emit('clear-enemy');
         EventBus.emit('action-button-sound');
         EventBus.emit('blend-game', { showDialog: false });

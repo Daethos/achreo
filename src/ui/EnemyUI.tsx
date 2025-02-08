@@ -52,7 +52,7 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
                 </button>
             ) : (
                 <button class='highlight cornerTL' onClick={removeParty} style={{ color: "red" }}>
-                    <p>Remove From Party <br /> <br /> <b>[PERMANENT]</b></p>
+                    <p>Remove <b>{enemy()?.name}</b> <br /> From The Party <br /> <br /> <b>[PERMANENT]</b></p>
                 </button>
             ) }
             <button class='highlight cornerTR' onClick={() => setShow(!show)}>

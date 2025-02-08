@@ -22,7 +22,7 @@ import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 import Party from '../entities/PartyComputer';
 import Ascean from '../../models/ascean';
-import { populateEnemy } from '../../assets/db/db';
+import { getEnemy, populateEnemy } from '../../assets/db/db';
 import { asceanCompiler, Compiler } from '../../utility/ascean';
 // import { WindPipeline } from '../shaders/Wind';
 const dimensions = useResizeListener();
@@ -409,18 +409,7 @@ export class Game extends Scene {
         EventBus.on('resetting-game', this.resetting);
         EventBus.on('add-to-party', this.addToParty);
         EventBus.on('remove-from-party', this.removeFromParty);
-        EventBus.on('despawn-enemy', (id: string) => {
-            const enemy = this.enemies.find((e: Enemy) => e.enemyID === id);
-            if (!enemy) return;
-            enemy.isDeleting = true;
-            this.player.removeEnemy(enemy);
-            this.player.disengage();
-            this.time.delayedCall(1000, () => {
-                this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
-                enemy.cleanUp();            
-                enemy.destroy();
-            }, undefined, this);
-        });
+        EventBus.on('despawn-enemy-to-party', this.despawnEnemyToParty);
     };
 
     resumeScene = () => {
@@ -732,14 +721,31 @@ export class Game extends Scene {
         this.party.push(newParty);
         newParty.setPosition(this.player.x - 40, this.player.y - 40);
     };
+    despawnEnemyToParty = (id: string) => {
+        const enemy = this.enemies.find((e: Enemy) => e.enemyID === id);
+        if (!enemy) return;
+        enemy.specialCombatText = this.showCombatText(`Excellent! I will not disappoint you, ${this.player.ascean.name}.`, 1500, 'bone', false, true, () => enemy.specialCombatText = undefined);
+        const party = getEnemy(enemy.ascean.name, enemy.ascean.level);
+        this.player.removeEnemy(enemy);
+        this.player.disengage();
+        this.time.delayedCall(2000, () => {
+            enemy.isDeleting = true;
+            this.addToParty(party);
+            this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
+            enemy.cleanUp();
+            enemy.destroy();
+        }, undefined, this);
+    };
     removeFromParty = (remove: Ascean) => {
         const party = this.party.find((e: Party) => e.playerID === remove._id);
         if (!party) return;
         const prevCoords = new Phaser.Math.Vector2(party.x,party.y);
-        party.isDeleting = true;
+        party.specialCombatText = this.showCombatText(`I understand. I'll be seeing you, ${this.player.ascean.name}.`, 1500, 'bone', false, true, () => party.specialCombatText = undefined);
+        // party.specialCombatText.update(this);
         this.player.disengage();
         this.time.delayedCall(1500, () => {
             this.party = this.party.filter((par: Party) => par.playerID !== remove._id);
+            party.isDeleting = true;
             party.cleanUp();
             party.destroy();
 

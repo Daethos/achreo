@@ -274,7 +274,7 @@ export default function App() {
             let newParty = await getParty(ascean()._id);
             newParty.party.push(asc as any);
             await updateParty(newParty);
-            EventBus.emit('add-to-party', asc);
+            // EventBus.emit('add-to-party', asc);
         } catch(err) {
             console.warn(err, 'Error Adding to Party');
         };

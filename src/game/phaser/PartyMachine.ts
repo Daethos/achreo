@@ -926,7 +926,13 @@ export default class PlayerMachine {
     };
     onDesperationUpdate = (_dt: number) => this.player.combatChecker(false);
     onDesperationExit = () => {
-        this.heal(0.5);
+        const gRatio = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
+        const pRatio = this.player.health / this.player.ascean.health.max;
+        if (gRatio <= pRatio) { // Heal the Player
+            this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 50, id: this.player.playerID }, type: 'Health' });
+        } else { // Heal the Party Member
+            this.heal(0.5);
+        };
         this.player.enemySound('phenomena', true);
     };
 
@@ -1065,7 +1071,13 @@ export default class PlayerMachine {
     onHealingExit = () => {
         if (this.player.castingSuccess === true) {
             this.player.castingSuccess = false;
-            this.heal(0.25);
+            const gRatio = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
+            const pRatio = this.player.health / this.player.ascean.health.max;
+            if (gRatio <= pRatio) { // Heal the Player
+                this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 25, id: this.player.playerID }, type: 'Health' });
+            } else { // Heal the Party Member
+                this.heal(0.25);
+            };
             this.player.enemySound('phenomena', true);
         };
         this.player.isCasting = false;
@@ -1201,17 +1213,11 @@ export default class PlayerMachine {
         this.player.enemySound('absorb', true);
     };
     heal = (pow: number) => {
-        const gRatio = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
-        const pRatio = this.player.health / this.player.ascean.health.max;
-        if (gRatio <= pRatio) { // Heal the Player
-            this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: pow * 100, id: this.player.playerID }, type: 'Health' });
-        } else { // Heal the Party Member
-            const heal = this.player.computerCombatSheet.computerHealth * pow;
-            this.player.health = Math.min(this.player.health + heal, this.player.computerCombatSheet.computerHealth);
-            this.player.updateHealthBar(this.player.health);
-            this.player.computerCombatSheet.newComputerHealth = this.player.health;
-            EventBus.emit(COMPUTER_BROADCAST, { id: this.player.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.player.health });
-        }
+        const heal = this.player.computerCombatSheet.computerHealth * pow;
+        this.player.health = Math.min(this.player.health + heal, this.player.computerCombatSheet.computerHealth);
+        this.player.updateHealthBar(this.player.health);
+        this.player.computerCombatSheet.newComputerHealth = this.player.health;
+        EventBus.emit(COMPUTER_BROADCAST, { id: this.player.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.player.health });
     };
     devour = (id: string) => {
         const enemy = this.scene.enemies.find(enemy => enemy.enemyID === this.player.spellTarget);
@@ -1544,7 +1550,13 @@ export default class PlayerMachine {
             this.player.reconTimer = undefined;
             return;
         };
-        this.heal(0.15);
+        const gRatio = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
+        const pRatio = this.player.health / this.player.ascean.health.max;
+        if (gRatio <= pRatio) { // Heal the Player
+            this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 15, id: this.player.playerID }, type: 'Health' });
+        } else { // Heal the Party Member
+            this.heal(0.15);
+        };
         this.player.enemySound('phenomena', true);
     };
 
@@ -1901,7 +1913,13 @@ export default class PlayerMachine {
         };
         this.player.enemySound('caerenic', true);
         this.player.specialCombatText = this.scene.showCombatText('Mending', 500, 'tendril', false, true, () => this.player.specialCombatText = undefined);
-        this.heal(0.15);
+        const gRatio = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
+        const pRatio = this.player.health / this.player.ascean.health.max;
+        if (gRatio <= pRatio) { // Heal the Player
+            this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 15, id: this.player.playerID }, type: 'Health' });
+        } else { // Heal the Party Member
+            this.heal(0.15);
+        };
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
         if (this.player.reactiveBubble.charges <= 0) {
             this.player.isMending = false;

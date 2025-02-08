@@ -1141,7 +1141,7 @@ export default class Party extends Entity {
 
     evaluateCombatDistance = () => {
         this.getDirection();
-        if (!this.inComputerCombat) return;
+        // if (!this.inComputerCombat) return;
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget);
         };
@@ -1150,8 +1150,11 @@ export default class Party extends Entity {
             this.playerMachine.stateMachine.setState(States.DEFEATED);
             return;
         };
+        if (!this.inComputerCombat || this.health <= 0) {
+            return;
+        };
         if (this.playerMachine.stateMachine.isCurrentState(States.LEASH) || this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) return;
-        if (!this.inComputerCombat || this.isCasting || this.isPraying || this.isContemplating || this.health <= 0) {
+        if (this.isCasting || this.isPraying || this.isContemplating) {
             this.isMoving = false;
             this.setVelocity(0);
             return;    

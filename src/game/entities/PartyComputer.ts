@@ -268,7 +268,6 @@ export default class Party extends Entity {
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
-                // if (!this.scene.hud.settings.difficulty.enemyCombatInteract && this.scene.combat) return;
                 if (this.currentTarget) {
                     this.scene.hud.logger.log(`Console: ${this.ascean.name} is currently attacking ${this.currentTarget.ascean.name}`);
                 };
@@ -278,13 +277,6 @@ export default class Party extends Entity {
                 this.setTint(TARGET_COLOR);
                 if (this.enemyID !== this.scene.state.enemyID) this.scene.hud.setupEnemy(this);
                 this.scene.player.setCurrentTarget(this);
-                // if (this.scene.scene.key !== 'ArenaCvC') {
-                //     this.scene.player.setCurrentTarget(this);
-                //     this.scene.player.targetIndex = this.scene.player.targets.findIndex((obj: Enemy) => obj?.enemyID === this.enemyID);
-                //     this.scene.player.animateTarget();
-                // } else {
-                //     (this.scene as ArenaView).setNewTarget(this);
-                // };
             })
             .on('pointerout', () => {
                 this.clearTint();
@@ -426,6 +418,7 @@ export default class Party extends Entity {
                 if (this.isDeleting) return;
                 if (other.gameObjectB?.isDeleting) return;
                 this.isValidRushEnemy(other.gameObjectB);
+                if (other.gameObjectB?.name === 'enemy') this.touching.push(other.gameObjectB);
                 if (this.isValidEnemyCollision(other) || this.playerInCombat(other.gameObjectB)) {
                     const isNewEnemy = this.isNewEnemy(other.gameObjectB);
                     if (!isNewEnemy) return;
@@ -436,7 +429,6 @@ export default class Party extends Entity {
                     const isNewNeutral = this.isNewEnemy(other.gameObjectB);
                     if (!isNewNeutral) return;
                     this.targets.push(other.gameObjectB);
-                    // if (this.inComputerCombat === false) this.scene.hud.setupEnemy(other.gameObjectB);
                 };
             },
             context: this.scene,
@@ -462,6 +454,7 @@ export default class Party extends Entity {
             callback: (other: any) => {
                 if (this.isDeleting) return;
                 if (other.gameObjectB?.isDeleting) return;
+                if (other.gameObjectB?.name === 'enemy') this.touching = this.touching.filter((target) => target !== other.gameObjectB)
                 if (this.isValidEnemyCollision(other) && !this.touching.length) {
                     this.actionAvailable = false;
                     this.triggeredActionAvailable = undefined;
@@ -864,7 +857,7 @@ export default class Party extends Entity {
     leap = () => {
         this.frameCount = 0;
         this.isLeaping = true;
-        const target = this.scene.getWorldPointer();
+        const target = this.currentTarget ? this.currentTarget.position : this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
         direction.normalize();
         this.flipX = direction.x < 0;
@@ -888,7 +881,7 @@ export default class Party extends Entity {
                 };
             },
         });       
-        EventBus.emit('special-combat-text', {
+        EventBus.emit('party-combat-text', {
             playerSpecialDescription: `You launch yourself through the air!`
         });
     };
@@ -897,8 +890,8 @@ export default class Party extends Entity {
         this.frameCount = 0;
         this.isRushing = true;
         this.isThrusting = true;
-        this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });        
-        const target = this.scene.getWorldPointer();
+        this.enemySound('stealth', true);
+        const target = this.currentTarget ? this.currentTarget.position : this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
         direction.normalize();
         this.flipX = direction.x < 0;
@@ -947,13 +940,13 @@ export default class Party extends Entity {
                     this.touching.forEach((enemy) => {
                         if (enemy.health <= 0) return;
                         if (enemy.isWarding || enemy.isShielding || enemy.isProtecting) {
-                            if (enemy.isShielding) enemy.shieldHit(this.playerID);
-                            if (enemy.isWarding) enemy.wardHit(this.playerID);
+                            if (enemy.isShielding) enemy.shieldHit(this.enemyID);
+                            if (enemy.isWarding) enemy.wardHit(this.enemyID);
                             return;
                         };
-                        if (enemy.isMenacing) enemy.menace(this.playerID);
-                        if (enemy.isMultifaring) enemy.multifarious(this.playerID);
-                        if (enemy.isMystifying) enemy.mystify(this.playerID);    
+                        if (enemy.isMenacing) enemy.menace(this.enemyID);
+                        if (enemy.isMultifaring) enemy.multifarious(this.enemyID);
+                        if (enemy.isMystifying) enemy.mystify(this.enemyID);    
                         this.scene.combatManager.partyMelee({ action: 'storm', origin: this.enemyID, enemyID: enemy.enemyID });
                     });
                 };
@@ -977,7 +970,6 @@ export default class Party extends Entity {
             this.playerMachine.positiveMachine.setState(States.STEALTH);
         };
     };
-
 
     disengage = () => {
         this.healthbar.setVisible(false);
@@ -1386,7 +1378,7 @@ export default class Party extends Entity {
             };
         };
 
-        // if (this.scene.combat === true && (!this.currentTarget || !this.currentTarget.inComputerCombat)) this.findEnemy(); // this.inComputerCombat === true && state.combatEngaged
+        // if (this.scene.combat === true && (!this.currentTarget) this.findEnemy(); // this.inComputerCombat === true && state.combatEngaged
         if (this.healthbar) this.healthbar.update(this);
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this);
@@ -1445,18 +1437,15 @@ export default class Party extends Entity {
                     return;
                 };
                 if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit(this.playerID);
-                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit(this.playerID);
+                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit(this.enemyID);
+                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit(this.enemyID);
                     return;
                 };
-                if (this.attackedTarget.isMenacing) this.attackedTarget.menace(this.playerID); 
-                if (this.attackedTarget.isMultifaring) this.attackedTarget.multifarious(this.playerID); 
-                if (this.attackedTarget.isMystifying) this.attackedTarget.mystify(this.playerID); 
+                if (this.attackedTarget.isMenacing) this.attackedTarget.menace(this.enemyID); 
+                if (this.attackedTarget.isMultifaring) this.attackedTarget.multifarious(this.enemyID); 
+                if (this.attackedTarget.isMystifying) this.attackedTarget.mystify(this.enemyID); 
             };
             this.scene.combatManager.partyMelee({ action, origin: this.enemyID, enemyID: this.attackedTarget.enemyID  });
-            /*
-                Put Combat Manager Concerns Here
-            */
         } else {
             if (!this.isAstrifying) {
                 if (this?.attackedTarget?.isShimmering && Phaser.Math.Between(1, 100) > 50) {
@@ -1464,18 +1453,15 @@ export default class Party extends Entity {
                     return;
                 };
                 if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit(this.playerID);
-                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit(this.playerID);
+                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit(this.enemyID);
+                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit(this.enemyID);
                     return;    
                 };
-                if (this.attackedTarget?.isMenacing) this.attackedTarget?.menace(this.playerID);
-                if (this.attackedTarget?.isMultifaring) this.attackedTarget?.multifarious(this.playerID);
-                if (this.attackedTarget?.isMystifying) this.attackedTarget?.mystify(this.playerID);
+                if (this.attackedTarget?.isMenacing) this.attackedTarget?.menace(this.enemyID);
+                if (this.attackedTarget?.isMultifaring) this.attackedTarget?.multifarious(this.enemyID);
+                if (this.attackedTarget?.isMystifying) this.attackedTarget?.mystify(this.enemyID);
             };
             this.scene.combatManager.partyMelee({ action: this.currentAction, origin: this.enemyID, enemyID: this.attackedTarget.enemyID } );
-            /*
-                Put Combat Manager Concerns Here
-            */
         };
         if (this.isStealthing) {
             this.scene.combatManager.paralyze(this.attackedTarget.enemyID);

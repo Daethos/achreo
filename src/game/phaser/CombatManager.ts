@@ -557,7 +557,6 @@ export class CombatManager extends Phaser.Scene {
                 };          
             };
         };
-        // };
     };
     writhe = (id: string, enemyID: string): void => {
         if (!id) return;

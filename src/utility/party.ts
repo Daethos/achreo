@@ -129,7 +129,7 @@ export const PARTY_INSTINCTS = {
             key: STATE,
             value: States.HEALING
         },{ // 2 - Starter Heal
-            key: STATE,
+            key: POSITIVE,
             value: States.MEND
         },{ // 3 - Critical Damage
             key: STATE,
@@ -162,7 +162,7 @@ export const PARTY_INSTINCTS = {
             key: POSITIVE,
             value: States.ABSORB
         },{ // 13 - Ranged > 300 Distance
-            key: STATE,
+            key: POSITIVE,
             value: States.WARD
         }
     ],
@@ -174,7 +174,7 @@ export const PARTY_INSTINCTS = {
             key: STATE,
             value: States.DEVOUR
         },{ // 2 - Starter Heal
-            key: STATE,
+            key: POSITIVE,
             value: States.MEND
         },{ // 3 - Critical Damage
             key: STATE,
@@ -183,7 +183,7 @@ export const PARTY_INSTINCTS = {
             key: STATE,
             value: States.STORM
         },{ // 5 - Starter Damage
-            key: POSITIVE,
+            key: STATE,
             value: States.LEAP
         },{ // 6 - Melee < 100 Distance
             key: POSITIVE,
@@ -207,7 +207,7 @@ export const PARTY_INSTINCTS = {
             key: POSITIVE,
             value: States.HOOK
         },{ // 13 - Ranged > 300 Distance
-            key: STATE,
+            key: POSITIVE,
             value: States.WARD
         }
     ],
@@ -216,8 +216,8 @@ export const PARTY_INSTINCTS = {
             key: STATE,
             value: States.DESPERATION
         },{ // 1 - Casual Heal
-            key: POSITIVE,
-            value: States.ENVELOP
+            key: STATE,
+            value: States.HEAL
         },{ // 2 - Starter Heal
             key: STATE,
             value: States.ENVELOP
@@ -264,7 +264,7 @@ export const PARTY_INSTINCTS = {
             key: STATE,
             value: States.RECONSTITUTE
         },{ // 2 - Starter Heal
-            key: STATE,
+            key: POSITIVE,
             value: States.ABSORB
         },{ // 3 - Critical Damage
             key: STATE,
@@ -306,10 +306,10 @@ export const PARTY_INSTINCTS = {
             key: STATE,
             value: States.DESPERATION
         },{ // 1 - Casual Heal
-            key: POSITIVE,
+            key: STATE,
             value: States.HEAL
         },{ // 2 - Starter Heal
-            key: STATE,
+            key: POSITIVE,
             value: States.MEND
         },{ // 3 - Critical Damage
             key: STATE,
@@ -342,7 +342,7 @@ export const PARTY_INSTINCTS = {
             key: STATE,
             value: States.SHIRK
         },{ // 13 - Ranged > 300 Distance
-            key: STATE,
+            key: POSITIVE,
             value: States.MENACE
         }
     ],
@@ -387,7 +387,7 @@ export const PARTY_INSTINCTS = {
             key: POSITIVE,
             value: States.MYSTIFY
         },{ // 13 - Ranged > 300 Distance
-            key: STATE,
+            key: POSITIVE,
             value: States.PROTECT
         }
     ]
@@ -398,26 +398,26 @@ export const DEFENSIVE = "Defensive";
 export const OFFENSIVE = "Offensive";
 
 export const PARTY_BALANCED_INSTINCTS = {
-    "constitution": [States.ILIRECH, States.KYNISOS, States.PARALYZE, States.WARD],
-    "strength": [States.SPRINTING, States.STORM, States.WARD, States.LEAP],
-    "agility": [States.ACHIRE, States.KYNISOS, States.SPRINTING, States.PURSUIT],
-    "achre": [States.ACHIRE, States.BLINK, States.FYERUS, States.SLOW],
-    "caeren": [States.FEAR, States.ILIRECH, States.HEALING, States.SCREAM],
-    "kyosir": [States.CONFUSE, States.DISPEL, States.KYNISOS, States.SUTURE],
+    "constitution": [States.ILIRECH, States.KYNISOS, States.KYRNAICISM, States.PARALYZE, States.WARD],
+    "strength": [States.QUOR, States.SPRINTING, States.STORM, States.WARD, States.LEAP],
+    "agility": [States.ACHIRE, States.KYNISOS, States.RUSH, States.SPRINTING, States.PURSUIT],
+    "achre": [States.ACHIRE, States.ASTRAVE, States.BLINK, States.FYERUS, States.SLOW],
+    "caeren": [States.ASTRAVE, States.FEAR, States.ILIRECH, States.HEALING, States.SCREAM],
+    "kyosir": [States.CONFUSE, States.DISPEL, States.KYNISOS, States.KYRNAICISM, States.SUTURE],
 };
 export const PARTY_DEFENSIVE_INSTINCTS = {
-    "constitution": [States.ABSORB, States.HEALING, States.KYRNAICISM, States.SHIELD, States.SHIRK],
-    "strength": [States.DESPERATION, States.HOWL, States.SPRINTING, States.WARD],
-    "agility": [States.DESPERATION, States.ENVELOP, States.SHIMMER, States.SNARE],
+    "constitution": [States.ABSORB, States.DESPERATION, States.HEALING, States.KYRNAICISM, States.SHIELD, States.SHIRK],
+    "strength": [States.DESPERATION, States.HOWL, States.MEND, States.SPRINTING, States.WARD],
+    "agility": [States.DESPERATION, States.ENVELOP, States.KYRNAICISM, States.SHIMMER, States.SNARE],
     "achre": [States.ABSORB, States.BLINK, States.DESPERATION, States.MODERATE, States.SLOW],
-    "caeren": [States.DESPERATION, States.FEAR, States.KYRNAICISM, States.MEND],
+    "caeren": [States.DESPERATION, States.FEAR, States.HEAL, States.KYRNAICISM, States.MEND],
     "kyosir": [States.CONFUSE, States.DESPERATION, States.HEALING, States.MYSTIFY, States.PROTECT, States.SUTURE],
 };
 export const PARTY_OFFENSIVE_INSTINCTS = {
     "constitution": [States.DISPEL, States.ILIRECH, States.KYNISOS, States.KYRNAICISM, States.MAIERETH, States.PARALYZE],
     "strength": [States.LEAP, States.QUOR, States.RUSH, States.SPRINTING, States.STORM],
-    "agility": [States.ACHIRE, States.KYNISOS, States.SPRINTING, States.STORM],
+    "agility": [States.ACHIRE, States.KYNISOS, States.RUSH, States.SPRINTING, States.STORM],
     "achre": [States.ACHIRE, States.ASTRAVE, States.BLINK, States.FYERUS, States.QUOR],
-    "caeren": [States.ACHIRE, States.ASTRAVE, States.MALICE, States.KYRNAICISM, States.SACRIFICE],
-    "kyosir": [States.DISPEL, States.MAIERETH, States.MALICE, States.SACRIFICE],
+    "caeren": [States.ACHIRE, States.ASTRAVE, States.ILIRECH, States.MALICE, States.KYRNAICISM, States.SACRIFICE],
+    "kyosir": [States.DISPEL, States.KYRNAICISM, States.MAIERETH, States.MALICE, States.SACRIFICE],
 };

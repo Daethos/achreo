@@ -489,14 +489,15 @@ export default class PlayerMachine {
         this.player.setVelocity(0);
         let chance = [1, 2, 4, 5, (!this.player.isRanged ? 6 : 7), (!this.player.isRanged ? 8 : 9), (!this.player.isRanged ? 10 : 11), (!this.player.isRanged ? 12 : 13)][Math.floor(Math.random() * 8)];
         let mastery = this.player.ascean.mastery;
+        let gHealth = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
         let pHealth = this.player.health / this.player.ascean.health.max;
         let eHealth = this.scene.state.newComputerHealth / this.scene.state.computerHealth;
         const direction = this.player.currentTarget?.position.subtract(this.player.position);
         const distance = direction?.length() || 0;
         let instinct =
-            pHealth <= 0.25 ? 0 :
-            pHealth <= 0.5 ? 1 :
-            (pHealth >= 0.7 && pHealth <= 0.9)  ? 2 :
+            (pHealth <= 0.25 || gHealth <= 0.25) ? 0 :
+            (pHealth <= 0.5 || gHealth <= 0.5) ? 1 :
+            ((pHealth >= 0.7 && pHealth <= 0.9) || (gHealth >= 0.7 && gHealth <= 0.9)) ? 2 :
 
             eHealth <= 0.35 ? 3 :
             eHealth <= 0.6 ? 4 :
@@ -1200,11 +1201,17 @@ export default class PlayerMachine {
         this.player.enemySound('absorb', true);
     };
     heal = (pow: number) => {
-        const heal = this.player.computerCombatSheet.computerHealth * pow;
-        this.player.health = Math.min(this.player.health + heal, this.player.computerCombatSheet.computerHealth);
-        this.player.updateHealthBar(this.player.health);
-        this.player.computerCombatSheet.newComputerHealth = this.player.health;
-        EventBus.emit(COMPUTER_BROADCAST, { id: this.player.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.player.health });
+        const gRatio = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
+        const pRatio = this.player.health / this.player.ascean.health.max;
+        if (gRatio <= pRatio) { // Heal the Player
+            this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: pow * 100, id: this.player.playerID }, type: 'Health' });
+        } else { // Heal the Party Member
+            const heal = this.player.computerCombatSheet.computerHealth * pow;
+            this.player.health = Math.min(this.player.health + heal, this.player.computerCombatSheet.computerHealth);
+            this.player.updateHealthBar(this.player.health);
+            this.player.computerCombatSheet.newComputerHealth = this.player.health;
+            EventBus.emit(COMPUTER_BROADCAST, { id: this.player.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.player.health });
+        }
     };
     devour = (id: string) => {
         const enemy = this.scene.enemies.find(enemy => enemy.enemyID === this.player.spellTarget);

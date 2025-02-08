@@ -926,6 +926,9 @@ const asceanCompiler = (ascean: any): Compiler | undefined => {
         if (Number.isNaN(ascean.health.current)) {
             ascean.health.current = ascean.health.max;
         };
+        if (ascean.health.current <= 0) {
+            ascean.health.current = 0;
+        };
         if (Number.isNaN(ascean.experience)) {
             ascean.experience = ascean.level * 1000;
         };

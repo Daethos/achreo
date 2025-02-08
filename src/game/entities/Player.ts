@@ -14,7 +14,7 @@ import Equipment from "../../models/equipment";
 import { Compiler } from "../../utility/ascean";
 import { ActionButton } from "../phaser/ActionButtons";
 import { Combat } from "../../stores/combat";
-import { COMPUTER_BROADCAST } from "../../utility/enemy";
+import { BROADCAST_DEATH, COMPUTER_BROADCAST } from "../../utility/enemy";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const DURATION = {
@@ -395,6 +395,7 @@ export default class Player extends Entity {
         EventBus.on('set-player', this.setPlayer)
         EventBus.on('combat', this.constantUpdate);
         EventBus.on('update-combat', this.eventUpdate);
+        EventBus.on(BROADCAST_DEATH, this.enemyDeath);    
         EventBus.on(COMPUTER_BROADCAST, this.computerBroadcast);
         EventBus.on('disengage', this.disengage); 
         EventBus.on('engage', this.engage);
@@ -407,8 +408,11 @@ export default class Player extends Entity {
         EventBus.on('updated-grace', this.updateGrace);
         EventBus.on('updated-stamina', this.updateStamina);
     }; 
-
     
+    enemyDeath = (id: string) => {
+        const enemy = this.targets.find((e: Enemy) => e.enemyID === id);
+        if (enemy) this.removeEnemy(enemy);
+    };
 
     updateGrace = (percentage: number) => {
         this.grace = Math.round(this.maxGrace * percentage / 100);
@@ -434,6 +438,11 @@ export default class Player extends Entity {
         this.inCombat = false;
         this.currentTarget = undefined;
         this.removeHighlight();
+        if (this.scene.party.length) {
+            for (let i = 0; i < this.scene.party.length; i++) {
+                this.scene.party[i].disengage();
+            };
+        };
     };
 
     engage = () => {
@@ -443,6 +452,11 @@ export default class Player extends Entity {
         if (enemy) {
             this.currentTarget = enemy;
             this.highlightTarget(enemy);
+            if (this.scene.party.length) {
+                for (let i = 0; i < this.scene.party.length; i++) {
+                    if (!this.scene.party[i].inComputerCombat) this.scene.party[i].checkComputerEnemyCombatEnter(enemy);
+                };
+            };
         };
     };
 
@@ -494,6 +508,11 @@ export default class Player extends Entity {
         this.currentTarget = enemy;
         this.highlightTarget(enemy);
         if (this.scene.state.enemyID !== enemy.enemyID) this.scene.hud.setupEnemy(enemy);
+        if (this.scene.party.length) {
+            for (let i = 0; i < this.scene.party.length; i++) {
+                if (!this.scene.party[i].inComputerCombat) this.scene.party[i].checkComputerEnemyCombatEnter(enemy);
+            };
+        };    
     };
 
     targetEngagement = (id: string) => {
@@ -506,6 +525,11 @@ export default class Player extends Entity {
         this.targetID = id;
         this.currentTarget = enemy;
         this.highlightTarget(enemy);
+        if (this.scene.party.length) {
+            for (let i = 0; i < this.scene.party.length; i++) {
+                if (!this.scene.party[i].inComputerCombat) this.scene.party[i].checkComputerEnemyCombatEnter(enemy);
+            };
+        };
     };
 
     constantUpdate = (e: Combat) => {
@@ -1600,7 +1624,7 @@ export default class Player extends Entity {
             this.playerMachine.stateMachine.setState(States.STUN);
             return;
         };
-        if (this.scene.combat === true && (!this.currentTarget || !this.currentTarget.inCombat)) this.findEnemy(); // this.inCombat === true && state.combatEngaged
+        if (this.scene.combat === true && (!this.currentTarget)) this.findEnemy(); // || !this.currentTarget.inCombat // this.inCombat === true && state.combatEngaged
         if (this.healthbar) this.healthbar.update(this);
         if (this.scrollingCombatText !== undefined) this.scrollingCombatText.update(this);
         if (this.specialCombatText !== undefined) this.specialCombatText.update(this); 

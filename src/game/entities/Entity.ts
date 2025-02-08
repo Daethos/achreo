@@ -512,7 +512,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 };
             };
         };
-        if (entity === 'enemy' && target && target.body) {
+        if ((entity === 'enemy' || entity === 'party') && target && target.body) {
             const direction = target.position.subtract(this.position);
             const distance = direction.length();
             if (distance < FRAME_COUNT.DISTANCE_CLEAR && !target.isProtecting && target.health > 0) {

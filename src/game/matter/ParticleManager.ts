@@ -178,6 +178,18 @@ export class Particle {
                 direction.normalize();
                 return direction;
             };
+        } else if (player.name === 'party') {            
+            if (!(player as Party).currentTarget || !(player as Party).currentTarget?.body) {
+                const target = scene.getWorldPointer();
+                const direction = target.subtract(player.position);
+                direction.normalize();
+                return direction;
+            } else {
+                const target = new Phaser.Math.Vector2((player as Party).currentTarget?.body?.position.x, (player as Party).currentTarget?.body?.position.y);
+                const direction = target.subtract(player.position);
+                direction.normalize();
+                return direction;
+            };
         } else {
             if (!(player as Player).isComputer && (scene.hud.settings.difficulty.aim === true || !(player as Player).currentTarget || !(player as Player).currentTarget?.body || special === true)) {
                 const target = scene.getWorldPointer();

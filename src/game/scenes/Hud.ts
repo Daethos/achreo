@@ -268,7 +268,8 @@ export class Hud extends Phaser.Scene {
             isTriumphant: enemy.isTriumphant,
             isLuckout: enemy.isLuckout, 
             isPersuaded: enemy.isPersuaded, 
-            playerTrait: enemy.playerTrait
+            playerTrait: enemy.playerTrait,
+            name: enemy.name
         };
         EventBus.emit('setup-enemy', data);
     };
@@ -446,6 +447,7 @@ export class Hud extends Phaser.Scene {
                 default: break;
             };
         });
+        EventBus.on('show-dialog-false', () => this.showDialog(false));
     };
     
     highlightElements(type: string) {

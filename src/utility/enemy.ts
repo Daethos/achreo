@@ -5,6 +5,7 @@ import { States } from "../game/phaser/StateMachine";
 import { Compiler, asceanCompiler } from "./ascean";
 import Equipment from "../models/equipment";
 
+export const BROADCAST_DEATH = "broadcast-comptuer-death";
 export const COMPUTER_BROADCAST = 'computer-broadcast';
 export const NEW_COMPUTER_ENEMY_HEALTH = 'newComputerEnemyHealth';
 export const UPDATE_COMPUTER_COMBAT = 'update-computer-combat';
@@ -302,6 +303,7 @@ export type EnemySheet = {
     id: string;
     game: Ascean;
     enemy: Compiler;
+    name: string;
     weapons: Equipment[];
     health: number;
     isAggressive: boolean;

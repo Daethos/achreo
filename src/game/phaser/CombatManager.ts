@@ -36,7 +36,15 @@ export class CombatManager extends Phaser.Scene {
         switch (type) {
             case 'Weapon':
                 let computerOne = this.context.enemies.find((e: Enemy) => e.enemyID === origin).computerCombatSheet;
-                let computerTwo = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID).computerCombatSheet;
+                let computerTwo;
+
+                let computer = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
+                if (computer) {
+                    computerTwo = computer.computerCombatSheet;
+                } else {
+                    computerTwo = this.context.party.find((e: Party) => e.enemyID === enemyID)?.computerCombatSheet;
+                };
+                // let computerTwo = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID).computerCombatSheet;
                 computerOne.computerAction = action;
                 computerOne.computerEnemyAction = computerTwo.computerAction;
                 computerTwo.computerEnemyAction = action;
@@ -96,7 +104,7 @@ export class CombatManager extends Phaser.Scene {
 
     partyMelee = (payload: { action: string; origin: string; enemyID: string; }) => {
         const { action, origin, enemyID } = payload;
-        let computerOne = this.context.party.find((e: Party) => e.playerID === origin)!.computerCombatSheet;
+        let computerOne = this.context.party.find((e: Party) => e.enemyID === origin)!.computerCombatSheet;
         let computerTwo = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID).computerCombatSheet;
         computerOne.computerAction = action;
         computerOne.computerEnemyAction = computerTwo.computerAction;

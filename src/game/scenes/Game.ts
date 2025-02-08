@@ -21,6 +21,9 @@ import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 import Party from '../entities/PartyComputer';
+import Ascean from '../../models/ascean';
+import { populateEnemy } from '../../assets/db/db';
+import { asceanCompiler, Compiler } from '../../utility/ascean';
 // import { WindPipeline } from '../shaders/Wind';
 const dimensions = useResizeListener();
 
@@ -198,7 +201,14 @@ export class Game extends Scene {
         this.musicCombat = this.sound.add('combat', { volume: this?.hud?.settings?.volume, loop: true });
         this.musicCombat2 = this.sound.add('combat2', { volume: this?.hud?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
-        // if (this.hud.settings?.music === true) this.musicDay.play();
+
+        const party = this.registry.get("party");
+        if (party.length) {
+            for (let i = 0; i < party.length; i++) {
+                const p = new Party({scene:this,x:200,y:200,texture:'player_actions',frame:'player_idle_0',data:party[i]});
+                this.party.push(p);
+            };
+        };
 
         this.postFxEvent();
         this.particleManager = new ParticleManager(this);
@@ -314,11 +324,16 @@ export class Game extends Scene {
         EventBus.off('update-enemy-aggression');
         EventBus.off('update-enemy-special');
         EventBus.off('resetting-game');
+        EventBus.off('add-to-party');
+        EventBus.off('despawn-enemy');
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].cleanUp();
         };
         for (let i = 0; i < this.npcs.length; i++) {
             this.npcs[i].cleanUp();
+        };
+        for (let i = 0; i < this.party.length; i++) {
+            this.party[i].cleanUp();
         };
         this.player.cleanUp();
     };
@@ -392,6 +407,20 @@ export class Game extends Scene {
             };
         });
         EventBus.on('resetting-game', this.resetting);
+        EventBus.on('add-to-party', this.addToParty);
+        EventBus.on('remove-from-party', this.removeFromParty);
+        EventBus.on('despawn-enemy', (id: string) => {
+            const enemy = this.enemies.find((e: Enemy) => e.enemyID === id);
+            if (!enemy) return;
+            enemy.isDeleting = true;
+            this.player.removeEnemy(enemy);
+            this.player.disengage();
+            this.time.delayedCall(1000, () => {
+                this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
+                enemy.cleanUp();            
+                enemy.destroy();
+            }, undefined, this);
+        });
     };
 
     resumeScene = () => {
@@ -409,6 +438,7 @@ export class Game extends Scene {
         this.scene.wake();
         EventBus.emit('current-scene-ready', this);
     };
+
     switchScene = (current: string) => {
         this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
             this.registry.set("combat", this.state);
@@ -482,6 +512,7 @@ export class Game extends Scene {
             };
         };
     });
+
     setPostFx = (settings: any, enable: boolean): void => { 
         if (enable === true) {
             this.postFxPipeline.setEnable();
@@ -507,6 +538,7 @@ export class Game extends Scene {
         this.postFxPipeline.crtHeight = settings.crtHeight;
         this.postFxPipeline.crtWidth = settings.crtWidth;
     };
+
     resetting = (): void => {
         this.sound.play('TV_Button_Press', { volume: this?.hud?.settings?.volume * 2 });
         this.cameras.main.fadeOut();
@@ -515,18 +547,22 @@ export class Game extends Scene {
             EventBus.emit('reset-game');
         });
     };
+
     getReputation = (): Reputation => {
         EventBus.emit('request-reputation');
         return this.reputation;
     };
+
     getEnemy = (id: string): Enemy | undefined => {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };
+
     getWorldPointer = () => {
         const pointer = this.hud.rightJoystick.pointer;
         let point = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
         return point;
     };
+
     rotateTween = (tween: any, count: number, active: boolean) => {
         if (active === true) {
             if (tween && tween.name) {
@@ -548,7 +584,9 @@ export class Game extends Scene {
             };
         };
     };
+
     isStateEnemy = (id: string): boolean => id === this.state.enemyID;
+
     quickCombat = () => {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
@@ -557,6 +595,7 @@ export class Game extends Scene {
             };
         };
     };
+
     clearAggression = () => {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
@@ -568,6 +607,7 @@ export class Game extends Scene {
             };
         };
     };
+
     combatEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (bool === true) {
@@ -607,6 +647,7 @@ export class Game extends Scene {
         this.combat = bool;
         EventBus.emit('combat-engaged', bool);
     };
+
     stealthEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (this.hud.settings?.music === false) return;
@@ -637,6 +678,7 @@ export class Game extends Scene {
             };
         };
     };
+
     pauseMusic = (): void => {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (this.musicDay.isPlaying) this.musicDay.pause();
@@ -645,6 +687,7 @@ export class Game extends Scene {
         if (this.musicCombat2.isPlaying) this.musicCombat2.pause();
         if (this.musicStealth.isPlaying) this.musicStealth.pause();
     };
+
     resumeMusic = (): void => {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (this.hud.settings?.music === false) return;
@@ -679,8 +722,35 @@ export class Game extends Scene {
             };
         };
     };
+
     drinkFlask = (): boolean => EventBus.emit('drink-firewater');
-    checkEnvironment = (player: Player | Enemy) => {
+
+    addToParty = (party: Ascean) => {
+        const ascean = populateEnemy(party);
+        const compile = asceanCompiler(ascean) as Compiler;
+        const newParty = new Party({scene:this,x:200,y:200,texture:'player_actions',frame:'player_idle_0',data:compile});
+        this.party.push(newParty);
+        newParty.setPosition(this.player.x - 40, this.player.y - 40);
+    };
+    removeFromParty = (remove: Ascean) => {
+        const party = this.party.find((e: Party) => e.playerID === remove._id);
+        if (!party) return;
+        const prevCoords = new Phaser.Math.Vector2(party.x,party.y);
+        party.isDeleting = true;
+        this.player.disengage();
+        this.time.delayedCall(1500, () => {
+            this.party = this.party.filter((par: Party) => par.playerID !== remove._id);
+            party.cleanUp();
+            party.destroy();
+
+            const compile = asceanCompiler(remove) as Compiler;
+            const enemy = new Enemy({scene:this,x:200,y:200,texture:'player_actions',frame:'player_idle_0',data:compile});
+            this.enemies.push(enemy);
+            enemy.setPosition(prevCoords.x, prevCoords.y);
+        }, undefined, this);
+        
+    };
+    checkEnvironment = (player: Player | Enemy | Party) => {
         const x = this.map.worldToTileX(player.x || 0);
         const y = this.map.worldToTileY(player.y || 0);
         if (!this.climbingLayer) return;
@@ -714,6 +784,7 @@ export class Game extends Scene {
             };
         };
     };
+
     playerUpdate = (delta: number): void => {
         this.player.update(delta); 
         this.combatManager.combatMachine.process();
@@ -722,6 +793,7 @@ export class Game extends Scene {
         this.checkEnvironment(this.player);
         if (!this.hud.settings.desktop) this.hud.rightJoystick.update();
     };
+
     setCameraOffset = () => {
         const { width, height } = this.cameras.main.worldView;
         if (this.player.flipX === true) {
@@ -736,6 +808,7 @@ export class Game extends Scene {
         };
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };
+
     startCombatTimer = (): void => {
         if (this.combatTimer) {
             this.combatTimer.destroy();
@@ -751,6 +824,7 @@ export class Game extends Scene {
             loop: true
         });
     };
+
     stopCombatTimer = (): void => {
         if (this.combatTimer) {
             this.combatTimer.destroy();
@@ -758,25 +832,22 @@ export class Game extends Scene {
         this.combatTime = 0;
         EventBus.emit('update-combat-timer', this.combatTime);
     };
+
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
+        for (let i = 0; i < this.party.length; i++) {
+            if (this.party[i].isDeleting) return;
+            this.party[i].update(delta);
+            this.checkEnvironment(this.party[i]);
+        };
         for (let i = 0; i < this.enemies.length; i++) {
+            if (this.enemies[i].isDeleting) return;
             this.enemies[i].update(delta);
             this.checkEnvironment(this.enemies[i]);
         };
         for (let i = 0; i < this.npcs.length; i++) {
             this.npcs[i].update();
         };
-        // const wind = (this.game.renderer as any).pipelines.get('Wind');
-        // if (wind) {
-        //     // console.log(wind,'wind');
-        //     wind.updateTime(time / 1000);
-        // };
-        // const day = (this.game.renderer as any).pipelines.get('Day');
-        // if (day) {
-        //     // console.log(day,'day');
-        //     day.updateTime(time / 1000);
-        // };
     };
     pause(): void {
         this.scene.pause();

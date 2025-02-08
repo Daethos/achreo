@@ -590,6 +590,16 @@ export type faction = {
     dialog: number; // Reputation threshold to enable dialog option
 };
 
+export const initFaction = {
+    name: '', // Name of faction type and functional key for factions[] array
+    reputation: 0, // 0 - 100. Higher reputation opens up dialog, quests, and trade
+    named: false, // Unique enemies
+    aggressive: false, // Attacks first if true
+    betrayed: false, // Betrayed = went from aggressive = false to true, Permanent = always aggressive, no dialog
+    faith: '', // Adherent || Devoted
+    dialog: 0, // Reputation threshold to enable dialog option
+};
+
 export const ACHREON_DRUID = "Achreon Druid";
 export const AHNARE_APOSTLE = "Ahn'are Apostle";
 export const ANASHTRE = "Anashtre";
@@ -1210,7 +1220,7 @@ export const initInventory: Inventory = new Inventory('inventory');
 
 export class Party<T> {
     public _id: string;
-    public party: T[] | [];
+    public party: T[] | any[];
     public constructor(id: string) {
         this._id = id;
         this.party = [];

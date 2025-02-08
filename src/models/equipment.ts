@@ -112,7 +112,8 @@ async function mutate(equipment: Equipment[], rarity?: string | 'Common') {
         // const range = ATTRIBUTE_RANGE[rarity as keyof typeof ATTRIBUTE_RANGE];
         for (const item of equipment) {
             item._id = uuidv4(); // uuidv4();
-            item.influences = influence((equipment as any)?.influences);
+            item.influences = influence((item as any)?.influences);
+            // console.log(item.influences, 'Current Influence of Item!')
             // const attributeCount = ATTRIBUTES.filter(attribute => item[attribute] > 0).length;
             for (const attribute of ATTRIBUTES) {   
                 if (item[attribute] > 0) {

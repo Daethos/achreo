@@ -7,7 +7,7 @@ import Settings from '../../models/settings';
 import Ascean from '../../models/ascean';
 import { Asceans } from './ascean';
 import Equipment, { getOneRandom } from '../../models/equipment';
-import { Inventory, Reputation } from '../../utility/player';
+import { Inventory, Party, Reputation } from '../../utility/player';
 import Statistics from '../../utility/statistics';
 import Talents, { createTalents } from '../../utility/talents';
 import Quest, { createQuests } from '../../utility/quests';
@@ -22,7 +22,17 @@ const STATISTICS = 'Statistics';
 const TALENTS = 'Talents';
 const PARTY = 'Party';
 
-export const getParty = async (id: string) => await db.collection(PARTY).doc({ _id: id }).get();
+export const getParty = async (id: string): Promise<Party<Ascean>> => {
+    const party = await db.collection(PARTY).doc({ _id: id }).get();
+    if (party) {
+        return party;
+    } else {
+        const newParty = new Party(id);
+        await db.collection(PARTY).add(newParty);
+        return newParty;
+    };
+};
+export const updateParty = async (party: Party<Ascean>) => await db.collection(PARTY).doc({ _id: party._id }).update(party);
 
 export const getAsceans = async () => await db.collection(ASCEANS).get();
 export const getAscean = async (id: string) => await db.collection(ASCEANS).doc({ _id: id }).get();
@@ -47,6 +57,8 @@ export const deleteAscean = async (id: string) => {
     if (statistics) await db.collection(STATISTICS).doc({ _id: id }).delete();
     const talents = await db.collection(TALENTS).doc({ _id: id }).get();
     if (talents) await db.collection(TALENTS).doc({ _id: id }).delete();
+    const party = await db.collection(PARTY).doc({ _id: id }).get();
+    if (party) await db.collection(PARTY).doc({ _id: id }).delete();
 };
 
 export const blessAscean = async (id: string, entry: any): Promise<any> => {
@@ -197,10 +209,20 @@ export const saveTutorial = async (id: string, type: string) => {
 };
 
 export const scrub = async (ascean: Ascean) => {
-    const scrubbed = { ...ascean, 
-        weaponOne: ascean.weaponOne._id, weaponTwo: ascean.weaponTwo._id, weaponThree: ascean.weaponThree._id, shield: ascean.shield._id, 
-        helmet: ascean.helmet._id, chest: ascean.chest._id, legs: ascean.legs._id, 
-        ringOne: ascean.ringOne._id, ringTwo: ascean.ringTwo._id, amulet: ascean.amulet._id, trinket: ascean.trinket._id };
+    const scrubbed = { 
+        ...ascean,
+        weaponOne: ascean.weaponOne._id,
+        weaponTwo: ascean.weaponTwo._id,
+        weaponThree: ascean.weaponThree._id,
+        shield: ascean.shield._id,
+        helmet: ascean.helmet._id,
+        chest: ascean.chest._id,
+        legs: ascean.legs._id,
+        amulet: ascean.amulet._id,
+        ringOne: ascean.ringOne._id,
+        ringTwo: ascean.ringTwo._id,
+        trinket: ascean.trinket._id
+    };
     await updateAscean(scrubbed);
     return scrubbed;
 };
@@ -384,6 +406,11 @@ export function populateEnemy(enemy: Ascean): Ascean {
         amulet: amulet,
         trinket: trinket,
     };
+};
+
+export function getEnemy(name: string, level: number) {
+    const enemy = Asceans.filter(ascean => ascean.level === level && ascean.name === name)[0];
+    return enemy;
 };
 
 export function nonRandomEnemy(level: number, mastery: string): Ascean {

@@ -8,7 +8,7 @@ import StartGame from './main';
 import { EventBus } from './EventBus';
 import { Menu } from '../utility/screens';
 import { Combat, initCombat } from '../stores/combat';
-import { fetchEnemy } from '../utility/enemy';
+import { EnemySheet, fetchEnemy } from '../utility/enemy';
 import { GameState, initGame } from '../stores/game';
 import { Compiler, LevelSheet, asceanCompiler } from '../utility/ascean';
 import { deleteEquipment, getAscean, getInventory, populate, updateSettings } from '../assets/db/db';
@@ -829,7 +829,7 @@ export default function PhaserGame (props: IProps) {
         EventBus.on('request-ascean', () => EventBus.emit('ascean', props.ascean()));
         EventBus.on('request-combat', () => EventBus.emit('request-combat-ready', combat()));
         EventBus.on('request-game', () => EventBus.emit('game', game()));
-        EventBus.on('setup-enemy', (e: any) => {
+        EventBus.on('setup-enemy', (e: EnemySheet) => {
             setCombat({
                 ...combat(),
                 computer: e.game,
@@ -842,8 +842,8 @@ export default function PhaserGame (props: IProps) {
                 computerAttributes: e.enemy.attributes,
                 computerDefense: e.enemy.defense,
                 computerDefenseDefault: e.enemy.defense,
-                computerDamageType: e.weapons[0].damageType[0], //e.enemy.combatWeaponOne.damageType[0],
-                isEnemy: true,
+                computerDamageType: e.weapons[0].damageType?.[0] as string, //e.enemy.combatWeaponOne.damageType[0],
+                isEnemy: e.name === 'enemy', // true
                 npcType: '',
                 isAggressive: e.isAggressive,
                 startedAggressive: e.startedAggressive,

@@ -7,7 +7,7 @@ import { PLAYER, ENEMY_ENEMIES } from "../../utility/player";
 import CastingBar from "../phaser/CastingBar";
 import AoE from "../phaser/AoE";
 import Bubble from "../phaser/Bubble";
-import { COMPUTER_BROADCAST, DISTANCE, DURATION, ENEMY_SPECIAL, GRIP_SCALE, INSTINCTS, NEW_COMPUTER_ENEMY_HEALTH, RANGE, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
+import { BROADCAST_DEATH, COMPUTER_BROADCAST, DISTANCE, DURATION, ENEMY_SPECIAL, GRIP_SCALE, INSTINCTS, NEW_COMPUTER_ENEMY_HEALTH, RANGE, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
 import { screenShake, vibrate } from "../phaser/ScreenShake";
 import { roundToTwoDecimals } from "../../utility/combat";
 import { Underground } from "../scenes/Underground";
@@ -22,6 +22,7 @@ import { Play } from "../main";
 import { ComputerCombat, initComputerCombat } from "../../stores/computer";
 import { ArenaView } from "../scenes/ArenaCvC";
 import StatusEffect from "../../utility/prayer";
+import Party from "./PartyComputer";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const COMPUTER_ACTION = 'computerAction';
@@ -100,6 +101,7 @@ export default class Enemy extends Entity {
     potentialEnemies: string[] = [];
     targetID: string = '';
     defeatedTime: number = 120000;
+    killingBlow: string = '';
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: "enemy", ascean: undefined, health: 1 }); 
@@ -470,6 +472,7 @@ export default class Enemy extends Entity {
         this.computerCombatSheet.newComputerHealth = this.health;
         const id = this.enemies.find((en: ENEMY) => en.id === e.origin && e.origin !== this.enemyID);
         if (id && this.health > 0) this.updateThreat(e.origin, calculateThreat(e.damage, this.health, this.ascean.health.max));
+        if (this.health <= 0) this.killingBlow = origin;
         EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
     };
 
@@ -618,6 +621,7 @@ export default class Enemy extends Entity {
             this.computerCombatSheet.computerWin = false;
             this.clearComputerCombatWin(e.enemyID);
         };
+        if (this.health <= 0) this.killingBlow = e.enemyID;
         EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
     };
     
@@ -1328,6 +1332,12 @@ export default class Enemy extends Entity {
             this.isShimmering = false;
             this.stealthEffect(false);
         };
+        EventBus.emit(BROADCAST_DEATH, this.enemyID);
+        const party = this.scene.party.find((e: Party) => e.enemyID === this.killingBlow);
+        if (party) { // A Party Member Got the Killing Blow
+            EventBus.emit('killing-blow', {e:this.ascean,enemyID:this.enemyID});
+        };
+        this.killingBlow = '';
         this.currentTargetCheck();
         this.health = 0;
         this.computerCombatSheet.newComputerHealth = 0;
@@ -3961,17 +3971,6 @@ export default class Enemy extends Entity {
             default: break;                        
         }; 
     };
-
-    // preRender(_time:number,_delta:number) {
-    //     if (this.body) {
-    //         // this.currentWeaponCheck();
-    //         if (this.healthbar) this.healthbar.update(this);
-    //         if (this.scrollingCombatText !== undefined) this.scrollingCombatText.update(this);
-    //         if (this.specialCombatText !== undefined) this.specialCombatText.update(this); 
-    //         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-    //         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
-    //     };
-    // };
  
     update(dt: number) {
         this.evaluateEnemyState(); 

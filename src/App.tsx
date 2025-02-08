@@ -9,7 +9,7 @@ import Ascean, { createAscean } from './models/ascean';
 import { CharacterSheet, Compiler, asceanCompiler, initCharacterSheet } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
 import { EventBus } from './game/EventBus';
-import { deleteAscean, getAscean, getAsceans, getInventory, getQuests, getReputation, getSettings, getStatistics, getTalents, populate, scrub, updateInventory, updateQuests, updateReputation, updateSettings, updateStatistics } from './assets/db/db'; 
+import { deleteAscean, getAscean, getAsceans, getEnemy, getInventory, getParty, getQuests, getReputation, getSettings, getStatistics, getTalents, populate, populateEnemy, scrub, updateInventory, updateParty, updateQuests, updateReputation, updateSettings, updateStatistics } from './assets/db/db'; 
 import { TIPS } from './utility/tips';
 import { Inventory, Reputation, initInventory, initReputation } from './utility/player';
 import { Puff } from 'solid-spinner';
@@ -19,6 +19,7 @@ import LoadAscean from './components/LoadAscean';
 import { Tutorial } from './game/scenes/Tutorial';
 import Talents, { initTalents } from './utility/talents';
 import QuestManager, { getQuest, initQuests, Quest } from './utility/quests';
+import { v4 as uuidv4 } from 'uuid';
 const AsceanBuilder = lazy(async () => await import('./components/AsceanBuilder'));
 const AsceanView = lazy(async () => await import('./components/AsceanView'));
 const MenuAscean = lazy(async () => await import('./components/MenuAscean'));
@@ -37,6 +38,7 @@ export default function App() {
     const [loading, setLoading] = createSignal<boolean>(false);
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>(initCharacterSheet);
     const [inventory, setInventory] = createSignal<Inventory>(initInventory);
+    // const [party, setParty] = createSignal<Party<Ascean>>(initParty);
     const [quests, setQuests] = createSignal<QuestManager>(initQuests);
     const [reputation, setReputation] = createSignal<Reputation>(initReputation);
     const [statistics, setStatistics] = createSignal<Statistics>(initStatistics);
@@ -143,6 +145,14 @@ export default function App() {
             const stat = await getStatistics(id);
             const tal = await getTalents(id);
             const quest = await getQuests(id);
+            const party = await getParty(id);
+            let compiledParty = [];
+            for (let i = 0; i < party.party.length; i++) {
+                let member = party.party[i];
+                const pop = populateEnemy(member);
+                const compile = asceanCompiler(pop);
+                compiledParty.push(compile);
+            };
             setInventory(inv);
             setReputation(rep);
             setSettings(set);
@@ -153,6 +163,7 @@ export default function App() {
             setMenu({ ...menu(), choosingCharacter: false, gameRunning: true, playModal: false });
             setStartGame(true);
             setLoading(false);
+            phaserRef.game?.registry.set("party", compiledParty);
             EventBus.emit('preload-ascean', id);
         } catch (err: any) {
             console.warn('Error loading Ascean:', err);
@@ -214,9 +225,7 @@ export default function App() {
     async function saveInventory(save: Inventory) {
         try {
             setInventory(save);
-            // const res =
             await updateInventory(save);
-            // console.log(res, 'Result of Saving Inventory');
         } catch (err) { 
             console.warn(err, 'Error Saving Inventory'); 
         };
@@ -257,12 +266,35 @@ export default function App() {
             console.warn('Error updating Ascean:', err);
         };
     };
+
+    async function addParty(party: { name: string; level: number; }) {
+        try {
+            let asc = getEnemy(party.name, party.level);
+            asc._id = uuidv4();
+            let newParty = await getParty(ascean()._id);
+            newParty.party.push(asc as any);
+            await updateParty(newParty);
+            EventBus.emit('add-to-party', asc);
+        } catch(err) {
+            console.warn(err, 'Error Adding to Party');
+        };
+    };
+    async function removeParty(party: Ascean) {
+        try {
+            let newParty = await getParty(ascean()._id);
+            newParty.party = newParty.party.filter((e: Ascean) => {
+                return e._id !== party._id;
+            });
+            await updateParty(newParty);
+            EventBus.emit('remove-from-party', party);
+        } catch(err) {
+            console.warn(err, 'Error Adding to Party');
+        };
+    };
     const addQuest = async (quest:{title: string, enemy: Ascean}): Promise<void> => {
         try {
             const { title, enemy } = quest;
-            console.log(title, enemy, 'title and enemy');
             const newQuest = getQuest(title, enemy, reputation());
-            console.log(newQuest, 'New Quest?')
             const newQuestManager: QuestManager = { 
                 ...quests(),
                 quests: quests().quests.length > 0 
@@ -374,6 +406,8 @@ export default function App() {
         "Enter Tutorial" : () => switchScene('Game', 'Tutorial'),
     };
     const sendSettings = () => EventBus.emit('get-settings', settings);
+    usePhaserEvent('add-party', addParty);
+    usePhaserEvent('remove-party', removeParty);
     usePhaserEvent('request-settings', sendSettings);
     usePhaserEvent('alert', (payload: Toast) => makeToast(payload.header, payload.body, payload.delay, payload.key, payload.extra, payload.arg));
     usePhaserEvent('set-tips', setTips);

@@ -1,10 +1,10 @@
 import Ascean from "../../models/ascean";
 import Equipment from "../../models/equipment";
 import { ComputerCombat, initComputerCombat } from "../../stores/computer";
-import { SPECIAL, TRAIT_SPECIALS } from "../../utility/abilities";
-import { Compiler, fetchTrait } from "../../utility/ascean";
-import { COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
-import { PLAYER, staminaCheck } from "../../utility/player";
+import { Compiler } from "../../utility/ascean";
+import { BROADCAST_DEATH, COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
+import { PARTY_SPECIAL } from "../../utility/party";
+import { PLAYER } from "../../utility/player";
 import { EventBus } from "../EventBus";
 import { Play } from "../main";
 import Beam from "../matter/Beam";
@@ -15,7 +15,6 @@ import PartyMachine from "../phaser/PartyMachine";
 import { vibrate } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
 import { Arena } from "../scenes/Arena";
-import { ArenaView } from "../scenes/ArenaCvC";
 import { Underground } from "../scenes/Underground";
 import Enemy from "./Enemy";
 import Entity, { assetSprite, calculateThreat, ENEMY, Player_Scene, SWING_TIME } from "./Entity";
@@ -48,7 +47,6 @@ const ORIGIN = {
 const MAX_HEARING_DISTANCE = 500;
 const MIN_HEARING_DISTANCE = 100;
 
-const ENEMY_COLOR = 0xFF0000;
 const TARGET_COLOR = 0x00FF00;
 export default class Party extends Entity {
     playerID: string;
@@ -197,7 +195,8 @@ export default class Party extends Entity {
         const ascean = data.data.ascean;
         super({ ...data, name: 'party', ascean: ascean, health: ascean.health.current });
         this.ascean = ascean;
-        this.health = this.ascean.health.current;
+        this.combatStats = data.data;
+        this.health = this.ascean.health.max;
         this.weapons = [data.data.combatWeaponOne, data.data.combatWeaponTwo, data.data.combatWeaponThree];
         this.playerID = this.ascean._id;
         this.computerCombatSheet = this.createComputerCombatSheet(data.data);
@@ -231,14 +230,14 @@ export default class Party extends Entity {
         this.playerMachine = new PartyMachine(scene, this);
         this.setScale(PLAYER.SCALE.SELF);   
         let partyCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { isSensor: false, label: 'partyCollider' }); // Y + 10 For Platformer
-        let playerSensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: 'playerSensor' }); // Y + 2 For Platformer
+        let partySensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: 'partySensor' }); // Y + 2 For Platformer
         const compoundBody = Body.create({
-            parts: [partyCollider, playerSensor],
+            parts: [partyCollider, partySensor],
             frictionAir: 0.5,
             restitution: 0.2,
         });
         this.setExistingBody(compoundBody);                                    
-        this.sensor = playerSensor;
+        this.sensor = partySensor;
         this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 24, 0xfdf6d8, 0);
         this.scene.add.existing(this.weaponHitbox);
 
@@ -263,13 +262,13 @@ export default class Party extends Entity {
         this.rushedEnemies = [];
         this.playerStateListener();
         this.setFixedRotation();   
-        this.checkEnemyCollision(playerSensor);
+        this.checkEnemyCollision(partySensor);
         this.setInteractive(new Phaser.Geom.Rectangle(
             48, 0,
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
-                if (!this.scene.hud.settings.difficulty.enemyCombatInteract && this.scene.combat) return;
+                // if (!this.scene.hud.settings.difficulty.enemyCombatInteract && this.scene.combat) return;
                 if (this.currentTarget) {
                     this.scene.hud.logger.log(`Console: ${this.ascean.name} is currently attacking ${this.currentTarget.ascean.name}`);
                 };
@@ -278,17 +277,18 @@ export default class Party extends Entity {
                 this.clearTint();
                 this.setTint(TARGET_COLOR);
                 if (this.enemyID !== this.scene.state.enemyID) this.scene.hud.setupEnemy(this);
-                if (this.scene.player) {
-                    this.scene.player.setCurrentTarget(this);
-                    this.scene.player.targetIndex = this.scene.player.targets.findIndex((obj: Enemy) => obj?.enemyID === this.enemyID);
-                    this.scene.player.animateTarget();
-                } else {
-                    (this.scene as ArenaView).setNewTarget(this);
-                };
+                this.scene.player.setCurrentTarget(this);
+                // if (this.scene.scene.key !== 'ArenaCvC') {
+                //     this.scene.player.setCurrentTarget(this);
+                //     this.scene.player.targetIndex = this.scene.player.targets.findIndex((obj: Enemy) => obj?.enemyID === this.enemyID);
+                //     this.scene.player.animateTarget();
+                // } else {
+                //     (this.scene as ArenaView).setNewTarget(this);
+                // };
             })
             .on('pointerout', () => {
                 this.clearTint();
-                this.setTint(ENEMY_COLOR);
+                this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
             });
         this.scene.time.delayedCall(1000, () => {
             this.setVisible(true);
@@ -296,11 +296,14 @@ export default class Party extends Entity {
             this.originPoint = new Phaser.Math.Vector2(this.x, this.y);
         });
         this.beam = new Beam(this);
-        super({...data,name:"party",ascean,health:ascean.health.current});
         this.originalPosition = new Phaser.Math.Vector2(this.x, this.y);
         this.originPoint = {}; // For Leashing
         this.combatConcerns = undefined;
         this.checkSpecials(ascean);
+        scene.time.delayedCall(1000, () => {
+            if (this.scene.state.isCaerenic) this.caerenicUpdate();
+            if (this.scene.state.isStalwart) this.stalwartUpdate(this.scene.state.isStalwart);
+        }, undefined, this);
     };
 
     ping = () => {
@@ -319,9 +322,15 @@ export default class Party extends Entity {
     };
 
     cleanUp() {
+        EventBus.off(BROADCAST_DEATH, this.clearComputerCombatWin);
         EventBus.off(COMPUTER_BROADCAST, this.computerBroadcast);
         EventBus.off(UPDATE_COMPUTER_COMBAT, this.computerCombatUpdate);
         EventBus.off(UPDATE_COMPUTER_DAMAGE, this.computerDamage);
+        EventBus.off('engage', this.engage);
+        EventBus.off('speed', this.speedUpdate);
+        EventBus.off('update-stealth', this.stealthUpdate);
+        EventBus.off('update-caerenic', this.caerenicUpdate);
+        EventBus.off('update-stalwart', this.stalwartUpdate);
         if (this.isGlowing) this.checkCaerenic(false);
         if (this.isShimmering) {
             this.isShimmering = false;
@@ -338,10 +347,10 @@ export default class Party extends Entity {
     };
 
     playerStateListener = () => {
+        EventBus.on(BROADCAST_DEATH, this.clearComputerCombatWin);
         EventBus.on(COMPUTER_BROADCAST, this.computerBroadcast);
-        EventBus.off(UPDATE_COMPUTER_COMBAT, this.computerCombatUpdate);
-        EventBus.off(UPDATE_COMPUTER_DAMAGE, this.computerDamage);
-        EventBus.on('disengage', this.disengage); 
+        EventBus.on(UPDATE_COMPUTER_COMBAT, this.computerCombatUpdate);
+        EventBus.on(UPDATE_COMPUTER_DAMAGE, this.computerDamage);
         EventBus.on('engage', this.engage);
         EventBus.on('speed', this.speedUpdate);
         EventBus.on('update-stealth', this.stealthUpdate);
@@ -408,33 +417,35 @@ export default class Party extends Entity {
         return newEnemy;
     };
 
-    checkEnemyCollision(playerSensor: any) {
+    playerInCombat = (enemy: Enemy) => enemy && enemy.name === 'enemy' && this.scene.combat;
+
+    checkEnemyCollision(partySensor: any) {
         this.scene.matterCollision.addOnCollideStart({
-            objectA: [playerSensor],
+            objectA: [partySensor],
             callback: (other: any) => {
+                if (this.isDeleting) return;
                 if (other.gameObjectB?.isDeleting) return;
                 this.isValidRushEnemy(other.gameObjectB);
-                if (this.isValidEnemyCollision(other)) {
+                if (this.isValidEnemyCollision(other) || this.playerInCombat(other.gameObjectB)) {
                     const isNewEnemy = this.isNewEnemy(other.gameObjectB);
                     if (!isNewEnemy) return;
                     this.targets.push(other.gameObjectB);
-                    /* 
-                        TODO: Put the target engagement function here
-                    */
+                    this.checkComputerEnemyCombatEnter(other.gameObjectB);
                 } else if (this.isValidNeutralCollision(other)) {
                     other.gameObjectB.originPoint = new Phaser.Math.Vector2(other.gameObjectB.x, other.gameObjectB.y).clone();
                     const isNewNeutral = this.isNewEnemy(other.gameObjectB);
                     if (!isNewNeutral) return;
                     this.targets.push(other.gameObjectB);
-                    if (this.inComputerCombat === false) this.scene.hud.setupEnemy(other.gameObjectB);
+                    // if (this.inComputerCombat === false) this.scene.hud.setupEnemy(other.gameObjectB);
                 };
             },
             context: this.scene,
         });
 
         this.scene.matterCollision.addOnCollideActive({
-            objectA: [playerSensor],
+            objectA: [partySensor],
             callback: (other: any) => {
+                if (this.isDeleting) return;
                 if (other.gameObjectB?.isDeleting) return;
                 this.isValidRushEnemy(other.gameObjectB);
                 if (this.isValidEnemyCollision(other)) {
@@ -447,8 +458,9 @@ export default class Party extends Entity {
         });
 
         this.scene.matterCollision.addOnCollideEnd({
-            objectA: [playerSensor],
+            objectA: [partySensor],
             callback: (other: any) => {
+                if (this.isDeleting) return;
                 if (other.gameObjectB?.isDeleting) return;
                 if (this.isValidEnemyCollision(other) && !this.touching.length) {
                     this.actionAvailable = false;
@@ -598,7 +610,7 @@ export default class Party extends Entity {
             if (this.isPolymorphed) this.isPolymorphed = false;
             if (this.isMalicing) this.playerMachine.malice(e.enemyID);
             if (this.isMending) this.playerMachine.mend();
-            if ((!this.inComputerCombat || !this.attacking) && e.newComputerHealth > 0 && e.enemyID !== this.enemyID) {
+            if ((!this.inComputerCombat || !this.currentTarget) && e.newComputerHealth > 0 && e.enemyID !== this.enemyID) {
                 const enemy = this.scene.enemies.find((en: Enemy) => en.enemyID === e.damagedID);
                 if (enemy) {
                     this.checkComputerEnemyCombatEnter(enemy);
@@ -657,20 +669,17 @@ export default class Party extends Entity {
     clearComputerCombatWin = (id: string) => {
         this.enemies = this.enemies.filter((enemy) => enemy.id !== id);
         if (this.enemies.length === 0) {
-            this.inCombat = false;
             this.inComputerCombat = false;
-            // this.setSpecialCombat(false);
-            this.attacking = undefined;
-            // this.isTriumphant = true;
-            // this.isAggressive = false;
-            this.health = this.ascean.health.max;
-            this.healthbar.setValue(this.healthbar.getTotal());
+            this.currentTarget = undefined;
+            // this.health = this.ascean.health.max;
+            // this.healthbar.setValue(this.healthbar.getTotal());
             this.clearStatuses();
+            this.disengage();
         } else {
             const newId = this.enemies[0].id;
             const newEnemy = this.scene.enemies.find((e) => newId === e.enemyID);
             if (newEnemy && newEnemy.health > 0) {
-                this.attacking = newEnemy;
+                this.currentTarget = newEnemy;
             } else {
                 this.clearComputerCombatWin(newId);
             };
@@ -733,7 +742,7 @@ export default class Party extends Entity {
         if (this.inComputerCombat) {
             this.playerMachine.stateMachine.setState(States.COMBAT);
         } else {
-            this.playerMachine.stateMachine.setState(States.NONCOMBAT);
+            this.playerMachine.stateMachine.setState(States.IDLE);
         };
     };
 
@@ -823,33 +832,10 @@ export default class Party extends Entity {
     };
     
     checkSpecials(ascean: Ascean) {
-        const traits = {
-            primary: fetchTrait(this.scene.hud.gameState?.traits.primary.name),
-            secondary: fetchTrait(this.scene.hud.gameState?.traits.secondary.name),
-            tertiary: fetchTrait(this.scene.hud.gameState?.traits.tertiary.name),
-        };
-        const potential = [traits.primary.name, traits.secondary.name, traits.tertiary.name];
-        let mastery = SPECIAL[ascean.mastery as keyof typeof SPECIAL];
-        mastery = mastery.filter((m) => {
-            return m !== 'Mark' && m !== 'Recall' && m !== 'Consume';
-        })
-        let extra: any[] = [];
-        for (let i = 0; i < 3; i++) {
-            const trait = TRAIT_SPECIALS[potential[i] as keyof typeof TRAIT_SPECIALS];
-            if (trait && trait.length > 0) {
-                extra = [ ...extra, ...trait ]
-            };
-        };
-        if (extra.length > 0) {
-            let start = [...mastery, ...extra];
-            start.sort();
-            this.combatSpecials = start;
-        } else {
-            this.combatSpecials = [...mastery];
-        };
+        this.combatSpecials = PARTY_SPECIAL[ascean.mastery as keyof typeof PARTY_SPECIAL];
     };
     
-    setSpecialCombat = (mult = 0.5, remove = false) => {
+    setSpecialCombat = (mult = 0.75, remove = false) => {
         if (remove) return;
         this.scene.time.delayedCall(DURATION.SPECIAL * mult, () => {
             if (!this.inComputerCombat) return;
@@ -998,6 +984,7 @@ export default class Party extends Entity {
         this.inComputerCombat = false;
         this.currentTarget = undefined;
         this.removeHighlight();
+        this.playerMachine.stateMachine.setState(States.FOLLOW);
     };
 
     engage = (enemy: Enemy) => {
@@ -1162,6 +1149,7 @@ export default class Party extends Entity {
 
     evaluateCombatDistance = () => {
         this.getDirection();
+        if (!this.inComputerCombat) return;
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget);
         };
@@ -1398,7 +1386,7 @@ export default class Party extends Entity {
             };
         };
 
-        if (this.scene.combat === true && (!this.currentTarget || !this.currentTarget.inComputerCombat)) this.findEnemy(); // this.inComputerCombat === true && state.combatEngaged
+        // if (this.scene.combat === true && (!this.currentTarget || !this.currentTarget.inComputerCombat)) this.findEnemy(); // this.inComputerCombat === true && state.combatEngaged
         if (this.healthbar) this.healthbar.update(this);
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this);
@@ -1465,6 +1453,7 @@ export default class Party extends Entity {
                 if (this.attackedTarget.isMultifaring) this.attackedTarget.multifarious(this.playerID); 
                 if (this.attackedTarget.isMystifying) this.attackedTarget.mystify(this.playerID); 
             };
+            this.scene.combatManager.partyMelee({ action, origin: this.enemyID, enemyID: this.attackedTarget.enemyID  });
             /*
                 Put Combat Manager Concerns Here
             */
@@ -1483,6 +1472,7 @@ export default class Party extends Entity {
                 if (this.attackedTarget?.isMultifaring) this.attackedTarget?.multifarious(this.playerID);
                 if (this.attackedTarget?.isMystifying) this.attackedTarget?.mystify(this.playerID);
             };
+            this.scene.combatManager.partyMelee({ action: this.currentAction, origin: this.enemyID, enemyID: this.attackedTarget.enemyID } );
             /*
                 Put Combat Manager Concerns Here
             */
@@ -1496,10 +1486,12 @@ export default class Party extends Entity {
         };
     };
 
-    update() {
+    update(dt: number) {
         this.handleComputerConcerns();
         this.evaluateCombatDistance();
         this.handleAnimations();
-        this.playerMachine.update(this.dt);
+        this.playerMachine.stateMachine.update(dt);
+        this.playerMachine.positiveMachine.update(dt);
+        this.playerMachine.negativeMachine.update(dt);
     };
 };

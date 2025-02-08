@@ -1,4 +1,5 @@
 import Ascean from "../models/ascean";
+import Equipment from "../models/equipment";
 import { ComputerCombat } from "../stores/computer";
 import { criticalCompiler, damageTypeCompiler } from "./combat";
 import { ACTION_TYPES, ARMOR_WEIGHT, ATTACK_TYPES, DAMAGE, HOLD_TYPES, MASTERY, STRONG_TYPES, THRESHOLD, WEAPON_TYPES } from "./combatTypes";
@@ -285,7 +286,8 @@ function computerCombatSplitter(data: { computerOne: ComputerCombat, computerTwo
     try {
         let { computerOne, computerTwo } = data;
         const computerTwoLive = (computerTwo.computerAction !== '' && computerOne.personalID === computerTwo.enemyID) ? true : false;
-        
+        checkCombatSheetData(computerOne, computerTwo);
+
         if (computerTwoLive) {
             const res = dualComputerActionSplitter(computerOne, computerTwo);
             computerOne = res.combat;
@@ -297,6 +299,18 @@ function computerCombatSplitter(data: { computerOne: ComputerCombat, computerTwo
             computerOne.damagedID = computerTwo.personalID;
             computerTwo.damagedID = computerOne.personalID;
         } else { // Only computerOne performs an action
+            computerOne.computerEnemy = computerTwo.computer;
+            computerOne.computerEnemyHealth = computerTwo.computerHealth;
+            computerOne.newComputerEnemyHealth = computerTwo.newComputerHealth;
+            computerOne.computerEnemyWeapons = computerTwo.computerWeapons as Equipment[];
+            computerOne.computerEnemyWeaponOne = computerTwo.computerWeaponOne;
+            computerOne.computerEnemyWeaponTwo = computerTwo.computerWeaponTwo;
+            computerOne.computerEnemyWeaponThree = computerTwo.computerWeaponThree;
+            computerOne.computerEnemyAttributes = computerTwo.computerAttributes;
+            computerOne.computerEnemyDamageType = computerTwo.computerDamageType;
+            computerOne.computerEnemyDefense = computerTwo.computerDefense;
+            computerOne.enemyID = computerTwo.personalID;
+
             attackCompiler(computerOne);
             computerTwo.newComputerHealth = computerOne.newComputerEnemyHealth;
             computerTwo.computerEnemyWin = computerOne.computerWin;
@@ -315,8 +329,37 @@ function computerCombatSplitter(data: { computerOne: ComputerCombat, computerTwo
 
         return {computerOne, computerTwo};
     } catch (err) {
-        console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
+        console.warn(err, 'Error in the Computer Combat Splitter of Game Services');
     };
+};
+
+function checkCombatSheetData(computerOne: ComputerCombat, computerTwo: ComputerCombat) {
+    computerOne.computerEnemy = computerTwo.computer;
+    computerOne.computerEnemyHealth = computerTwo.computerHealth;
+    computerOne.newComputerEnemyHealth = computerTwo.newComputerHealth;
+    computerOne.computerEnemyWeapons = computerTwo.computerWeapons as Equipment[];
+    computerOne.computerEnemyWeaponOne = computerTwo.computerWeaponOne;
+    computerOne.computerEnemyWeaponTwo = computerTwo.computerWeaponTwo;
+    computerOne.computerEnemyWeaponThree = computerTwo.computerWeaponThree;
+    computerOne.computerEnemyAttributes = computerTwo.computerAttributes;
+    computerOne.computerEnemyDamageType = computerTwo.computerDamageType;
+    computerOne.computerEnemyDefense = computerTwo.computerDefense;
+    computerOne.enemyID = computerTwo.personalID;
+
+    
+    computerTwo.computerEnemy = computerOne.computer;
+    computerTwo.computerEnemyHealth = computerOne.computerHealth;
+    computerTwo.newComputerEnemyHealth = computerOne.newComputerHealth;
+    computerTwo.computerEnemyWeapons = computerOne.computerWeapons as Equipment[];
+    computerTwo.computerEnemyWeaponOne = computerOne.computerWeaponOne;
+    computerTwo.computerEnemyWeaponTwo = computerOne.computerWeaponTwo;
+    computerTwo.computerEnemyWeaponThree = computerOne.computerWeaponThree;
+    computerTwo.computerEnemyAttributes = computerOne.computerAttributes;
+    computerTwo.computerEnemyDamageType = computerOne.computerDamageType;
+    computerTwo.computerEnemyDefense = computerOne.computerDefense;
+    computerTwo.enemyID = computerOne.personalID;
+
+    return { computerOne, computerTwo };
 };
 
 function dualComputerActionSplitter(combat: ComputerCombat, combatTwo: ComputerCombat) {

@@ -36,15 +36,25 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
         EventBus.emit('disengage');
         setShow(!show());
     };
+    const removeParty = () => {
+        EventBus.emit('remove-party', state().computer);
+        setShow(!show());
+    };
     
     return <div class='modal'>
         <div class='border center' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%', 'width': dimensions().ORIENTATION === 'landscape' ? '50%' : '70%', 'margin-top': '2%' }}>
             <button class='highlight cornerBL' onClick={clearEnemy}>
                 <p>Clear UI</p>
             </button>
-            <button class='highlight cornerTL' onClick={() => removeEnemy(state().enemyID)}>
-                <p>Remove {enemy()?.name.split(' ')[0]}</p>
-            </button>
+            { state().isEnemy || state().npcType ? (
+                <button class='highlight cornerTL' onClick={() => removeEnemy(state().enemyID)}>
+                    <p>Remove {enemy()?.name.split(' ')[0]}</p>
+                </button>
+            ) : (
+                <button class='highlight cornerTL' onClick={removeParty} style={{ color: "red" }}>
+                    <p>Remove From Party <br /> <br /> <b>[PERMANENT]</b></p>
+                </button>
+            ) }
             <button class='highlight cornerTR' onClick={() => setShow(!show)}>
                 <p>X</p>
             </button>

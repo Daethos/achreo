@@ -10,6 +10,7 @@ import { BlendModes } from "phaser";
 import { RANGE } from "../../utility/enemy";
 import { Play } from "../main";
 import PlayerComputer from '../entities/PlayerComputer';
+import Party from '../entities/PartyComputer';
 const DURATION = {
     CONSUMED: 2000,
     CONFUSED: 6000,
@@ -153,6 +154,17 @@ export default class PlayerMachine {
         } else {
             this.positiveMachine.setState(States.CLEAN);
         };
+    };
+
+    healCheck = (power: number) => {
+        if (this.player.currentTarget) {
+            const party = this.scene.party.find((e: Party) => e.enemyID === this.player.currentTarget?.enemyID);
+            if (party) {
+                party.playerMachine.heal(power/100);
+                return;
+            };
+        };
+        this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: power, id: this.player.playerID }, type: 'Health' });
     };
 
     onChaseEnter = () => {
@@ -1047,8 +1059,9 @@ export default class PlayerMachine {
     onDesperationUpdate = (_dt: number) => this.player.combatChecker(false);
     onDesperationExit = () => {
         const desperationCooldown = this.player.inCombat ? PLAYER.COOLDOWNS.LONG : PLAYER.COOLDOWNS.SHORT;
-        if (!this.player.isComputer) this.player.setTimeEvent('desperationCooldown', desperationCooldown);  
-        this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 50, id: this.player.playerID }, type: 'Health' });
+        if (!this.player.isComputer) this.player.setTimeEvent('desperationCooldown', desperationCooldown);
+        this.healCheck(50);
+        // this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 50, id: this.player.playerID }, type: 'Health' });
         this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
     };
 
@@ -1200,7 +1213,8 @@ export default class PlayerMachine {
             if (!this.player.isComputer) this.player.setTimeEvent('healingCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
             this.scene.combatManager.useGrace(PLAYER.STAMINA.HEALING);
             this.player.castingSuccess = false;
-            this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 25, id: this.player.playerID }, type: 'Health' });
+            // this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 25, id: this.player.playerID }, type: 'Health' });
+            this.healCheck(25);
             this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
         };
         this.player.isCasting = false;
@@ -1815,7 +1829,8 @@ export default class PlayerMachine {
             this.player.reconTimer = undefined;
             return;
         };
-        this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 15, id: this.player.playerID }, type: 'Health' });
+        // this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 15, id: this.player.playerID }, type: 'Health' });
+        this.healCheck(15);
         this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
     };
 

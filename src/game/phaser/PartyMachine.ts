@@ -1,6 +1,5 @@
 import Party from '../entities/PartyComputer';
 import StateMachine, { specialStateMachines, States } from "./StateMachine";
-import { BALANCED, BALANCED_INSTINCTS, DEFENSIVE, DEFENSIVE_INSTINCTS, OFFENSIVE, OFFENSIVE_INSTINCTS, PLAYER, PLAYER_INSTINCTS, staminaCheck } from "../../utility/player";
 import { FRAME_COUNT } from '../entities/Entity';
 import AoE from './AoE';
 import { EventBus } from "../EventBus";
@@ -8,6 +7,8 @@ import Bubble from "./Bubble";
 import { BlendModes } from "phaser";
 import { COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, RANGE, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
 import { Play } from "../main";
+import { BALANCED, DEFENSIVE, OFFENSIVE, PARTY_BALANCED_INSTINCTS, PARTY_DEFENSIVE_INSTINCTS, PARTY_INSTINCTS, PARTY_OFFENSIVE_INSTINCTS } from '../../utility/party';
+import { PLAYER } from '../../utility/player';
 const DURATION = {
     CONSUMED: 2000,
     CONFUSED: 6000,
@@ -41,10 +42,9 @@ export default class PlayerMachine {
         this.player = player;
         this.stateMachine = new StateMachine(this, 'party');
         this.stateMachine
-            .addState(States.IDLE, { onEnter: this.onIdleEnter, onUpdate: this.onIdleUpdate, onExit: this.onIdleExit })
-            .addState(States.NONCOMBAT, { onEnter: this.onNonCombatEnter, onUpdate: this.onNonCombatUpdate, onExit: this.onNonCombatExit })
+            .addState(States.IDLE, { onEnter: this.onIdleEnter, onUpdate: this.onIdleUpdate })
             .addState(States.COMPUTER_COMBAT, { onEnter: this.onComputerCombatEnter }) // , onUpdate: this.onComputerCombatUpdate
-            .addState(States.LULL, { onEnter: this.onLullEnter, onExit: this.onLullExit }) // onUpdate: this.onLullUpdate
+            .addState(States.LULL, { onEnter: this.onLullEnter }) // onUpdate: this.onLullUpdate
             .addState(States.CHASE, { onEnter: this.onChaseEnter, onUpdate: this.onChaseUpdate, onExit: this.onChaseExit })
             .addState(States.FOLLOW, { onEnter: this.onFollowEnter, onUpdate: this.onFollowUpdate, onExit: this.onFollowExit })
             .addState(States.LEASH, { onEnter: this.onLeashEnter, onUpdate: this.onLeashUpdate, onExit: this.onLeashExit })
@@ -92,7 +92,7 @@ export default class PlayerMachine {
             .addState(States.CONFUSED, { onEnter: this.onConfusedEnter, onUpdate: this.onConfusedUpdate, onExit: this.onConfusedExit })
             .addState(States.FEARED, { onEnter: this.onFearedEnter, onUpdate: this.onFearedUpdate, onExit: this.onFearedExit })
             .addState(States.POLYMORPHED, { onEnter: this.onPolymorphedEnter, onUpdate: this.onPolymorphedUpdate, onExit: this.onPolymorphedExit });
-        this.stateMachine.setState(States.NONCOMBAT);
+        this.stateMachine.setState(States.IDLE);
 
         this.positiveMachine = new StateMachine(this, 'player');
         this.positiveMachine
@@ -195,7 +195,7 @@ export default class PlayerMachine {
         const distance = direction.length();
         if (Math.abs(this.player.originPoint.x - this.player.position.x) > RANGE.LEASH * rangeMultiplier || 
             Math.abs(this.player.originPoint.y - this.player.position.y) > RANGE.LEASH * rangeMultiplier || 
-            !this.player.inCombat || distance > RANGE.LEASH * rangeMultiplier) {
+            !this.player.inComputerCombat || distance > RANGE.LEASH * rangeMultiplier) {
             this.stateMachine.setState(States.IDLE);
             return;
         };
@@ -232,6 +232,9 @@ export default class PlayerMachine {
     }; 
     onChaseExit = () => {
         // this.scene.navMesh.debugDrawClear();
+        this.player.chasing = false;
+        this.player.path = [];
+        this.player.isPathing = false;
         this.player.setVelocity(0, 0);
         if (this.player.chaseTimer) {
             this.player.chaseTimer?.remove(false);
@@ -241,7 +244,7 @@ export default class PlayerMachine {
     };
 
     onLeashEnter = () => {
-        this.player.inCombat = false;
+        this.player.inComputerCombat = false;
         this.player.healthbar.setVisible(false);
         this.player.specialCombatText = this.scene.showCombatText('Leashing', 1500, 'effect', false, true, () => this.player.specialCombatText = undefined);
         if (this.player.chaseTimer) {
@@ -297,6 +300,8 @@ export default class PlayerMachine {
         };
     };
     onLeashExit = () => {
+        this.player.path = [];
+        this.player.isPathing = false;
         this.player.setVelocity(0);
         if (this.player.leashTimer) {
             this.player.leashTimer.remove(false);
@@ -394,7 +399,7 @@ export default class PlayerMachine {
             delay: 500,
             callback: () => {
                 // this.scene.navMesh.debugDrawClear();
-                if (!this.scene.player || !this.scene.player.body || !this.scene.player.position) {
+                if (!this.scene.player || !this.scene.player.body || !this.scene.player.position || this.player.isDeleting) {
                     this.player.path = [];
                     this.player.followTimer?.remove(false);
                     this.player.followTimer?.destroy();
@@ -422,23 +427,25 @@ export default class PlayerMachine {
         });
     };
     onFollowUpdate = (_dt: number) => {
-        if (!this.scene.player || !this.scene.player.body || !this.scene.player.position) return;
+        if (!this.scene.player || !this.scene.player.body || !this.scene.player.position || this.player.isDeleting) return;
         const direction = this.scene.player.position.subtract(this.player.position);
         const distance = direction.length();
-        if (distance > 150) {
+        if (distance < 60) {
             this.stateMachine.setState(States.IDLE);
             return;
         } else {
             if (this.player.path && this.player.path.length > 1) {
-                this.player.setVelocity(this.player.pathDirection.x * this.player.speed, this.player.pathDirection.y * this.player.speed);
+                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed + 0.5), this.player.pathDirection.y * (this.player.speed + 0.5));
             } else {
                 if (this.player.isPathing) this.player.isPathing = false;
                 direction.normalize();
-                this.player.setVelocity(direction.x * this.player.speed, direction.y * this.player.speed);
+                this.player.setVelocity(direction.x * (this.player.speed + 0.5), direction.y * (this.player.speed + 0.5));
             };
         };
     };
     onFollowExit = () => {
+        this.player.path = [];
+        this.player.isPathing = false;
         this.player.setVelocity(0, 0);
         if (this.player.followTimer) {
             this.player.followTimer?.remove(false);
@@ -448,8 +455,8 @@ export default class PlayerMachine {
     };
 
     onContemplateEnter = () => {
-        if (this.player.inCombat === false || this.player.health <= 0) {
-            this.player.inCombat = false;
+        if (this.player.inComputerCombat === false || this.player.health <= 0) {
+            this.player.inComputerCombat = false;
             this.stateMachine.setState(States.IDLE);
             return;
         };
@@ -473,8 +480,8 @@ export default class PlayerMachine {
     };
 
     instincts = () => {
-        if (this.player.inCombat === false || this.player.health <= 0) {
-            this.player.inCombat = false;
+        if (this.player.inComputerCombat === false || this.player.health <= 0) {
+            this.player.inComputerCombat = false;
             this.stateMachine.setState(States.IDLE);
             return;
         };
@@ -514,20 +521,20 @@ export default class PlayerMachine {
         let foci;
         switch (focus) {
             case BALANCED:
-                foci = BALANCED_INSTINCTS[mastery as keyof typeof BALANCED_INSTINCTS];
+                foci = PARTY_BALANCED_INSTINCTS[mastery as keyof typeof PARTY_BALANCED_INSTINCTS];
                 foci = foci[Math.floor(Math.random() * foci.length)];
                 break;
             case DEFENSIVE:
-                foci = DEFENSIVE_INSTINCTS[mastery as keyof typeof DEFENSIVE_INSTINCTS];
+                foci = PARTY_DEFENSIVE_INSTINCTS[mastery as keyof typeof PARTY_DEFENSIVE_INSTINCTS];
                 foci = foci[Math.floor(Math.random() * foci.length)];
                 break;
             case OFFENSIVE:
-                foci = OFFENSIVE_INSTINCTS[mastery as keyof typeof OFFENSIVE_INSTINCTS];
+                foci = PARTY_OFFENSIVE_INSTINCTS[mastery as keyof typeof PARTY_OFFENSIVE_INSTINCTS];
                 foci = foci[Math.floor(Math.random() * foci.length)];
                 break;
         };
 
-        let key = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].key, value = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].value;
+        let key = PARTY_INSTINCTS[mastery as keyof typeof PARTY_INSTINCTS][instinct].key, value = PARTY_INSTINCTS[mastery as keyof typeof PARTY_INSTINCTS][instinct].value;
         let finals = [instinct, foci];
         if (instinct === 0 || instinct === 3 || instinct === 7 || instinct === 12) {
             finals.push(instinct);
@@ -545,40 +552,25 @@ export default class PlayerMachine {
             };
         };
 
-        let check: {success:boolean;cost:number;} = {success:false,cost:0};
-        const grace = PLAYER.STAMINA[value.toUpperCase() as keyof typeof PLAYER.STAMINA];
-        check = staminaCheck(this.player.grace, grace);
-
-        if (check.success === true) {
-            this.player.specialCombatText = this.scene.showCombatText('Instinct', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
-            this.scene.hud.logger.log(`${this.player.ascean.name}'s instinct leads them to ${value}.`);
-            this.player.prevInstinct = instinct;
-            (this as any)[key].setState(value);
-            if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
-        } else {
-            this.player.specialCombatText = this.scene.showCombatText('Compose Yourself', 750, 'dread', false, true, () => this.player.specialCombatText = undefined);
-            if (Math.random() > 0.5) {
-                this.stateMachine.setState(States.COMPUTER_COMBAT);
-            } else {
-                this.stateMachine.setState(States.CHASE);
-            };
-        };
+        this.player.specialCombatText = this.scene.showCombatText('Instinct', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
+        this.scene.hud.logger.log(`${this.player.ascean.name}'s instinct leads them to ${value}.`);
+        this.player.prevInstinct = instinct;
+        (this as any)[key].setState(value);
+        if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
     };
 
     onIdleEnter = () => {
         this.player.setVelocity(0);
         this.player.currentRound = 0;
     };
-    onIdleUpdate = (_dt: number) => {};
-    onIdleExit = () => {};
-    
-    onNonCombatEnter = () => {};
-    onNonCombatUpdate = (_dt: number) => {
-        if (this.player.isMoving) this.player.isMoving = false;
-        if (this.player.inCombat) this.stateMachine.setState(States.COMPUTER_COMBAT);
+    onIdleUpdate = (_dt: number) => {
+        const direction = this.scene.player.position.subtract(this.player.position);
+        const distance = direction.length();
+        if (distance > 100 && !this.stateMachine.isCurrentState(States.FOLLOW)) {
+            this.stateMachine.setState(States.FOLLOW);
+        };
     };
-    onNonCombatExit = () => {};
-
+    
     onLullEnter = () => {
         this.player.isMoving = false;
         this.player.setVelocity(0);
@@ -591,11 +583,10 @@ export default class PlayerMachine {
             this.stateMachine.setState(States.COMPUTER_COMBAT);
         }, undefined, this);
     };
-    onLullExit = () => {};
     
     onComputerCombatEnter = () => {  
-        if (this.player.inCombat === false || this.player.health <= 0) {
-            this.player.inCombat = false;
+        if (this.player.inComputerCombat === false || this.player.health <= 0) {
+            this.player.inComputerCombat = false;
             this.stateMachine.setState(States.IDLE);
             return;
         };
@@ -623,12 +614,12 @@ export default class PlayerMachine {
         this.player.frameCount = 0;
     };
     onComputerAttackUpdate = (_dt: number) => {
-        // if (this.player.frameCount === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input('action', 'attack');
+        if (this.player.frameCount === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) this.player.currentAction = States.ATTACK;
         if (!this.player.isAttacking) this.player.evaluateCombatDistance(); 
     };
     onComputerAttackExit = () => {
-        this.scene.combatManager.combatMachine.input('action', '');
         this.player.frameCount = 0;
+        this.player.currentAction = '';
         this.player.computerAction = false;    
         if (!this.player.isRanged) this.player.anims.play('player_idle', true);
     };
@@ -647,14 +638,14 @@ export default class PlayerMachine {
         };
     };
     onComputerParryUpdate = (_dt: number) => {
-        // if (this.player.frameCount === FRAME_COUNT.PARRY_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input('action', 'parry');
+        if (this.player.frameCount === FRAME_COUNT.PARRY_LIVE && !this.player.isRanged) this.player.currentAction = States.PARRY;
         if (this.player.frameCount >= FRAME_COUNT.PARRY_KILL) this.player.isParrying = false;
         if (!this.player.isParrying) this.player.evaluateCombatDistance();
     };
     onComputerParryExit = () => {
         this.player.isParrying = false;
-        this.player.currentAction = '';
         this.player.frameCount = 0;
+        this.player.currentAction = '';
         this.player.computerAction = false;    
         if (!this.player.isRanged) this.player.anims.play('player_idle', true);
     };
@@ -666,14 +657,14 @@ export default class PlayerMachine {
         this.player.frameCount = 0;
     };
     onComputerPostureUpdate = (_dt: number) => {
-        // if (this.player.frameCount === FRAME_COUNT.POSTURE_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input('action', 'posture');
+        if (this.player.frameCount === FRAME_COUNT.POSTURE_LIVE && !this.player.isRanged) this.player.currentAction = States.POSTURE
         if (!this.player.isPosturing) this.player.evaluateCombatDistance();
     };
     onComputerPostureExit = () => {
-        this.scene.combatManager.combatMachine.input('action', '');
         this.player.spriteShield.setVisible(this.player.isStalwart);
         this.player.frameCount = 0;
-        this.player.computerAction = false;    
+        this.player.currentAction = '';
+        this.player.computerAction = false;
         if (!this.player.isRanged) this.player.anims.play('player_idle', true);
     };
 
@@ -683,13 +674,13 @@ export default class PlayerMachine {
         this.player.frameCount = 0;
     };
     onComputerThrustUpdate = (_dt: number) => {
-        // if (this.player.frameCount === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input('action', 'thrust');
+        if (this.player.frameCount === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) this.player.currentAction = States.THRUST;
         if (!this.player.isThrusting) this.player.evaluateCombatDistance();
     };
     onComputerThrustExit = () => {
-        this.scene.combatManager.combatMachine.input('action', '');
         this.player.frameCount = 0;
         this.player.computerAction = false;
+        this.player.currentAction = '';
         if (!this.player.isRanged) this.player.anims.play('player_idle', true);
     };
 
@@ -736,13 +727,12 @@ export default class PlayerMachine {
         this.player.frameCount = 0;
     };
     onRollUpdate = (_dt: number) => {
-        if (this.player.frameCount === FRAME_COUNT.ROLL_LIVE && !this.player.isRanged) {
-            this.scene.combatManager.combatMachine.input('action', 'roll');
-        };
+        if (this.player.frameCount === FRAME_COUNT.ROLL_LIVE && !this.player.isRanged) this.player.currentAction = States.ROLL;
         this.player.combatChecker(this.player.isRolling);
     };
     onRollExit = () => {
         if (this.player.isStalwart || this.player.isStorming) return;
+        this.player.currentAction = '';
         this.player.spriteWeapon.setVisible(true);
         this.player.rollCooldown = 0; 
         if (this.scene.state.action !== '') {
@@ -760,7 +750,7 @@ export default class PlayerMachine {
         this.player.castbar.setTotal(PLAYER.DURATIONS.ACHIRE);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
-        this.player.castbar.setVisible(true);  
+        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onAchireUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -791,7 +781,7 @@ export default class PlayerMachine {
         this.player.castbar.setTotal(PLAYER.DURATIONS.ASTRAVE);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
-        this.player.castbar.setVisible(true);  
+        this.player.castbar.setup(this.player.x, this.player.y);
         this.player.isCasting = true;
     };
     onAstraveUpdate = (dt: number) => {
@@ -827,7 +817,7 @@ export default class PlayerMachine {
         this.player.castbar.setTotal(PLAYER.DURATIONS.ARCING);
         this.player.castbar.setTime(PLAYER.DURATIONS.ARCING, 0xFF0000);
         this.player.setStatic(true);
-        this.player.castbar.setVisible(true); 
+        this.player.castbar.setup(this.player.x, this.player.y);
         this.player.flickerCarenic(3000); 
         EventBus.emit('party-combat-text', {
             text: `${this.player.ascean.name} begins arcing with their ${this.scene.state.weapons[0]?.name}.`
@@ -898,7 +888,7 @@ export default class PlayerMachine {
         this.player.castbar.setTotal(PLAYER.DURATIONS.CONFUSE);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
-        this.player.castbar.setVisible(true);  
+        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onConfuseUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -965,7 +955,7 @@ export default class PlayerMachine {
             loop: false,
         });
         this.player.setStatic(true);
-        this.player.castbar.setVisible(true); 
+        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onDevourUpdate = (dt: number) => {
         this.player.combatChecker(this.player.isCasting);
@@ -994,7 +984,7 @@ export default class PlayerMachine {
         this.player.castbar.setTotal(PLAYER.DURATIONS.FEAR);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
-        this.player.castbar.setVisible(true);  
+        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onFearingUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1029,7 +1019,7 @@ export default class PlayerMachine {
         this.player.specialCombatText = this.scene.showCombatText('Fyerus', PLAYER.DURATIONS.FYERUS / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.castbar.setTotal(PLAYER.DURATIONS.FYERUS);
         this.player.castbar.setTime(PLAYER.DURATIONS.FYERUS);
-        this.player.castbar.setVisible(true);  
+        this.player.castbar.setup(this.player.x, this.player.y);
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);  
         this.player.aoe = new AoE(this.scene, 'fyerus', 6, false, this.player, false, this.player.currentTarget);    
         this.player.enemySound('combat-round', true);
@@ -1060,7 +1050,7 @@ export default class PlayerMachine {
         this.player.castbar.setTotal(PLAYER.DURATIONS.HEALING);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
-        this.player.castbar.setVisible(true);  
+        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onHealingUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1091,7 +1081,7 @@ export default class PlayerMachine {
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.MAIERETH);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
-        this.player.castbar.setVisible(true);  
+        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onIlirechUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1123,7 +1113,7 @@ export default class PlayerMachine {
         this.player.castbar.setTotal(PLAYER.DURATIONS.KYNISOS);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
-        this.player.castbar.setVisible(true);   
+        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onKynisosUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1178,7 +1168,7 @@ export default class PlayerMachine {
             loop: false,
         });
         this.player.setStatic(true);
-        this.player.castbar.setVisible(true);  
+        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onKyrnaicismUpdate = (dt: number) => {
         this.player.combatChecker(this.player.isCasting);
@@ -1210,7 +1200,7 @@ export default class PlayerMachine {
         this.player.enemySound('absorb', true);
     };
     heal = (pow: number) => {
-        const heal = this.player.health * pow;
+        const heal = this.player.computerCombatSheet.computerHealth * pow;
         this.player.health = Math.min(this.player.health + heal, this.player.computerCombatSheet.computerHealth);
         this.player.updateHealthBar(this.player.health);
         this.player.computerCombatSheet.newComputerHealth = this.player.health;
@@ -1250,7 +1240,7 @@ export default class PlayerMachine {
 
         const text = `${this.player.ascean.name} sacrifices ${Math.round(damage) / 2 * (this.player.isStalwart ? 0.85 : 1)} health to rip ${Math.round(damage)} from ${enemy.ascean?.name}.`;
         EventBus.emit('party-combat-text', { text });
-        enemy.flickerCarenic(750);    
+        enemy.flickerCarenic(750);
     };
     suture = (id: string, power: number) => {
         this.player.entropicMultiplier(power);
@@ -1281,7 +1271,7 @@ export default class PlayerMachine {
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.MAIERETH);                          
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
-        this.player.castbar.setVisible(true);  
+        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onMaierethUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1392,7 +1382,7 @@ export default class PlayerMachine {
         this.player.castbar.setTotal(PLAYER.DURATIONS.PARALYZE);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
-        this.player.castbar.setVisible(true); 
+        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onParalyzeUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1428,7 +1418,7 @@ export default class PlayerMachine {
         this.player.castbar.setTotal(PLAYER.DURATIONS.POLYMORPH);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
-        this.player.castbar.setVisible(true);  
+        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onPolymorphingUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1476,7 +1466,7 @@ export default class PlayerMachine {
         this.player.castbar.setTotal(PLAYER.DURATIONS.QUOR);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
-        this.player.castbar.setVisible(true);  
+        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onQuorUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1521,7 +1511,7 @@ export default class PlayerMachine {
             callbackScope: this,
             loop: false,
         });
-        this.player.castbar.setVisible(true);  
+        this.player.castbar.setup(this.player.x, this.player.y);
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
     };
     onReconstituteUpdate = (dt: number) => {
@@ -1559,7 +1549,7 @@ export default class PlayerMachine {
         this.player.castbar.setTotal(PLAYER.DURATIONS.ROOTING);
         this.player.specialCombatText = this.scene.showCombatText('Rooting', PLAYER.DURATIONS.ROOTING / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
-        this.player.castbar.setVisible(true);
+        this.player.castbar.setup(this.player.x, this.player.y);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.ROOTING);
     };
     onRootingUpdate = (dt: number) => {
@@ -1636,7 +1626,7 @@ export default class PlayerMachine {
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.SNARE);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
-        this.player.castbar.setVisible(true); 
+        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onSnaringUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;

@@ -14,7 +14,7 @@ import { LevelSheet } from '../utility/ascean';
 import { getRarityColor, sellRarity } from '../utility/styling';
 import ItemModal from '../components/ItemModal';
 import QuestManager, { getQuests, Quest } from '../utility/quests';
-import { namedNameCheck } from '../utility/player';
+import { faction, initFaction, initParty, namedNameCheck, Reputation } from '../utility/player';
 import Thievery from './Thievery';
 import Merchant from './Merchant';
 import Roster from './Roster';
@@ -22,6 +22,7 @@ import { ArenaRoster } from './BaseUI';
 import Settings from '../models/settings';
 import { usePhaserEvent } from '../utility/hooks';
 import { fetchTutorial } from '../utility/enemy';
+import { getParty } from '../assets/db/db';
 
 const GET_FORGE_COST = {
     Common: 1,
@@ -90,9 +91,10 @@ interface DialogTreeProps {
     setPlayerResponses: Setter<string[]>;
     setKeywordResponses: Setter<string[]>;
     styling?: any;
+    reputation: Accessor<Reputation>;
 };
 
-export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlayerResponses, setKeywordResponses, styling }: DialogTreeProps) => {
+export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlayerResponses, setKeywordResponses, styling, reputation }: DialogTreeProps) => {
     const [showDialogOptions, setShowDialogOptions] = createSignal<boolean>(false);
     const [renderedText, setRenderedText] = createSignal<string>('');
     const [renderedOptions, setRenderedOptions] = createSignal<any>(undefined);
@@ -198,7 +200,8 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
 
     usePhaserEvent('typing-complete', dialogTimeout);
 
-    const getOptionKey = (ascean: Ascean, combat: any, game: Accessor<GameState>,  key: string) => {
+    const getOptionKey = (ascean: Ascean, combat: any, game: Accessor<GameState>, key: string) => {
+
         const newKey = key === 'mastery' ? ascean[key].toLowerCase() : key;
         return ascean[newKey] !== undefined ? ascean[newKey] : combat[newKey] !== undefined ? combat[newKey] : game()[newKey as keyof typeof game];
     };
@@ -259,9 +262,10 @@ interface StoryDialogProps {
     game: Accessor<GameState>;
     settings: Accessor<Settings>;
     quests: Accessor<QuestManager>;
+    reputation: Accessor<Reputation>;
 };
 
-export default function Dialog({ ascean, asceanState, combat, game, settings, quests }: StoryDialogProps) {
+export default function Dialog({ ascean, asceanState, combat, game, settings, quests, reputation }: StoryDialogProps) {
     const [forgeModalShow, setForgeModalShow] = createSignal(false); 
     const [influence, setInfluence] = createSignal(combat()?.weapons[0]?.influences?.[0]);
     const [persuasionString, setPersuasionString] = createSignal<string>('');
@@ -278,6 +282,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [persuasion, setPersuasion] = createSignal<boolean>(false);
     const [persuasionTraits, setPersuasionTraits] = createSignal<any>([]);
     const [enemyArticle, setEnemyArticle] = createSignal<any>('');
+    const [enemyDescriptionArticle, setEnemyDescriptionArticle] = createSignal<any>('');
     const [merchantTable, setMerchantTable] = createSignal<any>({});
     const [blacksmithSell, setBlacksmithSell] = createSignal<boolean>(false);
     const [region, setRegion] = createSignal<any>(regionInformation['Astralands']);
@@ -293,6 +298,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [thievery, setThievery] = createSignal<boolean>(false);
     const [specialMerchant, setSpecialMerchant] = createSignal<boolean>(false);
     const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, result: false, win: false });
+    const [rep, setRep] = createSignal<faction>(initFaction);
+    const [party, setParty] = createSignal(false);
     const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
@@ -307,6 +314,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         checkPersuasion(game());
         checkInfluence(ascean);
         checkUpgrades();
+        checkParty();
     });
 
     createEffect(() => setMerchantTable(game().merchantEquipment));
@@ -373,10 +381,19 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         checkQuests(enemy, manager.quests);
         setNamedEnemy(namedNameCheck(enemy.name));
         setEnemyArticle(() => ['a', 'e', 'i', 'o', 'u'].includes(enemy.name.charAt(0).toLowerCase()) ? 'an' : 'a');
+        setEnemyDescriptionArticle(() => combat().computer?.description.split(' ')[0].toLowerCase() === 'the' ? 'the' : ['a', 'e', 'i', 'o', 'u'].includes((combat().computer?.description as string).charAt(0).toLowerCase()) ? 'an' : 'a');
+        // console.log(enemyArticle(), 'Enemy Name Article', enemyDescriptionArticle(), 'Enemy Description Article');
+        const rep = reputation().factions.find((f: faction) => f.name === combat().computer?.name) as faction;
+        if (rep) setRep(rep);
     };
-
+    
     const checkInfluence = (a: Accessor<Ascean>) => setInfluence(a()?.weaponOne?.influences?.[0]);
     
+    const checkParty = async () => {
+        const par = await getParty(ascean()._id);
+        setParty(par.party.length < 2);
+    }; 
+
     const checkQuests = (enemy: Ascean, quest: Quest[]) => {
         const enemyQuests = getQuests(enemy.name);
         const prospectiveQuests = [];
@@ -762,12 +779,14 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         setForge(item);
         setForgeModalShow(true);
     };
+
     function performAction(actionName: string) {
         const actionFunction = actions[actionName as keyof typeof actions];
         if (actionFunction) {
             actionFunction();
         };
     };
+
     function specialMerchantStyle(animation: string) {
         return {
             'font-weight': 700,
@@ -777,6 +796,16 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             animation
         };
     };
+
+    function changeEnemyToParty() {
+        EventBus.emit('add-party', {name: combat().computer?.name, level: combat().computer?.level});
+        EventBus.emit('despawn-enemy', combat().enemyID);
+        EventBus.emit('action-button-sound');
+        EventBus.emit('update-pause', false);
+        EventBus.emit('show-dialog-false');
+        // EventBus.emit('outside-press', 'dialog'); 
+    };
+
     return (
         <Show when={combat().computer}>  
         <div class='dialog-window'>
@@ -835,10 +864,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             ) : ( '' ) }
             { combat().isEnemy && combat().computer ? (
                 <div style={{ 'font-size': '0.75em' }}>
-                    <DialogTree 
-                        game={game} combat={combat} ascean={ascean() as Ascean} enemy={combat().computer} dialogNodes={getNodesForEnemy(combat()?.computer as Ascean) as DialogNode[]} 
-                        setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} styling={{'white-space':'pre-wrap'}}
-                    />
+                    <DialogTree game={game} combat={combat} ascean={ascean() as Ascean} enemy={combat().computer} dialogNodes={getNodesForEnemy(combat()?.computer as Ascean) as DialogNode[]} setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} styling={{'white-space':'pre-wrap'}} reputation={reputation} />
                 { game().currentIntent === 'challenge' ? (
                     <>
                     { combat().persuasionScenario ? (
@@ -910,7 +936,15 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     ) } 
                     </>
                 ) : game().currentIntent === 'conditions' ? (
-                    <Typewriter stringText={"This portion has not yet been written. Here you will be able to evaluate the conditions you have with said individual; disposition and the like."} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                    rep()?.reputation >= 0 && party() && (
+                        <div style={{ color: "gold" }}>
+                            <Typewriter stringText={`[Do you wish to recruit this enemy to your party? This is ${enemyArticle()} ${combat().computer?.name}. They are ${enemyDescriptionArticle()} ${combat().computer?.description}. You are allowed to have up to 2 party members accompanying you on your journey. Choose wisely.]`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
+                            <br />
+                            <button class="highlight" onClick={changeEnemyToParty}>
+                                <Typewriter stringText={`Recruit ${rep().name} to join your party.`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
+                            </button>
+                        </div>
+                    )
                 ) : game().currentIntent === 'farewell' ? (
                     <>
                         { combat().persuasionScenario ? (
@@ -1022,7 +1056,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </div>
             ) : combat().computer && combat().npcType !== 'Merchant-Alchemy' && combat().npcType !== 'Merchant-Smith' ? (
                 <DialogTree 
-                    game={game} combat={combat} ascean={ascean()} enemy={combat().computer} dialogNodes={getNodesForNPC(npcIds[combat().npcType])} 
+                    game={game} combat={combat} ascean={ascean()} enemy={combat().computer} dialogNodes={getNodesForNPC(npcIds[combat().npcType])} reputation={reputation}
                     setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} styling={{'white-space':'pre-wrap'}}
                 />
             ) : ( '' ) } 

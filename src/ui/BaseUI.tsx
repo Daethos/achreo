@@ -421,6 +421,23 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         });
         setEnemies(newEnemies);
     };
+    usePhaserEvent('killing-blow', (data: {e: Ascean, enemyID: string}) => {
+        const { e, enemyID } = data;
+        let experience: number = Math.round(e.level * 50 * (e.level / ascean().level) + (combat().playerAttributes?.rawKyosir as number));
+        experience = balanceExperience(experience, ascean().level);
+        const newState = { 
+            ...asceanState(), 
+            avarice: combat().prayerData.length > 0 ? combat().prayerData.includes('Avarice') : false, 
+            currency: ascean().currency,
+            firewater: ascean().firewater,
+            currentHealth: combat().newPlayerHealth,
+            opponent: e.level,
+            opponentExp: Math.min(experience + ascean().experience, ascean().level * 1000),
+        };
+        EventBus.emit('record-win', { record: combat(), experience: newState });
+        const loot = { enemyID, level: e.level };
+        EventBus.emit('enemy-loot', loot);
+    });
     usePhaserEvent('remove-non-aggressive-enemy', () => {
         if (combat().enemyID !== '') filterEnemies(combat().enemyID);
         EventBus.emit('clear-enemy');
@@ -469,7 +486,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
             </Suspense>
         </Show>
         <Suspense fallback={<Puff color="gold" />}>
-            <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} settings={settings} quests={quests} /> 
+            <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} reputation={reputation} settings={settings} quests={quests} /> 
         </Suspense>
         <Show when={showTutorial()}>
             <Suspense fallback={<Puff color="gold" />}>

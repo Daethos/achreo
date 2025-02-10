@@ -747,11 +747,7 @@ export default class PlayerMachine {
     };
 
     onAchireEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText('Achire', PLAYER.DURATIONS.ACHIRE / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.ACHIRE);
-        this.player.isCasting = true;
-        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
-        this.player.castbar.setup(this.player.x, this.player.y);
+        this.player.startCasting('Achire', PLAYER.DURATIONS.ACHIRE, 'cast');
     };
     onAchireUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -771,19 +767,13 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.player.enemySound('wild', true);
         };
-        this.player.isCasting = false;
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
+        this.player.stopCasting();
     };
 
     onAstraveEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText('Astrave', PLAYER.DURATIONS.ASTRAVE / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.ASTRAVE);
-        this.player.isCasting = true;
-        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
-        this.player.castbar.setup(this.player.x, this.player.y);
-        this.player.isCasting = true;
+        if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE)) return;
+        this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.startCasting('Astrave', PLAYER.DURATIONS.ASTRAVE, 'cast');
     };
     onAstraveUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -805,10 +795,7 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.player.enemySound('combat-round', true);
         };
-        this.player.isCasting = false;
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
+        this.player.stopCasting();
     };
 
     onArcEnter = () => {
@@ -833,7 +820,7 @@ export default class PlayerMachine {
     };
     onArcUpdate = (dt: number) => {
         this.player.combatChecker(this.player.isArcing);
-        if (this.player.isArcing) this.player.castbar.update(dt, 'channel', 'DAMAGE');
+        if (this.player.isArcing) this.player.castbar.update(dt, 'channel', 'damage');
         if (this.player.castbar.time >= PLAYER.DURATIONS.ARCING * 0.25 && this.player.castbar.time <= PLAYER.DURATIONS.ARCING * 0.26) {
             this.player.isAttacking = true;
         };
@@ -885,11 +872,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name;
-        this.player.specialCombatText = this.scene.showCombatText('Confusing', PLAYER.DURATIONS.CONFUSE / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.CONFUSE);
-        this.player.isCasting = true;
-        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
-        this.player.castbar.setup(this.player.x, this.player.y);
+        this.player.startCasting('Confusing', PLAYER.DURATIONS.CONFUSE, 'cast');
     };
     onConfuseUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -906,15 +889,10 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.player.enemySound('death', true);
             EventBus.emit('party-combat-text', {
-                text: `${this.player.ascean.name} confuses ${this.player.spellName}, and they stumble around in a daze.`
+                text: `${this.player.ascean.name} confuses ${this.player.spellName}, causing them to stumble in a daze.`
             });
         };
-        this.player.isCasting = false;
-        this.player.spellTarget = '';
-        this.player.spellName = '';
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
+        this.player.stopCasting();
     };
 
     onDesperationEnter = () => {
@@ -939,13 +917,10 @@ export default class PlayerMachine {
     onDevourEnter = () => {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return; 
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.isCasting = true;
         this.player.currentTarget.isConsumed = true;
         this.player.enemySound('absorb', true);
         this.player.flickerCarenic(2000); 
-        this.player.specialCombatText = this.scene.showCombatText('Devouring', PLAYER.DURATIONS.DEVOUR / 2, 'damage', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.DEVOUR);
-        this.player.castbar.setTime(PLAYER.DURATIONS.DEVOUR);
+        this.player.startCasting('Devouring', PLAYER.DURATIONS.DEVOUR, 'damage', true);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.DEVOUR);
         this.player.devourTimer = this.scene.time.addEvent({
             delay: 400,
@@ -962,20 +937,15 @@ export default class PlayerMachine {
             loop: false,
         });
         this.player.setStatic(true);
-        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onDevourUpdate = (dt: number) => {
         this.player.combatChecker(this.player.isCasting);
         if (this.player.isCasting === true) {
-            this.player.castbar.update(dt, 'channel', 'TENDRIL');
+            this.player.castbar.update(dt, 'channel', 'tendril');
         };
     };
     onDevourExit = () => {
-        this.player.isCasting = false;
-        this.player.castbar.reset();
-        this.player.frameCount = 0; 
-        this.player.beam.reset();
-        this.player.spellTarget = '';
+        this.player.stopCasting();
         this.player.setStatic(false);
         if (this.player.devourTimer !== undefined) {
             this.player.devourTimer.remove(false);
@@ -986,12 +956,7 @@ export default class PlayerMachine {
     onFearingEnter = () => {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.spellName = this.player.currentTarget.ascean?.name;
-        this.player.specialCombatText = this.scene.showCombatText('Fearing', PLAYER.DURATIONS.FEAR / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.FEAR);
-        this.player.isCasting = true;
-        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
-        this.player.castbar.setup(this.player.x, this.player.y);
+        this.player.startCasting('Fearing', PLAYER.DURATIONS.FEAR, 'cast');
     };
     onFearingUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1011,22 +976,14 @@ export default class PlayerMachine {
                 text: `${this.player.ascean.name} strikes fear into ${this.scene.state.computer?.name}!`
             });
         };
-        this.player.isCasting = false;
-        this.player.spellTarget = '';
-        this.player.spellName = '';
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);  
+        this.player.stopCasting();
     };
 
     onFyerusEnter = () => {
         this.player.isCasting = true;
-        if (this.player.isMoving === true) this.player.isCasting = false;
-        if (this.player.isCasting === false) return;
-        this.player.specialCombatText = this.scene.showCombatText('Fyerus', PLAYER.DURATIONS.FYERUS / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.FYERUS);
-        this.player.castbar.setTime(PLAYER.DURATIONS.FYERUS);
-        this.player.castbar.setup(this.player.x, this.player.y);
+        this.player.setStatic(true);
+        this.player.isMoving = false;
+        this.player.startCasting('Fyerus', PLAYER.DURATIONS.FYERUS, 'cast', true);
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);  
         this.player.aoe = new AoE(this.scene, 'fyerus', 6, false, this.player, false, this.player.currentTarget);    
         this.player.enemySound('combat-round', true);
@@ -1041,24 +998,17 @@ export default class PlayerMachine {
         };
         this.player.combatChecker(this.player.isCasting);
         if (this.player.isCasting === true) {
-            this.player.castbar.update(dt, 'channel', 'FYERUS');
+            this.player.castbar.update(dt, 'channel', 'fyerus');
         };
     };
     onFyerusExit = () => {
         if (this.player.aoe) this.player.aoe.cleanAnimation(this.scene);
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        this.player.isCasting = false;
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
+        this.player.stopCasting();
+        this.player.setStatic(false);
     };
 
-    onHealingEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText('Healing', PLAYER.DURATIONS.HEALING / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.HEALING);
-        this.player.isCasting = true;
-        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
-        this.player.castbar.setup(this.player.x, this.player.y);
-    };
+    onHealingEnter = () => this.player.startCasting('Healing', PLAYER.DURATIONS.HEALING, 'heal');
+    
     onHealingUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
         this.player.combatChecker(this.player.isCasting);
@@ -1080,21 +1030,14 @@ export default class PlayerMachine {
             };
             this.player.enemySound('phenomena', true);
         };
-        this.player.isCasting = false;
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
+        this.player.stopCasting();
     };
 
     onIlirechEnter = () => {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.specialCombatText = this.scene.showCombatText('Ilirech', PLAYER.DURATIONS.ILIRECH / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.ILIRECH);
+        this.player.startCasting('Ilirech', PLAYER.DURATIONS.ILIRECH, 'cast');
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.MAIERETH);
-        this.player.isCasting = true;
-        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
-        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onIlirechUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1114,20 +1057,11 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.player.enemySound('fire', true);
         };
-        this.player.isCasting = false;
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        this.player.beam.reset();
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
+        this.player.stopCasting();
     };
 
-    onKynisosEnter = () => { 
-        this.player.specialCombatText = this.scene.showCombatText('Kynisos', PLAYER.DURATIONS.KYNISOS / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.KYNISOS);
-        this.player.isCasting = true;
-        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
-        this.player.castbar.setup(this.player.x, this.player.y);
-    };
+    onKynisosEnter = () => this.player.startCasting('Kynisos', PLAYER.DURATIONS.KYNISOS, 'cast');
+    
     onKynisosUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
         this.player.combatChecker(this.player.isCasting);
@@ -1148,21 +1082,15 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.player.enemySound('combat-round', true);
         };
-        this.player.isCasting = false;
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
+        this.player.stopCasting();
     };
 
     onKyrnaicismEnter = () => {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.isCasting = true;
+        this.player.startCasting('Kyrnaicism', PLAYER.DURATIONS.KYRNAICISM, 'damage', true);
         this.player.enemySound('absorb', true);
         this.player.flickerCarenic(3000); 
-        this.player.specialCombatText = this.scene.showCombatText('Kyrnaicism', PLAYER.DURATIONS.KYRNAICISM / 2, 'damage', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.KYRNAICISM);
-        this.player.castbar.setTime(PLAYER.DURATIONS.KYRNAICISM);
         this.player.currentTarget.isConsumed = true;
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.KYRNAICISM);
         this.scene.combatManager.slow(this.player.spellTarget, 1000);
@@ -1181,18 +1109,13 @@ export default class PlayerMachine {
             loop: false,
         });
         this.player.setStatic(true);
-        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onKyrnaicismUpdate = (dt: number) => {
         this.player.combatChecker(this.player.isCasting);
-        if (this.player.isCasting) this.player.castbar.update(dt, 'channel', 'TENDRIL');
+        if (this.player.isCasting) this.player.castbar.update(dt, 'channel', 'tendril');
     };
     onKyrnaicismExit = () => {
-        this.player.isCasting = false;
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        this.player.beam.reset();
-        this.player.spellTarget = '';
+        this.player.stopCasting();
         this.player.setStatic(false);
         if (this.player.chiomicTimer) {
             this.player.chiomicTimer.remove(false);
@@ -1242,15 +1165,11 @@ export default class PlayerMachine {
         const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) return;
         let damage = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier());
-
         this.player.health -= (damage / 2);
         this.player.computerCombatSheet.newComputerHealth = this.player.health;
-
-        damage *= (1 * power / 100);
-
+        damage *= (1 + power / 100);
         EventBus.emit(COMPUTER_BROADCAST, { id: this.player.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.player.health });
         EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: this.player.enemyID });
-
         const text = `${this.player.ascean.name} sacrifices ${Math.round(damage) / 2 * (this.player.isStalwart ? 0.85 : 1)} health to rip ${Math.round(damage)} from ${enemy.ascean?.name}.`;
         EventBus.emit('party-combat-text', { text });
         enemy.flickerCarenic(750);
@@ -1271,20 +1190,14 @@ export default class PlayerMachine {
         enemy.flickerCarenic(750);
     };
 
-    onLeapEnter = () => {
-        this.player.leap();
-    };
+    onLeapEnter = () => this.player.leap();
     onLeapUpdate = (_dt: number) => this.player.combatChecker(this.player.isLeaping);
 
     onMaierethEnter = () => {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.specialCombatText = this.scene.showCombatText('Maiereth', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.MAIERETH);
+        this.player.startCasting('Maiereth', PLAYER.DURATIONS.MAIERETH, 'effect');    
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.MAIERETH);                          
-        this.player.isCasting = true;
-        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
-        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onMaierethUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1308,12 +1221,7 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.player.enemySound('spooky', true);
         };
-        this.player.isCasting = false;
-        this.player.spellTarget = '';
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        this.player.beam.reset();
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);  
+        this.player.stopCasting();
     };
 
     onHookEnter = () => {
@@ -1330,9 +1238,7 @@ export default class PlayerMachine {
             this.player.combatChecker(false);
         };
     };
-    onHookExit = () => {
-        this.player.beam.reset();
-    };
+    onHookExit = () => this.player.beam.reset();
 
     onMarkEnter = () => {
         this.player.setStatic(true);
@@ -1391,11 +1297,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name;
-        this.player.specialCombatText = this.scene.showCombatText('Paralyzing', PLAYER.DURATIONS.PARALYZE / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.PARALYZE);
-        this.player.isCasting = true;
-        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
-        this.player.castbar.setup(this.player.x, this.player.y);
+        this.player.startCasting('Paralyzing', PLAYER.DURATIONS.PARALYZE, 'cast');
     };
     onParalyzeUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1415,23 +1317,14 @@ export default class PlayerMachine {
                 text: `${this.player.ascean.name} paralyzes ${this.scene.state.computer?.name} for several seconds!`
             });
         };
-        this.player.isCasting = false;
-        this.player.spellTarget = '';
-        this.player.spellName = '';
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
+        this.player.stopCasting();
     };
 
     onPolymorphingEnter = () => {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.spellName = this.player.currentTarget.ascean?.name
-        this.player.specialCombatText = this.scene.showCombatText('Polymorphing', PLAYER.DURATIONS.POLYMORPH / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.POLYMORPH);
-        this.player.isCasting = true;
-        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
-        this.player.castbar.setup(this.player.x, this.player.y);
+        this.player.spellName = this.player.currentTarget.ascean?.name;
+        this.player.startCasting('Polymorphing', PLAYER.DURATIONS.POLYMORPH, 'cast');
     };
     onPolymorphingUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1451,12 +1344,7 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.player.enemySound('combat-round', true);
         };
-        this.player.spellTarget = '';
-        this.player.spellName = '';
-        this.player.isCasting = false;
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
+        this.player.stopCasting();
     };
 
     onPursuitEnter = () => {
@@ -1469,18 +1357,11 @@ export default class PlayerMachine {
                 this.player.setPosition(this.player.currentTarget.x - 16, this.player.currentTarget.y);
             };
         };
-
         this.player.flickerCarenic(750);
     };
     onPursuitUpdate = (_dt: number) => this.player.combatChecker(this.player.isPursuing);
 
-    onQuorEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText('Quor', PLAYER.DURATIONS.QUOR / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.QUOR);
-        this.player.isCasting = true;
-        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
-        this.player.castbar.setup(this.player.x, this.player.y);
-    };
+    onQuorEnter = () => this.player.startCasting('Quor', PLAYER.DURATIONS.QUOR, 'cast');
     onQuorUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
         this.player.combatChecker(this.player.isCasting);
@@ -1499,18 +1380,13 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.player.enemySound('freeze', true);
         };
-        this.player.isCasting = false;
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
+        this.player.stopCasting();
     };
 
     onReconstituteEnter = () => {
-        if (this.player.moving() === true) return;
-        this.player.isCasting = true;
-        this.player.specialCombatText = this.scene.showCombatText('Reconstitute', PLAYER.DURATIONS.RECONSTITUTE / 2, 'heal', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.RECONSTITUTE);
-        this.player.castbar.setTime(PLAYER.DURATIONS.RECONSTITUTE);
+        this.player.setStatic(true);
+        this.player.isMoving = false;
+        this.player.startCasting('Reconstituting', PLAYER.DURATIONS.RECONSTITUTE, 'heal');
         this.player.beam.startEmitter(this, PLAYER.DURATIONS.RECONSTITUTE);
         this.player.reconTimer = this.scene.time.addEvent({
             delay: 1000,
@@ -1524,24 +1400,19 @@ export default class PlayerMachine {
             callbackScope: this,
             loop: false,
         });
-        this.player.castbar.setup(this.player.x, this.player.y);
-        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
     };
     onReconstituteUpdate = (dt: number) => {
         if (this.player.isMoving) this.player.isCasting = false;
         this.player.combatChecker(this.player.isCasting);
-        if (this.player.isCasting) this.player.castbar.update(dt, 'channel', 'HEAL');
+        if (this.player.isCasting) this.player.castbar.update(dt, 'channel', 'heal');
     };
     onReconstituteExit = () => {
-        this.player.isCasting = false;
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        this.player.beam.reset();
+        this.player.setStatic(false);
+        this.player.stopCasting();
         if (this.player.reconTimer) {
             this.player.reconTimer.remove(false);
             this.player.reconTimer = undefined;
         }; 
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
     };
     reconstitute = () => {
         if (!this.player.isCasting) {
@@ -1564,11 +1435,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name;
-        this.player.isCasting = true;
-        this.player.castbar.setTotal(PLAYER.DURATIONS.ROOTING);
-        this.player.specialCombatText = this.scene.showCombatText('Rooting', PLAYER.DURATIONS.ROOTING / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
-        this.player.castbar.setup(this.player.x, this.player.y);
+        this.player.startCasting('Rooting', PLAYER.DURATIONS.ROOTING, 'cast');
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.ROOTING);
     };
     onRootingUpdate = (dt: number) => {
@@ -1588,13 +1455,7 @@ export default class PlayerMachine {
                 text: `${this.player.ascean.name} ensorcels ${this.player.spellName}, rooting them!`
             });
         };
-        this.player.isCasting = false;
-        this.player.spellTarget = '';
-        this.player.spellName = '';
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        this.player.beam.reset();
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
+        this.player.stopCasting();
     };
 
     onRushEnter = () => {
@@ -1640,12 +1501,8 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name;
-        this.player.specialCombatText = this.scene.showCombatText('Snaring', PLAYER.DURATIONS.SNARE, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.SNARE);
+        this.player.startCasting('Snaring', PLAYER.DURATIONS.SNARE, 'cast');
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.SNARE);
-        this.player.isCasting = true;
-        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
-        this.player.castbar.setup(this.player.x, this.player.y);
     };
     onSnaringUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1665,18 +1522,10 @@ export default class PlayerMachine {
                 text: `${this.player.ascean.name} ensorcels ${this.player.spellName}, snaring them!`
             });
         };
-        this.player.isCasting = false;
-        this.player.spellTarget = '';
-        this.player.spellName = '';
-        this.player.castbar.reset();
-        this.player.frameCount = 0;
-        this.player.beam.reset();
-        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
+        this.player.stopCasting();
     };
 
-    onStormEnter = () => {
-        this.player.storm();
-    };
+    onStormEnter = () => this.player.storm();
     onStormUpdate = (_dt: number) => this.player.combatChecker(this.player.isStorming);
 
     onSutureEnter = () => {

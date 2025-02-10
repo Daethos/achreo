@@ -176,7 +176,7 @@ export default class Party extends Entity {
         this.mark.setVisible(false);
         this.markAnimation = false;
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health, 'party');
-        this.castbar = new CastingBar(this.scene.hud, this.x, this.y, 0, this);
+        this.castbar = new CastingBar(this.scene, this.x, this.y, 0, this);
         this.rushedEnemies = [];
         this.playerStateListener();
         this.setFixedRotation();   
@@ -771,6 +771,31 @@ export default class Party extends Entity {
         this.resistCombatText = this.scene.showCombatText('Resisted', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.resistCombatText = undefined);
     };
 
+    startCasting = (name: string, duration: number, style: string, channel = false) => {
+        this.castbar.reset();
+        this.castbar.setVisible(true); // Added
+        this.castbar.setup(this.x, this.y);
+        this.isCasting = true;
+        this.specialCombatText = this.scene.showCombatText(name, duration / 2, style, false, true, () => this.specialCombatText = undefined);
+        this.castbar.setTotal(duration);
+        if (name !== 'Healing' && name !== 'Reconstituting') this.beam.enemyEmitter(this.attacking, duration, this.ascean.mastery); // scene.player
+        if (channel === true) this.castbar.setTime(duration);
+        if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true);
+        this.setVelocity(0);
+        this.anims.play('player_health', true);
+    };
+
+    stopCasting = () => {
+        this.isCasting = false;
+        this.castingSuccess = false;
+        this.castbar.reset();
+        this.beam.reset();
+        this.spellTarget = '';
+        this.spellName = '';
+        this.frameCount = 0;
+        if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false);
+    };
+
     leap = () => {
         this.frameCount = 0;
         this.isLeaping = true;
@@ -842,6 +867,7 @@ export default class Party extends Entity {
         this.isStorming = true;
         this.specialCombatText = this.scene.showCombatText('Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined); 
         this.isAttacking = true;
+        this.adjustSpeed(0.5);
         this.scene.tweens.add({
             targets: this,
             angle: 360,
@@ -868,7 +894,7 @@ export default class Party extends Entity {
                     });
                 };
             },
-            onComplete: () => this.isStorming = false,
+            onComplete: () => {this.isStorming = false; this.adjustSpeed(-0.5);},
             loop: 3,
         });  
         EventBus.emit('special-combat-text', {

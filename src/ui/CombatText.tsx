@@ -2,7 +2,7 @@ import { Accessor, createEffect, createSignal, Setter, Show } from 'solid-js';
 import { Combat } from '../stores/combat';
 import Settings from '../models/settings';
 import { EventBus } from '../game/EventBus';
-export default function CombatText({ settings, combat, combatHistory, editShow, setEditShow }: { settings: Accessor<Settings>; combat: Accessor<Combat>, combatHistory: Accessor<string>, editShow: Accessor<boolean>, setEditShow: Setter<boolean> }) {
+export default function CombatText({ settings, combat, combatHistory, partyHistory, partyShow, editShow, setEditShow }: { settings: Accessor<Settings>; combat: Accessor<Combat>, combatHistory: Accessor<string>, partyHistory: Accessor<string>, partyShow: Accessor<boolean>, editShow: Accessor<boolean>, setEditShow: Setter<boolean> }) {
     const [edit, setEdit] = createSignal({
         top: settings()?.combatText?.top || '40vh',
         left: settings()?.combatText?.left || '20vw',
@@ -27,7 +27,11 @@ export default function CombatText({ settings, combat, combatHistory, editShow, 
     return <div>
         <div class='combatText' style={{...edit(), 'border': '0.1em solid #FFC700', 'border-radius': '0.25em', 'box-shadow': '0 0 0.5em #FFC700'}}>
         <div style={{ 'text-wrap': 'balance', margin: '3%' }}> 
-            <div style={{ 'z-index': 1 }} innerHTML={combatHistory()} />
+            <Show when={partyShow()} fallback={
+                <div style={{ 'z-index': 1 }} innerHTML={combatHistory()} />
+            }>
+                <div style={{ 'z-index': 1 }} innerHTML={partyHistory()} />
+            </Show>
             <div class='center creature-heading'>
                 {combat().combatTimer && <p class='gold' style={{ 'z-index': 1, 'font-size': '0.75em' }}>Combat Timer: {combat().combatTimer}</p>}
             </div>

@@ -33,6 +33,16 @@ export const text = (prev: string, data: Combat) => {
     };
     return oldText;
 };
+export const partyText = (prev: string, data: { text: string; }) => {
+    let oldText: any = prev !== undefined ? prev : undefined;
+    let newText: any = '';
+    if (data.text) newText += data.text + '\n';
+    if (newText !== '') {
+        newText = styleText(newText);
+        oldText += newText;
+    };
+    return oldText;
+};
 function checkNumber(line: string[]) {
     for (let i = 0; i < line.length; i++) {
         if (HEALS.includes(line[i])) { 

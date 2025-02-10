@@ -47,7 +47,8 @@ const ORIGIN = {
 const MAX_HEARING_DISTANCE = 500;
 const MIN_HEARING_DISTANCE = 100;
 
-const TARGET_COLOR = 0x00FF00;
+const COLOR = 0x00FF00;
+const TARGET_COLOR = 0xFFC700;
 export default class Party extends Entity {
     playerID: string;
     computerAction: boolean = false;
@@ -201,7 +202,7 @@ export default class Party extends Entity {
         this.playerID = this.ascean._id;
         this.computerCombatSheet = this.createComputerCombatSheet(data.data);
         const weapon = this.weapons[0];
-        this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
+        this.setTint(COLOR);
         this.currentWeaponSprite = assetSprite(weapon);
         this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, this.currentWeaponSprite);
         if (weapon.grip === 'One Hand') {
@@ -280,7 +281,7 @@ export default class Party extends Entity {
             })
             .on('pointerout', () => {
                 this.clearTint();
-                this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
+                this.setTint(COLOR);
             });
         this.scene.time.delayedCall(1000, () => {
             this.setVisible(true);
@@ -403,7 +404,6 @@ export default class Party extends Entity {
 
     };
 
-    
     isNewComputerEnemy = (enemy: Enemy) => {
         const newEnemy = this.enemies.every(obj => obj.id !== enemy.enemyID);
         return newEnemy;
@@ -1084,7 +1084,7 @@ export default class Party extends Entity {
         if (this.particleEffect?.success) {
             this.particleEffect.triggered = true;
             this.particleEffect.success = false;
-            this.playerActionSuccess();
+            this.partyActionSuccess();
         } else if (this.particleEffect?.collided) {
             this.scene.particleManager.removeEffect(this.particleEffect?.id as string);
             this.particleEffect = undefined;              
@@ -1145,12 +1145,15 @@ export default class Party extends Entity {
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget);
         };
-        if (this.isDefeated && !this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) {
+        if ((this.isDefeated || this.health <= 0) && !this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) {
             this.isDefeated = false;
             this.playerMachine.stateMachine.setState(States.DEFEATED);
             return;
         };
-        if (!this.inComputerCombat || this.health <= 0) {
+        if (!this.inComputerCombat) {
+            if (!this.playerMachine.stateMachine.isCurrentState(States.IDLE) || !this.playerMachine.stateMachine.isCurrentState(States.FOLLOW)) {
+                this.playerMachine.stateMachine.setState(States.FOLLOW);
+            };
             return;
         };
         if (this.playerMachine.stateMachine.isCurrentState(States.LEASH) || this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) return;
@@ -1364,13 +1367,13 @@ export default class Party extends Entity {
     handleComputerConcerns = () => {
         if (this.actionSuccess === true) {
             this.actionSuccess = false;
-            this.playerActionSuccess();
+            this.partyActionSuccess();
         };
         if (this.particleEffect !== undefined) {
             if (this.particleEffect.success) {
                 this.particleEffect.success = false;
                 this.particleEffect.triggered = true;
-                this.playerActionSuccess();
+                this.partyActionSuccess();
             } else if (this.particleEffect.collided) {
                 this.scene.particleManager.removeEffect(this.particleEffect.id);
                 this.particleEffect = undefined;                
@@ -1425,7 +1428,7 @@ export default class Party extends Entity {
         this.functionality('party', this.currentTarget as Enemy);
     };
 
-    playerActionSuccess = () => {
+    partyActionSuccess = () => {
         if (this.particleEffect) {
             const action = this.particleEffect.action;
             this.killParticle();

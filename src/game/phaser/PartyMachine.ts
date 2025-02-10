@@ -196,7 +196,7 @@ export default class PlayerMachine {
         if (Math.abs(this.player.originPoint.x - this.player.position.x) > RANGE.LEASH * rangeMultiplier || 
             Math.abs(this.player.originPoint.y - this.player.position.y) > RANGE.LEASH * rangeMultiplier || 
             !this.player.inComputerCombat || distance > RANGE.LEASH * rangeMultiplier) {
-            this.stateMachine.setState(States.IDLE);
+            this.stateMachine.setState(States.FOLLOW);
             return;
         };
         if (distance >= 150 * rangeMultiplier) { // was 75 || 100
@@ -296,7 +296,7 @@ export default class PlayerMachine {
                 this.player.setVelocity(direction.x * (this.player.speed), direction.y * (this.player.speed));
             };
         } else {
-            this.stateMachine.setState(States.IDLE);
+            this.stateMachine.setState(States.FOLLOW);
         };
     };
     onLeashExit = () => {
@@ -567,7 +567,7 @@ export default class PlayerMachine {
     onIdleUpdate = (_dt: number) => {
         const direction = this.scene.player.position.subtract(this.player.position);
         const distance = direction.length();
-        if (distance > 100 && !this.stateMachine.isCurrentState(States.FOLLOW)) {
+        if (distance > 90 && !this.stateMachine.isCurrentState(States.FOLLOW)) {
             this.stateMachine.setState(States.FOLLOW);
         };
     };

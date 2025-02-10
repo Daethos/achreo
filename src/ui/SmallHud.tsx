@@ -10,7 +10,7 @@ import CombatText from './CombatText';
 import Dialog from './Dialog';
 import { LevelSheet } from '../utility/ascean';
 import Settings from '../models/settings';
-import { text } from '../utility/text';
+import { partyText, text } from '../utility/text';
 import { svg } from '../utility/settings';
 import QuestManager from '../utility/quests';
 import { Reputation } from '../utility/player';
@@ -31,8 +31,10 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings, 
         showPlayer: false,
     });
     const [editTextShow, setEditTextShow] = createSignal(false);
+    const [partyShow, setPartyShow] = createSignal(false);
     const [editSettingsShow, setEditSettingsShow] = createSignal(false);
     const [combatHistory, setCombatHistory] = createSignal<any>("");
+    const [partyHistory, setPartyHistory] = createSignal<any>("");
     createMemo(() => {
         if (ascean()?.experience as number > experience()) {
             setToastShow(true);
@@ -80,6 +82,10 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings, 
         EventBus.on('set-show-player', () => {
             showPlayer();
         });
+        EventBus.on('party-combat-text', (e: { text: string; }) => {
+            const newText = partyText(partyHistory(), e);
+            setPartyHistory(newText);
+        });
     });
     onCleanup(() => {
         EventBus.off('update-small-hud');
@@ -111,7 +117,8 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings, 
         </Show>
        <Show when={game().showCombat}>
             <button class='highlight' onClick={() => setEditTextShow(!editTextShow())} style={{ top: `${Number(settings().combatText.top.split('vh')[0]) - 12.5}vh`, left: `${Number(settings().combatText.left.split('vw')[0]) - 1.25}vw`, position: 'absolute', color: 'gold', transform: 'scale(0.75)' }}>{svg('UI')}</button>
-            <CombatText settings={settings} combat={combat} combatHistory={combatHistory} editShow={editTextShow} setEditShow={setEditTextShow} />
+            <button class='highlight' onClick={() => setPartyShow(!partyShow())} style={{ top: `${Number(settings().combatText.top.split('vh')[0]) - 11.5}vh`, right: `${Number(settings().combatText.left.split('vw')[0]) - 1.25}vw`, position: 'absolute', color: 'gold', transform: 'scale(0.8)' }}>{svg('INSPECT')}</button>
+            <CombatText settings={settings} combat={combat} combatHistory={combatHistory} partyHistory={partyHistory} editShow={editTextShow} setEditShow={setEditTextShow} partyShow={partyShow} />
         </Show>
         <Show when={game().showDialog}>
             <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} reputation={reputation} settings={settings} quests={quests} />

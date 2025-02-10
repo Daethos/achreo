@@ -425,7 +425,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.clearTint();
         this.anims.play('player_hurt', true).on('animationcomplete', () => {
             this.isHurt = false;
-            this.setTint(0xFF0000);    
+            if (this.name === 'enemy') this.setTint(0xFF0000);    
+            if (this.name === 'party') this.setTint(0x00FF00);    
         }); 
     };
     knockback(id: string) {

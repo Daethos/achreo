@@ -1660,12 +1660,14 @@ export default class Enemy extends Entity {
         this.setTint(TARGET_COLOR);
         this.isAttacking = true;
         this.frameCount = 0;
+        this.currentAction = '';
         this.attack();
     };
     onAttackUpdate = (_dt: number) => {
         if (this.frameCount === FRAME_COUNT.ATTACK_LIVE && !this.isRanged) {
             if (this.inComputerCombat) this.computerCombatSheet.computerAction = PHYSICAL_ACTIONS.ATTACK;
             if (this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, PHYSICAL_ACTIONS.ATTACK, this.enemyID);
+            this.currentAction = PHYSICAL_ACTIONS.ATTACK;
         };
         if (!this.isRanged) this.swingMomentum(this.attacking);
         this.combatChecker(this.isAttacking);
@@ -1674,6 +1676,7 @@ export default class Enemy extends Entity {
         if (this.inComputerCombat) this.computerCombatSheet.computerAction = '';
         if (this.scene.state.computerAction !== '' && this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, '', this.enemyID);
         this.setTint(ENEMY_COLOR);
+        this.currentAction = '';
         this.frameCount = 0;
     };
 
@@ -1681,12 +1684,14 @@ export default class Enemy extends Entity {
         this.setTint(TARGET_COLOR);
         this.isParrying = true;
         this.frameCount = 0;
+        this.currentAction = '';
         this.anims.play('player_attack_1', true);
     };
     onParryUpdate = (_dt: number) => {
         if (this.frameCount === FRAME_COUNT.PARRY_LIVE && !this.isRanged) {
             if (this.inComputerCombat) this.computerCombatSheet.computerAction = PHYSICAL_ACTIONS.PARRY;
             if (this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, PHYSICAL_ACTIONS.PARRY, this.enemyID);
+            this.currentAction = PHYSICAL_ACTIONS.PARRY;    
         };
         if (this.frameCount >= FRAME_COUNT.PARRY_KILL) this.isParrying = false;
         if (!this.isRanged) this.swingMomentum(this.attacking);
@@ -1706,11 +1711,13 @@ export default class Enemy extends Entity {
         this.isThrusting = true;
         this.frameCount = 0;
         this.thrustAttack();
+        this.currentAction = '';
     };
     onThrustUpdate = (_dt: number) => {
         if (this.frameCount === FRAME_COUNT.THRUST_LIVE && !this.isRanged) {
             if (this.inComputerCombat) this.computerCombatSheet.computerAction = PHYSICAL_ACTIONS.THRUST;
             if (this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, 'thrust', this.enemyID);
+            this.currentAction = PHYSICAL_ACTIONS.THRUST;    
         };
         if (!this.isRanged) this.swingMomentum(this.attacking);
         this.combatChecker(this.isThrusting);
@@ -1720,6 +1727,7 @@ export default class Enemy extends Entity {
         if (this.scene.state.computerAction !== '' && this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, '', this.enemyID);
         this.setTint(ENEMY_COLOR);
         this.frameCount = 0;
+        this.currentAction = '';
     };
 
     onDodgeEnter = () => {
@@ -1755,12 +1763,14 @@ export default class Enemy extends Entity {
         this.isPosturing = true;
         this.spriteShield.setVisible(true);
         this.frameCount = 0;
+        this.currentAction = '';
         this.posture();
     };
     onPostureUpdate = (_dt: number) => {
         if (this.frameCount === FRAME_COUNT.POSTURE_LIVE && !this.isRanged) {
             if (this.inComputerCombat) this.computerCombatSheet.computerAction = PHYSICAL_ACTIONS.POSTURE;
             if (this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, PHYSICAL_ACTIONS.POSTURE, this.enemyID);
+            this.currentAction = PHYSICAL_ACTIONS.POSTURE;    
         };
         if (!this.isRanged) this.swingMomentum(this.attacking);
         this.combatChecker(this.isPosturing);
@@ -1771,6 +1781,7 @@ export default class Enemy extends Entity {
         this.spriteShield.setVisible(false);
         this.setTint(ENEMY_COLOR);
         this.frameCount = 0;
+        this.currentAction = '';
     };
 
     onRollEnter = () => {
@@ -1781,12 +1792,14 @@ export default class Enemy extends Entity {
         ((this.body as any).parts as any)[1].vertices[0].y += this.colliderDisp;
         ((this.body as any).parts as any)[1].vertices[1].y += this.colliderDisp; 
         this.handleAnimations();
+        this.currentAction = '';
         this.frameCount = 0;
     };
     onRollUpdate = (_dt: number) => { 
         if (this.frameCount === FRAME_COUNT.ROLL_LIVE && !this.isRanged) {
             if (this.inComputerCombat) this.computerCombatSheet.computerAction = PHYSICAL_ACTIONS.ROLL;
             if (this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, PHYSICAL_ACTIONS.ROLL, this.enemyID);
+            this.currentAction = PHYSICAL_ACTIONS.ROLL;    
         };
         this.combatChecker(this.isRolling);
     };
@@ -1799,6 +1812,7 @@ export default class Enemy extends Entity {
         ((this.body as any).parts as any)[1].vertices[1].y -= this.colliderDisp;
         this.setTint(ENEMY_COLOR);
         this.frameCount = 0;
+        this.currentAction = '';
     };
 
     onLeashEnter = () => {

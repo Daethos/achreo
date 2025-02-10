@@ -37,7 +37,6 @@ export class CombatManager extends Phaser.Scene {
             case 'Weapon':
                 let computerOne = this.context.enemies.find((e: Enemy) => e.enemyID === origin).computerCombatSheet;
                 let computerTwo;
-
                 let computer = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
                 if (computer) {
                     computerTwo = computer.computerCombatSheet;
@@ -81,7 +80,7 @@ export class CombatManager extends Phaser.Scene {
     };
 
     // ============================ Magic Impact ============================= \\
-    magic = (entity: Player | Enemy, target: Player | Enemy): void => {
+    magic = (entity: Player | Enemy | Party, target: Player | Enemy | Party): void => {
         if (target.health <= 0) return;
         const ascean = entity.ascean;
         if (target.name === 'player') {
@@ -97,8 +96,8 @@ export class CombatManager extends Phaser.Scene {
             const health = target.health - damage;
             (entity as Enemy).computerCombatSheet.newComputerEnemyHealth = health;
             (target as Enemy).computerCombatSheet.newComputerHealth = health;
-            EventBus.emit(COMPUTER_BROADCAST, { id: (target as Enemy).enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });
-            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id: (target as Enemy).enemyID, origin: (target as Enemy).enemyID });
+            EventBus.emit(COMPUTER_BROADCAST, { id: (target as Enemy | Party).enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });
+            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id: (target as Enemy | Party).enemyID, origin: (entity as Enemy | Party).enemyID });
         };
     };
 

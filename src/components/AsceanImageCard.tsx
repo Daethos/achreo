@@ -12,7 +12,7 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow }:
     function item(rarity: string) {
         return { 
             'border': '0.2em solid ' + getRarityColor(rarity), 
-            'transform': 'scale(1.1)', 
+            'transform': 'scale(1.1)',
             'background-color': 'black', 
             'padding-bottom': '-0.25em',
             margin: '0.25em',

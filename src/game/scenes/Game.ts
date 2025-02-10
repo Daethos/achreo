@@ -27,14 +27,6 @@ import { asceanCompiler, Compiler } from '../../utility/ascean';
 // import { WindPipeline } from '../shaders/Wind';
 const dimensions = useResizeListener();
 
-// interface TileCluster {
-//     x: number;
-//     y: number;
-//     tiles: Phaser.Tilemaps.Tile[];
-//     width: number;
-//     height: number;
-// };
-
 export class Game extends Scene {
     overlay: Phaser.GameObjects.Graphics;
     animatedTiles: any[];
@@ -90,7 +82,6 @@ export class Game extends Scene {
     preload() {
         this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
         this.load.glsl('windShader', './src/game/shaders/Wind.glsl');
-        // this.load.glsl('rainShadow', './src/game/shaders/Rain.glsl');
     };
 
     create (hud: Hud) {
@@ -317,13 +308,10 @@ export class Game extends Scene {
         EventBus.off('minimap');
         EventBus.off('aggressive-enemy');
         EventBus.off('update-postfx');
-        EventBus.off('game-map-load');
-        EventBus.off('update-current-fps');
         EventBus.off('update-camera-zoom');
         EventBus.off('update-speed');
         EventBus.off('update-enemy-aggression');
         EventBus.off('update-enemy-special');
-        EventBus.off('resetting-game');
         EventBus.off('add-to-party');
         EventBus.off('despawn-enemy');
         for (let i = 0; i < this.enemies.length; i++) {
@@ -341,11 +329,10 @@ export class Game extends Scene {
     gameEvent = (): void => {
         EventBus.on('combat', (combat: any) => this.state = combat); 
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
-        EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
         EventBus.on('enemyLootDrop', (drops: any) => {
             if (drops.scene !== 'Game') return;
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
-        });    
+        });
         EventBus.on('minimap', () => {
             if (this.minimap.minimap.visible === true) {
                 this.minimap.minimap.setVisible(false);
@@ -371,12 +358,6 @@ export class Game extends Scene {
         });
         EventBus.on('check-stealth', (stealth: boolean) => {
             this.stealth = stealth;
-        });
-        EventBus.on('update-current-fps', (data: {x: number, y: number}) => {
-            const { x, y } = data;
-            const newX = dimensions()?.WIDTH * x;
-            const newY = dimensions()?.HEIGHT * y;
-            this.fpsText.setPosition(newX, newY);
         });
         EventBus.on('update-camera-zoom', (zoom: number) => {
             let camera = this.cameras.main;
@@ -406,7 +387,6 @@ export class Game extends Scene {
                 this.enemies[i].isSpecial = special >= Math.random();
             };
         });
-        EventBus.on('resetting-game', this.resetting);
         EventBus.on('add-to-party', this.addToParty);
         EventBus.on('remove-from-party', this.removeFromParty);
         EventBus.on('despawn-enemy-to-party', this.despawnEnemyToParty);
@@ -528,14 +508,6 @@ export class Game extends Scene {
         this.postFxPipeline.crtWidth = settings.crtWidth;
     };
 
-    resetting = (): void => {
-        this.sound.play('TV_Button_Press', { volume: this?.hud?.settings?.volume * 2 });
-        this.cameras.main.fadeOut();
-        this.pause();
-        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_came: any, _effect: any) => {
-            EventBus.emit('reset-game');
-        });
-    };
 
     getReputation = (): Reputation => {
         EventBus.emit('request-reputation');

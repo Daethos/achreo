@@ -64,9 +64,6 @@ export default class Party extends Entity {
     currentShieldSprite: string;
     playerVelocity: Phaser.Math.Vector2;
     fearCount: number = 0;
-    acceleration: number;
-    deceleration: number;
-    dt: number;
     playerMachine: PartyMachine;
     castingSuccess: boolean = false;
     isCounterSpelling: boolean = false;
@@ -78,14 +75,11 @@ export default class Party extends Entity {
     mark: Phaser.GameObjects.Graphics;
     markAnimation: boolean = false;
     reactiveTarget: string;
-    inputKeys: any;
     wasFlipped: boolean = false;
-    specials: boolean = false;
     spellName: string = '';
     followTimer: Phaser.Time.TimerEvent | undefined = undefined;
     reconTimer: Phaser.Time.TimerEvent | undefined = undefined;
     isNetherswapping: boolean = false;
-    isStimulating: boolean = false;
     netherswapTarget: Enemy | undefined = undefined;
     hookTime: number;
     isDiseasing: boolean = false;
@@ -109,85 +103,11 @@ export default class Party extends Entity {
     snareDuration = DURATION.SNARED;
     evasionTime: number = 0;
     prevInstinct: number = 0;
-    currentEnemies: string[] | [] = [];
     chasing: boolean = false;
     enemyID = uuidv4();
     inComputerCombat: boolean = false;
     computerCombatSheet: ComputerCombat = initComputerCombat;
     weapons: any[] = [];
-    talents: {
-        caerenic: false;
-        stalwart: false;
-        stealth: false;
-
-        invoke: false;
-        absorb: false;
-        achire: false;
-        astrave: false;
-        astrication: false;
-        arc: false;
-        berserk: false;
-        blind: false;
-        chiomic: false;
-        caerenesis: false;
-        confuse: false;
-        conviction: false;
-        desperation: false;
-        devour: false;
-        disease: false;
-        dispel: false;
-        endurance: false;
-        envelop: false;
-        fear: false;
-        freeze: false;
-        fyerus: false;
-        healing: false;
-        hook: false;
-        howl: false;
-        ilirech: false;
-        impermanence: false;
-        kynisos: false;
-        kyrnaicism: false;
-        leap: false;
-        maiereth: false;
-        malice: false;
-        mark: false;
-        menace: false;
-        mend: false;
-        moderate: false;
-        multifarious: false;
-        mystify: false;
-        netherswap: false;
-        paralyze: false;
-        polymorph: false;
-        protect: false;
-        pursuit: false;
-        recall: false;
-        quor: false;
-        reconstitute: false;
-        recover: false;
-        rein: false;
-        renewal: false;
-        root: false;
-        rush: false;
-        sacrifice: false;
-        scream: false;
-        seer: false;
-        shadow: false;
-        shield: false;
-        shimmer: false;
-        shirk: false;
-        slow: false;
-        snare: false;
-        sprint: false;
-        stimulate: false;
-        storm: false;
-        suture: false;
-        tether: false;
-        ward: false;
-        writhe: false;    
-    };
-    combatConcerns: Phaser.Time.TimerEvent | undefined;
     combatSpecials: any[];
     enemies: ENEMY[] | any[] = [];
 
@@ -225,9 +145,6 @@ export default class Party extends Entity {
         this.spriteShield.setVisible(false);
         this.playerVelocity = new Phaser.Math.Vector2();
         this.speed = this.startingSpeed(ascean);
-        this.acceleration = PLAYER.SPEED.ACCELERATION;
-        this.deceleration = PLAYER.SPEED.DECELERATION;
-        this.dt = this.scene.sys.game.loop.delta;
         this.playerMachine = new PartyMachine(scene, this);
         this.setScale(PLAYER.SCALE.SELF);   
         let partyCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { isSensor: false, label: 'partyCollider' }); // Y + 10 For Platformer
@@ -269,6 +186,7 @@ export default class Party extends Entity {
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {
+                this.scene.hud.logger.log(`Console: ${this.ascean.name}'s current State: ${this.playerMachine.stateMachine.getCurrentState()?.charAt(0).toUpperCase()}${this.playerMachine.stateMachine.getCurrentState()?.slice(1)}`)
                 if (this.currentTarget) {
                     this.scene.hud.logger.log(`Console: ${this.ascean.name} is currently attacking ${this.currentTarget.ascean.name}`);
                 };
@@ -291,7 +209,6 @@ export default class Party extends Entity {
         this.beam = new Beam(this);
         this.originalPosition = new Phaser.Math.Vector2(this.x, this.y);
         this.originPoint = {}; // For Leashing
-        this.combatConcerns = undefined;
         this.checkSpecials(ascean);
         scene.time.delayedCall(1000, () => {
             if (this.scene.state.isCaerenic) this.caerenicUpdate();
@@ -423,7 +340,7 @@ export default class Party extends Entity {
                     const isNewEnemy = this.isNewEnemy(other.gameObjectB);
                     if (!isNewEnemy) return;
                     this.targets.push(other.gameObjectB);
-                    this.checkComputerEnemyCombatEnter(other.gameObjectB);
+                    if (!this.currentTarget) this.checkComputerEnemyCombatEnter(other.gameObjectB);
                 } else if (this.isValidNeutralCollision(other)) {
                     other.gameObjectB.originPoint = new Phaser.Math.Vector2(other.gameObjectB.x, other.gameObjectB.y).clone();
                     const isNewNeutral = this.isNewEnemy(other.gameObjectB);
@@ -485,9 +402,10 @@ export default class Party extends Entity {
 
     computerDamage = (e: { damage: number; id: string; origin: string; }) => {
         if (e.id !== this.enemyID) return;
-        this.health = Math.max(this.health - e.damage, 0);
+        const { damage, origin } = e;
+        this.health = Math.max(this.health - damage, 0);
         this.updateHealthBar(this.health);
-            this.scrollingCombatText = this.scene.showCombatText(`${Math.round(e.damage)}`, 1500, 'damage', false, false, () => this.scrollingCombatText = undefined);
+            this.scrollingCombatText = this.scene.showCombatText(`${Math.round(damage)}`, 1500, 'damage', false, false, () => this.scrollingCombatText = undefined);
         if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
         if (this.isFeared) {
             const chance = Math.random() < 0.1 + this.fearCount;
@@ -500,15 +418,15 @@ export default class Party extends Entity {
         };
         if (this.isConfused) this.isConfused = false;
         if (this.isPolymorphed) this.isPolymorphed = false;
-        if (this.isMalicing) this.playerMachine.malice(e.origin);
+        if (this.isMalicing) this.playerMachine.malice(origin);
         if (this.isMending) this.playerMachine.mend();
         if ((!this.inComputerCombat || !this.currentTarget) && this.health > 0) {
-            const enemy = this.scene.enemies.find((en: Enemy) => en.enemyID === e.origin && e.origin !== this.enemyID);
+            const enemy = this.scene.enemies.find((en: Enemy) => en.enemyID === origin && origin !== this.enemyID);
             if (enemy) this.checkComputerEnemyCombatEnter(enemy);
         };
         this.computerCombatSheet.newComputerHealth = this.health;
-        const id = this.enemies.find((en: ENEMY) => en.id === e.origin && e.origin !== this.enemyID);
-        if (id && this.health > 0) this.updateThreat(e.origin, calculateThreat(e.damage, this.health, this.ascean.health.max));
+        const id = this.enemies.find((en: ENEMY) => en.id === origin && origin !== this.enemyID);
+        if (id && this.health > 0) this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max));
         EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
     };
 
@@ -819,7 +737,6 @@ export default class Party extends Entity {
 
     completeReset = () => {
         this.playerMachine.stateMachine.setState(States.IDLE);
-        this.specials = false;
         this.isCasting = false;
         this.isMoving = false;
     };
@@ -1141,7 +1058,6 @@ export default class Party extends Entity {
 
     evaluateCombatDistance = () => {
         this.getDirection();
-        // if (!this.inComputerCombat) return;
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget);
         };
@@ -1383,8 +1299,7 @@ export default class Party extends Entity {
                 this.scene.particleManager.updateParticle(this.particleEffect);
             };
         };
-
-        // if (this.scene.combat === true && (!this.currentTarget) this.findEnemy(); // this.inComputerCombat === true && state.combatEngaged
+        this.functionality('party', this.currentTarget as Enemy);
         if (this.healthbar) this.healthbar.update(this);
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this);
@@ -1425,7 +1340,6 @@ export default class Party extends Entity {
             return;
         };
 
-        this.functionality('party', this.currentTarget as Enemy);
     };
 
     partyActionSuccess = () => {

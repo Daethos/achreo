@@ -4,7 +4,7 @@
 #origin-pic:hover, #deity-pic:hover {border: 0.1em solid gold;}
 #origin-bonus {color: gold; font-weight: 500;}
 #popover-image {right: 0;}
-#typewriter {width: 100%;} 
+#typewriter {width: 100%;}
 .border {border: 0.1em solid #fdf6d8; border-radius: 0.25rem; margin: 0.5rem; background-color: black; z-index: 0;
     box-shadow:
     inset #000 0 0 0 0.2em, 
@@ -167,12 +167,6 @@
 .stat-block.wide .section-right {display: inline-block; vertical-align: top; width: 48%; text-align: left; }
 .stat-block.wide .section-left {margin-right: 1.5%; }
 .stat-block.wide .section-right {margin-left: 1.5%; }
-@media screen and (max-width: 800px) {
-    .stat-block.wide .section-left,
-    .stat-block.wide .section-right {display: inline-block; width: 100%;}
-    .stat-block.wide .section-left {margin: 0;}
-    .stat-block.wide .section-right {margin: 0;}
-}
 .orange-border.bottom {width: 95%; border-radius: 25%;}
 .tapered-rule{display: block;width: 100%;height: 5px;border: none;color: #5a0043;fill: #5a0043;stroke: #5a0043;}
 .creature-heading h1{font-family: 'Cinzel Regular', 'Libre Baskerville', 'Lora', 'Calisto MT', 'Bookman Old Style', Bookman, 'Goudy Old Style', Garamond, 'Hoefler Text', 'Bitstream Charter', Georgia, serif;font-size: 1.5em;color: gold;margin: 10px 0 0;letter-spacing: 1px;font-variant: small-caps;font-weight: bold;text-wrap: calc(100% - 2rem);}
@@ -206,4 +200,146 @@
 .deity-box {position:absolute;height:40%;width:60%;left:20%;background:rgba(0,0,0,0.95);top:50%;border:0.1em solid gold;border-radius:0.25em;box-shadow:0 0 0.5em #ffc700;display:inline-flex;overflow:scroll;scrollbar-width:none;}
 .my-transition {
     transition: height 750ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+@media screen and (max-width: 800px) {
+    .stat-block.wide .section-left,
+    .stat-block.wide .section-right {display: inline-block; width: 100%;}
+    .stat-block.wide .section-left {margin: 0;}
+    .stat-block.wide .section-right {margin: 0;}
+}
+@media screen and (min-width: 900px) {
+    .border {
+        border: 0.25em solid #fdf6d8; 
+        border-radius: 0.25rem;
+        margin: 0.5rem;
+        box-shadow: inset #000 0 0 0 0.5em, inset #fdf6d8 0 0 0 0.75em; 
+    }
+    .creature-heading h1{
+        font-size: 1.75em;
+        margin: 12px 0 0;
+        letter-spacing: 1px;
+    }
+    .creature-heading h2{font-size: 1.25em;}
+    .creature-heading p{font-size: 1.25em;}
+    .property-line h4,
+    .property-line p{
+        margin: 0;
+        font-size: 1.25em;
+    }
+    .property-line {text-indent: -1em;padding-left: 1.1em;}
+    .property-line.first {margin: 12px 0 0}
+    .property-line.last {margin: 0 0 14px;}
+    .abilities > div {
+        font-size: 1em;
+    }
+    .abilities h4 {
+        margin: 12px 0 4px;font-size: 1.25em;
+    }
+    .abilities p{
+        margin: 0 0 12px;
+    }
+    .property-block h4,
+    .property-block p {
+        font-size: 1.25em;
+    }
+    .property-block {padding: 12px 4px 0;}
+    .actions h3 {
+        border-bottom: 2px solid #5a0043;
+        font-size: 1.75em;letter-spacing: 1px;
+        margin: 24px 0 0;padding: 0 0 12px;
+        text-indent: 6px;
+    }
+    .imageCardGrid {
+        transform: scale(1.5);
+    }
+}
+@media screen and (min-width: 1200px) {
+    .border {border: 0.4em solid #fdf6d8; border-radius: 0.25rem; margin: 0.5rem;
+        box-shadow:
+        inset #000 0 0 0 0.8em, 
+        inset #fdf6d8 0 0 0 1.2em; 
+    }
+    .creature-heading h1{
+        font-size: 2em;
+        margin: 14px 0 0;
+        letter-spacing: 1px;
+    }
+    .creature-heading h2{font-size: 1.5em;}
+    .creature-heading p{font-size: 1.5em;}
+    .property-line h4,
+    .property-line p{
+        margin: 0;
+        font-size: 1.5em;
+    }
+    .property-line {text-indent: -1em;padding-left: 1.1em;}
+    .property-line.first {margin: 14px 0 0}
+    .property-line.last {margin: 0 0 16px;}
+    .abilities > div {
+        font-size: 1.1em;
+    }
+    .abilities h4 {
+        margin: 14px 0 6px;font-size: 1.5em;
+    }
+    .abilities p{
+        margin: 0 0 14px;
+    }
+    .property-block h4,
+    .property-block p {
+        font-size: 1.5em;
+    }
+    .property-block {padding: 14px 6px 0;}
+    .actions h3 {
+        border-bottom: 3px solid #5a0043;
+        font-size: 2em;letter-spacing: 1px;
+        margin: 28px 0 0;padding: 0 0 14px;
+        text-indent: 6px;
+    }
+    .imageCardGrid {
+        transform: scale(2);
+    }
+}
+@media screen and (min-width: 1800px) {
+    .border {border: 0.55em solid #fdf6d8; border-radius: 0.25rem; margin: 0.5rem;
+        box-shadow:
+        inset #000 0 0 0 1.1em, 
+        inset #fdf6d8 0 0 0 1.65em; 
+    }
+    .creature-heading h1{
+        font-size: 3em;
+        margin: 18px 0 0;
+        letter-spacing: 1px;
+    }
+    .creature-heading h2{font-size: 2em;}
+    .creature-heading p{font-size: 2em;}
+    .property-line h4,
+    .property-line p{
+        margin: 0;
+        font-size: 2em;
+    }
+    .property-line {text-indent: -1em;padding-left: 1.1em;}
+    .property-line.first {margin: 14px 0 0}
+    .property-line.last {margin: 0 0 16px;}
+    .abilities > div {
+        font-size: 1.5em;
+    }
+    .abilities h4 {
+        margin: 20px 0 10px;font-size: 2em;
+    }
+    .abilities p{
+        margin: 0 0 20px;
+    }
+    .property-block h4,
+    .property-block p {
+        font-size: 2em;
+    }
+    .property-block {padding: 20px 10px 0;}
+    .actions h3 {
+        border-bottom: 5px solid #5a0043;
+        font-size: 2.5em;letter-spacing: 1px;
+        margin: 32px 0 0;padding: 0 0 16px;
+        text-indent: 8px;
+    }
+    .imageCardGrid {
+        transform: scale(2.5);
+    }
 }

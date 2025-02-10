@@ -51,7 +51,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
         </div>
     }>
         <div class='stat-block superCenter' style={{ width: '90%', overflow: 'scroll', 'scrollbar-width': 'none', animation: 'fadein 1.5s ease' }}>
-            <div class='border left center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
+            <div class='border left center' style={{ height: '80vh', width: '48%', top: '10%' }}>
                 <div class='creature-heading superCenter' style={{ width: '100%' }}>
                     <h1>{ascean().name}</h1>
                     <h2>{ascean().description}</h2>
@@ -61,8 +61,8 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                     <p style={viewMargin}>Faith: <span class='gold'>{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> | Mastery: <span class='gold'>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span></p>
                 </div>
             </div>
-            <div class='border right center' style={{ height: '77.5vh', width: '48%', top: '10%' }}>
-                <div class='superCenter' style={{ 'margin-top': '0' }}>
+            <div class='border right center' style={{ height: '80vh', width: '48%', top: '10%' }}>
+                <div class='superCenter'>
                 <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                 <Suspense fallback={<Puff color="gold" />}>
                     <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />

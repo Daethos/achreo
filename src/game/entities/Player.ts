@@ -1733,6 +1733,9 @@ export default class Player extends Entity {
         this.handleActions();
         this.handleAnimations();
         this.handleMovement();
-        this.playerMachine.update(dt);
+        this.playerMachine.stateMachine.update(dt);
+        this.playerMachine.positiveMachine.update(dt);
+        this.playerMachine.negativeMachine.update(dt);
+        // this.playerMachine.update(dt);
     };
 };

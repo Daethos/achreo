@@ -435,11 +435,11 @@ export default class PlayerMachine {
             return;
         } else {
             if (this.player.path && this.player.path.length > 1) {
-                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed + 0.5), this.player.pathDirection.y * (this.player.speed + 0.5));
+                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed + 0.25), this.player.pathDirection.y * (this.player.speed + 0.25));
             } else {
                 if (this.player.isPathing) this.player.isPathing = false;
                 direction.normalize();
-                this.player.setVelocity(direction.x * (this.player.speed + 0.5), direction.y * (this.player.speed + 0.5));
+                this.player.setVelocity(direction.x * (this.player.speed + 0.25), direction.y * (this.player.speed + 0.25));
             };
         };
     };
@@ -567,7 +567,7 @@ export default class PlayerMachine {
     onIdleUpdate = (_dt: number) => {
         const direction = this.scene.player.position.subtract(this.player.position);
         const distance = direction.length();
-        if (distance > 100 && !this.stateMachine.isCurrentState(States.FOLLOW)) {
+        if (distance > 105 && !this.stateMachine.isCurrentState(States.FOLLOW)) {
             this.stateMachine.setState(States.FOLLOW);
         };
     };

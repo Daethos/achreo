@@ -567,7 +567,7 @@ export default class PlayerMachine {
     onIdleUpdate = (_dt: number) => {
         const direction = this.scene.player.position.subtract(this.player.position);
         const distance = direction.length();
-        if (distance > 90 && !this.stateMachine.isCurrentState(States.FOLLOW)) {
+        if (distance > 100 && !this.stateMachine.isCurrentState(States.FOLLOW)) {
             this.stateMachine.setState(States.FOLLOW);
         };
     };
@@ -2269,7 +2269,7 @@ export default class PlayerMachine {
             clearStealth(this.player);
             clearStealth(this.player.spriteWeapon);
             clearStealth(this.player.spriteShield);
-            this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
+            this.player.setTint(0x00FF00);
         };
         this.player.enemySound('stealth', true);
     };
@@ -2722,7 +2722,7 @@ export default class PlayerMachine {
     onPolymorphedExit = () => { 
         if (this.player.isPolymorphed) this.player.isPolymorphed = false;
         this.player.clearAnimations();
-        this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
+        this.player.setTint(0x00FF00);
         this.player.spriteWeapon.setVisible(true);
         if (this.player.polymorphTimer) {
             this.player.polymorphTimer.destroy();
@@ -2742,7 +2742,7 @@ export default class PlayerMachine {
 
     onSlowedExit = () => {
         this.player.clearTint();
-        this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
+        this.player.setTint(0x00FF00);
         this.player.adjustSpeed((PLAYER.SPEED.SLOW - 0.25));
     };
 
@@ -2758,7 +2758,7 @@ export default class PlayerMachine {
     };
     onSnaredExit = () => { 
         this.player.clearTint(); 
-        this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF); 
+        this.player.setTint(0x00FF00); 
         this.player.adjustSpeed((PLAYER.SPEED.SNARE - 0.25));
     };
 
@@ -2782,7 +2782,7 @@ export default class PlayerMachine {
     onStunnedExit = () => {
         this.player.isStunned = false;
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;
-        this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
+        this.player.setTint(0x00FF00);
         this.player.setStatic(false);
         this.player.anims.resume();
     };

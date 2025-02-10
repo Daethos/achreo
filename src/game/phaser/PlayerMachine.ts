@@ -371,7 +371,7 @@ export default class PlayerMachine {
         this.player.setCollisionCategory(1);
         this.player.spriteWeapon.setVisible(true);
         if (this.player.isStalwart) this.player.spriteShield.setVisible(true);
-        this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: this.scene.state.playerHealth * 0.1, id: this.player.playerID }, type: 'Set Health' });
+        this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 10, id: this.player.playerID }, type: 'Health' });
     };
 
     onEvasionEnter = () => {

@@ -69,7 +69,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
             this.castbarListener();
         } else {
             this.barHeight = 12;
-            this.barWidth = 90;
+            this.barWidth = 84;
             this.borderColor = 0x000000;
             this.fillColor = COLORS.CAST;
             this.bar = new Phaser.GameObjects.Graphics(scene);

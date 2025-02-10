@@ -94,7 +94,7 @@ export default class PlayerMachine {
             .addState(States.POLYMORPHED, { onEnter: this.onPolymorphedEnter, onUpdate: this.onPolymorphedUpdate, onExit: this.onPolymorphedExit });
         this.stateMachine.setState(States.IDLE);
 
-        this.positiveMachine = new StateMachine(this, 'player');
+        this.positiveMachine = new StateMachine(this, 'party');
         this.positiveMachine
             .addState(States.CLEAN, { onEnter: this.onCleanEnter, onExit: this.onCleanExit })
             .addState(States.ABSORB, { onEnter: this.onAbsorbEnter, onUpdate: this.onAbsorbUpdate })
@@ -130,7 +130,7 @@ export default class PlayerMachine {
             .addState(States.TETHER, { onEnter: this.onTetherEnter, onExit: this.onTetherExit })
             .addState(States.DISPEL, { onEnter: this.onDispelEnter, onExit: this.onDispelExit })
             
-        this.negativeMachine = new StateMachine(this, 'player');
+        this.negativeMachine = new StateMachine(this, 'party');
         this.negativeMachine
             .addState(States.CLEAN, { onEnter: this.onCleanEnter, onExit: this.onCleanExit })
             .addState(States.FROZEN, { onEnter: this.onFrozenEnter, onExit: this.onFrozenExit })
@@ -1722,26 +1722,10 @@ export default class PlayerMachine {
     };
     onAbsorbUpdate = (_dt: number) => {if (!this.player.isAbsorbing) this.positiveMachine.setState(States.CLEAN);};
 
-    absorb = () => {
-        if (this.player.negationBubble === undefined || this.player.isAbsorbing === false) {
-            if (this.player.negationBubble) {
-                this.player.negationBubble.destroy();
-                this.player.negationBubble = undefined;
-            };
-            this.player.isAbsorbing = false;
-            return;
-        };
-        this.player.enemySound('absorb', true);
-        this.player.specialCombatText = this.scene.showCombatText('Absorbed', 500, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        if (Math.random() < 0.2) {
-            this.player.isAbsorbing = false;
-        };
-    };
-
     onChiomicEnter = () => {
         this.player.aoe = new AoE(this.scene, 'chiomic', 1, false, this.player);    
         this.player.enemySound('death', true);
-        this.player.specialCombatText = this.scene.showCombatText('Hah! Hah!', PLAYER.DURATIONS.CHIOMIC, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Hah! Hah! Hah!', PLAYER.DURATIONS.CHIOMIC, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.isChiomic = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.CHIOMIC, () => {
             this.player.isChiomic = false;
@@ -1806,22 +1790,6 @@ export default class PlayerMachine {
     };
     onEnvelopUpdate = (_dt: number) => {if (!this.player.isEnveloping) this.positiveMachine.setState(States.CLEAN);};
 
-    envelop = () => {
-        if (this.player.reactiveBubble === undefined || this.player.isEnveloping === false) {
-            if (this.player.reactiveBubble) {
-                this.player.reactiveBubble.destroy();
-                this.player.reactiveBubble = undefined;
-            };
-            this.player.isEnveloping = false;
-            return;
-        };
-        this.player.enemySound('caerenic', true);
-        this.player.specialCombatText = this.scene.showCombatText('Enveloped', 500, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        if (Math.random() < 0.2) {
-            this.player.isEnveloping = false;
-        };
-    };
-
     onFreezeEnter = () => {
         this.player.aoe = new AoE(this.scene, 'freeze', 1, false, this.player);
         this.player.enemySound('freeze', true);
@@ -1844,7 +1812,7 @@ export default class PlayerMachine {
         this.player.reactiveName = States.MALICE;
         this.player.enemySound('debuff', true);
         this.player.isMalicing = true;
-        this.player.specialCombatText = this.scene.showCombatText('Malice', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Malicing', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'purple', PLAYER.DURATIONS.MALICE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MALICE, () => {
             this.player.isMalicing = false;    
@@ -1859,24 +1827,6 @@ export default class PlayerMachine {
         });
     };
     onMaliceUpdate = (_dt: number) => {if (!this.player.isMalicing) this.positiveMachine.setState(States.CLEAN);};
-
-    malice = (id: string) => {
-        if (this.player.reactiveBubble === undefined || this.player.isMalicing === false) {
-            if (this.player.reactiveBubble) {
-                this.player.reactiveBubble.destroy();
-                this.player.reactiveBubble = undefined;
-            };
-            this.player.isMalicing = false;
-            return;
-        };
-        this.player.enemySound('debuff', true);
-        this.player.specialCombatText = this.scene.showCombatText('Malice', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
-        this.chiomism(id, 10);
-        this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
-        if (this.player.reactiveBubble.charges <= 0) {
-            this.player.isMalicing = false;
-        };
-    };
 
     onMendEnter = () => {
         if (this.player.reactiveBubble) {
@@ -1902,30 +1852,6 @@ export default class PlayerMachine {
     };
     onMendUpdate = (_dt: number) => {if (!this.player.isMending) this.positiveMachine.setState(States.CLEAN);};
 
-    mend = () => {
-        if (this.player.reactiveBubble === undefined || this.player.isMending === false) {
-            if (this.player.reactiveBubble) {
-                this.player.reactiveBubble.destroy();
-                this.player.reactiveBubble = undefined;
-            };
-            this.player.isMending = false;
-            return;
-        };
-        this.player.enemySound('caerenic', true);
-        this.player.specialCombatText = this.scene.showCombatText('Mending', 500, 'tendril', false, true, () => this.player.specialCombatText = undefined);
-        const gRatio = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
-        const pRatio = this.player.health / this.player.ascean.health.max;
-        if (gRatio <= pRatio) { // Heal the Player
-            this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 15, id: this.player.playerID }, type: 'Health' });
-        } else { // Heal the Party Member
-            this.heal(0.15);
-        };
-        this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
-        if (this.player.reactiveBubble.charges <= 0) {
-            this.player.isMending = false;
-        };
-    };
-
     onMenaceEnter = () => {
         if (this.player.reactiveBubble) {
             this.player.reactiveBubble.cleanUp();
@@ -1949,25 +1875,6 @@ export default class PlayerMachine {
         });
     };
     onMenaceUpdate = (_dt: number) => {if (!this.player.isMenacing) this.positiveMachine.setState(States.CLEAN);};
-
-    menace = (id: string) => {
-        if (id === '') return;
-        if (this.player.reactiveBubble === undefined || this.player.isMenacing === false) {
-            if (this.player.reactiveBubble) {
-                this.player.reactiveBubble.cleanUp();
-                this.player.reactiveBubble = undefined;
-            };
-            this.player.isMenacing = false;
-            return;
-        };
-        this.scene.combatManager.fear(id);
-        this.player.enemySound('caerenic', true);
-        this.player.specialCombatText = this.scene.showCombatText('Mending', 500, 'tendril', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
-        if (this.player.reactiveBubble.charges <= 3) {
-            this.player.isMenacing = false;
-        };
-    };
 
     onModerateEnter = () => {
         if (this.player.reactiveBubble) {
@@ -1993,25 +1900,6 @@ export default class PlayerMachine {
     };
     onModerateUpdate = (_dt: number) => {if (!this.player.isModerating) this.positiveMachine.setState(States.CLEAN);};
 
-    moderate = (id: string) => {
-        if (id === '') return;
-        if (this.player.reactiveBubble === undefined || this.player.isModerating === false) {
-            if (this.player.reactiveBubble) {
-                this.player.reactiveBubble.cleanUp();
-                this.player.reactiveBubble = undefined;
-            };
-            this.player.isModerating = false;
-            return;
-        };
-        this.scene.combatManager.slow(id);
-        this.player.enemySound('debuff', true);
-        this.player.specialCombatText = this.scene.showCombatText('Mending', 500, 'tendril', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
-        if (this.player.reactiveBubble.charges <= 0) {
-            this.player.isModerating = false;
-        };
-    };
-
     onMultifariousEnter = () => {
         if (this.player.reactiveBubble) {
             this.player.reactiveBubble.cleanUp();
@@ -2020,7 +1908,7 @@ export default class PlayerMachine {
         this.player.reactiveName = States.MULTIFARIOUS;
         this.player.enemySound('combat-round', true);
         this.player.isMultifaring = true;
-        this.player.specialCombatText = this.scene.showCombatText('Moderating', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Multifaring', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'ultramarine', PLAYER.DURATIONS.MULTIFARIOUS);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MULTIFARIOUS, () => {
             this.player.isMultifaring = false;    
@@ -2035,25 +1923,6 @@ export default class PlayerMachine {
         });
     };
     onMultifariousUpdate = (_dt: number) => {if (!this.player.isMultifaring) this.positiveMachine.setState(States.CLEAN);};
-
-    multifarious = (id: string) => {
-        if (id === '') return;
-        if (this.player.reactiveBubble === undefined || this.player.isMultifaring === false) {
-            if (this.player.reactiveBubble) {
-                this.player.reactiveBubble.cleanUp();
-                this.player.reactiveBubble = undefined;
-            };
-            this.player.isMultifaring = false;
-            return;
-        };
-        this.scene.combatManager.polymorph(id);
-        this.player.enemySound('combat-round', true);
-        this.player.specialCombatText = this.scene.showCombatText('Multifarious', 500, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
-        if (this.player.reactiveBubble.charges <= 3) {
-            this.player.isMultifaring = false;
-        };
-    };
 
     onMystifyEnter = () => {
         if (this.player.reactiveBubble) {
@@ -2078,25 +1947,6 @@ export default class PlayerMachine {
         });
     };
     onMystifyUpdate = (_dt: number) => {if (!this.player.isMystifying) this.positiveMachine.setState(States.CLEAN);};
-
-    mystify = (id: string) => {
-        if (id === '') return;
-        if (this.player.reactiveBubble === undefined || this.player.isMystifying === false) {
-            if (this.player.reactiveBubble) {
-                this.player.reactiveBubble.cleanUp();
-                this.player.reactiveBubble = undefined;
-            };
-            this.player.isMystifying = false;
-            return;
-        };
-        this.scene.combatManager.confuse(id);
-        this.player.enemySound('death', true);
-        this.player.specialCombatText = this.scene.showCombatText('Mystifying', 500, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
-        if (this.player.reactiveBubble.charges <= 3) {
-            this.player.isMystifying = false;
-        };
-    };
 
     onProtectEnter = () => {
         if (this.player.negationBubble) {
@@ -2172,24 +2022,6 @@ export default class PlayerMachine {
     };
     onShieldUpdate = (_dt: number) => {if (!this.player.isShielding) this.positiveMachine.setState(States.CLEAN);};
 
-    shield = () => {
-        if (this.player.negationBubble === undefined || this.player.isShielding === false) {
-            if (this.player.negationBubble) {
-                this.player.negationBubble.cleanUp();
-                this.player.negationBubble = undefined;
-            };
-            this.player.isShielding = false;
-            return;
-        };
-        this.player.enemySound('shield', true);
-        this.player.specialCombatText = this.scene.showCombatText('Shield Hit', 500, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.player.negationBubble.setCharges(this.player.negationBubble.charges - 1);
-        if (this.player.negationBubble.charges <= 0) {
-            this.player.specialCombatText = this.scene.showCombatText('Shield Broken', 500, 'damage', false, true, () => this.player.specialCombatText = undefined);
-            this.player.isShielding = false;
-        };
-    };
-
     onShimmerEnter = () => {
         this.player.isShimmering = true; 
         this.player.enemySound('stealth', true);
@@ -2205,13 +2037,6 @@ export default class PlayerMachine {
         });
     };
     onShimmerUpdate = (_dt: number) => {if (!this.player.isShimmering) this.positiveMachine.setState(States.CLEAN);};
-
-    shimmer = () => {
-        const shimmers = ['It fades through them', "You simply weren't there", "Perhaps them never were", "They don't seem certain of them at all"];
-        const shim = shimmers[Math.floor(Math.random() * shimmers.length)];
-        this.player.enemySound('stealth', true);
-        this.player.specialCombatText = this.scene.showCombatText(shim, 1500, 'effect', false, true, () => this.player.specialCombatText = undefined);
-    };
 
     onSprintEnter = () => {
         this.player.isSprinting = true;
@@ -2297,26 +2122,6 @@ export default class PlayerMachine {
         });
     };
     onWardUpdate = (_dt: number) => {if (!this.player.isWarding) this.positiveMachine.setState(States.CLEAN);};
-
-    ward = (id: string) => {
-        if (this.player.negationBubble === undefined || this.player.isWarding === false) {
-            if (this.player.negationBubble) {
-                this.player.negationBubble.cleanUp();
-                this.player.negationBubble = undefined;
-            };
-            this.player.isWarding = false;
-            return;
-        };
-        this.player.enemySound('parry', true);
-        this.scene.combatManager.stunned(id);
-        this.player.negationBubble.setCharges(this.player.negationBubble.charges - 1);
-        this.player.specialCombatText = this.scene.showCombatText('Warded', 500, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        if (this.player.negationBubble.charges <= 0) {
-            this.player.specialCombatText = this.scene.showCombatText('Ward Broken', 500, 'damage', false, true, () => this.player.specialCombatText = undefined);
-            this.player.negationBubble.setCharges(0);
-            this.player.isWarding = false;
-        };
-    };
 
     onWritheEnter = () => {
         this.player.aoe = new AoE(this.scene, 'writhe', 1, false, this.player);    

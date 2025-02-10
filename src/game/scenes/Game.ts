@@ -4,7 +4,6 @@ import { EventBus } from '../EventBus';
 import LootDrop from '../matter/LootDrop';
 import Equipment from '../../models/equipment';
 import { States } from '../phaser/StateMachine';
-import { useResizeListener } from '../../utility/dimensions';
 import { Reputation, initReputation } from '../../utility/player';
 import Player from '../entities/Player';
 import Enemy from '../entities/Enemy';
@@ -16,16 +15,15 @@ import ParticleManager from '../matter/ParticleManager';
 import { Hud } from './Hud';
 import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import { ObjectPool } from '../phaser/ObjectPool';
-// @ts-ignore
-import { PhaserNavMeshPlugin } from 'phaser-navmesh';
-// @ts-ignore
-import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 import Party from '../entities/PartyComputer';
 import Ascean from '../../models/ascean';
 import { getEnemy, populateEnemy } from '../../assets/db/db';
 import { asceanCompiler, Compiler } from '../../utility/ascean';
 // import { WindPipeline } from '../shaders/Wind';
-const dimensions = useResizeListener();
+// @ts-ignore
+import { PhaserNavMeshPlugin } from 'phaser-navmesh';
+// @ts-ignore
+import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
 
 export class Game extends Scene {
     overlay: Phaser.GameObjects.Graphics;

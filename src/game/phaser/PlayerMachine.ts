@@ -2176,7 +2176,7 @@ export default class PlayerMachine {
             return;
         };
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
-        this.player.specialCombatText = this.scene.showCombatText('Malice', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Malicing', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
         this.chiomism(id, 10);
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
         if (this.player.reactiveBubble.charges <= 0) {
@@ -2266,7 +2266,7 @@ export default class PlayerMachine {
         };
         this.scene.combatManager.fear(id);
         this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
-        this.player.specialCombatText = this.scene.showCombatText('Mending', 500, 'tendril', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Menacing', 500, 'tendril', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
         if (this.player.reactiveBubble.charges <= 3) {
             this.player.isMenacing = false;
@@ -2282,7 +2282,7 @@ export default class PlayerMachine {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.MODERATE);    
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.player.isModerating = true;
-        this.player.specialCombatText = this.scene.showCombatText('Moderating', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Moderate', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'sapphire', PLAYER.DURATIONS.MODERATE);
         if (!this.player.isComputer) this.player.setTimeEvent('moderateCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MODERATE, () => {
@@ -2311,7 +2311,7 @@ export default class PlayerMachine {
         };
         this.scene.combatManager.slow(id);
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
-        this.player.specialCombatText = this.scene.showCombatText('Mending', 500, 'tendril', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Moderating', 500, 'tendril', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
         if (this.player.reactiveBubble.charges <= 0) {
             this.player.isModerating = false;
@@ -2327,7 +2327,7 @@ export default class PlayerMachine {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.MULTIFARIOUS);    
         this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
         this.player.isMultifaring = true;
-        this.player.specialCombatText = this.scene.showCombatText('Moderating', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Multifarious', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'ultramarine', PLAYER.DURATIONS.MULTIFARIOUS);
         if (!this.player.isComputer) this.player.setTimeEvent('multifariousCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MULTIFARIOUS, () => {
@@ -2356,7 +2356,7 @@ export default class PlayerMachine {
         };
         this.scene.combatManager.polymorph(id);
         this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
-        this.player.specialCombatText = this.scene.showCombatText('Multifarious', 500, 'cast', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Multifaring', 500, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
         if (this.player.reactiveBubble.charges <= 3) {
             this.player.isMultifaring = false;
@@ -2372,7 +2372,7 @@ export default class PlayerMachine {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.MYSTIFY);    
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.player.isMystifying = true;
-        this.player.specialCombatText = this.scene.showCombatText('Mystifying', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Mystify', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'chartreuse', PLAYER.DURATIONS.MYSTIFY);
         if (!this.player.isComputer) this.player.setTimeEvent('mystifyCooldown', PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MYSTIFY, () => {

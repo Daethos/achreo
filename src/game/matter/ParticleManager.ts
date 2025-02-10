@@ -321,24 +321,6 @@ export default class ParticleManager extends Phaser.Scene {
             this.particles.push(particle);
         };
 
-        // const y = 
-        //     particle.target.y // Start Direction 
-        //     * particle.velocity // Velocity Multiplier
-        //     * TIME[particle.action as keyof typeof TIME] // Duration of projectile 
-        //     / this.context.sys.game.loop.delta // Delta Estimate 
-        //     + particle.effect.y; // Current Y Coordinate
-        // console.log(`%c Estimated Y: ${y}, Starting Y: ${particle.effect.y} Delta: ${this.context.sys.game.loop.delta}`, 'color:gold');
-
-        // // Tween Y-position with yoyo for the arc effect
-        // this.context.tweens.add({
-        //     targets: particle.effect,
-        //     y: y - 25, // Move upwards to simulate "depth"
-        //     duration: TIME[particle.action as keyof typeof TIME] / 2, // Duration for yoyo effect
-        //     ease: 'Quad.easeOut', // Easing for smooth arc
-        //     yoyo: true, // Only yoyo the Y movement
-        // });
-
-        // Tween for scale and alpha (without yoyo)
         this.context.tweens.add({
             targets: particle.effect,
             scale: particle.effect.scale * 0.675, // Scale down to simulate depth

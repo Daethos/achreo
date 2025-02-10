@@ -726,8 +726,8 @@ export default class Player extends Entity {
                     this.touching.forEach((enemy) => {
                         if (enemy.health <= 0) return;
                         if (enemy.isWarding || enemy.isShielding || enemy.isProtecting) {
-                            if (enemy.isShielding) enemy.shieldHit(this.playerID);
-                            if (enemy.isWarding) enemy.wardHit(this.playerID);
+                            if (enemy.isShielding) enemy.shield();
+                            if (enemy.isWarding) enemy.ward(this.playerID);
                             return;
                         };
                         if (enemy.isMenacing) enemy.menace(this.playerID);
@@ -1310,12 +1310,12 @@ export default class Player extends Entity {
             if (this.attackedTarget?.health <= 0) return;
             if (!this.isAstrifying) {
                 if (this?.attackedTarget?.isShimmering && Phaser.Math.Between(1, 100) > 50) {
-                    this?.attackedTarget?.shimmerHit();
+                    this?.attackedTarget?.shimmer();
                     return;
                 };
                 if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit(this.playerID);
-                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit(this.playerID);
+                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shield();
+                    if (this.attackedTarget?.isWarding) this.attackedTarget?.ward(this.playerID);
                     return;
                 };
                 if (this.attackedTarget.isMenacing) this.attackedTarget.menace(this.playerID); 
@@ -1347,12 +1347,12 @@ export default class Player extends Entity {
             if (!action) return;
             if (!this.isAstrifying) {
                 if (this?.attackedTarget?.isShimmering && Phaser.Math.Between(1, 100) > 50) {
-                    this?.attackedTarget?.shimmerHit();
+                    this?.attackedTarget?.shimmer();
                     return;
                 };
                 if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit(this.playerID);
-                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit(this.playerID);
+                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shield();
+                    if (this.attackedTarget?.isWarding) this.attackedTarget?.ward(this.playerID);
                     return;    
                 };
                 if (this.attackedTarget?.isMenacing) this.attackedTarget?.menace(this.playerID);

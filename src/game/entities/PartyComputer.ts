@@ -418,8 +418,8 @@ export default class Party extends Entity {
         };
         if (this.isConfused) this.isConfused = false;
         if (this.isPolymorphed) this.isPolymorphed = false;
-        if (this.isMalicing) this.playerMachine.malice(origin);
-        if (this.isMending) this.playerMachine.mend();
+        if (this.isMalicing) this.malice(origin);
+        if (this.isMending) this.mend();
         if ((!this.inComputerCombat || !this.currentTarget) && this.health > 0) {
             const enemy = this.scene.enemies.find((en: Enemy) => en.enemyID === origin && origin !== this.enemyID);
             if (enemy) this.checkComputerEnemyCombatEnter(enemy);
@@ -519,8 +519,8 @@ export default class Party extends Entity {
             };
             if (this.isConfused) this.isConfused = false;
             if (this.isPolymorphed) this.isPolymorphed = false;
-            if (this.isMalicing) this.playerMachine.malice(e.enemyID);
-            if (this.isMending) this.playerMachine.mend();
+            if (this.isMalicing) this.malice(e.enemyID);
+            if (this.isMending) this.mend();
             if ((!this.inComputerCombat || !this.currentTarget) && e.newComputerHealth > 0 && e.enemyID !== this.enemyID) {
                 const enemy = this.scene.enemies.find((en: Enemy) => en.enemyID === e.damagedID);
                 if (enemy) {
@@ -857,8 +857,8 @@ export default class Party extends Entity {
                     this.touching.forEach((enemy) => {
                         if (enemy.health <= 0) return;
                         if (enemy.isWarding || enemy.isShielding || enemy.isProtecting) {
-                            if (enemy.isShielding) enemy.shieldHit(this.enemyID);
-                            if (enemy.isWarding) enemy.wardHit(this.enemyID);
+                            if (enemy.isShielding) enemy.shield();
+                            if (enemy.isWarding) enemy.ward(this.enemyID);
                             return;
                         };
                         if (enemy.isMenacing) enemy.menace(this.enemyID);
@@ -874,6 +874,202 @@ export default class Party extends Entity {
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You begin storming with your ${this.computerCombatSheet.computerWeapons[0]?.name}.`
         });
+    };
+
+    absorb = () => {
+        if (this.negationBubble === undefined || this.isAbsorbing === false) {
+            if (this.negationBubble) {
+                this.negationBubble.destroy();
+                this.negationBubble = undefined;
+            };
+            this.isAbsorbing = false;
+            return;
+        };
+        this.enemySound('absorb', true);
+        this.specialCombatText = this.scene.showCombatText('Absorbed', 500, 'effect', false, true, () => this.specialCombatText = undefined);
+        if (Math.random() < 0.2) {
+            this.isAbsorbing = false;
+        };
+    };
+
+    envelop = () => {
+        if (this.reactiveBubble === undefined || this.isEnveloping === false) {
+            if (this.reactiveBubble) {
+                this.reactiveBubble.destroy();
+                this.reactiveBubble = undefined;
+            };
+            this.isEnveloping = false;
+            return;
+        };
+        this.enemySound('caerenic', true);
+        this.specialCombatText = this.scene.showCombatText('Enveloped', 500, 'effect', false, true, () => this.specialCombatText = undefined);
+        if (Math.random() < 0.2) {
+            this.isEnveloping = false;
+        };
+    };
+
+    malice = (id: string) => {
+        if (this.reactiveBubble === undefined || this.isMalicing === false) {
+            if (this.reactiveBubble) {
+                this.reactiveBubble.destroy();
+                this.reactiveBubble = undefined;
+            };
+            this.isMalicing = false;
+            return;
+        };
+        this.enemySound('debuff', true);
+        this.specialCombatText = this.scene.showCombatText('Maliced', 750, 'hush', false, true, () => this.specialCombatText = undefined);
+        this.playerMachine.chiomism(id, 10);
+        this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
+        if (this.reactiveBubble.charges <= 0) {
+            this.isMalicing = false;
+        };
+    };
+
+    menace = (id: string) => {
+        if (id === '') return;
+        if (this.reactiveBubble === undefined || this.isMenacing === false) {
+            if (this.reactiveBubble) {
+                this.reactiveBubble.cleanUp();
+                this.reactiveBubble = undefined;
+            };
+            this.isMenacing = false;
+            return;
+        };
+        this.scene.combatManager.fear(id);
+        this.enemySound('caerenic', true);
+        this.specialCombatText = this.scene.showCombatText('Menaced', 500, 'tendril', false, true, () => this.specialCombatText = undefined);
+        this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
+        if (this.reactiveBubble.charges <= 3) {
+            this.isMenacing = false;
+        };
+    };
+
+    mend = () => {
+        if (this.reactiveBubble === undefined || this.isMending === false) {
+            if (this.reactiveBubble) {
+                this.reactiveBubble.destroy();
+                this.reactiveBubble = undefined;
+            };
+            this.isMending = false;
+            return;
+        };
+        this.enemySound('caerenic', true);
+        this.specialCombatText = this.scene.showCombatText('Mended', 500, 'tendril', false, true, () => this.specialCombatText = undefined);
+        this.playerMachine.heal(0.15);
+        // const gRatio = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
+        // const pRatio = this.health / this.ascean.health.max;
+        // if (gRatio <= pRatio) { // Heal the Player
+        //     this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 15, id: this.scene.player.playerID }, type: 'Health' });
+        // } else { // Heal the Party Member
+        //     this.playerMachine.heal(0.15);
+        // };
+        this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
+        if (this.reactiveBubble.charges <= 0) {
+            this.isMending = false;
+        };
+    };
+
+    moderate = (id: string) => {
+        if (id === '') return;
+        if (this.reactiveBubble === undefined || this.isModerating === false) {
+            if (this.reactiveBubble) {
+                this.reactiveBubble.cleanUp();
+                this.reactiveBubble = undefined;
+            };
+            this.isModerating = false;
+            return;
+        };
+        this.scene.combatManager.slow(id);
+        this.enemySound('debuff', true);
+        this.specialCombatText = this.scene.showCombatText('Moderated', 500, 'tendril', false, true, () => this.specialCombatText = undefined);
+        this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
+        if (this.reactiveBubble.charges <= 0) {
+            this.isModerating = false;
+        };
+    };
+
+    multifarious = (id: string) => {
+        if (id === '') return;
+        if (this.reactiveBubble === undefined || this.isMultifaring === false) {
+            if (this.reactiveBubble) {
+                this.reactiveBubble.cleanUp();
+                this.reactiveBubble = undefined;
+            };
+            this.isMultifaring = false;
+            return;
+        };
+        this.scene.combatManager.polymorph(id);
+        this.enemySound('combat-round', true);
+        this.specialCombatText = this.scene.showCombatText('Multifarious`d', 500, 'cast', false, true, () => this.specialCombatText = undefined);
+        this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
+        if (this.reactiveBubble.charges <= 3) {
+            this.isMultifaring = false;
+        };
+    };
+
+    mystify = (id: string) => {
+        if (id === '') return;
+        if (this.reactiveBubble === undefined || this.isMystifying === false) {
+            if (this.reactiveBubble) {
+                this.reactiveBubble.cleanUp();
+                this.reactiveBubble = undefined;
+            };
+            this.isMystifying = false;
+            return;
+        };
+        this.scene.combatManager.confuse(id);
+        this.enemySound('death', true);
+        this.specialCombatText = this.scene.showCombatText('Mystified', 500, 'effect', false, true, () => this.specialCombatText = undefined);
+        this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
+        if (this.reactiveBubble.charges <= 3) {
+            this.isMystifying = false;
+        };
+    };
+
+    shield = () => {
+        if (this.negationBubble === undefined || this.isShielding === false) {
+            if (this.negationBubble) {
+                this.negationBubble.cleanUp();
+                this.negationBubble = undefined;
+            };
+            this.isShielding = false;
+            return;
+        };
+        this.enemySound('shield', true);
+        this.specialCombatText = this.scene.showCombatText('Shielded', 500, 'effect', false, true, () => this.specialCombatText = undefined);
+        this.negationBubble.setCharges(this.negationBubble.charges - 1);
+        if (this.negationBubble.charges <= 0) {
+            this.specialCombatText = this.scene.showCombatText('Shield Broken', 500, 'damage', false, true, () => this.specialCombatText = undefined);
+            this.isShielding = false;
+        };
+    };
+    
+    shimmer = () => {
+        const shimmers = ['It fades through them', "You simply weren't there", "Perhaps them never were", "They don't seem certain of them at all"];
+        const shim = shimmers[Math.floor(Math.random() * shimmers.length)];
+        this.enemySound('stealth', true);
+        this.specialCombatText = this.scene.showCombatText(shim, 1500, 'effect', false, true, () => this.specialCombatText = undefined);
+    };
+
+    ward = (id: string) => {
+        if (this.negationBubble === undefined || this.isWarding === false) {
+            if (this.negationBubble) {
+                this.negationBubble.cleanUp();
+                this.negationBubble = undefined;
+            };
+            this.isWarding = false;
+            return;
+        };
+        this.enemySound('parry', true);
+        this.scene.combatManager.stunned(id);
+        this.negationBubble.setCharges(this.negationBubble.charges - 1);
+        this.specialCombatText = this.scene.showCombatText('Warded', 500, 'effect', false, true, () => this.specialCombatText = undefined);
+        if (this.negationBubble.charges <= 0) {
+            this.specialCombatText = this.scene.showCombatText('Ward Broken', 500, 'damage', false, true, () => this.specialCombatText = undefined);
+            this.negationBubble.setCharges(0);
+            this.isWarding = false;
+        };
     };
 
     speedUpdate = (e: Ascean) => {
@@ -1299,14 +1495,12 @@ export default class Party extends Entity {
                 this.scene.particleManager.updateParticle(this.particleEffect);
             };
         };
-        this.functionality('party', this.currentTarget as Enemy);
         if (this.healthbar) this.healthbar.update(this);
         if (this.scrollingCombatText) this.scrollingCombatText.update(this);
         if (this.specialCombatText) this.specialCombatText.update(this);
         if (this.resistCombatText) this.resistCombatText.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-        
         if (this.isConfused && !this.sansSuffering('isConfused') && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
             this.playerMachine.stateMachine.setState(States.CONFUSED);
             return;
@@ -1327,6 +1521,9 @@ export default class Party extends Entity {
             this.playerMachine.negativeMachine.setState(States.FROZEN);
             return;
         };
+
+        this.functionality('party', this.currentTarget as Enemy);
+
         if (this.isRooted && !this.playerMachine.negativeMachine.isCurrentState(States.ROOTED) && !this.currentNegativeState(States.ROOTED)) {
             this.playerMachine.negativeMachine.setState(States.ROOTED);
             return;
@@ -1339,7 +1536,6 @@ export default class Party extends Entity {
             this.playerMachine.negativeMachine.setState(States.SNARED);
             return;
         };
-
     };
 
     partyActionSuccess = () => {
@@ -1353,28 +1549,28 @@ export default class Party extends Entity {
             if (this.attackedTarget?.health <= 0) return;
             if (!this.isAstrifying) {
                 if (this?.attackedTarget?.isShimmering && Phaser.Math.Between(1, 100) > 50) {
-                    this?.attackedTarget?.shimmerHit();
+                    this?.attackedTarget?.shimmer();
                     return;
                 };
                 if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit(this.enemyID);
-                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit(this.enemyID);
+                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shield();
+                    if (this.attackedTarget?.isWarding) this.attackedTarget?.ward(this.enemyID);
                     return;
                 };
                 if (this.attackedTarget.isMenacing) this.attackedTarget.menace(this.enemyID); 
                 if (this.attackedTarget.isMultifaring) this.attackedTarget.multifarious(this.enemyID); 
                 if (this.attackedTarget.isMystifying) this.attackedTarget.mystify(this.enemyID); 
             };
-            this.scene.combatManager.partyMelee({ action, origin: this.enemyID, enemyID: this.attackedTarget.enemyID  });
+            this.scene.combatManager.partyMelee({ action, origin: this.enemyID, enemyID: this.attackedTarget.enemyID });
         } else {
             if (!this.isAstrifying) {
                 if (this?.attackedTarget?.isShimmering && Phaser.Math.Between(1, 100) > 50) {
-                    this?.attackedTarget?.shimmerHit();
+                    this?.attackedTarget?.shimmer();
                     return;
                 };
                 if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shieldHit(this.enemyID);
-                    if (this.attackedTarget?.isWarding) this.attackedTarget?.wardHit(this.enemyID);
+                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shield();
+                    if (this.attackedTarget?.isWarding) this.attackedTarget?.ward(this.enemyID);
                     return;    
                 };
                 if (this.attackedTarget?.isMenacing) this.attackedTarget?.menace(this.enemyID);

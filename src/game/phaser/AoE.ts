@@ -92,12 +92,21 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     setCount = (scene: Play, type: string, positive: boolean) => {
         if (type === 'fyerus') {
             if ((scene as Player_Scene).player.isMoving) {
-                scene.glowFilter.remove(this);
-                this.bless = [];
-                this.timer.destroy();
-                this.timer.remove(false);
-                this.timer = undefined;
-                this.destroy();
+                scene.tweens.add({
+                    targets: [this],
+                    alpha: 0,
+                    duration: 1000,
+                    onComplete: () => {
+                        scene.glowFilter.remove(this);
+                        this.hit = [];
+                        if (this.timer) {
+                            this.timer.destroy();
+                            this.timer.remove(false);
+                            this.timer = undefined;
+                        };
+                        this.destroy();
+                    }
+                });
                 return;
             };
         };
@@ -108,12 +117,21 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 });
                 this.count -= 1;
                 if (this.count === 0) {
-                    scene.glowFilter.remove(this);
-                    this.bless = [];
-                    this.timer.destroy();
-                    this.timer.remove(false);
-                    this.timer = undefined;
-                    this.destroy();
+                    scene.tweens.add({
+                        targets: [this],
+                        alpha: 0,
+                        duration: 1000,
+                        onComplete: () => {
+                            scene.glowFilter.remove(this);
+                            this.bless = [];
+                            if (this.timer) {
+                                this.timer.destroy();
+                                this.timer.remove(false);
+                                this.timer = undefined;
+                            };
+                            this.destroy();
+                        }
+                    });
                 } else {
                     this.setCount(scene, type, positive);
                 };
@@ -125,12 +143,21 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 });
                 this.count -= 1;
                 if (this.count === 0) {
-                    scene.glowFilter.remove(this);
-                    this.hit = [];
-                    this.timer.destroy();
-                    this.timer.remove(false);
-                    this.timer = undefined;
-                    this.destroy();    
+                    scene.tweens.add({
+                        targets: [this],
+                        alpha: 0,
+                        duration: 1000,
+                        onComplete: () => {
+                            scene.glowFilter.remove(this);
+                            this.hit = [];
+                            if (this.timer) {
+                                this.timer.destroy();
+                                this.timer.remove(false);
+                                this.timer = undefined;
+                            };
+                            this.destroy();
+                        }
+                    });
                 } else {
                     this.setCount(scene, type, false);
                 };
@@ -141,12 +168,21 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     setPartyCount = (scene: Play, type: string, positive: boolean, origin: Party) => {
         if (type === 'fyerus') {
             if ((scene as Player_Scene).player.isMoving) {
-                scene.glowFilter.remove(this);
-                this.bless = [];
-                this.timer.destroy();
-                this.timer.remove(false);
-                this.timer = undefined;
-                this.destroy();
+                scene.tweens.add({
+                    targets: [this],
+                    alpha: 0,
+                    duration: 1000,
+                    onComplete: () => {
+                        scene.glowFilter.remove(this);
+                        this.hit = [];
+                        if (this.timer) {
+                            this.timer.destroy();
+                            this.timer.remove(false);
+                            this.timer = undefined;
+                        };
+                        this.destroy();
+                    }
+                });
                 return;
             };
         };
@@ -158,12 +194,21 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 });
                 this.count -= 1;
                 if (this.count === 0) {
-                    scene.glowFilter.remove(this);
-                    this.bless = [];
-                    this.timer.destroy();
-                    this.timer.remove(false);
-                    this.timer = undefined;
-                    this.destroy();
+                    scene.tweens.add({
+                        targets: [this],
+                        alpha: 0,
+                        duration: 1000,
+                        onComplete: () => {
+                            scene.glowFilter.remove(this);
+                            this.bless = [];
+                            if (this.timer) {
+                                this.timer.destroy();
+                                this.timer.remove(false);
+                                this.timer = undefined;
+                            };
+                            this.destroy();
+                        }
+                    });
                 } else {
                     this.setPartyCount(scene, type, positive, origin);
                 };
@@ -175,12 +220,21 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 });
                 this.count -= 1;
                 if (this.count === 0) {
-                    scene.glowFilter.remove(this);
-                    this.hit = [];
-                    this.timer.destroy();
-                    this.timer.remove(false);
-                    this.timer = undefined;
-                    this.destroy();    
+                    scene.tweens.add({
+                        targets: [this],
+                        alpha: 0,
+                        duration: 1000,
+                        onComplete: () => {
+                            scene.glowFilter.remove(this);
+                            this.hit = [];
+                            if (this.timer) {
+                                this.timer.destroy();
+                                this.timer.remove(false);
+                                this.timer = undefined;
+                            };
+                            this.destroy();
+                        }
+                    });
                 } else {
                     this.setPartyCount(scene, type, false, origin);
                 };
@@ -214,28 +268,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     };
     setupEnemyCount = (scene: Play, type: string, positive: boolean, enemy: Enemy) => {
         if (enemy.isDeleting) {
-            scene.glowFilter.remove(this);
-            this.hit = [];
-            if (this.timer) {
-                this.timer.destroy();
-                this.timer.remove(false);
-                this.timer = undefined;
-            };
-            this.destroy();
-        };
-        if (positive === true) {
-            scene.time.delayedCall(975, () => {
-                this.hit.forEach((hit) => {
-                    if (hit.name === 'player') {
-                        if ((scene as Player_Scene).player.checkPlayerResist() === true) {
-                            (scene.combatManager as any)[type](hit.playerID, enemy.enemyID);
-                        };
-                    } else if (hit.name === 'enemy') {
-                        (scene.combatManager as any)[type](hit.enemyID, enemy.enemyID);
-                    };
-                });
-                this.count -= 1;
-                if (this.count === 0) {
+            scene.tweens.add({
+                targets: [this],
+                alpha: 0,
+                duration: 1000,
+                onComplete: () => {
                     scene.glowFilter.remove(this);
                     this.hit = [];
                     if (this.timer) {
@@ -244,6 +281,38 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                         this.timer = undefined;
                     };
                     this.destroy();
+                }
+            });
+            return;
+        };
+        if (positive === true) {
+            scene.time.delayedCall(975, () => {
+                this.hit.forEach((hit) => {
+                    if (hit.name === 'player') {
+                        if ((scene as Player_Scene).player.checkPlayerResist() === true) {
+                            (scene.combatManager as any)[type](hit.playerID, enemy.enemyID);
+                        };
+                    } else if (hit.name === 'enemy' || hit.name === 'party') {
+                        (scene.combatManager as any)[type](hit.enemyID, enemy.enemyID);
+                    };
+                });
+                this.count -= 1;
+                if (this.count === 0) {
+                    scene.tweens.add({
+                        targets: [this],
+                        alpha: 0,
+                        duration: 1000,
+                        onComplete: () => {
+                            scene.glowFilter.remove(this);
+                            this.hit = [];
+                            if (this.timer) {
+                                this.timer.destroy();
+                                this.timer.remove(false);
+                                this.timer = undefined;
+                            };
+                            this.destroy();
+                        }
+                    });
                 } else {
                     this.setupEnemyCount(scene, type, positive, enemy);
                 };
@@ -256,14 +325,21 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 });
                 this.count -= 1;
                 if (this.count === 0) {
-                    scene.glowFilter.remove(this);
-                    this.bless = [];
-                    if (this.timer) {
-                        this.timer.destroy();
-                        this.timer.remove(false);
-                        this.timer = undefined;
-                    };
-                    this.destroy();    
+                    scene.tweens.add({
+                        targets: [this],
+                        alpha: 0,
+                        duration: 1000,
+                        onComplete: () => {
+                            scene.glowFilter.remove(this);
+                            this.bless = [];
+                            if (this.timer) {
+                                this.timer.destroy();
+                                this.timer.remove(false);
+                                this.timer = undefined;
+                            };
+                            this.destroy();
+                        }
+                    }); 
                 } else {
                     this.setupEnemyCount(scene, type, false, enemy);
                 };
@@ -434,6 +510,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                     } else {
                         this.bless.push(gameObjectB);
                     };
+                } else if (gameObjectB?.name === 'party' && bodyB?.label === 'partyCollider') {
+                    const hit = this.hit.find((h) => h.enemyID === gameObjectB.enemyID);
+                    if (!hit) this.hit.push(gameObjectB);
                 };
             },
             context: scene
@@ -447,6 +526,8 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 } else if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
                     this.bless = this.bless.filter((target) => target !== gameObjectB);
                     this.hit = this.hit.filter((target) => target !== gameObjectB);
+                } else if (gameObjectB?.name === 'party' && bodyB?.label === 'partyCollider') {
+                    this.hit = this.hit.filter((target) => target !== gameObjectB);
                 };
             },
             context: scene
@@ -458,7 +539,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
                 if ((gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') ||
-                    (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider')) {
+                    (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') ||
+                    (gameObjectB?.name === 'party' && bodyB?.label === 'partyCollider')
+                ) {
                     this.hit.push(gameObjectB);
                 };
             },

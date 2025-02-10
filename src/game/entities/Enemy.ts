@@ -474,29 +474,38 @@ export default class Enemy extends Entity {
         };
         this.computerCombatSheet.newComputerHealth = this.health;
         const enemy = this.enemies.find((en: ENEMY) => en.id === origin && origin !== this.enemyID);
-        if (enemy && this.health > 0) this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max));
-        if (this.health <= 0) {
-            this.killingBlow = origin;
+        if (enemy && this.health > 0) {
+            this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max));
+        } else if (!enemy && this.health > 0 && origin !== '') {
+            this.enemies.push({id:origin,threat:0});
+            this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max))
         };
+        if (this.health <= 0) this.killingBlow = origin;
         EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
     };
 
     updateThreat(id: string, threat: number) {
-        this.enemies.forEach(enemy => {
+        this.enemies.forEach((enemy: ENEMY) => {
             if (enemy.id === id) enemy.threat += threat;
         });
-        if (this.enemies.length <= 1) return;
+        if (this.enemies.length <= 1 || this.health <= 0) return;
         this.enemies.sort((a, b) => b.threat - a.threat);
-        let topEnemy: string = this.enemies[0].id;
-        if (!this.attacking || this.health <= 0) return;
-        if (this.attacking.name === 'player') {
-            if (this.attacking.playerID !== topEnemy) this.updatePlayerTarget(this.scene.player);
-        } else if (this.attacking && this.attacking.enemyID !== topEnemy && this.health >= 0) {
-            const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === topEnemy);
+        const topEnemy: string = this.enemies[0].id;
+        const updateTarget = (id: string) => {
+            const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === id);
             if (enemy) this.updateEnemyTarget(enemy);
-        } else if (!this.attacking && this.health >= 0) {
-            const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === topEnemy);
-            if (enemy) this.updateEnemyTarget(enemy);
+            const party = this.scene.party.find((e: Party) => e.enemyID === id);
+            if (party) this.updateEnemyTarget(party);
+        };
+    
+        if (this.scene.player.playerID === topEnemy && this.attacking?.name !== 'player') {
+            this.updatePlayerTarget(this.scene.player);
+        } else if (this.attacking?.name !== 'player' && this.attacking.enemyID !== topEnemy) {
+            updateTarget(topEnemy);
+        } else if (this.attacking?.name === 'player' && this.attacking?.playerID !== topEnemy) {
+            updateTarget(topEnemy);
+        } else if (!this.attacking) {
+            updateTarget(topEnemy);
         };
     };
 
@@ -509,7 +518,7 @@ export default class Enemy extends Entity {
         this.ping();
     };
 
-    updateEnemyTarget(target: Enemy) {
+    updateEnemyTarget(target: Enemy | Party) {
         this.attacking = target;
         this.inComputerCombat = true;
         this.computerCombatSheet = {
@@ -591,10 +600,10 @@ export default class Enemy extends Entity {
                     this.checkComputerEnemyCombatEnter(enemy);
                 };
             };
-            const id = this.enemies.find((en: ENEMY) => en.id === enemyID && enemyID !== this.enemyID);
-            if (id && newComputerHealth > 0) {
+            const enemy = this.enemies.find((en: ENEMY) => en.id === enemyID && enemyID !== this.enemyID);
+            if (enemy && newComputerHealth > 0) {
                 this.updateThreat(enemyID, calculateThreat(Math.round(this.health - newComputerHealth), newComputerHealth, computerHealth));
-            } else if (!id && newComputerHealth > 0 && enemyID !== '' && enemyID !== this.enemyID) {
+            } else if (!enemy && newComputerHealth > 0 && enemyID !== '' && enemyID !== this.enemyID) {
                 this.enemies.push({id:enemyID,threat:0});
                 this.updateThreat(enemyID, calculateThreat(Math.round(this.health - newComputerHealth), newComputerHealth, computerHealth))
             };
@@ -655,7 +664,12 @@ export default class Enemy extends Entity {
             if (this.isMending) this.mend(this.scene.player.playerID);
             if (!this.inCombat && newComputerHealth > 0 && newPlayerHealth > 0) this.checkEnemyCombatEnter();
             const id = this.enemies.find((en: ENEMY) => en.id === this.scene.player.playerID);
-            if (id && newComputerHealth > 0) this.updateThreat(this.scene.player.playerID, calculateThreat(Math.round(this.health - newComputerHealth), newComputerHealth, computerHealth));
+            if (id && newComputerHealth > 0) {
+                this.updateThreat(this.scene.player.playerID, calculateThreat(Math.round(this.health - newComputerHealth), newComputerHealth, computerHealth));
+            } else if (!id && newComputerHealth > 0) {
+                this.enemies.push({id:this.scene.player.playerID, threat:0});
+                this.updateThreat(this.scene.player.playerID, calculateThreat(Math.round(this.health - newComputerHealth), newComputerHealth, computerHealth));
+            };
         } else if (this.health < newComputerHealth) { 
             let heal = Math.round(newComputerHealth - this.health);
             this.scrollingCombatText = this.scene.showCombatText(`${heal}`, 1500, 'heal', false, false, () => this.scrollingCombatText = undefined);
@@ -996,7 +1010,7 @@ export default class Enemy extends Entity {
             this.enemies = [];
             this.clearStatuses();
         } else if (this.enemies[0].id === this.scene?.player?.playerID || this.attacking?.name === 'player') {
-            this.enemies = this.enemies.filter((e: ENEMY) => e.id !== this.scene?.player?.playerID);
+            this.enemies = this.enemies.filter((e: ENEMY) => e.id !== this.scene.player.playerID);
             this.inCombat = false;
             this.isTriumphant = true;
             const newId = this.enemies[0].id;
@@ -1004,7 +1018,7 @@ export default class Enemy extends Entity {
             this.attacking = newEnemy;
             this.stateMachine.setState(States.CHASE);
         } else {
-            this.enemies = this.enemies.filter((e: ENEMY) => e.id !== this.scene?.player?.playerID);
+            this.enemies = this.enemies.filter((e: ENEMY) => e.id !== this.scene.player.playerID);
             this.inCombat = false;
             this.isTriumphant = true;
         };

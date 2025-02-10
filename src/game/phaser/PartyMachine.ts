@@ -1386,7 +1386,7 @@ export default class PlayerMachine {
     onReconstituteEnter = () => {
         this.player.setStatic(true);
         this.player.isMoving = false;
-        this.player.startCasting('Reconstituting', PLAYER.DURATIONS.RECONSTITUTE, 'heal');
+        this.player.startCasting('Reconstituting', PLAYER.DURATIONS.RECONSTITUTE, 'heal', true);
         this.player.beam.startEmitter(this, PLAYER.DURATIONS.RECONSTITUTE);
         this.player.reconTimer = this.scene.time.addEvent({
             delay: 1000,

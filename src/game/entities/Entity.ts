@@ -25,7 +25,7 @@ export function calculateThreat(damage: number, currentHealth: number, totalHeal
     const damageRatio = damage / currentHealth;
     const healthRatio = (totalHealth - currentHealth) / totalHealth;
     const relative = damageRatio + healthRatio;
-    return relative ?? 0;
+    return relative;
 };
 export type Player_Scene = Game | Underground | Tutorial | Arena;
 export type ENEMY = {id:string; threat:number};

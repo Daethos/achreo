@@ -489,13 +489,13 @@ export default class Party extends Entity {
         this.enemies.forEach(enemy => {
             if (enemy.id === id) enemy.threat += threat;
         });
-        if (this.enemies.length <= 1) return;
-        this.enemies.sort((a, b) => b.threat - a.threat);
+        if (this.enemies.length <= 1 || this.health <= 0) return;
+        this.enemies = this.enemies.sort((a, b) => b.threat - a.threat);
         let topEnemy: string = this.enemies[0].id;
-        if (this.currentTarget && this.currentTarget.enemyID !== topEnemy && this.health >= 0) {
+        if (this.currentTarget && this.currentTarget.enemyID !== topEnemy) {
             const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === topEnemy);
             if (enemy) this.updateEnemyTarget(enemy);
-        } else if (!this.currentTarget && this.health >= 0) {
+        } else if (!this.currentTarget) {
             const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === topEnemy);
             if (enemy) this.updateEnemyTarget(enemy);
         };
@@ -527,10 +527,10 @@ export default class Party extends Entity {
                     this.checkComputerEnemyCombatEnter(enemy);
                 };
             };
-            const id = this.enemies.find((en: ENEMY) => en.id === e.enemyID && e.enemyID !== this.enemyID);
+            const id = this.enemies.find((en: ENEMY) => en.id === e.enemyID);
             if (id && e.newComputerHealth > 0) {
                 this.updateThreat(e.enemyID, calculateThreat(Math.round(this.health - e.newComputerHealth), e.newComputerHealth, this.ascean.health.max));
-            } else if (!id && e.newComputerHealth > 0 && e.enemyID !== '' && e.enemyID !== this.enemyID) {
+            } else if (!id && e.newComputerHealth > 0 && e.enemyID !== '') {
                 this.enemies.push({id:e.enemyID,threat:0});
                 this.updateThreat(e.enemyID, calculateThreat(Math.round(this.health - e.newComputerHealth), e.newComputerHealth, this.ascean.health.max))
             };

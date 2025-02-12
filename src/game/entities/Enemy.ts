@@ -754,26 +754,18 @@ export default class Enemy extends Entity {
                             this.stateMachine.setState(States.AWARE);
                         };
                     };
-                } else if (other.gameObjectB && ((other.gameObjectB.name === 'enemy' && (this.scene.scene.key !== 'Arena' && this.scene.scene.key !== 'Underground')) 
-                    || other.gameObjectB.name === 'party')) {
+                } else if (other.gameObjectB && ((other.gameObjectB.name === 'enemy' && this.scene.scene.key !== 'Arena' && this.scene.scene.key !== 'Underground') || other.gameObjectB.name === 'party')) {
                     this.isValidComputerRushEnemy(other.gameObjectB);
                     this.touching.push(other.gameObjectB);
+                    if (this.inCombat || this.inComputerCombat || other.gameObjectB.health <= 0 || this.health <= 0) return;                     
+                    this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
+                    this.checkComputerEnemyCombatEnter(other.gameObjectB);                    
                     // if (this.ascean && this.computerEnemyAggressionCheck()) {
                         // this.createComputerCombat(other);
-                        // // ===== TEMPORARY FOR TESTING ===== \\    
                     // } else if (this.computerStatusCheck(other.gameObjectB) && !this.isAggressive) {
                     // } else {
                         // const newEnemy = this.isNewComputerEnemy(other.gameObjectB);
                         // const realEnemy = this.potentialEnemies.includes(other.gameObjectB.ascean.name);
-                        
-                    // ===== TEMPORARY FOR TESTING ===== \\
-                    if (this.inCombat || this.inComputerCombat || other.gameObjectB.health <= 0 || this.health <= 0) return;                     
-                    this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
-                    this.checkComputerEnemyCombatEnter(other.gameObjectB);
-
-                        // if (newEnemy && realEnemy) {
-                        // };
-                        // this.stateMachine.setState(States.AWARE);
                     // };
                 }
             },

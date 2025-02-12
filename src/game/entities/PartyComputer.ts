@@ -57,7 +57,6 @@ export default class Party extends Entity {
     targetIndex: number = 1;
     isMoving: boolean = false;
     targetID: string = '';
-    triggeredActionAvailable: any = undefined;
     staminaModifier: number = 0;
     strafingLeft: boolean = false;
     strafingRight: boolean = false;
@@ -343,16 +342,15 @@ export default class Party extends Entity {
                     if (!isNewEnemy) return;
                     this.targets.push(other.gameObjectB);
                     if (!this.currentTarget) this.checkComputerEnemyCombatEnter(other.gameObjectB);
-                } else if (this.isValidNeutralCollision(other)) {
-                    other.gameObjectB.originPoint = new Phaser.Math.Vector2(other.gameObjectB.x, other.gameObjectB.y).clone();
-                    const isNewNeutral = this.isNewEnemy(other.gameObjectB);
-                    if (!isNewNeutral) return;
-                    this.targets.push(other.gameObjectB);
+                // } else if (this.isValidNeutralCollision(other)) {
+                //     other.gameObjectB.originPoint = new Phaser.Math.Vector2(other.gameObjectB.x, other.gameObjectB.y).clone();
+                //     const isNewNeutral = this.isNewEnemy(other.gameObjectB);
+                //     if (!isNewNeutral) return;
+                //     this.targets.push(other.gameObjectB);
                 };
             },
             context: this.scene,
         });
-
         this.scene.matterCollision.addOnCollideActive({
             objectA: [partySensor],
             callback: (other: any) => {
@@ -360,27 +358,17 @@ export default class Party extends Entity {
                 if (other.gameObjectB?.isDeleting) return;
                 this.isValidRushEnemy(other.gameObjectB);
                 if (this.isValidEnemyCollision(other)) {
-                    this.actionTarget = other;
                     if (!this.currentTarget) this.currentTarget = other.gameObjectB;
                     if (!this.targetID) this.targetID = other.gameObjectB.enemyID;    
                 };
             },
             context: this.scene,
         });
-
         this.scene.matterCollision.addOnCollideEnd({
             objectA: [partySensor],
             callback: (other: any) => {
                 if (this.isDeleting) return;
-                if (other.gameObjectB?.isDeleting) return;
-                if (other.gameObjectB?.name === 'enemy') this.touching = this.touching.filter((target) => target !== other.gameObjectB)
-                if (this.isValidEnemyCollision(other) && !this.touching.length) {
-                    this.actionAvailable = false;
-                    this.triggeredActionAvailable = undefined;
-                } else if (this.isValidNeutralCollision(other) && !this.touching.length) {
-                    this.actionAvailable = false;
-                    this.triggeredActionAvailable = undefined;
-                };
+                if (other.gameObjectB?.name === 'enemy') this.touching = this.touching.filter((target) => target !== other.gameObjectB);
             },
             context: this.scene,
         });
@@ -427,8 +415,13 @@ export default class Party extends Entity {
             if (enemy) this.checkComputerEnemyCombatEnter(enemy);
         };
         this.computerCombatSheet.newComputerHealth = this.health;
-        const id = this.enemies.find((en: ENEMY) => en.id === origin && origin !== this.enemyID);
-        if (id && this.health > 0) this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max));
+        const enemy = this.enemies.find((en: ENEMY) => en.id === origin);
+        if (enemy && this.health > 0) {
+            this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max));
+        } else if (!enemy && this.health > 0 && origin !== '') {
+            this.enemies.push({id:origin,threat:0});
+            this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max));
+        };
         EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
     };
 
@@ -534,7 +527,7 @@ export default class Party extends Entity {
                 this.updateThreat(e.enemyID, calculateThreat(Math.round(this.health - e.newComputerHealth), e.newComputerHealth, this.ascean.health.max));
             } else if (!id && e.newComputerHealth > 0 && e.enemyID !== '') {
                 this.enemies.push({id:e.enemyID,threat:0});
-                this.updateThreat(e.enemyID, calculateThreat(Math.round(this.health - e.newComputerHealth), e.newComputerHealth, this.ascean.health.max))
+                this.updateThreat(e.enemyID, calculateThreat(Math.round(this.health - e.newComputerHealth), e.newComputerHealth, this.ascean.health.max));
             };
             this.computerSoundEffects(e);
         } else if (this.health < e.newComputerHealth) { 
@@ -851,10 +844,28 @@ export default class Party extends Entity {
             onComplete: () => {
                 if (this.rushedEnemies.length > 0) {
                     this.rushedEnemies.forEach((enemy) => {
+                        if (enemy.health <= 0) return;
+                        if (enemy.isWarding || enemy.isShielding || enemy.isProtecting) {
+                            if (enemy.isShielding) enemy.shield();
+                            if (enemy.isWarding) enemy.ward(this.enemyID);
+                            return;
+                        };
+                        if (enemy.isMenacing) enemy.menace(this.enemyID);
+                        if (enemy.isMultifaring) enemy.multifarious(this.enemyID);
+                        if (enemy.isMystifying) enemy.mystify(this.enemyID);
                         this.scene.combatManager.partyMelee({enemyID: enemy.enemyID, action: 'rush', origin: this.enemyID});
                     });
                 } else if (this.touching.length > 0) {
                     this.touching.forEach((enemy) => {
+                        if (enemy.health <= 0) return;
+                        if (enemy.isWarding || enemy.isShielding || enemy.isProtecting) {
+                            if (enemy.isShielding) enemy.shield();
+                            if (enemy.isWarding) enemy.ward(this.enemyID);
+                            return;
+                        };
+                        if (enemy.isMenacing) enemy.menace(this.enemyID);
+                        if (enemy.isMultifaring) enemy.multifarious(this.enemyID);
+                        if (enemy.isMystifying) enemy.mystify(this.enemyID);
                         this.scene.combatManager.partyMelee({enemyID: enemy.enemyID, action: 'rush', origin: this.enemyID});
                     });
                 };
@@ -891,7 +902,7 @@ export default class Party extends Entity {
                         };
                         if (enemy.isMenacing) enemy.menace(this.enemyID);
                         if (enemy.isMultifaring) enemy.multifarious(this.enemyID);
-                        if (enemy.isMystifying) enemy.mystify(this.enemyID);    
+                        if (enemy.isMystifying) enemy.mystify(this.enemyID);
                         this.scene.combatManager.partyMelee({ action: 'storm', origin: this.enemyID, enemyID: enemy.enemyID });
                     });
                 };

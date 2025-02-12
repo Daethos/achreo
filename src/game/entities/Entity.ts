@@ -151,7 +151,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     currentTarget: any = undefined;
-
     actionAvailable: boolean = false;
     actionSuccess: boolean = false;
     actionTarget: any = undefined;
@@ -458,7 +457,29 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     movingVertical = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y !== 0;
     movingDown = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y > 0;
     movingUp = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y < 0;
+    ailments = (): number => {
+        let total = 0;
+        if (this.isConfused) total+=2;
+        if (this.isFeared) total+=2;
+        if (this.isParalyzed) total+=2;
+        if (this.isPolymorphed) total+=2;
+        if (this.isStunned) total+=2;
 
+        if (this.isFrozen) total++;
+        if (this.isRooted) total++;
+        if (this.isSlowed) total++;
+        if (this.isSnared) total++;
+        return total;
+    };
+    halesness = (): number => {
+        let total = 0;
+        if (this.reactiveBubble) total +=2;
+        if (this.negationBubble) total +=2;
+        if (this.isShadowing) total++;
+        if (this.isSprinting) total++;
+        if (this.isTethering) total++;
+        return total;    
+    };
     isTrying = (): boolean => this.isAttacking || this.isPosturing || this.isThrusting;
     isSuffering = (): boolean => this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed || this.isStunned;
     sansSuffering = (ailment: string): boolean => {

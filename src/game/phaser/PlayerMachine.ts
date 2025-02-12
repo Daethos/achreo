@@ -546,7 +546,6 @@ export default class PlayerMachine {
     onCombatEnter = () => {
         if (this.player.isComputer) this.stateMachine.setState(States.COMPUTER_COMBAT);
     };
-    onCombatUpdate = (_dt: number) => {};
 
     onLullEnter = () => {
         this.player.isMoving = false;

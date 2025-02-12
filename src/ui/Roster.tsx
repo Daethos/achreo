@@ -1,4 +1,4 @@
-import { Accessor, createSignal, For, JSX, onMount, Setter, Show } from "solid-js";
+import { Accessor, createSignal, For, JSX, Setter, Show } from "solid-js";
 import { ARENA_ENEMY, fetchArena } from "../utility/enemy";
 import Ascean from "../models/ascean";
 import { EventBus } from "../game/EventBus";

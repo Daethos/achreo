@@ -140,14 +140,12 @@ export class Arena extends Phaser.Scene {
         this.player.setPosition(random.x,random.y);
         const team = this.registry.get("team");
         const party = this.registry.get("party");
-        console.log(team, "Do you have a team?", party, "How many are in your party?");
         if (party.length) {
             for (let i = 0; i < party.length; i++) {
                 const p = new Party({scene:this,x: 200, y: 200,texture:'player_actions',frame:'player_idle_0',data:party[i],position:i});
                 this.party.push(p);
                 p.setPosition(this.player.x + PARTY_OFFSET[i].x, this.player.y + PARTY_OFFSET[i].y);    
                 if (!team) {
-                    console.log("Playing solo", team);
                     p.setActive(false);
                     p.setVisible(false);
                 };

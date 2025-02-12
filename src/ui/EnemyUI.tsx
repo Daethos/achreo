@@ -138,13 +138,13 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
     //         console.log(exists, 'exists');
     //     EventBus.emit('create-enemy-prayer', exists);
     // };
-    return (
+    return ( // linear-gradient(#00AA00, green)
         <div class='enemyCombatUi'>
             <div class='enemyName' style={{ position: 'fixed', 'z-index': 1, 'font-size': size(state().computer?.name.length as number), 'right': '4.5vw', 'top': top(state().computer?.name.length as number) }} onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
             <div class='center enemyHealthBar' onClick={changeDisplay} style={{ 'max-height': '24px', 'right':'2%', width:'20.75vw' }}>
                 <div class='enemyPortrait' style={{ 'font-size': '1.1em', color: '#fdf6d8', top: '-0.5%' }}>{healthDisplay()}</div>
                 <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `100%`, 'background': 'linear-gradient(#aa0000, red)' }}></div>
-                <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `${healthPercentage()}%`, 'background': 'linear-gradient(#00AA00, green)', transition: 'width 0.5s ease-out, background 0.5s ease-out' }}></div>
+                <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `${healthPercentage()}%`, 'background': state().isEnemy ? 'linear-gradient(purple, #191970)' : 'linear-gradient(#00AA00, green)', transition: 'width 0.5s ease-out, background 0.5s ease-out' }}></div>
             </div>
             <img id='enemyHealthbarBorder' src={'../assets/gui/enemy-healthbar-bold.png'} alt="Health Bar" style={{ 'z-index': -1, 'max-height': '74px' }} />
             <div class='enemyUiWeapon' onClick={() => setItemShow(!itemShow())} style={itemStyle(state()?.computerWeapons?.[0]?.rarity as string)}>

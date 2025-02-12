@@ -452,11 +452,48 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         requestAnimationFrame(knockbackLoop);
         if ("vibrate" in navigator) navigator.vibrate(48);
     };
+    getDirection = () => {
+        if (this.velocity?.x as number < 0) {
+            this.setFlipX(true);
+        } else if (this.velocity?.x as number > 0) {
+            this.setFlipX(false);
+        } else if (this.currentTarget && this.currentTarget.body) {
+            const direction = this.currentTarget.position.subtract(this.position);
+            if (direction.x < 0 && !this.flipX) {
+                this.setFlipX(true);
+            } else if (direction.x > 0 && this.flipX) {
+                this.setFlipX(false);
+            };
+        };
+    };
+    handleIdleAnimations = () => {
+        if (this.isClimbing) {
+            this.anims.play('player_climb', true);
+            this.anims.pause();
+        } else if (this.inWater) {
+            this.anims.play(this.velocity?.y as number > 0 ? 'swim_down' : 'swim_up', true);
+        } else {
+            this.anims.play(this.isStealthing ? 'player_crouch_idle' : 'player_idle', true);
+        };
+    };
+
+    handleMovementAnimations = () => {
+        if (this.isClimbing) {
+            this.anims.play('player_climb', true);
+        } else if (this.inWater) {
+            this.anims.play(this.velocity?.y as number > 0 ? 'swim_down' : 'swim_up', true);
+        } else if (!this.xCheck()) {
+            this.anims.play(this.velocity?.y as number > 0 ? 'run_down' : 'run_up', true);
+        } else {
+            this.anims.play('player_running', true);
+        };
+    };
     moving = (): boolean => this.body?.velocity.x !== 0 || this.body.velocity.y !== 0;
     movingHorizontal = (): boolean => this.body?.velocity.x !== 0 && this.body?.velocity.y === 0;
     movingVertical = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y !== 0;
     movingDown = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y > 0;
     movingUp = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y < 0;
+    xCheck = () => this.velocity?.x !== 0;
     ailments = (): number => {
         let total = 0;
         if (this.isConfused) total+=2;

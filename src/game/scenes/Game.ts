@@ -352,7 +352,7 @@ export class Game extends Scene {
             enemy.isAggressive = e.isAggressive;
             if (e.isAggressive === true) {
                 enemy.setSpecialCombat(true);
-                enemy.attacking = this.player;
+                enemy.currentTarget = this.player;
                 enemy.inCombat = true;
                 enemy.originPoint = new Phaser.Math.Vector2(enemy.x, enemy.y).clone();
                 enemy.stateMachine.setState(States.CHASE);
@@ -816,15 +816,15 @@ export class Game extends Scene {
 
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
-        for (let i = 0; i < this.party.length; i++) {
-            if (this.party[i].isDeleting) return;
-            this.party[i].update(delta);
-            this.checkEnvironment(this.party[i]);
-        };
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].isDeleting) return;
             this.enemies[i].update(delta);
             this.checkEnvironment(this.enemies[i]);
+        };
+        for (let i = 0; i < this.party.length; i++) {
+            if (this.party[i].isDeleting) return;
+            this.party[i].update(delta);
+            this.checkEnvironment(this.party[i]);
         };
         for (let i = 0; i < this.npcs.length; i++) {
             this.npcs[i].update();

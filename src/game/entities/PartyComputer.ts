@@ -287,6 +287,16 @@ export default class Party extends Entity {
         return newSheet;
     };
 
+    callToArms = (enemy: Enemy) => {
+        this.checkComputerEnemyCombatEnter(enemy);
+        for (let i = 0; i < this.scene.party.length; i++) {
+            const p = this.scene.party[i];
+            if (!p.inComputerCombat) {
+                p.checkComputerEnemyCombatEnter(enemy);
+            };
+        };
+    };
+
     checkComputerEnemyCombatEnter = (enemy: Enemy) => {
         this.currentTarget = enemy;
         this.inComputerCombat = true;
@@ -311,11 +321,11 @@ export default class Party extends Entity {
         if (newEnemy) {
             this.enemies.push({id:enemy.enemyID,threat:0});
         };
-        // this.setSpecialCombat(true);
+
         if (this.healthbar) this.healthbar.setVisible(true);
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
         this.specialCombatText = this.scene.showCombatText('!', 1000, 'effect', true, true, () => this.specialCombatText = undefined);
-        
+        this.scene.hud.logger.log(`Console: ${this.ascean.name} is being called to arms against ${enemy.ascean.name}!`);
         const distance = this.currentTarget.position.subtract(this.position).length();
         const state = distance > 100 ? States.CHASE : States.COMBAT;
         this.playerMachine.stateMachine.setState(state);
@@ -341,12 +351,7 @@ export default class Party extends Entity {
                     const isNewEnemy = this.isNewEnemy(other.gameObjectB);
                     if (!isNewEnemy) return;
                     this.targets.push(other.gameObjectB);
-                    if (!this.currentTarget) this.checkComputerEnemyCombatEnter(other.gameObjectB);
-                // } else if (this.isValidNeutralCollision(other)) {
-                //     other.gameObjectB.originPoint = new Phaser.Math.Vector2(other.gameObjectB.x, other.gameObjectB.y).clone();
-                //     const isNewNeutral = this.isNewEnemy(other.gameObjectB);
-                //     if (!isNewNeutral) return;
-                //     this.targets.push(other.gameObjectB);
+                    if (!this.currentTarget) this.callToArms(other.gameObjectB);
                 };
             },
             context: this.scene,
@@ -575,6 +580,10 @@ export default class Party extends Entity {
     clearComputerCombatWin = (id: string) => {
         this.enemies = this.enemies.filter((enemy) => enemy.id !== id);
         if (this.enemies.length === 0) {
+            if (this.scene.player.inCombat && this.scene.player.currentTarget) {
+                this.currentTarget = this.scene.player.currentTarget;
+                return;    
+            };
             this.inComputerCombat = false;
             this.currentTarget = undefined;
             // this.health = this.ascean.health.max;
@@ -1128,7 +1137,7 @@ export default class Party extends Entity {
         this.inComputerCombat = false;
         this.currentTarget = undefined;
         this.removeHighlight();
-        this.playerMachine.stateMachine.setState(States.FOLLOW);
+        // this.playerMachine.stateMachine.setState(States.FOLLOW);
     };
 
     engage = (enemy: Enemy) => {
@@ -1167,8 +1176,7 @@ export default class Party extends Entity {
     getEnemyId = () => this.currentTarget?.enemyID;
     isAttackTarget = (enemy: Enemy) => this.getEnemyId() === enemy.enemyID;
     isNewEnemy = (enemy: Enemy) => this.targets.every(obj => obj.enemyID !== enemy.enemyID);
-    isValidEnemyCollision = (other: any): boolean =>  (other.gameObjectB && other.bodyB.label === 'enemyCollider' && other.gameObjectB.isAggressive && other.gameObjectB.ascean);
-    isValidNeutralCollision = (other: any): boolean => (other.gameObjectB && other.bodyB.label === 'enemyCollider' && other.gameObjectB.ascean);
+    isValidEnemyCollision = (other: any): boolean =>  (other.gameObjectB && other.bodyB.label === 'enemyCollider' && other.gameObjectB.ascean); // && other.gameObjectB.isAggressive
     isValidRushEnemy = (enemy: Enemy) => {
         if (!enemy?.enemyID) return;
         if (this.isRushing) {
@@ -1275,34 +1283,18 @@ export default class Party extends Entity {
         return false;  // Clear line of sight
     };
 
-    
-    getDirection = () => {
-        if (this.velocity?.x as number < 0) {
-            this.setFlipX(true);
-        } else if (this.velocity?.x as number > 0) {
-            this.setFlipX(false);
-        } else if (this.currentTarget) {
-            const direction = this.currentTarget.position.subtract(this.position);
-            if (direction.x < 0 && !this.flipX) {
-                this.setFlipX(true);
-            } else if (direction.x > 0 && this.flipX) {
-                this.setFlipX(false);
-            };
-        };
-    };
-
     evaluateCombatDistance = () => {
         this.getDirection();
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget);
         };
-        if ((this.isDefeated || this.health <= 0) && !this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) {
-            this.isDefeated = false;
+        if (this.health <= 0 && !this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) { // this.isDefeated ||
+            // this.isDefeated = false;
             this.playerMachine.stateMachine.setState(States.DEFEATED);
             return;
         };
         if (!this.inComputerCombat) {
-            if (!this.playerMachine.stateMachine.isCurrentState(States.IDLE) && !this.playerMachine.stateMachine.isCurrentState(States.FOLLOW)) {
+            if (!this.playerMachine.stateMachine.isCurrentState(States.DEFEATED) && !this.playerMachine.stateMachine.isCurrentState(States.IDLE) && !this.playerMachine.stateMachine.isCurrentState(States.FOLLOW)) {
                 this.playerMachine.stateMachine.setState(States.FOLLOW);
             };
             return;
@@ -1451,7 +1443,6 @@ export default class Party extends Entity {
         requestAnimationFrame(rollLoop);
     };
 
-    xCheck = () => this.velocity?.x !== 0;
 
     handleAnimations = () => {
         if (this.isDefeated) return;
@@ -1492,28 +1483,6 @@ export default class Party extends Entity {
         this.spriteShield.setPosition(this.x, this.y);
     };
 
-    handleIdleAnimations = () => {
-        if (this.isClimbing) {
-            this.anims.play('player_climb', true);
-            this.anims.pause();
-        } else if (this.inWater) {
-            this.anims.play(this.velocity?.y as number > 0 ? 'swim_down' : 'swim_up', true);
-        } else {
-            this.anims.play(this.isStealthing ? 'player_crouch_idle' : 'player_idle', true);
-        };
-    };
-
-    handleMovementAnimations = () => {
-        if (this.isClimbing) {
-            this.anims.play('player_climb', true);
-        } else if (this.inWater) {
-            this.anims.play(this.velocity?.y as number > 0 ? 'swim_down' : 'swim_up', true);
-        } else if (!this.xCheck()) {
-            this.anims.play(this.velocity?.y as number > 0 ? 'run_down' : 'run_up', true);
-        } else {
-            this.anims.play('player_running', true);
-        };
-    };
 
     handleComputerConcerns = () => {
         if (this.actionSuccess === true) {

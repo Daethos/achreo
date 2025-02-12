@@ -157,10 +157,27 @@ export default class PlayerMachine {
     };
 
     healCheck = (power: number) => {
-        if (this.player.currentTarget) {
-            const party = this.scene.party.find((e: Party) => e.enemyID === this.player.currentTarget?.enemyID);
-            if (party) {
-                party.playerMachine.heal(power/100);
+        if (this.player.currentTarget?.name === 'party') {
+            const partyMember = this.scene.party.find((e: Party) => e.enemyID === this.player.currentTarget?.enemyID);
+            if (partyMember) {
+                partyMember.playerMachine.heal(power/100);
+                return;
+            };
+        };
+        if (this.player.isComputer) {
+            const playerRatio = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
+            let mostInjured: Party | undefined = undefined;
+            let lowestRatio = 1;
+    
+            for (const partyMember of this.scene.party) {
+                const ratio = partyMember.health / partyMember.ascean.health.max;
+                if (ratio < lowestRatio) {
+                    mostInjured = partyMember;
+                    lowestRatio = ratio;
+                };
+            };
+            if (mostInjured && lowestRatio < playerRatio) {
+                mostInjured.playerMachine.heal(power / 100);
                 return;
             };
         };
@@ -445,29 +462,37 @@ export default class PlayerMachine {
         };
         this.player.isMoving = false;
         this.player.setVelocity(0);
-        let chance = [1, 2, 4, 5, (!this.player.isRanged ? 6 : 7), (!this.player.isRanged ? 8 : 9), (!this.player.isRanged ? 10 : 11), (!this.player.isRanged ? 12 : 13)][Math.floor(Math.random() * 8)];
+        const ranged = this.player.isRanged;
+        let chance = [1, 2, 4, 5, (!ranged ? 6 : 7), (!ranged ? 8 : 9), (!ranged ? 10 : 11), (!ranged ? 12 : 13)][Math.floor(Math.random() * 8)];
         let mastery = this.player.ascean.mastery;
         let pHealth = this.player.health / this.player.ascean.health.max;
         let eHealth = this.scene.state.newComputerHealth / this.scene.state.computerHealth;
+        let oHealth = 1;
+        for (const party of this.scene.party) {
+            const ratio = party.health / party.ascean.health.max;
+            if (ratio < oHealth) {
+                oHealth = ratio;
+            };
+        };
         const direction = this.player.currentTarget?.position.subtract(this.player.position);
         const distance = direction?.length() || 0;
         let instinct =
-            pHealth <= 0.25 ? 0 :
-            pHealth <= 0.5 ? 1 :
-            (pHealth >= 0.7 && pHealth <= 0.9)  ? 2 :
+            (pHealth <= 0.25 || oHealth <= 0.25) ? 0 :
+            (pHealth <= 0.5 || oHealth <= 0.5) ? 1 :
+            ((pHealth >= 0.7 && pHealth <= 0.9) || (oHealth >= 0.7 && oHealth <= 0.9)) ? 2 :
 
             eHealth <= 0.35 ? 3 :
             eHealth <= 0.6 ? 4 :
             eHealth >= 0.85 ? 5 :
             
-            (distance <= 60 && !this.player.isRanged) ? 6 :
-            (distance <= 60 && this.player.isRanged) ? 7 :
-            (distance > 60 && distance <= 120 && !this.player.isRanged) ? 8 :
-            (distance > 60 && distance <= 120 && this.player.isRanged) ? 9 :
-            (distance > 120 && distance <= 180 && !this.player.isRanged) ? 10 :
-            (distance > 120 && distance <= 180 && this.player.isRanged) ? 11 :
-            (distance > 180 && !this.player.isRanged) ? 12 :
-            (distance > 180 && this.player.isRanged) ? 13 :
+            (distance <= 60 && !ranged) ? 6 :
+            (distance <= 60 && ranged) ? 7 :
+            (distance > 60 && distance <= 120 && !ranged) ? 8 :
+            (distance > 60 && distance <= 120 && ranged) ? 9 :
+            (distance > 120 && distance <= 180 && !ranged) ? 10 :
+            (distance > 120 && distance <= 180 && ranged) ? 11 :
+            (distance > 180 && !ranged) ? 12 :
+            (distance > 180 && ranged) ? 13 :
 
             chance;
 

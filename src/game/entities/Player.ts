@@ -1698,6 +1698,5 @@ export default class Player extends Entity {
         this.playerMachine.stateMachine.update(dt);
         this.playerMachine.positiveMachine.update(dt);
         this.playerMachine.negativeMachine.update(dt);
-        // this.playerMachine.update(dt);
     };
 };

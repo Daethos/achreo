@@ -359,8 +359,8 @@ export const PARTY_INSTINCTS = {
             key: STATE,
             value: States.FYERUS
         },{ // 12 - Melee > 300 Distance
-            key: STATE,
-            value: States.SHIRK
+            key: POSITIVE,
+            value: States.MEND
         },{ // 13 - Ranged > 300 Distance
             key: POSITIVE,
             value: States.MENACE

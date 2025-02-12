@@ -180,12 +180,12 @@ export default class PlayerComputer extends Player {
             };
             if (distanceY > PLAYER.DISTANCE.RANGED_ALIGNMENT) {
                 direction.normalize();
-                this.setVelocityY(direction.y * this.speed + 0.5); // 2 || 4
+                this.setVelocityY(direction.y * (this.speed + 0.5)); // 2 || 4
             };
             if (this.currentTarget.position.subtract(this.position).length() > PLAYER.DISTANCE.THRESHOLD * multiplier) { // 225-525 
                 direction.normalize();
-                this.setVelocityX(direction.x * this.speed + 0.25); // 2.25
-                this.setVelocityY(direction.y * this.speed + 0.25); // 2.25          
+                this.setVelocityX(direction.x * (this.speed + 0.25)); // 2.25
+                this.setVelocityY(direction.y * (this.speed + 0.25)); // 2.25          
             } else if (this.currentTarget.position.subtract(this.position).length() < PLAYER.DISTANCE.THRESHOLD && !this.currentTarget.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
                 if (Phaser.Math.Between(1, 250) === 1 && !this.playerMachine.stateMachine.isCurrentState(States.EVADE)) {
                     this.playerMachine.stateMachine.setState(States.EVADE);
@@ -203,7 +203,7 @@ export default class PlayerComputer extends Player {
                 this.anims.play('player_idle', true);
             } else { // Between 75 and 225 and outside y-distance
                 direction.normalize();
-                this.setVelocityY(direction.y * this.speed + 0.5); // 2.25
+                this.setVelocityY(direction.y * (this.speed + 0.5)); // 2.25
             };
         } else { // Melee || Continually Maintaining Reach for MELEE ENEMIES.
             if (!this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) {

@@ -201,19 +201,19 @@ export default class PlayerMachine {
         };
         if (distance >= 150 * rangeMultiplier) { // was 75 || 100
             if (this.player.path && this.player.path.length > 1) {
-                this.player.setVelocity(this.player.pathDirection.x * this.player.speed, this.player.pathDirection.y * this.player.speed);
+                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed * this.player.handleTerrain()), this.player.pathDirection.y * (this.player.speed * this.player.handleTerrain()));
             } else {
                 if (this.player.isPathing) this.player.isPathing = false;
                 direction.normalize();
-                this.player.setVelocity(direction.x * this.player.speed, direction.y * this.player.speed);
+                this.player.setVelocity(direction.x * (this.player.speed * this.player.handleTerrain()), direction.y * (this.player.speed * this.player.handleTerrain()));
             };
         } else if (distance >= 60 * rangeMultiplier) { // was 75 || 100
             if (this.player.path && this.player.path.length > 1) {
-                this.player.setVelocity(this.player.pathDirection.x * this.player.speed, this.player.pathDirection.y * this.player.speed);
+                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed * this.player.handleTerrain()), this.player.pathDirection.y * (this.player.speed * this.player.handleTerrain()));
             } else {
                 if (this.player.isPathing) this.player.isPathing = false;
                 direction.normalize();
-                this.player.setVelocity(direction.x * this.player.speed, direction.y * this.player.speed);
+                this.player.setVelocity(direction.x * (this.player.speed * this.player.handleTerrain()), direction.y * (this.player.speed * this.player.handleTerrain()));
             };
             if (!this.player.chasing) {
                 this.player.chasing = true;
@@ -272,7 +272,7 @@ export default class PlayerMachine {
                     this.player.pathDirection = pathDirection;
                     this.player.pathDirection.subtract(this.player.position);
                     this.player.pathDirection.normalize();
-                    this.player.setVelocity(this.player.pathDirection.x * this.player.speed, this.player.pathDirection.y * this.player.speed);
+                    this.player.setVelocity(this.player.pathDirection.x * (this.player.speed * this.player.handleTerrain()), this.player.pathDirection.y * (this.player.speed * this.player.handleTerrain()));
                     const distanceToNextPoint = Math.sqrt((this.player.nextPoint.x - this.player.position.x) ** 2 + (this.player.nextPoint.y - this.player.position.y) ** 2);
                     if (distanceToNextPoint < 10) {
                         this.player.path.shift();
@@ -289,11 +289,11 @@ export default class PlayerMachine {
         
         if (direction.length() >= 10) {
             if (this.player.path && this.player.path.length > 1) {
-                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed), this.player.pathDirection.y * (this.player.speed));
+                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed * this.player.handleTerrain()), this.player.pathDirection.y * (this.player.speed * this.player.handleTerrain()));
             } else {
                 if (this.player.isPathing) this.player.isPathing = false;
                 direction.normalize();
-                this.player.setVelocity(direction.x * (this.player.speed), direction.y * (this.player.speed));
+                this.player.setVelocity(direction.x * (this.player.speed * this.player.handleTerrain()), direction.y * (this.player.speed * this.player.handleTerrain()));
             };
         } else {
             this.stateMachine.setState(States.FOLLOW);
@@ -364,14 +364,14 @@ export default class PlayerMachine {
             this.stateMachine.setState(States.COMPUTER_COMBAT);
         };
         if (this.player.evadeRight) {
-            this.player.setVelocityX((this.player.speed - 0.25));
+            this.player.setVelocityX(((this.player.speed * this.player.handleTerrain()) - 0.25));
         } else {
-            this.player.setVelocityX(-(this.player.speed - 0.25));
+            this.player.setVelocityX(-((this.player.speed * this.player.handleTerrain()) - 0.25));
         };
         if (this.player.evadeUp) {
-            this.player.setVelocityY((this.player.speed - 0.25));
+            this.player.setVelocityY(((this.player.speed * this.player.handleTerrain()) - 0.25));
         } else {
-            this.player.setVelocityY(-(this.player.speed - 0.25));
+            this.player.setVelocityY(-((this.player.speed * this.player.handleTerrain()) - 0.25));
         };
     }; 
     onEvasionExit = () => this.player.evaluateCombatDistance();
@@ -442,11 +442,11 @@ export default class PlayerMachine {
             return;
         } else {
             if (this.player.path && this.player.path.length > 1) {
-                this.player.setVelocity(this.player.pathDirection.x * this.player.speed, this.player.pathDirection.y * this.player.speed);
+                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed * this.player.handleTerrain()), this.player.pathDirection.y * (this.player.speed * this.player.handleTerrain()));
             } else {
                 if (this.player.isPathing) this.player.isPathing = false;
                 direction.normalize();
-                this.player.setVelocity(direction.x * this.player.speed, direction.y * this.player.speed);
+                this.player.setVelocity(direction.x * (this.player.speed * this.player.handleTerrain()), direction.y * (this.player.speed * this.player.handleTerrain()));
             };
         };
     };
@@ -486,6 +486,43 @@ export default class PlayerMachine {
         this.instincts();
     };
 
+    checkHeal = (power: number) => {
+        const playerRatio = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
+        const personalRatio = this.player.health / this.player.ascean.health.max;
+        let otherRatio = 1;
+        let otherParty: Party | undefined = undefined;
+        for (let i = 0; i < this.scene.party.length; ++i) {
+            const p = this.scene.party[i];
+            if (p.enemyID !== this.player.enemyID) {
+                const ratio = p.health / p.ascean.health.max;
+                if (ratio < otherRatio) {
+                    otherParty = p;
+                    otherRatio = ratio;
+                };
+            };
+        };
+        const ratios = [
+            { type: 'player', ratio: playerRatio },
+            { type: 'current', ratio: personalRatio },
+            { type: 'other', ratio: otherRatio }
+        ];
+        const mostInjured = ratios.reduce((min, entry) => (entry.ratio < min.ratio ? entry: min));
+        switch (mostInjured.type) {
+            case 'player':
+                this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: power * 100, id: this.scene.player.playerID }, type: 'Health' });
+                break;
+            case 'current':
+                this.heal(power);
+                break;
+            case 'other':
+                (otherParty as Party).playerMachine.heal(power);
+                break;
+            default:
+                console.warn("No valid target to Heal");
+                break;
+        };
+    };
+
     instincts = () => {
         if (this.player.inComputerCombat === false || this.player.health <= 0) {
             this.player.inComputerCombat = false;
@@ -494,30 +531,39 @@ export default class PlayerMachine {
         };
         this.player.isMoving = false;
         this.player.setVelocity(0);
-        let chance = [1, 2, 4, 5, (!this.player.isRanged ? 6 : 7), (!this.player.isRanged ? 8 : 9), (!this.player.isRanged ? 10 : 11), (!this.player.isRanged ? 12 : 13)][Math.floor(Math.random() * 8)];
+        const ranged = this.player.isRanged;
+        let chance = [1, 2, 4, 5, (!ranged ? 6 : 7), (!ranged ? 8 : 9), (!ranged ? 10 : 11), (!ranged ? 12 : 13)][Math.floor(Math.random() * 8)];
         let mastery = this.player.ascean.mastery;
-        let gHealth = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
-        let pHealth = this.player.health / this.player.ascean.health.max;
-        let eHealth = this.scene.state.newComputerHealth / this.scene.state.computerHealth;
+        let playerHealth = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
+        let partyHealth = this.player.health / this.player.ascean.health.max;
+        let enemyHealth = this.player.currentTarget ? this.player.currentTarget.health / this.player.currentTarget.ascean.health.max : 1;
+        let otherHealth = 1;
+        for (let i = 0; i < this.scene.party.length; ++i) {
+            const p = this.scene.party[i];
+            if (p.enemyID !== this.player.enemyID) {
+                const ratio = p.health / p.ascean.health.max;
+                otherHealth = ratio < otherHealth ? ratio : otherHealth;
+            };
+        };
         const direction = this.player.currentTarget?.position.subtract(this.player.position);
         const distance = direction?.length() || 0;
         let instinct =
-            (pHealth <= 0.25 || gHealth <= 0.25) ? 0 :
-            (pHealth <= 0.5 || gHealth <= 0.5) ? 1 :
-            ((pHealth >= 0.7 && pHealth <= 0.9) || (gHealth >= 0.7 && gHealth <= 0.9)) ? 2 :
+            (partyHealth <= 0.25 || playerHealth <= 0.25 || otherHealth <= 0.25) ? 0 :
+            (partyHealth <= 0.5 || playerHealth <= 0.5 || otherHealth <= 0.5) ? 1 :
+            ((partyHealth >= 0.7 && partyHealth <= 0.9) || (playerHealth >= 0.7 && playerHealth <= 0.9) || (otherHealth >= 0.7 && otherHealth <= 0.9)) ? 2 :
 
-            eHealth <= 0.35 ? 3 :
-            eHealth <= 0.6 ? 4 :
-            eHealth >= 0.85 ? 5 :
+            enemyHealth <= 0.35 ? 3 :
+            enemyHealth <= 0.6 ? 4 :
+            enemyHealth >= 0.85 ? 5 :
             
-            (distance <= 60 && !this.player.isRanged) ? 6 :
-            (distance <= 60 && this.player.isRanged) ? 7 :
-            (distance > 60 && distance <= 120 && !this.player.isRanged) ? 8 :
-            (distance > 60 && distance <= 120 && this.player.isRanged) ? 9 :
-            (distance > 120 && distance <= 180 && !this.player.isRanged) ? 10 :
-            (distance > 120 && distance <= 180 && this.player.isRanged) ? 11 :
-            (distance > 180 && !this.player.isRanged) ? 12 :
-            (distance > 180 && this.player.isRanged) ? 13 :
+            (distance <= 60 && !ranged) ? 6 :
+            (distance <= 60 && ranged) ? 7 :
+            (distance > 60 && distance <= 120 && !ranged) ? 8 :
+            (distance > 60 && distance <= 120 && ranged) ? 9 :
+            (distance > 120 && distance <= 180 && !ranged) ? 10 :
+            (distance > 120 && distance <= 180 && ranged) ? 11 :
+            (distance > 180 && !ranged) ? 12 :
+            (distance > 180 && ranged) ? 13 :
 
             chance;
 
@@ -911,13 +957,7 @@ export default class PlayerMachine {
     };
     onDesperationUpdate = (_dt: number) => this.player.combatChecker(false);
     onDesperationExit = () => {
-        const gRatio = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
-        const pRatio = this.player.health / this.player.ascean.health.max;
-        if (gRatio <= pRatio) { // Heal the Player
-            this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 50, id: this.player.playerID }, type: 'Health' });
-        } else { // Heal the Party Member
-            this.heal(0.5);
-        };
+        this.checkHeal(0.5);
         this.player.enemySound('phenomena', true);
     };
 
@@ -1028,13 +1068,7 @@ export default class PlayerMachine {
     onHealingExit = () => {
         if (this.player.castingSuccess === true) {
             this.player.castingSuccess = false;
-            const gRatio = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
-            const pRatio = this.player.health / this.player.ascean.health.max;
-            if (gRatio <= pRatio) { // Heal the Player
-                this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 25, id: this.player.playerID }, type: 'Health' });
-            } else { // Heal the Party Member
-                this.heal(0.25);
-            };
+            this.checkHeal(0.25);
             this.player.enemySound('phenomena', true);
         };
         this.player.stopCasting();
@@ -1428,13 +1462,7 @@ export default class PlayerMachine {
             this.player.reconTimer = undefined;
             return;
         };
-        const gRatio = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
-        const pRatio = this.player.health / this.player.ascean.health.max;
-        if (gRatio <= pRatio) { // Heal the Player
-            this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 15, id: this.player.playerID }, type: 'Health' });
-        } else { // Heal the Party Member
-            this.heal(0.15);
-        };
+        this.checkHeal(0.15);
         this.player.enemySound('phenomena', true);
     };
 

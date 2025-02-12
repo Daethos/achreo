@@ -30,7 +30,7 @@
         "@capacitor/ios": "^5.7.4",
         "localforage": "^1.10.0",
         "mrpas": "^2.0.0",
-        "phaser": "^3.86.0",
+        "phaser": "^3.88.0",
         "phaser-animated-tiles-phaser3.5": "^2.0.5",
         "phaser-matter-collision-plugin": "^1.0.0",
         "phaser-navmesh": "^2.3.1",

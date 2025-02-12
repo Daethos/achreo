@@ -438,7 +438,7 @@ export class CombatManager extends Phaser.Scene {
         let party = this.context.party.find((e: Party) => e.enemyID === id);
         if (party) {
             party.isFeared = true;
-            enemy.count.feared++;
+            party.count.feared++;
         };
     };
     slow = (id: string, time: number = 3000): void => {

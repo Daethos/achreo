@@ -274,7 +274,14 @@ export default function App() {
             let newParty = await getParty(ascean()._id);
             newParty.party.push(asc as any);
             await updateParty(newParty);
-            // EventBus.emit('add-to-party', asc);
+            let compiledParty = [];
+            for (let i = 0; i < newParty.party.length; i++) {
+                let member = newParty.party[i];
+                const pop = populateEnemy(member);
+                const compile = asceanCompiler(pop);
+                compiledParty.push(compile);
+            };
+            phaserRef.game?.registry.set("party", compiledParty);
         } catch(err) {
             console.warn(err, 'Error Adding to Party');
         };
@@ -286,6 +293,14 @@ export default function App() {
                 return e._id !== party._id;
             });
             await updateParty(newParty);
+            let compiledParty = [];
+            for (let i = 0; i < newParty.party.length; i++) {
+                let member = newParty.party[i];
+                const pop = populateEnemy(member);
+                const compile = asceanCompiler(pop);
+                compiledParty.push(compile);
+            };
+            phaserRef.game?.registry.set("party", compiledParty);
             EventBus.emit('remove-from-party', party);
         } catch(err) {
             console.warn(err, 'Error Adding to Party');

@@ -110,8 +110,9 @@ export default class Party extends Entity {
     weapons: any[] = [];
     combatSpecials: any[];
     enemies: ENEMY[] | any[] = [];
+    partyPosition: number;
 
-    constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler }) {
+    constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler, position: number }) {
         const { scene } = data;
         const ascean = data.data.ascean;
         super({ ...data, name: 'party', ascean: ascean, health: ascean.health.current });
@@ -120,6 +121,7 @@ export default class Party extends Entity {
         this.health = this.ascean.health.max;
         this.weapons = [data.data.combatWeaponOne, data.data.combatWeaponTwo, data.data.combatWeaponThree];
         this.playerID = this.ascean._id;
+        this.partyPosition = data.position; 
         this.computerCombatSheet = this.createComputerCombatSheet(data.data);
         const weapon = this.weapons[0];
         this.setTint(COLOR);
@@ -1289,7 +1291,7 @@ export default class Party extends Entity {
             return;
         };
         if (!this.inComputerCombat) {
-            if (!this.playerMachine.stateMachine.isCurrentState(States.IDLE) || !this.playerMachine.stateMachine.isCurrentState(States.FOLLOW)) {
+            if (!this.playerMachine.stateMachine.isCurrentState(States.IDLE) && !this.playerMachine.stateMachine.isCurrentState(States.FOLLOW)) {
                 this.playerMachine.stateMachine.setState(States.FOLLOW);
             };
             return;

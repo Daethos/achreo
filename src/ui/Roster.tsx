@@ -1,4 +1,4 @@
-import { Accessor, createSignal, For, JSX, Setter, Show } from "solid-js";
+import { Accessor, createSignal, For, JSX, onMount, Setter, Show } from "solid-js";
 import { ARENA_ENEMY, fetchArena } from "../utility/enemy";
 import Ascean from "../models/ascean";
 import { EventBus } from "../game/EventBus";
@@ -7,7 +7,7 @@ import Currency from "../utility/Currency";
 import { FloatingLabel, Form } from "solid-bootstrap";
 import { ArenaRoster } from "./BaseUI";
 import { GameState } from "../stores/game";
-import { rebalanceCurrency } from "../game/PhaserGame";
+import { IRefPhaserGame, rebalanceCurrency } from "../game/PhaserGame";
 import Equipment from "../models/equipment";
 import LootDrop from "./LootDrop";
 import ItemModal from "../components/ItemModal";
@@ -23,24 +23,28 @@ const selectors = {
     8: { prev: 6, next: 8 },
 };
 
-export default function Roster({ arena, ascean, setArena, base, game, settings }: { arena: Accessor<ArenaRoster>; ascean: Accessor<Ascean>; setArena: Setter<ArenaRoster>; base: boolean; game: Accessor<GameState>; settings: Accessor<Settings>; }) {
+export default function Roster({ arena, ascean, setArena, base, game, settings, instance }: { arena: Accessor<ArenaRoster>; ascean: Accessor<Ascean>; setArena: Setter<ArenaRoster>; base: boolean; game: Accessor<GameState>; settings: Accessor<Settings>; instance: IRefPhaserGame }) {
     const [selector, setSelector] = createSignal<ARENA_ENEMY>({ level: Math.min((ascean().level % 2 === 0 ? ascean().level : ascean().level + 1), 8), mastery: 'constitution', id: '' });
     const [switchScene, setSwitchScene] = createSignal<boolean>(true);
     const [lootDrop, setLootDrop] = createSignal<Equipment | undefined>(undefined);
     const [show, setShow] = createSignal<boolean>(false);
+    const [party, setParty] = createSignal<any>(instance?.game?.registry.get("party"));
 
     function createArena() {
         EventBus.emit('alert', { header: 'Duel Commencing', body: `The Eulex has begun. You have chosen to face ${arena().enemies.length} enemies of various might. Dae Ky'veshyr, ${ascean().name}.` }); // godspeed
+        const p = instance?.game?.registry.get("party");
+        setParty(p);
         const enemies = fetchArena(arena().enemies);
         let multiplier = 0;
         for (let i = 0; i < arena().enemies.length; i++) {
-            multiplier += (arena().enemies[i].level / ascean().level);
+            multiplier += ((arena().enemies[i].level ** 2) / (ascean().level ** 2));
         };
         if (arena().enemies.length > 1) multiplier *= ((arena().enemies.length - 1) * 1.25);
+        if (p.length > 0 && arena().party) multiplier *= 1 / (1 + p.length);
         multiplier /= 2;
         const wager = { ...arena().wager, multiplier };
         if (switchScene()) {
-            EventBus.emit('set-wager-arena', {wager, enemies});
+            EventBus.emit('set-wager-arena', {wager, enemies, team: arena().party});
         } else {
             EventBus.emit('set-wager-underground', {wager, enemies});
         };
@@ -84,6 +88,18 @@ export default function Roster({ arena, ascean, setArena, base, game, settings }
         };
         return 0;
     };
+    function checkTeam() {
+        const partyAvailable = party().length > 0;
+        let team: boolean = false;
+        if (partyAvailable) {
+            team = switchScene() && partyAvailable ? !arena().party : partyAvailable;
+        };
+        setArena({...arena(), party: team});
+    };
+    function switchScenes() {
+        setSwitchScene(!switchScene());
+        if (switchScene() === false) checkTeam();
+    };
     function clearWager() {
         let silver = ascean().currency.silver, gold = ascean().currency.gold;
         if (arena().win) {
@@ -100,17 +116,17 @@ export default function Roster({ arena, ascean, setArena, base, game, settings }
     };
     const style = { position: 'absolute',left: '20%',top: '10%',height: '80%',width: '60%',background: 'linear-gradient(#000, #222)',border: `0.15em solid ${masteryColor(ascean().mastery)}`,'border-radius': '0.15em','box-shadow': `0 0 1.25em ${masteryColor(ascean().mastery)}`,overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' } as JSX.PropAttributes;
     const partial = { top: '10%', height: '80%', width: '49%', background: 'linear-gradient(#000, #222)',border: `0.15em solid ${masteryColor(ascean().mastery)}`,'border-radius': '0.15em','box-shadow': `0 0 1.25em ${masteryColor(ascean().mastery)}`,overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' } as JSX.PropAttributes;
-    
     return <Show when={arena().show}>
         <div class='modal' style={{ 'z-index': 99 }}>
             <Show when={arena().result} fallback={<>
                 <div class='left moisten' style={{...partial, left: '0%'}}>
                     <div class='creature-heading center' >
-                        <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Opponent(s):</span> {arena().enemies.length}</h1>
+                        <h1 style={{ margin: '8px 0' }} onClick={checkTeam}><span style={{ color: '#fdf6d8' }} >Opponent(s):</span> {arena().enemies.length} {arena().party ? '[Party]' : '[Solo]'}</h1>
                         <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Wager:</span> {arena().wager.gold}g {arena().wager.silver}s</h1>
                         {/* settings().difficulty.arena ? 'Arena [Computer]' : */}
-                        <h1 style={{ margin: '8px 0' }} onClick={() => setSwitchScene(!switchScene())}><span style={{ color: '#fdf6d8' }}>Map: </span>{switchScene() ? !settings().difficulty.arena ? 'Arena [Computer]' : 'Arena [Manual]' : 'Underground [Manual]'}</h1>
-                        <p style={{ color: 'gold', 'font-size': '0.75em', 'margin': '0' }}>Click Maps to Switch. [Note]: Player AI is available only in the Arena.</p>
+                        <h1 style={{ margin: '8px 0' }} onClick={switchScenes}><span style={{ color: '#fdf6d8' }}>Map: </span>{switchScene() ? !settings().difficulty.arena ? 'Arena [Computer]' : 'Arena [Manual]' : 'Underground [Manual]'}</h1>
+                        <p style={{ color: 'gold', 'font-size': '0.75em', 'margin': '0' }}>Click on Maps and/or Opponents to Switch Between Options<br /> [Note]: Player AI is available only in the Arena. <br /> If you have a party, cannot fight [Solo] in the Underground.</p>
+                        <h1 ></h1>
                         {arena().enemies.length > 0 && <button class='highlight animate' onClick={() => createArena()} style={{ 'font-size': '1.25em' }}>Enter the Eulex</button>}
                         <For each={arena().enemies}>{(enemy) => {
                             return (

@@ -1,5 +1,25 @@
 import { States } from "../game/phaser/StateMachine";
+/*        
+    0     1     2
 
+    3     -     4
+
+    5     6     7
+*/
+type COORDINATES = { x: number, y: number };
+export const PARTY_OFFSET: {[key:number]: COORDINATES} = {
+    // Top Left to Right
+    0: { x: -60, y: -30 },
+    1: { x: 0, y: -30 },
+    2: { x: 60, y: -30 },
+    // Middle Left, Right
+    3: { x: -60, y: 0 },
+    4: { x: 60, y: 0 },
+    // Bottom Left to Right
+    5: { x: -60, y: 36 },
+    6: { x: 0, y: 36 },
+    7: { x: 60, y: 36 },
+};
 export const PARTY_SPECIAL = {
     'constitution': [ // 14
         'Absorb',

@@ -24,6 +24,7 @@ import { asceanCompiler, Compiler } from '../../utility/ascean';
 import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 // @ts-ignore
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
+import { PARTY_OFFSET } from '../../utility/party';
 
 export class Game extends Scene {
     overlay: Phaser.GameObjects.Graphics;
@@ -194,8 +195,11 @@ export class Game extends Scene {
         const party = this.registry.get("party");
         if (party.length) {
             for (let i = 0; i < party.length; i++) {
-                const p = new Party({scene:this,x:200,y:200,texture:'player_actions',frame:'player_idle_0',data:party[i]});
+                const p = new Party({scene:this,x:200,y:200,texture:'player_actions',frame:'player_idle_0',data:party[i],position:i});
                 this.party.push(p);
+                if (this.hud.prevScene === 'Underground') p.setPosition(1410, 130);
+                if (this.hud.prevScene === 'Tutorial') p.setPosition(38, 72);
+                if (this.hud.prevScene === '') p.setPosition(200 + PARTY_OFFSET[i].x, 200 + PARTY_OFFSET[i].y);
             };
         };
 
@@ -685,9 +689,10 @@ export class Game extends Scene {
     drinkFlask = (): boolean => EventBus.emit('drink-firewater');
 
     addToParty = (party: Ascean) => {
+        const position = this.party.length;
         const ascean = populateEnemy(party);
         const compile = asceanCompiler(ascean) as Compiler;
-        const newParty = new Party({scene:this,x:200,y:200,texture:'player_actions',frame:'player_idle_0',data:compile});
+        const newParty = new Party({scene:this,x:200,y:200,texture:'player_actions',frame:'player_idle_0',data:compile, position});
         this.party.push(newParty);
         newParty.setPosition(this.player.x - 40, this.player.y - 40);
     };

@@ -32,6 +32,7 @@ export type ArenaRoster = {
     wager: { silver: number; gold: number; multiplier: number; };
     result: boolean;
     win: boolean;
+    party: boolean;
 };
 interface Props {
     instance: Store<IRefPhaserGame>;
@@ -72,7 +73,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         caeren: 0,
         kyosir: 0,
     });
-    const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, result: false, win: false });
+    const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], party: instance?.game?.registry.get("party").length || false, wager: { silver: 0, gold: 0, multiplier: 0 }, result: false, win: false });
     createEffect(() => EventBus.emit('combat', combat()));  
     createEffect(() => EventBus.emit('game', game()));  
     createEffect(() => EventBus.emit('reputation', reputation()));
@@ -452,10 +453,11 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         instance.game?.registry.set("enemies", enemy);
         EventBus.emit("create-tutorial-enemy");
     });
-    usePhaserEvent('set-wager-arena', (data: { wager: { silver: number; gold: number; multiplier: number; }; enemies: Compiler[] }) => {
-        const { wager, enemies } = data;
+    usePhaserEvent('set-wager-arena', (data: { wager: { silver: number; gold: number; multiplier: number; }; enemies: Compiler[]; team: boolean }) => {
+        const { wager, enemies, team } = data;
         instance.game?.registry.set("enemies", enemies);
         instance.game?.registry.set("wager", wager);
+        instance.game?.registry.set("team", team);
         setArena({ ...arena(), wager });
         EventBus.emit("scene-switch", {current:"Underground", next:"Arena"});
     });
@@ -499,7 +501,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
             </Suspense>
         </Show>    
         <Suspense fallback={<Puff color="gold" />}>
-            <Roster arena={arena} ascean={ascean} setArena={setArena} base={true} game={game} settings={settings} />
+            <Roster arena={arena} ascean={ascean} setArena={setArena} base={true} game={game} settings={settings} instance={instance} />
         </Suspense>
     </div>;
 };

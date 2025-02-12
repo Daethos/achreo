@@ -27,7 +27,7 @@ import Party from "./PartyComputer";
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const COMPUTER_ACTION = 'computerAction';
 const ENEMY_COLOR = 0xFF0000;
-const TARGET_COLOR = 0x00FF00;
+const TARGET_COLOR = 0xFFFF00;
 const MAX_HEARING_DISTANCE = 500;
 const MIN_HEARING_DISTANCE = 100;
 const PHYSICAL_ACTIONS = {
@@ -754,7 +754,8 @@ export default class Enemy extends Entity {
                             this.stateMachine.setState(States.AWARE);
                         };
                     };
-                } else if (other.gameObjectB && (other.gameObjectB.name === 'enemy' || other.gameObjectB.name === 'party')) {
+                } else if (other.gameObjectB && ((other.gameObjectB.name === 'enemy' && (this.scene.scene.key !== 'Arena' && this.scene.scene.key !== 'Underground')) 
+                    || other.gameObjectB.name === 'party')) {
                     this.isValidComputerRushEnemy(other.gameObjectB);
                     this.touching.push(other.gameObjectB);
                     // if (this.ascean && this.computerEnemyAggressionCheck()) {
@@ -889,7 +890,7 @@ export default class Enemy extends Entity {
     setEnemyColor = () => {
         this.currentTargetCheck();
         if (this.isCurrentTarget === true) {
-            return TARGET_COLOR;
+            return ENEMY_COLOR;
         } else {
             return ENEMY_COLOR;
         };
@@ -1069,8 +1070,13 @@ export default class Enemy extends Entity {
         } else {
             const newId = this.enemies[0].id;
             const newEnemy = this.scene.enemies.find((e) => newId === e.enemyID);
+            const newPartyEnemy = this.scene.party.find((e) => newId === e.enemyID);
             if (newEnemy && newEnemy.health > 0) {
                 this.attacking = newEnemy;
+            } else if (newPartyEnemy && newPartyEnemy.health > 0) {
+                this.attacking = newPartyEnemy;
+            } else if (this.scene.player.playerID === newId && this.scene.player.health > 0) {
+                this.attacking = this.scene.player;
             } else {
                 this.clearComputerCombatWin(newId);
             };

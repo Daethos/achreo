@@ -177,7 +177,13 @@ export class Underground extends Scene {
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
-
+        const party = this.registry.get("party");
+        if (party.length) {
+            for (let i = 0; i < party.length; i++) {
+                const p = new Party({scene:this,x: this.centerX, y: 64,texture:'player_actions',frame:'player_idle_0',data:party[i],position:i});
+                this.party.push(p);
+            };
+        };
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
@@ -563,6 +569,9 @@ export class Underground extends Scene {
                 count = j;
                 current = distance;
             };
+            for (let k = 0; k < this.party.length; k++) {
+                this.party[k].enemies.push({id:enemy.enemyID, threat:0});
+            };
             this.time.delayedCall(3000, () => {
                 enemy.checkEnemyCombatEnter();
                 this.player.targets.push(enemy);
@@ -616,6 +625,7 @@ export class Underground extends Scene {
         this.combatManager.combatMachine.process();
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
+        if (!this.hud.settings.desktop) this.hud.rightJoystick.update();
     };
     setCameraOffset = () => {
         const { width, height } = this.cameras.main.worldView;
@@ -651,7 +661,10 @@ export class Underground extends Scene {
     };
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
-        this.hud.rightJoystick.update();
+        for (let i = 0; i < this.party.length; i++) {
+            if (this.party[i].isDeleting) return;
+            this.party[i].update(delta);
+        };
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(delta);
             if ((this.enemies[i].isDefeated || this.enemies[i].isTriumphant) && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);

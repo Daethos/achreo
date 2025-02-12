@@ -7,7 +7,7 @@ import Bubble from "./Bubble";
 import { BlendModes } from "phaser";
 import { COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, RANGE, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
 import { Play } from "../main";
-import { BALANCED, DEFENSIVE, OFFENSIVE, PARTY_BALANCED_INSTINCTS, PARTY_DEFENSIVE_INSTINCTS, PARTY_INSTINCTS, PARTY_OFFENSIVE_INSTINCTS } from '../../utility/party';
+import { BALANCED, DEFENSIVE, OFFENSIVE, PARTY_BALANCED_INSTINCTS, PARTY_DEFENSIVE_INSTINCTS, PARTY_INSTINCTS, PARTY_OFFENSIVE_INSTINCTS, PARTY_OFFSET } from '../../utility/party';
 import { PLAYER } from '../../utility/player';
 const DURATION = {
     CONSUMED: 2000,
@@ -406,7 +406,10 @@ export default class PlayerMachine {
                     this.player.followTimer = undefined;
                     return;
                 };
-                this.player.path = this.scene.navMesh.findPath(this.player.position, this.scene.player.position);
+                const followPosition = new Phaser.Math.Vector2(
+                    this.scene.player.x + PARTY_OFFSET[this.player.y < this.scene.player.y ? this.player.partyPosition : this.player.partyPosition + 5].x, 
+                    this.scene.player.y + PARTY_OFFSET[this.player.y < this.scene.player.y ? this.player.partyPosition : this.player.partyPosition + 5].y);
+                this.player.path = this.scene.navMesh.findPath(this.player.position, followPosition);
                 if (this.player.path && this.player.path.length > 1) {
                     if (!this.player.isPathing) this.player.isPathing = true;
                     const nextPoint = this.player.path[1];
@@ -414,6 +417,7 @@ export default class PlayerMachine {
                     // this.scene.navMesh.debugDrawPath(this.player.path, 0xffd900);
                     const pathDirection = new Phaser.Math.Vector2(this.player.nextPoint.x, this.player.nextPoint.y);
                     this.player.pathDirection = pathDirection;
+                    
                     this.player.pathDirection.subtract(this.player.position);
                     this.player.pathDirection.normalize();
                     const distanceToNextPoint = Math.sqrt((this.player.nextPoint.x - this.player.position.x) ** 2 + (this.player.nextPoint.y - this.player.position.y) ** 2);
@@ -428,18 +432,21 @@ export default class PlayerMachine {
     };
     onFollowUpdate = (_dt: number) => {
         if (!this.scene.player || !this.scene.player.body || !this.scene.player.position || this.player.isDeleting) return;
-        const direction = this.scene.player.position.subtract(this.player.position);
+        const followPosition = new Phaser.Math.Vector2(
+            this.scene.player.x + PARTY_OFFSET[this.player.y < this.scene.player.y ? this.player.partyPosition : this.player.partyPosition + 5].x, 
+            this.scene.player.y + PARTY_OFFSET[this.player.y < this.scene.player.y ? this.player.partyPosition : this.player.partyPosition + 5].y);
+        const direction = followPosition.subtract(this.player.position);
         const distance = direction.length();
-        if (distance < 60) {
+        if (distance < 36) {
             this.stateMachine.setState(States.IDLE);
             return;
         } else {
             if (this.player.path && this.player.path.length > 1) {
-                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed + 0.25), this.player.pathDirection.y * (this.player.speed + 0.25));
+                this.player.setVelocity(this.player.pathDirection.x * this.player.speed, this.player.pathDirection.y * this.player.speed);
             } else {
                 if (this.player.isPathing) this.player.isPathing = false;
                 direction.normalize();
-                this.player.setVelocity(direction.x * (this.player.speed + 0.25), direction.y * (this.player.speed + 0.25));
+                this.player.setVelocity(direction.x * this.player.speed, direction.y * this.player.speed);
             };
         };
     };
@@ -567,7 +574,7 @@ export default class PlayerMachine {
     onIdleUpdate = (_dt: number) => {
         const direction = this.scene.player.position.subtract(this.player.position);
         const distance = direction.length();
-        if (distance > 105 && !this.stateMachine.isCurrentState(States.FOLLOW)) {
+        if (distance > 180 && !this.stateMachine.isCurrentState(States.FOLLOW)) {
             this.stateMachine.setState(States.FOLLOW);
         };
     };

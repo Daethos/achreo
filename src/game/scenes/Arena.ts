@@ -22,6 +22,7 @@ import MovingPlatform from '../matter/MovingPlatform';
 import { ObjectPool } from '../phaser/ObjectPool';
 import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import Party from '../entities/PartyComputer';
+import { PARTY_OFFSET } from '../../utility/party';
 
 export class Arena extends Phaser.Scene {
     sceneKey: string = '';
@@ -137,7 +138,21 @@ export class Arena extends Phaser.Scene {
             this.hud.rightJoystick.joystick.setVisible(false);
         };
         this.player.setPosition(random.x,random.y);
-
+        const team = this.registry.get("team");
+        const party = this.registry.get("party");
+        console.log(team, "Do you have a team?", party, "How many are in your party?");
+        if (party.length) {
+            for (let i = 0; i < party.length; i++) {
+                const p = new Party({scene:this,x: 200, y: 200,texture:'player_actions',frame:'player_idle_0',data:party[i],position:i});
+                this.party.push(p);
+                p.setPosition(this.player.x + PARTY_OFFSET[i].x, this.player.y + PARTY_OFFSET[i].y);    
+                if (!team) {
+                    console.log("Playing solo", team);
+                    p.setActive(false);
+                    p.setVisible(false);
+                };
+            };
+        };
         camera.startFollow(this.player, false, 0.1, 0.1);
         camera.setLerp(0.1, 0.1);
         camera.setRoundPixels(true);
@@ -189,7 +204,8 @@ export class Arena extends Phaser.Scene {
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
-        
+
+
         this.createArenaEnemy();
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 50; i++) {
@@ -287,6 +303,7 @@ export class Arena extends Phaser.Scene {
         };
         const random = this.markers[Math.floor(Math.random() * this.markers.length)];
         this.player.setPosition(random.x, random.y);
+        this.configureParty();
         if (this.player.isComputer) {
             this.hud.actionBar.setVisible(false);
             this.hud.joystick.joystick.setVisible(false);
@@ -582,6 +599,27 @@ export class Arena extends Phaser.Scene {
 
     drinkFlask = (): boolean => EventBus.emit('drink-firewater');
 
+    configureParty = () => {
+        const team = this.registry.get("team");
+        for (let i = 0; i < this.party.length; i++) {
+            const p = this.party[i];
+            p.isDeleting = true;
+            this.time.delayedCall(500, () => {
+                this.party = this.party.filter((party: Party) => party.enemyID !== p.enemyID);
+                p.cleanUp();
+                p.destroy();
+            }, undefined, this);
+        };
+        if (team) {
+            const party = this.registry.get("party");
+            for (let i = 0; i < party.length; i++) {
+                const p = new Party({scene:this,x: 200, y: 200,texture:'player_actions',frame:'player_idle_0',data:party[i],position:i});
+                this.party.push(p);    
+                p.setPosition(this.player.x + PARTY_OFFSET[i].x, this.player.y + PARTY_OFFSET[i].y);    
+            };
+        };
+    };
+
     createArenaEnemy = () => {
         EventBus.emit('alert', { header: "Prepare!", body: "The enemies are being summoned. Prepare for the Eulex.", key: "Close" });
         this.time.delayedCall(1500, () => {
@@ -609,7 +647,10 @@ export class Arena extends Phaser.Scene {
                     count = j;
                     current = distance;
                 };
-                this.time.delayedCall(1500, () => {
+                for (let k = 0; k < this.party.length; k++) {
+                    this.party[k].enemies.push({id:enemy.enemyID, threat:0});
+                };
+                this.time.delayedCall(1000, () => {
                     enemy.checkEnemyCombatEnter();
                     this.player.targets.push(enemy);
                     if (count === j) {
@@ -697,6 +738,10 @@ export class Arena extends Phaser.Scene {
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(delta);
             if ((this.enemies[i].isDefeated || this.enemies[i].isTriumphant) && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
+        };
+        for (let i = 0; i < this.party.length; i++) {
+            if (this.party[i].isDeleting || !this.party[i].active) return;
+            this.party[i].update(delta);
         };
         const camera = this.cameras.main;
         const bounds = new Phaser.Geom.Rectangle(

@@ -783,7 +783,7 @@ export default class Party extends Entity {
         this.isCasting = true;
         this.specialCombatText = this.scene.showCombatText(name, duration / 2, style, false, true, () => this.specialCombatText = undefined);
         this.castbar.setTotal(duration);
-        if (name !== 'Healing' && name !== 'Reconstituting') this.beam.enemyEmitter(this.attacking, duration, this.ascean.mastery); // scene.player
+        if (name !== 'Healing' && name !== 'Reconstituting') this.beam.enemyEmitter(this.currentTarget, duration, this.ascean.mastery); // scene.player
         if (channel === true) this.castbar.setTime(duration);
         if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true);
         this.setVelocity(0);

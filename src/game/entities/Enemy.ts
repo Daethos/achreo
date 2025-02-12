@@ -901,7 +901,7 @@ export default class Enemy extends Entity {
     };
 
     computerEnemyAttacker = () => {
-        const enemy = this.scene.enemies.find((e: Enemy) => e.attacking?.enemyID === this.enemyID);
+        const enemy = this.scene.enemies.find((e: Enemy) => e.currentTarget?.enemyID === this.enemyID);
         return enemy;
     };
 

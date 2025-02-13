@@ -926,7 +926,7 @@ export default function PhaserGame (props: IProps) {
                 setGame({ 
                     ...game(), 
                     showLootIds: updatedShowLootIds.length > 0 ? updatedShowLootIds : [],
-                    showLoot: updatedShowLootIds.length > 0,
+                    // showLoot: updatedShowLootIds.length > 0,
                     lootTag: updatedShowLootIds.length > 0,    
                 });
             };

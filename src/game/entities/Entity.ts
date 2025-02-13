@@ -475,7 +475,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.anims.play(this.isStealthing ? 'player_crouch_idle' : 'player_idle', true);
         };
     };
-
     handleMovementAnimations = () => {
         if (this.isClimbing) {
             this.anims.play('player_climb', true);

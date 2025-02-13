@@ -787,7 +787,7 @@ export default class Party extends Entity {
         if (channel === true) this.castbar.setTime(duration);
         if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true);
         this.setVelocity(0);
-        this.anims.play('player_health', true);
+        // this.anims.play('player_health', true);
     };
 
     stopCasting = () => {
@@ -1294,19 +1294,22 @@ export default class Party extends Entity {
             this.playerMachine.stateMachine.setState(States.DEFEATED);
             return;
         };
+        if (this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) return;
         if (!this.inComputerCombat) {
             if (!this.playerMachine.stateMachine.isCurrentState(States.DEFEATED) && !this.playerMachine.stateMachine.isCurrentState(States.IDLE) && !this.playerMachine.stateMachine.isCurrentState(States.FOLLOW)) {
                 this.playerMachine.stateMachine.setState(States.FOLLOW);
             };
             return;
         };
-        if (this.playerMachine.stateMachine.isCurrentState(States.LEASH) || this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) return;
         if (this.isCasting || this.isPraying || this.isContemplating) {
             this.isMoving = false;
             this.setVelocity(0);
             return;    
         };
-        if (this.isSuffering() || !this.currentTarget || !this.currentTarget.body || this.playerMachine.stateMachine.isCurrentState(States.CHASE) || this.playerMachine.stateMachine.isCurrentState(States.EVADE)) return;
+        if (this.isSuffering() || !this.currentTarget || !this.currentTarget.body 
+        || this.playerMachine.stateMachine.isCurrentState(States.CHASE) 
+        || this.playerMachine.stateMachine.isCurrentState(States.EVADE)
+    ) return;
         
         let direction = this.currentTarget.position.subtract(this.position);
         const distanceY = Math.abs(direction.y);
@@ -1330,7 +1333,7 @@ export default class Party extends Entity {
             if (this.currentTarget.position.subtract(this.position).length() > PLAYER.DISTANCE.THRESHOLD * multiplier) { // 225-525 
                 direction.normalize();
                 this.setVelocityX(direction.x * (this.speed + 0.25)); // 2.25
-                this.setVelocityY(direction.y * (this.speed + 0.25)); // 2.25          
+                this.setVelocityY(direction.y * (this.speed + 0.25)); // 2.25
             } else if (this.currentTarget.position.subtract(this.position).length() < PLAYER.DISTANCE.THRESHOLD && !this.currentTarget.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
                 if (Phaser.Math.Between(1, 250) === 1 && !this.playerMachine.stateMachine.isCurrentState(States.EVADE)) {
                     this.playerMachine.stateMachine.setState(States.EVADE);
@@ -1391,7 +1394,6 @@ export default class Party extends Entity {
         };
     };
 
-
     playerDodge = () => {
         this.dodgeCooldown = 50; // Was a 6x Mult for Dodge Prev aka 1728
         let currentDistance = 0;
@@ -1444,7 +1446,7 @@ export default class Party extends Entity {
         requestAnimationFrame(rollLoop);
     };
 
-    handleAnimations = () => {
+    handlePartyAnimations = () => {
         if (this.isDefeated) return;
         if (this.isPolymorphed) {
             this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
@@ -1468,19 +1470,17 @@ export default class Party extends Entity {
             this.anims.play('player_attack_3', true).on('animationcomplete', () => this.isPosturing = false);
         } else if (this.isAttacking) {
             this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isAttacking = false);
-        } else if (this.moving()) {
+        } else if (this.moving()) { // && this.computerActionsClear()
             this.handleMovementAnimations();
             this.isMoving = true;
         } else if (this.isCasting) {
             this.anims.play('player_health', true);
         } else if (this.isPraying) {
             this.anims.play('player_pray', true).on('animationcomplete', () => this.isPraying = false);
-        } else {
+        } else { //  if (this.computerActionsClear())
             this.isMoving = false;
             this.handleIdleAnimations();
         };
-        this.spriteWeapon.setPosition(this.x, this.y);
-        this.spriteShield.setPosition(this.x, this.y);
     };
 
     handleComputerConcerns = () => {
@@ -1508,6 +1508,8 @@ export default class Party extends Entity {
         if (this.resistCombatText) this.resistCombatText.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
+        this.spriteWeapon.setPosition(this.x, this.y);
+        this.spriteShield.setPosition(this.x, this.y);
         if (this.isConfused && !this.sansSuffering('isConfused') && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
             this.playerMachine.stateMachine.setState(States.CONFUSED);
             return;
@@ -1598,7 +1600,7 @@ export default class Party extends Entity {
     update(dt: number) {
         this.handleComputerConcerns();
         this.evaluateCombatDistance();
-        this.handleAnimations();
+        this.handlePartyAnimations();
         this.playerMachine.stateMachine.update(dt);
         this.playerMachine.positiveMachine.update(dt);
         this.playerMachine.negativeMachine.update(dt);

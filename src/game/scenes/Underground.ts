@@ -203,11 +203,9 @@ export class Underground extends Scene {
         EventBus.off('enemyLootDrop');
         EventBus.off('minimap');
         EventBus.off('update-postfx');
-        EventBus.off('game-map-load');
         EventBus.off('update-camera-zoom');
         EventBus.off('update-speed');
         EventBus.off('update-enemy-special');
-        EventBus.off('resetting-game');
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].cleanUp();
         };
@@ -221,7 +219,6 @@ export class Underground extends Scene {
         EventBus.on('combat', (combat: any) => this.state = combat); 
         EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
         EventBus.on('create-arena', this.createArenaEnemy);
-        EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
         EventBus.on('enemyLootDrop', (drops: any) => {
             if (drops.scene !== 'Underground') return;
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
@@ -279,12 +276,6 @@ export class Underground extends Scene {
             for (let i = 0; i < this.enemies.length; i++) {
                 this.enemies[i].isSpecial = special >= Math.random();
             };
-        });
-        EventBus.on('resetting-game', () => {
-            this.sound.play('TV_Button_Press', { volume: this?.hud?.settings?.volume * 2 });
-            this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_came: any, _effect: any) => {
-                EventBus.emit('reset-game');
-            });
         });
     };
 

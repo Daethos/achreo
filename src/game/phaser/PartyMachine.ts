@@ -229,13 +229,14 @@ export default class PlayerMachine {
         } else {
             this.stateMachine.setState(States.COMPUTER_COMBAT);
         };
-    }; 
+    };
     onChaseExit = () => {
         // this.scene.navMesh.debugDrawClear();
         this.player.chasing = false;
         this.player.path = [];
         this.player.isPathing = false;
-        this.player.setVelocity(0, 0);
+        this.player.setVelocity(0);
+        // this.player.personalAnimation();
         if (this.player.chaseTimer) {
             this.player.chaseTimer?.remove(false);
             this.player.chaseTimer.destroy();
@@ -374,7 +375,7 @@ export default class PlayerMachine {
             this.player.setVelocityY(-((this.player.speed * this.player.handleTerrain()) - 0.25));
         };
     }; 
-    onEvasionExit = () => this.player.evaluateCombatDistance();
+    onEvasionExit = () => {}; // this.player.evaluateCombatDistance()
 
     onFollowEnter = () => {
         if (!this.scene.player || !this.scene.player.body || !this.scene.player.position) return;
@@ -453,7 +454,7 @@ export default class PlayerMachine {
     onFollowExit = () => {
         this.player.path = [];
         this.player.isPathing = false;
-        this.player.setVelocity(0, 0);
+        this.player.setVelocity(0);
         if (this.player.followTimer) {
             this.player.followTimer?.remove(false);
             this.player.followTimer.destroy();
@@ -651,19 +652,15 @@ export default class PlayerMachine {
             return;
         };
         this.player.frameCount = 0;
-        this.player.computerAction = true;
-        this.scene.time.delayedCall(Phaser.Math.Between(750, 1250), () => {
+        this.player.computerAction = true; // Phaser.Math.Between(750, 1250)
+        this.scene.time.delayedCall(this.player.swingTimer, () => {
             this.player.frameCount = 0;
             this.player.computerAction = false;
             this.player.evaluateCombat();
         }, undefined, this);
     };
-    onComputerCombatUpdate = (_dt: number) => { 
-        if (!this.player.computerAction) this.stateMachine.setState(States.LULL);  
-    };
 
     onComputerAttackEnter = () => {
-        this.player.clearAnimations();
         this.player.isAttacking = true;
         this.player.frameCount = 0;
     };
@@ -679,7 +676,6 @@ export default class PlayerMachine {
     };
 
     onComputerParryEnter = () => {
-        this.player.clearAnimations();
         this.player.isParrying = true;
         this.player.frameCount = 0;
         if (this.player.hasMagic === true) {
@@ -705,7 +701,6 @@ export default class PlayerMachine {
     };
 
     onComputerPostureEnter = () => {
-        this.player.clearAnimations();
         this.player.isPosturing = true;
         this.player.spriteShield.setVisible(true);
         this.player.frameCount = 0;
@@ -723,7 +718,6 @@ export default class PlayerMachine {
     };
 
     onComputerThrustEnter = () => {
-        this.player.clearAnimations();
         this.player.isThrusting = true;
         this.player.frameCount = 0;
     };
@@ -2173,7 +2167,6 @@ export default class PlayerMachine {
     };
     onShirkExit = () => {};
 
-
     onShadowEnter = () => {
         this.player.isShadowing = true;
         this.player.enemySound('wild', true);
@@ -2263,7 +2256,7 @@ export default class PlayerMachine {
     onConfusedUpdate = (_dt: number) => {
         if (!this.player.isConfused) this.player.combatChecker(this.player.isConfused);
         this.player.playerVelocity.x = this.player.confuseVelocity.x;
-        this.player.playerVelocity.y = this.player.confuseVelocity.y;    
+        this.player.playerVelocity.y = this.player.confuseVelocity.y;
     };
     onConfusedExit = () => { 
         if (this.player.isConfused) this.player.isConfused = false;

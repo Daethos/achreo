@@ -99,46 +99,46 @@ export const INTRO_NODES = {
         key: 0,
         prev: undefined, // undefined
         next: 1,
-        text: `This world is a menagerie of beauty and horror, its jungle's reach cruel and wild; marred and mutated with the blood of Ancients. \n
-        These Worldly beings of fantastic might and worship a thousand years past grew civilization and genius from their worshipers. \n
-        The Sundering eclipsed such flourishing--a War of the Ancients.`,
+        text: `This world is a menagerie of beauty and horror, its jungles cruel and wild; marred and mutated with the blood of Ancients. \n
+        Worldly beings of fantastic might and worship a thousand years past, civilization and genius grew from their reverence. \n
+        The Sundering eclipsed such flourishing—a War of the Ancients.`,
     },
     1: {
         key: 1,
         prev: 0,
         next: 2,
-        text: `Most humans died. Those who lived did so from the brilliance of the herald and prophet of Daethos, Laetrois Ath'Shaorah, 
+        text: `Most humans died. Those who survived did so thanks to the brilliance of the prophet of Daethos, Laetrois Ath'Shaorah, 
         who warred against the Ancients on behalf of humanity. \n
-        At its end, humans were freed from the Ancients, from each other, and from their homes; the Sundering's last gift to the world.
-        For a thousand years since, strange people from stranger lands clashed. Few coalesced.`,
+        Humans were freed: from the Ancients, from their homelands, 
+        and from each other. The Sundering's last gift.
+        For a thousand years since, strange peoples from stranger lands clashed. Few coalesced.`,
     },
     2: {
         key: 2,
         prev: 1,
         next: 3,
         text: `And yet, the beauty of this world bloomed once more, with many now curious and traveling round the realm,
-        with some speaking shadows, dreaming of ignition,
         despite whispers of the old and the Ancient being seen again. \n
-        Whether in their mythic forms or of an othernature altogether, 
-        perchance not all perished in their war. \n
-        Perchance its horror has returned.`,
+        Whether in their mythic forms or of another nature altogether, 
+        perhaps not all perished in their war. \n
+        Perhaps its horror has returned.`,
     },
     3: {
         key: 3,
         prev: 2,
         next: 4,
-        text: `Inside of the last century, warring has ceased into uncomfortable peace. 
-        Many fathers and sons died in its making--honored in the hearts of those still living. Their progeny now tranquil, or perhaps placid. \n
-        The Ascea satiates those wary of their idle, listless nature; 
+        text: `Inside the past century, warring has ceased to an uncomfortable peace. 
+        Many fathers and sons died in its making, their progeny now placid. \n
+        The Ascea now satiates those wary of their idle, listless nature; 
         a decennial tournament full of jape, jest, and joust, 
-        where prestige and wealth are sought,
-        and the ‘Ascean va'Esai’ crowned.`,
+        where honor, prestige, and wealth are sought, and the title, 
+        ‘Ascean va'Esai,’ is crowned.`,
     },
     4: {
         key: 4,
         prev: 3,
         next: 5,
-        text: `A grave and distinguishing burden befalls all who claim the mantle of the Ascean vs'Esai. \n
+        text: `A grave and distinguishing burden befalls all who seek to claim the mantle of the ‘Ascean vs'Esai.’ \n
         Mathyus Caderyn II: King; Daethic; Noth'eon of the Eye
         Theogeni Spiras: High Lord; Fyers Protectorate of the Firelands 
         Evrio Lorian Peroumes: General; the Li'ivian [Current va'Esai] \n 
@@ -148,14 +148,16 @@ export const INTRO_NODES = {
         key: 5,
         prev: 4,
         next: undefined, // undefined
-        text: `The Ascea may grant forms of honor, prestige, swathes of land, and numerous titles--yet these are base; inert. 
+        text: `The Ascea may grant forms of honor, prestige, swathes of land, and numerous titles—yet these are base; inert. 
         To become the Ascean va'Esai. To be Worthy. 
         That is the offer. That is the reward. \n
         Do not listen to whispers otherwise. Do not be led astray. 
         Do not fear the bleating of the fallen and the beaten. 
         There is nothing else.`,
     },
-};
+}; 
+// with some speaking shadows, dreaming of ignition,
+// --honored in the hearts of those still living.
 // There grows a concern when great sons of great men come of an age where the world sits idle, listless, waiting to stir. \n NODE 3
 // Such peacable time could not last, an Ancient or otherwise curious of limitation, be it themself or another. \n NODE 1
 // Misery wrought from rebuilding gave way to more warring. \n NODE 2

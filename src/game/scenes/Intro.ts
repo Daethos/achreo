@@ -36,7 +36,7 @@ export class Intro extends Scene {
         });
         this.background.fillRect(0, 0, width, height);
         this.introText = this.add.text(
-            0, // width * 0.15 
+            0, // width * 0.1
             0, // height * 0.2 
             this.node.text, {
                 color: '#fdf6d8',
@@ -45,7 +45,6 @@ export class Intro extends Scene {
                 stroke: 'black',
                 strokeThickness: 2,
                 align: 'center',
-                // fixedWidth: width * WRAP.WIDTH,
                 wordWrap: {
                     width: width * WRAP.WIDTH,
                     callback: undefined,
@@ -65,8 +64,8 @@ export class Intro extends Scene {
         this.introTextBorder.setOrigin(0);
 
         this.introContainer = new Phaser.GameObjects.Container(this, 0, 0, [this.introTextBorder, this.introText]);
-        this.introContainer.width = width * WRAP.WIDTH;
-        this.introContainer.height = height * WRAP.HEIGHT;
+        // this.introContainer.width = width * WRAP.WIDTH;
+        // this.introContainer.height = height * WRAP.HEIGHT;
         this.add.existing(this.introContainer);
 
         this.node = INTRO_NODES[0];
@@ -77,6 +76,7 @@ export class Intro extends Scene {
             setTextCallback: function (text, _isLastChar, _insertIdx) { 
                 return text;
             }, // callback before set-text
+            
             setTextCallbackScope: undefined,
         });
         typing.start(this.node.text);

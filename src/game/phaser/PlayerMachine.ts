@@ -410,6 +410,8 @@ export default class PlayerMachine {
     };
     onEvasionUpdate = (dt: number) => {
         this.player.evasionTime -= dt;
+        if (this.player.isDodging === true) this.player.anims.play('player_slide', true);
+        if (this.player.isRolling === true) this.player.anims.play('player_roll', true);
         if ((!this.player.isDodging && !this.player.isRolling) || this.player.evasionTime <= 0) {
             this.player.evasionTime = 0;
             this.player.isDodging = false;
@@ -611,9 +613,10 @@ export default class PlayerMachine {
     };
 
     onComputerAttackEnter = () => {
-        this.player.clearAnimations();
+        // this.player.clearAnimations();
         this.player.isAttacking = true;
         this.player.frameCount = 0;
+        // this.player.attack();
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_ATTACK);
     };
     onComputerAttackUpdate = (_dt: number) => {
@@ -624,13 +627,15 @@ export default class PlayerMachine {
         this.scene.combatManager.combatMachine.input('action', '');
         this.player.frameCount = 0;
         this.player.computerAction = false;    
-        if (!this.player.isRanged) this.player.anims.play('player_idle', true);
+        // if (!this.player.isRanged) this.player.anims.play('player_idle', true);
     };
 
     onComputerParryEnter = () => {
-        this.player.clearAnimations();
+        // this.player.clearAnimations();
         this.player.isParrying = true;
         this.player.frameCount = 0;
+        // this.player.parry();
+        // this.player.anims.play('player_attack_1', true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_PARRY);
         if (this.player.hasMagic === true) {
             this.player.specialCombatText = this.scene.showCombatText('Counter Spell', 1000, 'hush', false, true, () => this.player.specialCombatText = undefined);
@@ -652,14 +657,15 @@ export default class PlayerMachine {
         this.scene.combatManager.combatMachine.input('action', '');
         this.player.frameCount = 0;
         this.player.computerAction = false;    
-        if (!this.player.isRanged) this.player.anims.play('player_idle', true);
+        // if (!this.player.isRanged) this.player.anims.play('player_idle', true);
     };
 
     onComputerPostureEnter = () => {
-        this.player.clearAnimations();
+        // this.player.clearAnimations();
         this.player.isPosturing = true;
         this.player.spriteShield.setVisible(true);
         this.player.frameCount = 0;
+        // this.player.posture();
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_POSTURE);
     };
     onComputerPostureUpdate = (_dt: number) => {
@@ -671,14 +677,15 @@ export default class PlayerMachine {
         this.player.spriteShield.setVisible(this.player.isStalwart);
         this.player.frameCount = 0;
         this.player.computerAction = false;    
-        if (!this.player.isRanged) this.player.anims.play('player_idle', true);
+        // if (!this.player.isRanged) this.player.anims.play('player_idle', true);
     };
 
     onComputerThrustEnter = () => {
-        this.player.clearAnimations();
+        // this.player.clearAnimations();
         this.player.isThrusting = true;
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_THRUST);
         this.player.frameCount = 0;
+        // this.player.thrustAttack();
     };
     onComputerThrustUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input('action', 'thrust');
@@ -701,7 +708,7 @@ export default class PlayerMachine {
             };
         };
         this.player.isAttacking = true;
-        if (!this.player.isComputer) this.player.swingReset(States.ATTACK, true);
+        this.player.swingReset(States.ATTACK, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ATTACK);
         this.player.frameCount = 0;
     }; 
@@ -715,7 +722,7 @@ export default class PlayerMachine {
 
     onParryEnter = () => {
         this.player.isParrying = true;    
-        if (!this.player.isComputer) this.player.swingReset(States.PARRY, true);
+        this.player.swingReset(States.PARRY, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.PARRY);
         if (this.player.hasMagic === true) {
             this.player.specialCombatText = this.scene.showCombatText('Counter Spell', 1000, 'hush', false, true, () => this.player.specialCombatText = undefined);
@@ -749,7 +756,7 @@ export default class PlayerMachine {
         };
         this.player.isPosturing = true;
         this.player.spriteShield.setVisible(true);
-        if (!this.player.isComputer) this.player.swingReset(States.POSTURE, true);
+        this.player.swingReset(States.POSTURE, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.POSTURE);
         this.player.frameCount = 0;
     };
@@ -837,7 +844,7 @@ export default class PlayerMachine {
             };
         };
         this.player.isThrusting = true;
-        if (!this.player.isComputer) this.player.swingReset(States.THRUST, true);
+        this.player.swingReset(States.THRUST, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.THRUST);
         this.player.frameCount = 0;
     };
@@ -3082,7 +3089,15 @@ export default class PlayerMachine {
     onConfusedUpdate = (_dt: number) => {
         if (!this.player.isConfused) this.player.combatChecker(this.player.isConfused);
         this.player.playerVelocity.x = this.player.confuseVelocity.x;
-        this.player.playerVelocity.y = this.player.confuseVelocity.y;    
+        this.player.playerVelocity.y = this.player.confuseVelocity.y;
+        // if (this.player.isComputer) {
+        //     if (Math.abs(this.player.velocity?.x as number) > 0 || Math.abs(this.player.velocity?.y as number) > 0) {
+        //         this.player.getDirection();
+        //         this.player.anims.play(`player_running`, true);
+        //     } else {
+        //         this.player.anims.play(`player_idle`, true);
+        //     };
+        // };
     };
     onConfusedExit = () => { 
         if (this.player.isConfused) this.player.isConfused = false;
@@ -3155,6 +3170,14 @@ export default class PlayerMachine {
         if (!this.player.isFeared) this.player.combatChecker(this.player.isFeared);
         this.player.playerVelocity.x = this.player.fearVelocity.x;
         this.player.playerVelocity.y = this.player.fearVelocity.y;
+        // if (this.player.isComputer) {
+        //     if (Math.abs(this.player.velocity?.x as number) > 0 || Math.abs(this.player.velocity?.y as number) > 0) {
+        //         this.player.getDirection();
+        //         this.player.anims.play(`player_running`, true);
+        //     } else {
+        //         this.player.anims.play(`player_idle`, true);
+        //     };
+        // };
     };
     onFearedExit = () => { 
         if (!this.player.isComputer) {        
@@ -3255,8 +3278,10 @@ export default class PlayerMachine {
     };
     onPolymorphedUpdate = (_dt: number) => {
         if (!this.player.isPolymorphed) this.player.combatChecker(this.player.isPolymorphed);
+        // this.player.setVelocity(this.player.polymorphVelocity.x, this.player.polymorphVelocity.y);
         this.player.playerVelocity.x = this.player.polymorphVelocity.x;
         this.player.playerVelocity.y = this.player.polymorphVelocity.y;
+        // if (this.player.isComputer) this.player.anims.play(`rabbit_${this.player.polymorphMovement}_${this.player.polymorphDirection}`, true);
     };
     onPolymorphedExit = () => { 
         if (!this.player.isComputer) {        

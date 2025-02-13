@@ -218,22 +218,24 @@ export class Hud extends Phaser.Scene {
     };
 
     resize(_gameSize: Phaser.Structs.Size, _: Phaser.Structs.Size, displaySize: Phaser.Structs.Size, previousWidth: number, previousHeight: number) {
-        this.actionBar.resizeScale(displaySize.width / previousWidth * displaySize.height / previousHeight);
-        
-        EventBus.emit('update-small-hud-scale', (this.settings.positions.smallHud.scale * displaySize.width / previousWidth));
-        EventBus.emit('update-left-hud-scale', (this.settings.positions.leftHud.scale * displaySize.height / previousHeight));
-        
-        this.joystick.scaleX = displaySize.width / previousWidth;
-        this.joystick.scaleY = displaySize.height / previousHeight;
-        
-        this.rightJoystick.scaleX = displaySize.width / previousWidth;
-        this.rightJoystick.scaleY = displaySize.height / previousHeight;
-        
-        this.actionBar.draw();
-        EventBus.emit('update-hud-position', ({ x: this.settings.positions.smallHud.x, y: this.settings.positions.smallHud.y }));
-        EventBus.emit('update-left-hud-position', ({ x: this.settings.positions.leftHud.x, y: this.settings.positions.leftHud.y }));
-        this.joystick.setPosition(displaySize.width * this.settings.positions.leftJoystick.x, this.gameHeight * this.settings.positions.leftJoystick.y);
-        this.rightJoystick.setPosition(displaySize.width * this.settings.positions.rightJoystick.x, this.gameHeight * this.settings.positions.rightJoystick.y);
+        if (this.settings.tutorial.boot) {
+            this.actionBar.resizeScale(displaySize.width / previousWidth * displaySize.height / previousHeight);
+            
+            EventBus.emit('update-small-hud-scale', (this.settings.positions.smallHud.scale * displaySize.width / previousWidth));
+            EventBus.emit('update-left-hud-scale', (this.settings.positions.leftHud.scale * displaySize.height / previousHeight));
+            
+            this.joystick.scaleX = displaySize.width / previousWidth;
+            this.joystick.scaleY = displaySize.height / previousHeight;
+            
+            this.rightJoystick.scaleX = displaySize.width / previousWidth;
+            this.rightJoystick.scaleY = displaySize.height / previousHeight;
+            
+            this.actionBar.draw();
+            EventBus.emit('update-hud-position', ({ x: this.settings.positions.smallHud.x, y: this.settings.positions.smallHud.y }));
+            EventBus.emit('update-left-hud-position', ({ x: this.settings.positions.leftHud.x, y: this.settings.positions.leftHud.y }));
+            this.joystick.setPosition(displaySize.width * this.settings.positions.leftJoystick.x, this.gameHeight * this.settings.positions.leftJoystick.y);
+            this.rightJoystick.setPosition(displaySize.width * this.settings.positions.rightJoystick.x, this.gameHeight * this.settings.positions.rightJoystick.y);
+        };
         
         this.gameWidth = displaySize.width;
         this.gameHeight = displaySize.height;

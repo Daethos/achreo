@@ -4,6 +4,7 @@ import { fetchTrait } from "../../utility/ascean";
 import { DURATION } from "../../utility/enemy";
 import { PLAYER, staminaCheck } from "../../utility/player";
 import { Particle } from "../matter/ParticleManager";
+import { sprint, walk } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
 import { Arena } from "../scenes/Arena";
 import { Underground } from "../scenes/Underground";
@@ -249,6 +250,49 @@ export default class PlayerComputer extends Player {
             this.scene.combatManager.useStamina(-5);    
         };
     };
+    handleComputerAnimations = () => {
+        if (this.isDefeated) return;
+        if (this.isPolymorphed) {
+            this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
+        } else if (this.isConfused || this.isFeared) {
+            if (this.moving()) {
+                this.handleMovementAnimations();
+            } else {
+                this.handleIdleAnimations();
+            };
+        } else if (this.isParrying) {
+            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isParrying = false);
+        } else if (this.isThrusting) {
+            sprint(this.scene);
+            this.anims.play('player_attack_2', true).on('animationcomplete', () => this.isThrusting = false);
+        } else if (this.isDodging) { 
+            this.anims.play('player_slide', true);
+            if (this.dodgeCooldown === 0) this.playerDodge();
+        } else if (this.isRolling) {
+            sprint(this.scene);
+            this.anims.play('player_roll', true);
+            if (this.rollCooldown === 0) this.playerRoll();
+        } else if (this.isPosturing) {
+            sprint(this.scene);
+            this.anims.play('player_attack_3', true).on('animationcomplete', () => this.isPosturing = false);
+        } else if (this.isAttacking) {
+            sprint(this.scene);
+            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isAttacking = false);
+        } else if (this.moving()) {
+            this.handleMovementAnimations();
+            this.isMoving = true;
+        } else if (this.isCasting) {
+            walk(this.scene);
+            this.anims.play('player_health', true);
+        } else if (this.isPraying) {
+            this.anims.play('player_pray', true).on('animationcomplete', () => this.isPraying = false);
+        } else if (this.computerActionsClear()) {
+            this.isMoving = false;
+            this.handleIdleAnimations();
+        };
+        this.spriteWeapon.setPosition(this.x, this.y);
+        this.spriteShield.setPosition(this.x, this.y);
+    };
 
     handleComputerConcerns = () => {
         if (this.actionSuccess === true) {
@@ -294,6 +338,9 @@ export default class PlayerComputer extends Player {
             this.playerMachine.stateMachine.setState(States.STUN);
             return;
         };
+        
+        this.functionality('player', this.currentTarget as Enemy);
+
         if (this.isFrozen && !this.playerMachine.negativeMachine.isCurrentState(States.FROZEN) && !this.currentNegativeState(States.FROZEN)) {
             this.playerMachine.negativeMachine.setState(States.FROZEN);
             return;
@@ -311,13 +358,12 @@ export default class PlayerComputer extends Player {
             return;
         };
 
-        this.functionality('player', this.currentTarget as Enemy);
     };
 
     update() {
         this.handleComputerConcerns();
         this.evaluateCombatDistance();
-        this.handleAnimations();
+        this.handleComputerAnimations();
         this.playerMachine.update(this.dt);
     };
 };

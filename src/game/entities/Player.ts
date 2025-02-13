@@ -1271,6 +1271,17 @@ export default class Player extends Entity {
             return true;
         };
     };
+
+    computerActionsClear = () => {
+        return (
+            // !this.playerMachine.stateMachine.isCurrentState(States.ROLL) &&
+            // !this.playerMachine.stateMachine.isCurrentState(States.DODGE) &&
+            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_PARRY) &&
+            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_ATTACK) &&    
+            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_POSTURE) &&    
+            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_THRUST)    
+        );
+    };
     
     movementClear = () => {
         return (
@@ -1313,20 +1324,14 @@ export default class Player extends Entity {
                 this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: action }});
             } else {
                 this.scene.combatManager.combatMachine.action({ type: 'Player', data: { 
-                    playerAction: { 
-                        action, 
-                        parry: this.scene.state.parryGuess 
-                    },  
+                    playerAction: { action, parry: this.scene.state.parryGuess },  
                     enemyID: this.attackedTarget.enemyID, 
                     ascean: this.attackedTarget.ascean, 
                     damageType: this.attackedTarget.currentDamageType, 
                     combatStats: this.attackedTarget.combatStats, 
                     weapons: this.attackedTarget.weapons, 
                     health: this.attackedTarget.health, 
-                    actionData: { 
-                        action: this.attackedTarget.currentAction, 
-                        parry: this.attackedTarget.parryAction 
-                    },
+                    actionData: { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction },
                 }});
             };
         } else {
@@ -1363,11 +1368,9 @@ export default class Player extends Entity {
         };
         if (this.isStealthing) {
             this.scene.combatManager.paralyze(this.attackedTarget.enemyID);
-            // this.isStealthing = false;
             this.scene.combatEngaged(true);
             this.inCombat = true;
             this.attackedTarget.jumpIntoCombat();
-            // EventBus.emit('update-stealth');
             this.stealthUpdate();
         };
     };
@@ -1423,8 +1426,6 @@ export default class Player extends Entity {
         let startTime: any = undefined;
         requestAnimationFrame(rollLoop);
     };
-
-    xCheck = () => this.velocity?.x !== 0;
 
     handleActions = () => {
         if (this.currentTarget) {

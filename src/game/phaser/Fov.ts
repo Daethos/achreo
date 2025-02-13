@@ -64,6 +64,7 @@ export default class Fov {
             };
         };
         if (this.scene.enemies.length > 0) this.updateEnemies();
+        if (this.scene.party.length > 0) this.updateParty();
         if (this.scene.dms?.length > 0) this.updateDms();
         // if (this.scene.npcs.length > 0) this.updateNpcs();
         if (this.scene.player.highlight) this.updateHighlight();
@@ -118,6 +119,26 @@ export default class Fov {
         const rolloffIdx = distance <= this.radius ? this.radius - distance : 0;
         const alpha = rolloffIdx < lightDropoff.length ? lightDropoff[rolloffIdx] : 1;
         this.scene.player.highlight.setAlpha(alpha);
+    };
+
+    updateParty = () => {
+        for (let i = 0; i < this.scene.party.length; i++) {
+            const party = this.scene.party[i];
+            if (!party || !party.body) continue;
+            const coords = new Phaser.Math.Vector2({
+                x: this.map.worldToTileX(party.x) as number,
+                y: this.map.worldToTileY(party.y) as number
+            });
+            const distance = Math.floor(new Phaser.Math.Vector2(coords.x, coords.y).distance(new Phaser.Math.Vector2(this.lastPos.x, this.lastPos.y)));
+            const rolloffIdx = distance <= this.radius ? this.radius - distance : 0;
+            const alpha = rolloffIdx < lightDropoff.length ? lightDropoff[rolloffIdx] : 1;
+            party.setAlpha(alpha);
+            party.spriteWeapon.setAlpha(alpha);
+            party.spriteShield.setAlpha(alpha);
+            party.healthbar.setAlpha(alpha);
+            party.reactiveBubble?.setAlpha(alpha);
+            party.negationBubble?.setAlpha(alpha);
+        };
     };
 
     updateEnemies = () => {

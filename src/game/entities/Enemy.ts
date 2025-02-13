@@ -3651,6 +3651,8 @@ export default class Enemy extends Entity {
             if (this.attackedTarget?.isMenacing) this.attackedTarget.menace(this.enemyID);
             if (this.attackedTarget?.isMultifaring) this.attackedTarget.multifarious(this.enemyID);
             if (this.attackedTarget?.isMystifying) this.attackedTarget.mystify(this.enemyID);
+            if (this.attackedTarget?.isShadowing === true) this.attackedTarget.playerMachine.pursue(this.enemyID);
+            if (this.attackedTarget?.isTethering === true) this.attackedTarget.playerMachine.tether(this.enemyID);
         };
         this.attackedTarget = undefined;
     };

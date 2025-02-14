@@ -1130,6 +1130,7 @@ export default class Party extends Entity {
         this.inComputerCombat = false;
         this.currentTarget = undefined;
         this.removeHighlight();
+        this.enemies = [];
         // this.playerMachine.stateMachine.setState(States.FOLLOW);
     };
 

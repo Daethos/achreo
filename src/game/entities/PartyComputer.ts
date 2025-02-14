@@ -328,7 +328,7 @@ export default class Party extends Entity {
         this.specialCombatText = this.scene.showCombatText('!', 1000, 'effect', true, true, () => this.specialCombatText = undefined);
         this.scene.hud.logger.log(`Console: ${this.ascean.name} is being called to arms against ${enemy.ascean.name}!`);
         const distance = this.currentTarget.position.subtract(this.position).length();
-        const state = distance > 100 ? States.CHASE : States.COMBAT;
+        const state = distance > 100 ? States.CHASE : States.COMPUTER_COMBAT;
         this.playerMachine.stateMachine.setState(state);
 
     };
@@ -656,7 +656,7 @@ export default class Party extends Entity {
     combatChecker = (state: boolean) => {
         if (state) return;
         if (this.inComputerCombat) {
-            this.playerMachine.stateMachine.setState(States.COMBAT);
+            this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
         } else {
             this.playerMachine.stateMachine.setState(States.IDLE);
         };
@@ -787,7 +787,6 @@ export default class Party extends Entity {
         if (channel === true) this.castbar.setTime(duration);
         if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true);
         this.setVelocity(0);
-        // this.anims.play('player_health', true);
     };
 
     stopCasting = () => {
@@ -1006,13 +1005,6 @@ export default class Party extends Entity {
         this.enemySound('caerenic', true);
         this.specialCombatText = this.scene.showCombatText('Mended', 500, 'tendril', false, true, () => this.specialCombatText = undefined);
         this.playerMachine.heal(0.15);
-        // const gRatio = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
-        // const pRatio = this.health / this.ascean.health.max;
-        // if (gRatio <= pRatio) { // Heal the Player
-        //     this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 15, id: this.scene.player.playerID }, type: 'Health' });
-        // } else { // Heal the Party Member
-        //     this.playerMachine.heal(0.15);
-        // };
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 0) {
             this.isMending = false;
@@ -1169,7 +1161,7 @@ export default class Party extends Entity {
             } else if (!enemy.inComputerCombat) {
                 (this.scene as Player_Scene).quickCombat();
             } else {
-                this.quickTarget(enemy);
+                this.checkComputerEnemyCombatEnter(enemy);
             };
         };
     };
@@ -1284,6 +1276,17 @@ export default class Party extends Entity {
         return false;  // Clear line of sight
     };
 
+    clearAttacks = () => {
+        return(
+            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_ATTACK) &&
+            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_PARRY) &&
+            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_POSTURE) &&
+            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_THRUST) &&
+            !this.playerMachine.stateMachine.isCurrentState(States.DODGE) &&
+            !this.playerMachine.stateMachine.isCurrentState(States.ROLL)
+        );
+    };
+
     evaluateCombatDistance = () => {
         this.getDirection();
         if (this.currentTarget) {
@@ -1348,7 +1351,7 @@ export default class Party extends Entity {
                 return;
             } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.
                 this.setVelocity(0);
-                this.anims.play('player_idle', true);
+                if (this.clearAttacks()) this.anims.play('player_idle', true);
             } else { // Between 75 and 225 and outside y-distance
                 direction.normalize();
                 this.setVelocityY(direction.y * (this.speed + 0.5)); // 2.25
@@ -1366,7 +1369,7 @@ export default class Party extends Entity {
             } else { // Inside melee range
                 this.isPosted = true;
                 this.setVelocity(0);
-                this.anims.play('player_idle', true);
+                if (this.clearAttacks()) this.anims.play('player_idle', true);
             };
         };
     };
@@ -1510,6 +1513,7 @@ export default class Party extends Entity {
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
         this.spriteWeapon.setPosition(this.x, this.y);
         this.spriteShield.setPosition(this.x, this.y);
+        if (this.scene.combat === true && (!this.currentTarget || !this.inComputerCombat)) this.findEnemy();
         if (this.isConfused && !this.sansSuffering('isConfused') && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
             this.playerMachine.stateMachine.setState(States.CONFUSED);
             return;

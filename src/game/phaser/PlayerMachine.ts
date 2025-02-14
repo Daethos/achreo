@@ -602,7 +602,7 @@ export default class PlayerMachine {
         };
         this.player.frameCount = 0;
         this.player.computerAction = true;
-        this.scene.time.delayedCall(Phaser.Math.Between(750, 1250), () => {
+        this.scene.time.delayedCall(this.player.swingTimer, () => {
             this.player.frameCount = 0;
             this.player.computerAction = false;
             (this.player as PlayerComputer).evaluateCombat();
@@ -613,10 +613,8 @@ export default class PlayerMachine {
     };
 
     onComputerAttackEnter = () => {
-        // this.player.clearAnimations();
         this.player.isAttacking = true;
         this.player.frameCount = 0;
-        // this.player.attack();
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_ATTACK);
     };
     onComputerAttackUpdate = (_dt: number) => {
@@ -631,10 +629,8 @@ export default class PlayerMachine {
     };
 
     onComputerParryEnter = () => {
-        // this.player.clearAnimations();
         this.player.isParrying = true;
         this.player.frameCount = 0;
-        // this.player.parry();
         // this.player.anims.play('player_attack_1', true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_PARRY);
         if (this.player.hasMagic === true) {
@@ -661,11 +657,9 @@ export default class PlayerMachine {
     };
 
     onComputerPostureEnter = () => {
-        // this.player.clearAnimations();
         this.player.isPosturing = true;
         this.player.spriteShield.setVisible(true);
         this.player.frameCount = 0;
-        // this.player.posture();
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_POSTURE);
     };
     onComputerPostureUpdate = (_dt: number) => {
@@ -681,11 +675,9 @@ export default class PlayerMachine {
     };
 
     onComputerThrustEnter = () => {
-        // this.player.clearAnimations();
         this.player.isThrusting = true;
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_THRUST);
         this.player.frameCount = 0;
-        // this.player.thrustAttack();
     };
     onComputerThrustUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input('action', 'thrust');
@@ -3373,11 +3365,5 @@ export default class PlayerMachine {
         this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
         this.player.setStatic(false);
         this.player.anims.resume();
-    };
-
-    update(dt: number) {
-        this.stateMachine.update(dt);
-        this.positiveMachine.update(dt);
-        this.negativeMachine.update(dt);
     };
 };

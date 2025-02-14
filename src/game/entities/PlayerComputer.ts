@@ -143,6 +143,17 @@ export default class PlayerComputer extends Player {
         return false;  // Clear line of sight
     };
 
+    clearAttacks = () => {
+        return(
+            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_ATTACK) &&
+            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_PARRY) &&
+            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_POSTURE) &&
+            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_THRUST) &&
+            !this.playerMachine.stateMachine.isCurrentState(States.DODGE) &&
+            !this.playerMachine.stateMachine.isCurrentState(States.ROLL)
+        );
+    };
+
     evaluateCombatDistance = () => {
         this.getDirection();
         if (this.currentTarget) {
@@ -201,7 +212,7 @@ export default class PlayerComputer extends Player {
                 return;
             } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.
                 this.setVelocity(0);
-                this.anims.play('player_idle', true);
+                if (this.clearAttacks()) this.anims.play('player_idle', true);
             } else { // Between 75 and 225 and outside y-distance
                 direction.normalize();
                 this.setVelocityY(direction.y * (this.speed + 0.5)); // 2.25
@@ -219,7 +230,7 @@ export default class PlayerComputer extends Player {
             } else { // Inside melee range
                 this.isPosted = true;
                 this.setVelocity(0);
-                this.anims.play('player_idle', true);
+                if (this.clearAttacks()) this.anims.play('player_idle', true);
             };
         };
     };
@@ -360,10 +371,12 @@ export default class PlayerComputer extends Player {
 
     };
 
-    update() {
+    update(dt: number) {
         this.handleComputerConcerns();
         this.evaluateCombatDistance();
         this.handleComputerAnimations();
-        this.playerMachine.update(this.dt);
+        this.playerMachine.stateMachine.update(dt);
+        this.playerMachine.positiveMachine.update(dt);
+        this.playerMachine.negativeMachine.update(dt);
     };
 };

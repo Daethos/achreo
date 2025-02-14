@@ -321,22 +321,22 @@ export default class PlayerMachine {
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
         this.player.specialCombatText = this.scene.showCombatText('Defeated', 3000, 'damage', false, true, () => this.player.specialCombatText = undefined);
-        this.player.defeatedDuration = PLAYER.DURATIONS.DEFEATED;
+        this.player.defeatedDuration = PLAYER.DURATIONS.DEFEATED * 3;
         this.player.setCollisionCategory(0);
     };
     onDefeatedUpdate = (dt: number) => {
         this.player.defeatedDuration -= dt;
-        if (this.player.defeatedDuration <= 0) {
+        if (this.player.defeatedDuration <= 0 || this.player.health > 0) {
             this.player.anims.playReverse('player_death', true).once('animationcomplete', () => this.player.isDefeated = false, this.player);
         };
         this.player.combatChecker(this.player.isDefeated);
     };
     onDefeatedExit = () => {
-        this.player.defeatedDuration = PLAYER.DURATIONS.DEFEATED;
+        this.player.defeatedDuration = PLAYER.DURATIONS.DEFEATED * 3;
         this.player.setCollisionCategory(1);
         this.player.spriteWeapon.setVisible(true);
         if (this.player.isStalwart) this.player.spriteShield.setVisible(true);
-        this.player.health = this.player.ascean.health.max;
+        this.heal(0.1);
     };
 
     onEvasionEnter = () => {
@@ -621,7 +621,7 @@ export default class PlayerMachine {
     onIdleUpdate = (_dt: number) => {
         const direction = this.scene.player.position.subtract(this.player.position);
         const distance = direction.length();
-        if (distance > 180 && !this.stateMachine.isCurrentState(States.FOLLOW)) {
+        if (distance > 144 && !this.stateMachine.isCurrentState(States.FOLLOW)) {
             this.stateMachine.setState(States.FOLLOW);
         };
     };

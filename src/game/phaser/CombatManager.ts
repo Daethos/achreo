@@ -531,7 +531,7 @@ export class CombatManager extends Phaser.Scene {
             return;
         };
         const enemy = this.context.enemies.find((e: Enemy) => e.enemyID === combatID);
-        if (enemy) {
+        if (enemy) { // Enemy Taking Damage
             if (enemySpecialID === this.context.player.playerID) {
                 if (this.context.player.spellTarget === this.context.player.getEnemyId()) {
                     this.combatMachine.action({ type: 'Chiomic', data: this.context.player.entropicMultiplier(20) }); 
@@ -553,7 +553,16 @@ export class CombatManager extends Phaser.Scene {
                     if (!party) return;
                     const damage = Math.round(party.ascean[party?.ascean.mastery as keyof typeof party.ascean] * 0.3);
                     EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id: combatID, origin: enemySpecialID });
-                };          
+                };  
+            };
+        } else { // Party Taking Damage
+            const party = this.context.party.find((e: Party) => e.enemyID === combatID);
+            if (party) {
+                const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
+                if (origin) { // CvC
+                    const damage = Math.round(origin.ascean[origin.ascean.mastery as keyof typeof origin.ascean] * 0.3);
+                    EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id: combatID, origin: enemySpecialID });
+                };
             };
         };
     };
@@ -573,7 +582,7 @@ export class CombatManager extends Phaser.Scene {
             return;    
         };
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy) {
+        if (enemy) { // Enemy Taking Damage
             if (enemyID === this.context.player.playerID) { // Player Combat
                 const match = this.context.isStateEnemy(id);
                 if (match) { // Target Player Attack
@@ -590,11 +599,19 @@ export class CombatManager extends Phaser.Scene {
                         actionData: { action: enemy.currentAction, parry: enemy.parryAction }
                     }});
                 };
-            } else { 
+            } else { // Computer Combat
                 const party = this.context.party.find((e: Party) => e.enemyID === enemyID);
                 if (party) { // Party Combat
                     this.partyMelee({action:'writhe',origin:enemyID,enemyID:id});
                 } else { // CvC
+                    this.computer({ type: 'Weapon', payload: { action: 'writhe', origin: enemyID, enemyID: id } });
+                };
+            };
+        } else {
+            const party = this.context.party.find((e: Party) => e.enemyID === id);
+            if (party) {
+                const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
+                if (origin) { // Party Taking Damage vs Enemy
                     this.computer({ type: 'Weapon', payload: { action: 'writhe', origin: enemyID, enemyID: id } });
                 };
             };

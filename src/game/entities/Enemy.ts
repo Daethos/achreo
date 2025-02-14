@@ -1152,7 +1152,7 @@ export default class Enemy extends Entity {
 
     playerStalwart = () => this.scene.state.isStalwart ? 0.85 : 1;
 
-    mastery = () => this.ascean?.[this.ascean?.mastery];
+    mastery = () => this.ascean?.[this.ascean?.mastery] || 20;
 
     chiomic = (power: number, id: string) => {
         this.entropicMultiplier(power);
@@ -1162,7 +1162,7 @@ export default class Enemy extends Entity {
             if (this.isCurrentTarget === true) {
                 this.scene.combatManager.combatMachine.action({ type: 'Enemy Chiomic', data: power });
             } else {
-                const chiomic = Math.round(this.mastery() / 2 * (1 + (power / 100))  * this.playerCaerenic() * this.playerStalwart() * ((this.ascean?.level + 9) / 10));
+                const chiomic = Math.round(this.mastery() / 2 * (1 + (power / 100)) * this.playerCaerenic() * this.playerStalwart() * ((this.ascean?.level + 9) / 10));
                 const ratio = chiomic / this.scene.state.computerHealth * 100;
                 const computerActionDescription = `${this.ascean?.name} flays ${chiomic} health from you with their hush.`;
                 EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
@@ -1840,7 +1840,7 @@ export default class Enemy extends Entity {
         this.inCombat = false;
         this.inComputerCombat = false;
         this.healthbar.setVisible(false);
-        if (this.currentTarget !== undefined && this.currentTarget.playerID) {
+        if (this.currentTarget !== undefined && this.currentTarget.name === 'player') {
             this.currentTarget.removeTarget(this.enemyID);
             this.currentTarget = undefined;
         };
@@ -1848,7 +1848,6 @@ export default class Enemy extends Entity {
             this.currentTarget = undefined;
         };
         this.setSpecialCombat(false);
-        // this.specialCombatText = this.scene.showCombatText('Leashing', 1500, 'effect', false, true, () => this.specialCombatText = undefined);
         this.leashTimer = this.scene.time.addEvent({
             delay: 500,
             callback: () => {

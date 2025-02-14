@@ -757,7 +757,7 @@ export default class Enemy extends Entity {
                 } else if (other.gameObjectB && other.gameObjectB.name === 'enemy' && this.scene.scene.key !== 'Arena' && this.scene.scene.key !== 'Underground') {
                     this.isValidComputerRushEnemy(other.gameObjectB);
                     this.touching.push(other.gameObjectB);
-                    if (this.inCombat || this.inComputerCombat || other.gameObjectB.health <= 0 || this.health <= 0) return;                     
+                    if (this.inCombat || this.inComputerCombat || other.gameObjectB.health <= 0 || this.health <= 0 || this.isDefeated) return;                     
                     // this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
                     this.checkComputerEnemyCombatEnter(other.gameObjectB);                    
                     // if (this.ascean && this.computerEnemyAggressionCheck()) {
@@ -1121,7 +1121,7 @@ export default class Enemy extends Entity {
             this.specialCombat = this.scene.time.addEvent({
                 delay: DURATION.SPECIAL * mult,
                 callback: () => {
-                    if ((this.inCombat === false && this.inComputerCombat === false) || this.isDeleting === true || this.health <= 0) {
+                    if ((this.inCombat === false && this.inComputerCombat === false) || this.isDeleting === true || this.health <= 0 || this.isDefeated) {
                         this.specialCombat?.remove();
                         return;
                     };
@@ -1366,6 +1366,7 @@ export default class Enemy extends Entity {
         this.setCollisionCategory(0);
         this.enemies = [];
         this.clearStatuses();
+        this.defeatedTime = 120000;
     };
     onDefeatedUpdate = (dt: number) => {
         if (this.isDeleting) return;
@@ -3892,6 +3893,7 @@ export default class Enemy extends Entity {
             if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         };
         if (this.health <= 0 && !this.stateMachine.isCurrentState(States.DEFEATED)) {
+            this.stateMachine.clearStates();
             this.stateMachine.setState(States.DEFEATED);
             return;
         };

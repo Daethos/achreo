@@ -267,7 +267,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     startingSpeed = (entity: Ascean) => {
-        let speed = SPEED; // PLAYER.SPEED.INITIAL
+        let speed = SPEED;
         if (this.name === 'player') {
             speed += this.scene.hud.settings.difficulty.playerSpeed || 0;
         } else {

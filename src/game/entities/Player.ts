@@ -1225,8 +1225,10 @@ export default class Player extends Entity {
         const data = enemies.map(enemy => {
             return { 
                 id: enemy.enemyID, 
-                game: enemy.ascean, 
-                enemy: enemy.combatStats, 
+                game: enemy.ascean,
+                name: enemy.name,
+                weapons: enemy.weapons,
+                enemy: enemy.combatStats,
                 health: enemy.health, 
                 isAggressive: enemy.isAggressive, 
                 startedAggressive: enemy.startedAggressive, 

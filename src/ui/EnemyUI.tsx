@@ -106,8 +106,9 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
     const [effect, setEffect] = createSignal<StatusEffect>();
     const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, true);
     function fetchEnemy(enemy: EnemySheet) {
+        console.log(enemy, "Fetching!");
         EventBus.emit('setup-enemy', enemy);
-        EventBus.emit('tab-target', enemy);    
+        EventBus.emit('tab-target', enemy);
     };
     const size = (len: number) => {
         switch (true) {

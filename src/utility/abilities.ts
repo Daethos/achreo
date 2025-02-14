@@ -70,7 +70,7 @@ export const SPECIALS = [
     'Writhe',
 ]; // 'Charm', 'Shroud'
 export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
-    'constitution': [ // 14
+    'constitution': [
         'Invoke',
         'Consume',
         'Mark',
@@ -90,10 +90,11 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         'Renewal',
         'Shield',
         'Shirk',
+        'Suture',
         'Tether',
         'Ward'
-    ], // 14 
-    'strength': [ // 14
+    ], 
+    'strength': [
         'Invoke',
         'Consume',
         
@@ -108,13 +109,14 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         'Recover',
         'Rush',
         'Scream',
+        'Shield',
         'Sprint',
         'Storm',
         'Tether',
         'Ward',
         'Writhe'
-    ], // 14
-    'agility': [ // 14
+    ],
+    'agility': [
         'Invoke',
         'Consume',
         'Mark',
@@ -133,11 +135,12 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         'Rush',
         'Shadow',
         'Shimmer',
+        'Shirk',
         'Snare',
         'Sprint',
         'Storm',
-    ], // 14
-    'achre': [ // 14
+    ],
+    'achre': [
         'Invoke',
         'Consume',
         'Mark',
@@ -148,9 +151,11 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         'Astrave',
         'Blink',
         'Desperation',
+        'Dispel',
         'Freeze',
         'Fyerus',
         'Healing',
+        'Maiereth',
         'Moderate',
         'Multifarious',
         'Netherswap',
@@ -158,9 +163,11 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         'Quor',
         'Reconstitute',
         'Rein',
-        'Slow'
-    ], // 14 
-    'caeren': [ // 14
+        'Sacrifice',
+        'Slow',
+        'Snare'
+    ], 
+    'caeren': [
         'Invoke',
         'Consume',
         'Mark',
@@ -179,11 +186,12 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         'Mend',
         'Reconstitute',
         'Rein',
-        'Sacrifice', 
+        'Sacrifice',
         'Scream',
-        'Shirk'
-    ], // 14
-    'kyosir': [ // 14
+        'Shirk',
+        'Suture'
+    ],
+    'kyosir': [
         'Invoke',
         'Consume',
         'Mark',
@@ -197,6 +205,7 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         'Healing',
         'Hook',
         'Kynisos',
+        'Kyrnaicism',
         'Maiereth',
         'Malice',
         'Mystify',
@@ -205,7 +214,7 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         'Reconstitute',
         'Sacrifice',
         'Suture'
-    ], // 14
+    ],
 };
 export const STARTING_SPECIALS = {
     'constitution': ['Healing', 'Kyrnaicism', 'Mend', 'Renewal', 'Shield'],

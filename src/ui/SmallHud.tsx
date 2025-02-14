@@ -14,6 +14,7 @@ import { partyText, text } from '../utility/text';
 import { svg } from '../utility/settings';
 import QuestManager from '../utility/quests';
 import { Reputation } from '../utility/player';
+import { IRefPhaserGame } from '../game/PhaserGame';
 interface Props {
     ascean: Accessor<Ascean>;
     asceanState: Accessor<LevelSheet>;
@@ -22,8 +23,9 @@ interface Props {
     settings: Accessor<Settings>; 
     quests: Accessor<QuestManager>;
     reputation: Accessor<Reputation>;
+    instance: IRefPhaserGame;
 };
-export default function SmallHud({ ascean, asceanState, combat, game, settings, quests, reputation }: Props) { 
+export default function SmallHud({ ascean, asceanState, combat, game, settings, quests, reputation, instance }: Props) { 
     const [alert, setAlert] = createSignal<{ header: string; body: string } | undefined>(undefined);
     const [toastShow, setToastShow] = createSignal<boolean>(false);
     const [experience, setExperience] = createSignal<number>(ascean()?.experience as number); // ascean().experience as number
@@ -121,7 +123,7 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings, 
             <CombatText settings={settings} combat={combat} combatHistory={combatHistory} partyHistory={partyHistory} editShow={editTextShow} setEditShow={setEditTextShow} partyShow={partyShow} />
         </Show>
         <Show when={game().showDialog}>
-            <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} reputation={reputation} settings={settings} quests={quests} />
+            <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} reputation={reputation} settings={settings} quests={quests} instance={instance} />
         </Show>
     </>;
 };

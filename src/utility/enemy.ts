@@ -12,104 +12,117 @@ export const UPDATE_COMPUTER_COMBAT = 'update-computer-combat';
 export const UPDATE_COMPUTER_DAMAGE = 'update-computer-damage';
 
 export const ENEMY_SPECIAL = {
-    'constitution': [ // 14
-        'Desperation', 
-        'Disease', 
-        'Healing', 
+    'constitution': [ // 17
+        'Desperation',
+        'Disease',
+        // 'Dispel',
+        'Healing',
         'Ilirech',
-        'Kyrnaicism', 
-        'Malice', 
+        'Kyrnaicism',
         'Maiereth',
-        'Mend', 
-        'Renewal', 
-        'Sacrifice', 
-        'Scream', 
-        'Shield', 
-        'Suture', 
+        'Mend',
+        // 'Paralyze',
+        'Renewal',
+        'Sacrifice',
+        'Scream',
+        'Shield',
+        // 'Shirk',
+        'Suture',
+        // 'Tether',
         'Ward'
-    ], // 14
+    ], // 17
 
     'strength': [ // 12
         'Desperation',
-        'Howl', 
-        'Malice', 
-        'Mend',
-        'Pursuit', 
+        // 'Envelop',
+        // 'Hook',
+        'Howl',
+        // 'Leap',
+        'Pursuit',
         'Rush',
-        'Scream', 
-        'Sprint', 
-        'Suture', 
-        'Tshaeral', 
-        'Ward', 
+        'Scream',
+        'Shield',
+        'Sprint',
+        'Suture',
+        // 'Tether',
+        'Tshaeral',
+        'Ward',
         'Writhe'
     ], // 12
 
     'agility': [ // 12
-        'Desperation', 
-        'Disease', 
-        'Howl', 
-        'Mend', 
-        'Pursuit', 
-        'Rush', 
-        'Shimmer', 
-        'Snare', 
+        'Desperation',
+        // 'Envelop',
+        // 'Hook',
+        'Howl',
+        // 'Leap',
+        'Pursuit',
+        'Rush',
+        // 'Shadow',
+        'Shimmer',
+        // 'Shirk',
         'Slowing',
-        'Sprint', 
-        'Suture', 
+        'Snare',
+        'Sprint',
+        'Suture',
         'Writhe'
     ], // 12
 
-    'achre': [ // 14
+    'achre': [ // 16
+        // 'Absorb',
+        // 'Achire',
+        'Astrave',
         'Blink',
-        'Freeze', 
+        // 'Dispel',
+        'Freeze',
         'Ilirech',
-        'Kyrnaicism', 
         'Maiereth',
-        'Multifarious', 
-        'Mystify', 
-        'Polymorph', 
+        // 'Moderate',
+        'Multifarious',
+        'Polymorph',
+        // 'Quor',
         'Reconstitute',
-        'Sacrifice', 
-        'Shimmer', 
+        'Sacrifice',
         'Slowing',
         'Snare',
-        'Suture', 
-    ], // 14
+    ], // 16
         
-    'caeren': [ // 14
+    'caeren': [ // 15
+        'Astrave',
         'Blink',
-        'Devour',
-        'Fear', 
-        'Healing', 
+        'Fear',
+        'Healing',
         'Ilirech',
-        'Kyrnaicism', 
-        'Maiereth',
+        'Kyrnaicism',
+        'Malice',
         'Menace',
-        'Mend', 
-        'Protect', 
-        'Sacrifice', 
-        'Scream', 
-        'Shield', 
+        'Mend',
+        'Protect',
+        'Sacrifice',
+        'Scream',
+        'Shield',
+        // 'Shirk',
         'Suture'
-    ], // 14
-
-    'kyosir': [ // 15
-        'Chiomic', 
-        'Confuse',
-        'Devour',
-        'Disease', 
-        'Ilirech',
-        'Kyrnaicism', 
-        'Maiereth',
-        'Malice', 
-        'Mystify',
-        'Protect', 
-        'Reconstitute',
-        'Sacrifice', 
-        'Scream', 
-        'Suture', 
-        'Tshaeral'
     ], // 15
+
+    'kyosir': [ // 16
+        'Chiomic',
+        'Confuse',
+        'Desperation',
+        'Disease',
+        // 'Dispel',
+        // 'Hook',
+        'Kyrnaicism',
+        'Maiereth',
+        'Malice',
+        'Mystify',
+        'Protect',
+        'Reconstitute',
+        'Sacrifice',
+        'Scream',
+        'Suture',
+        'Tshaeral'
+    ], // 16
 };
 export const DISTANCE = {
     MIN: 0,
@@ -223,16 +236,16 @@ export const INSTINCTS = {
     'achre': [
         { // 0
             key: 'stateMachine',
-            value: States.HEALING
+            value: States.RECONSTITUTE
         },{ // 1
             key: 'stateMachine',
-            value: States.SUTURE
+            value: States.HEALING
         },{ // 2
             key: 'stateMachine',
-            value: States.MAIERETH
+            value: States.SACRIFICE
         },{ // 3
             key: 'stateMachine',
-            value: States.ILIRECH
+            value: States.SACRIFICE
         },{ // 4
             key: 'positiveMachine',
             value: States.FREEZE
@@ -253,7 +266,7 @@ export const INSTINCTS = {
             value: States.MEND
         },{ // 2
             key: 'stateMachine',
-            value: States.MAIERETH
+            value: States.SACRIFICE
         },{ // 3
             key: 'stateMachine',
             value: States.KYRNAICISM
@@ -280,7 +293,7 @@ export const INSTINCTS = {
             value: States.MAIERETH
         },{ // 3
             key: 'stateMachine',
-            value: States.ILIRECH
+            value: States.SUTURE
         },{ // 4
             key: 'positiveMachine',
             value: States.CHIOMIC

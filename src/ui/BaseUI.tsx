@@ -488,7 +488,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
             </Suspense>
         </Show>
         <Suspense fallback={<Puff color="gold" />}>
-            <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} reputation={reputation} settings={settings} quests={quests} /> 
+            <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} reputation={reputation} settings={settings} quests={quests} instance={instance} /> 
         </Suspense>
         <Show when={showTutorial()}>
             <Suspense fallback={<Puff color="gold" />}>

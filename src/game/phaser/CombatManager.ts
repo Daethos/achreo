@@ -7,6 +7,7 @@ import StatusEffect, { PRAYERS } from '../../utility/prayer';
 import { COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from '../../utility/enemy';
 import { computerCombatCompiler } from '../../utility/computerCombat';
 import Party from '../entities/PartyComputer';
+// import { ENEMY_ATTACKS } from '../../utility/combatTypes';
 
 export class CombatManager extends Phaser.Scene {
     combatMachine: CombatMachine;
@@ -101,7 +102,7 @@ export class CombatManager extends Phaser.Scene {
         };
     };
 
-    partyMelee = (payload: { action: string; origin: string; enemyID: string; }) => {
+    partyAction = (payload: { action: string; origin: string; enemyID: string; }) => {
         const { action, origin, enemyID } = payload;
         let computerOne = this.context.party.find((e: Party) => e.enemyID === origin)!.computerCombatSheet;
         let computerTwo = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID).computerCombatSheet;
@@ -113,6 +114,7 @@ export class CombatManager extends Phaser.Scene {
         const result = computerCombatCompiler({computerOne,computerTwo});
         EventBus.emit(UPDATE_COMPUTER_COMBAT, result?.computerOne);
         EventBus.emit(UPDATE_COMPUTER_COMBAT, result?.computerTwo);
+        // EventBus.emit('party-combat-text', { text: `${result?.computerOne?.computer?.name} ${ENEMY_ATTACKS[result?.computerOne?.computerAction as keyof typeof ENEMY_ATTACKS]} ${result?.computerOne?.computerEnemy?.name} with their ${result?.computerOne?.computerWeapons[0]?.name} for ${Math.round(result?.computerOne?.realizedComputerDamage as number)} ${result?.computerOne?.computerDamageType} damage.` });
     };
 
 
@@ -140,9 +142,9 @@ export class CombatManager extends Phaser.Scene {
     };
     astrave = (id: string, enemyID: string): void => {
         if (!id) return;
-        if (id === this.context?.player?.playerID) {
+        if (id === this.context.player.playerID) {
             let caster = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
-            caster.chiomic(15);
+            caster.chiomic(15, id);
             this.context.player.isStunned = true;
             return;    
         };
@@ -602,7 +604,7 @@ export class CombatManager extends Phaser.Scene {
             } else { // Computer Combat
                 const party = this.context.party.find((e: Party) => e.enemyID === enemyID);
                 if (party) { // Party Combat
-                    this.partyMelee({action:'writhe',origin:enemyID,enemyID:id});
+                    this.partyAction({action:'writhe',origin:enemyID,enemyID:id});
                 } else { // CvC
                     this.computer({ type: 'Weapon', payload: { action: 'writhe', origin: enemyID, enemyID: id } });
                 };

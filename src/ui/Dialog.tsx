@@ -23,6 +23,7 @@ import Settings from '../models/settings';
 import { usePhaserEvent } from '../utility/hooks';
 import { fetchTutorial } from '../utility/enemy';
 import { getParty } from '../assets/db/db';
+import { IRefPhaserGame } from '../game/PhaserGame';
 
 const GET_FORGE_COST = {
     Common: 1,
@@ -263,9 +264,10 @@ interface StoryDialogProps {
     settings: Accessor<Settings>;
     quests: Accessor<QuestManager>;
     reputation: Accessor<Reputation>;
+    instance: IRefPhaserGame
 };
 
-export default function Dialog({ ascean, asceanState, combat, game, settings, quests, reputation }: StoryDialogProps) {
+export default function Dialog({ ascean, asceanState, combat, game, settings, quests, reputation, instance }: StoryDialogProps) {
     const [forgeModalShow, setForgeModalShow] = createSignal(false); 
     const [influence, setInfluence] = createSignal(combat()?.weapons[0]?.influences?.[0]);
     const [persuasionString, setPersuasionString] = createSignal<string>('');
@@ -297,7 +299,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
     const [thievery, setThievery] = createSignal<boolean>(false);
     const [specialMerchant, setSpecialMerchant] = createSignal<boolean>(false);
-    const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, result: false, win: false });
+    const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, party: false, result: false, win: false });
     const [rep, setRep] = createSignal<faction>(initFaction);
     const [party, setParty] = createSignal(false);
     const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
@@ -937,7 +939,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     ) } 
                     </>
                 ) : game().currentIntent === 'conditions' ? (
-                    rep()?.reputation >= 0 && party() && (
+                    rep()?.reputation >= 0 && party() ? (
                         <div style={{ color: "gold" }}>
                             <Typewriter stringText={`[Do you wish to recruit this enemy to your party? This is ${enemyArticle()} ${combat().computer?.name}. They are ${enemyDescriptionArticle()} ${combat().computer?.description}. You are allowed to have up to 2 party members accompanying you on your journey. Choose wisely.]`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
                             <br />
@@ -945,7 +947,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <Typewriter stringText={`Recruit ${rep().name} to join your party.`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                             </button>
                         </div>
-                    )
+                    ) : (                         
+                        <div style={{ color: "gold" }}>
+                            <Typewriter stringText={`[You have reached maximum party size. The ${combat().computer?.name} is not capable of being recruited to your party. You must remove a current party member in order to recruit them for your journey.]`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
+                        </div> )
                 ) : game().currentIntent === 'farewell' ? (
                     <>
                         { combat().persuasionScenario ? (
@@ -1073,7 +1078,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         </div>
         <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
-        <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} game={game} settings={settings} />
+        <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} game={game} settings={settings} instance={instance} />
         <Show when={showBuy() && merchantTable()?.length > 0}>
             <div class='modal'>
             <div class='creature-heading' style={{ position: 'absolute',left: '20%',top: '20%',height: '70%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' }}>

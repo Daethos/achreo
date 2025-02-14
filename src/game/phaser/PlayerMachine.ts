@@ -14,6 +14,7 @@ import Party from '../entities/PartyComputer';
 const DURATION = {
     CONSUMED: 2000,
     CONFUSED: 6000,
+    PARALYZED: 4000,
     POLYMORPHED: 8000,
     FEARED: 4000,
     FROZEN: 3000,
@@ -100,6 +101,7 @@ export default class PlayerMachine {
             .addState(States.DEVOUR, { onEnter: this.onDevourEnter, onUpdate: this.onDevourUpdate, onExit: this.onDevourExit })
             .addState(States.CONFUSED, { onEnter: this.onConfusedEnter, onUpdate: this.onConfusedUpdate, onExit: this.onConfusedExit })
             .addState(States.FEARED, { onEnter: this.onFearedEnter, onUpdate: this.onFearedUpdate, onExit: this.onFearedExit })
+            .addState(States.PARALYZED, { onEnter: this.onParalyzedEnter, onUpdate: this.onParalyzedUpdate, onExit: this.onParalyzedExit })
             .addState(States.POLYMORPHED, { onEnter: this.onPolymorphedEnter, onUpdate: this.onPolymorphedUpdate, onExit: this.onPolymorphedExit });
         this.stateMachine.setState(States.NONCOMBAT);
 
@@ -345,7 +347,6 @@ export default class PlayerMachine {
             this.player.leashTimer = undefined;
         };
         // this.scene.navMesh.debugDrawClear(); 
-        // (this.scene as Arena).computerDisengage();
     };
 
     onDefeatedEnter = () => {
@@ -977,9 +978,9 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ARC);
             if (this.player.touching.length > 0) {
-                this.player.touching.forEach((enemy: any) => {
-                    this.scene.combatManager.playerMelee(enemy.enemyID, 'arc');
-                });
+                for (let i = 0; i < this.player.touching.length; ++i) {
+                    this.scene.combatManager.playerMelee(this.player.touching[i].enemyID, 'arc');
+                };
             };
         };
         this.player.castbar.reset();
@@ -1084,7 +1085,6 @@ export default class PlayerMachine {
         const desperationCooldown = this.player.inCombat ? PLAYER.COOLDOWNS.LONG : PLAYER.COOLDOWNS.SHORT;
         if (!this.player.isComputer) this.player.setTimeEvent('desperationCooldown', desperationCooldown);
         this.healCheck(50);
-        // this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 50, id: this.player.playerID }, type: 'Health' });
         this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
     };
 
@@ -1236,7 +1236,6 @@ export default class PlayerMachine {
             if (!this.player.isComputer) this.player.setTimeEvent('healingCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
             this.scene.combatManager.useGrace(PLAYER.STAMINA.HEALING);
             this.player.castingSuccess = false;
-            // this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 25, id: this.player.playerID }, type: 'Health' });
             this.healCheck(25);
             this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
         };
@@ -1852,7 +1851,6 @@ export default class PlayerMachine {
             this.player.reconTimer = undefined;
             return;
         };
-        // this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 15, id: this.player.playerID }, type: 'Health' });
         this.healCheck(15);
         this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
     };
@@ -2661,8 +2659,6 @@ export default class PlayerMachine {
     onStealthExit = () => {
         this.player.isStealthing = false;
         this.stealthEffect(false);
-        // this.scene.stealthEngaged(false);
-        // EventBus.emit('outside-stance', 'stealth');
     };
 
     stealthEffect = (stealth: boolean) => {
@@ -3082,14 +3078,6 @@ export default class PlayerMachine {
         if (!this.player.isConfused) this.player.combatChecker(this.player.isConfused);
         this.player.playerVelocity.x = this.player.confuseVelocity.x;
         this.player.playerVelocity.y = this.player.confuseVelocity.y;
-        // if (this.player.isComputer) {
-        //     if (Math.abs(this.player.velocity?.x as number) > 0 || Math.abs(this.player.velocity?.y as number) > 0) {
-        //         this.player.getDirection();
-        //         this.player.anims.play(`player_running`, true);
-        //     } else {
-        //         this.player.anims.play(`player_idle`, true);
-        //     };
-        // };
     };
     onConfusedExit = () => { 
         if (this.player.isConfused) this.player.isConfused = false;
@@ -3162,14 +3150,6 @@ export default class PlayerMachine {
         if (!this.player.isFeared) this.player.combatChecker(this.player.isFeared);
         this.player.playerVelocity.x = this.player.fearVelocity.x;
         this.player.playerVelocity.y = this.player.fearVelocity.y;
-        // if (this.player.isComputer) {
-        //     if (Math.abs(this.player.velocity?.x as number) > 0 || Math.abs(this.player.velocity?.y as number) > 0) {
-        //         this.player.getDirection();
-        //         this.player.anims.play(`player_running`, true);
-        //     } else {
-        //         this.player.anims.play(`player_idle`, true);
-        //     };
-        // };
     };
     onFearedExit = () => { 
         if (!this.player.isComputer) {        
@@ -3206,7 +3186,46 @@ export default class PlayerMachine {
         screenShake(this.scene);
     };
     onFrozenExit = () => this.player.setStatic(false);
-
+    onParalyzedEnter = () => {
+        if (!this.player.isComputer) {
+            if (this.scene.hud.settings.desktop === false) {
+                this.scene.hud.joystick.joystick.setVisible(false);
+                this.scene.hud.rightJoystick.joystick.setVisible(false);
+            };
+            this.scene.hud.actionBar.setVisible(false);
+        };
+        this.player.specialCombatText = this.player.scene.showCombatText('Paralyzed', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.paralyzeDuration = DURATION.PARALYZED;
+        this.player.isAttacking = false;
+        this.player.isParrying = false;
+        this.player.isPosturing = false;
+        this.player.isRolling = false;
+        this.player.isDodging = false;
+        this.player.currentAction = ''; 
+        this.player.anims.pause();
+        this.player.setTint(0x888888); // 0x888888
+        this.player.setStatic(true);
+    };
+    onParalyzedUpdate = (dt: number) => {
+        this.player.setVelocity(0);
+        this.player.paralyzeDuration -= dt;
+        if (this.player.paralyzeDuration <= 0) this.player.isParalyzed = false;
+        this.player.combatChecker(this.player.isParalyzed);
+    }; 
+    onParalyzedExit = () => {
+        if (!this.player.isComputer) {        
+            if (this.scene.hud.settings.desktop === false) {
+                this.scene.hud.joystick.joystick.setVisible(true);
+                this.scene.hud.rightJoystick.joystick.setVisible(true);
+            };
+            this.scene.hud.actionBar.setVisible(true);
+        };
+        this.player.isParalyzed = false;
+        this.player.paralyzeDuration = DURATION.PARALYZED;
+        this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
+        this.player.setStatic(false);
+        this.player.anims.resume();
+    };
     onPolymorphedEnter = () => {
         if (!this.player.isComputer) {
             if (this.scene.hud.settings.desktop === false) {
@@ -3270,10 +3289,8 @@ export default class PlayerMachine {
     };
     onPolymorphedUpdate = (_dt: number) => {
         if (!this.player.isPolymorphed) this.player.combatChecker(this.player.isPolymorphed);
-        // this.player.setVelocity(this.player.polymorphVelocity.x, this.player.polymorphVelocity.y);
         this.player.playerVelocity.x = this.player.polymorphVelocity.x;
         this.player.playerVelocity.y = this.player.polymorphVelocity.y;
-        // if (this.player.isComputer) this.player.anims.play(`rabbit_${this.player.polymorphMovement}_${this.player.polymorphDirection}`, true);
     };
     onPolymorphedExit = () => { 
         if (!this.player.isComputer) {        

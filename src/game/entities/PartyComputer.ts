@@ -2,6 +2,7 @@ import Ascean from "../../models/ascean";
 import Equipment from "../../models/equipment";
 import { ComputerCombat, initComputerCombat } from "../../stores/computer";
 import { Compiler } from "../../utility/ascean";
+import { ENEMY_ATTACKS } from "../../utility/combatTypes";
 import { BROADCAST_DEATH, COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
 import { PARTY_SPECIAL } from "../../utility/party";
 import { PLAYER } from "../../utility/player";
@@ -25,6 +26,7 @@ const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const DURATION = {
     CONSUMED: 2000,
     CONFUSED: 6000,
+    PARALYZED: 4000,
     POLYMORPHED: 8000,
     FEARED: 4000,
     FROZEN: 3000,
@@ -67,6 +69,7 @@ export default class Party extends Entity {
     castingSuccess: boolean = false;
     isCounterSpelling: boolean = false;
     isCaerenic: boolean = false;
+    paralyzeDuration: number = DURATION.PARALYZED;
     slowDuration: number = DURATION.SLOWED;
     defeatedDuration: number = PLAYER.DURATIONS.DEFEATED;
     highlight: Phaser.GameObjects.Graphics;
@@ -487,9 +490,10 @@ export default class Party extends Entity {
     };
 
     updateThreat(id: string, threat: number) {
-        this.enemies.forEach(enemy => {
-            if (enemy.id === id) enemy.threat += threat;
-        });
+        const enemyToUpdate = this.enemies.find(enemy => enemy.id === id);
+        if (enemyToUpdate) {
+            enemyToUpdate.threat += threat;
+        };
         if (this.enemies.length <= 1 || this.health <= 0) return;
         this.enemies = this.enemies.sort((a, b) => b.threat - a.threat);
         let topEnemy: string = this.enemies[0].id;
@@ -504,8 +508,9 @@ export default class Party extends Entity {
 
     computerCombatUpdate = (e: ComputerCombat) => {
         if (this.enemyID !== e.personalID) return;
-        if (this.health > e.newComputerHealth) {
-            let damage: number | string = Math.round(this.health - e.newComputerHealth);
+        const { enemyID, newComputerHealth } = e;
+        if (this.health > newComputerHealth) {
+            let damage: number | string = Math.round(this.health - newComputerHealth);
             damage = e.computerEnemyCriticalSuccess ? `${damage} (Critical)` : e.computerEnemyGlancingBlow ? `${damage} (Glancing)` : damage;
             this.scrollingCombatText = this.scene.showCombatText(`${damage}`, 1500, 'damage', e.computerEnemyCriticalSuccess, false, () => this.scrollingCombatText = undefined);
             if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
@@ -520,30 +525,30 @@ export default class Party extends Entity {
             };
             if (this.isConfused) this.isConfused = false;
             if (this.isPolymorphed) this.isPolymorphed = false;
-            if (this.isMalicing) this.malice(e.enemyID);
+            if (this.isMalicing) this.malice(enemyID);
             if (this.isMending) this.mend();
-            if ((!this.inComputerCombat || !this.currentTarget) && e.newComputerHealth > 0 && e.enemyID !== this.enemyID) {
+            if ((!this.inComputerCombat || !this.currentTarget) && newComputerHealth > 0 && enemyID !== this.enemyID) {
                 const enemy = this.scene.enemies.find((en: Enemy) => en.enemyID === e.damagedID);
                 if (enemy) {
                     this.checkComputerEnemyCombatEnter(enemy);
                 };
             };
-            const id = this.enemies.find((en: ENEMY) => en.id === e.enemyID);
-            if (id && e.newComputerHealth > 0) {
-                this.updateThreat(e.enemyID, calculateThreat(Math.round(this.health - e.newComputerHealth), e.newComputerHealth, this.ascean.health.max));
-            } else if (!id && e.newComputerHealth > 0 && e.enemyID !== '') {
-                this.enemies.push({id:e.enemyID,threat:0});
-                this.updateThreat(e.enemyID, calculateThreat(Math.round(this.health - e.newComputerHealth), e.newComputerHealth, this.ascean.health.max));
+            const id = this.enemies.find((en: ENEMY) => en.id === enemyID);
+            if (id && newComputerHealth > 0) {
+                this.updateThreat(enemyID, calculateThreat(Math.round(this.health - newComputerHealth), newComputerHealth, this.ascean.health.max));
+            } else if (!id && newComputerHealth > 0 && enemyID !== '') {
+                this.enemies.push({id:enemyID,threat:0});
+                this.updateThreat(enemyID, calculateThreat(Math.round(this.health - newComputerHealth), newComputerHealth, this.ascean.health.max));
             };
             this.computerSoundEffects(e);
-        } else if (this.health < e.newComputerHealth) { 
-            let heal = Math.round(e.newComputerHealth - this.health);
+        } else if (this.health < newComputerHealth) { 
+            let heal = Math.round(newComputerHealth - this.health);
             this.scrollingCombatText = this.scene.showCombatText(`${heal}`, 1500, 'heal', false, false, () => this.scrollingCombatText = undefined);
         }; 
-        this.health = e.newComputerHealth;
+        this.health = newComputerHealth;
         this.computerCombatSheet.newComputerHealth = this.health;
         if (this.healthbar.getTotal() < e.computerHealth) this.healthbar.setTotal(e.computerHealth);
-        this.updateHealthBar(e.newComputerHealth);
+        this.updateHealthBar(newComputerHealth);
         this.weapons = e.computerWeapons;
         this.currentRound = e.combatRound;
         this.computerCombatSheet.criticalSuccess = false;
@@ -551,10 +556,13 @@ export default class Party extends Entity {
         this.computerCombatSheet.computerWin = e.computerWin;
         if (e.newComputerEnemyHealth <= 0 && this.computerCombatSheet.computerWin) {
             this.computerCombatSheet.computerWin = false;
-            this.clearComputerCombatWin(e.enemyID);
+            this.clearComputerCombatWin(enemyID);
         };
         this.checkGear(e.computer?.shield as Equipment, e.computerWeapons?.[0] as Equipment, e.computerDamageType.toLowerCase());
         EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
+        if (e?.realizedComputerDamage > 0) {
+            EventBus.emit('party-combat-text', { text: `${this.ascean.name} ${ENEMY_ATTACKS[e.computerAction as keyof typeof ENEMY_ATTACKS]} ${e.computerEnemy?.name} with their ${e.computerWeapons[0]?.name} for ${Math.round(e?.realizedComputerDamage as number)} ${e.computerDamageType} damage.` });
+        };
     };
     
 
@@ -805,12 +813,13 @@ export default class Party extends Entity {
         this.isLeaping = true;
         const target = this.currentTarget ? this.currentTarget.position : this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
+        const distance = direction.length();
         direction.normalize();
         this.flipX = direction.x < 0;
         this.scene.tweens.add({
             targets: this,
-            x: this.x + (direction.x * 200),
-            y: this.y + (direction.y * 200),
+            x: this.x + (direction.x * Math.min(distance, 200)),
+            y: this.y + (direction.y * Math.min(distance, 200)),
             duration: 900,
             ease: Phaser.Math.Easing.Back.InOut,
             onStart: () => {
@@ -821,9 +830,9 @@ export default class Party extends Entity {
             onComplete: () => { 
                 this.isLeaping = false; 
                 if (this.touching.length > 0) {
-                    this.touching.forEach((enemy) => {
-                        this.scene.combatManager.partyMelee({enemyID: enemy.enemyID, action: 'leap', origin: this.enemyID});
-                    });
+                    for (let i = 0; i < this.touching.length; ++i) {
+                        this.scene.combatManager.partyAction({enemyID: this.touching[i].enemyID, action: 'leap', origin: this.enemyID});
+                    };
                 };
             },
         });       
@@ -852,7 +861,8 @@ export default class Party extends Entity {
             },
             onComplete: () => {
                 if (this.rushedEnemies.length > 0) {
-                    this.rushedEnemies.forEach((enemy) => {
+                    for (let i = 0; i < this.rushedEnemies.length; ++i) {
+                        const enemy = this.rushedEnemies[i];
                         if (enemy.health <= 0) return;
                         if (enemy.isWarding || enemy.isShielding || enemy.isProtecting) {
                             if (enemy.isShielding) enemy.shield();
@@ -862,10 +872,11 @@ export default class Party extends Entity {
                         if (enemy.isMenacing) enemy.menace(this.enemyID);
                         if (enemy.isMultifaring) enemy.multifarious(this.enemyID);
                         if (enemy.isMystifying) enemy.mystify(this.enemyID);
-                        this.scene.combatManager.partyMelee({enemyID: enemy.enemyID, action: 'rush', origin: this.enemyID});
-                    });
+                        this.scene.combatManager.partyAction({enemyID: enemy.enemyID, action: 'rush', origin: this.enemyID});
+                    };
                 } else if (this.touching.length > 0) {
-                    this.touching.forEach((enemy) => {
+                    for (let i = 0; i < this.touching.length; ++i) {
+                        const enemy = this.touching[i];
                         if (enemy.health <= 0) return;
                         if (enemy.isWarding || enemy.isShielding || enemy.isProtecting) {
                             if (enemy.isShielding) enemy.shield();
@@ -875,8 +886,8 @@ export default class Party extends Entity {
                         if (enemy.isMenacing) enemy.menace(this.enemyID);
                         if (enemy.isMultifaring) enemy.multifarious(this.enemyID);
                         if (enemy.isMystifying) enemy.mystify(this.enemyID);
-                        this.scene.combatManager.partyMelee({enemyID: enemy.enemyID, action: 'rush', origin: this.enemyID});
-                    });
+                        this.scene.combatManager.partyAction({enemyID: enemy.enemyID, action: 'rush', origin: this.enemyID});
+                    };
                 };
                 this.isRushing = false;
             },
@@ -902,7 +913,8 @@ export default class Party extends Entity {
                 this.isAttacking = true;
                 this.specialCombatText = this.scene.showCombatText('Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined);
                 if (this.touching.length > 0) {
-                    this.touching.forEach((enemy) => {
+                    for (let i = 0; i < this.touching.length; ++i) {
+                        const enemy = this.touching[i];
                         if (enemy.health <= 0) return;
                         if (enemy.isWarding || enemy.isShielding || enemy.isProtecting) {
                             if (enemy.isShielding) enemy.shield();
@@ -912,8 +924,8 @@ export default class Party extends Entity {
                         if (enemy.isMenacing) enemy.menace(this.enemyID);
                         if (enemy.isMultifaring) enemy.multifarious(this.enemyID);
                         if (enemy.isMystifying) enemy.mystify(this.enemyID);
-                        this.scene.combatManager.partyMelee({ action: 'storm', origin: this.enemyID, enemyID: enemy.enemyID });
-                    });
+                        this.scene.combatManager.partyAction({ action: 'storm', origin: this.enemyID, enemyID: enemy.enemyID });
+                    };
                 };
             },
             onComplete: () => {this.isStorming = false; this.adjustSpeed(-0.5);},
@@ -1068,6 +1080,17 @@ export default class Party extends Entity {
         };
     };
 
+    pursue = (id: string) => {
+        const enemy = this.scene.enemies.find(e => e.enemyID === id);
+        if (!enemy) return;
+        this.enemySound('wild', true);
+        if (enemy.flipX) {
+            this.setPosition(enemy.x + 16, enemy.y);
+        } else {
+            this.setPosition(enemy.x - 16, enemy.y);
+        };
+    };
+
     shield = () => {
         if (this.negationBubble === undefined || this.isShielding === false) {
             if (this.negationBubble) {
@@ -1091,6 +1114,13 @@ export default class Party extends Entity {
         const shim = shimmers[Math.floor(Math.random() * shimmers.length)];
         this.enemySound('stealth', true);
         this.specialCombatText = this.scene.showCombatText(shim, 1500, 'effect', false, true, () => this.specialCombatText = undefined);
+    };
+
+    tether = (id: string) => {
+        const enemy = this.scene.enemies.find(e => e.enemyID === id);
+        if (!enemy) return;
+        this.enemySound('dungeon', true);
+        this.hook(enemy, 1000);
     };
 
     ward = (id: string) => {
@@ -1131,7 +1161,6 @@ export default class Party extends Entity {
         this.currentTarget = undefined;
         this.removeHighlight();
         this.enemies = [];
-        // this.playerMachine.stateMachine.setState(States.FOLLOW);
     };
 
     engage = (enemy: Enemy) => {
@@ -1523,6 +1552,10 @@ export default class Party extends Entity {
             this.playerMachine.stateMachine.setState(States.FEARED);
             return;
         };
+        if (this.isParalyzed && !this.sansSuffering('isParalyzed') && !this.playerMachine.stateMachine.isCurrentState(States.PARALYZED)) {
+            this.playerMachine.stateMachine.setState(States.PARALYZED);
+            return;
+        };
         if (this.isPolymorphed && !this.sansSuffering('isPolymorphed') && !this.playerMachine.stateMachine.isCurrentState(States.POLYMORPHED)) {
             this.playerMachine.stateMachine.setState(States.POLYMORPHED);
             return;
@@ -1553,6 +1586,7 @@ export default class Party extends Entity {
     };
 
     partyActionSuccess = () => {
+        if (!this.attackedTarget) return;
         if (this.particleEffect) {
             const action = this.particleEffect.action;
             this.killParticle();
@@ -1562,36 +1596,44 @@ export default class Party extends Entity {
             };
             if (this.attackedTarget?.health <= 0) return;
             if (!this.isAstrifying) {
-                if (this?.attackedTarget?.isShimmering && Phaser.Math.Between(1, 100) > 50) {
-                    this?.attackedTarget?.shimmer();
+                if (this.attackedTarget.isShimmering && Phaser.Math.Between(1, 100) > 50) {
+                    this.attackedTarget.shimmer();
                     return;
                 };
-                if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shield();
-                    if (this.attackedTarget?.isWarding) this.attackedTarget?.ward(this.enemyID);
+                if (this.attackedTarget.isAbsorbing || this.attackedTarget.isEnveloping || this.attackedTarget.isProtecting || this.attackedTarget.isShielding || this.attackedTarget.isWarding) {
+                    if (this.attackedTarget.isAbsorbing === true) this.attackedTarget.absorb();
+                    if (this.attackedTarget.isEnveloping === true) this.attackedTarget.envelop();
+                    if (this.attackedTarget.isShielding === true) this.attackedTarget.shield();
+                    if (this.attackedTarget.isWarding === true) this.attackedTarget.ward(this.enemyID);
                     return;
                 };
-                if (this.attackedTarget.isMenacing) this.attackedTarget.menace(this.enemyID); 
-                if (this.attackedTarget.isMultifaring) this.attackedTarget.multifarious(this.enemyID); 
-                if (this.attackedTarget.isMystifying) this.attackedTarget.mystify(this.enemyID); 
+                if (this.attackedTarget.isMenacing === true) this.attackedTarget.menace(this.enemyID); 
+                if (this.attackedTarget.isMultifaring === true) this.attackedTarget.multifarious(this.enemyID); 
+                if (this.attackedTarget.isMystifying === true) this.attackedTarget.mystify(this.enemyID);
+                if (this.attackedTarget.isShadowing === true) this.attackedTarget.pursue(this.enemyID);
+                if (this.attackedTarget.isTethering === true) this.attackedTarget.tether(this.enemyID);
             };
-            this.scene.combatManager.partyMelee({ action, origin: this.enemyID, enemyID: this.attackedTarget.enemyID });
+            this.scene.combatManager.partyAction({ action, origin: this.enemyID, enemyID: this.attackedTarget.enemyID });
         } else {
             if (!this.isAstrifying) {
-                if (this?.attackedTarget?.isShimmering && Phaser.Math.Between(1, 100) > 50) {
-                    this?.attackedTarget?.shimmer();
+                if (this.attackedTarget.isShimmering && Phaser.Math.Between(1, 100) > 50) {
+                    this.attackedTarget.shimmer();
                     return;
                 };
-                if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shield();
-                    if (this.attackedTarget?.isWarding) this.attackedTarget?.ward(this.enemyID);
+                if (this.attackedTarget.isAbsorbing || this.attackedTarget.isEnveloping || this.attackedTarget.isProtecting || this.attackedTarget.isShielding || this.attackedTarget.isWarding) {
+                    if (this.attackedTarget.isAbsorbing === true) this.attackedTarget.absorb();
+                    if (this.attackedTarget.isEnveloping === true) this.attackedTarget.envelop();
+                    if (this.attackedTarget.isShielding === true) this.attackedTarget.shield();
+                    if (this.attackedTarget.isWarding === true) this.attackedTarget.ward(this.enemyID);
                     return;    
                 };
-                if (this.attackedTarget?.isMenacing) this.attackedTarget?.menace(this.enemyID);
-                if (this.attackedTarget?.isMultifaring) this.attackedTarget?.multifarious(this.enemyID);
-                if (this.attackedTarget?.isMystifying) this.attackedTarget?.mystify(this.enemyID);
+                if (this.attackedTarget.isMenacing === true) this.attackedTarget.menace(this.enemyID);
+                if (this.attackedTarget.isMultifaring === true) this.attackedTarget.multifarious(this.enemyID);
+                if (this.attackedTarget.isMystifying === true) this.attackedTarget.mystify(this.enemyID);
+                if (this.attackedTarget.isShadowing === true) this.attackedTarget.pursue(this.enemyID);
+                if (this.attackedTarget.isTethering === true) this.attackedTarget.tether(this.enemyID);
             };
-            this.scene.combatManager.partyMelee({ action: this.currentAction, origin: this.enemyID, enemyID: this.attackedTarget.enemyID } );
+            this.scene.combatManager.partyAction({ action: this.currentAction, origin: this.enemyID, enemyID: this.attackedTarget.enemyID } );
         };
         if (this.isStealthing) {
             this.scene.combatManager.paralyze(this.attackedTarget.enemyID);

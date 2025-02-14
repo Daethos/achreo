@@ -20,6 +20,7 @@ const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const DURATION = {
     CONSUMED: 2000,
     CONFUSED: 6000,
+    PARALYZED: 4000,
     POLYMORPHED: 8000,
     FEARED: 4000,
     FROZEN: 3000,
@@ -63,6 +64,7 @@ export default class Player extends Entity {
     castingSuccess: boolean = false;
     isCounterSpelling: boolean = false;
     isCaerenic: boolean = false;
+    paralyzeDuration: number = DURATION.PARALYZED;
     slowDuration: number = DURATION.SLOWED;
     defeatedDuration: number = PLAYER.DURATIONS.DEFEATED;
     highlight: Phaser.GameObjects.Graphics;
@@ -534,16 +536,45 @@ export default class Player extends Entity {
         };
     };
 
-    constantUpdate = (e: Combat) => {
-        this.checkGear(e.player?.shield as Equipment, e.weapons?.[0] as Equipment, e.playerDamageType.toLowerCase());
+    checkGear = (shield: Equipment, weapon: Equipment, damage: string) => {
+        if (!shield || !weapon) return;
+        this.currentDamageType = damage;    
+        this.hasMagic = this.checkDamageType(damage, 'magic');
+        this.checkMeleeOrRanged(weapon);
+        let staminaModifier = 0;
+        if (this.currentWeaponSprite !== assetSprite(weapon)) {
+            this.currentWeaponSprite = assetSprite(weapon);
+            this.spriteWeapon.setTexture(this.currentWeaponSprite);
+            if (weapon.grip === 'One Hand') {
+                this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
+            } else {
+                staminaModifier += 2;
+                this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
+            };
+        };
+        if (this.currentShieldSprite !== assetSprite(shield)) {
+            this.currentShieldSprite = assetSprite(shield);
+            this.spriteShield.setTexture(this.currentShieldSprite);
+            if (shield.type === "Medium Shield") {
+                staminaModifier += 1;
+            } else if (shield.type === "Large Shield") {
+                staminaModifier += 2;
+            } else if (shield.type === "Great Shield") {
+                staminaModifier += 3;
+            };
+        };
+        this.staminaModifier = staminaModifier;
     };
+
+    constantUpdate = (e: Combat) => this.checkGear(e.player?.shield as Equipment, e.weapons?.[0] as Equipment, e.playerDamageType.toLowerCase());
     
     eventUpdate = (e: Combat) => {
         if (this.scene.scene.isSleeping(this.scene.scene.key)) return;
-        if (this.health > e.newPlayerHealth) {
-            let damage: number | string = Math.round(this.health - e.newPlayerHealth);
-            damage = e.computerCriticalSuccess === true ? `${damage} (Critical)` : e.computerGlancingBlow === true ? `${damage} (Glancing)` : damage;
-            this.scrollingCombatText = this.scene.showCombatText(`${damage}`, PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.scrollingCombatText = undefined);
+        const { computerCriticalSuccess, newPlayerHealth } = e;
+        if (this.health > newPlayerHealth) {
+            let damage: number | string = Math.round(this.health - newPlayerHealth);
+            damage = computerCriticalSuccess === true ? `${damage} (Critical)` : e.computerGlancingBlow === true ? `${damage} (Glancing)` : damage;
+            this.scrollingCombatText = this.scene.showCombatText(`${damage}`, PLAYER.DURATIONS.TEXT, 'damage', computerCriticalSuccess, false, () => this.scrollingCombatText = undefined);
             if (this.isConfused) this.isConfused = false;
             if (this.isPolymorphed) this.isPolymorphed = false;
             if (this.reactiveBubble) {
@@ -566,30 +597,30 @@ export default class Player extends Entity {
                 };
             };
         };
-        if (this.health < e.newPlayerHealth) this.scrollingCombatText = this.scene.showCombatText(`${Math.round(e.newPlayerHealth - this.health)}`, PLAYER.DURATIONS.TEXT, 'heal', false, false, () => this.scrollingCombatText = undefined);
-        this.health = e.newPlayerHealth;
+        if (this.health < newPlayerHealth) this.scrollingCombatText = this.scene.showCombatText(`${Math.round(newPlayerHealth - this.health)}`, PLAYER.DURATIONS.TEXT, 'heal', false, false, () => this.scrollingCombatText = undefined);
+        this.health = newPlayerHealth;
         this.healthbar.setValue(this.health);
         if (this.healthbar.getTotal() < e.playerHealth) this.healthbar.setTotal(e.playerHealth);
         if (e.computerParrySuccess === true) {
             this.isStunned = true;
             this.scene.combatManager.combatMachine.input('computerParrySuccess', false);
-            this.resistCombatText = this.scene.showCombatText('Parry', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.resistCombatText = undefined);    
+            this.resistCombatText = this.scene.showCombatText('Parry', PLAYER.DURATIONS.TEXT, 'damage', computerCriticalSuccess, false, () => this.resistCombatText = undefined);    
         };
         if (e.rollSuccess === true) {
             this.specialCombatText = this.scene.showCombatText('Roll', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
-            this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
-            this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
+            // this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
+            // this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
             this.scene.combatManager.useStamina(-5);
         };
         if (e.parrySuccess === true) {
             this.specialCombatText = this.scene.showCombatText('Parry', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
             this.scene.combatManager.stunned(e.enemyID);
-            this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
-            this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'parry');
-            this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
+            // this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
+            // this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'parry');
+            // this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
             this.scene.combatManager.useStamina(-5);
         };
-        if (e.computerRollSuccess === true) this.resistCombatText = this.scene.showCombatText('Roll', PLAYER.DURATIONS.TEXT, 'damage', e.computerCriticalSuccess, false, () => this.resistCombatText = undefined);
+        if (e.computerRollSuccess === true) this.resistCombatText = this.scene.showCombatText('Roll', PLAYER.DURATIONS.TEXT, 'damage', computerCriticalSuccess, false, () => this.resistCombatText = undefined);
         if (this.currentRound !== e.combatRound && this.scene.combat === true) {
             this.currentRound = e.combatRound;
             if (e.computerDamaged || e.playerDamaged || e.rollSuccess || e.parrySuccess || e.computerRollSuccess || e.computerParrySuccess) this.soundEffects(e);
@@ -597,13 +628,13 @@ export default class Player extends Entity {
         if (e.newComputerHealth <= 0 && e.playerWin === true) {
             this.defeatedEnemyCheck(e.enemyID);
         };
-        if (e.newPlayerHealth <= 0) {
+        if (newPlayerHealth <= 0) {
             this.isDefeated = true;
             this.disengage();
         };    
         if (e.playerAttributes?.stamina as number > this.maxStamina) this.maxStamina = e.playerAttributes?.stamina as number;
         if (e.playerAttributes?.grace as number > this.maxGrace) this.maxGrace = e.playerAttributes?.grace as number;
-        if (e.criticalSuccess || e.glancingBlow || e.computerGlancingBlow || e.computerCriticalSuccess) {
+        if (e.criticalSuccess || e.glancingBlow || e.computerGlancingBlow || computerCriticalSuccess) {
             EventBus.emit('blend-combat', { 
                 computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false, parrySuccess: false, computerParrySuccess: false, rollSuccess: false, computerRollSuccess: false, criticalSuccess: false, computerCriticalSuccess: false, religiousSuccess: false,
             });
@@ -620,6 +651,7 @@ export default class Player extends Entity {
         this.isLeaping = true;
         const target = this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
+        const distance = direction.length();
         direction.normalize();
         this.flipX = direction.x < 0;
         this.scene.tweens.add({
@@ -631,8 +663,8 @@ export default class Player extends Entity {
         });
         this.scene.tweens.add({
             targets: this,
-            x: this.x + (direction.x * 200),
-            y: this.y + (direction.y * 200),
+            x: this.x + (direction.x * Math.min(distance, 200)),
+            y: this.y + (direction.y * Math.min(distance, 200)),
             duration: 900,
             ease: Phaser.Math.Easing.Back.InOut,
             onStart: () => {
@@ -646,9 +678,9 @@ export default class Player extends Entity {
                 this.scene.combatManager.useGrace(PLAYER.STAMINA.LEAP);
                 this.isLeaping = false; 
                 if (this.touching.length > 0) {
-                    this.touching.forEach((enemy) => {
-                        this.scene.combatManager.playerMelee(enemy.enemyID, 'leap');
-                    });
+                    for (let i = 0; i < this.touching.length; ++i) {
+                        this.scene.combatManager.playerMelee(this.touching[i].enemyID, 'leap');
+                    };
                 };
             },
         });       
@@ -685,13 +717,33 @@ export default class Player extends Entity {
             },
             onComplete: () => {
                 if (this.rushedEnemies.length > 0) {
-                    this.rushedEnemies.forEach((enemy) => {
+                    for (let i = 0; i < this.rushedEnemies.length; ++i) {
+                        const enemy = this.rushedEnemies[i];
+                        if (enemy.health <= 0) return;
+                        if (!this.isAstrifying && (enemy.isWarding || enemy.isShielding || enemy.isProtecting)) {
+                            if (enemy.isShielding) enemy.shield();
+                            if (enemy.isWarding) enemy.ward(this.playerID);
+                            return;
+                        };
+                        if (enemy.isMenacing) enemy.menace(this.playerID);
+                        if (enemy.isMultifaring) enemy.multifarious(this.playerID);
+                        if (enemy.isMystifying) enemy.mystify(this.playerID);    
                         this.scene.combatManager.playerMelee(enemy.enemyID, 'rush');
-                    });
+                    };
                 } else if (this.touching.length > 0) {
-                    this.touching.forEach((enemy) => {
+                    for (let i = 0; i < this.touching.length; ++i) {
+                        const enemy = this.touching[i];
+                        if (enemy.health <= 0) return;
+                        if (!this.isAstrifying && (enemy.isWarding || enemy.isShielding || enemy.isProtecting)) {
+                            if (enemy.isShielding) enemy.shield();
+                            if (enemy.isWarding) enemy.ward(this.playerID);
+                            return;
+                        };
+                        if (enemy.isMenacing) enemy.menace(this.playerID);
+                        if (enemy.isMultifaring) enemy.multifarious(this.playerID);
+                        if (enemy.isMystifying) enemy.mystify(this.playerID);    
                         this.scene.combatManager.playerMelee(enemy.enemyID, 'rush');
-                    });
+                    };
                 };
                 this.isRushing = false;
             },
@@ -725,9 +777,10 @@ export default class Player extends Entity {
                 screenShake(this.scene);
                 this.specialCombatText = this.scene.showCombatText('Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined);
                 if (this.touching.length > 0) {
-                    this.touching.forEach((enemy) => {
+                    for (let i = 0; i < this.touching.length; ++i) {
+                        const enemy = this.touching[i];
                         if (enemy.health <= 0) return;
-                        if (enemy.isWarding || enemy.isShielding || enemy.isProtecting) {
+                        if (!this.isAstrifying && (enemy.isWarding || enemy.isShielding || enemy.isProtecting)) {
                             if (enemy.isShielding) enemy.shield();
                             if (enemy.isWarding) enemy.ward(this.playerID);
                             return;
@@ -736,7 +789,7 @@ export default class Player extends Entity {
                         if (enemy.isMultifaring) enemy.multifarious(this.playerID);
                         if (enemy.isMystifying) enemy.mystify(this.playerID);    
                         this.scene.combatManager.playerMelee(enemy.enemyID, 'storm');
-                    });
+                    };
                 };
             },
             onComplete: () => this.isStorming = false,
@@ -786,36 +839,6 @@ export default class Player extends Entity {
         } catch (err) {
             console.warn(err, 'Error Setting Sound Effects');
         };
-    };
-
-    checkGear = (shield: Equipment, weapon: Equipment, damage: string) => {
-        if (!shield || !weapon) return;
-        this.currentDamageType = damage;    
-        this.hasMagic = this.checkDamageType(damage, 'magic');
-        this.checkMeleeOrRanged(weapon);
-        let staminaModifier = 0;
-        if (this.currentWeaponSprite !== assetSprite(weapon)) {
-            this.currentWeaponSprite = assetSprite(weapon);
-            this.spriteWeapon.setTexture(this.currentWeaponSprite);
-            if (weapon.grip === 'One Hand') {
-                this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
-            } else {
-                staminaModifier += 2;
-                this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
-            };
-        };
-        if (this.currentShieldSprite !== assetSprite(shield)) {
-            this.currentShieldSprite = assetSprite(shield);
-            this.spriteShield.setTexture(this.currentShieldSprite);
-            if (shield.type === "Medium Shield") {
-                staminaModifier += 1;
-            } else if (shield.type === "Large Shield") {
-                staminaModifier += 2;
-            } else if (shield.type === "Great Shield") {
-                staminaModifier += 3;
-            };
-        };
-        this.staminaModifier = staminaModifier;
     };
 
     enemyUpdate = (e: string) => {
@@ -1300,6 +1323,7 @@ export default class Player extends Entity {
     };
 
     playerActionSuccess = () => {
+        if (!this.attackedTarget) return;
         if (this.particleEffect) {
             const action = this.particleEffect.action;
             this.killParticle();
@@ -1309,18 +1333,22 @@ export default class Player extends Entity {
             };
             if (this.attackedTarget?.health <= 0) return;
             if (!this.isAstrifying) {
-                if (this?.attackedTarget?.isShimmering && Phaser.Math.Between(1, 100) > 50) {
-                    this?.attackedTarget?.shimmer();
+                if (this.attackedTarget.isShimmering && Phaser.Math.Between(1, 100) > 50) {
+                    this.attackedTarget.shimmer();
                     return;
                 };
-                if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shield();
-                    if (this.attackedTarget?.isWarding) this.attackedTarget?.ward(this.playerID);
+                if (this.attackedTarget.isAbsorbing || this.attackedTarget.isEnveloping || this.attackedTarget.isProtecting || this.attackedTarget.isShielding || this.attackedTarget.isWarding) {
+                    if (this.attackedTarget.isAbsorbing === true) this.attackedTarget.absorb();
+                    if (this.attackedTarget.isEnveloping === true) this.attackedTarget.envelop();
+                    if (this.attackedTarget.isShielding === true) this.attackedTarget.shield();
+                    if (this.attackedTarget.isWarding === true) this.attackedTarget.ward(this.playerID);
                     return;
                 };
-                if (this.attackedTarget.isMenacing) this.attackedTarget.menace(this.playerID); 
-                if (this.attackedTarget.isMultifaring) this.attackedTarget.multifarious(this.playerID); 
-                if (this.attackedTarget.isMystifying) this.attackedTarget.mystify(this.playerID); 
+                if (this.attackedTarget.isMenacing === true) this.attackedTarget.menace(this.playerID); 
+                if (this.attackedTarget.isMultifaring === true) this.attackedTarget.multifarious(this.playerID); 
+                if (this.attackedTarget.isMystifying === true) this.attackedTarget.mystify(this.playerID); 
+                if (this.attackedTarget.isShadowing === true) this.attackedTarget.pursue(this.playerID);
+                if (this.attackedTarget.isTethering === true) this.attackedTarget.tether(this.playerID);
             };
             if (this.enemyIdMatch()) {
                 this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: action }});
@@ -1344,14 +1372,18 @@ export default class Player extends Entity {
                     this?.attackedTarget?.shimmer();
                     return;
                 };
-                if (this.attackedTarget?.isProtecting || this.attackedTarget?.isShielding || this.attackedTarget?.isWarding) {
-                    if (this.attackedTarget?.isShielding) this.attackedTarget?.shield();
-                    if (this.attackedTarget?.isWarding) this.attackedTarget?.ward(this.playerID);
+                if (this.attackedTarget.isAbsorbing || this.attackedTarget.isEnveloping || this.attackedTarget.isProtecting || this.attackedTarget.isShielding || this.attackedTarget.isWarding) {
+                    if (this.attackedTarget.isAbsorbing === true) this.attackedTarget.absorb();
+                    if (this.attackedTarget.isEnveloping === true) this.attackedTarget.envelop();
+                    if (this.attackedTarget.isShielding === true) this.attackedTarget.shield();
+                    if (this.attackedTarget.isWarding === true) this.attackedTarget.ward(this.playerID);
                     return;    
                 };
-                if (this.attackedTarget?.isMenacing) this.attackedTarget?.menace(this.playerID);
-                if (this.attackedTarget?.isMultifaring) this.attackedTarget?.multifarious(this.playerID);
-                if (this.attackedTarget?.isMystifying) this.attackedTarget?.mystify(this.playerID);
+                if (this.attackedTarget.isMenacing === true) this.attackedTarget.menace(this.playerID);
+                if (this.attackedTarget.isMultifaring === true) this.attackedTarget.multifarious(this.playerID);
+                if (this.attackedTarget.isMystifying === true) this.attackedTarget.mystify(this.playerID);
+                if (this.attackedTarget.isShadowing === true) this.attackedTarget.pursue(this.playerID);
+                if (this.attackedTarget.isTethering === true) this.attackedTarget.tether(this.playerID);
             };
             if (this.enemyIdMatch()) {
                 this.scene.combatManager.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: action } });
@@ -1571,6 +1603,10 @@ export default class Player extends Entity {
         };
         if (this.isFrozen && !this.playerMachine.negativeMachine.isCurrentState(States.FROZEN)) {
             this.playerMachine.negativeMachine.setState(States.FROZEN);
+            return;
+        };
+        if (this.isParalyzed && !this.sansSuffering('isParalyzed') && !this.playerMachine.stateMachine.isCurrentState(States.PARALYZED)) {
+            this.playerMachine.stateMachine.setState(States.PARALYZED);
             return;
         };
         if (this.isPolymorphed && !this.playerMachine.stateMachine.isCurrentState(States.POLYMORPHED)) {

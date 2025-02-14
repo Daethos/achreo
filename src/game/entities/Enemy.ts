@@ -102,6 +102,8 @@ export default class Enemy extends Entity {
     targetID: string = '';
     defeatedTime: number = 120000;
     killingBlow: string = '';
+    hookTime: number = 0;
+    spellName: string = '';
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: "enemy", ascean: undefined, health: 1 }); 
@@ -124,6 +126,10 @@ export default class Enemy extends Entity {
             this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES];
         };
         this.setTint(ENEMY_COLOR);
+        /*  TODO: Text the Following New Specials
+                STATE: Achire, Dispel, Hook, Leap, Quor, Paralyze, 
+                POSITIVE: Absorb, Envelop, Moderate, Shadow, Shirk, Tether
+        */  TODO:
         this.stateMachine = new StateMachine(this, 'enemy');
         this.stateMachine
             .addState(States.IDLE, { onEnter: this.onIdleEnter, onUpdate: this.onIdleUpdate, onExit: this.onIdleExit })
@@ -151,18 +157,22 @@ export default class Enemy extends Entity {
             .addState(States.HURT, { onEnter: this.onHurtEnter, onUpdate: this.onHurtUpdate, onExit: this.onHurtExit })
             .addState(States.DEATH, { onEnter: this.onDeathEnter, onUpdate: this.onDeathUpdate })
             .addState(States.DEFEATED, { onEnter: this.onDefeatedEnter, onUpdate: this.onDefeatedUpdate, onExit: this.onDefeatedExit }) // ====== Special States ======
+            .addState(States.ACHIRE, { onEnter: this.onAchireEnter, onUpdate: this.onAchireUpdate, onExit: this.onAchireExit })
             .addState(States.ASTRAVE, { onEnter: this.onAstraveEnter, onUpdate: this.onAstraveUpdate, onExit: this.onAstraveExit })
             .addState(States.BLINK, { onEnter: this.onBlinkEnter, onUpdate: this.onBlinkUpdate, onExit: this.onBlinkExit })
             .addState(States.CONFUSE, { onEnter: this.onConfuseEnter, onUpdate: this.onConfuseUpdate, onExit: this.onConfuseExit })
             .addState(States.DESPERATION, { onEnter: this.onDesperationEnter, onExit: this.onDesperationExit })
             .addState(States.FEAR, { onEnter: this.onFearingEnter, onUpdate: this.onFearingUpdate, onExit: this.onFearingExit })
             .addState(States.HEALING, { onEnter: this.onHealingEnter, onUpdate: this.onHealingUpdate, onExit: this.onHealingExit })
+            .addState(States.HOOK, { onEnter: this.onHookEnter, onUpdate: this.onHookUpdate, onExit: this.onHookExit })
             .addState(States.ILIRECH, { onEnter: this.onIlirechEnter, onUpdate: this.onIlirechUpdate, onExit: this.onIlirechExit })
             .addState(States.KYRNAICISM, { onEnter: this.onKyrnaicismEnter, onUpdate: this.onKyrnaicismUpdate, onExit: this.onKyrnaicismExit })
             .addState(States.LEAP, { onEnter: this.onLeapEnter, onUpdate: this.onLeapUpdate, onExit: this.onLeapExit })
             .addState(States.MAIERETH, { onEnter: this.onMaierethEnter, onUpdate: this.onMaierethUpdate, onExit: this.onMaierethExit })
+            .addState(States.PARALYZE, { onEnter: this.onParalyzeEnter, onUpdate: this.onParalyzeUpdate, onExit: this.onParalyzeExit })
             .addState(States.POLYMORPH, { onEnter: this.onPolymorphingEnter, onUpdate: this.onPolymorphingUpdate, onExit: this.onPolymorphingExit })
             .addState(States.PURSUIT, { onEnter: this.onPursuitEnter, onUpdate: this.onPursuitUpdate, onExit: this.onPursuitExit })
+            .addState(States.QUOR, { onEnter: this.onQuorEnter, onUpdate: this.onQuorUpdate, onExit: this.onQuorExit })
             .addState(States.RECONSTITUTE, { onEnter: this.onReconstituteEnter, onUpdate: this.onReconstituteUpdate, onExit: this.onReconstituteExit })
             .addState(States.RUSH, { onEnter: this.onRushEnter, onUpdate: this.onRushUpdate, onExit: this.onRushExit })
             .addState(States.SACRIFICE, { onEnter: this.onSacrificeEnter, onUpdate: this.onSacrificeUpdate, onExit: this.onSacrificeExit })
@@ -175,13 +185,17 @@ export default class Enemy extends Entity {
         this.positiveMachine = new StateMachine(this, 'enemy');
         this.positiveMachine
             .addState(States.CLEAN, { onEnter: this.onCleanEnter, onExit: this.onCleanExit })
+            .addState(States.ABSORB, { onEnter: this.onAbsorbEnter, onUpdate: this.onAbsorbUpdate })
             .addState(States.CHIOMIC, { onEnter: this.onChiomicEnter, onUpdate: this.onChiomicUpdate })
             .addState(States.DISEASE, { onEnter: this.onDiseaseEnter, onUpdate: this.onDiseaseUpdate })
+            .addState(States.DISPEL, { onEnter: this.onDispelEnter, onExit: this.onDispelExit })
+            .addState(States.ENVELOP, { onEnter: this.onEnvelopEnter, onUpdate: this.onEnvelopUpdate })
             .addState(States.FREEZE, { onEnter: this.onFreezeEnter, onUpdate: this.onFreezeUpdate })
             .addState(States.HOWL, { onEnter: this.onHowlEnter, onUpdate: this.onHowlUpdate })
             .addState(States.MALICE, { onEnter: this.onMaliceEnter, onUpdate: this.onMaliceUpdate })
             .addState(States.MENACE, { onEnter: this.onMenaceEnter, onUpdate: this.onMenaceUpdate })
             .addState(States.MEND, { onEnter: this.onMendEnter, onUpdate: this.onMendUpdate })
+            .addState(States.MODERATE, { onEnter: this.onModerateEnter, onUpdate: this.onModerateUpdate })
             .addState(States.MULTIFARIOUS, { onEnter: this.onMultifariousEnter, onUpdate: this.onMultifariousUpdate })
             .addState(States.MYSTIFY, { onEnter: this.onMystifyEnter, onUpdate: this.onMystifyUpdate })
             .addState(States.PROTECT, { onEnter: this.onProtectEnter, onUpdate: this.onProtectUpdate })
@@ -190,6 +204,9 @@ export default class Enemy extends Entity {
             .addState(States.SHIELD, { onEnter: this.onShieldEnter, onUpdate: this.onShieldUpdate })
             .addState(States.SHIMMER, { onEnter: this.onShimmerEnter, onUpdate: this.onShimmerUpdate })
             .addState(States.SPRINTING, { onEnter: this.onSprintEnter, onUpdate: this.onSprintUpdate })
+            .addState(States.SHADOW, { onEnter: this.onShadowEnter, onExit: this.onShadowExit })
+            .addState(States.SHIRK, { onEnter: this.onShirkEnter, onExit: this.onShirkExit })
+            .addState(States.TETHER, { onEnter: this.onTetherEnter, onExit: this.onTetherExit })
             .addState(States.WARD, { onEnter: this.onWardEnter, onUpdate: this.onWardUpdate })
             .addState(States.WRITHE, { onEnter: this.onWritheEnter, onUpdate: this.onWritheUpdate }); 
         // ========== NEGATIVE META STATES ========== \\
@@ -485,9 +502,10 @@ export default class Enemy extends Entity {
     };
 
     updateThreat(id: string, threat: number) {
-        this.enemies.forEach((enemy: ENEMY) => {
-            if (enemy.id === id) enemy.threat += threat;
-        });
+        const enemyToUpdate = this.enemies.find(enemy => enemy.id === id);
+        if (enemyToUpdate) {
+            enemyToUpdate.threat += threat;
+        };
         if (this.enemies.length <= 1 || this.health <= 0) return;
         this.enemies.sort((a, b) => b.threat - a.threat);
         const topEnemy: string = this.enemies[0].id;
@@ -1152,7 +1170,7 @@ export default class Enemy extends Entity {
 
     playerStalwart = () => this.scene.state.isStalwart ? 0.85 : 1;
 
-    mastery = () => this.ascean?.[this.ascean?.mastery] || 20;
+    mastery = () => this.ascean[this.ascean.mastery] || 20;
 
     chiomic = (power: number, id: string) => {
         this.entropicMultiplier(power);
@@ -1163,6 +1181,7 @@ export default class Enemy extends Entity {
                 this.scene.combatManager.combatMachine.action({ type: 'Enemy Chiomic', data: power });
             } else {
                 const chiomic = Math.round(this.mastery() / 2 * (1 + (power / 100)) * this.playerCaerenic() * this.playerStalwart() * ((this.ascean?.level + 9) / 10));
+                console.log(chiomic, "Chiomic ")
                 const ratio = chiomic / this.scene.state.computerHealth * 100;
                 const computerActionDescription = `${this.ascean?.name} flays ${chiomic} health from you with their hush.`;
                 EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });
@@ -1405,16 +1424,6 @@ export default class Enemy extends Entity {
             this.isShimmering = false;
             this.stealthEffect(false);
         };
-        // if (this.inComputerCombat || this.currentTarget) {
-        //     const id = this.computerEnemyAttacker();
-        //     if (id) {
-        //         this.checkComputerEnemyCombatEnter(id);
-        //         return;
-        //     } else {
-        //         this.inComputerCombat = false;
-        //         this.currentTarget = undefined;
-        //     };
-        // };
     };
     onIdleUpdate = (dt: number) => {
         this.idleWait -= dt;
@@ -1916,9 +1925,7 @@ export default class Enemy extends Entity {
     // ========================== CREATING ENHANCED ENEMY AI ========================= \\
 
     instincts = () => {
-        if ((this.inCombat === false && this.inComputerCombat === false) || this.health <= 0) {
-            return;
-        };
+        if ((this.inCombat === false && this.inComputerCombat === false) || this.health <= 0) return;
         this.scene.time.delayedCall(500, () => {
             let chance = [1, 2, 3, (!this.isRanged ? 5 : 6)][Math.floor(Math.random() * 4)];
             let mastery = this.ascean.mastery;
@@ -1947,6 +1954,28 @@ export default class Enemy extends Entity {
     };
 
     // ========================== SPECIAL ENEMY STATES ========================== \\
+    onAchireEnter = () => {
+        this.targetID = this.getTargetId();
+        this.startCasting('Achire', PLAYER.DURATIONS.ACHIRE, 'cast');
+    };
+    onAchireUpdate = (dt: number) => {
+        this.counterCheck();
+        if (this.isCasting === true) this.castbar.update(dt, 'cast');        
+        if (this.isSuccessful(PLAYER.DURATIONS.ACHIRE)) {
+            this.stateMachine.setState(States.CLEAN);
+        };
+    };
+    onAchireExit = () => {
+        if (this.castingSuccess === true) { 
+            this.particleEffect = this.scene.particleManager.addEffect('achire', this, 'achire', true);
+            if (this.inCombat) EventBus.emit('enemy-combat-text', {
+                text: `${this.ascean.name}'s Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0]?.name}.`
+            });
+            this.castingSuccess = false;
+            this.enemySound('wild', true);
+        };
+        this.stopCasting('Countered Achire');
+    };
     onAstraveEnter = () => {
         this.targetID = this.getTargetId();
         this.startCasting('Astrave', PLAYER.DURATIONS.ASTRAVE, 'cast')
@@ -2103,6 +2132,22 @@ export default class Enemy extends Entity {
         this.enemySound('phenomena', this.castingSuccess);
         this.stopCasting('Countered Healing');
     };
+    // FIXME: Check enemyActionSuccess for finishing this ability
+    onHookEnter = () => {
+        this.particleEffect = this.scene.particleManager.addEffect('hook', this, 'hook', true);
+        this.specialCombatText = this.scene.showCombatText('Hook', DURATION.TEXT, 'damage', false, true, () => this.specialCombatText = undefined);
+        this.enemySound('dungeon', true);
+        this.flickerCarenic(750);
+        this.beam.startEmitter(this.particleEffect.effect, 1500);
+        this.hookTime = 0;
+    };
+    onHookUpdate = (dt: number) => {
+        this.hookTime += dt;
+        if (this.hookTime >= 1250 || !this.particleEffect?.effect) {
+            this.combatChecker(false);
+        };
+    };
+    onHookExit = () => this.beam.reset();
 
     onIlirechEnter = () => {
         this.targetID = this.getTargetId();
@@ -2188,7 +2233,7 @@ export default class Enemy extends Entity {
         const direction = target.subtract(this.position);
         const distance = direction.length();
         const buffer = this.currentTarget.isMoving ? 40 : 30;
-        let leap = Math.min(distance + buffer, 250);
+        let leap = Math.min(distance + buffer, 200);
         direction.normalize();
         this.flipX = direction.x < 0;
         this.flickerCarenic(900);
@@ -2201,14 +2246,14 @@ export default class Enemy extends Entity {
             ease: 'Elastic',
             onComplete: () => { 
                 if (this.touching.length > 0) {
-                    this.touching.forEach(enemy => {
-                        if (enemy.name === 'player') {
-                            this.scene.combatManager.writhe(enemy.playerID, this.enemyID);
+                    for (let i = 0; i < this.touching.length; ++i) {
+                        if (this.touching[i].name === 'player') {
+                            this.scene.combatManager.writhe(this.touching[i].playerID, this.enemyID);
                             this.scene.combatManager.useStamina(5);
                         } else { // CvC
-                            this.scene.combatManager.computer({ type: 'Weapon', payload: { action: 'writhe', origin: this.enemyID, enemyID: enemy.enemyID } });
+                            this.scene.combatManager.computer({ type: 'Weapon', payload: { action: 'writhe', origin: this.enemyID, enemyID: this.touching[i].enemyID } });
                         };
-                    });
+                    };
                 };
                 this.stateMachine.setState(States.COMBAT);
             },
@@ -2260,7 +2305,32 @@ export default class Enemy extends Entity {
         this.enemySound('spooky', this.castingSuccess);
         this.stopCasting('Countered Maiereth');
     };
-    
+    onParalyzeEnter = () => { 
+        this.targetID = this.getTargetId();
+        this.startCasting('Paralyzing', PLAYER.DURATIONS.PARALYZE, 'cast');
+    };
+    onParalyzeUpdate = (dt: number) => {
+        this.counterCheck();
+        if (this.isCasting === true) this.castbar.update(dt, 'cast');
+        if (this.isSuccessful(PLAYER.DURATIONS.PARALYZE)) {
+            this.stateMachine.setState(States.CLEAN);
+        };
+    };
+    onParalyzeExit = () => {
+        if (this.targetID === this.scene.player.playerID) {
+            if (this.castingSuccess === true && this.checkPlayerResist() === true) {
+                this.scene.combatManager.paralyze(this.targetID);
+                if (this.inCombat) EventBus.emit('enemy-combat-text', {
+                    text: `${this.ascean.name} paralyzes you for several seconds!`
+                });
+            };
+        } else {
+            if (this.castingSuccess === true) this.scene.combatManager.paralyze(this.targetID);
+        };
+        this.enemySound('combat-round', this.castingSuccess);
+        this.stopCasting('Paralyze Countered');
+        this.instincts();
+    };
     onPolymorphingEnter = () => {
         this.targetID = this.getTargetId();
         this.startCasting('Polymorphing', PLAYER.DURATIONS.POLYMORPH, 'cast');
@@ -2307,7 +2377,25 @@ export default class Enemy extends Entity {
     };
     onPursuitUpdate = (_dt: number) => {};
     onPursuitExit = () => {};
-    
+    onQuorEnter = () => this.startCasting('Quor', PLAYER.DURATIONS.QUOR, 'cast');
+    onQuorUpdate = (dt: number) => {
+        this.counterCheck();
+        if (this.isCasting === true) this.castbar.update(dt, 'cast');
+        if (this.isSuccessful(PLAYER.DURATIONS.QUOR)) {
+            this.stateMachine.setState(States.CLEAN);
+        };
+    };
+    onQuorExit = () => {
+        if (this.castingSuccess === true) {
+            this.particleEffect =  this.scene.particleManager.addEffect('quor', this, 'quor', true);
+            EventBus.emit('party-combat-text', {
+                text: `${this.ascean.name}'s Achre is imbued with instantiation, its Quor auguring it through the ${this.scene.state.weapons[0]?.name}.`
+            });
+            this.castingSuccess = false;
+            this.enemySound('freeze', true);
+        };
+        this.stopCasting('Countered Quor');
+    };
     onReconstituteEnter = () => {
         this.startCasting('Reconstituting', PLAYER.DURATIONS.RECONSTITUTE, 'heal', true);
         this.channelCount = 0;
@@ -2404,14 +2492,14 @@ export default class Enemy extends Entity {
 
     rushComplete = () => {
         if (this.rushedEnemies.length > 0) {
-            this.rushedEnemies.forEach(enemy => {
-                if (enemy.name === 'player') {
+            for (let i = 0; i < this.rushedEnemies.length; ++i) {
+                if (this.rushedEnemies[i].name === 'player') {
                     this.scene.combatManager.useStamina(5);
-                    this.scene.combatManager.writhe(enemy.playerID, this.enemyID);
-                } else if (enemy.name === 'enemy' && this.inComputerCombat) { // CvC
-                    this.scene.combatManager.computer({ type: 'Weapon', payload: { action: 'rush', origin: this.enemyID, enemyID: enemy.enemyID } });
+                    this.scene.combatManager.writhe(this.rushedEnemies[i].playerID, this.enemyID);
+                } else if (this.rushedEnemies[i].name === 'enemy' && this.inComputerCombat) { // CvC
+                    this.scene.combatManager.computer({ type: 'Weapon', payload: { action: 'rush', origin: this.enemyID, enemyID: this.rushedEnemies[i].enemyID } });
                 };
-            });
+            };
         };
         this.isRushing = false;
         this.stateMachine.setState(States.CHASE);
@@ -2538,6 +2626,44 @@ export default class Enemy extends Entity {
 
     // ========================== SPECIAL META STATES ========================== \\
 
+    onAbsorbEnter = () => {
+        if (this.negationBubble) {
+            this.negationBubble.cleanUp();
+            this.negationBubble = undefined;
+        };
+        this.isAbsorbing = true;
+        this.negationName = States.ABSORB;
+        this.enemySound('absorb', true);
+        this.specialCombatText = this.scene.showCombatText('Absorbing', 750, 'effect', false, true, () => this.specialCombatText = undefined);
+        this.negationBubble = new Bubble(this.scene, this.x, this.y, 'aqua', PLAYER.DURATIONS.ABSORB);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.ABSORB, () => {
+            this.isAbsorbing = false;    
+            if (this.negationBubble) {
+                this.negationBubble.destroy();
+                this.negationBubble = undefined;
+                if (this.negationName === States.ABSORB) this.negationName = '';
+            };    
+        }, undefined, this);
+        if (this.inCombat) EventBus.emit('enemy-combat-text', {
+            text: `${this.ascean.name} warps oncoming damage into grace.`
+        });
+    };
+    onAbsorbUpdate = (_dt: number) => {if (!this.isAbsorbing) this.positiveMachine.setState(States.CLEAN);};
+    absorb = () => {
+        if (this.negationBubble === undefined || this.isAbsorbing === false) {
+            if (this.negationBubble) {
+                this.negationBubble.destroy();
+                this.negationBubble = undefined;
+            };
+            this.isAbsorbing = false;
+            return;
+        };
+        this.enemySound('absorb', true);
+        this.specialCombatText = this.scene.showCombatText('Absorbed', 500, 'effect', false, true, () => this.specialCombatText = undefined);
+        if (Math.random() < 0.2) {
+            this.isAbsorbing = false;
+        };
+    };
     onChiomicEnter = () => {
         this.aoe = new AoE(this.scene, 'chiomic', 1, true, this);    
         this.specialCombatText = this.scene.showCombatText('Hah! Hah!', PLAYER.DURATIONS.CHIOMIC, 'effect', false, true, () => this.specialCombatText = undefined);
@@ -2569,7 +2695,53 @@ export default class Enemy extends Entity {
         this.enemySound('dungeon', true);
     };
     onDiseaseUpdate = (_dt: number) => {if (!this.isDiseasing) this.positiveMachine.setState(States.CLEAN);};
-
+    onDispelEnter = () => {
+        if (this.currentTarget === undefined) return;
+        this.enemySound('debuff', true);
+        this.specialCombatText = this.scene.showCombatText('Dispelling', 750, 'effect', false, true, () => this.specialCombatText = undefined);
+        this.flickerCarenic(1000); 
+        this.currentTarget.clearBubbles();
+        // this.currentTarget.clearPositiveEffects();
+    };
+    onDispelExit = () => {};
+    onEnvelopEnter = () => {
+        if (this.reactiveBubble) {
+            this.reactiveBubble.cleanUp();
+            this.reactiveBubble = undefined;
+        };
+        this.isEnveloping = true;
+        this.enemySound('caerenic', true);
+        this.specialCombatText = this.scene.showCombatText('Enveloping', 750, 'cast', false, true, () => this.specialCombatText = undefined);
+        this.reactiveBubble = new Bubble(this.scene, this.x, this.y, 'blue', PLAYER.DURATIONS.ENVELOP);
+        this.reactiveName = States.ENVELOP;
+        this.scene.time.delayedCall(PLAYER.DURATIONS.ENVELOP, () => {
+            this.isEnveloping = false;    
+            if (this.reactiveBubble !== undefined && this.reactiveName === States.ENVELOP) {
+                this.reactiveBubble.destroy();
+                this.reactiveBubble = undefined;
+                this.reactiveName = '';
+            };    
+        }, undefined, this);
+        if (this.inCombat) EventBus.emit('enemy-combat-text', {
+            text: `${this.ascean.name} envelops themself, shirking oncoming attacks.`
+        });
+    };
+    onEnvelopUpdate = (_dt: number) => {if (!this.isEnveloping) this.positiveMachine.setState(States.CLEAN);};
+    envelop = () => {
+        if (this.reactiveBubble === undefined || this.isEnveloping === false) {
+            if (this.reactiveBubble) {
+                this.reactiveBubble.destroy();
+                this.reactiveBubble = undefined;
+            };
+            this.isEnveloping = false;
+            return;
+        };
+        this.enemySound('caerenic', true);
+        this.specialCombatText = this.scene.showCombatText('Enveloped', 500, 'effect', false, true, () => this.specialCombatText = undefined);
+        if (Math.random() < 0.2) {
+            this.isEnveloping = false;
+        };
+    };
     onFreezeEnter = () => {
         this.aoe = new AoE(this.scene, 'freeze', 1, true, this);
         this.specialCombatText = this.scene.showCombatText('Freezing', PLAYER.DURATIONS.FREEZE, 'cast', false, true, () => this.specialCombatText = undefined);
@@ -2762,6 +2934,48 @@ export default class Enemy extends Entity {
         this.enemySound('caerenic', true);
     };
 
+    onModerateEnter = () => {
+        if (this.reactiveBubble) {
+            this.reactiveBubble.cleanUp();
+            this.reactiveBubble = undefined;
+        };
+        this.reactiveName = States.MODERATE;
+        this.enemySound('debuff', true);
+        this.isModerating = true;
+        this.specialCombatText = this.scene.showCombatText('Moderating', 750, 'cast', false, true, () => this.specialCombatText = undefined);
+        this.reactiveBubble = new Bubble(this.scene, this.x, this.y, 'sapphire', PLAYER.DURATIONS.MODERATE);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.MODERATE, () => {
+            this.isModerating = false;    
+            if (this.reactiveBubble && this.reactiveName === States.MODERATE) {
+                this.reactiveBubble.cleanUp();
+                this.reactiveBubble = undefined;
+                this.reactiveName = '';
+            };
+        }, undefined, this);
+        if (this.inCombat) EventBus.emit('enemy-combat-text', {
+            text: `${this.ascean.name} seeks to moderate oncoming attacks.`
+        });
+    };
+    onModerateUpdate = (_dt: number) => {if (!this.isModerating) this.positiveMachine.setState(States.CLEAN);};
+    moderate = (id: string) => {
+        if (id === '') return;
+        if (this.reactiveBubble === undefined || this.isModerating === false) {
+            if (this.reactiveBubble) {
+                this.reactiveBubble.cleanUp();
+                this.reactiveBubble = undefined;
+            };
+            this.isModerating = false;
+            return;
+        };
+        this.scene.combatManager.slow(id);
+        this.enemySound('debuff', true);
+        this.specialCombatText = this.scene.showCombatText('Moderated', 500, 'tendril', false, true, () => this.specialCombatText = undefined);
+        this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
+        if (this.reactiveBubble.charges <= 0) {
+            this.isModerating = false;
+        };
+    };
+
     onMultifariousEnter = () => {
         if (this.reactiveBubble) {
             this.reactiveBubble.cleanUp();
@@ -2919,6 +3133,33 @@ export default class Enemy extends Entity {
     };
     onScreamUpdate = (_dt: number) => {if (!this.isScreaming) this.positiveMachine.setState(States.CLEAN);};
 
+    onShadowEnter = () => {
+        this.isShadowing = true;
+        this.enemySound('wild', true);
+        this.specialCombatText = this.scene.showCombatText('Shadowing', DURATION.TEXT, 'damage', false, true, () => this.specialCombatText = undefined);
+        this.flickerCarenic(6000);
+        this.scene.time.delayedCall(6000, () => {
+            this.isShadowing = false;
+        }, undefined, this);
+    };
+    onShadowExit = () => {};
+    pursue = (id: string) => {
+        this.enemySound('wild', true);
+        if (id === this.scene.player.playerID) {
+            if (this.scene.player.flipX) {
+                this.setPosition(this.scene.player.x + 16, this.scene.player.y);
+            } else {
+                this.setPosition(this.scene.player.x - 16, this.scene.player.y);
+            };
+        };
+        const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === id) || this.scene.party.find((e: Party) => e.enemyID === id);
+        if (!enemy) return;
+        if (enemy.flipX) {
+            this.setPosition(enemy.x + 16, enemy.y);
+        } else {
+            this.setPosition(enemy.x - 16, enemy.y);
+        };
+    };
     onShieldEnter = () => {
         if (this.negationBubble) {
             this.negationBubble.cleanUp();
@@ -2986,6 +3227,33 @@ export default class Enemy extends Entity {
         this.specialCombatText = this.scene.showCombatText(`${this.ascean.name} simply wasn't there`, 500, 'effect', false, false, () => this.specialCombatText = undefined);
     };
 
+    onShirkEnter = () => {
+        this.isShirking = true;
+        this.enemySound('blink', true);
+        this.specialCombatText = this.scene.showCombatText('Shirking', 750, 'effect', false, true, () => this.specialCombatText = undefined);
+        this.isConfused = false;
+        this.isFeared = false;
+        this.isParalyzed = false;
+        this.isPolymorphed = false;
+        this.isStunned = false;
+        this.isSlowed = false;
+        this.isSnared = false;
+        this.isFrozen = false;
+        this.isRooted = false;
+
+        this.stateMachine.setState(States.COMBAT);
+        this.negativeMachine.setState(States.CLEAN);
+
+        this.flickerCarenic(6000);
+        this.scene.time.delayedCall(6000, () => {
+            this.isShirking = false;
+        }, undefined, this); 
+        if (this.inCombat) EventBus.emit('enemy-combat-text', {
+            text: `${this.ascean.name}'s caeren's hush grants reprieve, freeing them.`
+        });
+    };
+    onShirkExit = () => {};
+
     onSprintEnter = () => {
         this.isSprinting = true;
         this.adjustSpeed(PLAYER.SPEED.SPRINT);
@@ -3003,7 +3271,27 @@ export default class Enemy extends Entity {
         this.enemySound('blink', true);
     };
     onSprintUpdate = (_dt: number) => {if (!this.isSprinting) this.positiveMachine.setState(States.CLEAN);};
+    onTetherEnter = () => {
+        this.isTethering = true;
+        this.enemySound('dungeon', true);
+        this.specialCombatText = this.scene.showCombatText('Tethering', DURATION.TEXT, 'damage', false, true, () => this.specialCombatText = undefined);
+        this.flickerCarenic(6000);
+        this.scene.time.delayedCall(6000, () => {
+            this.isTethering = false;
+        }, undefined, this);
+    };
+    onTetherExit = () => {};
 
+    tether = (id: string) => {
+        this.enemySound('dungeon', true);
+        if (this.scene.player.playerID === id) {
+            this.hook(this.scene.player, 1000);
+            return;    
+        };
+        const enemy = this.scene.enemies.find(e => e.enemyID === id) || this.scene.party.find(e => e.enemyID === id);
+        if (!enemy) return;
+        this.hook(enemy, 1000);
+    };
     onWardEnter = () => {
         if (this.negationBubble) {
             this.negationBubble.cleanUp();
@@ -3596,7 +3884,8 @@ export default class Enemy extends Entity {
     };
 
     enemyActionSuccess = () => {
-       if (this.attackedTarget?.name === 'player') {
+        if (!this.attackedTarget) return;
+        if (this.attackedTarget?.name === 'player') {
            if (this.isRanged) this.scene.combatManager.checkPlayerSuccess();
            const shimmer = Math.random() * 101;
             if (this.attackedTarget.isAbsorbing || this.attackedTarget.isEnveloping || this.attackedTarget.isShielding || (this.attackedTarget.isShimmering && shimmer > 50) || this.attackedTarget.isWarding) {
@@ -3615,7 +3904,12 @@ export default class Enemy extends Entity {
                 } else {
                     this.scene.combatManager.combatMachine.action({ type: 'Enemy', data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.particleEffect.action, parry: this.parryAction, id: this.enemyID }}});
                 };
+                const action = this.particleEffect.action;
                 this.killParticle();
+                if (action === 'hook') {
+                    this.hook(this.attackedTarget, 1500);
+                    return;
+                };
             } else {
                 if (this.isCurrentTarget) {
                     if (this.currentAction === '') return;
@@ -3632,7 +3926,7 @@ export default class Enemy extends Entity {
             if (this.attackedTarget.isTethering === true) this.attackedTarget.playerMachine.tether(this.enemyID);
         } else { // CvC
             const shimmer = Math.random() * 101;
-            if (this.attackedTarget?.isAbsorbing || this.attackedTarget?.isEnveloping || this.attackedTarget?.isShielding || (this.attackedTarget?.isShimmering && shimmer > 50) || this.attackedTarget?.isWarding) {
+            if (this.attackedTarget.isAbsorbing || this.attackedTarget.isEnveloping || this.attackedTarget.isShielding || (this.attackedTarget.isShimmering && shimmer > 50) || this.attackedTarget.isWarding) {
                 if (this.attackedTarget.isAbsorbing === true) this.attackedTarget.absorb();
                 if (this.attackedTarget.isEnveloping === true) this.attackedTarget.envelop();
                 if (this.attackedTarget.isShielding === true) this.attackedTarget.shield();
@@ -3644,16 +3938,21 @@ export default class Enemy extends Entity {
             };
             if (this.particleEffect) {
                 this.scene.combatManager.computer({ type: 'Weapon', payload: { action: this.particleEffect.action, origin: this.enemyID, enemyID: this.attackedTarget.enemyID } });
+                const action = this.particleEffect.action;
                 this.killParticle();
+                if (action === 'hook') {
+                    this.hook(this.attackedTarget, 1500);
+                    return;
+                };
             } else {
                 if (this.currentAction === '') return;
                 this.scene.combatManager.computer({ type: 'Weapon', payload: { action: this.currentAction, origin: this.enemyID, enemyID: this.attackedTarget.enemyID } });
             };
-            if (this.attackedTarget?.isMenacing) this.attackedTarget.menace(this.enemyID);
-            if (this.attackedTarget?.isMultifaring) this.attackedTarget.multifarious(this.enemyID);
-            if (this.attackedTarget?.isMystifying) this.attackedTarget.mystify(this.enemyID);
-            if (this.attackedTarget?.isShadowing === true) this.attackedTarget.playerMachine.pursue(this.enemyID);
-            if (this.attackedTarget?.isTethering === true) this.attackedTarget.playerMachine.tether(this.enemyID);
+            if (this.attackedTarget.isMenacing === true) this.attackedTarget.menace(this.enemyID);
+            if (this.attackedTarget.isMultifaring === true) this.attackedTarget.multifarious(this.enemyID);
+            if (this.attackedTarget.isMystifying === true) this.attackedTarget.mystify(this.enemyID);
+            if (this.attackedTarget.isShadowing === true) this.attackedTarget.pursue(this.enemyID);
+            if (this.attackedTarget.isTethering === true) this.attackedTarget.tether(this.enemyID);
         };
         this.attackedTarget = undefined;
     };

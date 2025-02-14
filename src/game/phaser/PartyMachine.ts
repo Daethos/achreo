@@ -12,6 +12,7 @@ import { PLAYER } from '../../utility/player';
 const DURATION = {
     CONSUMED: 2000,
     CONFUSED: 6000,
+    PARALYZED: 4000,
     POLYMORPHED: 8000,
     FEARED: 4000,
     FROZEN: 3000,
@@ -91,6 +92,7 @@ export default class PlayerMachine {
             .addState(States.DEVOUR, { onEnter: this.onDevourEnter, onUpdate: this.onDevourUpdate, onExit: this.onDevourExit })
             .addState(States.CONFUSED, { onEnter: this.onConfusedEnter, onUpdate: this.onConfusedUpdate, onExit: this.onConfusedExit })
             .addState(States.FEARED, { onEnter: this.onFearedEnter, onUpdate: this.onFearedUpdate, onExit: this.onFearedExit })
+            .addState(States.PARALYZED, { onEnter: this.onParalyzedEnter, onUpdate: this.onParalyzedUpdate, onExit: this.onParalyzedExit })
             .addState(States.POLYMORPHED, { onEnter: this.onPolymorphedEnter, onUpdate: this.onPolymorphedUpdate, onExit: this.onPolymorphedExit });
         this.stateMachine.setState(States.IDLE);
 
@@ -880,9 +882,9 @@ export default class PlayerMachine {
         if (this.player.castingSuccess === true) {
             this.player.castingSuccess = false;
             if (this.player.touching.length > 0) {
-                this.player.touching.forEach((enemy: any) => {
-                    this.scene.combatManager.partyMelee({enemyID: enemy.enemyID, action: 'arc', origin: this.player.enemyID});
-                });
+                for (let i = 0; i < this.player.touching.length; ++i) {
+                    this.scene.combatManager.partyAction({enemyID: this.player.touching[i].enemyID, action: 'arc', origin: this.player.enemyID});
+                };
             };
         };
         this.player.castbar.reset();
@@ -1349,7 +1351,7 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.player.enemySound('combat-round', true);
             EventBus.emit('party-combat-text', {
-                text: `${this.player.ascean.name} paralyzes ${this.scene.state.computer?.name} for several seconds!`
+                text: `${this.player.ascean.name} paralyzes ${this.player.spellName} for several seconds!`
             });
         };
         this.player.stopCasting();
@@ -2137,6 +2139,7 @@ export default class PlayerMachine {
         this.player.specialCombatText = this.scene.showCombatText('Dispelling', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.flickerCarenic(1000); 
         this.player.currentTarget.clearBubbles();
+        // this.player.currentTarget.clearPositiveEffects();
     };
     onDispelExit = () => {};
 
@@ -2177,17 +2180,6 @@ export default class PlayerMachine {
         }, undefined, this);
     };
     onShadowExit = () => {};
-
-    pursue = (id: string) => {
-        const enemy = this.scene.enemies.find(e => e.enemyID === id);
-        if (!enemy) return;
-        this.player.enemySound('wild', true);
-        if (enemy.flipX) {
-            this.player.setPosition(enemy.x + 16, enemy.y);
-        } else {
-            this.player.setPosition(enemy.x - 16, enemy.y);
-        };
-    };
     
     onTetherEnter = () => {
         this.player.isTethering = true;
@@ -2199,13 +2191,6 @@ export default class PlayerMachine {
         }, undefined, this);
     };
     onTetherExit = () => {};
-
-    tether = (id: string) => {
-        const enemy = this.scene.enemies.find(e => e.enemyID === id);
-        if (!enemy) return;
-        this.player.enemySound('dungeon', true);
-        this.player.hook(enemy, 1000);
-    };
 
     // ================= NEGATIVE MACHINE STATES ================= \\
     onConfusedEnter = () => {
@@ -2343,6 +2328,32 @@ export default class PlayerMachine {
     };
     onFrozenExit = () => this.player.setStatic(false);
 
+    onParalyzedEnter = () => {
+        this.player.specialCombatText = this.player.scene.showCombatText('Paralyzed', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.paralyzeDuration = DURATION.PARALYZED;
+        this.player.isAttacking = false;
+        this.player.isParrying = false;
+        this.player.isPosturing = false;
+        this.player.isRolling = false;
+        this.player.isDodging = false;
+        this.player.currentAction = ''; 
+        this.player.anims.pause();
+        this.player.setTint(0x888888); // 0x888888
+        this.player.setStatic(true);
+    };
+    onParalyzedUpdate = (dt: number) => {
+        this.player.setVelocity(0);
+        this.player.paralyzeDuration -= dt;
+        if (this.player.paralyzeDuration <= 0) this.player.isParalyzed = false;
+        this.player.combatChecker(this.player.isParalyzed);
+    }; 
+    onParalyzedExit = () => {
+        this.player.isParalyzed = false;
+        this.player.paralyzeDuration = DURATION.PARALYZED;
+        this.player.setTint(0x00FF00);
+        this.player.setStatic(false);
+        this.player.anims.resume();
+    };
     onPolymorphedEnter = () => {
         this.player.isPolymorphed = true;
         this.player.specialCombatText = this.scene.showCombatText('Polymorphed', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);

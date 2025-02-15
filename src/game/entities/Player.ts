@@ -350,6 +350,29 @@ export default class Player extends Entity {
         EventBus.off('updated-stamina', this.updateStamina);
     };
 
+    clearBubbles = () => {
+        this.isMalicing = false;
+        this.isMending = false;
+        this.isMenacing = false;
+        this.isMultifaring = false;
+        this.isMystifying = false;
+        this.isProtecting = false;
+        this.isShielding = false;
+        this.isWarding = false;
+        this.clearShields();
+    };
+        
+    clearShields = () => {
+        if (this.reactiveBubble) {
+            this.reactiveBubble.cleanUp();
+            this.reactiveBubble = undefined;
+        };
+        if (this.negationBubble) {
+            this.negationBubble.cleanUp();
+            this.negationBubble = undefined;
+        };
+    };
+
     animateMark = () => {
         this.scene.tweens.add({
             targets: this.mark,

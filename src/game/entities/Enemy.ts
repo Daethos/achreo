@@ -1177,7 +1177,6 @@ export default class Enemy extends Entity {
                 this.scene.combatManager.combatMachine.action({ type: 'Enemy Chiomic', data: power });
             } else {
                 const chiomic = Math.round(this.mastery() / 2 * (1 + (power / 100)) * this.playerCaerenic() * this.playerStalwart() * ((this.ascean?.level + 9) / 10));
-                console.log(chiomic, "Chiomic ")
                 const ratio = chiomic / this.scene.state.computerHealth * 100;
                 const computerActionDescription = `${this.ascean?.name} flays ${chiomic} health from you with their hush.`;
                 EventBus.emit('add-combat-logs', { ...this.scene.state, computerActionDescription });

@@ -303,7 +303,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     setGlow = (object: any, glow: boolean, type: string | undefined = undefined) => {
         this.glowColor = this.setColor(this.ascean?.mastery);
-        this.scene.glowFilter?.remove(object);
+        this.scene?.glowFilter?.remove(object);
         if (!glow) {
             switch (type) {
                 case 'shield':

@@ -17,6 +17,7 @@ export const ACTION_TYPES = {
     ACHIRE: "achire",
     ARC: "arc",
     ATTACK: "attack",
+    HOOK: "hook",
     LEAP: "leap",
     POSTURE: "posture",
     QUOR: "quor",

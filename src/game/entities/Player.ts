@@ -261,6 +261,7 @@ export default class Player extends Entity {
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
         .on('pointerup', () => {
+            this.scene.hud.logger.log(`Console: Current States: Physical: ${this.playerMachine.stateMachine.getCurrentState()?.toUpperCase()} | Positive: ${this.playerMachine.positiveMachine.getCurrentState()?.toUpperCase()} | Negative: ${this.playerMachine.negativeMachine.getCurrentState()?.toUpperCase()}. Suffering: ${this.isSuffering()}`)
             if (this.inCombat) return;
             const button = this.scene.hud.smallHud.getButton('info');
             this.scene.hud.smallHud.pressButton(button as Phaser.GameObjects.Image);
@@ -1320,16 +1321,16 @@ export default class Player extends Entity {
         };
     };
 
-    computerActionsClear = () => {
-        return (
-            // !this.playerMachine.stateMachine.isCurrentState(States.ROLL) &&
-            // !this.playerMachine.stateMachine.isCurrentState(States.DODGE) &&
-            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_PARRY) &&
-            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_ATTACK) &&    
-            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_POSTURE) &&    
-            !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_THRUST)    
-        );
-    };
+    // computerActionsClear = () => {
+    //     return (
+    //         // !this.playerMachine.stateMachine.isCurrentState(States.ROLL) &&
+    //         // !this.playerMachine.stateMachine.isCurrentState(States.DODGE) &&
+    //         !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_PARRY) &&
+    //         !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_ATTACK) &&    
+    //         !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_POSTURE) &&    
+    //         !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_THRUST)    
+    //     );
+    // };
     
     movementClear = () => {
         return (
@@ -1352,7 +1353,7 @@ export default class Player extends Entity {
             this.killParticle();
             if (action === 'hook') {
                 this.hook(this.attackedTarget, 1500);
-                return;
+                // return;
             };
             if (this.attackedTarget?.health <= 0) return;
             if (!this.isAstrifying) {
@@ -1486,7 +1487,7 @@ export default class Player extends Entity {
 
     handleActions = () => {
         if (this.currentTarget) {
-            this.highlightTarget(this.currentTarget); 
+            this.highlightTarget(this.currentTarget);
             if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
                 this.scene.hud.setupEnemy(this.currentTarget);
             };
@@ -1624,12 +1625,16 @@ export default class Player extends Entity {
             this.playerMachine.stateMachine.setState(States.FEARED);
             return;
         };
-        if (this.isFrozen && !this.playerMachine.negativeMachine.isCurrentState(States.FROZEN)) {
-            this.playerMachine.negativeMachine.setState(States.FROZEN);
-            return;
-        };
         if (this.isParalyzed && !this.playerMachine.stateMachine.isCurrentState(States.PARALYZED)) {
             this.playerMachine.stateMachine.setState(States.PARALYZED);
+            return;
+        };
+        if (this.isStunned && !this.playerMachine.stateMachine.isCurrentState(States.STUN)) {
+            this.playerMachine.stateMachine.setState(States.STUN);
+            return;
+        };
+        if (this.isFrozen && !this.playerMachine.negativeMachine.isCurrentState(States.FROZEN)) {
+            this.playerMachine.negativeMachine.setState(States.FROZEN);
             return;
         };
         if (this.isPolymorphed && !this.playerMachine.stateMachine.isCurrentState(States.POLYMORPHED)) {
@@ -1643,10 +1648,6 @@ export default class Player extends Entity {
         if (this.isSnared && !this.playerMachine.negativeMachine.isCurrentState(States.SNARED)) {
             this.playerMachine.negativeMachine.setState(States.SNARED); 
             return;    
-        };
-        if (this.isStunned && !this.playerMachine.stateMachine.isCurrentState(States.STUN)) {
-            this.playerMachine.stateMachine.setState(States.STUN);
-            return;
         };
         if (this.scene.combat === true && (!this.currentTarget)) this.findEnemy(); // || !this.currentTarget.inCombat // this.inCombat === true && state.combatEngaged
         if (this.healthbar) this.healthbar.update(this);

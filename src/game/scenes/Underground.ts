@@ -562,9 +562,17 @@ export class Underground extends Scene {
             };
             for (let k = 0; k < this.party.length; k++) {
                 this.party[k].enemies.push({id:enemy.enemyID, threat:0});
+                enemy.enemies.push({id:this.party[k].enemyID,threat:0});
             };
             this.time.delayedCall(3000, () => {
-                enemy.checkEnemyCombatEnter();
+                // enemy.checkEnemyCombatEnter();                    
+                if (this.party.length > 0 && Math.random() > 0.5) {
+                    enemy.checkComputerEnemyCombatEnter(this.party[Math.floor(Math.random() * this.party.length)]);
+                    enemy.enemies.push({id:this.player.playerID,threat:0});
+                    enemy.inCombat = true;
+                } else {
+                    enemy.checkEnemyCombatEnter();
+                };
                 this.player.targets.push(enemy);
                 if (count === j) {
                     this.player.targetEngagement(enemy.enemyID);

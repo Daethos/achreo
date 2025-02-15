@@ -487,7 +487,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
     };
     handleTerrain = (): number => (this.isClimbing || this.inWater) ? 0.65 : 1;
-    moving = (): boolean => this.body?.velocity.x !== 0 || this.body.velocity.y !== 0;
+    moving = (): boolean => this.body?.velocity.x !== 0 || this.body?.velocity.y !== 0;
     movingHorizontal = (): boolean => this.body?.velocity.x !== 0 && this.body?.velocity.y === 0;
     movingVertical = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y !== 0;
     movingDown = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y > 0;

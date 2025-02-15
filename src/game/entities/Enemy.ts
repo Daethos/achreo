@@ -313,6 +313,7 @@ export default class Enemy extends Entity {
         EventBus.off(COMPUTER_BROADCAST, this.computerBroadcast);
         EventBus.off(UPDATE_COMPUTER_COMBAT, this.computerCombatUpdate);
         EventBus.off(UPDATE_COMPUTER_DAMAGE, this.computerDamage);
+        // EventBus.off(BROADCAST_DEATH, this.enemyDeath);
         EventBus.off('personal-update', this.personalUpdate);    
         EventBus.off('enemy-persuasion', this.persuasionUpdate);
         EventBus.off('enemy-luckout', this.luckoutUpdate);
@@ -337,6 +338,7 @@ export default class Enemy extends Entity {
         EventBus.on(COMPUTER_BROADCAST, this.computerBroadcast);
         EventBus.on(UPDATE_COMPUTER_COMBAT, this.computerCombatUpdate);
         EventBus.on(UPDATE_COMPUTER_DAMAGE, this.computerDamage);
+        // EventBus.on(BROADCAST_DEATH, this.enemyDeath);
         EventBus.on('personal-update', this.personalUpdate);
         EventBus.on('enemy-persuasion', this.persuasionUpdate);
         EventBus.on('enemy-luckout', this.luckoutUpdate);
@@ -915,7 +917,7 @@ export default class Enemy extends Entity {
     };
 
     computerEnemyAttacker = () => {
-        const enemy = this.scene.enemies.find((e: Enemy) => e.currentTarget?.enemyID === this.enemyID);
+        const enemy = this.scene.enemies.find((e: Enemy) => e.currentTarget?.enemyID === this.enemyID) || this.scene.party?.find((e: Party) => e.currentTarget?.enemyID === this.enemyID);
         return enemy;
     };
 
@@ -1837,9 +1839,9 @@ export default class Enemy extends Entity {
         this.enemyAnimation();
         this.setTint(ENEMY_COLOR);
         if (this.inComputerCombat || this.currentTarget) {
-            const id = this.computerEnemyAttacker();
-            if (id) {
-                this.checkComputerEnemyCombatEnter(id);
+            const enemy = this.computerEnemyAttacker();
+            if (enemy) {
+                this.checkComputerEnemyCombatEnter(enemy);
                 return;
             };
         };
@@ -2382,7 +2384,7 @@ export default class Enemy extends Entity {
     onQuorExit = () => {
         if (this.castingSuccess === true) {
             this.particleEffect =  this.scene.particleManager.addEffect('quor', this, 'quor', true);
-            EventBus.emit('party-combat-text', {
+            if (this.inCombat) EventBus.emit('enemy-combat-text', {
                 text: `${this.ascean.name}'s Achre is imbued with instantiation, its Quor auguring it through the ${this.scene.state.weapons[0]?.name}.`
             });
             this.castingSuccess = false;
@@ -4038,9 +4040,9 @@ export default class Enemy extends Entity {
         if (this.isCasting === true || this.isSuffering() === true || this.isHurt === true || this.isContemplating === true || this.isDeleting || this.isDefeated) return;
         if (this.currentTarget === undefined || this.currentTarget.body === undefined || (this.inCombat === false && this.inComputerCombat === false) || (this.inCombat && this.scene.state.newPlayerHealth <= 0) || this.health <= 0) {
             if (this.inComputerCombat || this.currentTarget) {
-                const id = this.computerEnemyAttacker();
-                if (id) {
-                    this.checkComputerEnemyCombatEnter(id);
+                const enemy = this.computerEnemyAttacker();
+                if (enemy) {
+                    this.checkComputerEnemyCombatEnter(enemy);
                     return;
                 };
             };

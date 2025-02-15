@@ -1251,7 +1251,6 @@ export default class Party extends Entity {
         return false;
     };
 
-
     checkEvasion = (particle: Particle) => {
         const particleVector = new Phaser.Math.Vector2(particle.effect.x, particle.effect.y);
         const playerVector = new Phaser.Math.Vector2(this.x, this.y);

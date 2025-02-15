@@ -127,18 +127,17 @@ export const INTRO_NODES = {
         key: 3,
         prev: 2,
         next: 4,
-        text: `Inside the past century, warring has ceased to an uncomfortable peace. 
-        Many fathers and sons died in its making, their progeny now placid. \n
+        text: `Inside the past century, warring ceased to an uncomfortable peace, with many fathers and sons dying in its making, their progeny now placid. \n
         The Ascea now satiates those wary of their idle, listless nature; 
         a decennial tournament full of jape, jest, and joust, 
-        where honor, prestige, and wealth are sought, and the title, 
-        ‘Ascean va'Esai,’ is crowned.`,
+        where honor, prestige, and wealth are sought, and title, 
+        the ‘Ascean va'Esai,’ is crowned.`,
     },
     4: {
         key: 4,
         prev: 3,
         next: 5,
-        text: `A grave and distinguishing burden befalls all who seek to claim the mantle of the ‘Ascean vs'Esai.’ \n
+        text: `A grave and distinguishing burden befalls all who seek to claim the mantle of the ‘Ascean va'Esai.’ \n
         Mathyus Caderyn II: King; Daethic; Noth'eon of the Eye
         Theogeni Spiras: High Lord; Fyers Protectorate of the Firelands 
         Evrio Lorian Peroumes: General; the Li'ivian [Current va'Esai] \n 

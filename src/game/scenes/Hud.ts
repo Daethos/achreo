@@ -221,20 +221,22 @@ export class Hud extends Phaser.Scene {
         if (this.settings.tutorial.boot) {
             this.actionBar.resizeScale(displaySize.width / previousWidth * displaySize.height / previousHeight);
             
-            EventBus.emit('update-small-hud-scale', (this.settings.positions.smallHud.scale * displaySize.width / previousWidth));
-            EventBus.emit('update-left-hud-scale', (this.settings.positions.leftHud.scale * displaySize.height / previousHeight));
+            EventBus.emit('update-small-hud-scale', (this.settings.positions.smallHud.scale * (displaySize.width / previousWidth) * (displaySize.height / previousHeight)));
+            EventBus.emit('update-left-hud-scale', (this.settings.positions.leftHud.scale * (displaySize.width / previousWidth) * (displaySize.height / previousHeight)));
             
-            this.joystick.scaleX = displaySize.width / previousWidth;
-            this.joystick.scaleY = displaySize.height / previousHeight;
+            this.joystick.joystick.scaleX = displaySize.width / previousWidth;
+            this.joystick.joystick.scaleY = displaySize.height / previousHeight;
             
-            this.rightJoystick.scaleX = displaySize.width / previousWidth;
-            this.rightJoystick.scaleY = displaySize.height / previousHeight;
+            this.rightJoystick.joystick.scaleX = displaySize.width / previousWidth;
+            this.rightJoystick.joystick.scaleY = displaySize.height / previousHeight;
             
             this.actionBar.draw();
             EventBus.emit('update-hud-position', ({ x: this.settings.positions.smallHud.x, y: this.settings.positions.smallHud.y }));
+            // EventBus.emit('update-hud-scale', (this.settings.positions.smallHud.scale * previousWidth / displaySize.width * previousHeight / displaySize.height));
             EventBus.emit('update-left-hud-position', ({ x: this.settings.positions.leftHud.x, y: this.settings.positions.leftHud.y }));
-            this.joystick.setPosition(displaySize.width * this.settings.positions.leftJoystick.x, this.gameHeight * this.settings.positions.leftJoystick.y);
-            this.rightJoystick.setPosition(displaySize.width * this.settings.positions.rightJoystick.x, this.gameHeight * this.settings.positions.rightJoystick.y);
+            // EventBus.emit('update-left-hud-scale', (this.settings.positions.leftHud.scale * previousWidth / displaySize.width * previousHeight / displaySize.height));
+            this.joystick.joystick.setPosition(displaySize.width * this.settings.positions.leftJoystick.x, displaySize.height * this.settings.positions.leftJoystick.y);
+            this.rightJoystick.joystick.setPosition(displaySize.width * this.settings.positions.rightJoystick.x, displaySize.height * this.settings.positions.rightJoystick.y);
         };
         
         this.gameWidth = displaySize.width;

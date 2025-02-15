@@ -823,7 +823,7 @@ export default class Enemy extends Entity {
         return newEnemy;
     };
 
-    isNewComputerEnemy = (enemy: Enemy) => {
+    isNewComputerEnemy = (enemy: Enemy | Party) => {
         const newEnemy = this.enemies.every(obj => obj.id !== enemy.enemyID);
         return newEnemy;
     };
@@ -855,7 +855,7 @@ export default class Enemy extends Entity {
         this.ping();
     };
 
-    checkComputerEnemyCombatEnter = (enemy: Enemy) => {
+    checkComputerEnemyCombatEnter = (enemy: Enemy | Party) => {
         this.currentTarget = enemy;
         this.inComputerCombat = true;
         this.computerCombatSheet = {

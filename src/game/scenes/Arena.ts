@@ -620,7 +620,7 @@ export class Arena extends Phaser.Scene {
 
     createArenaEnemy = () => {
         EventBus.emit('alert', { header: "Prepare!", body: "The enemies are being summoned. Prepare for the Eulex.", key: "Close" });
-        this.time.delayedCall(1500, () => {
+        this.time.delayedCall(1000, () => {
             let data: Compiler[] = this.registry.get("enemies");
             if (!data) {
                 this.switchArena();
@@ -647,9 +647,16 @@ export class Arena extends Phaser.Scene {
                 };
                 for (let k = 0; k < this.party.length; k++) {
                     this.party[k].enemies.push({id:enemy.enemyID, threat:0});
+                    enemy.enemies.push({id:this.party[k].enemyID,threat:0});
                 };
                 this.time.delayedCall(1000, () => {
-                    enemy.checkEnemyCombatEnter();
+                    if (this.party.length > 0 && Math.random() > 0.5) {
+                        enemy.checkComputerEnemyCombatEnter(this.party[Math.floor(Math.random() * this.party.length)]);
+                        enemy.enemies.push({id:this.player.playerID,threat:0});
+                        enemy.inCombat = true;
+                    } else {
+                        enemy.checkEnemyCombatEnter();
+                    };
                     this.player.targets.push(enemy);
                     if (count === j) {
                         if (this.player.isComputer) {

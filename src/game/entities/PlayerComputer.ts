@@ -297,7 +297,7 @@ export default class PlayerComputer extends Player {
             this.anims.play('player_health', true);
         } else if (this.isPraying) {
             this.anims.play('player_pray', true).on('animationcomplete', () => this.isPraying = false);
-        } else if (this.computerActionsClear()) {
+        } else {
             this.isMoving = false;
             this.handleIdleAnimations();
         };
@@ -339,6 +339,10 @@ export default class PlayerComputer extends Player {
         };
         if (this.isFeared && !this.sansSuffering('isFeared') && !this.playerMachine.stateMachine.isCurrentState(States.FEARED)) {
             this.playerMachine.stateMachine.setState(States.FEARED);
+            return;
+        };
+        if (this.isParalyzed && !this.sansSuffering('isParalyzed') && !this.playerMachine.stateMachine.isCurrentState(States.PARALYZED)) {
+            this.playerMachine.stateMachine.setState(States.PARALYZED);
             return;
         };
         if (this.isPolymorphed && !this.sansSuffering('isPolymorphed') && !this.playerMachine.stateMachine.isCurrentState(States.POLYMORPHED)) {

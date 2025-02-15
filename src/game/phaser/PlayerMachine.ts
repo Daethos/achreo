@@ -385,6 +385,7 @@ export default class PlayerMachine {
             };
             this.scene.hud.actionBar.setVisible(true);
         };
+        this.player.isDefeated = false;
         this.player.defeatedDuration = PLAYER.DURATIONS.DEFEATED;
         this.player.setCollisionCategory(1);
         this.player.spriteWeapon.setVisible(true);

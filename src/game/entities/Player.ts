@@ -1628,7 +1628,7 @@ export default class Player extends Entity {
             this.playerMachine.negativeMachine.setState(States.FROZEN);
             return;
         };
-        if (this.isParalyzed && !this.sansSuffering('isParalyzed') && !this.playerMachine.stateMachine.isCurrentState(States.PARALYZED)) {
+        if (this.isParalyzed && !this.playerMachine.stateMachine.isCurrentState(States.PARALYZED)) {
             this.playerMachine.stateMachine.setState(States.PARALYZED);
             return;
         };

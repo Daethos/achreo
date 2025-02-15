@@ -881,6 +881,7 @@ function faithCompiler(combat: Combat): Combat { // The influence will add a cha
 function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultiplier: number, playerMagicalDefenseMultiplier: number): Combat { // Triggers if 40+ Str/Caer for 2h, 1h + Agi/Achre Mastery and 2nd weapon is 1h
     const computer = combat.computer;
     const weapons = combat.computerWeapons;
+    const computerAction = combat.computerAction;
     let computerWeaponOnePhysicalDamage: number = weapons[0].physicalDamage;
     let computerWeaponOneMagicalDamage: number = weapons[0].magicalDamage;
     let computerWeaponTwoPhysicalDamage: number = weapons[1].physicalDamage;
@@ -959,11 +960,13 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
             combat.realizedComputerDamage *= (caeren / 150);
         };
     };
-    if (combat.action === ACTION_TYPES.ATTACK) combat.realizedComputerDamage *= DAMAGE.LOW;    
-    if (combat.action === ACTION_TYPES.POSTURE) combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
-    if (combat.action === ACTION_TYPES.LEAP) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
-    if (combat.action === ACTION_TYPES.RUSH) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
-    if (combat.action === ACTION_TYPES.WRITHE) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
+    if (computerAction === ACTION_TYPES.ATTACK) combat.realizedComputerDamage *= DAMAGE.LOW;    
+    if (computerAction === ACTION_TYPES.POSTURE) combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
+    if (computerAction === ACTION_TYPES.ACHIRE) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
+    if (computerAction === ACTION_TYPES.QUOR) combat.realizedComputerDamage *= DAMAGE.THREE;
+    if (computerAction === ACTION_TYPES.LEAP) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
+    if (computerAction === ACTION_TYPES.RUSH) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
+    if (computerAction === ACTION_TYPES.WRITHE) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
     if (combat.prayerData.includes(PRAYERS.AVARICE)) combat.realizedComputerDamage *= DAMAGE.LOW;
     if (combat.isStalwart) combat.realizedComputerDamage *= DAMAGE.STALWART;
     if (combat.isCaerenic) combat.realizedComputerDamage *= DAMAGE.CAERENEIC_NEG;
@@ -1096,9 +1099,17 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
         computerPhysicalDamage *= DAMAGE.NEG_HIGH;
         computerMagicalDamage *= DAMAGE.NEG_HIGH;
     };
+    if (computerAction === ACTION_TYPES.ACHIRE) {
+        computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
+        computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+    };
     if (computerAction === ACTION_TYPES.LEAP ) {
         computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
         computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+    };
+    if (computerAction === ACTION_TYPES.QUOR) {
+        computerPhysicalDamage *= DAMAGE.THREE;
+        computerMagicalDamage *= DAMAGE.THREE;
     };
     if (computerAction === ACTION_TYPES.RUSH ) {
         computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
@@ -1266,14 +1277,14 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: nu
         combat.realizedPlayerDamage *= DAMAGE.NEG_HIGH;
     };
     if (combat.action === ACTION_TYPES.LEAP) {
-        combat.realizedPlayerDamage *= DAMAGE.TWO;
+        combat.realizedPlayerDamage *= DAMAGE.ONE_FIFTY;
     };
     if (combat.action === ACTION_TYPES.RUSH) {
-        combat.realizedPlayerDamage *= DAMAGE.TWO;
+        combat.realizedPlayerDamage *= DAMAGE.ONE_FIFTY;
     };
     
     if (combat.action === ACTION_TYPES.WRITHE) {
-        combat.realizedPlayerDamage *= DAMAGE.TWO;
+        combat.realizedPlayerDamage *= DAMAGE.ONE_FIFTY;
     };
     if (combat.action === ACTION_TYPES.ACHIRE) {
         combat.realizedPlayerDamage *= DAMAGE.ONE_FIFTY;
@@ -1282,7 +1293,7 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: nu
         combat.realizedPlayerDamage *= DAMAGE.THREE;
     };
     if (combat.action === ACTION_TYPES.LEAP) {
-        combat.realizedPlayerDamage *= DAMAGE.MID;
+        combat.realizedPlayerDamage *= DAMAGE.ONE_FIFTY;
     };
     if (combat.action === ACTION_TYPES.QUOR) {
         combat.realizedPlayerDamage *= DAMAGE.THREE;
@@ -1450,20 +1461,20 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
         playerMagicalDamage *= DAMAGE.THREE;
     };
     if (playerAction === ACTION_TYPES.LEAP) {
-        playerPhysicalDamage *= DAMAGE.TWO;
-        playerMagicalDamage *= DAMAGE.TWO;
+        playerPhysicalDamage *= DAMAGE.ONE_FIFTY;
+        playerMagicalDamage *= DAMAGE.ONE_FIFTY;
     };
     if (playerAction === ACTION_TYPES.QUOR) {
         playerPhysicalDamage *= DAMAGE.THREE;
         playerMagicalDamage *= DAMAGE.THREE;
     };
     if (playerAction === ACTION_TYPES.RUSH) {
-        playerPhysicalDamage *= DAMAGE.TWO;
-        playerMagicalDamage *= DAMAGE.TWO;
+        playerPhysicalDamage *= DAMAGE.ONE_FIFTY;
+        playerMagicalDamage *= DAMAGE.ONE_FIFTY;
     };
     if (playerAction === ACTION_TYPES.WRITHE) {
-        playerPhysicalDamage *= DAMAGE.TWO;
-        playerMagicalDamage *= DAMAGE.TWO;
+        playerPhysicalDamage *= DAMAGE.ONE_FIFTY;
+        playerMagicalDamage *= DAMAGE.ONE_FIFTY;
     };
     if (playerAction === ACTION_TYPES.STORM) {
         playerPhysicalDamage *= DAMAGE.NEG_LOW;

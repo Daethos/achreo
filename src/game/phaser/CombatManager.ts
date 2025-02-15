@@ -568,17 +568,17 @@ export class CombatManager extends Phaser.Scene {
             };
         };
     };
-    writhe = (id: string, enemyID: string): void => {
+    writhe = (id: string, enemyID: string, type = 'writhe'): void => {
         if (!id) return;
         if (id === this.context.player.playerID) {
             let en = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
             if (!en) return;
             if (en.isCurrentTarget) {
-                this.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: 'writhe', id: en.enemyID } });
+                this.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: type, id: en.enemyID } });
             } else {
                 this.combatMachine.action({ type: 'Enemy', data: { 
                     enemyID: en.enemyID, ascean: en.ascean, damageType: en.currentDamageType, combatStats: en.combatStats, weapons: en.weapons, health: en.health, 
-                    actionData: { action: 'writhe', parry: en.parryAction, id: enemyID }}});
+                    actionData: { action: type, parry: en.parryAction, id: enemyID }}});
             };
             this.useGrace(10);
             return;    
@@ -588,10 +588,10 @@ export class CombatManager extends Phaser.Scene {
             if (enemyID === this.context.player.playerID) { // Player Combat
                 const match = this.context.isStateEnemy(id);
                 if (match) { // Target Player Attack
-                    this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: 'writhe' } });
+                    this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: type } });
                 } else { // Blind Player Attack
                     this.combatMachine.action({ type: 'Player', data: { 
-                        playerAction: { action: 'writhe', parry: this.context.state.parryGuess }, 
+                        playerAction: { action: type, parry: this.context.state.parryGuess }, 
                         enemyID: enemy.enemyID, 
                         ascean: enemy.ascean, 
                         damageType: enemy.currentDamageType, 
@@ -604,9 +604,9 @@ export class CombatManager extends Phaser.Scene {
             } else { // Computer Combat
                 const party = this.context.party.find((e: Party) => e.enemyID === enemyID);
                 if (party) { // Party Combat
-                    this.partyAction({action:'writhe',origin:enemyID,enemyID:id});
+                    this.partyAction({action:type,origin:enemyID,enemyID:id});
                 } else { // CvC
-                    this.computer({ type: 'Weapon', payload: { action: 'writhe', origin: enemyID, enemyID: id } });
+                    this.computer({ type: 'Weapon', payload: { action: type, origin: enemyID, enemyID: id } });
                 };
             };
         } else {
@@ -614,7 +614,7 @@ export class CombatManager extends Phaser.Scene {
             if (party) {
                 const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
                 if (origin) { // Party Taking Damage vs Enemy
-                    this.computer({ type: 'Weapon', payload: { action: 'writhe', origin: enemyID, enemyID: id } });
+                    this.computer({ type: 'Weapon', payload: { action: type, origin: enemyID, enemyID: id } });
                 };
             };
         };

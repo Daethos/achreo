@@ -168,8 +168,8 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
         const inventoryCritChance = `Crit Chance: ${highlighted()?.item?.criticalChance}%`;
         const asceanCritDamage = `Crit Damage: ${ascean()[inventoryType()]?.criticalDamage}x`;
         const inventoryCritDamage = `Crit Damage: ${highlighted()?.item?.criticalDamage}x`;
-        const asceanRoll = `Roll Chance: ${ascean()[inventoryType()]?.roll}%`;
-        const inventoryRoll = `Roll Chance: ${highlighted()?.item?.roll}%`;
+        const asceanRoll = `Roll Chance: ${ascean()[inventoryType()]?.roll.toFixed(2)}%`;
+        const inventoryRoll = `Roll Chance: ${highlighted()?.item?.roll.toFixed(2)}%`;
         const asceanInfluence = ascean()[inventoryType()]?.influences && ascean()[inventoryType()]?.influences?.length > 0 ?
                 `Influence: ${ascean()[inventoryType()]?.influences?.[0]}` : undefined;
         const inventoryInfluence = highlighted()?.item?.influences && highlighted()?.item?.influences?.length as number > 0 ?

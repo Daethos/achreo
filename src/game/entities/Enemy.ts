@@ -126,10 +126,6 @@ export default class Enemy extends Entity {
             this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES];
         };
         this.setTint(ENEMY_COLOR);
-        /*  TODO: Text the Following New Specials
-                STATE: Achire, Dispel, Hook, Leap, Quor, Paralyze, 
-                POSITIVE: Absorb, Envelop, Moderate, Shadow, Shirk, Tether
-        */  TODO:
         this.stateMachine = new StateMachine(this, 'enemy');
         this.stateMachine
             .addState(States.IDLE, { onEnter: this.onIdleEnter, onUpdate: this.onIdleUpdate, onExit: this.onIdleExit })
@@ -1130,7 +1126,7 @@ export default class Enemy extends Entity {
         this.stateMachine.setState(States.CHASE);
     };
 
-    setSpecialCombat = (bool: boolean, mult = randomFloatFromInterval(0.75, 1.0)) => { // 0.75, 1.25
+    setSpecialCombat = (bool: boolean, mult = randomFloatFromInterval(0.75, 1.0)) => { // 0.75, 1.0
         if (this.isSpecial === false) return;
         if (bool === true) {
             const mastery = this.ascean.mastery;
@@ -1150,7 +1146,7 @@ export default class Enemy extends Entity {
                     const special = ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL][Math.floor(Math.random() * ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL].length)].toLowerCase();
                     this.specialAction = special;
                     // this.currentAction = 'special';
-                    // const specific = ['snare'];
+                    // const specific = ['paralyze'];
                     // const test = specific[Math.floor(Math.random() * specific.length)];
                     if (this.stateMachine.isState(special)) {
                         this.stateMachine.setState(special);
@@ -2132,18 +2128,17 @@ export default class Enemy extends Entity {
         this.enemySound('phenomena', this.castingSuccess);
         this.stopCasting('Countered Healing');
     };
-    // FIXME: Check enemyActionSuccess for finishing this ability
     onHookEnter = () => {
         this.particleEffect = this.scene.particleManager.addEffect('hook', this, 'hook', true);
         this.specialCombatText = this.scene.showCombatText('Hook', DURATION.TEXT, 'damage', false, true, () => this.specialCombatText = undefined);
         this.enemySound('dungeon', true);
         this.flickerCarenic(750);
-        this.beam.startEmitter(this.particleEffect.effect, 1500);
+        this.beam.startEmitter(this.particleEffect.effect, 1750);
         this.hookTime = 0;
     };
     onHookUpdate = (dt: number) => {
         this.hookTime += dt;
-        if (this.hookTime >= 1250 || !this.particleEffect?.effect) {
+        if (this.hookTime >= 1750 || !this.particleEffect?.effect) {
             this.combatChecker(false);
         };
     };
@@ -2248,10 +2243,10 @@ export default class Enemy extends Entity {
                 if (this.touching.length > 0) {
                     for (let i = 0; i < this.touching.length; ++i) {
                         if (this.touching[i].name === 'player') {
-                            this.scene.combatManager.writhe(this.touching[i].playerID, this.enemyID);
+                            this.scene.combatManager.writhe(this.touching[i].playerID, this.enemyID, 'leap');
                             this.scene.combatManager.useStamina(5);
                         } else { // CvC
-                            this.scene.combatManager.computer({ type: 'Weapon', payload: { action: 'writhe', origin: this.enemyID, enemyID: this.touching[i].enemyID } });
+                            this.scene.combatManager.computer({ type: 'Weapon', payload: { action: 'leap', origin: this.enemyID, enemyID: this.touching[i].enemyID } });
                         };
                     };
                 };
@@ -2495,7 +2490,7 @@ export default class Enemy extends Entity {
             for (let i = 0; i < this.rushedEnemies.length; ++i) {
                 if (this.rushedEnemies[i].name === 'player') {
                     this.scene.combatManager.useStamina(5);
-                    this.scene.combatManager.writhe(this.rushedEnemies[i].playerID, this.enemyID);
+                    this.scene.combatManager.writhe(this.rushedEnemies[i].playerID, this.enemyID, 'rush');
                 } else if (this.rushedEnemies[i].name === 'enemy' && this.inComputerCombat) { // CvC
                     this.scene.combatManager.computer({ type: 'Weapon', payload: { action: 'rush', origin: this.enemyID, enemyID: this.rushedEnemies[i].enemyID } });
                 };
@@ -3949,6 +3944,7 @@ export default class Enemy extends Entity {
                 this.scene.combatManager.computer({ type: 'Weapon', payload: { action: this.currentAction, origin: this.enemyID, enemyID: this.attackedTarget.enemyID } });
             };
             if (this.attackedTarget.isMenacing === true) this.attackedTarget.menace(this.enemyID);
+            if (this.attackedTarget.isModerating === true) this.attackedTarget.moderate(this.enemyID);
             if (this.attackedTarget.isMultifaring === true) this.attackedTarget.multifarious(this.enemyID);
             if (this.attackedTarget.isMystifying === true) this.attackedTarget.mystify(this.enemyID);
             if (this.attackedTarget.isShadowing === true) this.attackedTarget.pursue(this.enemyID);

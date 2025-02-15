@@ -1266,12 +1266,12 @@ export default class PlayerMachine {
         this.player.specialCombatText = this.scene.showCombatText('Hook', DURATION.TEXT, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.player.enemySound('dungeon', true);
         this.player.flickerCarenic(750);
-        this.player.beam.startEmitter(this.player.particleEffect.effect, 1500);
+        this.player.beam.startEmitter(this.player.particleEffect.effect, 1750);
         this.player.hookTime = 0;
     };
     onHookUpdate = (dt: number) => {
         this.player.hookTime += dt;
-        if (this.player.hookTime >= 1250 || !this.player.particleEffect?.effect) {
+        if (this.player.hookTime >= 1750 || !this.player.particleEffect?.effect) {
             this.player.combatChecker(false);
         };
     };

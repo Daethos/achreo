@@ -2,7 +2,7 @@ import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { ComputerCombat } from "../stores/computer";
 import { criticalCompiler, damageTypeCompiler } from "./combat";
-import { ACTION_TYPES, ARMOR_WEIGHT, ATTACK_TYPES, DAMAGE, HOLD_TYPES, MASTERY, STRONG_TYPES, THRESHOLD, WEAPON_TYPES } from "./combatTypes";
+import { ACTION_TYPES, ARMOR_WEIGHT, ATTACK_TYPES, DAMAGE, HOLD_TYPES, MASTERY, STRONG_ATTACKS, STRONG_TYPES, THRESHOLD, WEAPON_TYPES } from "./combatTypes";
 // import { PRAYERS } from "./prayer";
 
 function computerWeaponMaker(combat: ComputerCombat): ComputerCombat {
@@ -118,7 +118,7 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
         playerMagicalDefenseMultiplier = 100 - (combat.computerEnemyDefense?.magicalPosture as number);
     };
 
-    if (computerAction === ACTION_TYPES.ATTACK || computerAction === ACTION_TYPES.LEAP || computerAction === ACTION_TYPES.RUSH || computerAction === ACTION_TYPES.WRITHE) {
+    if (STRONG_ATTACKS.includes(computerAction)) {
         if (computerWeapon?.grip === HOLD_TYPES.ONE_HAND) {
             if (computerWeapon?.attackType === ATTACK_TYPES.PHYSICAL) {
                 if (combat.computer?.mastery === MASTERY.AGILITY || combat.computer?.mastery === MASTERY.CONSTITUTION) {
@@ -222,9 +222,17 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
         computerPhysicalDamage *= DAMAGE.NEG_HIGH;
         computerMagicalDamage *= DAMAGE.NEG_HIGH;
     };
+    if (computerAction === ACTION_TYPES.ACHIRE) {
+        computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
+        computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+    };
     if (computerAction === ACTION_TYPES.LEAP) {
         computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
         computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+    };
+    if (computerAction === ACTION_TYPES.QUOR) {
+        computerPhysicalDamage *= DAMAGE.THREE;
+        computerMagicalDamage *= DAMAGE.THREE;
     };
     if (computerAction === ACTION_TYPES.RUSH) {
         computerPhysicalDamage *= DAMAGE.ONE_FIFTY;

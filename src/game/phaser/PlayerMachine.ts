@@ -1540,7 +1540,7 @@ export default class PlayerMachine {
         this.player.flickerCarenic(750);
         if (!this.player.isComputer) this.player.setTimeEvent('hookCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
         this.scene.combatManager.useGrace(PLAYER.STAMINA.HOOK);
-        this.player.beam.startEmitter(this.player.particleEffect.effect, 1500);
+        this.player.beam.startEmitter(this.player.particleEffect.effect, 1750);
         this.player.hookTime = 0;
         screenShake(this.scene);
         this.scene.tweens.add({
@@ -1553,7 +1553,7 @@ export default class PlayerMachine {
     };
     onHookUpdate = (dt: number) => {
         this.player.hookTime += dt;
-        if (this.player.hookTime >= 1250 || !this.player.particleEffect?.effect) {
+        if (this.player.hookTime >= 1750 || !this.player.particleEffect?.effect) {
             this.player.combatChecker(false);
         };
     };

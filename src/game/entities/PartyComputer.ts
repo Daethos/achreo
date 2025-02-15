@@ -1607,7 +1607,8 @@ export default class Party extends Entity {
                     if (this.attackedTarget.isWarding === true) this.attackedTarget.ward(this.enemyID);
                     return;
                 };
-                if (this.attackedTarget.isMenacing === true) this.attackedTarget.menace(this.enemyID); 
+                if (this.attackedTarget.isMenacing === true) this.attackedTarget.menace(this.enemyID);
+                if (this.attackedTarget.isModerating === true) this.attackedTarget.moderate(this.enemyID);  
                 if (this.attackedTarget.isMultifaring === true) this.attackedTarget.multifarious(this.enemyID); 
                 if (this.attackedTarget.isMystifying === true) this.attackedTarget.mystify(this.enemyID);
                 if (this.attackedTarget.isShadowing === true) this.attackedTarget.pursue(this.enemyID);
@@ -1628,6 +1629,7 @@ export default class Party extends Entity {
                     return;    
                 };
                 if (this.attackedTarget.isMenacing === true) this.attackedTarget.menace(this.enemyID);
+                if (this.attackedTarget.isModerating === true) this.attackedTarget.moderate(this.enemyID);
                 if (this.attackedTarget.isMultifaring === true) this.attackedTarget.multifarious(this.enemyID);
                 if (this.attackedTarget.isMystifying === true) this.attackedTarget.mystify(this.enemyID);
                 if (this.attackedTarget.isShadowing === true) this.attackedTarget.pursue(this.enemyID);

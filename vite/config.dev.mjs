@@ -6,7 +6,6 @@ export default defineConfig({
         solid(),
     ],
     server: {
-        // hmr: false,
         port: 8080
     }
 });

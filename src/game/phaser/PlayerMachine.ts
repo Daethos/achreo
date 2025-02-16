@@ -1182,7 +1182,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean.name;
-        this.player.specialCombatText = this.scene.showCombatText('Ilirech', PLAYER.DURATIONS.FROST / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Frost', PLAYER.DURATIONS.FROST / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.castbar.setTotal(PLAYER.DURATIONS.FROST);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.FROST);
         this.player.isCasting = true;

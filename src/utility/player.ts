@@ -115,6 +115,8 @@ export const PLAYER = {
         RECALL: COST.LOW,
 
         // Moderate Cost
+        ASTRAVE: COST.MID,
+        FYERUS: COST.MID,
         KYNISOS: COST.MID,
         KYRNAICISM: COST.MID,
         PURSUIT: COST.MID,
@@ -127,9 +129,7 @@ export const PLAYER = {
         SUTURE: COST.MID,
         TETHER: COST.MID,
         // High Cost
-        ASTRAVE: COST.HIGH,
         DESPERATION: COST.HIGH,
-        FYERUS: COST.HIGH,
         TSHAERAL: COST.HIGH,
 
         // Trait

@@ -81,7 +81,7 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         'Dispel',
         'Healing',
         'Ilirech',
-        'Maiereth',
+        'Likyr',
         'Kyrnaicism', 
         'Kynisos', 
         'Mend',
@@ -153,9 +153,9 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         'Desperation',
         'Dispel',
         'Freeze',
+        'Frost',
         'Fyerus',
         'Healing',
-        'Maiereth',
         'Moderate',
         'Multifarious',
         'Netherswap',
@@ -217,11 +217,11 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
     ],
 };
 export const STARTING_SPECIALS = {
-    'constitution': ['Healing', 'Kyrnaicism', 'Mend', 'Renewal', 'Shield'],
+    'constitution': ['Healing', 'Kyrnaicism', 'Likyr', 'Renewal', 'Shield'],
     'strength': ['Arc', 'Desperation', 'Howl', 'Leap', 'Storm'],
     'agility': ['Pursuit', 'Recover', 'Rush', 'Shimmer', 'Sprint'],
-    'achre': ['Blink', 'Absorb', 'Polymorph', 'Astrave', 'Slow'],
-    'caeren': ['Fear', 'Ilirech', 'Mend', 'Sacrifice', 'Scream'],
+    'achre': ['Blink', 'Absorb', 'Achire', 'Polymorph', 'Frost'],
+    'caeren': ['Fear', 'Ilirech', 'Mend', 'Scream', 'Suture'],
     'kyosir': ['Confuse', 'Maiereth', 'Malice', 'Reconstitute', 'Sacrifice'],
 };
 export const STARTING_MASTERY_UI = {

@@ -283,6 +283,16 @@ export const ACTION_ORIGIN = {
         svg: 'AOE',
         talent: '',
     },
+    FROST: {
+        name: 'Frost',
+        description: "You seize into this world with Nyrolean tendrils, slowing them.",
+        cooldown: `${PLAYER.COOLDOWNS.SHORT / 1000}s`,
+        cost: `${PLAYER.STAMINA.FROST} Grace`,
+        time: '1.5s',
+        special: 'Cast. Targeted',
+        svg: 'CAST',
+        talent: '',
+    },
     FYERUS: {
         name: 'Fyerus',
         description: "Uprooted tendrils, damaging enemies and snaring enemies caught in their grasp.",
@@ -326,7 +336,7 @@ export const ACTION_ORIGIN = {
     ILIRECH: {
         name: 'Ilirech',
         description: "You rip into this world with Ilian tendrils.",
-        cooldown: `${PLAYER.COOLDOWNS.MODERATE / 1000}s`,
+        cooldown: `${PLAYER.COOLDOWNS.SHORT / 1000}s`,
         cost: `${PLAYER.STAMINA.ILIRECH} Grace`,
         time: '1.5s',
         special: 'Cast. Targeted',
@@ -371,6 +381,16 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Combat Movement',
         svg: 'WEAPONS',
+        talent: '',
+    },
+    LIKYR: {
+        name: 'Likyr',
+        description: "Blend caeren from the enemy and absorb it into you, healing for a portion of damage done.",
+        cooldown: `${PLAYER.COOLDOWNS.MODERATE / 1000}s`,
+        cost: `${PLAYER.STAMINA.LIKYR} Grace`,
+        time: '1.5s',
+        special: 'Cast. Targeted',
+        svg: 'CAST',
         talent: '',
     },
     MAIERETH: {

@@ -93,9 +93,11 @@ export const PLAYER = {
         CONFUSE: COST.LOW,
         DISPEL: COST.LOW,
         FEAR: COST.LOW,
+        FROST: COST.LOW,
         HEALING: COST.LOW,
         ILIRECH: COST.LOW,
         LEAP: COST.LOW,
+        LIKYR: COST.LOW,
         MAIERETH: COST.LOW,
         PARALYZE: COST.LOW,
         POLYMORPH: COST.LOW,
@@ -185,6 +187,7 @@ export const PLAYER = {
         FEAR: DURATION.STANDARD,
         FYERUS: DURATION.MODERATE,
         FREEZE: DURATION.BOTTOM,
+        FROST: DURATION.STANDARD,
         HEALING: DURATION.STANDARD,
         HOOK: DURATION.STANDARD,
         HOWL: DURATION.ONE,
@@ -192,6 +195,7 @@ export const PLAYER = {
         KYNISOS: DURATION.ONE,
         KYRNAICISM: DURATION.THREE,
         LEAP: DURATION.BOTTOM,
+        LIKYR: DURATION.STANDARD,
         MAIERETH: DURATION.ONE,
         MALICE: DURATION.HIGH,
         MENACE: DURATION.HIGH,
@@ -285,7 +289,7 @@ export const PLAYER_INSTINCTS = {
             value: States.INVOKE
         },{ // 3 - Critical Damage
             key: STATE,
-            value: States.MAIERETH
+            value: States.LIKYR
         },{ // 4 - Casual Damage
             key: STATE,
             value: States.ILIRECH
@@ -426,7 +430,7 @@ export const PLAYER_INSTINCTS = {
             value: States.ACHIRE
         },{ // 5 - Starter Damage
             key: STATE,
-            value: States.SLOW
+            value: States.FROST
         },{ // 6 - Melee < 100 Distance
             key: POSITIVE,
             value: States.FREEZE
@@ -550,26 +554,26 @@ export const DEFENSIVE = "Defensive";
 export const OFFENSIVE = "Offensive";
 
 export const BALANCED_INSTINCTS = {
-    "constitution": [States.INVOKE, States.ILIRECH, States.KYNISOS, States.PARALYZE, States.WARD],
+    "constitution": [States.INVOKE, States.ILIRECH, States.LIKYR, States.KYNISOS, States.PARALYZE, States.WARD],
     "strength": [States.INVOKE, States.RECOVER, States.SPRINTING, States.STORM, States.WARD],
     "agility": [States.INVOKE, States.ACHIRE, States.KYNISOS, States.RECOVER, States.SPRINTING],
-    "achre": [States.INVOKE, States.ACHIRE, States.BLINK, States.FYERUS, States.REIN, States.SLOW],
+    "achre": [States.INVOKE, States.ACHIRE, States.BLINK, States.FROST, States.FYERUS, States.REIN, States.SLOW],
     "caeren": [States.INVOKE, States.FEAR, States.ILIRECH, States.HEALING, States.SCREAM],
     "kyosir": [States.INVOKE, States.CONFUSE, States.DISPEL, States.KYNISOS, States.SUTURE],
 };
 export const DEFENSIVE_INSTINCTS = {
-    "constitution": [States.ABSORB, States.HEALING, States.INVOKE, States.KYRNAICISM, States.SHIELD, States.SHIRK],
+    "constitution": [States.ABSORB, States.HEALING, States.INVOKE, States.KYRNAICISM, States.LIKYR, States.SHIELD, States.SHIRK],
     "strength": [States.INVOKE, States.DESPERATION, States.HOWL, States.SPRINTING, States.WARD],
     "agility": [States.INVOKE, States.DESPERATION, States.ENVELOP, States.RECOVER, States.SHIMMER, States.SNARE],
-    "achre": [States.INVOKE, States.ABSORB, States.BLINK, States.DESPERATION, States.MODERATE, States.SLOW],
+    "achre": [States.INVOKE, States.ABSORB, States.BLINK, States.DESPERATION, States.FROST, States.MODERATE, States.SLOW],
     "caeren": [States.INVOKE, States.DESPERATION, States.FEAR, States.KYRNAICISM, States.MEND],
     "kyosir": [States.CONFUSE, States.DESPERATION, States.HEALING, States.MYSTIFY, States.PROTECT, States.SUTURE],
 };
 export const OFFENSIVE_INSTINCTS = {
-    "constitution": [States.DISPEL, States.ILIRECH, States.KYNISOS, States.KYRNAICISM, States.MAIERETH, States.PARALYZE],
+    "constitution": [States.DISPEL, States.ILIRECH, States.KYNISOS, States.KYRNAICISM, States.LIKYR, States.PARALYZE],
     "strength": [States.INVOKE, States.LEAP, States.QUOR, States.RECOVER, States.RUSH, States.SPRINTING, States.STORM],
     "agility": [States.INVOKE, States.ACHIRE, States.KYNISOS, States.RECOVER, States.SPRINTING, States.STORM],
-    "achre": [States.INVOKE, States.ACHIRE, States.ASTRAVE, States.BLINK, States.FYERUS, States.QUOR, States.REIN],
+    "achre": [States.INVOKE, States.ACHIRE, States.ASTRAVE, States.BLINK, States.FROST, States.FYERUS, States.QUOR, States.REIN],
     "caeren": [States.INVOKE, States.ACHIRE, States.ASTRAVE, States.MALICE, States.KYRNAICISM, States.SACRIFICE],
     "kyosir": [States.INVOKE, States.DISPEL, States.MAIERETH, States.MALICE, States.SACRIFICE],
 };

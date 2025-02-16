@@ -74,6 +74,7 @@ export default class PlayerMachine {
             .addState(States.CONSUME, { onEnter: this.onConsumeEnter, onUpdate: this.onConsumeUpdate, onExit: this.onConsumeExit })
             .addState(States.DESPERATION, { onEnter: this.onDesperationEnter, onUpdate: this.onDesperationUpdate, onExit: this.onDesperationExit })
             .addState(States.FEAR, { onEnter: this.onFearingEnter, onUpdate: this.onFearingUpdate, onExit: this.onFearingExit })
+            .addState(States.FROST, { onEnter: this.onFrostEnter, onUpdate: this.onFrostUpdate, onExit: this.onFrostExit })
             .addState(States.FYERUS, { onEnter: this.onFyerusEnter, onUpdate: this.onFyerusUpdate, onExit: this.onFyerusExit })
             .addState(States.HEALING, { onEnter: this.onHealingEnter, onUpdate: this.onHealingUpdate, onExit: this.onHealingExit })
             .addState(States.HOOK, { onEnter: this.onHookEnter, onUpdate: this.onHookUpdate, onExit: this.onHookExit })
@@ -82,6 +83,7 @@ export default class PlayerMachine {
             .addState(States.KYNISOS, { onEnter: this.onKynisosEnter, onUpdate: this.onKynisosUpdate, onExit: this.onKynisosExit })
             .addState(States.KYRNAICISM, { onEnter: this.onKyrnaicismEnter, onUpdate: this.onKyrnaicismUpdate, onExit: this.onKyrnaicismExit })
             .addState(States.LEAP, { onEnter: this.onLeapEnter, onUpdate: this.onLeapUpdate, onExit: this.onLeapExit })
+            .addState(States.LIKYR, { onEnter: this.onLikyrEnter, onUpdate: this.onLikyrUpdate, onExit: this.onLikyrExit })
             .addState(States.MAIERETH, { onEnter: this.onMaierethEnter, onUpdate: this.onMaierethUpdate, onExit: this.onMaierethExit })
             .addState(States.MARK, { onEnter: this.onMarkEnter, onUpdate: this.onMarkUpdate, onExit: this.onMarkExit })
             .addState(States.NETHERSWAP, { onEnter: this.onNetherswapEnter, onUpdate: this.onNetherswapUpdate, onExit: this.onNetherswapExit })
@@ -1176,7 +1178,46 @@ export default class PlayerMachine {
         this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);  
     };
-
+    onFrostEnter = () => {
+        if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
+        this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.spellName = this.player.currentTarget.ascean.name;
+        this.player.specialCombatText = this.scene.showCombatText('Ilirech', PLAYER.DURATIONS.FROST / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setTotal(PLAYER.DURATIONS.FROST);
+        this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.FROST);
+        this.player.isCasting = true;
+        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
+        this.player.castbar.setVisible(true);  
+    };
+    onFrostUpdate = (dt: number) => {
+        if (this.player.isMoving === true) this.player.isCasting = false;
+        this.player.combatChecker(this.player.isCasting);
+        if (this.player.castbar.time >= PLAYER.DURATIONS.FROST) {
+            this.player.castingSuccess = true;
+            this.player.isCasting = false;
+        };
+        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+    };
+    onFrostExit = () => {
+        if (this.player.castingSuccess === true) {
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You seize into this world with Nyrolean tendrils, slowing ${this.player.spellName}.`
+            });
+            this.chiomism(this.player.spellTarget, 75);
+            this.scene.combatManager.slow(this.player.spellTarget, 3000);
+            if (!this.player.isComputer) this.player.setTimeEvent('frostCooldown', PLAYER.COOLDOWNS.SHORT);
+            this.player.castingSuccess = false;
+            this.scene.sound.play('frost', { volume: this.scene.hud.settings.volume });
+            this.scene.combatManager.useGrace(PLAYER.STAMINA.FROST);    
+        };
+        this.player.isCasting = false;
+        this.player.castbar.reset();
+        this.player.frameCount = 0;
+        this.player.beam.reset();
+        this.player.spellTarget = '';
+        this.player.spellName = '';
+        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
+    };
     onFyerusEnter = () => {
         this.player.isCasting = true;
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1251,7 +1292,7 @@ export default class PlayerMachine {
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.specialCombatText = this.scene.showCombatText('Ilirech', PLAYER.DURATIONS.ILIRECH / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.castbar.setTotal(PLAYER.DURATIONS.ILIRECH);
-        this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.MAIERETH);
+        this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.ILIRECH);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
         this.player.castbar.setVisible(true);  
@@ -1271,7 +1312,7 @@ export default class PlayerMachine {
                 playerSpecialDescription: `You rip into this world with Ilian tendrils entwining.`
             });
             this.chiomism(this.player.spellTarget, 100);
-            if (!this.player.isComputer) this.player.setTimeEvent('ilirechCooldown', PLAYER.COOLDOWNS.MODERATE);
+            if (!this.player.isComputer) this.player.setTimeEvent('ilirechCooldown', PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.scene.sound.play('fire', { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.ILIRECH);    
@@ -1389,6 +1430,47 @@ export default class PlayerMachine {
             this.player.chiomicTimer = undefined;
         }; 
     };
+    
+    onLikyrEnter = () => {
+        if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
+        this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.spellName = this.player.currentTarget.ascean.name;
+        this.player.specialCombatText = this.scene.showCombatText('Likyr', PLAYER.DURATIONS.LIKYR / 2, 'cast', false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setTotal(PLAYER.DURATIONS.LIKYR);
+        this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.LIKYR);
+        this.player.isCasting = true;
+        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
+        this.player.castbar.setVisible(true);  
+    };
+    onLikyrUpdate = (dt: number) => {
+        if (this.player.isMoving === true) this.player.isCasting = false;
+        this.player.combatChecker(this.player.isCasting);
+        if (this.player.castbar.time >= PLAYER.DURATIONS.LIKYR) {
+            this.player.castingSuccess = true;
+            this.player.isCasting = false;
+        };
+        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+    };
+    onLikyrExit = () => {
+        if (this.player.castingSuccess === true) {
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You blend caeren into this world with Likyrish tendrils entwining.`
+            });
+            this.suture(this.player.spellTarget, 20);
+            if (!this.player.isComputer) this.player.setTimeEvent('likyrCooldown', PLAYER.COOLDOWNS.MODERATE);
+            this.player.castingSuccess = false;
+            this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
+            this.scene.combatManager.useGrace(PLAYER.STAMINA.LIKYR);
+        };
+        this.player.isCasting = false;
+        this.player.castbar.reset();
+        this.player.frameCount = 0;
+        this.player.beam.reset();
+        this.player.spellTarget = '';
+        this.player.spellName = '';
+        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
+    };
+
     caerenicDamage = () => this.player.isCaerenic ? 1.15 : 1;
     levelModifier = () => (this.scene.state.player?.level as number + 9) / 10;
     mastery = () => this.scene.state.player?.[this.scene.state.player?.mastery as keyof typeof this.scene.state.player];

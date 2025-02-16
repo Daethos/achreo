@@ -70,6 +70,7 @@ export default class PlayerMachine {
             .addState(States.ACHIRE, { onEnter: this.onAchireEnter, onUpdate: this.onAchireUpdate, onExit: this.onAchireExit })
             .addState(States.ASTRAVE, { onEnter: this.onAstraveEnter, onUpdate: this.onAstraveUpdate, onExit: this.onAstraveExit })
             .addState(States.BLINK, { onEnter: this.onBlinkEnter, onUpdate: this.onBlinkUpdate })
+            .addState(States.CHIOMISM, { onEnter: this.onChiomismEnter, onUpdate: this.onChiomismUpdate, onExit: this.onChiomismExit })
             .addState(States.CONFUSE, { onEnter: this.onConfuseEnter, onUpdate: this.onConfuseUpdate, onExit: this.onConfuseExit })
             .addState(States.CONSUME, { onEnter: this.onConsumeEnter, onUpdate: this.onConsumeUpdate, onExit: this.onConsumeExit })
             .addState(States.DESPERATION, { onEnter: this.onDesperationEnter, onUpdate: this.onDesperationUpdate, onExit: this.onDesperationExit })
@@ -81,6 +82,7 @@ export default class PlayerMachine {
             .addState(States.ILIRECH, { onEnter: this.onIlirechEnter, onUpdate: this.onIlirechUpdate, onExit: this.onIlirechExit })
             .addState(States.INVOKE, { onEnter: this.onInvokeEnter, onUpdate: this.onInvokeUpdate, onExit: this.onInvokeExit })
             .addState(States.KYNISOS, { onEnter: this.onKynisosEnter, onUpdate: this.onKynisosUpdate, onExit: this.onKynisosExit })
+            .addState(States.KYRISIAN, { onEnter: this.onKyrisianEnter, onUpdate: this.onKyrisianUpdate, onExit: this.onKyrisianExit })
             .addState(States.KYRNAICISM, { onEnter: this.onKyrnaicismEnter, onUpdate: this.onKyrnaicismUpdate, onExit: this.onKyrnaicismExit })
             .addState(States.LEAP, { onEnter: this.onLeapEnter, onUpdate: this.onLeapUpdate, onExit: this.onLeapExit })
             .addState(States.LIKYR, { onEnter: this.onLikyrEnter, onUpdate: this.onLikyrUpdate, onExit: this.onLikyrExit })
@@ -1021,6 +1023,49 @@ export default class PlayerMachine {
     };
     onBlinkUpdate = (_dt: number) => this.player.combatChecker(false);
 
+    onChiomismEnter = () => {
+        if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
+        this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.spellName = this.player.currentTarget.ascean.name;
+        this.player.specialCombatText = this.scene.showCombatText('Chiomism', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setTotal(PLAYER.DURATIONS.CHIOMISM);
+        this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.CHIOMISM);                          
+        this.player.isCasting = true;
+        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
+        this.player.castbar.setVisible(true);  
+    };
+    onChiomismUpdate = (dt: number) => {
+        if (this.player.isMoving === true) this.player.isCasting = false;
+        this.player.combatChecker(this.player.isCasting);
+        if (this.player.castbar.time >= PLAYER.DURATIONS.CHIOMISM) {
+            this.player.castingSuccess = true;
+            this.player.isCasting = false;
+        };
+        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+    };
+    onChiomismExit = () => {
+        if (this.player.castingSuccess === true) {
+            this.sacrifice(this.player.spellTarget, 30);
+            const chance = Phaser.Math.Between(1, 100);
+            if (chance > 75) {
+                this.scene.combatManager.confuse(this.player.spellTarget);
+            };
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You bleed and laugh at ${this.player.spellName} with tendrils of Chiomyr.`
+            });
+            if (!this.player.isComputer) this.player.setTimeEvent('chiomismCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+            this.player.castingSuccess = false;
+            this.scene.sound.play('death', { volume: this.scene.hud.settings.volume });
+            this.scene.combatManager.useGrace(PLAYER.STAMINA.CHIOMISM);    
+        };
+        this.player.isCasting = false;
+        this.player.spellTarget = '';
+        this.player.spellName = '';
+        this.player.castbar.reset();
+        this.player.frameCount = 0;
+        this.player.beam.reset();
+        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);  
+    };
     onConfuseEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
@@ -1382,7 +1427,49 @@ export default class PlayerMachine {
         this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
     };
-
+    onKyrisianEnter = () => {
+        if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
+        this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.spellName = this.player.currentTarget.ascean.name;
+        this.player.specialCombatText = this.scene.showCombatText('Kyrisian', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setTotal(PLAYER.DURATIONS.KYRISIAN);
+        this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.KYRISIAN);                          
+        this.player.isCasting = true;
+        if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
+        this.player.castbar.setVisible(true);  
+    };
+    onKyrisianUpdate = (dt: number) => {
+        if (this.player.isMoving === true) this.player.isCasting = false;
+        this.player.combatChecker(this.player.isCasting);
+        if (this.player.castbar.time >= PLAYER.DURATIONS.KYRISIAN) {
+            this.player.castingSuccess = true;
+            this.player.isCasting = false;
+        };
+        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+    };
+    onKyrisianExit = () => {
+        if (this.player.castingSuccess === true) {
+            this.sacrifice(this.player.spellTarget, 30);
+            const chance = Phaser.Math.Between(1, 100);
+            if (chance > 75) {
+                this.scene.combatManager.paralyze(this.player.spellTarget);
+            };
+            EventBus.emit('special-combat-text', {
+                playerSpecialDescription: `You bleed and bewitch ${this.player.spellName} with tendrils of Kyrisos.`
+            });
+            if (!this.player.isComputer) this.player.setTimeEvent('kyrisianCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+            this.player.castingSuccess = false;
+            this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
+            this.scene.combatManager.useGrace(PLAYER.STAMINA.KYRISIAN);    
+        };
+        this.player.isCasting = false;
+        this.player.spellTarget = '';
+        this.player.spellName = '';
+        this.player.castbar.reset();
+        this.player.frameCount = 0;
+        this.player.beam.reset();
+        if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);  
+    };
     onKyrnaicismEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;

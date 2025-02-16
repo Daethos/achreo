@@ -4,7 +4,7 @@ import Equipment from "../models/equipment";
 
 export const PHYSICAL_ACTIONS = ['attack', 'posture', 'thrust'];
 export const PHYSICAL_EVASIONS = ['dodge', 'roll'];
-const COST = {LOW: 25, MID: 50, HIGH: 75};
+const COST = {LOW: 15, MID: 30, HIGH: 45, HIGHEST: 60}; // Good, Better, Best, Bested. How is that for a declension
 const DURATION = {BOTTOM: 750, STANDARD: 1500, ONE: 1000, THREE: 3000, FIVE: 5000, MODERATE: 6000, HIGH: 8000, TEN: 10000};
 
 export const PLAYER = {
@@ -82,91 +82,102 @@ export const PLAYER = {
         COMPUTER_ROLL: 10,
         COMPUTER_THRUST: 10,
 
-        // Magical
-        // Low Cost        
-        INVOKE: -COST.LOW,
+        // Special Cost
+        INVOKE: -COST.MID,
         CONSUME: 0,
 
-        ACHIRE: COST.LOW,
+        // Low Cost - 15
         ARC: COST.LOW,
         BLINK: COST.LOW,
         CONFUSE: COST.LOW,
         DISPEL: COST.LOW,
         FEAR: COST.LOW,
-        FROST: COST.LOW,
-        HEALING: COST.LOW,
-        ILIRECH: COST.LOW,
-        LEAP: COST.LOW,
-        LIKYR: COST.LOW,
-        MAIERETH: COST.LOW,
+        HOOK: COST.LOW,
+        MARK: COST.LOW,
+        NETHERSWAP: COST.LOW,
         PARALYZE: COST.LOW,
         POLYMORPH: COST.LOW,
+        RECALL: COST.LOW,    
         ROOT: COST.LOW,
-        RUSH: COST.LOW,
         SHIMMER: COST.LOW,
         SHIRK: COST.LOW,
         SLOW: COST.LOW,
         SPRINT: COST.LOW,
         
-
-        HOOK: COST.LOW,
-        MARK: COST.LOW,
-        NETHERSWAP: COST.LOW,
-        RECALL: COST.LOW,
-
-        // Moderate Cost
-        ASTRAVE: COST.MID,
-        FYERUS: COST.MID,
-        KYNISOS: COST.MID,
+        // Moderate Cost - 30
+        ACHIRE: COST.MID, // LOW
+        CHIOMISM: COST.MID, // LOW
+        FROST: COST.MID, // LOW
+        HEALING: COST.MID, // LOW
+        ILIRECH: COST.MID, // LOW
+        KYRISIAN: COST.MID,
         KYRNAICISM: COST.MID,
+        LEAP: COST.MID, // LOW
+        LIKYR: COST.MID, // LOW
+        MAIERETH: COST.MID, // LOW
         PURSUIT: COST.MID,
-        SHADOW: COST.MID,
-        QUOR: COST.MID,
-        RECONSTITUTE: COST.MID,
-        SACRIFICE: COST.MID,
+        RUSH: COST.MID, // LOW
         SNARE: COST.MID,
-        STORM: COST.MID,
-        SUTURE: COST.MID,
-        TETHER: COST.MID,
-        // High Cost
-        DESPERATION: COST.HIGH,
-        TSHAERAL: COST.HIGH,
-
+        
+        // High Cost - 45
+        QUOR: COST.HIGH, // MID
+        RECONSTITUTE: COST.HIGH, // MID
+        SACRIFICE: COST.HIGH, // MID
+        SHADOW: COST.HIGH, // MID
+        STORM: COST.HIGH, // MID
+        SUTURE: COST.HIGH, // MID
+        TETHER: COST.HIGH, // MID
+        
+        // Highest Cost - 60
+        DESPERATION: COST.HIGHEST,
+        TSHAERAL: COST.HIGHEST,
+        
         // Trait
         ENDURANCE: 0,
+        
         ASTRICATION: COST.LOW,
         BERSERK: COST.LOW,
         CONVICTION: COST.LOW,
         IMPERMANENCE: COST.LOW,
         SEER: COST.LOW,
         STIMULATE: COST.LOW,
-        BLIND: COST.MID,
+        
+        BLIND: COST.HIGH,
         CAERENESIS: COST.HIGH,
-        DEVOUR: COST.HIGH,
-
+        
+        DEVOUR: COST.HIGHEST,
+        
         // AoE
-        CHIOMIC: COST.MID,  
-        DISEASE: COST.MID,
+        CHIOMIC: COST.MID,
         FREEZE: COST.MID,
         HOWL: COST.MID,
-        RENEWAL: COST.MID,
         SCREAM: COST.MID,
-        WRITHE: COST.MID,
+        
+        ASTRAVE: COST.HIGH,
+        DISEASE: COST.HIGH,
+        FYERUS: COST.HIGH,
+        KYNISOS: COST.HIGH,
+        RENEWAL: COST.HIGH,
+        WRITHE: COST.HIGH,
 
         // Bubble
         ABSORB: 0,
-        ENVELOP: 0,
-        MALICE: COST.MID,
-        MENACE: COST.MID,
-        MEND: COST.MID,
-        MODERATE: COST.LOW,
-        MULTIFARIOUS: COST.MID,
-        MYSTIFY: COST.MID,
-        PROTECT: COST.HIGH,
-        RECOVER: COST.LOW,
         REIN: 0,
-        SHIELD: COST.HIGH,
-        WARD: COST.MID,
+        
+        ENVELOP: COST.LOW,
+        MODERATE: COST.LOW,
+        RECOVER: COST.LOW,
+
+        MALICE: COST.MID,
+        MEND: COST.MID,
+        
+        MULTIFARIOUS: COST.HIGH,
+        MYSTIFY: COST.HIGH,
+        MENACE: COST.HIGH,
+        
+        PROTECT: COST.HIGHEST,
+        SHIELD: COST.HIGHEST,
+        WARD: COST.HIGHEST,
     },
     COOLDOWNS: {
         SHORT: 6000,
@@ -179,6 +190,7 @@ export const PLAYER = {
         ASTRAVE: DURATION.STANDARD,
         ARCING: DURATION.THREE,
         CHIOMIC: DURATION.ONE,
+        CHIOMISM: DURATION.ONE,
         CONFUSE: DURATION.ONE,
         DEFEATED: DURATION.HIGH,
         DESPERATION: DURATION.BOTTOM,
@@ -193,6 +205,7 @@ export const PLAYER = {
         HOWL: DURATION.ONE,
         ILIRECH: DURATION.STANDARD,
         KYNISOS: DURATION.ONE,
+        KYRISIAN: DURATION.ONE,
         KYRNAICISM: DURATION.THREE,
         LEAP: DURATION.BOTTOM,
         LIKYR: DURATION.STANDARD,
@@ -289,13 +302,13 @@ export const PLAYER_INSTINCTS = {
             value: States.INVOKE
         },{ // 3 - Critical Damage
             key: STATE,
-            value: States.LIKYR
+            value: States.KYRISIAN
         },{ // 4 - Casual Damage
             key: STATE,
-            value: States.ILIRECH
+            value: States.KYRNAICISM
         },{ // 5 - Starter Damage
             key: STATE,
-            value: States.KYRNAICISM
+            value: States.LIKYR
         },{ // 6 - Melee < 100 Distance
             key: POSITIVE,
             value: States.DISEASE
@@ -472,10 +485,10 @@ export const PLAYER_INSTINCTS = {
             value: States.SACRIFICE
         },{ // 4 - Casual Damage
             key: STATE,
-            value: States.ILIRECH
+            value: States.KYRNAICISM
         },{ // 5 - Starter Damage
             key: STATE,
-            value: States.KYRNAICISM
+            value: States.MAIERETH
         },{ // 6 - Melee < 100 Distance
             key: POSITIVE,
             value: States.SCREAM
@@ -517,7 +530,7 @@ export const PLAYER_INSTINCTS = {
             value: States.SACRIFICE
         },{ // 4 - Casual Damage
             key: STATE,
-            value: States.MAIERETH
+            value: States.CHIOMISM
         },{ // 5 - Starter Damage
             key: STATE,
             value: States.INVOKE
@@ -538,7 +551,7 @@ export const PLAYER_INSTINCTS = {
             value: States.HOOK
         },{ // 11 - Ranged > 200 Distance && Distance < 300
             key: STATE,
-            value: States.MAIERETH
+            value: States.CHIOMISM
         },{ // 12 - Melee > 300 Distance
             key: POSITIVE,
             value: States.MYSTIFY
@@ -554,7 +567,7 @@ export const DEFENSIVE = "Defensive";
 export const OFFENSIVE = "Offensive";
 
 export const BALANCED_INSTINCTS = {
-    "constitution": [States.INVOKE, States.ILIRECH, States.LIKYR, States.KYNISOS, States.PARALYZE, States.WARD],
+    "constitution": [States.INVOKE, States.ILIRECH, States.LIKYR, States.KYNISOS, States.KYRISIAN, States.PARALYZE, States.WARD],
     "strength": [States.INVOKE, States.RECOVER, States.SPRINTING, States.STORM, States.WARD],
     "agility": [States.INVOKE, States.ACHIRE, States.KYNISOS, States.RECOVER, States.SPRINTING],
     "achre": [States.INVOKE, States.ACHIRE, States.BLINK, States.FROST, States.FYERUS, States.REIN, States.SLOW],
@@ -562,20 +575,20 @@ export const BALANCED_INSTINCTS = {
     "kyosir": [States.INVOKE, States.CONFUSE, States.DISPEL, States.KYNISOS, States.SUTURE],
 };
 export const DEFENSIVE_INSTINCTS = {
-    "constitution": [States.ABSORB, States.HEALING, States.INVOKE, States.KYRNAICISM, States.LIKYR, States.SHIELD, States.SHIRK],
+    "constitution": [States.ABSORB, States.HEALING, States.INVOKE, States.LIKYR, States.SHIELD, States.SHIRK, States.WARD],
     "strength": [States.INVOKE, States.DESPERATION, States.HOWL, States.SPRINTING, States.WARD],
     "agility": [States.INVOKE, States.DESPERATION, States.ENVELOP, States.RECOVER, States.SHIMMER, States.SNARE],
     "achre": [States.INVOKE, States.ABSORB, States.BLINK, States.DESPERATION, States.FROST, States.MODERATE, States.SLOW],
-    "caeren": [States.INVOKE, States.DESPERATION, States.FEAR, States.KYRNAICISM, States.MEND],
+    "caeren": [States.INVOKE, States.DESPERATION, States.FEAR, States.HEALING, States.KYRNAICISM, States.MEND],
     "kyosir": [States.CONFUSE, States.DESPERATION, States.HEALING, States.MYSTIFY, States.PROTECT, States.SUTURE],
 };
 export const OFFENSIVE_INSTINCTS = {
-    "constitution": [States.DISPEL, States.ILIRECH, States.KYNISOS, States.KYRNAICISM, States.LIKYR, States.PARALYZE],
+    "constitution": [States.DISPEL, States.ILIRECH, States.KYNISOS, States.KYRISIAN, States.KYRNAICISM, States.LIKYR, States.PARALYZE],
     "strength": [States.INVOKE, States.LEAP, States.QUOR, States.RECOVER, States.RUSH, States.SPRINTING, States.STORM],
     "agility": [States.INVOKE, States.ACHIRE, States.KYNISOS, States.RECOVER, States.SPRINTING, States.STORM],
     "achre": [States.INVOKE, States.ACHIRE, States.ASTRAVE, States.BLINK, States.FROST, States.FYERUS, States.QUOR, States.REIN],
-    "caeren": [States.INVOKE, States.ACHIRE, States.ASTRAVE, States.MALICE, States.KYRNAICISM, States.SACRIFICE],
-    "kyosir": [States.INVOKE, States.DISPEL, States.MAIERETH, States.MALICE, States.SACRIFICE],
+    "caeren": [States.INVOKE, States.ASTRAVE, States.ILIRECH, States.MAIERETH, States.MALICE, States.KYRNAICISM, States.SACRIFICE],
+    "kyosir": [States.INVOKE, States.CHIOMISM, States.DISPEL, States.ILIRECH, States.KYRNAICISM, States.MALICE, States.SACRIFICE],
 };
 
 export const STAMINA = ['attack', 'posture', 'roll', 'dodge', 'parry', 'thrust'];

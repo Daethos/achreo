@@ -38,6 +38,7 @@ export const States = {
 
     ARC: 'arc',
     BLINK: "blink",
+    CHIOMISM: "chiomism",
     CONFUSE: "confuse",
     CONSUME: "consume",
     DESPERATION: "desperation",
@@ -70,6 +71,7 @@ export const States = {
     FYERUS: 'fyerus', // Channeled, AoE, Damage w/ Snare?, Manual Aim || Aqua & Ruby
     KYNISOS: 'kynisos', // Casted, AoE, Root, Manual Aim || Gold & Green
     QUOR: 'quor', // 3s, 6x, can crit, manual, mid grace, low cooldown
+    KYRISIAN: 'kyrisian',
     LIKYR: 'likyr',
     MAIERETH: 'maiereth', // cast, 1-1.5s, direct, (var of Ascean).damage, can crit, mid range, low grace, low cooldown
     ILIRECH: 'ilirech', // cast, 1s, direct, -X health, X * 2 damage, low range, low grace, 2s cooldown

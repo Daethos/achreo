@@ -183,6 +183,16 @@ export const ACTION_ORIGIN = {
         svg: 'CONSUME',
         talent: 'Increased Radius.',
     },
+    CHOIMISM: {
+        name: 'Chiomism',
+        description: "You bleed and laugh into this world with Chiomic tendrils.",
+        cooldown: `${PLAYER.COOLDOWNS.SHORT / 1000}s`,
+        cost: `${PLAYER.STAMINA.CHIOMISM} Grace`,
+        time: '1s',
+        special: 'Cast. Targeted',
+        svg: 'CAST',
+        talent: '',
+    },
     CONFUSE: {
         name: 'Confuse',
         description: "Inspire confusion in your opponent for several seconds. Damage may break this effect.",
@@ -361,6 +371,16 @@ export const ACTION_ORIGIN = {
         time: '1s Cast',
         special: 'AoE (Manual)',
         svg: 'AOE',
+        talent: '',
+    },
+    KYRISIAN: {
+        name: 'Kyrisian',
+        description: "You bleed and bewitch into this world with Kyrison tendrils.",
+        cooldown: `${PLAYER.COOLDOWNS.SHORT / 1000}s`,
+        cost: `${PLAYER.STAMINA.KYRISIAN} Grace`,
+        time: '1s',
+        special: 'Cast. Targeted',
+        svg: 'CAST',
         talent: '',
     },
     KYRNAICISM: {

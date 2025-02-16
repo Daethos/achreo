@@ -156,14 +156,18 @@ export default class Enemy extends Entity {
             .addState(States.ACHIRE, { onEnter: this.onAchireEnter, onUpdate: this.onAchireUpdate, onExit: this.onAchireExit })
             .addState(States.ASTRAVE, { onEnter: this.onAstraveEnter, onUpdate: this.onAstraveUpdate, onExit: this.onAstraveExit })
             .addState(States.BLINK, { onEnter: this.onBlinkEnter, onUpdate: this.onBlinkUpdate, onExit: this.onBlinkExit })
+            .addState(States.CHIOMISM, { onEnter: this.onChiomismEnter, onUpdate: this.onChiomismUpdate, onExit: this.onChiomismExit })
             .addState(States.CONFUSE, { onEnter: this.onConfuseEnter, onUpdate: this.onConfuseUpdate, onExit: this.onConfuseExit })
             .addState(States.DESPERATION, { onEnter: this.onDesperationEnter, onExit: this.onDesperationExit })
             .addState(States.FEAR, { onEnter: this.onFearingEnter, onUpdate: this.onFearingUpdate, onExit: this.onFearingExit })
+            .addState(States.FROST, { onEnter: this.onFrostEnter, onUpdate: this.onFrostUpdate, onExit: this.onFrostExit })
             .addState(States.HEALING, { onEnter: this.onHealingEnter, onUpdate: this.onHealingUpdate, onExit: this.onHealingExit })
             .addState(States.HOOK, { onEnter: this.onHookEnter, onUpdate: this.onHookUpdate, onExit: this.onHookExit })
             .addState(States.ILIRECH, { onEnter: this.onIlirechEnter, onUpdate: this.onIlirechUpdate, onExit: this.onIlirechExit })
+            .addState(States.KYRISIAN, { onEnter: this.onKyrisianEnter, onUpdate: this.onKyrisianUpdate, onExit: this.onKyrisianExit })
             .addState(States.KYRNAICISM, { onEnter: this.onKyrnaicismEnter, onUpdate: this.onKyrnaicismUpdate, onExit: this.onKyrnaicismExit })
             .addState(States.LEAP, { onEnter: this.onLeapEnter, onUpdate: this.onLeapUpdate, onExit: this.onLeapExit })
+            .addState(States.LIKYR, { onEnter: this.onLikyrEnter, onUpdate: this.onLikyrUpdate, onExit: this.onLikyrExit })
             .addState(States.MAIERETH, { onEnter: this.onMaierethEnter, onUpdate: this.onMaierethUpdate, onExit: this.onMaierethExit })
             .addState(States.PARALYZE, { onEnter: this.onParalyzeEnter, onUpdate: this.onParalyzeUpdate, onExit: this.onParalyzeExit })
             .addState(States.POLYMORPH, { onEnter: this.onPolymorphingEnter, onUpdate: this.onPolymorphingUpdate, onExit: this.onPolymorphingExit })
@@ -508,10 +512,10 @@ export default class Enemy extends Entity {
         this.enemies.sort((a, b) => b.threat - a.threat);
         const topEnemy: string = this.enemies[0].id;
         const updateTarget = (id: string) => {
-            const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === id);
-            if (enemy) this.updateEnemyTarget(enemy);
+            const enemy = this.scene.getEnemy(id);
+            if (enemy && enemy.health > 0) this.updateEnemyTarget(enemy);
             const party = this.scene.party.find((e: Party) => e.enemyID === id);
-            if (party) this.updateEnemyTarget(party);
+            if (party && party.health > 0) this.updateEnemyTarget(party);
         };
     
         if (this.scene.player.playerID === topEnemy && this.currentTarget?.name !== 'player') {
@@ -591,7 +595,7 @@ export default class Enemy extends Entity {
 
     computerCombatUpdate = (e: ComputerCombat) => {
         if (this.enemyID !== e.personalID) return;
-        const { computerDamageType, damagedID, enemyID, computerWeapons, computerWin, computerHealth, newComputerHealth } = e;
+        const { computerDamageType, enemyID, computerWeapons, computerWin, computerHealth, newComputerHealth } = e;
         if (this.health > newComputerHealth) {
             let damage: number | string = Math.round(this.health - newComputerHealth);
             damage = e.computerEnemyCriticalSuccess ? `${damage} (Critical)` : e.computerEnemyGlancingBlow ? `${damage} (Glancing)` : damage;
@@ -611,7 +615,7 @@ export default class Enemy extends Entity {
             if (this.isMalicing) this.malice(enemyID);
             if (this.isMending) this.mend(enemyID);
             if ((!this.inComputerCombat || !this.currentTarget) && newComputerHealth > 0 && enemyID !== this.enemyID) {
-                const enemy = this.scene.enemies.find((en: Enemy) => en.enemyID === damagedID);
+                const enemy = this.scene.getEnemy(enemyID) || this.scene.party.find((p: Party) => p.enemyID === enemyID);
                 if (enemy) {
                     this.checkComputerEnemyCombatEnter(enemy);
                 };
@@ -764,16 +768,16 @@ export default class Enemy extends Entity {
                         };
                         if (this.isReasonable()) this.scene.hud.setupEnemy(this);
                         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
-                        if (this.stateMachine.isCurrentState(States.DEFEATED)) {
-                            this.scene.hud.showDialog(true);
-                        } else {
-                            this.stateMachine.setState(States.AWARE);
-                        };
+                        // if (this.stateMachine.isCurrentState(States.DEFEATED)) {
+                        //     this.scene.hud.showDialog(true);
+                        // } else {
+                        //     this.stateMachine.setState(States.AWARE);
+                        // };
                     }; //  || other.gameObjectB.name === 'party'
                 } else if (other.gameObjectB && other.gameObjectB.name === 'enemy' && this.scene.scene.key !== 'Arena' && this.scene.scene.key !== 'Underground') {
                     this.isValidComputerRushEnemy(other.gameObjectB);
                     this.touching.push(other.gameObjectB);
-                    if (this.inCombat || this.inComputerCombat || other.gameObjectB.health <= 0 || this.health <= 0 || this.isDefeated) return;                     
+                    if (this.inCombat || this.inComputerCombat || other.gameObjectB.isDefeated || other.gameObjectB.health <= 0 || this.health <= 0 || this.isDefeated) return;                     
                     // this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
                     this.checkComputerEnemyCombatEnter(other.gameObjectB);                    
                     // if (this.ascean && this.computerEnemyAggressionCheck()) {
@@ -796,12 +800,12 @@ export default class Enemy extends Entity {
                     this.scene.player.touching = this.scene.player.touching.filter((touch: Enemy) => touch.enemyID !== this.enemyID);
                     if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive && !this.inComputerCombat && this.health > 0) {
                         if (this.healthbar) this.healthbar.setVisible(false);
-                        if (this.isDefeated === true) {
-                            this.scene.hud.showDialog(false);
-                            this.stateMachine.setState(States.DEFEATED);
-                        } else {
-                            this.stateMachine.setState(States.IDLE);
-                        };
+                        // if (this.isDefeated === true) {
+                        //     this.scene.hud.showDialog(false);
+                        //     this.stateMachine.setState(States.DEFEATED);
+                        // } else {
+                        //     this.stateMachine.setState(States.IDLE);
+                        // };
                         if (this.isCurrentTarget === true && !this.inCombat) this.scene.hud.clearNonAggressiveEnemy();
                     };
                 } else if (other.gameObjectB && (other.gameObjectB.name === 'enemy' || other.gameObjectB.name === 'party')) {
@@ -858,6 +862,7 @@ export default class Enemy extends Entity {
     };
 
     checkComputerEnemyCombatEnter = (enemy: Enemy | Party) => {
+        if (enemy.isDefeated || enemy.health <= 0 || this.isDefeated || this.health <= 0) return;
         this.currentTarget = enemy;
         this.inComputerCombat = true;
         this.computerCombatSheet = {
@@ -1638,6 +1643,7 @@ export default class Enemy extends Entity {
         this.isContemplating = false;
         this.currentAction = '';
         if (this.inCombat === false && this.inComputerCombat === false) {
+            if (this.health <= 0) return;
             this.stateMachine.setState(States.LEASH);
             return;
         };
@@ -1924,11 +1930,12 @@ export default class Enemy extends Entity {
     instincts = () => {
         if ((this.inCombat === false && this.inComputerCombat === false) || this.health <= 0) return;
         this.scene.time.delayedCall(500, () => {
+            if ((this.inCombat === false && this.inComputerCombat === false) || this.health <= 0) return;
             let chance = [1, 2, 3, (!this.isRanged ? 5 : 6)][Math.floor(Math.random() * 4)];
             let mastery = this.ascean.mastery;
             let health = this.health / this.ascean.health.max;
             let player = this.scene.state.newPlayerHealth / this.scene.state.playerHealth;
-            if (!this.currentTarget || !this.currentTarget.body) {
+            if ((!this.currentTarget || !this.currentTarget.body) && this.health > 0) {
                 this.stateMachine.setState(States.COMBAT);
                 return;
             };
@@ -1994,7 +2001,7 @@ export default class Enemy extends Entity {
                 this.scene.combatManager.useGrace(PLAYER.STAMINA.ASTRAVE);    
             };
         } else if (this.castingSuccess === true) { // CvC
-            const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === this.targetID);
+            const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === this.targetID) || this.scene.party.find((p: Party) => p.enemyID === this.targetID);
             this.aoe = new AoE(this.scene, 'astrave', 1, true, this, false, enemy);    
         };
         this.enemySound('combat-round', this.castingSuccess);
@@ -2021,7 +2028,48 @@ export default class Enemy extends Entity {
     };
     onBlinkUpdate = (_dt: number) => {};
     onBlinkExit = () => {};
-
+    onChiomismEnter = () => {
+        this.targetID = this.getTargetId();
+        this.startCasting('Chiomism', PLAYER.DURATIONS.CHIOMISM, 'damage');
+    };
+    onChiomismUpdate = (dt: number) => {
+        this.counterCheck();
+        if (this.isCasting === true) this.castbar.update(dt, 'cast');
+        if (this.isSuccessful(PLAYER.DURATIONS.CHIOMISM)) {
+            this.stateMachine.setState(States.CLEAN);
+        };
+    };
+    onChiomismExit = () => {
+        if (this.targetID === this.scene?.player?.playerID) {
+            if (this.castingSuccess === true && this.checkPlayerResist() === true) {
+                this.sacrifice(30, this.targetID);
+                const chance = Phaser.Math.Between(1, 100);
+                if (chance > 75) {
+                    if (this.checkPlayerResist() === true) {
+                        this.scene.combatManager.confuse(this.targetID);
+                    } else {
+                        EventBus.emit('special-combat-text', {
+                            playerSpecialDescription: `You resist the laugh of the chiomic tongue.` // Menses wink wink
+                        });
+                    };
+                };
+                EventBus.emit('enemy-combat-text', {
+                    computerSpecialDescription: `${this.ascean.name} bleeds and laughs at you with tendrils of Chiomyr.`
+                });
+                screenShake(this.scene, 90);
+            };
+        } else { // CvC
+            if (this.castingSuccess === true) {
+                this.sacrifice(30, this.targetID);
+                const chance = Phaser.Math.Between(1, 100);
+                if (chance > 75) {
+                    this.scene.combatManager.confuse(this.targetID);
+                };
+            };
+        };
+        this.enemySound('death', this.castingSuccess);
+        this.stopCasting('Countered Chiomism');
+    };
     onConfuseEnter = () => {
         this.targetID = this.getTargetId();
         this.startCasting('Confusing', PLAYER.DURATIONS.CONFUSE, 'cast');
@@ -2054,6 +2102,7 @@ export default class Enemy extends Entity {
         this.specialCombatText = this.scene.showCombatText('Desperation', PLAYER.DURATIONS.HEALING / 2, 'cast', false, true, () => this.specialCombatText = undefined);
         if (this.isGlowing === false) this.checkCaerenic(true);
         this.scene.time.delayedCall(PLAYER.DURATIONS.DESPERATION, () => {
+            if (this.health <= 0) return;
             const heal = Math.round(this.ascean.health.max * 0.5);
             const total = Math.min(this.health + heal, this.ascean.health.max);
             this.enemySound('phenomena', true);
@@ -2098,7 +2147,36 @@ export default class Enemy extends Entity {
         this.stopCasting('Countered Fear');
         this.instincts();
     };
-
+    onFrostEnter = () => {
+        this.targetID = this.getTargetId();
+        this.startCasting('Frost', PLAYER.DURATIONS.FROST, 'cast');
+    };
+    onFrostUpdate = (dt: number) => {
+        this.counterCheck();
+        if (this.isCasting === true) this.castbar.update(dt, 'cast');
+        if (this.isSuccessful(PLAYER.DURATIONS.FROST)) {
+            this.stateMachine.setState(States.CLEAN);
+        };
+    };
+    onFrostExit = () => {
+        if (this.targetID === this.scene?.player?.playerID) {
+            if (this.castingSuccess === true && this.checkPlayerResist() === true) {
+                this.chiomic(75, this.targetID);
+                this.scene.combatManager.slow(this.targetID, 3000);
+                EventBus.emit('enemy-combat-text', {
+                    computerSpecialDescription: `${this.ascean.name} seizes into this world with Nyrolean tendrils, slowing you.`
+                });
+                screenShake(this.scene, 90);
+            };
+        } else { // CvC
+            if (this.castingSuccess === true) {
+                this.chiomic(75, this.targetID);
+                this.scene.combatManager.slow(this.targetID, 3000);
+            };
+        };
+        this.enemySound('fire', this.castingSuccess);
+        this.stopCasting('Countered Frost');
+    };
     onHealingEnter = () => this.startCasting('Healing', PLAYER.DURATIONS.HEALING, 'cast');
     onHealingUpdate = (dt: number) => {
         this.counterCheck();
@@ -2172,6 +2250,49 @@ export default class Enemy extends Entity {
         this.stopCasting('Countered Ilirech');
     };
     
+    onKyrisianEnter = () => {
+        this.targetID = this.getTargetId();
+        this.startCasting('Kyrisian', PLAYER.DURATIONS.KYRISIAN, 'damage');
+    };
+        
+    onKyrisianUpdate = (dt: number) => {
+        this.counterCheck();
+        if (this.isCasting === true) this.castbar.update(dt, 'cast');
+        if (this.isSuccessful(PLAYER.DURATIONS.KYRISIAN)) {
+            this.stateMachine.setState(States.CLEAN);
+        };
+    };
+    onKyrisianExit = () => {
+        if (this.targetID === this.scene?.player?.playerID) {
+            if (this.castingSuccess === true && this.checkPlayerResist() === true) {
+                this.sacrifice(30, this.targetID);
+                const chance = Phaser.Math.Between(1, 100);
+                if (chance > 75) {
+                    if (this.checkPlayerResist() === true) {
+                        this.scene.combatManager.paralyze(this.targetID);
+                    } else {
+                        EventBus.emit('special-combat-text', {
+                            playerSpecialDescription: `You resist the charm of the golden voice.` // Menses wink wink
+                        });
+                    };
+                };
+                EventBus.emit('enemy-combat-text', {
+                    computerSpecialDescription: `${this.ascean.name} bleeds and bewitches you with tendrils of Kyrisos.`
+                });
+                screenShake(this.scene, 90);
+            };
+        } else { // CvC
+            if (this.castingSuccess === true) {
+                this.sacrifice(30, this.targetID);
+                const chance = Phaser.Math.Between(1, 100);
+                if (chance > 75) {
+                    this.scene.combatManager.paralyze(this.targetID);
+                };
+            };
+        };
+        this.enemySound('spooky', this.castingSuccess);
+        this.stopCasting('Countered Kyrisian');
+    };
     onKyrnaicismEnter = () => {
         this.startCasting('Kyrnaicism', PLAYER.DURATIONS.KYRNAICISM, 'damage', true);
         this.targetID = this.getTargetId();
@@ -2221,7 +2342,7 @@ export default class Enemy extends Entity {
     };
 
     onLeapEnter = () => {
-        if (!this.currentTarget || !this.currentTarget.body) {
+        if ((!this.currentTarget || !this.currentTarget.body) && this.health > 0) {
             this.stateMachine.setState(States.COMBAT);
             return;
         };
@@ -2251,7 +2372,7 @@ export default class Enemy extends Entity {
                         };
                     };
                 };
-                this.stateMachine.setState(States.COMBAT);
+                if (this.health > 0) this.stateMachine.setState(States.COMBAT);
             },
         });
         this.scrollingCombatText = this.scene.showCombatText('Leaping!', 900, 'damage', false, false, () => this.scrollingCombatText = undefined);
@@ -2263,7 +2384,33 @@ export default class Enemy extends Entity {
     };
     onLeapUpdate = (_dt: number) => {};
     onLeapExit = () => this.evaluateCombatDistance();
-
+    onLikyrEnter = () => {
+        this.targetID = this.getTargetId();
+        this.startCasting('Likyr', PLAYER.DURATIONS.LIKYR, 'damage');
+    };
+        
+    onLikyrUpdate = (dt: number) => {
+        this.counterCheck();
+        if (this.isCasting === true) this.castbar.update(dt, 'cast');
+        if (this.isSuccessful(PLAYER.DURATIONS.LIKYR)) {
+            this.stateMachine.setState(States.CLEAN);
+        };
+    };
+    onLikyrExit = () => {
+        if (this.targetID === this.scene?.player?.playerID) {
+            if (this.castingSuccess === true && this.checkPlayerResist() === true) {
+                this.suture(20, this.targetID);
+                EventBus.emit('enemy-combat-text', {
+                    computerSpecialDescription: `${this.ascean.name} blends caeren into this world with Likyrish tendrils.`
+                });
+                screenShake(this.scene, 90);
+            };
+        } else { // CvC
+            if (this.castingSuccess === true) this.suture(20, this.targetID);
+        };
+        this.enemySound('debuff', this.castingSuccess);
+        this.stopCasting('Countered Likyr');
+    };
     onMaierethEnter = () => {
         this.targetID = this.getTargetId();
         this.startCasting('Maiereth', PLAYER.DURATIONS.MAIERETH, 'damage');
@@ -2296,7 +2443,13 @@ export default class Enemy extends Entity {
                 screenShake(this.scene, 90);
             };
         } else { // CvC
-            if (this.castingSuccess === true) this.sacrifice(30, this.targetID);
+            if (this.castingSuccess === true) {
+                this.sacrifice(30, this.targetID);
+                const chance = Phaser.Math.Between(1, 100);
+                if (chance > 75) {
+                    this.scene.combatManager.fear(this.targetID);
+                };
+            };
         };
         this.enemySound('spooky', this.castingSuccess);
         this.stopCasting('Countered Maiereth');
@@ -2445,7 +2598,7 @@ export default class Enemy extends Entity {
         this.isCasting = true;
         this.isRushing = true;
         this.enemySound('stealth', true);
-        if (!this.currentTarget) {
+        if ((!this.currentTarget || !this.currentTarget.body) && this.health > 0) {
             this.isRushing = false;
             this.stateMachine.setState(States.CHASE);
             return;
@@ -2498,7 +2651,7 @@ export default class Enemy extends Entity {
             };
         };
         this.isRushing = false;
-        this.stateMachine.setState(States.CHASE);
+        if (this.health > 0) this.stateMachine.setState(States.CHASE);
     };
     
     onSacrificeEnter = () => {
@@ -3237,7 +3390,7 @@ export default class Enemy extends Entity {
         this.isFrozen = false;
         this.isRooted = false;
 
-        this.stateMachine.setState(States.COMBAT);
+        if (this.health > 0) this.stateMachine.setState(States.COMBAT);
         this.negativeMachine.setState(States.CLEAN);
 
         this.flickerCarenic(6000);
@@ -3509,9 +3662,9 @@ export default class Enemy extends Entity {
     onCounterSpelledUpdate = (_dt: number) => {
         this.anims.play('player_hurt', true);
         if (!this.isCounterSpelled) {
-            if (this.inCombat === true || this.inComputerCombat === true) {
+            if ((this.inCombat === true || this.inComputerCombat === true) && this.health > 0) {
                 this.stateMachine.setState(States.COMBAT);
-            } else {
+            } else if (this.health > 0) {
                 this.stateMachine.setState(States.IDLE);
             };
         };
@@ -3633,9 +3786,9 @@ export default class Enemy extends Entity {
         if (this.hurtTime >= 320) this.isHurt = false;
         this.anims.play('player_hurt', true);
         if (!this.isHurt) {
-            if (this.inCombat === true || this.inComputerCombat === true) {
+            if ((this.inCombat === true || this.inComputerCombat === true) && this.health > 0) {
                 this.stateMachine.setState(States.COMBAT);
-            } else {
+            } else if (this.health > 0) {
                 this.stateMachine.setState(States.IDLE);
             };
         };
@@ -3661,7 +3814,7 @@ export default class Enemy extends Entity {
         this.setStatic(true);
         this.scene.time.delayedCall(this.paralyzeDuration, () => {
             this.count.paralyzed -= 1;
-            if (this.count.paralyzed <= 0) {
+            if (this.count.paralyzed <= 0 || this.health <= 0) {
                 this.count.paralyzed = 0;
                 this.isParalyzed = false;
             } else {
@@ -3777,7 +3930,7 @@ export default class Enemy extends Entity {
 
         this.scene.time.delayedCall(this.stunDuration, () => {
             this.count.stunned -= 1;
-            if (this.count.stunned <= 0) {
+            if (this.count.stunned <= 0 || this.health <= 0) {
                 this.count.stunned = 0;
                 this.isStunned = false;
             } else {
@@ -4037,7 +4190,7 @@ export default class Enemy extends Entity {
     };
 
     evaluateCombatDistance = () => {
-        if (this.isCasting === true || this.isSuffering() === true || this.isHurt === true || this.isContemplating === true || this.isDeleting || this.isDefeated) return;
+        if (this.isCasting === true || this.isSuffering() === true || this.isHurt === true || this.isContemplating === true || this.isDeleting || this.isDefeated || this.stateMachine.isCurrentState(States.DEFEATED)) return;
         if (this.currentTarget === undefined || this.currentTarget.body === undefined || (this.inCombat === false && this.inComputerCombat === false) || (this.inCombat && this.scene.state.newPlayerHealth <= 0) || this.health <= 0) {
             if (this.inComputerCombat || this.currentTarget) {
                 const enemy = this.computerEnemyAttacker();
@@ -4190,7 +4343,6 @@ export default class Enemy extends Entity {
             if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         };
         if (this.health <= 0 && !this.stateMachine.isCurrentState(States.DEFEATED)) {
-            this.stateMachine.clearStates();
             this.stateMachine.setState(States.DEFEATED);
             return;
         };

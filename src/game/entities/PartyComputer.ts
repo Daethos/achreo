@@ -302,6 +302,7 @@ export default class Party extends Entity {
     };
 
     checkComputerEnemyCombatEnter = (enemy: Enemy) => {
+        if (enemy.isDefeated || enemy.health <= 0) return;
         this.currentTarget = enemy;
         this.inComputerCombat = true;
         this.computerCombatSheet = {
@@ -420,16 +421,19 @@ export default class Party extends Entity {
         if (this.isMalicing) this.malice(origin);
         if (this.isMending) this.mend();
         if ((!this.inComputerCombat || !this.currentTarget) && this.health > 0) {
-            const enemy = this.scene.enemies.find((en: Enemy) => en.enemyID === origin && origin !== this.enemyID);
-            if (enemy) this.checkComputerEnemyCombatEnter(enemy);
+            const enemy = this.scene.getEnemy(origin);
+            if (enemy && enemy.health > 0) this.checkComputerEnemyCombatEnter(enemy);
         };
         this.computerCombatSheet.newComputerHealth = this.health;
         const enemy = this.enemies.find((en: ENEMY) => en.id === origin);
-        if (enemy && this.health > 0) {
+        if (enemy && enemy.health > 0 && this.health > 0) {
             this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max));
         } else if (!enemy && this.health > 0 && origin !== '') {
-            this.enemies.push({id:origin,threat:0});
-            this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max));
+            const enemy = this.scene.getEnemy(origin);
+            if (enemy && enemy.health > 0 && this.health > 0) {
+                this.enemies.push({id:origin,threat:0});
+                this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max));
+            };
         };
         EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
     };
@@ -498,11 +502,11 @@ export default class Party extends Entity {
         this.enemies = this.enemies.sort((a, b) => b.threat - a.threat);
         let topEnemy: string = this.enemies[0].id;
         if (this.currentTarget && this.currentTarget.enemyID !== topEnemy) {
-            const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === topEnemy);
-            if (enemy) this.updateEnemyTarget(enemy);
+            const enemy = this.scene.getEnemy(topEnemy);
+            if (enemy && enemy.health > 0) this.updateEnemyTarget(enemy);
         } else if (!this.currentTarget) {
-            const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === topEnemy);
-            if (enemy) this.updateEnemyTarget(enemy);
+            const enemy = this.scene.getEnemy(topEnemy);
+            if (enemy && enemy.health > 0) this.updateEnemyTarget(enemy);
         };
     };
 
@@ -528,7 +532,7 @@ export default class Party extends Entity {
             if (this.isMalicing) this.malice(enemyID);
             if (this.isMending) this.mend();
             if ((!this.inComputerCombat || !this.currentTarget) && newComputerHealth > 0 && enemyID !== this.enemyID) {
-                const enemy = this.scene.enemies.find((en: Enemy) => en.enemyID === e.damagedID);
+                const enemy = this.scene.getEnemy(e.damagedID);
                 if (enemy) {
                     this.checkComputerEnemyCombatEnter(enemy);
                 };
@@ -601,7 +605,7 @@ export default class Party extends Entity {
             this.disengage();
         } else {
             const newId = this.enemies[0].id;
-            const newEnemy = this.scene.enemies.find((e) => newId === e.enemyID);
+            const newEnemy = this.scene.getEnemy(newId);
             if (newEnemy && newEnemy.health > 0) {
                 this.currentTarget = newEnemy;
             } else {
@@ -1081,7 +1085,7 @@ export default class Party extends Entity {
     };
 
     pursue = (id: string) => {
-        const enemy = this.scene.enemies.find(e => e.enemyID === id);
+        const enemy = this.scene.getEnemy(id);
         if (!enemy) return;
         this.enemySound('wild', true);
         if (enemy.flipX) {
@@ -1117,7 +1121,7 @@ export default class Party extends Entity {
     };
 
     tether = (id: string) => {
-        const enemy = this.scene.enemies.find(e => e.enemyID === id);
+        const enemy = this.scene.getEnemy(id);
         if (!enemy) return;
         this.enemySound('dungeon', true);
         this.hook(enemy, 1000);
@@ -1209,7 +1213,7 @@ export default class Party extends Entity {
     };
     
     computerEngagement = (id: string) => {
-        const enemy = this.scene.enemies.find((obj: Enemy) => obj.enemyID === id);
+        const enemy = this.scene.getEnemy(id);
         if (!enemy) return;
         if (this.isNewEnemy(enemy)) this.targets.push(enemy);
         this.inComputerCombat = true;
@@ -1226,7 +1230,7 @@ export default class Party extends Entity {
     };
 
     targetEngagement = (id: string) => {
-        const enemy = this.scene.enemies.find((obj: Enemy) => obj.enemyID === id);
+        const enemy = this.scene.getEnemy(id);
         if (!enemy) return;
         if (this.isNewEnemy(enemy)) this.targets.push(enemy);
         this.inComputerCombat = true;
@@ -1236,7 +1240,7 @@ export default class Party extends Entity {
     };
 
     invalidTarget = (id: string) => {
-        const enemy = this.scene.enemies.find((enemy: Enemy) => enemy.enemyID === id);
+        const enemy = this.scene.getEnemy(id);
         if (enemy) return enemy.health === 0; // enemy.isDefeated;
         this.resistCombatText = this.scene.showCombatText(`Combat Issue: NPC Targeted`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
         return true;

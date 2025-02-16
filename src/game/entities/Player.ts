@@ -514,8 +514,8 @@ export default class Player extends Entity {
     };
 
     invalidTarget = (id: string) => {
-        const enemy = this.scene.enemies.find((enemy: Enemy) => enemy.enemyID === id);
-        if (enemy) return enemy.health === 0; // enemy.isDefeated;
+        const enemy = this.scene.getEnemy(id);
+        if (enemy) return enemy.health <= 0; // enemy.isDefeated;
         this.resistCombatText = this.scene.showCombatText(`Combat Issue: NPC Targeted`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
         return true;
     };
@@ -544,7 +544,7 @@ export default class Player extends Entity {
     };
 
     targetEngagement = (id: string) => {
-        const enemy = this.scene.enemies.find((obj: Enemy) => obj.enemyID === id);
+        const enemy = this.scene.getEnemy(id);
         if (!enemy) return;
         if (this.isNewEnemy(enemy)) this.targets.push(enemy);
         if (this.scene.state.enemyID !== id) this.scene.hud.setupEnemy(enemy);
@@ -911,12 +911,9 @@ export default class Player extends Entity {
     defeatedEnemyCheck = (id: string) => {
         this.currentTarget = undefined;
         this.removeHighlight();
-        // const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === id && e.health <= 0);
-        // if (enemy) {
         this.targets = this.targets.filter(target => target.enemyID !== id);
         this.sendEnemies(this.targets);
         this.scene.combatManager.combatMachine.clear(id);
-        // };
         const enemyInCombat = this.targets.find(obj => obj.inCombat && obj.health > 0);
         if (enemyInCombat) {
             this.scene.hud.setupEnemy(enemyInCombat);

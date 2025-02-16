@@ -63,16 +63,20 @@ export default class PlayerMachine {
             .addState(States.ACHIRE, { onEnter: this.onAchireEnter, onUpdate: this.onAchireUpdate, onExit: this.onAchireExit })
             .addState(States.ASTRAVE, { onEnter: this.onAstraveEnter, onUpdate: this.onAstraveUpdate, onExit: this.onAstraveExit })
             .addState(States.BLINK, { onEnter: this.onBlinkEnter, onUpdate: this.onBlinkUpdate })
+            .addState(States.CHIOMISM, { onEnter: this.onChiomismEnter, onUpdate: this.onChiomismUpdate, onExit: this.onChiomismExit })
             .addState(States.CONFUSE, { onEnter: this.onConfuseEnter, onUpdate: this.onConfuseUpdate, onExit: this.onConfuseExit })
             .addState(States.DESPERATION, { onEnter: this.onDesperationEnter, onUpdate: this.onDesperationUpdate, onExit: this.onDesperationExit })
             .addState(States.FEAR, { onEnter: this.onFearingEnter, onUpdate: this.onFearingUpdate, onExit: this.onFearingExit })
+            .addState(States.FROST, { onEnter: this.onFrostEnter, onUpdate: this.onFrostUpdate, onExit: this.onFrostExit })
             .addState(States.FYERUS, { onEnter: this.onFyerusEnter, onUpdate: this.onFyerusUpdate, onExit: this.onFyerusExit })
             .addState(States.HEALING, { onEnter: this.onHealingEnter, onUpdate: this.onHealingUpdate, onExit: this.onHealingExit })
             .addState(States.HOOK, { onEnter: this.onHookEnter, onUpdate: this.onHookUpdate, onExit: this.onHookExit })
             .addState(States.ILIRECH, { onEnter: this.onIlirechEnter, onUpdate: this.onIlirechUpdate, onExit: this.onIlirechExit })
             .addState(States.KYNISOS, { onEnter: this.onKynisosEnter, onUpdate: this.onKynisosUpdate, onExit: this.onKynisosExit })
+            .addState(States.KYRISIAN, { onEnter: this.onKyrisianEnter, onUpdate: this.onKyrisianUpdate, onExit: this.onKyrisianExit })
             .addState(States.KYRNAICISM, { onEnter: this.onKyrnaicismEnter, onUpdate: this.onKyrnaicismUpdate, onExit: this.onKyrnaicismExit })
             .addState(States.LEAP, { onEnter: this.onLeapEnter, onUpdate: this.onLeapUpdate })
+            .addState(States.LIKYR, { onEnter: this.onLikyrEnter, onUpdate: this.onLikyrUpdate, onExit: this.onLikyrExit })
             .addState(States.MAIERETH, { onEnter: this.onMaierethEnter, onUpdate: this.onMaierethUpdate, onExit: this.onMaierethExit })
             .addState(States.MARK, { onEnter: this.onMarkEnter, onUpdate: this.onMarkUpdate, onExit: this.onMarkExit })
             .addState(States.NETHERSWAP, { onEnter: this.onNetherswapEnter, onUpdate: this.onNetherswapUpdate, onExit: this.onNetherswapExit })
@@ -917,7 +921,37 @@ export default class PlayerMachine {
         this.player.flickerCarenic(750); 
     };
     onBlinkUpdate = (_dt: number) => this.player.combatChecker(false);
-
+    onChiomismEnter = () => {
+        if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
+        this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.spellName = this.player.currentTarget.ascean.name;
+        this.player.startCasting('Chiomism', PLAYER.DURATIONS.CHIOMISM, 'effect');    
+        this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.CHIOMISM);                          
+    };
+    onChiomismUpdate = (dt: number) => {
+        if (this.player.isMoving === true) this.player.isCasting = false;
+        this.player.combatChecker(this.player.isCasting);
+        if (this.player.castbar.time >= PLAYER.DURATIONS.CHIOMISM) {
+            this.player.castingSuccess = true;
+            this.player.isCasting = false;
+        };
+        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+    };
+    onChiomismExit = () => {
+        if (this.player.castingSuccess === true) {
+            this.sacrifice(this.player.spellTarget, 30);
+            const chance = Phaser.Math.Between(1, 100);
+            if (chance > 75) {
+                this.scene.combatManager.confuse(this.player.spellTarget);
+            };
+            EventBus.emit('party-combat-text', {
+                text: `${this.player.ascean.name} bleeds and laugh at ${this.player.spellName} with tendrils of Chiomyr.`
+            });
+            this.player.castingSuccess = false;
+            this.player.enemySound('death', true);
+        };
+        this.player.stopCasting();
+    };
     onConfuseEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
@@ -1022,7 +1056,34 @@ export default class PlayerMachine {
         };
         this.player.stopCasting();
     };
-
+    onFrostEnter = () => {
+        if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
+        this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.spellName = this.player.currentTarget.ascean.name;
+        this.player.startCasting('Frost', PLAYER.DURATIONS.FROST, 'cast');
+        this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.FROST);
+    };
+    onFrostUpdate = (dt: number) => {
+        if (this.player.isMoving === true) this.player.isCasting = false;
+        this.player.combatChecker(this.player.isCasting);
+        if (this.player.castbar.time >= PLAYER.DURATIONS.FROST) {
+            this.player.castingSuccess = true;
+            this.player.isCasting = false;
+        };
+        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+    };
+    onFrostExit = () => {
+        if (this.player.castingSuccess === true) {
+            EventBus.emit('party-combat-text', {
+                text: `${this.player.ascean.name} seizes into this world with Nyrolean tendrils, slowing ${this.player.spellName}.`
+            });
+            this.chiomism(this.player.spellTarget, 75);
+            this.scene.combatManager.slow(this.player.spellTarget, 3000);
+            this.player.castingSuccess = false;
+            this.player.enemySound('frost', true);
+        };
+        this.player.stopCasting();
+    };
     onFyerusEnter = () => {
         this.player.isCasting = true;
         this.player.setStatic(true);
@@ -1075,7 +1136,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.startCasting('Ilirech', PLAYER.DURATIONS.ILIRECH, 'cast');
-        this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.MAIERETH);
+        this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.ILIRECH);
     };
     onIlirechUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1122,7 +1183,37 @@ export default class PlayerMachine {
         };
         this.player.stopCasting();
     };
-
+    onKyrisianEnter = () => {
+        if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
+        this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.spellName = this.player.currentTarget.ascean.name;
+        this.player.startCasting('Kyrisian', PLAYER.DURATIONS.KYRISIAN, 'effect');    
+        this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.KYRISIAN);                          
+    };
+    onKyrisianUpdate = (dt: number) => {
+        if (this.player.isMoving === true) this.player.isCasting = false;
+        this.player.combatChecker(this.player.isCasting);
+        if (this.player.castbar.time >= PLAYER.DURATIONS.KYRISIAN) {
+            this.player.castingSuccess = true;
+            this.player.isCasting = false;
+        };
+        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+    };
+    onKyrisianExit = () => {
+        if (this.player.castingSuccess === true) {
+            this.sacrifice(this.player.spellTarget, 30);
+            const chance = Phaser.Math.Between(1, 100);
+            if (chance > 75) {
+                this.scene.combatManager.paralyze(this.player.spellTarget);
+            };
+            EventBus.emit('party-combat-text', {
+                text: `${this.player.ascean.name} bleeds and bewitches ${this.player.spellName} with tendrils of Kyrisos.`
+            });
+            this.player.castingSuccess = false;
+            this.player.enemySound('spooky', true);
+        };
+        this.player.stopCasting();
+    };
     onKyrnaicismEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
@@ -1230,7 +1321,33 @@ export default class PlayerMachine {
 
     onLeapEnter = () => this.player.leap();
     onLeapUpdate = (_dt: number) => this.player.combatChecker(this.player.isLeaping);
-
+    onLikyrEnter = () => {
+        if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
+        this.player.spellTarget = this.player.currentTarget.enemyID;
+        this.player.spellName = this.player.currentTarget.ascean.name;
+        this.player.startCasting('Likyr', PLAYER.DURATIONS.LIKYR, 'cast');
+        this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.LIKYR);
+    };
+    onLikyrUpdate = (dt: number) => {
+        if (this.player.isMoving === true) this.player.isCasting = false;
+        this.player.combatChecker(this.player.isCasting);
+        if (this.player.castbar.time >= PLAYER.DURATIONS.LIKYR) {
+            this.player.castingSuccess = true;
+            this.player.isCasting = false;
+        };
+        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+    };
+    onLikyrExit = () => {
+        if (this.player.castingSuccess === true) {
+            EventBus.emit('party-combat-text', {
+                text: `${this.player.ascean.name} blends caeren into this world with Likyrish tendrils entwining ${this.player.spellName}.`
+            });
+            this.suture(this.player.spellTarget, 20);
+            this.player.castingSuccess = false;
+            this.player.enemySound('debuff', true);
+        };
+        this.player.stopCasting();
+    };
     onMaierethEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;

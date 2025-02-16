@@ -23,14 +23,15 @@ export const PARTY_OFFSET: {[key:number]: COORDINATES} = {
 export const PARTY_SPECIAL = {
     'constitution': [ // 14
         'Absorb',
-        'Blind',
+        // 'Blind',
         'Desperation',
         'Dispel',
         'Healing',
         'Ilirech',
-        'Maiereth',
+        'Kynisos',
+        'Kyrisian',
         'Kyrnaicism', 
-        'Kynisos', 
+        'Likyr',
         'Mend',
         'Paralyze',
         'Reconstitute',
@@ -42,8 +43,8 @@ export const PARTY_SPECIAL = {
     ], // 14 
     'strength': [ // 14
         'Arc',
-        'Blind',
-        'Caerenesis',
+        // 'Blind',
+        // 'Caerenesis',
         'Desperation',
         'Devour',
         'Healing',
@@ -86,6 +87,7 @@ export const PARTY_SPECIAL = {
         'Desperation',
         'Devour',
         'Freeze',
+        'Frost',
         'Fyerus',
         'Healing',
         'Moderate',
@@ -94,19 +96,21 @@ export const PARTY_SPECIAL = {
         'Polymorph',
         'Quor',
         'Reconstitute',
+        'Sacrifice',
         'Slow'
     ], // 14 
     'caeren': [ // 14
         'Achire',
         'Astrave',
         'Blink',
-        'Caerenesis',
+        // 'Caerenesis',
         'Desperation',
         'Fear',
         'Fyerus',
         'Healing',
         'Ilirech',
         'Kyrnaicism',
+        'Maiereth',
         'Malice',
         'Menace',
         'Mend',
@@ -118,6 +122,7 @@ export const PARTY_SPECIAL = {
     'kyosir': [ // 14
         'Blink',
         'Chiomic',
+        'Chiomism',
         'Confuse',
         'Desperation',
         'Devour',
@@ -126,7 +131,6 @@ export const PARTY_SPECIAL = {
         'Healing',
         'Hook',
         'Kynisos',
-        'Maiereth',
         'Malice',
         'Mystify',
         'Netherswap',
@@ -150,16 +154,16 @@ export const PARTY_INSTINCTS = {
             value: States.HEALING
         },{ // 2 - Starter Heal
             key: POSITIVE,
-            value: States.MEND
+            value: States.LIKYR
         },{ // 3 - Critical Damage
             key: STATE,
-            value: States.MAIERETH
+            value: States.KYRISIAN
         },{ // 4 - Casual Damage
             key: STATE,
-            value: States.ILIRECH
+            value: States.KYRNAICISM
         },{ // 5 - Starter Damage
             key: STATE,
-            value: States.KYRNAICISM
+            value: States.ILIRECH
         },{ // 6 - Melee < 100 Distance
             key: POSITIVE,
             value: States.DISEASE
@@ -279,10 +283,10 @@ export const PARTY_INSTINCTS = {
     'achre': [
         { // 0 - Critical Heal
             key: STATE,
-            value: States.HEALING
+            value: States.RECONSTITUTE
         },{ // 1 - Casual Heal
             key: STATE,
-            value: States.RECONSTITUTE
+            value: States.HEALING
         },{ // 2 - Starter Heal
             key: POSITIVE,
             value: States.ABSORB
@@ -294,7 +298,7 @@ export const PARTY_INSTINCTS = {
             value: States.ACHIRE
         },{ // 5 - Starter Damage
             key: STATE,
-            value: States.SLOW
+            value: States.FROST
         },{ // 6 - Melee < 100 Distance
             key: POSITIVE,
             value: States.FREEZE
@@ -336,10 +340,10 @@ export const PARTY_INSTINCTS = {
             value: States.SACRIFICE
         },{ // 4 - Casual Damage
             key: STATE,
-            value: States.ILIRECH
+            value: States.KYRNAICISM
         },{ // 5 - Starter Damage
             key: STATE,
-            value: States.KYRNAICISM
+            value: States.MAIERETH
         },{ // 6 - Melee < 100 Distance
             key: POSITIVE,
             value: States.SCREAM
@@ -381,7 +385,7 @@ export const PARTY_INSTINCTS = {
             value: States.SACRIFICE
         },{ // 4 - Casual Damage
             key: STATE,
-            value: States.MAIERETH
+            value: States.CHIOMISM
         },{ // 5 - Starter Damage
             key: STATE,
             value: States.KYRNAICISM
@@ -418,7 +422,7 @@ export const DEFENSIVE = "Defensive";
 export const OFFENSIVE = "Offensive";
 
 export const PARTY_BALANCED_INSTINCTS = {
-    "constitution": [States.ILIRECH, States.KYNISOS, States.KYRNAICISM, States.PARALYZE, States.WARD],
+    "constitution": [States.ILIRECH, States.LIKYR, States.KYNISOS, States.KYRNAICISM, States.PARALYZE, States.WARD],
     "strength": [States.QUOR, States.SPRINTING, States.STORM, States.WARD, States.LEAP],
     "agility": [States.ACHIRE, States.KYNISOS, States.RUSH, States.SPRINTING, States.PURSUIT],
     "achre": [States.ACHIRE, States.ASTRAVE, States.BLINK, States.FYERUS, States.SLOW],
@@ -426,7 +430,7 @@ export const PARTY_BALANCED_INSTINCTS = {
     "kyosir": [States.CONFUSE, States.DISPEL, States.KYNISOS, States.KYRNAICISM, States.SUTURE],
 };
 export const PARTY_DEFENSIVE_INSTINCTS = {
-    "constitution": [States.ABSORB, States.DESPERATION, States.HEALING, States.KYRNAICISM, States.SHIELD, States.SHIRK],
+    "constitution": [States.ABSORB, States.DESPERATION, States.HEALING, States.KYRNAICISM, States.LIKYR, States.SHIELD, States.SHIRK],
     "strength": [States.DESPERATION, States.HOWL, States.MEND, States.SPRINTING, States.WARD],
     "agility": [States.DESPERATION, States.ENVELOP, States.KYRNAICISM, States.SHIMMER, States.SNARE],
     "achre": [States.ABSORB, States.BLINK, States.DESPERATION, States.MODERATE, States.SLOW],
@@ -438,6 +442,6 @@ export const PARTY_OFFENSIVE_INSTINCTS = {
     "strength": [States.LEAP, States.QUOR, States.RUSH, States.SPRINTING, States.STORM],
     "agility": [States.ACHIRE, States.KYNISOS, States.RUSH, States.SPRINTING, States.STORM],
     "achre": [States.ACHIRE, States.ASTRAVE, States.BLINK, States.FYERUS, States.QUOR],
-    "caeren": [States.ACHIRE, States.ASTRAVE, States.ILIRECH, States.MALICE, States.KYRNAICISM, States.SACRIFICE],
-    "kyosir": [States.DISPEL, States.KYRNAICISM, States.MAIERETH, States.MALICE, States.SACRIFICE],
+    "caeren": [States.ASTRAVE, States.ILIRECH, States.MAIERETH, States.MALICE, States.KYRNAICISM, States.SACRIFICE],
+    "kyosir": [States.CHIOMISM, States.DISPEL, States.ILIRECH, States.KYRNAICISM, States.MALICE, States.SACRIFICE],
 };

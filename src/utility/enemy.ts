@@ -18,8 +18,9 @@ export const ENEMY_SPECIAL = {
         'Dispel',
         'Healing',
         'Ilirech',
+        'Kyrisian',
         'Kyrnaicism',
-        'Maiereth',
+        'Likyr',
         'Mend',
         'Paralyze',
         'Renewal',
@@ -51,6 +52,7 @@ export const ENEMY_SPECIAL = {
     ], // 12
 
     'agility': [ // 12
+        'Achire',
         'Desperation',
         'Envelop',
         'Hook',
@@ -65,7 +67,6 @@ export const ENEMY_SPECIAL = {
         'Snare',
         'Sprint',
         'Suture',
-        'Writhe'
     ], // 12
 
     'achre': [ // 16
@@ -75,8 +76,8 @@ export const ENEMY_SPECIAL = {
         'Blink',
         'Dispel',
         'Freeze',
+        'Frost',
         'Ilirech',
-        'Maiereth',
         'Moderate',
         'Multifarious',
         'Polymorph',
@@ -94,6 +95,7 @@ export const ENEMY_SPECIAL = {
         'Healing',
         'Ilirech',
         'Kyrnaicism',
+        'Maiereth',
         'Malice',
         'Menace',
         'Mend',
@@ -107,13 +109,13 @@ export const ENEMY_SPECIAL = {
 
     'kyosir': [ // 16
         'Chiomic',
+        'Chiomism',
         'Confuse',
         'Desperation',
         'Disease',
         'Dispel',
         'Hook',
         'Kyrnaicism',
-        'Maiereth',
         'Malice',
         'Mystify',
         'Protect',
@@ -170,7 +172,7 @@ export const INSTINCTS = {
             value: States.HEALING
         },{ // 2 - Desperate Damage
             key: 'stateMachine',
-            value: States.MAIERETH
+            value: States.KYRISIAN
         },{ // 3 - Casual Damage
             key: 'stateMachine',
             value: States.KYRNAICISM
@@ -242,10 +244,10 @@ export const INSTINCTS = {
             value: States.HEALING
         },{ // 2
             key: 'stateMachine',
-            value: States.SACRIFICE
+            value: States.ACHIRE
         },{ // 3
             key: 'stateMachine',
-            value: States.SACRIFICE
+            value: States.FROST
         },{ // 4
             key: 'positiveMachine',
             value: States.FREEZE
@@ -290,10 +292,10 @@ export const INSTINCTS = {
             value: States.TSHAERAL
         },{ // 2
             key: 'stateMachine',
-            value: States.MAIERETH
+            value: States.CHIOMISM
         },{ // 3
             key: 'stateMachine',
-            value: States.SUTURE
+            value: States.ILIRECH
         },{ // 4
             key: 'positiveMachine',
             value: States.CHIOMIC

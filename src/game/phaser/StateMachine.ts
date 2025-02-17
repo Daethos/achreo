@@ -140,11 +140,11 @@ export const States = {
     STUNNED: "stunned",
 };
 
-export const specialStateMachines = [States.ARC, States.BLINK, States.CONFUSE, States.CONSUME, States.DESPERATION, States.FEAR, States.PARALYZE, 
-    States.HEALING, States.INVOKE, States.KYRNAICISM, States.LEAP, States.POLYMORPH, States.PURSUIT, States.ROOT, States.RUSH, States.SACRIFICE, 
-    States.DISPEL, States.SHADOW, States.SHIRK, States.TETHER, States.ACHIRE, States.ASTRAVE, States.FYERUS, States.KYNISOS, States.QUOR, 
-    States.MAIERETH, States.ILIRECH, States.RECONSTITUTE, States.SHROUD, States.SLOW, States.SLOWING, States.STORM, States.SNARE, States.STORM, 
-    States.SUTURE, States.TSHAERAL, States.TSHAER, States.TSHAERING];
+export const specialStateMachines = 
+    [States.ACHIRE, States.ARC, States.ASTRAVE, States.BLINK, States.CHIOMISM, States.CONFUSE, States.CONSUME, States.DESPERATION, States.DEVOUR, States.DISPEL, States.FEAR, States.FROST, 
+    States.FYERUS, States.HEALING, States.ILIRECH, States.INVOKE, States.KYNISOS, States.KYRISIAN, States.KYRNAICISM, States.LEAP, States.LIKYR, States.MAIERETH, 
+    States.PARALYZE, States.POLYMORPH, States.PURSUIT, States.QUOR, States.ROOT, States.RUSH, States.SACRIFICE, States.SHADOW, States.SHIRK, States.TETHER, 
+    States.RECONSTITUTE, States.SHROUD, States.SLOW, States.SLOWING, States.STORM, States.SNARE,States.SUTURE, States.TSHAERAL, States.TSHAER, States.TSHAERING];
 export const specialPositiveMachines = [States.ABSORB, States.CHIOMIC, States.DISEASE, States.ENVELOP, States.FREEZE, States.HOWL, States.MALICE, 
     States.MEND, States.MODERATE, States.MULTIFARIOUS, States.MYSTIFY, States.PROTECT, States.RECOVER, States.REIN, States.RENEWAL, States.SCREAM, 
     States.SHIELD, States.SHIMMER, States.SPRINTING, States.WARD, States.WRITHE];
@@ -157,7 +157,7 @@ export default class StateMachine {
     private id: string = (++idCount).toString();
     private context?: object;
     public isChangingState: boolean = false;
-    private changeStateQueue: string[] = []; 
+    private changeStateQueue: string[] = [];
 
     constructor(context?: object, id?: string) {
         this.id = id || this.id;
@@ -195,15 +195,13 @@ export default class StateMachine {
     };
 
     // console.warn(`State ${name} does not exist`);
-    setState(name: string) {  
-        if (!this.states.has(name)) {
-            return;
-        }; 
+    setState(name: string) {
+        if (!this.states.has(name)) return;
         if (this.isCurrentState(name)) return;
         if (this.isChangingState === true) {
-            this.changeStateQueue.push(name); 
+            this.changeStateQueue.push(name);
             return;
-        }; 
+        };
         this.isChangingState = true;
         if (this.currentState && this.currentState.onExit) this.currentState.onExit();
         this.currentState = this.states.get(name)!;
@@ -217,5 +215,5 @@ export default class StateMachine {
             return;
         };
         if (this.currentState && this.currentState.onUpdate) this.currentState?.onUpdate?.(dt);
-    }; 
+    };
 };

@@ -118,7 +118,7 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
         playerMagicalDefenseMultiplier = 100 - (combat.computerEnemyDefense?.magicalPosture as number);
     };
 
-    if (STRONG_ATTACKS.includes(computerAction)) {
+    if (computerAction === ACTION_TYPES.ATTACK) {
         if (computerWeapon?.grip === HOLD_TYPES.ONE_HAND) {
             if (computerWeapon?.attackType === ATTACK_TYPES.PHYSICAL) {
                 if (combat.computer?.mastery === MASTERY.AGILITY || combat.computer?.mastery === MASTERY.CONSTITUTION) {

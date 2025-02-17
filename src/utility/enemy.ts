@@ -161,7 +161,6 @@ export const RANGE = {
     Game: 1000,
     Arena: 2000,
 }; 
-
 export const INSTINCTS = {
     'constitution': [
         { // 0 - Desperate Heal

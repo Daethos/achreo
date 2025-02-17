@@ -1362,7 +1362,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
         computerPhysicalDefenseMultiplier = 100 - (combat.computerDefense?.physicalPosture as number);
         computerMagicalDefenseMultiplier = 100 - (combat.computerDefense?.magicalPosture as number);
     };
-    if (STRONG_ATTACKS.includes(playerAction)) {
+    if (playerAction === ACTION_TYPES.ATTACK) {
         if (combat.weapons[0]?.grip === HOLD_TYPES.ONE_HAND) {
             if (combat.weapons[0]?.attackType === ATTACK_TYPES.PHYSICAL) {
                 if (combat.player?.mastery === MASTERY.AGILITY || combat.player?.mastery === MASTERY.CONSTITUTION) {

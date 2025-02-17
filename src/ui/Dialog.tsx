@@ -14,7 +14,7 @@ import { LevelSheet } from '../utility/ascean';
 import { getRarityColor, sellRarity } from '../utility/styling';
 import ItemModal from '../components/ItemModal';
 import QuestManager, { getQuests, Quest } from '../utility/quests';
-import { faction, initFaction, initParty, namedNameCheck, Reputation } from '../utility/player';
+import { faction, initFaction, namedNameCheck, Reputation } from '../utility/player';
 import Thievery from './Thievery';
 import Merchant from './Merchant';
 import Roster from './Roster';

@@ -768,11 +768,6 @@ export default class Enemy extends Entity {
                         };
                         if (this.isReasonable()) this.scene.hud.setupEnemy(this);
                         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
-                        // if (this.stateMachine.isCurrentState(States.DEFEATED)) {
-                        //     this.scene.hud.showDialog(true);
-                        // } else {
-                        //     this.stateMachine.setState(States.AWARE);
-                        // };
                     }; //  || other.gameObjectB.name === 'party'
                 } else if (other.gameObjectB && other.gameObjectB.name === 'enemy' && this.scene.scene.key !== 'Arena' && this.scene.scene.key !== 'Underground') {
                     this.isValidComputerRushEnemy(other.gameObjectB);
@@ -800,12 +795,6 @@ export default class Enemy extends Entity {
                     this.scene.player.touching = this.scene.player.touching.filter((touch: Enemy) => touch.enemyID !== this.enemyID);
                     if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive && !this.inComputerCombat && this.health > 0) {
                         if (this.healthbar) this.healthbar.setVisible(false);
-                        // if (this.isDefeated === true) {
-                        //     this.scene.hud.showDialog(false);
-                        //     this.stateMachine.setState(States.DEFEATED);
-                        // } else {
-                        //     this.stateMachine.setState(States.IDLE);
-                        // };
                         if (this.isCurrentTarget === true && !this.inCombat) this.scene.hud.clearNonAggressiveEnemy();
                     };
                 } else if (other.gameObjectB && (other.gameObjectB.name === 'enemy' || other.gameObjectB.name === 'party')) {
@@ -1367,10 +1356,11 @@ export default class Enemy extends Entity {
             this.isShimmering = false;
             this.stealthEffect(false);
         };
+        if (this.isGlowing) this.checkCaerenic(false);
         EventBus.emit(BROADCAST_DEATH, this.enemyID);
         const party = this.scene.party.find((e: Party) => e.enemyID === this.killingBlow);
         if (party) { // A Party Member Got the Killing Blow
-            EventBus.emit('killing-blow', {e:this.ascean,enemyID:this.enemyID});
+            EventBus.emit('killing-blow', {e:this.ascean, enemyID:this.enemyID});
         };
         this.killingBlow = '';
         this.currentTargetCheck();
@@ -1406,11 +1396,10 @@ export default class Enemy extends Entity {
         this.isAggressive = this.startedAggressive;
         this.spriteWeapon.setVisible(true);
         this.setCollisionCategory(1);
-        const texts = ['Alright, I feel better again.', 'Well, that was unplesant.', "Thank goodness that's over.", "Good as new!"];
+        const texts = [`${this.weapons[0].influences[0]} be praised! I live again.`, `${this.weapons[0].influences[0]}, you have my caeren. Thank you for this change once more.`, 'Alright, I feel better again.', 'Well, that was unpleasant.', "Thank goodness that's over.", "Good as new!", "Hopefully, that's the end of that nonsense.", "My word, I didn't expect that to happen."];
         const text = texts[Math.floor(Math.random() * texts.length)];
         this.specialCombatText = this.scene.showCombatText(text, 1500, 'effect', false, true, () => this.specialCombatText = undefined);
     };
-
 
     onDeathEnter = () => {
         this.clearTint(); 
@@ -1642,8 +1631,8 @@ export default class Enemy extends Entity {
     onContemplateExit = () => {
         this.isContemplating = false;
         this.currentAction = '';
+        if (this.health <= 0) return;
         if (this.inCombat === false && this.inComputerCombat === false) {
-            if (this.health <= 0) return;
             this.stateMachine.setState(States.LEASH);
             return;
         };
@@ -4190,7 +4179,7 @@ export default class Enemy extends Entity {
     };
 
     evaluateCombatDistance = () => {
-        if (this.isCasting === true || this.isSuffering() === true || this.isHurt === true || this.isContemplating === true || this.isDeleting || this.isDefeated || this.stateMachine.isCurrentState(States.DEFEATED)) return;
+        if (this.isCasting || this.isSuffering() || this.isHurt || this.isContemplating || this.isDeleting || this.isDefeated || this.stateMachine.isCurrentState(States.DEFEATED)) return;
         if (this.currentTarget === undefined || this.currentTarget.body === undefined || (this.inCombat === false && this.inComputerCombat === false) || (this.inCombat && this.scene.state.newPlayerHealth <= 0) || this.health <= 0) {
             if (this.inComputerCombat || this.currentTarget) {
                 const enemy = this.computerEnemyAttacker();
@@ -4346,7 +4335,7 @@ export default class Enemy extends Entity {
             this.stateMachine.setState(States.DEFEATED);
             return;
         };
-        if (this.inCombat === false && this.inComputerCombat === false) return;
+        if ((this.inCombat === false && this.inComputerCombat === false) || this.health <= 0) return;
         this.evaluateEnemyAnimation();
         if (this.isConfused && !this.sansSuffering('isConfused') && !this.stateMachine.isCurrentState(States.CONFUSED)) {
             this.stateMachine.setState(States.CONFUSED);

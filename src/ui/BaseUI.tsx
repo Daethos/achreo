@@ -103,7 +103,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                 stalwart: number = combat().isStalwart ? 0.85 : 1;
             switch (type) {
                 case 'Weapon': // Targeted Weapon Action by Enemy or Player
-                    if (newComputerHealth === 0) return;
+                    if (combat().computer === undefined || newComputerHealth === 0) return;
                     const weapon = { ...combat(), [data.key]: data.value };
                     res = weaponActionCompiler(weapon) as Combat;
                     playerWin = res.playerWin;
@@ -153,6 +153,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     break;
                 case 'Player': // Blind Player Attack i.e. hitting a non targeted enemy
                     const { playerAction, enemyID, ascean, damageType, combatStats, weapons, health, actionData } = data;
+                    if (ascean === undefined || health === 0) return;
                     let playerData = {
                         action: playerAction.action,
                         parryGuess: playerAction.parry,

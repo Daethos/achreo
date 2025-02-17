@@ -4,14 +4,14 @@ import { Amulets, Rings, Trinkets } from '../assets/db/jewelry';
 import { v4 as uuidv4 } from 'uuid';
 import { addEquipment } from '../assets/db/db';
 
-const ATTRIBUTE_RANGE = {
-    Default: [0, 0, 0, 0, 0, 0, 0],
-    Common: [0, 1, 1, 1, 2, 2, 3],
-    Uncommon: [1, 1, 2, 2, 3, 4, 6],
-    Rare: [2, 3, 4, 5, 6, 7, 10],
-    Epic: [4, 5, 6, 7, 8, 10, 15],
-    Legendary: [10, 14, 17, 20, 24, 27, 30],
-};
+// const ATTRIBUTE_RANGE = {
+//     Default: [0, 0, 0, 0, 0, 0, 0],
+//     Common: [0, 1, 1, 1, 2, 2, 3],
+//     Uncommon: [1, 1, 2, 2, 3, 4, 6],
+//     Rare: [2, 3, 4, 5, 6, 7, 10],
+//     Epic: [4, 5, 6, 7, 8, 10, 15],
+//     Legendary: [10, 14, 17, 20, 24, 27, 30],
+// };
 const ATTRIBUTES = ['strength', 'constitution', 'agility', 'achre', 'caeren', 'kyosir'];
 const CHANCE = ['criticalChance', 'physicalPenetration', 'magicalPenetration', 'roll', 'dodge'];
 const DAMAGE = ['physicalDamage', 'magicalDamage'];
@@ -107,7 +107,7 @@ async function defaultMutate(equipment: Equipment[]) {
     };
 };
 
-async function mutate(equipment: Equipment[], rarity?: string | 'Common') { 
+async function mutate(equipment: Equipment[], _rarity?: string | 'Common') { 
     try {
         // const range = ATTRIBUTE_RANGE[rarity as keyof typeof ATTRIBUTE_RANGE];
         for (const item of equipment) {

@@ -7,14 +7,12 @@ import StatusEffect, { PRAYERS } from '../../utility/prayer';
 import { COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from '../../utility/enemy';
 import { computerCombatCompiler } from '../../utility/computerCombat';
 import Party from '../entities/PartyComputer';
-// import { ENEMY_ATTACKS } from '../../utility/combatTypes';
 
-export class CombatManager extends Phaser.Scene {
+export class CombatManager {
     combatMachine: CombatMachine;
     context: Play;
 
     constructor(scene: Play) {
-        super('Combat');
         this.context = scene;
         this.combatMachine = new CombatMachine(this);
     };
@@ -44,13 +42,11 @@ export class CombatManager extends Phaser.Scene {
                 } else {
                     computerTwo = this.context.party.find((e: Party) => e.enemyID === enemyID)?.computerCombatSheet;
                 };
-                // let computerTwo = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID).computerCombatSheet;
                 computerOne.computerAction = action;
                 computerOne.computerEnemyAction = computerTwo.computerAction;
                 computerTwo.computerEnemyAction = action;
                 computerOne.enemyID = computerTwo.personalID;
                 computerTwo.enemyID = computerOne.personalID;
-                // computerTwo.computerEnemyAction = action;
                 const result = computerCombatCompiler({computerOne, computerTwo});
                 EventBus.emit(UPDATE_COMPUTER_COMBAT, result?.computerOne);
                 EventBus.emit(UPDATE_COMPUTER_COMBAT, result?.computerTwo);

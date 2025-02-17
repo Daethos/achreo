@@ -318,11 +318,14 @@ export class Game extends Scene {
         EventBus.off('despawn-enemy');
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].cleanUp();
+            this.enemies[i].destroy();
         };
         for (let i = 0; i < this.npcs.length; i++) {
             this.npcs[i].cleanUp();
+            this.npcs[i].destroy();
         };
         for (let i = 0; i < this.party.length; i++) {
+            this.party[i].cleanUp();
             this.party[i].cleanUp();
         };
         this.player.cleanUp();
@@ -381,7 +384,6 @@ export class Game extends Scene {
         EventBus.on('update-enemy-aggression', (aggression: number) => {
             for (let i = 0; i < this.enemies.length; i++) {
                 this.enemies[i].isAggressive = aggression >= Math.random();
-
             };
         });
         EventBus.on('update-enemy-special', (special: number) => {
@@ -716,7 +718,6 @@ export class Game extends Scene {
         if (!party) return;
         const prevCoords = new Phaser.Math.Vector2(party.x,party.y);
         party.specialCombatText = this.showCombatText(`I understand. I'll be seeing you, ${this.player.ascean.name}.`, 1500, 'bone', false, true, () => party.specialCombatText = undefined);
-        // party.specialCombatText.update(this);
         this.player.disengage();
         this.time.delayedCall(1500, () => {
             this.party = this.party.filter((par: Party) => par.playerID !== remove._id);
@@ -791,9 +792,7 @@ export class Game extends Scene {
     };
 
     startCombatTimer = (): void => {
-        if (this.combatTimer) {
-            this.combatTimer.destroy();
-        };
+        if (this.combatTimer) this.combatTimer.destroy();
         this.combatTimer = this.time.addEvent({
             delay: 1000,
             callback: () => {
@@ -807,9 +806,7 @@ export class Game extends Scene {
     };
 
     stopCombatTimer = (): void => {
-        if (this.combatTimer) {
-            this.combatTimer.destroy();
-        };
+        if (this.combatTimer) this.combatTimer.destroy();
         this.combatTime = 0;
         EventBus.emit('update-combat-timer', this.combatTime);
     };

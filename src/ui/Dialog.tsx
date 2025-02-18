@@ -649,9 +649,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         EventBus.emit('update-pause', false);
     };
 
-    const refillFlask = () => {
-        console.log('refilling flask!');
-    };
+    const refillFlask = () => console.log('refilling flask!');
 
     const getLoot = async (type: string, armor?: string): Promise<void> => {
         if (game()?.merchantEquipment.length > 0) {

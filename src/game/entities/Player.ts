@@ -411,10 +411,10 @@ export default class Player extends Entity {
 
 
     computerBroadcast = (e: any) => {
-        if (this.currentTarget?.enemyID !== e.id) return;
-        if (e.key === 'newComputerEnemyHealth') {
-            EventBus.emit('update-combat-state', { key: 'newComputerHealth', value: e.value });
-        };
+        if (this.scene.state.enemyID !== e.id) return;
+        // if (e.key === 'newComputerEnemyHealth') {
+        EventBus.emit('update-combat-state', { key: 'newComputerHealth', value: e.value });
+        // };
     };
 
     playerStateListener = () => {

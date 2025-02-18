@@ -334,7 +334,9 @@ export default class Party extends Entity {
         const distance = this.currentTarget.position.subtract(this.position).length();
         const state = distance > 100 ? States.CHASE : States.COMPUTER_COMBAT;
         this.playerMachine.stateMachine.setState(state);
-
+        if (!enemy.inComputerCombat) {
+            enemy.checkComputerEnemyCombatEnter(this);
+        };
     };
 
     isNewComputerEnemy = (enemy: Enemy) => {
@@ -532,7 +534,7 @@ export default class Party extends Entity {
             if (this.isMalicing) this.malice(enemyID);
             if (this.isMending) this.mend();
             if ((!this.inComputerCombat || !this.currentTarget) && newComputerHealth > 0 && enemyID !== this.enemyID) {
-                const enemy = this.scene.getEnemy(e.damagedID);
+                const enemy = this.scene.getEnemy(enemyID);
                 if (enemy) {
                     this.checkComputerEnemyCombatEnter(enemy);
                 };
@@ -599,8 +601,6 @@ export default class Party extends Entity {
             };
             this.inComputerCombat = false;
             this.currentTarget = undefined;
-            // this.health = this.ascean.health.max;
-            // this.healthbar.setValue(this.healthbar.getTotal());
             this.clearStatuses();
             this.disengage();
         } else {

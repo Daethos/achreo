@@ -768,6 +768,11 @@ export default class Enemy extends Entity {
                         };
                         if (this.isReasonable()) this.scene.hud.setupEnemy(this);
                         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
+                        if (this.stateMachine.isCurrentState(States.DEFEATED)) {
+                            this.scene.hud.showDialog(true);
+                        } else {
+                            this.stateMachine.setState(States.AWARE);
+                        };
                     }; //  || other.gameObjectB.name === 'party'
                 } else if (other.gameObjectB && other.gameObjectB.name === 'enemy' && this.scene.scene.key !== 'Arena' && this.scene.scene.key !== 'Underground') {
                     this.isValidComputerRushEnemy(other.gameObjectB);
@@ -795,6 +800,12 @@ export default class Enemy extends Entity {
                     this.scene.player.touching = this.scene.player.touching.filter((touch: Enemy) => touch.enemyID !== this.enemyID);
                     if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive && !this.inComputerCombat && this.health > 0) {
                         if (this.healthbar) this.healthbar.setVisible(false);
+                        if (this.isDefeated === true) {
+                            this.scene.hud.showDialog(false);
+                            this.stateMachine.setState(States.DEFEATED);
+                        } else {
+                            this.stateMachine.setState(States.IDLE);
+                        };
                         if (this.isCurrentTarget === true && !this.inCombat) this.scene.hud.clearNonAggressiveEnemy();
                     };
                 } else if (other.gameObjectB && (other.gameObjectB.name === 'enemy' || other.gameObjectB.name === 'party')) {
@@ -851,7 +862,7 @@ export default class Enemy extends Entity {
     };
 
     checkComputerEnemyCombatEnter = (enemy: Enemy | Party) => {
-        if (enemy.isDefeated || enemy.health <= 0 || this.isDefeated || this.health <= 0) return;
+        if (enemy.health <= 0 || this.health <= 0) return;
         this.currentTarget = enemy;
         this.inComputerCombat = true;
         this.computerCombatSheet = {

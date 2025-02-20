@@ -108,6 +108,7 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         'Healing',
         'Hook',
         'Howl',
+        'Ilirech',
         'Leap',
         'Quor',
         'Reconstitute',
@@ -144,6 +145,7 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         'Snare',
         'Sprint',
         'Storm',
+        'Writhe'
     ],
     'achre': [
         'Invoke',
@@ -354,3 +356,76 @@ export const TRAIT_SPECIALS = {
     "Tshaeral": ['Devour'],
 };
 export const TRAITS = ["Astrication", "Caerenesis", "Seer", "Blind", "Endurance", "Stimulate", "Berserk", "Conviction", "Impermanence", "Devour"];
+
+export const INVOKE = 'Invoke';
+export const CONSUME = 'Consume';
+export const ABSORB = "Absorb";
+export const ACHIRE = "Achire";
+export const ASTRAVE = "Astrave";
+export const ASTRICATION = "Astrication";
+export const ARC = "Arc";
+export const BERSERK = "Berserk";
+export const BLIND = "Blind";
+export const BLINK = "Blink";
+export const CHIOMIC = "Chiomic";
+export const CHIOMISM = "Chiomism";
+export const CAERENESIS = "Caerenesis";
+export const CONFUSE = "Confuse";
+export const CONVICTION = "Conviction";
+export const DESPERATION = "Desperation";
+export const DEVOUR = "Devour";
+export const DISEASE = "Disease";
+export const DISPEL = "Dispel";
+export const ENDURANCE = "Endurance";
+export const ENVELOP = "Envelop";
+export const FEAR = "Fear";
+export const FREEZE = "Freeze";
+export const FROST = "Frost";
+export const FYERUS = "Fyerus";
+export const HEALING = "Healing";
+export const HOOK = "Hook";
+export const HOWL = "Howl";
+export const ILIRECH = "Ilirech";
+export const IMPERMANENCE = "Impermanence";
+export const KYNISOS = "Kynisos";
+export const KYRISIAN = "Kyrisian";
+export const KYRNAICISM = "Kyrnaicism";
+export const LEAP = "Leap";
+export const LIKYR = "Likyr";
+export const MAIERETH = "Maiereth";
+export const MALICE = "Malice";
+export const MARK = "Mark";
+export const MENACE = "Menace";
+export const MEND = "Mend";
+export const MODERATE = "Moderate";
+export const MULTIFARIOUS = "Multifarious";
+export const MYSTIFY = "Mystify";
+export const NETHERSWAP = "Netherswap";
+export const PARALYZE = "Paralyze";
+export const POLYMORPH = "Polymorph";
+export const PROTECT = "Protect";
+export const PURSUIT = "Absorb";
+export const RECALL = "Recall";
+export const QUOR = "Quor";
+export const RECONSTITUTE = "Reconstitute";
+export const RECOVER = "Recover";
+export const REIN = "Rein";
+export const RENEWAL = "Renewal";
+export const ROOT = "Root";
+export const RUSH = "Rush";
+export const SACRIFICE = "Sacrifice";
+export const SCREAM = "Scream";
+export const SEER = "Seer";
+export const SHADOW = "Shadow";
+export const SHIELD = "Shield";
+export const SHIMMER = "Shimmer";
+export const SHIRK = "Shirk";
+export const SLOW = "Slow";
+export const SNARE = "Snare";
+export const SPRINT = "Sprint";
+export const STIMULATE = "Stimulate";
+export const STORM = "Storm";
+export const SUTURE = "Suture";
+export const TETHER = "Tether";
+export const WARD = "Ward";
+export const WRITHE = "Writhe";

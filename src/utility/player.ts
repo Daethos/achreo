@@ -6,7 +6,20 @@ export const PHYSICAL_ACTIONS = ['attack', 'posture', 'thrust'];
 export const PHYSICAL_EVASIONS = ['dodge', 'roll'];
 const COST = {LOW: 15, MID: 30, HIGH: 45, HIGHEST: 60}; // Good, Better, Best, Bested. How is that for a declension
 const DURATION = {BOTTOM: 750, STANDARD: 1500, ONE: 1000, THREE: 3000, FIVE: 5000, MODERATE: 6000, HIGH: 8000, TEN: 10000};
-
+export const TALENT_COST = {
+    "-30": -45,
+    "-15": -30,
+    0: -15,
+    15: 0,
+    30: 15,
+    45: 30,
+    60: 45
+};
+export const TALENT_COOLDOWN = {
+    6000: 2000,
+    10000: 6000,
+    15000: 10000,
+};
 export const PLAYER = {
     ACTION_WEIGHT: {
         ATTACK: 60,

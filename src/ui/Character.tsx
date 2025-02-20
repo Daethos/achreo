@@ -120,6 +120,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     const [removeModalShow, setRemoveModalShow] = createSignal<boolean>(false);
     const [weaponCompared, setWeaponCompared] = createSignal<string>('');
     const [showTalent, setShowTalent] = createSignal<any>({show:false,talent:undefined});
+    const [showTalentConfirm, setShowTalentConfirm] = createSignal<any>({show:false, type:''});
     const [showQuest, setShowQuest] = createSignal<any>({show:false,quest:undefined});
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [showInventory, setShowInventory] = createSignal<boolean>(false);
@@ -185,6 +186,21 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             start.sort();
             setSpecials(start);
         };
+    };
+
+    const addTalent = (talent: string, type: string) => {
+        console.log(talent, type, 'addTalent');
+        if (talents().points.spent === talents().points.total) {
+            console.log('You do not have any points to spend, returning!');
+            setShowTalentConfirm({ show: false, type: '' });    
+            return;
+        };
+        let newTalents = JSON.parse(JSON.stringify(talents()));
+        console.log(newTalents.talents[talent as keyof typeof newTalents.talents], 'Talent?');
+        (newTalents.talents[talent as keyof typeof newTalents.talents] as any)[type] = true;
+        newTalents.points.spent += 1;    
+        console.log(newTalents.talents[talent as keyof typeof newTalents.talents], newTalents.points, "New Talent and Points?");
+        setShowTalentConfirm({ show: false, type: '' });
     };
 
     const currentItemStyle = (rarity: string): JSX.CSSProperties => {
@@ -310,6 +326,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 return <div class='creature-heading'>
                     <h1>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</h1>
                     <h1 style={{color:'#fdf6d8'}}>{talents().points.spent} / {talents().points.total}</h1>
+                    <span style={font('0.5em', 'gold')}>This feature is not currently functional.</span>
                     <For each={specials()}>{(special, index) => {
                         const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
                         return <div class='border row juice' onClick={() => setShowTalent({show:true,talent:spec})} style={{ margin: '1em auto', 'border-color': masteryColor(ascean().mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
@@ -944,22 +961,49 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         <Show when={showTalent().show}>
             <div class='modal'>
                 <div class='superCenter' style={{ width:'50%' }}>
-                <div class='border row juice' style={{ margin: '1em auto', 'border-color': masteryColor(ascean().mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
+                <div class='border row moisten' style={{ margin: '1em auto', 'border-color': masteryColor(ascean().mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
                     <div style={{ padding: '1em' }}>
-                    <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
-                        {svg(showTalent()?.talent.svg)} {showTalent()?.talent.name} {talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] ? '(Talented)' : '(Talentless)'} <br />
-                    </p>
-                    <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>
-                        {showTalent()?.talent.description}
-                    </p>
-                    <p style={{ color: 'aqua' }}>
-                        {showTalent()?.talent.time} {showTalent()?.talent.special} <br />
-                        {showTalent()?.talent.cost}. {showTalent()?.talent.cooldown} Cooldown <br />
-                    </p>
+                        <p class='row' style={{ color: 'gold', 'font-size': '1.25em', margin: '3%', display: '' }}>
+                            <span style={{ 'margin': '3%' }}>{svg(showTalent()?.talent.svg)}</span>
+                            {showTalent()?.talent.name}{' '} 
+                            {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? '(Enhanced)' : talents().points.spent < talents().points.total ?
+                                <button class='highlight' style={{ bottom: '0', right: '0', 'color': 'green', padding: '1% 3%' }} onClick={() => setShowTalentConfirm({show:true,type:'enhanced'})}>
+                                    <p style={font('0.9em')}>Enhance</p>
+                            </button> : ''} 
+                            {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? '(Optimized)' : talents().points.spent < talents().points.total ?
+                                <button class='highlight' style={{ bottom: '0', right: '0', 'color': 'green', padding: '1% 3%' }} onClick={() => setShowTalentConfirm({show:true,type:'efficient'})}>
+                                    <p style={font('0.9em')}>Optimize</p>
+                                </button> : ''}{' '}
+                            <br />
+                        </p>
+                        <p style={{ 'color':'gold', 'font-size':'0.75em' }}>{showTalent()?.talent.talent.split(".")[1]} <br /> {showTalent()?.talent.talent.split("Enhanced:")[0]}</p>
+                        <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>{showTalent()?.talent.description}</p>
+                        <p style={{ color: 'aqua' }}>
+                            {showTalent()?.talent.time} {showTalent()?.talent.special} <br />
+                            {showTalent()?.talent.cost}. {showTalent()?.talent.cooldown} Cooldown <br />
+                        </p>
                     </div>
-                <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '0', right: '0', 'background-color': 'red' }} onClick={() => setShowTalent({ show: false, talent: undefined })}>
-                    <p style={font('0.5em')}>X</p>
-                </button>
+                    <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '5%', right: '0', 'background-color': 'red' }} onClick={() => setShowTalent({ show: false, talent: undefined })}>
+                        <p style={font('0.5em')}>X</p>
+                    </button>
+                </div>
+                </div>
+            </div>
+        </Show>
+        <Show when={showTalentConfirm().show}>
+            <div class='modal'>
+                <div class='superCenter' style={{ width: '50%' }}>
+                <div class='border row' style={{ margin: '1em auto', 'border-color': masteryColor(ascean().mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
+                    <div class='center' style={{ padding: '1em' }}>
+                        Do you wish to <b>{showTalentConfirm().type === 'efficient' ? 'Optimize' : 'Enhance'}</b> {showTalent()?.talent.name}? <br /><br />
+                        <button class='highlight' style={{ bottom: '0', right: '0', 'color': 'green' }} onClick={() => addTalent(showTalent()?.talent.name.toLowerCase(), showTalentConfirm().type)}>
+                            <p style={font('1em')}>Confirm</p>
+                        </button>
+
+                        <button class='highlight' style={{ bottom: '0', right: '0', 'color': 'red' }} onClick={() => setShowTalentConfirm({ show: false, type: '' })}>
+                            <p style={font('1em')}>Cancel</p>
+                        </button>
+                    </div>
                 </div>
                 </div>
             </div>

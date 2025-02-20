@@ -86,7 +86,7 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
     // }; // , 'text-shadow': `0.025em 0.025em 0.025em ${state().isStealth ? '#000' : '#800080'}`
     // top(state().player?.name.length as number)
     return <div class='playerCombatUi' style={{ position: 'fixed' }}> 
-        <div class='playerHealthBar' style={{ position: 'absolute', 'z-index': 0, 'max-height': '5vh', width: '20.75vw', left: '4%' }}>
+        <div class='playerHealthBar' style={{ 'z-index': 0, 'max-height': '24px', width: '20.75vw', left: '4%' }}>
             <div class='playerPortrait' style={{ 'font-size': '1.15em', 'font-weight': 'bold', color: state().isStealth ? '#fdf6d8' : '#000', 'margin': 'auto', 'z-index': 1, 'text-shadow': `0.025em 0.025em 0.025em ${state().isStealth ? '#000' : '#fdf6d8'}` }}>{healthDisplay()}</div>
             <div class='healthbarPosition' style={{ width: `100%`, 'background': 'linear-gradient(#aa0000, red)' }}></div>
             <div class='healthbarPosition' style={{ width: `${healthPercentage()}%`, 'background': state()?.isStealth ? 'linear-gradient(#000, #444)' : 'linear-gradient(gold, #fdf6d8)', transition: 'width 0.5s ease-out' }}></div>

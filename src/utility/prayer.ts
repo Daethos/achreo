@@ -65,6 +65,7 @@ export const PRAYERS = {
     DISPEL: "Dispel",
     HEAL: "Heal",
     INSIGHT: "Insight",
+    SILENCE: "Silence"
 };
 
 const SPECIALS = ['Avarice', 'Denial', 'Dispel', 'Insight', 'Silence'];

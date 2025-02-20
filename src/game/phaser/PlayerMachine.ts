@@ -1,6 +1,6 @@
 import Player from '../entities/Player';
 import StateMachine, { specialStateMachines, States } from "./StateMachine";
-import { BALANCED, BALANCED_INSTINCTS, DEFENSIVE, DEFENSIVE_INSTINCTS, OFFENSIVE, OFFENSIVE_INSTINCTS, PLAYER, PLAYER_INSTINCTS, staminaCheck } from "../../utility/player";
+import { BALANCED, BALANCED_INSTINCTS, DEFENSIVE, DEFENSIVE_INSTINCTS, OFFENSIVE, OFFENSIVE_INSTINCTS, PLAYER, PLAYER_INSTINCTS, staminaCheck, TALENT_COOLDOWN, TALENT_COST } from "../../utility/player";
 import { FRAME_COUNT } from '../entities/Entity';
 import AoE from './AoE';
 import { EventBus } from "../EventBus";
@@ -1320,10 +1320,13 @@ export default class PlayerMachine {
     };
     onHealingExit = () => {
         if (this.player.castingSuccess === true) {
-            if (!this.player.isComputer) this.player.setTimeEvent('healingCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.HEALING);
+            const cost = this.scene.hud.talents.talents.healing.efficient ? TALENT_COST[PLAYER.STAMINA.HEALING as keyof typeof TALENT_COST] : PLAYER.STAMINA.HEALING;
+            const cooldown = this.scene.hud.talents.talents.healing.efficient ? TALENT_COOLDOWN[PLAYER.COOLDOWNS.SHORT as keyof typeof TALENT_COOLDOWN] : PLAYER.COOLDOWNS.SHORT;
+            if (!this.player.isComputer) this.player.setTimeEvent('healingCooldown', this.player.inCombat ? cooldown : PLAYER.COOLDOWNS.SHORT / 3);
+            this.scene.combatManager.useGrace(cost);
             this.player.castingSuccess = false;
-            this.healCheck(25);
+            const power = this.scene.hud.talents.talents.healing.enhanced ? 50 : 25;
+            this.healCheck(power);
             this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
         };
         this.player.isCasting = false;
@@ -3096,7 +3099,7 @@ export default class PlayerMachine {
 
     onShirkEnter = () => {
         this.player.isShirking = true;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.STIMULATE);    
+        this.scene.combatManager.useGrace(PLAYER.STAMINA.SHIRK);    
         if (!this.player.isComputer) this.player.setTimeEvent('shirkCooldown', PLAYER.COOLDOWNS.MODERATE);
         this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Shirking', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);

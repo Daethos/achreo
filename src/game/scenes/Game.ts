@@ -157,8 +157,15 @@ export class Game extends Scene {
         map?.getObjectLayer('Enemies')?.objects.forEach((enemy: any) => {
             const e = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: undefined });
             this.enemies.push(e);
-            e.setPosition(enemy.x, enemy.y)
+            e.setPosition(enemy.x, enemy.y);
         });
+        if (this.hud.settings.desktop) {
+            for (let i = 0; i < 40; ++i) {
+                const e = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: undefined });
+                this.enemies.push(e);
+                e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
+            };
+        };
         map?.getObjectLayer('Npcs')?.objects.forEach((npc: any) => 
             this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' })));
         let camera = this.cameras.main;

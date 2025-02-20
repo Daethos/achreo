@@ -9,7 +9,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Physical)',
         svg: 'ATTACK',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.',
     },
     DODGE: {
         name: 'Dodge',
@@ -19,7 +19,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Physical)',
         svg: 'DODGE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.',
     },
     PARRY: {
         name: 'Parry',
@@ -29,7 +29,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Physical)',
         svg: 'PARRY',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.',
     },
     POSTURE: {
         name: 'Posture',
@@ -39,7 +39,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Physical)',
         svg: 'POSTURE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.',
     },
     ROLL: {
         name: 'Roll',
@@ -49,7 +49,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Physical)',
         svg: 'ROLL',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.',
     },
     THRUST: {
         name: 'Thrust',
@@ -59,7 +59,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Physical)',
         svg: 'THRUST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.',
     },
 
 
@@ -71,7 +71,7 @@ export const ACTION_ORIGIN = {
         time: 'Prayer',
         special: '(Targeted)',
         svg: 'INVOKE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Increases Grace Regained. Enhanced: Doubles Prayer Effectiveness.',
     },
     CONSUME: {
         name: 'Consume',
@@ -81,7 +81,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Targeted)',
         svg: 'SHIELD',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Effectiveness.',
     },
     ABSORB: {
         name: 'Absorb',
@@ -91,7 +91,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Negation Bubble',
         svg: 'CONSUME',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Lowers the Grace Absorbed.',
     },
     ACHIRE: {
         name: 'Achire',
@@ -101,7 +101,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Projectile',
         svg: 'CAST',
-        talent: 'Stuns enemy on hit.',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Stuns on Hit.',
     },
     ARC: {
         name: 'Arc',
@@ -111,7 +111,7 @@ export const ACTION_ORIGIN = {
         time: '3s',
         special: 'Channel. Attack',
         svg: 'WEAPONS',
-        talent: 'Creates Shockwave. Larger Radius.',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Stuns on Impact.',
     },
     ASTRAVE: {
         name: 'Astrave',
@@ -121,7 +121,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. AoE (Manual)',
         svg: 'AOE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Active for 3 Seconds.',
     },
     ASTRICATION: {
         name: 'Astrication',
@@ -131,7 +131,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Duration.',
     },
     BERSERK: {
         name: 'Berserk',
@@ -141,7 +141,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'CONSUME',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Greater Strength Per Attack.',
     },
     BLIND: {
         name: 'Blind',
@@ -151,7 +151,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Paralyzes Instead of Stun, More Damage.',
     },
     BLINK: {
         name: 'Blink',
@@ -161,7 +161,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Movement',
         svg: 'INVOKE',
-        talent: 'Increases Speed for 3 Seconds.',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increases Speed For Several Seconds.',
     },
     CAERENESIS: {
         name: 'Caerenesis',
@@ -171,7 +171,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Target)',
         svg: 'AOE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Activates for 3 Seconds.',
     },
     CHIOMIC: {
         name: 'Chiomic',
@@ -181,9 +181,9 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'CONSUME',
-        talent: 'Increased Radius.',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Radius.',
     },
-    CHOIMISM: {
+    CHIOMISM: {
         name: 'Chiomism',
         description: "You bleed and laugh into this world with Chiomic tendrils.",
         cooldown: `${PLAYER.COOLDOWNS.SHORT / 1000}s`,
@@ -191,7 +191,7 @@ export const ACTION_ORIGIN = {
         time: '1s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Confuse Chance.',
     },
     CONFUSE: {
         name: 'Confuse',
@@ -201,7 +201,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talent: 'May not break from damage.',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: May not break from damage.',
     },
     CONVICTION: {
         name: 'Conviction',
@@ -211,7 +211,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'CAST',
-        talent: 'Costs 0 Grace.',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Strength of each Successive Strike.',
     },
     DESPERATION: {
         name: 'Desperation',
@@ -221,7 +221,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Self)',
         svg: 'INVOKE',
-        talent: 'Increases healing to 75%.',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Healing Amount.',
     },
     DEVOUR: {
         name: 'Devour',
@@ -231,7 +231,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Physical',
         svg: 'VOICE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Lifedrain.',
     },
     DISEASE: {
         name: 'Disease',
@@ -241,7 +241,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'AOE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Radius.',
     },
     DISPEL: {
         name: 'Dispel',
@@ -251,7 +251,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Targeted)',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Removes All Positive Enemy Effects.',
     },
     ENDURANCE: {
         name: 'Endurance',
@@ -261,7 +261,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'BEAM',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Stamina Recovery.',
     },
     ENVELOP: {
         name: 'Envelop',
@@ -271,7 +271,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Negation Bubble',
         svg: 'SHIELD',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Reduced Stamina Cost.',
     },
     FEAR: {
         name: 'Fear',
@@ -281,7 +281,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Lower Fear Broken Chance.',
     },
     FREEZE: {
         name: 'Freeze',
@@ -291,7 +291,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'AOE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Radius.',
     },
     FROST: {
         name: 'Frost',
@@ -301,7 +301,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Snares Instead of Slows.',
     },
     FYERUS: {
         name: 'Fyerus',
@@ -311,7 +311,7 @@ export const ACTION_ORIGIN = {
         time: '6s',
         special: 'Channel. AoE (Manual)',
         svg: 'BEAM',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Radius.',
     },
     HEALING: {
         name: 'Healing',
@@ -321,7 +321,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.',
     },
     HOOK: {
         name: 'Hook',
@@ -331,7 +331,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Physical',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Damage Increase Based on Distance Hooked.',
     },
     HOWL: {
         name: 'Howl',
@@ -341,7 +341,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'VOICE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Radius.',
     },
     ILIRECH: {
         name: 'Ilirech',
@@ -351,7 +351,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Chance to Stun.',
     },
     IMPERMANENCE: {
         name: 'Impermanence',
@@ -361,7 +361,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'BEAM',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Duration.',
     },
     KYNISOS: {
         name: 'Kynisos',
@@ -371,7 +371,7 @@ export const ACTION_ORIGIN = {
         time: '1s Cast',
         special: 'AoE (Manual)',
         svg: 'AOE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Radius.',
     },
     KYRISIAN: {
         name: 'Kyrisian',
@@ -381,7 +381,7 @@ export const ACTION_ORIGIN = {
         time: '1s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Paralyze Chance.',
     },
     KYRNAICISM: {
         name: 'Kyrnaicism',
@@ -391,7 +391,7 @@ export const ACTION_ORIGIN = {
         time: '3s',
         special: 'Channel. Targeted',
         svg: 'BEAM',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Damage.',
     },
     LEAP: {
         name: 'Leap',
@@ -401,7 +401,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Combat Movement',
         svg: 'WEAPONS',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Stuns on Impact.',
     },
     LIKYR: {
         name: 'Likyr',
@@ -411,7 +411,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Creates Buff Prayer.',
     },
     MAIERETH: {
         name: 'Maiereth',
@@ -421,7 +421,7 @@ export const ACTION_ORIGIN = {
         time: '1s',
         special: 'Cast. (Targeted)',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Fear Chance.',
     },
     MALICE: {
         name: 'Malice',
@@ -431,7 +431,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Damage.',
     },
     MARK: {
         name: 'Mark',
@@ -441,7 +441,7 @@ export const ACTION_ORIGIN = {
         time: 'Prayer',
         special: 'Physical',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Heal on Mark.',
     },
     MENACE: {
         name: 'Menace',
@@ -451,7 +451,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Duration.',
     },
     MEND: {
         name: 'Mend',
@@ -461,7 +461,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.',
     },
     MODERATE: {
         name: 'Moderate',
@@ -471,7 +471,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Snares Instead of Slows.',
     },
     MULTIFARIOUS: {
         name: 'Multifarious',
@@ -481,7 +481,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Duration.',
     },
     MYSTIFY: {
         name: 'Mystify',
@@ -491,7 +491,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Duration.',
     },
     NETHERSWAP: {
         name: 'Netherswap',
@@ -501,7 +501,7 @@ export const ACTION_ORIGIN = {
         time: 'Prayer',
         special: 'Physical',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Swaps Health Percentage if Lower.',
     },
     PARALYZE: {
         name: 'Paralyze',
@@ -511,7 +511,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Creates Debuff Prayer.',
     },
     POLYMORPH: {
         name: 'Polymorph',
@@ -521,7 +521,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Polymorph Does Not Regenerate Enemy Health.',
     },
     PROTECT: {
         name: 'Protect',
@@ -531,7 +531,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Negation Bubble',
         svg: 'SHIELD',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Duration.',
     },
     PURSUIT: {
         name: 'Pursuit',
@@ -541,7 +541,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Physical',
         svg: 'CONSUME',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increases Speed.',
     },
     QUOR: {
         name: 'Quor',
@@ -551,7 +551,7 @@ export const ACTION_ORIGIN = {
         time: '3s',
         special: 'Cast. Projectile',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Releases Astrave on Contact.',
     },
     RECALL: {
         name: 'Recall',
@@ -561,7 +561,7 @@ export const ACTION_ORIGIN = {
         time: 'Prayer',
         special: 'Physical',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Heal on Recall.',
     },
     RECONSTITUTE: {
         name: 'Reconstitute',
@@ -571,7 +571,7 @@ export const ACTION_ORIGIN = {
         time: '5s',
         special: 'Channel',
         svg: 'BEAM',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.',
     },
     RECOVER: {
         name: 'Recover',
@@ -581,7 +581,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increases Stamina Recovered.',
     },
     REIN: {
         name: 'Rein',
@@ -591,7 +591,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Reactive Bubble',
         svg: 'SHIELD',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increases Grace Recovered.',
     },
     RENEWAL: {
         name: 'Renewal',
@@ -601,7 +601,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'AOE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Radius.',
     },
     ROOT: {
         name: 'Root',
@@ -611,7 +611,7 @@ export const ACTION_ORIGIN = {
         time: 'Prayer',
         special: '(Targeted)',
         svg: 'AOE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Creates Silence Prayer.',
     },
     RUSH: {
         name: 'Rush',
@@ -621,7 +621,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Combat Movement',
         svg: 'WEAPONS',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Slows Enemies, Increases Speed.',
     },
     SACRIFICE: {
         name: 'Sacrifice',
@@ -631,7 +631,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Targeted)',
         svg: 'SACRIFICE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Creates Damage Prayer.',
     },
     SCREAM: {
         name: 'Scream',
@@ -641,7 +641,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'VOICE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Radius.',
     },
     SEER: {
         name: 'Seer',
@@ -651,7 +651,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'INVOKE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Lasts for 3 criticals.',
     },
     SHADOW: {
         name: 'Shadow',
@@ -661,7 +661,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Physical',
         svg: 'CONSUME',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Speed on Activate.',
     },
     SHIELD: {
         name: 'Shield',
@@ -671,7 +671,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Negation Bubble',
         svg: 'SHIELD',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Duration.',
     },
     SHIMMER: {
         name: 'Shimmer',
@@ -681,7 +681,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Buff)',
         svg: 'SHIELD',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Evasion.',
     },
     SHIRK: {
         name: 'Shirk',
@@ -691,7 +691,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Negation (Self)',
         svg: 'INVOKE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Immunity.',
     },
     SLOW: {
         name: 'Slow',
@@ -701,7 +701,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Targeted)',
         svg: 'INVOKE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Snares instead of Slows.',
     },
     SNARE: {
         name: 'Snare',
@@ -711,7 +711,7 @@ export const ACTION_ORIGIN = {
         time: '1.5s',
         special: 'Cast. Targeted',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Decreased Speed.',
     },
     SPRINT: {
         name: 'Sprint',
@@ -721,7 +721,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Movement',
         svg: 'INVOKE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Duration, Speed.',
     },
     STIMULATE: {
         name: 'Stimulate',
@@ -731,7 +731,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Refresh)',
         svg: 'INVOKE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Creates Insight Prayer.',
     },
     STORM: {
         name: 'Storm',
@@ -741,7 +741,7 @@ export const ACTION_ORIGIN = {
         time: '3s',
         special: 'Channel',
         svg: 'SACRIFICE',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Speed.',
     },
     SUTURE: {
         name: 'Suture',
@@ -751,7 +751,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: '(Targeted)',
         svg: 'CONSUME',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Creates Heal Prayer.',
     },
     TETHER: {
         name: 'Tether',
@@ -761,7 +761,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Physical',
         svg: 'CAST',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Duration, Damaged on Hook.',
     },
     WARD: {
         name: 'Ward',
@@ -771,7 +771,7 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'Negation Bubble',
         svg: 'SHIELD',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Duration.',
     },
     WRITHE: {
         name: 'Writhe',
@@ -781,6 +781,6 @@ export const ACTION_ORIGIN = {
         time: 'Instant',
         special: 'AoE (Self)',
         svg: 'WEAPONS',
-        talent: '',
+        talent: 'Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Radius.',
     },
 };

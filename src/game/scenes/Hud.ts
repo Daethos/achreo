@@ -15,6 +15,7 @@ import { Tutorial } from "./Tutorial";
 import { Arena } from "./Arena";
 import { Underground } from "./Underground";
 import { EnemySheet } from "../../utility/enemy";
+import Talents from "../../utility/talents";
 // import { ArenaCvC, ArenaView } from "./ArenaCvC";
 const dimensions = useResizeListener();
 
@@ -37,6 +38,7 @@ export class Hud extends Phaser.Scene {
     prevDiff: number = -1;
     prevScene: string = '';
     currScene: string = '';
+    talents: Talents;
     // private arenaContainers: Phaser.GameObjects.Container[] = [];
     // private arenaButton: Phaser.GameObjects.Image;
     // private borders: Phaser.GameObjects.Graphics[] = [];
@@ -51,6 +53,7 @@ export class Hud extends Phaser.Scene {
         this.gameEvents();
         this.gameState = this.registry.get('game');
         this.settings = this.registry.get('settings');
+        this.talents = this.registry.get('talents');
         this.currentZoom = this.settings.positions.camera.zoom;
         this.smallHud = new SmallHud(this);
         this.actionBar = new ActionButtons(this);
@@ -289,6 +292,9 @@ export class Hud extends Phaser.Scene {
     gameEvents = (): void => {
         EventBus.on('game', (game: GameState) => {
             this.gameState = game;
+        });
+        EventBus.on('talents', (talents: Talents) => {
+            this.talents = talents;
         });
         EventBus.on('settings', (settings: Settings) => {
             this.settings = settings;

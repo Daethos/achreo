@@ -9,7 +9,7 @@ import Ascean, { createAscean } from './models/ascean';
 import { CharacterSheet, Compiler, asceanCompiler, initCharacterSheet } from './utility/ascean';
 import { usePhaserEvent } from './utility/hooks';
 import { EventBus } from './game/EventBus';
-import { deleteAscean, getAscean, getAsceans, getEnemy, getInventory, getParty, getQuests, getReputation, getSettings, getStatistics, getTalents, populate, populateEnemy, scrub, updateInventory, updateParty, updateQuests, updateReputation, updateSettings, updateStatistics } from './assets/db/db'; 
+import { deleteAscean, getAscean, getAsceans, getEnemy, getInventory, getParty, getQuests, getReputation, getSettings, getStatistics, getTalents, populate, populateEnemy, scrub, updateInventory, updateParty, updateQuests, updateReputation, updateSettings, updateStatistics, updateTalents } from './assets/db/db'; 
 import { TIPS } from './utility/tips';
 import { Inventory, Reputation, initInventory, initReputation } from './utility/player';
 import { Puff } from 'solid-spinner';
@@ -153,17 +153,42 @@ export default function App() {
                 const compile = asceanCompiler(pop);
                 compiledParty.push(compile);
             };
+            if (tal.points.total !== ascean().level - 1) {
+                let newTalent = JSON.parse(JSON.stringify(tal));
+                newTalent = {
+                    ...newTalent,
+                    points: {
+                        ...newTalent.points,
+                        total: ascean().level - 1
+                    }
+                };
+                setTalents(newTalent);
+                await updateTal(newTalent);
+            } else {
+                setTalents(tal);
+            };
+
+            // };
+            // let newTalent = {
+            //     ...tal,
+            //     points: {
+            //         ...tal.points,
+            //         total: ascean().level - 1
+            //     }
+            // };
             setInventory(inv);
             setReputation(rep);
             setSettings(set);
             setStatistics(stat);
-            setTalents(tal);
+            // setTalents(tal);
             setQuests(quest);
             if (set.difficulty.tidbits === true) setTips(true);
             setMenu({ ...menu(), choosingCharacter: false, gameRunning: true, playModal: false });
             setStartGame(true);
             setLoading(false);
             phaserRef.game?.registry.set("party", compiledParty);
+            phaserRef.game?.registry.set("settings", settings());
+            phaserRef.game?.registry.set("talents", talents());
             EventBus.emit('preload-ascean', id);
         } catch (err: any) {
             console.warn('Error loading Ascean:', err);
@@ -309,7 +334,7 @@ export default function App() {
     const addQuest = async (quest:{title: string, enemy: Ascean}): Promise<void> => {
         try {
             const { title, enemy } = quest;
-            const newQuest = getQuest(title, enemy, reputation());
+            const newQuest = getQuest(title, enemy, reputation(), ascean());
             const newQuestManager: QuestManager = { 
                 ...quests(),
                 quests: quests().quests.length > 0 
@@ -351,7 +376,7 @@ export default function App() {
             console.warn('Error updating Statistics:', err);
         };
     };
-    const updateTalents = async (talents: Talents): Promise<void> => {
+    const updateTal = async (talents: Talents): Promise<void> => {
         try {
             await updateTalents(talents);
             setTalents(talents);
@@ -444,7 +469,7 @@ export default function App() {
     usePhaserEvent('remove-quest', removeQuest);
     usePhaserEvent('update-reputation', updateRep);
     usePhaserEvent('update-statistics', updateStat);
-    usePhaserEvent('update-talents', updateTalents);
+    usePhaserEvent('update-talents', updateTal);
     usePhaserEvent('request-settings', () => EventBus.emit('settings', settings()));
     usePhaserEvent('save-settings', saveSettings);
     usePhaserEvent('save-this-setting', saveThisSetting);

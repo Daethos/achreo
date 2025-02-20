@@ -223,24 +223,24 @@ export default class Settings {
                 zoom: 1,
             },
             castbar: {
-                barHeight: 24,
-                barWidth: 200,
+                barHeight: 20,
+                barWidth: 180,
                 barY: 0,
             },
             leftJoystick: { 
                 base: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].leftJoystick.base,
                 thumb: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].leftJoystick.thumb,
                 opacity: 0.1,
-                x: 0.15, 
-                y: 0.7,
+                x: 0.1, 
+                y: 0.725,
                 width: 1, 
             },
             rightJoystick: { 
                 base: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].rightJoystick.base,
                 thumb: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].rightJoystick.thumb,
                 opacity: 0.1,
-                x: 0.85,
-                y: 0.7,
+                x: 0.9,
+                y: 0.725,
                 width: 1, 
             },
             actionButtons: {
@@ -249,8 +249,8 @@ export default class Settings {
                 display: 'arc',
                 opacity: 0.75,
                 spacing: 3.57,
-                x: 0.7,
-                y: 0.7,
+                x: 0.75,
+                y: 0.725,
                 width: 1,
             },
             specialButtons: {
@@ -259,8 +259,8 @@ export default class Settings {
                 display: 'arc',
                 opacity: 0.75,
                 spacing: 3.57,
-                x: 0.6425,
-                y: 0.5625,
+                x: 0.7,
+                y: 0.62,
                 width: 1,
             },
             fpsText: {
@@ -276,7 +276,7 @@ export default class Settings {
             smallHud: { 
                 offset: 36,
                 scale: 0.08,
-                x: 0.5,
+                x: 0.495,
                 y: 0.9125
             },
         };

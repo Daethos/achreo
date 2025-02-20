@@ -174,6 +174,15 @@ export default function PhaserGame (props: IProps) {
                 }
             };
             EventBus.emit('update-statistics', newStats);
+            let newTalents = JSON.parse(JSON.stringify(props.talents()));
+            newTalents = {
+                ...newTalents,
+                points: {
+                    ...newTalents.points,
+                    total: newTalents.points.total + 1    
+                }
+            };
+            EventBus.emit('update-talents', newTalents);
         } catch (err: any) {
             console.warn(err, '<- Error in the Controller Updating the Level!')
         };
@@ -923,11 +932,11 @@ export default function PhaserGame (props: IProps) {
                 setGame({ ...game(), showLootIds: [...game().showLootIds, e.loot], lootTag: true });
             } else {
                 const updatedShowLootIds = game().showLootIds.filter((id) => id !== e.loot);
-                setGame({ 
-                    ...game(), 
+                setGame({
+                    ...game(),
                     showLootIds: updatedShowLootIds.length > 0 ? updatedShowLootIds : [],
                     // showLoot: updatedShowLootIds.length > 0,
-                    lootTag: updatedShowLootIds.length > 0,    
+                    lootTag: updatedShowLootIds.length > 0,
                 });
             };
         });

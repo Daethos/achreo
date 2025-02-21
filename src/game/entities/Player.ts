@@ -561,16 +561,11 @@ export default class Player extends Entity {
         };
         if (e.rollSuccess === true) {
             this.specialCombatText = this.scene.showCombatText('Roll', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
-            // this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
-            // this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
             this.scene.combatManager.useStamina(-5);
         };
         if (e.parrySuccess === true) {
             this.specialCombatText = this.scene.showCombatText('Parry', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
             this.scene.combatManager.stunned(e.enemyID);
-            // this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'dodge');
-            // this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'parry');
-            // this.scene.hud.actionBar.setCurrent(this.swingTimer, this.swingTimer, 'roll');
             this.scene.combatManager.useStamina(-5);
         };
         if (e.computerRollSuccess === true) this.resistCombatText = this.scene.showCombatText('Roll', PLAYER.DURATIONS.TEXT, 'damage', computerCriticalSuccess, false, () => this.resistCombatText = undefined);

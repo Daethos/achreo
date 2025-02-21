@@ -308,6 +308,7 @@ export class Arena extends Phaser.Scene {
             this.hud.rightJoystick.joystick.setVisible(false);
         };
         this.createArenaEnemy();
+        this.matter.resume();
         this.scene.wake();
         EventBus.emit('current-scene-ready', this);
     };
@@ -324,6 +325,7 @@ export class Arena extends Phaser.Scene {
             };
             this.player.disengage();
             this.pauseMusic();
+            this.matter.pause();
             this.scene.sleep(current);
         });
     };

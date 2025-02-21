@@ -25,7 +25,6 @@ import { FAITH_RARITY } from '../utility/combatTypes';
 import Talents from '../utility/talents';
 import { ACTION_ORIGIN } from '../utility/actions';
 import { svg } from '../utility/settings';
-import { TALENT_COOLDOWN, TALENT_COST } from '../utility/player';
 import QuestManager from '../utility/quests';
 const AsceanImageCard = lazy(async () => await import('../components/AsceanImageCard'));
 const ExperienceBar = lazy(async () => await import('./ExperienceBar'));
@@ -37,7 +36,7 @@ const ItemModal = lazy(async () => await import('../components/ItemModal'));
 const LevelUp = lazy(async () => await import('./LevelUp'));
 const SettingSetter = lazy(async () => await import('../utility/settings'));
 const TutorialOverlay = lazy(async () => await import('../utility/tutorial'));
-const COST = {
+export const COST = {
     "-30": "-45 Grace",
     "-15": "-30 Grace",
     "0": "-15 Grace",
@@ -46,11 +45,10 @@ const COST = {
     "45": "30 Grace",
     "60": "45 Grace",
 };
-const COOLDOWN = {
+export const COOLDOWN = {
     "6s": "2s",
     "10s": "6s",
     "15s": "10s",
-
 };
 export const viewCycleMap = {
     Character: 'Inventory',

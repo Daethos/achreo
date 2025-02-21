@@ -3,6 +3,7 @@ import { PLAYER, STAMINA, staminaCheck } from '../../utility/player';
 import { vibrate } from './ScreenShake';
 import { ACTION_ORIGIN } from '../../utility/actions';
 import { Hud } from '../scenes/Hud';
+import { COOLDOWN, COST } from '../../ui/Character';
 const ACTIONS = [
     { ATTACK: 0x800080 }, // 0xFA0000 
     { POSTURE: 0x800080 }, // 0x005100 
@@ -994,9 +995,13 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 padding: { left: PADDING, right: PADDING, top: PADDING / 2, bottom: PADDING /2 },
                 wordWrap: { useAdvancedWrap: true, width: WIDTH - PADDING * 2 },
             });
-            const textSuper = this.scene.add.text(0, textTitle?.height + textDescription?.height, `${action.cost} \n ${action.time} ${action.special} \n ${action.cooldown} Cooldown`, {
+            const efficient = (this.scene.talents.talents[button.name.toLowerCase() as keyof typeof this.scene.talents.talents]).efficient;
+            const enhanced = (this.scene.talents.talents[button.name.toLowerCase() as keyof typeof this.scene.talents.talents]).enhanced;
+            const cost = efficient ? COST[action.cost.split(" Grace")[0] as keyof typeof COST] : action.cost;
+            const cooldown = efficient ? COOLDOWN[action.cooldown as keyof typeof COOLDOWN] : action.cooldown;
+            const textSuper = this.scene.add.text(0, textTitle?.height + textDescription?.height, `${cost} \n ${action.time} ${action.special} \n ${cooldown} Cooldown ${enhanced ? `\n ${action.talent.split(".")[1]}` : ``}`, {
                 align: 'left',
-                color: STAMINA.includes(button.name.toLowerCase()) ? '#0f0' : '#0cf',
+                color: efficient ? "#ffd700" : STAMINA.includes(button.name.toLowerCase()) ? '#0f0' : '#0cf',
                 fontFamily: 'Cinzel-Regular',
                 fontSize: '14px',
                 stroke: '#000',

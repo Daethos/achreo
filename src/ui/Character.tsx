@@ -344,7 +344,6 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
                         const efficient = (talents().talents[special.toLowerCase() as keyof typeof talents] as any).efficient;
                         const enhanced = (talents().talents[special.toLowerCase() as keyof typeof talents] as any).enhanced;
-
                         const cost = efficient ? COST[spec?.cost.split(" Grace")[0] as keyof typeof COST] : spec?.cost;
                         const cooldown = efficient ? COOLDOWN[spec?.cooldown as keyof typeof COOLDOWN] : spec?.cooldown;
                         return <div class='border row juice' onClick={() => setShowTalent({show:true,talent:spec})} style={{ margin: '1em auto', 'border-color': masteryColor(ascean().mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
@@ -996,9 +995,14 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         </p>
                         <p style={{ 'color':'gold', 'font-size':'0.75em' }}>{showTalent()?.talent.talent.split(".")[1]} <br /> {showTalent()?.talent.talent.split("Enhanced:")[0]}</p>
                         <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>{showTalent()?.talent.description}</p>
+                        <span style={{ color: 'gold' }}>{(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? showTalent()?.talent.talent.split(".")[1] : ''}</span>
                         <p style={{ color: 'aqua' }}>
+                            
                             {showTalent()?.talent.time} {showTalent()?.talent.special} <br />
-                            {showTalent()?.talent.cost}. {showTalent()?.talent.cooldown} Cooldown <br />
+                            <span style={{ color: (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? 'gold' : '' }}>
+                                {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? COST[showTalent()?.talent.cost.split(" Grace")[0] as keyof typeof COST] : showTalent()?.talent.cost}.{' '}
+                                {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? COOLDOWN[showTalent()?.talent.cooldown as keyof typeof COOLDOWN] : showTalent()?.talent.cooldown} Cooldown. <br />
+                            </span>
                         </p>
                     </div>
                     <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '5%', right: '0', 'background-color': 'red' }} onClick={() => setShowTalent({ show: false, talent: undefined })}>

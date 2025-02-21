@@ -54,6 +54,60 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
 },{
+    "_id":"daethic_inquisitor_0.5",
+    "origin":"Li'ivi",
+    "sex":"Woman",
+    "mastery":"constitution",
+    "level":0.5,
+    "experience":0,
+    "inventory":[],
+    "name":"Daethic Inquisitor",
+    "description":"Old Caste of Worship in the Seyr",
+    "constitution":13,
+    "strength":8,
+    "agility":8,
+    "achre":11,
+    "caeren":11,
+    "kyosir":10,
+    "weaponOne":{
+        name: "Tendril",
+        rarity: 'Common',
+    },"weaponTwo":{
+        name: "Hush",
+        rarity: 'Common',
+    },"weaponThree":{
+        name: 'Daethic Bow',
+        rarity: 'Common',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Common',
+    },"helmet":{
+        name: "Dae Hood",
+        rarity: 'Common',
+    },"chest":{
+        name: "Dae Robes",
+        rarity: 'Common',
+    },"legs":{
+        name: "Dae Pants",
+        rarity: 'Common',
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: 'Default',
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: 'Default',
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: 'Default',
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: 'Default',
+    },
+    "faith":"devoted",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":147,"max":147}
+},{
     "_id":"daethic_knight_0.5",
     "origin":"Li'ivi",
     "sex":"Man",
@@ -115,7 +169,7 @@ export const Asceans: any[] = [
     "level":0.5,
     "experience":0,
     "inventory":[],
-    "name":"Fang Mercenary",
+    "name":"Fang Duelist",
     "description":"Refined Gentleman of the Fangs",
     "constitution":8,
     "strength":8,
@@ -648,6 +702,60 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
 },{
+    "_id":"daethic_inquisitor_1",
+    "origin":"Li'ivi",
+    "sex":"Woman",
+    "mastery":"constitution",
+    "level":1,
+    "experience":0,
+    "inventory":[],
+    "name":"Daethic Inquisitor",
+    "description":"Old Caste of Worship in the Seyr",
+    "constitution":15,
+    "strength":10,
+    "agility":10,
+    "achre":13,
+    "caeren":13,
+    "kyosir":12,
+    "weaponOne":{
+        name: "Tendril",
+        rarity: 'Common',
+    },"weaponTwo":{
+        name: "Hush",
+        rarity: 'Common',
+    },"weaponThree":{
+        name: 'Daethic Bow',
+        rarity: 'Common',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Common',
+    },"helmet":{
+        name: "Dae Hood",
+        rarity: 'Common',
+    },"chest":{
+        name: "Dae Robes",
+        rarity: 'Common',
+    },"legs":{
+        name: "Dae Pants",
+        rarity: 'Common',
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: 'Default',
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: 'Default',
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: 'Default',
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: 'Default',
+    },
+    "faith":"devoted",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":147,"max":147}
+},{
     "_id":"daethic_knight_1",
     "origin":"Li'ivi",
     "sex":"Man",
@@ -709,7 +817,7 @@ export const Asceans: any[] = [
     "level":1,
     "experience":0,
     "inventory":[],
-    "name":"Fang Mercenary",
+    "name":"Fang Duelist",
     "description":"Refined Gentleman of the Fangs",
     "constitution":12,
     "strength":10,
@@ -1296,6 +1404,60 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
 },{
+    "_id":"daethic_inquisitor_2",
+    "origin":"Li'ivi",
+    "sex":"Woman",
+    "mastery":"constitution",
+    "level":2,
+    "experience":0,
+    "inventory":[],
+    "name":"Daethic Inquisitor",
+    "description":"Old Caste of Worship in the Seyr",
+    "constitution":17,
+    "strength":10,
+    "agility":10,
+    "achre":14,
+    "caeren":14,
+    "kyosir":14,
+    "weaponOne":{
+        name: "Tendril",
+        rarity: 'Common',
+    },"weaponTwo":{
+        name: "Hush",
+        rarity: 'Common',
+    },"weaponThree":{
+        name: 'Daethic Bow',
+        rarity: 'Common',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Common',
+    },"helmet":{
+        name: "Dae Hood",
+        rarity: 'Common',
+    },"chest":{
+        name: "Dae Robes",
+        rarity: 'Common',
+    },"legs":{
+        name: "Dae Pants",
+        rarity: 'Common',
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: 'Default',
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: 'Default',
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: 'Default',
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: 'Default',
+    },
+    "faith":"devoted",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":147,"max":147}
+},{
     "_id":"daethic_knight_2",
     "origin":"Li'ivi",
     "sex":"Man",
@@ -1357,7 +1519,7 @@ export const Asceans: any[] = [
     "level":2,
     "experience":0,
     "inventory":[],
-    "name":"Fang Mercenary",
+    "name":"Fang Duelist",
     "description":"Refined Gentleman of the Fangs",
     "constitution":14,
     "strength":10,
@@ -2052,6 +2214,60 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
 },{
+    "_id":"cambiren_druid_4",
+    "origin":"Nothos",
+    "sex":"Woman",
+    "mastery":"caeren",
+    "level":4,
+    "experience":0,
+    "inventory":[],
+    "name":"Cambiren Druid",
+    "description":"Cambiren Druid of the Eye",
+    "constitution":20,
+    "strength":10,
+    "agility":10,
+    "achre":12,
+    "caeren":23,
+    "kyosir":16,
+    "weaponOne":{
+        name: 'Caerenic Shatter',
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: "Ahn'vyer's Wing",
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: 'Nyrolean Wave',
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Pavise',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: 'Cambiren Helm',
+        rarity: 'Uncommon',
+    },"chest":{
+        name: 'Cambiren Armor',
+        rarity: 'Uncommon',
+    },"legs":{
+        name: 'Cambiren Greaves',
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: 'Cambiren Ring',
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: "Cambiren Ring",
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: 'Cambiren Amulet',
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: 'Cambiren Trinket',
+        rarity: 'Uncommon',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":279,"max":279}
+},{
     "_id":"daethic_inquisitor_4",
     "origin":"Li'ivi",
     "sex":"Woman",
@@ -2160,6 +2376,114 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
 },{
+    "_id":"fang_duelist_4",
+    "origin":"Li'ivi",
+    "sex":"Man",
+    "mastery":"agility",
+    "level":4,
+    "experience":0,
+    "inventory":[],
+    "name":"Fang Duelist",
+    "description":"Refined Gentleman of the Fangs",
+    "constitution":16,
+    "strength":10,
+    "agility":21,
+    "achre":18,
+    "caeren":10,
+    "kyosir":18,
+    "weaponOne":{
+        name: "Longsword",
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: 'Scimitar',
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: 'Pernach',
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Fireland Helm",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Fireland Cuirass",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Fireland Greaves",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: 'Fireland Ring',
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: 'Fireland Ring',
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: "Se'narian Necklace",
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: 'Kyrison Trinket',
+        rarity: 'Uncommon',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":29,"max":29}
+},{
+    "_id":"fang_mercenary_4",
+    "origin":"Nothos",
+    "sex":"Man",
+    "mastery":"strength",
+    "level":4,
+    "experience":0,
+    "inventory":[],
+    "name":"Fang Mercenary",
+    "description":"Of a Clan in the West Fangs",
+    "constitution":20,
+    "strength":21,
+    "agility":16,
+    "achre":10,
+    "caeren":10,
+    "kyosir":16,
+    "weaponOne":{
+        name: "War Hammer",
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: 'Battle Axe',
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: 'Claymore',
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Fang Helm",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Fang Armor",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Fang Greaves",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: 'Fang Ring',
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: 'Fang Ring',
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: 'Fang Amulet',
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: 'Fang Trinket',
+        rarity: 'Uncommon',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":36,"max":36}
+},{
     "_id":"fyers_occultist_4",
     "origin":"Fyers",
     "sex":"Man",
@@ -2213,6 +2537,60 @@ export const Asceans: any[] = [
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
+},{
+    "_id":"kyngian_shaman_4",
+    "origin":"Quor'eite",
+    "sex":"Man",
+    "mastery":"agility",
+    "level":4,
+    "experience":0,
+    "inventory":[],
+    "name":"Kyn'gian Shaman",
+    "description":"Southron Shaman of Old Quor'eia",
+    "constitution":20,
+    "strength":12,
+    "agility":23,
+    "achre":18,
+    "caeren":14,
+    "kyosir":16,
+    "weaponOne":{
+        name: 'Longbow',
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: 'Spear',
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: "Kynshear",
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Marauder's Helm",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Marauder's Armor",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Marauder's Greaves",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: 'Achreon Ring',
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: "Quor'eite Ring",
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: "Marauder's Amulet",
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: "Marauder's Trinket",
+        rarity: 'Uncommon',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":279,"max":279}
 },{
     "_id":"kyrisian_4",
     "origin":"Notheo",
@@ -2322,6 +2700,114 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
 },{
+    "_id":"marauder_4",
+    "origin":"Sedyreal",
+    "sex":"Man",
+    "mastery":"agility",
+    "level":4,
+    "experience":0,
+    "inventory":[],
+    "name":"Marauder",
+    "description":"Ravaging countryside; akin to Fang Mercenaries",
+    "constitution":17,
+    "strength":16,
+    "agility":22,
+    "achre":14,
+    "caeren":10,
+    "kyosir":12,
+    "weaponOne":{
+        name: 'Hand Axe',
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: 'Longbow',
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: 'Spear',
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Scutum',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Marauder's Helm",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Marauder's Armor",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Marauder's Greaves",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: 'Fireland Ring',
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: 'Fireland Ring',
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: "Marauder's Amulet",
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: "Marauder's Trinket",
+        rarity: 'Uncommon',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":32,"max":32}
+},{
+    "_id":"mavrosin_occultist_4",
+    "origin":"Nothos",
+    "sex":"Man",
+    "mastery":"strength",
+    "level":4,
+    "experience":0,
+    "inventory":[],
+    "name":"Mavrosin Occultist",
+    "description":"Cultist of Mavros Ilios. Adherence to the true Sun",
+    "constitution":18,
+    "strength":21,
+    "agility":16,
+    "achre":10,
+    "caeren":14,
+    "kyosir":14,
+    "weaponOne":{
+        name: "Sunshatter",
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: 'Sunshear',
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: "Sevashyr Greatbow",
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Shaorahi',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Soverain Helm",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Soverain Cuirass",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Soverain Greaves",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: 'Soverain Ring',
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: 'Soverain Ring',
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: 'Ilian Amulet',
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: 'Ilian Trinket',
+        rarity: 'Uncommon',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":36,"max":36}
+},{
     "_id":"ilire_occultist_4",
     "origin":"Nothos",
     "sex":"Man",
@@ -2333,9 +2819,9 @@ export const Asceans: any[] = [
     "description":"Northren Occultist of Ilios, Ancient of the Sun",
     "constitution":19,
     "strength":25,
-    "agility":10,
+    "agility":14,
     "achre":10,
-    "caeren":17,
+    "caeren":19,
     "kyosir":10,
     "weaponOne":{
         name: "Sunshear",
@@ -2365,16 +2851,70 @@ export const Asceans: any[] = [
         name: "Fang Ring",
         rarity: 'Uncommon',
     },"amulet":{
-        name: "Fang Amulet",
+        name: "Soverain Amulet",
         rarity: 'Uncommon',
     },"trinket":    {
-        name: "Fang Trinket",
+        name: "Soverain Trinket",
         rarity: 'Uncommon',
     },
     "faith":"adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":139,"max":139}
+},{
+    "_id":"northren_wanderer_4",
+    "origin":"Nothos",
+    "sex":"Man",
+    "mastery":"constitution",
+    "level":4,
+    "experience":0,
+    "inventory":[],
+    "name":"Northren Wanderer",
+    "description":"Dispossessed Warrior from the Northren Wars",
+    "constitution":20,
+    "strength":10,
+    "agility":10,
+    "achre":18,
+    "caeren":18,
+    "kyosir":18,
+    "weaponOne":{
+        name: "Quor'eite Crush",
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: 'Wildstrike',
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: 'Caeren Barrage',
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Pavise',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Soverain Helm",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Soverain Cuirass",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Soverain Greaves",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: 'Soverain Ring',
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: 'Soverain Ring',
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: 'Achreon Amulet',
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: "Quor'eite Trinker",
+        rarity: 'Uncommon',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":39,"max":39}
 },{
     "_id":"nyren_4",
     "origin":"Li'ivi",
@@ -2430,6 +2970,60 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
 },{
+    "_id":"old_li'ivi_occultist_4",
+    "origin":"Li'ivi",
+    "sex":"Man",
+    "mastery":"constitution",
+    "level":4,
+    "experience":0,
+    "inventory":[],
+    "name":"Old Li'ivi Occultist",
+    "description":"Of the Old and Adherent, in a time before Daethos",
+    "constitution":20,
+    "strength":10,
+    "agility":10,
+    "achre":20,
+    "caeren":16,
+    "kyosir":18,
+    "weaponOne":{
+        name: "Blessed Dagger",
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: "Cursed Dagger",
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: "Shrenari",
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Heater',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Li'kyr Hood",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Li'kyr Robes",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Li'kyr Pants",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: "Chiomic Ring",
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: "Kyrison Ring",
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: "Kyrnaic Amulet",
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: "Kyrnaic Trinket",
+        rarity: 'Uncommon',
+    },
+    "faith":"devoted",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":115,"max":115}
+},{
     "_id":"quor'eite_occultist_4",
     "origin":"Nothos",
     "sex":"Man",
@@ -2483,6 +3077,114 @@ export const Asceans: any[] = [
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":139,"max":139}
+},{
+    "_id":"quor'eite_stalker_4",
+    "origin":"Quor'eite",
+    "sex":"Man",
+    "mastery":"agility",
+    "level":4,
+    "experience":0,
+    "inventory":[],
+    "name":"Quor'eite Stalker",
+    "description":"Hunters of Sedyrus",
+    "constitution":16,
+    "strength":10,
+    "agility":22,
+    "achre":19,
+    "caeren":10,
+    "kyosir":16,
+    "weaponOne":{
+        name: 'Kynshear',
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: 'Longbow',
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: 'Spear',
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Pavise',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Marauder's Helm",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Marauder's Armor",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Marauder's Greaves",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: "Quor'eite Ring",
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: "Quor'eite Ring",
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: "Marauder's Amulet",
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: "Marauder's Trinket",
+        rarity: 'Uncommon',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":29,"max":29}
+},{
+    "_id":"rahvrecur_4",
+    "origin":"Notheo",
+    "sex":"Man",
+    "mastery":"achre",
+    "level":4,
+    "experience":0,
+    "inventory":[],
+    "name":"Rahvrehcur",
+    "description":"Old Occultist to the Ancient of Dreams",
+    "constitution":18,
+    "strength":10,
+    "agility":20,
+    "achre":24,
+    "caeren":12,
+    "kyosir":14,
+    "weaponOne":{
+        name: "Nightmare",
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: 'Caeren Barrage',
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: 'Cursed Dagger',
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Shaorahi',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Li'kyr Hood",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Li'kyr Robes",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Li'kyr Pants",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: 'Achreon Ring',
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: 'Achreon Ring',
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: 'Rahvric Necklace',
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: 'Rahvric Trinket',
+        rarity: 'Uncommon',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":33,"max":33}
 },{
     "_id":"tshaeral_shaman_4",
     "origin":"Sedyreal",
@@ -2646,6 +3348,60 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
 },{
+    "_id":"achreon_druid_6",
+    "origin":"Notheo",
+    "sex":"Man",
+    "mastery":"achre",
+    "level":6,
+    "experience":0,
+    "inventory":[],
+    "name":"Achreon Druid",
+    "description":"Northren Druid of the Wild",
+    "constitution":19,
+    "strength":16,
+    "agility":22,
+    "achre":28,
+    "caeren":12,
+    "kyosir":12,
+    "weaponOne":{
+        name: "Wildstrike",
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: "Wildstrike",
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: 'Achestra',
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Achreon Helm",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Achreon Armor",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Achreon Greaves",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: "Achreon Ring",
+        rarity: 'Rare',
+    },"ringTwo":{
+        name: "Quor'eite Ring",
+        rarity: 'Rare',
+    },"amulet":{
+        name: "Achreon Amulet",
+        rarity: 'Rare',
+    },"trinket":    {
+        name: "Achreon Trinket",
+        rarity: 'Rare',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":147,"max":147}
+},{
     "_id":"anashtre_6",
     "origin":"Ashtre",
     "sex":"Man",
@@ -2699,6 +3455,60 @@ export const Asceans: any[] = [
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
+},{
+    "_id":"cambiren_druid_6",
+    "origin":"Nothos",
+    "sex":"Woman",
+    "mastery":"caeren",
+    "level":6,
+    "experience":0,
+    "inventory":[],
+    "name":"Cambiren Druid",
+    "description":"Cambiren Druid of the Eye",
+    "constitution":22,
+    "strength":12,
+    "agility":10,
+    "achre":14,
+    "caeren":29,
+    "kyosir":18,
+    "weaponOne":{
+        name: 'Caerenic Shatter',
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: "Ahn'vyer's Wing",
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: 'Nyrolean Wave',
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Pavise',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: 'Cambiren Helm',
+        rarity: 'Rare',
+    },"chest":{
+        name: 'Cambiren Armor',
+        rarity: 'Rare',
+    },"legs":{
+        name: 'Cambiren Greaves',
+        rarity: 'Rare',
+    },"ringOne":{
+        name: 'Cambiren Ring',
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: "Cambiren Ring",
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: 'Cambiren Amulet',
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: 'Cambiren Trinket',
+        rarity: 'Uncommon',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":279,"max":279}
 },{
     "_id":"daethic_inquisitor_6",
     "origin":"Li'ivi",
@@ -2862,6 +3672,222 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
 },{
+    "_id":"fyers_occultist_6",
+    "origin":"Fyers",
+    "sex":"Man",
+    "mastery":"achre",
+    "level":6,
+    "experience":0,
+    "inventory":[],
+    "name":"Fyers Occultist",
+    "description":"Southron Occultist of Fyer",
+    "constitution":20,
+    "strength":10,
+    "agility":15,
+    "achre":27,
+    "caeren":22,
+    "kyosir":12,
+    "weaponOne":{
+        name: "Lava Spit",
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: "Lava Spit",
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: 'Achestra',
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Fyers Hood",
+        rarity: 'Rare',
+    },"chest":{
+        name: "Fyers Robes",
+        rarity: 'Rare',
+    },"legs":{
+        name: "Fyers Pants",
+        rarity: 'Rare',
+    },"ringOne":{
+        name: "Fyers Ring",
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: "Fyers Ring",
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: "Fyers Amulet",
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: "Fyers Trinket",
+        rarity: 'Uncommon',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":147,"max":147}
+},{
+    "_id":"ilire_occultist_6",
+    "origin":"Nothos",
+    "sex":"Man",
+    "mastery":"strength",
+    "level":6,
+    "experience":0,
+    "inventory":[],
+    "name":"Ilire Occultist",
+    "description":"Northren Occultist of Ilios, Ancient of the Sun",
+    "constitution":21,
+    "strength":33,
+    "agility":16,
+    "achre":10,
+    "caeren":21,
+    "kyosir":10,
+    "weaponOne":{
+        name: "Sunshear",
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: "Sunshatter",
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: "Sevashyr Greatbow",
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Heater',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Fang Helm",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Fang Armor",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Fang Greaves",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: "Fang Ring",
+        rarity: 'Rare',
+    },"ringTwo":{
+        name: "Fang Ring",
+        rarity: 'Rare',
+    },"amulet":{
+        name: "Fang Amulet",
+        rarity: 'Rare',
+    },"trinket":    {
+        name: "Fang Trinket",
+        rarity: 'Rare',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":139,"max":139}
+},{
+    "_id":"kyngian_shaman_6",
+    "origin":"Quor'eite",
+    "sex":"Man",
+    "mastery":"agility",
+    "level":6,
+    "experience":0,
+    "inventory":[],
+    "name":"Kyn'gian Shaman",
+    "description":"Southron Shaman of Old Quor'eia",
+    "constitution":22,
+    "strength":13,
+    "agility":31,
+    "achre":20,
+    "caeren":16,
+    "kyosir":18,
+    "weaponOne":{
+        name: 'Longbow',
+        rarity: 'Rare',
+    },"weaponTwo":{
+        name: 'Spear',
+        rarity: 'Rare',
+    },"weaponThree":{
+        name: "Kynshear",
+        rarity: 'Rare',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Rare',
+    },"helmet":{
+        name: "Marauder's Helm",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Marauder's Armor",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Marauder's Greaves",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: 'Achreon Ring',
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: "Quor'eite Ring",
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: "Marauder's Amulet",
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: "Marauder's Trinket",
+        rarity: 'Uncommon',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":279,"max":279}
+},{
+    "_id":"kyrisian_6",
+    "origin":"Notheo",
+    "sex":"Woman",
+    "mastery":"constitution",
+    "level":6,
+    "experience":0,
+    "inventory":[],
+    "name":"Kyrisian Occultist",
+    "description":"Occultist Adherent to Kyrisos, Ancient of Gold. Care with interactions.",
+    "constitution":25,
+    "strength":10,
+    "agility":14,
+    "achre":14,
+    "caeren":16,
+    "kyosir":19,
+    "weaponOne":{
+        name: "Blessed Dagger",
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: "Cursed Dagger",
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: 'Shrenari',
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Li'kyr Hood",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Li'kyr Robes",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Li'kyr Pants",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: "Kyrison Ring",
+        rarity: 'Rare',
+    },"ringTwo":{
+        name: "Kyrison Ring",
+        rarity: 'Rare',
+    },"amulet":{
+        name: "Kyrison Amulet",
+        rarity: 'Rare',
+    },"trinket":    {
+        name: "Kyrison Trinket",
+        rarity: 'Rare',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":147,"max":147}
+},{
     "_id":"li'ivigion_6",
     "origin":"Li'ivi",
     "sex":"Man",
@@ -2909,6 +3935,60 @@ export const Asceans: any[] = [
         rarity: 'Uncommon',
     },"trinket":    {
         name: "Dae Trinket",
+        rarity: 'Uncommon',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":115,"max":115}
+},{
+    "_id":"ma'ier_occultist_6",
+    "origin":"Fyers",
+    "sex":"Man",
+    "mastery":"constitution",
+    "level":6,
+    "experience":0,
+    "inventory":[],
+    "name":"Ma'ier Occultist",
+    "description":"Southron Occultist of Ma'anre, Ancient of the Moon",
+    "constitution":19,
+    "strength":12,
+    "agility":22,
+    "achre":21,
+    "caeren":19,
+    "kyosir":12,
+    "weaponOne":{
+        name: "Shotel",
+        rarity: 'Rare',
+    },"weaponTwo":{
+        name: "Slivermoon",
+        rarity: 'Rare',
+    },"weaponThree":{
+        name: 'Moontear',
+        rarity: 'Rare',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Rare',
+    },"helmet":{
+        name: "Occult Helm",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Occult Armor",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Occult Greaves",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: "Occult Ring",
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: "Occult Ring",
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: "Occult Amulet",
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: "Occult Trinket",
         rarity: 'Uncommon',
     },
     "faith":"adherent",
@@ -3077,6 +4157,114 @@ export const Asceans: any[] = [
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
+},{
+    "_id":"mavrosin_occultist_6",
+    "origin":"Nothos",
+    "sex":"Man",
+    "mastery":"strength",
+    "level":6,
+    "experience":0,
+    "inventory":[],
+    "name":"Mavrosin Occultist",
+    "description":"Cultist of Mavros Ilios. Adherence to the true Sun",
+    "constitution":22,
+    "strength":25,
+    "agility":18,
+    "achre":10,
+    "caeren":16,
+    "kyosir":16,
+    "weaponOne":{
+        name: "Sunshatter",
+        rarity: 'Rare',
+    },"weaponTwo":{
+        name: 'Sunshear',
+        rarity: 'Rare',
+    },"weaponThree":{
+        name: "Sevashyr Greatbow",
+        rarity: 'Rare',
+    },"shield":{
+        name: 'Shaorahi',
+        rarity: 'Rare',
+    },"helmet":{
+        name: "Soverain Helm",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Soverain Cuirass",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Soverain Greaves",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: 'Soverain Ring',
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: 'Soverain Ring',
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: 'Ilian Amulet',
+        rarity: 'Rare',
+    },"trinket":    {
+        name: 'Ilian Trinket',
+        rarity: 'Rare',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":36,"max":36}
+},{
+    "_id":"northren_wanderer_6",
+    "origin":"Nothos",
+    "sex":"Man",
+    "mastery":"constitution",
+    "level":6,
+    "experience":0,
+    "inventory":[],
+    "name":"Northren Wanderer",
+    "description":"Dispossessed Warrior from the Northren Wars",
+    "constitution":28,
+    "strength":10,
+    "agility":10,
+    "achre":22,
+    "caeren":20,
+    "kyosir":20,
+    "weaponOne":{
+        name: "Quor'eite Crush",
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: 'Wildstrike',
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: 'Caeren Barrage',
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Pavise',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Soverain Helm",
+        rarity: 'Uncommon',
+    },"chest":{
+        name: "Soverain Cuirass",
+        rarity: 'Uncommon',
+    },"legs":{
+        name: "Soverain Greaves",
+        rarity: 'Uncommon',
+    },"ringOne":{
+        name: 'Soverain Ring',
+        rarity: 'Rare',
+    },"ringTwo":{
+        name: 'Soverain Ring',
+        rarity: 'Rare',
+    },"amulet":{
+        name: 'Achreon Amulet',
+        rarity: 'Rare',
+    },"trinket":    {
+        name: "Quor'eite Trinker",
+        rarity: 'Rare',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":39,"max":39}
 },{
     "_id":"nyren_6",
     "origin":"Li'ivi",
@@ -3252,7 +4440,7 @@ export const Asceans: any[] = [
     "constitution":20,
     "strength":10,
     "agility":22,
-    "achre":28,
+    "achre":32,
     "caeren":14,
     "kyosir":18,
     "weaponOne":{
@@ -3347,6 +4535,114 @@ export const Asceans: any[] = [
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
+},{
+    "_id":"tshaeral_shaman_6",
+    "origin":"Sedyreal",
+    "sex":"Man",
+    "mastery":"agility",
+    "level":6,
+    "experience":0,
+    "inventory":[],
+    "name":"Tshaeral Shaman",
+    "description":"Southron Shaman of Sedyrus, Ancient of Iron",
+    "constitution":20,
+    "strength":23,
+    "agility":20,
+    "achre":13,
+    "caeren":16,
+    "kyosir":13,
+    "weaponOne":{
+        name: "Hand Axe",
+        rarity: 'Uncommon',
+    },"weaponTwo":{
+        name: "Hand Axe",
+        rarity: 'Uncommon',
+    },"weaponThree":{
+        name: "Longbow",
+        rarity: 'Uncommon',
+    },"shield":{
+        name: 'Heater',
+        rarity: 'Uncommon',
+    },"helmet":{
+        name: "Marauder's Helm",
+        rarity: 'Rare',
+    },"chest":{
+        name: "Marauder's Armor",
+        rarity: 'Rare',
+    },"legs":{
+        name: "Marauder's Greaves",
+        rarity: 'Rare',
+    },"ringOne":{
+        name: "Marauder's Ring",
+        rarity: 'Uncommon',
+    },"ringTwo":{
+        name: "Marauder's Ring",
+        rarity: 'Uncommon',
+    },"amulet":{
+        name: "Marauder's Amulet",
+        rarity: 'Uncommon',
+    },"trinket":    {
+        name: "Marauder's Trinket",
+        rarity: 'Uncommon',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":115,"max":115}
+},{
+    "_id":"achreon_druid_8",
+    "origin":"Notheo",
+    "sex":"Man",
+    "mastery":"achre",
+    "level":8,
+    "experience":0,
+    "inventory":[],
+    "name":"Achreon Druid",
+    "description":"Northren Druid of the Wild",
+    "constitution":21,
+    "strength":18,
+    "agility":24,
+    "achre":36,
+    "caeren":14,
+    "kyosir":14,
+    "weaponOne":{
+        name: "Wildstrike",
+        rarity: 'Rare',
+    },"weaponTwo":{
+        name: "Wildstrike",
+        rarity: 'Rare',
+    },"weaponThree":{
+        name: 'Achestra',
+        rarity: 'Rare',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Rare',
+    },"helmet":{
+        name: "Achreon Helm",
+        rarity: 'Rare',
+    },"chest":{
+        name: "Achreon Armor",
+        rarity: 'Rare',
+    },"legs":{
+        name: "Achreon Greaves",
+        rarity: 'Rare',
+    },"ringOne":{
+        name: "Achreon Ring",
+        rarity: 'Rare',
+    },"ringTwo":{
+        name: "Quor'eite Ring",
+        rarity: 'Rare',
+    },"amulet":{
+        name: "Achreon Amulet",
+        rarity: 'Rare',
+    },"trinket":    {
+        name: "Achreon Trinket",
+        rarity: 'Rare',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":147,"max":147}
 },{
     "_id":"cambiren_druid_8",
     "origin":"Nothos",
@@ -3780,6 +5076,60 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":399,"max":399}
 },{
+    "_id":"fyers_occultist_8",
+    "origin":"Fyers",
+    "sex":"Man",
+    "mastery":"achre",
+    "level":8,
+    "experience":0,
+    "inventory":[],
+    "name":"Fyers Occultist",
+    "description":"Southron Occultist of Fyer",
+    "constitution":22,
+    "strength":10,
+    "agility":17,
+    "achre":33,
+    "caeren":26,
+    "kyosir":15,
+    "weaponOne":{
+        name: "Lava Spit",
+        rarity: 'Rare',
+    },"weaponTwo":{
+        name: "Lava Spit",
+        rarity: 'Rare',
+    },"weaponThree":{
+        name: 'Achestra',
+        rarity: 'Rare',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Rare',
+    },"helmet":{
+        name: "Fyers Hood",
+        rarity: 'Rare',
+    },"chest":{
+        name: "Fyers Robes",
+        rarity: 'Rare',
+    },"legs":{
+        name: "Fyers Pants",
+        rarity: 'Rare',
+    },"ringOne":{
+        name: "Fyers Ring",
+        rarity: 'Rare',
+    },"ringTwo":{
+        name: "Fyers Ring",
+        rarity: 'Rare',
+    },"amulet":{
+        name: "Fyers Amulet",
+        rarity: 'Rare',
+    },"trinket":    {
+        name: "Fyers Trinket",
+        rarity: 'Rare',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":147,"max":147}
+},{
     "_id":"garris_ashenus_8",
     "origin":"Fyers",
     "sex":"Man",
@@ -3790,11 +5140,11 @@ export const Asceans: any[] = [
     "name":"Garris Ashenus",
     "description":"Merchant-Knight of the Firelands",
     "constitution":25,
-    "strength":12,
-    "agility":32,
+    "strength":14,
+    "agility":35,
     "achre":18,
-    "caeren":11,
-    "kyosir":12,
+    "caeren":12,
+    "kyosir":18,
     "weaponOne":{
         name: "Shotel",
         rarity: 'Epic',
@@ -3845,7 +5195,7 @@ export const Asceans: any[] = [
     "description":"Achreon Druid of the Eye",
     "constitution":26,
     "strength":14,
-    "agility":31,
+    "agility":35,
     "achre":22,
     "caeren":12,
     "kyosir":22,
@@ -3900,7 +5250,7 @@ export const Asceans: any[] = [
     "constitution":24,
     "strength":10,
     "agility":22,
-    "achre":32,
+    "achre":36,
     "caeren":10,
     "kyosir":23,
     "weaponOne":{
@@ -3995,6 +5345,60 @@ export const Asceans: any[] = [
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":279,"max":279}
+},{
+    "_id":"kyrisian_8",
+    "origin":"Notheo",
+    "sex":"Woman",
+    "mastery":"constitution",
+    "level":8,
+    "experience":0,
+    "inventory":[],
+    "name":"Kyrisian Occultist",
+    "description":"Occultist Adherent to Kyrisos, Ancient of Gold. Care with interactions.",
+    "constitution":33,
+    "strength":10,
+    "agility":16,
+    "achre":16,
+    "caeren":18,
+    "kyosir":23,
+    "weaponOne":{
+        name: "Blessed Dagger",
+        rarity: 'Rare',
+    },"weaponTwo":{
+        name: "Cursed Dagger",
+        rarity: 'Rare',
+    },"weaponThree":{
+        name: 'Shrenari',
+        rarity: 'Rare',
+    },"shield":{
+        name: 'Parma',
+        rarity: 'Rare',
+    },"helmet":{
+        name: "Li'kyr Hood",
+        rarity: 'Rare',
+    },"chest":{
+        name: "Li'kyr Robes",
+        rarity: 'Rare',
+    },"legs":{
+        name: "Li'kyr Pants",
+        rarity: 'Rare',
+    },"ringOne":{
+        name: "Kyrison Ring",
+        rarity: 'Rare',
+    },"ringTwo":{
+        name: "Kyrison Ring",
+        rarity: 'Rare',
+    },"amulet":{
+        name: "Kyrison Amulet",
+        rarity: 'Rare',
+    },"trinket":    {
+        name: "Kyrison Trinket",
+        rarity: 'Rare',
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":147,"max":147}
 },{
     "_id":"mirio_8",
     "origin":"Li'ivi",
@@ -4329,10 +5733,10 @@ export const Asceans: any[] = [
     "inventory":[],
     "name":"Sera Lorian",
     "description":"Daestra in the Outskirts of Lor",
-    "constitution":24,
+    "constitution":25,
     "strength":10,
     "agility":10,
-    "achre":30,
+    "achre":33,
     "caeren":27,
     "kyosir":20,
     "weaponOne":{
@@ -4437,10 +5841,10 @@ export const Asceans: any[] = [
     "inventory":[],
     "name":"Synaethi Spiras",
     "description":"Ghost-Child of Theogeni Spiras",
-    "constitution":23,
-    "strength":10,
-    "agility":17,
-    "achre":33,
+    "constitution":25,
+    "strength":12,
+    "agility":18,
+    "achre":35,
     "caeren":22,
     "kyosir":16,
     "weaponOne":{
@@ -4493,9 +5897,9 @@ export const Asceans: any[] = [
     "description":"Eldest Ashfyre Brother",
     "constitution":22,
     "strength":10,
-    "agility":11,
+    "agility":14,
     "achre":20,
-    "caeren":25,
+    "caeren":26,
     "kyosir":24,
     "weaponOne":{
         name: 'Lava Spit',
@@ -4600,11 +6004,11 @@ export const Asceans: any[] = [
     "name":"Vincere",
     "description":"Arbiter of the Ley",
     "constitution":24,
-    "strength":11,
+    "strength":14,
     "agility":24,
-    "achre":30,
-    "caeren":12,
-    "kyosir":12,
+    "achre":32,
+    "caeren":16,
+    "kyosir":16,
     "weaponOne":{
         name: "Quor'eite Crush",
         rarity: 'Epic',

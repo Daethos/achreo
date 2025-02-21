@@ -9,16 +9,16 @@ const DURATION = {BOTTOM: 750, STANDARD: 1500, ONE: 1000, THREE: 3000, FIVE: 500
 export const TALENT_COST = {
     "-30": -45,
     "-15": -30,
-    0: -15,
-    15: 0,
-    30: 15,
-    45: 30,
-    60: 45
+    "0": -15,
+    "15": 0,
+    "30": 15,
+    "45": 30,
+    "60": 45,
 };
 export const TALENT_COOLDOWN = {
-    6000: 2000,
-    10000: 6000,
-    15000: 10000,
+    "6000": 2000,
+    "10000": 6000,
+    "15000": 10000,
 };
 export const PLAYER = {
     ACTION_WEIGHT: {
@@ -97,9 +97,9 @@ export const PLAYER = {
 
         // Special Cost
         INVOKE: -COST.MID,
-        CONSUME: 0,
-
+        
         // Low Cost - 15
+        CONSUME: COST.LOW,
         ARC: COST.LOW,
         BLINK: COST.LOW,
         CONFUSE: COST.LOW,

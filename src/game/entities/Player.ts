@@ -5,7 +5,7 @@ import HealthBar from "../phaser/HealthBar";
 import PlayerMachine from '../phaser/PlayerMachine';
 import { EventBus } from "../EventBus";
 import CastingBar from "../phaser/CastingBar";
-import { PHYSICAL_ACTIONS, PHYSICAL_EVASIONS, PLAYER } from "../../utility/player";
+import { PHYSICAL_ACTIONS, PHYSICAL_EVASIONS, PLAYER, TALENT_COOLDOWN, TALENT_COST } from "../../utility/player";
 import Beam from "../matter/Beam";
 import Enemy from './Enemy';
 import Ascean from "../../models/ascean";
@@ -15,6 +15,7 @@ import { Compiler } from "../../utility/ascean";
 import { ActionButton } from "../phaser/ActionButtons";
 import { Combat } from "../../stores/combat";
 import { BROADCAST_DEATH, COMPUTER_BROADCAST } from "../../utility/enemy";
+import AoE from "../phaser/AoE";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const DURATION = {
@@ -598,6 +599,25 @@ export default class Player extends Entity {
         this.resistCombatText = this.scene.showCombatText('Resisted', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.resistCombatText = undefined);
     };
 
+    checkTalentCost = (type: string, cost: number) => {
+        const grace = this.scene.hud.talents.talents[type as keyof typeof this.scene.hud.talents.talents].efficient ? TALENT_COST[cost as unknown as keyof typeof TALENT_COST] : cost;
+        this.scene.combatManager.useGrace(grace);
+    };
+
+    checkTalentCooldown = (type: string, cooldown: number) => {
+        const limit = this.scene.hud.talents.talents[type as keyof typeof this.scene.hud.talents.talents].efficient ? TALENT_COOLDOWN[cooldown as unknown as keyof typeof TALENT_COOLDOWN] : cooldown;
+        this.setTimeEvent(`${type}Cooldown`, limit);
+    };
+
+    checkTalentEnhanced = (type: string): boolean => {
+        return this.scene.hud.talents.talents[type as keyof typeof this.scene.hud.talents.talents].enhanced;
+    };
+
+    damageDistance = (enemy: Enemy) => {
+        const distance = enemy.position.subtract(this.position).length();
+        this.playerMachine.chiomism(enemy.enemyID, distance);
+    };
+
     leap = () => {
         this.frameCount = 0;
         this.isLeaping = true;
@@ -627,11 +647,12 @@ export default class Player extends Entity {
             },
             onComplete: () => { 
                 screenShake(this.scene);
-                this.scene.combatManager.useGrace(PLAYER.STAMINA.LEAP);
                 this.isLeaping = false; 
+                const special = this.checkTalentEnhanced(States.LEAP);
                 if (this.touching.length > 0) {
                     for (let i = 0; i < this.touching.length; ++i) {
                         this.scene.combatManager.playerMelee(this.touching[i].enemyID, 'leap');
+                        if (special) this.scene.combatManager.stun(this.touching[i].enemyID);
                     };
                 };
             },
@@ -668,6 +689,7 @@ export default class Player extends Entity {
                 this.flickerCarenic(600);  
             },
             onComplete: () => {
+                const special = this.checkTalentEnhanced(States.RUSH);
                 if (this.rushedEnemies.length > 0) {
                     for (let i = 0; i < this.rushedEnemies.length; ++i) {
                         const enemy = this.rushedEnemies[i];
@@ -681,6 +703,7 @@ export default class Player extends Entity {
                         if (enemy.isMultifaring) enemy.multifarious(this.playerID);
                         if (enemy.isMystifying) enemy.mystify(this.playerID);    
                         this.scene.combatManager.playerMelee(enemy.enemyID, 'rush');
+                        if (special) this.scene.combatManager.slow(enemy.enemyID);
                     };
                 } else if (this.touching.length > 0) {
                     for (let i = 0; i < this.touching.length; ++i) {
@@ -695,6 +718,7 @@ export default class Player extends Entity {
                         if (enemy.isMultifaring) enemy.multifarious(this.playerID);
                         if (enemy.isMystifying) enemy.mystify(this.playerID);    
                         this.scene.combatManager.playerMelee(enemy.enemyID, 'rush');
+                        if (special) this.scene.combatManager.slow(enemy.enemyID);
                     };
                 };
                 this.isRushing = false;
@@ -1276,9 +1300,25 @@ export default class Player extends Entity {
         if (this.particleEffect) {
             const action = this.particleEffect.action;
             this.killParticle();
-            if (action === 'hook') {
+            if (action === States.ACHIRE) {
+                if (this.checkTalentEnhanced(States.ACHIRE)) {
+                    this.scene.combatManager.stun(this.attackedTarget.enemyID);
+                };
+            };
+            if (action === States.HOOK) {
                 this.hook(this.attackedTarget, 1500);
-                // return;
+                if (this.checkTalentEnhanced(States.HOOK)) {
+                    this.damageDistance(this.attackedTarget);
+                };
+            };
+            if (action === States.QUOR) {
+                if (this.checkTalentEnhanced(States.QUOR)) {
+                    if (this.isComputer) {
+                        this.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, false, this.attackedTarget);    
+                    } else {
+                        this.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, true);
+                    };
+                };
             };
             if (this.attackedTarget?.health <= 0) return;
             if (!this.isAstrifying) {

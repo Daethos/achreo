@@ -25,6 +25,7 @@ import { FAITH_RARITY } from '../utility/combatTypes';
 import Talents from '../utility/talents';
 import { ACTION_ORIGIN } from '../utility/actions';
 import { svg } from '../utility/settings';
+import { TALENT_COOLDOWN, TALENT_COST } from '../utility/player';
 import QuestManager from '../utility/quests';
 const AsceanImageCard = lazy(async () => await import('../components/AsceanImageCard'));
 const ExperienceBar = lazy(async () => await import('./ExperienceBar'));
@@ -36,7 +37,21 @@ const ItemModal = lazy(async () => await import('../components/ItemModal'));
 const LevelUp = lazy(async () => await import('./LevelUp'));
 const SettingSetter = lazy(async () => await import('../utility/settings'));
 const TutorialOverlay = lazy(async () => await import('../utility/tutorial'));
+const COST = {
+    "-30": "-45 Grace",
+    "-15": "-30 Grace",
+    "0": "-15 Grace",
+    "15": "0 Grace",
+    "30": "15 Grace",
+    "45": "30 Grace",
+    "60": "45 Grace",
+};
+const COOLDOWN = {
+    "6s": "2s",
+    "10s": "6s",
+    "15s": "10s",
 
+};
 export const viewCycleMap = {
     Character: 'Inventory',
     Inventory: 'Settings',
@@ -198,7 +213,8 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         let newTalents = JSON.parse(JSON.stringify(talents()));
         console.log(newTalents.talents[talent as keyof typeof newTalents.talents], 'Talent?');
         (newTalents.talents[talent as keyof typeof newTalents.talents] as any)[type] = true;
-        newTalents.points.spent += 1;    
+        newTalents.points.spent += 1;
+        EventBus.emit('update-talents', newTalents);
         console.log(newTalents.talents[talent as keyof typeof newTalents.talents], newTalents.points, "New Talent and Points?");
         setShowTalentConfirm({ show: false, type: '' });
     };
@@ -326,20 +342,24 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 return <div class='creature-heading'>
                     <h1>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</h1>
                     <h1 style={{color:'#fdf6d8'}}>{talents().points.spent} / {talents().points.total}</h1>
-                    <span style={font('0.5em', 'gold')}>This feature is not currently functional.</span>
-                    <For each={specials()}>{(special, index) => {
+                    <For each={specials()}>{(special) => {
                         const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
+                        const efficient = (talents().talents[special.toLowerCase() as keyof typeof talents] as any).efficient;
+                        const enhanced = (talents().talents[special.toLowerCase() as keyof typeof talents] as any).enhanced;
+
+                        const cost = efficient ? COST[spec?.cost.split(" Grace")[0] as keyof typeof COST] : spec?.cost;
+                        const cooldown = efficient ? COOLDOWN[spec?.cooldown as keyof typeof COOLDOWN] : spec?.cooldown;
                         return <div class='border row juice' onClick={() => setShowTalent({show:true,talent:spec})} style={{ margin: '1em auto', 'border-color': masteryColor(ascean().mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
                             <div style={{ padding: '1em' }}>
                             <p style={{ color: 'gold', 'font-size': '1.25em', margin: '3%' }}>
                                 {svg(spec?.svg)} {special} <br />
                             </p>
                             <p style={{ 'color':'#fdf6d8', 'font-size':'1em' }}>
-                                {spec?.description}
+                                {spec?.description} <span style={{ color: 'gold' }}>{enhanced ? spec?.talent.split(".")[1] : ""}</span>
                             </p>
-                            <p  style={{ color: 'aqua' }}>
+                            <p style={{ color: 'aqua' }}>
                                 {spec?.time} {spec?.special} <br />
-                                {spec?.cost}. {spec?.cooldown} Cooldown <br />
+                                <span style={{ color: efficient ? 'gold' : 'aqua' }}>{cost}. {cooldown} Cooldown</span> <br />
                             </p>
                             </div>
                         </div>
@@ -999,7 +1019,6 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         <button class='highlight' style={{ bottom: '0', right: '0', 'color': 'green' }} onClick={() => addTalent(showTalent()?.talent.name.toLowerCase(), showTalentConfirm().type)}>
                             <p style={font('1em')}>Confirm</p>
                         </button>
-
                         <button class='highlight' style={{ bottom: '0', right: '0', 'color': 'red' }} onClick={() => setShowTalentConfirm({ show: false, type: '' })}>
                             <p style={font('1em')}>Cancel</p>
                         </button>

@@ -7,7 +7,7 @@ import { EventBus } from "../game/EventBus";
 import { GameState } from '../stores/game';
 import { Compiler, LevelSheet } from '../utility/ascean';
 import { usePhaserEvent } from '../utility/hooks';
-import { consumePrayer, instantActionCompiler, prayerEffectTick, prayerRemoveTick, statusEffectCheck, weaponActionCompiler } from '../utility/combat';
+import { consumePrayer, instantActionCompiler, prayerEffectTick, prayerRemoveTick, statusEffectCheck, talentPrayerCompiler, weaponActionCompiler } from '../utility/combat';
 import { screenShake } from '../game/phaser/ScreenShake';
 import { Reputation } from '../utility/player';
 import { Puff } from 'solid-spinner';
@@ -120,6 +120,13 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     res = { ...combat(), ...consume };
                     playerWin = res.playerWin;
                     EventBus.emit('blend-combat', { newComputerHealth: res.newComputerHealth,newPlayerHealth: res.newPlayerHealth, playerEffects: res.playerEffects, playerWin });
+                    break;
+                case 'Talent Prayer':
+                    if (combat().computer === undefined || newComputerHealth === 0) return;
+                    let talent = talentPrayerCompiler(combat(), data) as Combat;
+                    playerWin = talent.playerWin;
+                    res = { ...combat(), ...talent };
+                    EventBus.emit('blend-combat', talent);
                     break;
                 case 'Prayer': // Consuming Prayer
                     let prayer = { ...combat(), playerEffects: data };

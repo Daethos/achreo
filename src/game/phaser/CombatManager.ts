@@ -7,6 +7,7 @@ import StatusEffect, { PRAYERS } from '../../utility/prayer';
 import { COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from '../../utility/enemy';
 import { computerCombatCompiler } from '../../utility/computerCombat';
 import Party from '../entities/PartyComputer';
+import { States } from './StateMachine';
 
 export class CombatManager {
     combatMachine: CombatMachine;
@@ -189,6 +190,7 @@ export class CombatManager {
                 const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 1);
                 const health = enemy.health - damage;
                 this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
+                enemy.specialFear = this.context.player.checkTalentEnhanced(States.FEAR);
             } else { // Party Combat
                 const party = this.context.party.find((e: Party) => e.enemyID === origin);
                 if (party) {
@@ -229,7 +231,7 @@ export class CombatManager {
             };
         };
     };
-    chiomic = (id: string): void => {
+    chiomic = (id: string, origin: string): void => {
         if (!id) return;
         if (id === this.context.player.playerID) {
             this.useGrace(10);
@@ -240,6 +242,9 @@ export class CombatManager {
         if (enemy) {
             enemy.count.confused++;
             enemy.isConfused = true;
+            if (origin === this.context.player.playerID) {
+                enemy.specialConfuse = this.context.player.checkTalentEnhanced(States.CONFUSE);
+            };
             return;
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
@@ -248,7 +253,7 @@ export class CombatManager {
             party.isConfused = true;
         };
     };
-    confuse = (id: string): void => {
+    confuse = (id: string, special: boolean = false): void => {
         if (!id) return;
         if (id === this.context.player.playerID) {
             this.useGrace(10);
@@ -259,6 +264,7 @@ export class CombatManager {
         if (enemy) {
             enemy.count.confused++;
             enemy.isConfused = true;
+            enemy.specialConfuse = special;
             return;
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
@@ -267,7 +273,7 @@ export class CombatManager {
             party.isConfused = true;
         };
     };
-    fear = (id: string): void => {
+    fear = (id: string, special: boolean = false): void => {
         if (!id) return;
         if (id === this.context.player.playerID) {
             this.useGrace(10);
@@ -278,6 +284,7 @@ export class CombatManager {
         if (enemy) {
             enemy.count.feared++;
             enemy.isFeared = true;
+            enemy.specialFear = special;
             return;
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
@@ -361,7 +368,7 @@ export class CombatManager {
             party.isParalyzed = true;
         };
     };
-    polymorph = (id: string): void => {
+    polymorph = (id: string, special: boolean = false): void => {
         if (!id) return;
         if (id === this.context.player.playerID) {
             this.context.player.isPolymorphed = true;
@@ -371,6 +378,7 @@ export class CombatManager {
         if (enemy) {
             enemy.count.polymorphed += 1;
             enemy.isPolymorphed = true;
+            enemy.specialPolymorph = special;
             return;
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
@@ -420,7 +428,7 @@ export class CombatManager {
         enemy.isRooted = true;
         enemy.count.rooted += 1;
     };
-    scream = (id: string): void => {
+    scream = (id: string, origin: string): void => {
         if (!id) return;
         if (id === this.context.player.playerID) {
             this.useGrace(10);
@@ -431,6 +439,9 @@ export class CombatManager {
         if (enemy) {
             enemy.isFeared = true;
             enemy.count.feared++;
+            if (origin === this.context.player.playerID) {
+                enemy.specialFear = this.context.player.checkTalentEnhanced(States.FEAR);
+            };
             return;
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);

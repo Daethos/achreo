@@ -22,6 +22,7 @@ const ACTIONS: { [key: string]: ActionHandler } = {
     'Instant': (data: string) => Dispatcher.instant(data),
     'Consume': (data: any[]) => Dispatcher.prayer(data),
     'Chiomic': (data: number) => Dispatcher.chiomic(data),
+    'Prayer': (data: string) => Dispatcher.talentPrayer(data),
     'Sacrifice': (data: number) => Dispatcher.sacrifice(data),
     'Suture': (data: number) => Dispatcher.suture(data),
     'Enemy Chiomic': (data: number) => Dispatcher.enemyChiomic(data),

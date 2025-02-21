@@ -31,6 +31,7 @@ export const ACTION_TYPES = {
 export const ATTACK_TYPES = { MAGIC: "Magic", PHYSICAL: "Physical" };
 export const DAMAGE = {
     CUMULATIVE: 0.03,
+    CUMULATIVE_TALENTED: 0.06,
     CAERENEIC_NEG: 1.25,
     CAERENEIC_POS: 1.15,
     STALWART: 0.85,

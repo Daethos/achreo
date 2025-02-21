@@ -104,6 +104,10 @@ export default class Enemy extends Entity {
     killingBlow: string = '';
     hookTime: number = 0;
     spellName: string = '';
+    specialPolymorph: boolean = false;
+    specialConfuse: boolean = false;
+    confuseCount: number = 0;
+    specialFear: boolean = false;
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: "enemy", ascean: undefined, health: 1 }); 
@@ -472,18 +476,31 @@ export default class Enemy extends Entity {
         const { damage, origin } = e;
         this.health = Math.max(this.health - damage, 0);
         this.updateHealthBar(this.health);
-            this.scrollingCombatText = this.scene.showCombatText(`${Math.round(damage)}`, 1500, 'damage', false, false, () => this.scrollingCombatText = undefined);
+            this.scrollingCombatText = this.scene.showCombatText(`${Math.round(damage)}`, 1500, 'bone', false, false, () => this.scrollingCombatText = undefined);
         if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
         if (this.isFeared) {
-            const chance = Math.random() < 0.1 + this.fearCount;
+            const strength = this.specialFear ? 0.05 : 0.1;
+            const chance = Math.random() < strength + this.fearCount;
             if (chance) {
                 this.specialCombatText = this.scene.showCombatText('Fear Broken', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.specialCombatText = undefined);
                 this.isFeared = false;
             } else {
-                this.fearCount += 0.1;
+                this.fearCount += strength;
             };
         };
-        if (this.isConfused) this.isConfused = false;
+        if (this.isConfused) {
+            if (!this.specialConfuse) {
+                this.isConfused = false;
+            } else {
+                const chance = Math.random() < 0.1 + this.confuseCount;
+                if (chance) {
+                    this.specialCombatText = this.scene.showCombatText('Confuse Broken', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.specialCombatText = undefined);
+                    this.isConfused = false;
+                } else {
+                    this.confuseCount += 0.1;
+                };
+            };
+        };
         if (this.isPolymorphed) this.isPolymorphed = false;
         if (this.isMalicing) this.malice(origin);
         if (this.isMending) this.mend(origin);
@@ -599,7 +616,7 @@ export default class Enemy extends Entity {
         if (this.health > newComputerHealth) {
             let damage: number | string = Math.round(this.health - newComputerHealth);
             // damage = e.computerEnemyCriticalSuccess ? `${damage} (Critical)` : e.computerEnemyGlancingBlow ? `${damage} (Glancing)` : damage;
-            this.scrollingCombatText = this.scene.showCombatText(`${damage}`, 1500, 'damage', e.computerEnemyCriticalSuccess, false, () => this.scrollingCombatText = undefined);
+            this.scrollingCombatText = this.scene.showCombatText(`${damage}`, 1500, 'bone', e.computerEnemyCriticalSuccess, false, () => this.scrollingCombatText = undefined);
             if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
             if (this.isFeared) {
                 const chance = Math.random() < 0.1 + this.fearCount;
@@ -667,7 +684,7 @@ export default class Enemy extends Entity {
         if (this.health > newComputerHealth) {
             let damage: number | string = Math.round(this.health - newComputerHealth);
             // damage = criticalSuccess ? `${damage} (Critical)` : glancingBlow ? `${damage} (Glancing)` : damage;
-            this.scrollingCombatText = this.scene.showCombatText(`${damage}`, 1500, 'damage', criticalSuccess, false, () => this.scrollingCombatText = undefined);
+            this.scrollingCombatText = this.scene.showCombatText(`${damage}`, 1500, 'bone', criticalSuccess, false, () => this.scrollingCombatText = undefined);
             if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
             if (this.isFeared) {
                 const chance = Math.random() < 0.1 + this.fearCount;
@@ -3881,17 +3898,19 @@ export default class Enemy extends Entity {
                 } else {   
                     randomDirection();
                     this.specialCombatText = this.scene.showCombatText('...thump', 1000, 'effect', false, false, () => this.specialCombatText = undefined);
-                    if (this.isCurrentTarget && this.health < this.ascean.health.max) {
-                        this.health = (this.health + (this.ascean.health.max * 0.15)) > this.ascean.health.max ? this.ascean.health.max : (this.health + (this.ascean.health.max * 0.15));
-                        if (this.isCurrentTarget) {
-                            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: this.health, id: this.enemyID } });
+                    if (!this.specialPolymorph) {
+                        if (this.isCurrentTarget && this.health < this.ascean.health.max) {
+                            this.health = (this.health + (this.ascean.health.max * 0.15)) > this.ascean.health.max ? this.ascean.health.max : (this.health + (this.ascean.health.max * 0.15));
+                            if (this.isCurrentTarget) {
+                                this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: this.health, id: this.enemyID } });
+                            };
+                        } else if (this.health < this.ascean.health.max) {
+                            this.health = this.health + (this.ascean.health.max * 0.15);
+                            this.updateHealthBar(this.health);
                         };
-                    } else if (this.health < this.ascean.health.max) {
-                        this.health = this.health + (this.ascean.health.max * 0.15);
-                        this.updateHealthBar(this.health);
+                        this.computerCombatSheet.newComputerHealth = this.health;
+                        EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
                     };
-                    this.computerCombatSheet.newComputerHealth = this.health;
-                    EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
                 };
             },
             callbackScope: this,

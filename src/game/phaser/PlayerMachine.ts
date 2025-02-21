@@ -883,13 +883,13 @@ export default class PlayerMachine {
     onAchireExit = () => {
         if (this.player.castingSuccess === true) { 
             this.player.particleEffect =  this.scene.particleManager.addEffect('achire', this.player, 'achire', true);
-            if (!this.player.isComputer) this.player.setTimeEvent('achireCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.ACHIRE, PLAYER.COOLDOWNS.SHORT);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `Your Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0]?.name}.`
             });
             this.player.castingSuccess = false;
             this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.ACHIRE);
+            this.player.checkTalentCost(States.ACHIRE, PLAYER.STAMINA.ACHIRE);
             screenShake(this.scene, 90);
         };
         this.player.isCasting = false;
@@ -922,15 +922,15 @@ export default class PlayerMachine {
             if (this.player.isComputer) {
                 this.player.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, false, this.player.currentTarget);    
             } else {
-                this.player.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, true);    
-                this.player.setTimeEvent('astraveCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
+                this.player.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, true);
+                this.player.checkTalentCooldown(States.ASTRAVE, PLAYER.COOLDOWNS.MODERATE);
             };
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You unearth the winds and lightning from the land of hush and tendril.`
             });
             this.player.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.ASTRAVE);    
+            this.player.checkTalentCost(States.ASTRAVE, PLAYER.STAMINA.ASTRAVE);
         };
         this.player.isCasting = false;
         this.player.castbar.reset();
@@ -979,12 +979,13 @@ export default class PlayerMachine {
                 yoyo: true
             });
             screenShake(this.scene, 120, 0.005);
-            if (!this.player.isComputer) this.player.setTimeEvent('arcCooldown', PLAYER.COOLDOWNS.SHORT);  
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.ARC, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.ARC);
+            this.player.checkTalentCost(States.ARC, PLAYER.STAMINA.ARC);
             if (this.player.touching.length > 0) {
                 for (let i = 0; i < this.player.touching.length; ++i) {
                     this.scene.combatManager.playerMelee(this.player.touching[i].enemyID, 'arc');
+                    if (this.player.checkTalentEnhanced(States.ARC)) this.scene.combatManager.stun(this.player.touching[i].enemyID);
                 };
             };
         };
@@ -1015,10 +1016,17 @@ export default class PlayerMachine {
         const clampedY = Phaser.Math.Clamp(this.player.y, mapBounds.minY, mapBounds.maxY);
         this.player.setPosition(clampedX, clampedY);
         if (this.player.moving()) {
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.BLINK);
+            this.player.checkTalentCost(States.BLINK, PLAYER.STAMINA.BLINK);
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.BLINK, PLAYER.COOLDOWNS.SHORT);
             screenShake(this.scene);
+            if (this.player.checkTalentEnhanced(States.BLINK)) {
+                this.player.adjustSpeed(PLAYER.SPEED.SPRINT);
+                this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT / 2, () => {
+                    this.player.isSprinting = false;
+                    this.player.adjustSpeed(-PLAYER.SPEED.SPRINT);
+                }, undefined, this);
+            };
         };
-        if (!this.player.isComputer) this.player.setTimeEvent('blinkCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);
         this.player.flickerCarenic(750); 
     };
     onBlinkUpdate = (_dt: number) => this.player.combatChecker(false);
@@ -1047,16 +1055,15 @@ export default class PlayerMachine {
         if (this.player.castingSuccess === true) {
             this.sacrifice(this.player.spellTarget, 30);
             const chance = Phaser.Math.Between(1, 100);
-            if (chance > 75) {
-                this.scene.combatManager.confuse(this.player.spellTarget);
-            };
+            const ceiling = this.player.checkTalentEnhanced(States.CHIOMISM) ? 50 : 75;
+            if (chance > ceiling) this.scene.combatManager.confuse(this.player.spellTarget, this.player.checkTalentEnhanced(States.CONFUSE));
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You bleed and laugh at ${this.player.spellName} with tendrils of Chiomyr.`
             });
-            if (!this.player.isComputer) this.player.setTimeEvent('chiomismCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.CHIOMISM, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.scene.sound.play('death', { volume: this.scene.hud.settings.volume });
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.CHIOMISM);    
+            this.player.checkTalentCost(States.CHIOMISM, PLAYER.STAMINA.CHIOMISM);
         };
         this.player.isCasting = false;
         this.player.spellTarget = '';
@@ -1087,11 +1094,11 @@ export default class PlayerMachine {
     };
     onConfuseExit = () => {
         if (this.player.castingSuccess === true) {
-            this.scene.combatManager.confuse(this.player.spellTarget);
-            if (!this.player.isComputer) this.player.setTimeEvent('confuseCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+            this.scene.combatManager.confuse(this.player.spellTarget, this.player.checkTalentEnhanced(States.CONFUSE));
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.CONFUSE, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.scene.sound.play('death', { volume: this.scene.hud.settings.volume });
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.CONFUSE);    
+            this.player.checkTalentCost(States.CONFUSE, PLAYER.STAMINA.CONFUSE);
             screenShake(this.scene);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You confuse ${this.player.spellName}, and they stumble around in a daze.`
@@ -1109,7 +1116,8 @@ export default class PlayerMachine {
         if (this.scene.state.playerEffects.length === 0) return;
         this.player.isPraying = true;
         this.scene.sound.play('consume', { volume: this.scene.hud.settings.volume });
-        if (!this.player.isComputer) this.player.setTimeEvent('consumeCooldown', PLAYER.COOLDOWNS.SHORT);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.CONSUME, PLAYER.COOLDOWNS.SHORT);
+        
     };
     onConsumeUpdate = (_dt: number) => {
         this.player.combatChecker(this.player.isPraying);
@@ -1117,12 +1125,15 @@ export default class PlayerMachine {
     onConsumeExit = () => {
         if (this.scene.state.playerEffects.length === 0) return;
         this.scene.combatManager.combatMachine.action({ type: 'Consume', data: this.scene.state.playerEffects[0].id });        
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.CONSUME);
+        this.player.checkTalentCost(States.CONSUME, PLAYER.STAMINA.CONSUME);
+        if (this.player.checkTalentEnhanced(States.CONSUME)) {
+            if (Math.random() > 0.5) this.scene.combatManager.combatMachine.action({ type: 'Instant', data: this.scene.state.playerBlessing });
+        };
     };
 
     onDesperationEnter = () => {
         this.player.specialCombatText = this.scene.showCombatText('Desperation', PLAYER.DURATIONS.HEALING / 2, 'heal', false, true, () => this.player.specialCombatText = undefined);
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.DESPERATION);
+        this.player.checkTalentCost(States.DESPERATION, PLAYER.STAMINA.DESPERATION);
         this.player.flickerCarenic(PLAYER.DURATIONS.HEALING); 
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `Your caeren shrieks like a beacon, and a hush of ${this.scene.state.weapons[0]?.influences?.[0]} soothes your body.`
@@ -1130,9 +1141,9 @@ export default class PlayerMachine {
     };
     onDesperationUpdate = (_dt: number) => this.player.combatChecker(false);
     onDesperationExit = () => {
-        const desperationCooldown = this.player.inCombat ? PLAYER.COOLDOWNS.LONG : PLAYER.COOLDOWNS.SHORT;
-        if (!this.player.isComputer) this.player.setTimeEvent('desperationCooldown', desperationCooldown);
-        this.healCheck(50);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.DESPERATION, PLAYER.COOLDOWNS.LONG);
+        const power = this.player.checkTalentEnhanced(States.DESPERATION) ? 100 : 50;
+        this.healCheck(power);
         this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
     };
 
@@ -1141,25 +1152,24 @@ export default class PlayerMachine {
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.isCasting = true;
         this.player.currentTarget.isConsumed = true;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.DEVOUR);
+        this.player.checkTalentCost(States.DEVOUR, PLAYER.STAMINA.DEVOUR);
         this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
         this.player.flickerCarenic(2000); 
         this.player.specialCombatText = this.scene.showCombatText('Devouring', PLAYER.DURATIONS.DEVOUR / 2, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.player.castbar.setTotal(PLAYER.DURATIONS.DEVOUR);
         this.player.castbar.setTime(PLAYER.DURATIONS.DEVOUR);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.DEVOUR);
+        const power = this.player.checkTalentEnhanced(States.DEVOUR) ? 0.06 : 0.04;
         this.player.devourTimer = this.scene.time.addEvent({
             delay: 400,
-            callback: () => this.devour(),
+            callback: () => this.devour(power),
             callbackScope: this,
             repeat: 5,
         });
-        if (!this.player.isComputer) this.player.setTimeEvent('devourCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.DEVOUR, PLAYER.COOLDOWNS.LONG);
         this.scene.time.addEvent({
             delay: 2000,
-            callback: () => {
-                this.player.isCasting = false;
-            },
+            callback: () => this.player.isCasting = false,
             callbackScope: this,
             loop: false,
         });
@@ -1193,7 +1203,7 @@ export default class PlayerMachine {
         this.player.castbar.setTotal(PLAYER.DURATIONS.FEAR);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
-        this.player.castbar.setVisible(true);  
+        this.player.castbar.setVisible(true);
     };
     onFearingUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1206,11 +1216,11 @@ export default class PlayerMachine {
     };
     onFearingExit = () => {
         if (this.player.castingSuccess === true) {
-            this.scene.combatManager.fear(this.player.spellTarget);
-            if (!this.player.isComputer) this.player.setTimeEvent('fearCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.MODERATE : PLAYER.COOLDOWNS.MODERATE / 3);  
+            this.scene.combatManager.fear(this.player.spellTarget, this.player.checkTalentEnhanced(States.FEAR));
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.FEAR, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.FEAR);    
+            this.player.checkTalentCost(States.FEAR, PLAYER.STAMINA.FEAR);
             screenShake(this.scene);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You strike fear into ${this.scene.state.computer?.name}!`
@@ -1223,6 +1233,7 @@ export default class PlayerMachine {
         this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);  
     };
+
     onFrostEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
@@ -1249,11 +1260,15 @@ export default class PlayerMachine {
                 playerSpecialDescription: `You seize into this world with Nyrolean tendrils, slowing ${this.player.spellName}.`
             });
             this.chiomism(this.player.spellTarget, 75);
-            this.scene.combatManager.slow(this.player.spellTarget, 3000);
-            if (!this.player.isComputer) this.player.setTimeEvent('frostCooldown', PLAYER.COOLDOWNS.SHORT);
+            if (this.player.checkTalentEnhanced(States.FROST)) {
+                this.scene.combatManager.snare(this.player.spellTarget);
+            } else {
+                this.scene.combatManager.slow(this.player.spellTarget, 3000);
+            };
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.FROST, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.scene.sound.play('frost', { volume: this.scene.hud.settings.volume });
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.FROST);    
+            this.player.checkTalentCost(States.FROST, PLAYER.STAMINA.FROST);
         };
         this.player.isCasting = false;
         this.player.castbar.reset();
@@ -1263,6 +1278,7 @@ export default class PlayerMachine {
         this.player.spellName = '';
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
     };
+
     onFyerusEnter = () => {
         this.player.isCasting = true;
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1320,12 +1336,10 @@ export default class PlayerMachine {
     };
     onHealingExit = () => {
         if (this.player.castingSuccess === true) {
-            const cost = this.scene.hud.talents.talents.healing.efficient ? TALENT_COST[PLAYER.STAMINA.HEALING as keyof typeof TALENT_COST] : PLAYER.STAMINA.HEALING;
-            const cooldown = this.scene.hud.talents.talents.healing.efficient ? TALENT_COOLDOWN[PLAYER.COOLDOWNS.SHORT as keyof typeof TALENT_COOLDOWN] : PLAYER.COOLDOWNS.SHORT;
-            if (!this.player.isComputer) this.player.setTimeEvent('healingCooldown', this.player.inCombat ? cooldown : PLAYER.COOLDOWNS.SHORT / 3);
-            this.scene.combatManager.useGrace(cost);
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.HEALING, PLAYER.COOLDOWNS.SHORT);
+            this.player.checkTalentCost(States.HEALING, PLAYER.STAMINA.HEALING);
             this.player.castingSuccess = false;
-            const power = this.scene.hud.talents.talents.healing.enhanced ? 50 : 25;
+            const power = this.player.checkTalentEnhanced(States.HEALING) ? 50 : 25;
             this.healCheck(power);
             this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
         };
@@ -1360,10 +1374,14 @@ export default class PlayerMachine {
                 playerSpecialDescription: `You rip into this world with Ilian tendrils entwining.`
             });
             this.chiomism(this.player.spellTarget, 100);
-            if (!this.player.isComputer) this.player.setTimeEvent('ilirechCooldown', PLAYER.COOLDOWNS.SHORT);
+            if (this.player.checkTalentEnhanced(States.ILIRECH)) {
+                const chance = Phaser.Math.Between(1, 100);
+                if (chance > 75) this.scene.combatManager.stun(this.player.spellTarget);
+            };
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.ILIRECH, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.scene.sound.play('fire', { volume: this.scene.hud.settings.volume });
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.ILIRECH);    
+            this.player.checkTalentCost(States.ILIRECH, PLAYER.STAMINA.ILIRECH);
         };
         this.player.isCasting = false;
         this.player.castbar.reset();
@@ -1386,10 +1404,15 @@ export default class PlayerMachine {
     onInvokeExit = () => {
         this.player.setStatic(false);
         if (!this.player.currentTarget || this.player.currentTarget.health <= 0) return;
-        if (!this.player.isComputer) this.player.setTimeEvent('invokeCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.INVOKE, PLAYER.COOLDOWNS.LONG);
         this.scene.combatManager.combatMachine.action({ type: 'Instant', data: this.scene.state.playerBlessing });
+        if (this.player.checkTalentEnhanced(States.INVOKE)) {
+            this.scene.time.delayedCall(1000, () => {
+                this.scene.combatManager.combatMachine.action({ type: 'Instant', data: this.scene.state.playerBlessing });
+            }, undefined, this);
+        };
         this.scene.sound.play('prayer', { volume: this.scene.hud.settings.volume });
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.INVOKE);
+        this.player.checkTalentCost(States.INVOKE, PLAYER.STAMINA.INVOKE);
     };
 
     onKynisosEnter = () => { 
@@ -1454,16 +1477,15 @@ export default class PlayerMachine {
         if (this.player.castingSuccess === true) {
             this.sacrifice(this.player.spellTarget, 30);
             const chance = Phaser.Math.Between(1, 100);
-            if (chance > 75) {
-                this.scene.combatManager.paralyze(this.player.spellTarget);
-            };
+            const ceiling = this.player.checkTalentEnhanced(States.KYRISIAN) ? 50 : 75;
+            if (chance > ceiling) this.scene.combatManager.paralyze(this.player.spellTarget);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You bleed and bewitch ${this.player.spellName} with tendrils of Kyrisos.`
             });
-            if (!this.player.isComputer) this.player.setTimeEvent('kyrisianCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.KYRISIAN, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.KYRISIAN);    
+            this.player.checkTalentCost(States.KYRISIAN, PLAYER.STAMINA.KYRISIAN);    
         };
         this.player.isCasting = false;
         this.player.spellTarget = '';
@@ -1477,7 +1499,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.isCasting = true;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.KYRNAICISM);
+        this.player.checkTalentCost(States.KYRNAICISM, PLAYER.STAMINA.KYRNAICISM);    
         this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
         this.player.flickerCarenic(3000); 
         this.player.specialCombatText = this.scene.showCombatText('Kyrnaicism', PLAYER.DURATIONS.KYRNAICISM / 2, 'damage', false, true, () => this.player.specialCombatText = undefined);
@@ -1486,18 +1508,17 @@ export default class PlayerMachine {
         this.player.currentTarget.isConsumed = true;
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.KYRNAICISM);
         this.scene.combatManager.slow(this.player.spellTarget, 1000);
+        const power = this.player.checkTalentEnhanced(States.KYRNAICISM) ? 40 : 20;
         this.player.chiomicTimer = this.scene.time.addEvent({
             delay: 1000,
-            callback: () => this.kyrnaicism(),
+            callback: () => this.kyrnaicism(power),
             callbackScope: this,
             repeat: 3,
         });
-        if (!this.player.isComputer) this.player.setTimeEvent('kyrnaicismCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.KYRNAICISM, PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.addEvent({
             delay: 3000,
-            callback: () => {
-                this.player.isCasting = false;
-            },
+            callback: () => this.player.isCasting = false,
             callbackScope: this,
             loop: false,
         });
@@ -1546,11 +1567,12 @@ export default class PlayerMachine {
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You blend caeren into this world with Likyrish tendrils entwining.`
             });
-            this.suture(this.player.spellTarget, 20);
-            if (!this.player.isComputer) this.player.setTimeEvent('likyrCooldown', PLAYER.COOLDOWNS.MODERATE);
+            this.suture(this.player.spellTarget, 30);
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.LIKYR, PLAYER.COOLDOWNS.MODERATE);
+            if (this.player.checkTalentEnhanced(States.LIKYR)) this.scene.combatManager.combatMachine.action({ type: 'Prayer', data: 'Heal' });
             this.player.castingSuccess = false;
             this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.LIKYR);
+            this.player.checkTalentCost(States.LIKYR, PLAYER.STAMINA.LIKYR);
         };
         this.player.isCasting = false;
         this.player.castbar.reset();
@@ -1578,7 +1600,7 @@ export default class PlayerMachine {
             this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: id } });
         };
     };
-    devour = () => {
+    devour = (power: number) => {
         const enemy = this.scene.enemies.find(enemy => enemy.enemyID === this.player.spellTarget);
         if (this.player.isCasting === false || !enemy || enemy.health <= 0) {
             this.player.isCasting = false;
@@ -1589,7 +1611,7 @@ export default class PlayerMachine {
         if (this.player.spellTarget === this.player.getEnemyId()) {
             this.scene.combatManager.combatMachine.action({ type: 'Tshaeral', data: 4 });
         } else {
-            const drained = Math.round(this.scene.state.playerHealth * 0.04 * this.caerenicDamage() * this.levelModifier());
+            const drained = Math.round(this.scene.state.playerHealth * power * this.caerenicDamage() * this.levelModifier());
             const newPlayerHealth = drained / this.scene.state.playerHealth * 100;
             const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
             const playerActionDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
@@ -1598,7 +1620,7 @@ export default class PlayerMachine {
             this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newHealth, id: this.player.spellTarget } });
         };
     };
-    kyrnaicism = () => {
+    kyrnaicism = (power: number) => {
         const enemy = this.scene.enemies.find(enemy => enemy.enemyID === this.player.spellTarget);
         if (this.player.isCasting === false || !enemy || enemy.health <= 0) {
             this.player.isCasting = false;
@@ -1608,9 +1630,9 @@ export default class PlayerMachine {
         };
         this.scene.combatManager.slow(this.player.spellTarget, 1000);
         if (this.player.spellTarget === this.player.getEnemyId()) {
-            this.scene.combatManager.combatMachine.action({ type: 'Chiomic', data: this.player.entropicMultiplier(20) }); 
+            this.scene.combatManager.combatMachine.action({ type: 'Chiomic', data: this.player.entropicMultiplier(power) }); 
         } else {
-            const chiomic = Math.round(this.mastery() * (1 + (this.player.entropicMultiplier(20) / 100)) * this.caerenicDamage() * this.levelModifier());
+            const chiomic = Math.round(this.mastery() * (1 + (this.player.entropicMultiplier(power) / 100)) * this.caerenicDamage() * this.levelModifier());
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your wreathing tendrils rip ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
@@ -1660,8 +1682,8 @@ export default class PlayerMachine {
     };
     onLeapUpdate = (_dt: number) => this.player.combatChecker(this.player.isLeaping);
     onLeapExit = () => {
-        const leapCooldown = this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
-        if (!this.player.isComputer) this.player.setTimeEvent('leapCooldown', leapCooldown);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.LEAP, PLAYER.COOLDOWNS.SHORT);
+        this.player.checkTalentCost(States.LEAP, PLAYER.STAMINA.LEAP);
     };
 
     onMaierethEnter = () => {
@@ -1687,16 +1709,15 @@ export default class PlayerMachine {
         if (this.player.castingSuccess === true) {
             this.sacrifice(this.player.spellTarget, 30);
             const chance = Phaser.Math.Between(1, 100);
-            if (chance > 75) {
-                this.scene.combatManager.fear(this.player.spellTarget);
-            };
+            const ceiling = this.player.checkTalentEnhanced(States.MAIERETH) ? 50 : 75;
+            if (chance > ceiling) this.scene.combatManager.fear(this.player.spellTarget);
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You bleed and strike ${this.scene.state.computer?.name} with tendrils of Ma'anre.`
             });
-            if (!this.player.isComputer) this.player.setTimeEvent('maierethCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.MAIERETH, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.MAIERETH);    
+            this.player.checkTalentCost(States.MAIERETH, PLAYER.STAMINA.MAIERETH);
         };
         this.player.isCasting = false;
         this.player.spellTarget = '';
@@ -1711,8 +1732,8 @@ export default class PlayerMachine {
         this.player.specialCombatText = this.scene.showCombatText('Hook', DURATION.TEXT, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.scene.sound.play('dungeon', { volume: this.scene.hud.settings.volume });
         this.player.flickerCarenic(750);
-        if (!this.player.isComputer) this.player.setTimeEvent('hookCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3);  
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.HOOK);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.HOOK, PLAYER.COOLDOWNS.SHORT);
+        this.player.checkTalentCost(States.HOOK, PLAYER.STAMINA.HOOK);
         this.player.beam.startEmitter(this.player.particleEffect.effect, 1750);
         this.player.hookTime = 0;
         screenShake(this.scene);
@@ -1755,15 +1776,16 @@ export default class PlayerMachine {
                 this.scene.hud.rightJoystick.joystick.setVisible(true);
             };
             this.scene.hud.actionBar.setVisible(true);
+            this.player.checkTalentCooldown(States.MARK, PLAYER.COOLDOWNS.SHORT);
         };
         this.player.mark.setPosition(this.player.x, this.player.y + 24);
         this.player.mark.setVisible(true);
         this.player.animateMark();
         this.player.animateMark();
         this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
-        if (!this.player.isComputer) this.player.setTimeEvent('markCooldown', PLAYER.COOLDOWNS.SHORT);  
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.MARK);
+        this.player.checkTalentCost(States.MARK, PLAYER.STAMINA.MARK);
         this.player.setStatic(false);
+        if (this.player.checkTalentEnhanced(States.MARK)) this.healCheck(25);
     };
 
     onNetherswapEnter = () => {
@@ -1791,9 +1813,11 @@ export default class PlayerMachine {
                 this.scene.hud.rightJoystick.joystick.setVisible(true);
             };
             this.scene.hud.actionBar.setVisible(true);
+            this.player.checkTalentCooldown(States.NETHERSWAP, PLAYER.COOLDOWNS.SHORT);
         };
         this.player.setStatic(false);
         if (this.player.netherswapTarget === undefined) return; 
+        if (this.player.checkTalentEnhanced(States.NETHERSWAP)) this.suture(this.player.netherswapTarget.enemyID, 10);
         this.player.specialCombatText = this.scene.showCombatText('Netherswap', DURATION.TEXT / 2, 'effect', false, true, () => this.player.specialCombatText = undefined);
         const player = new Phaser.Math.Vector2(this.player.x, this.player.y);
         const enemy = new Phaser.Math.Vector2(this.player.netherswapTarget.x, this.player.netherswapTarget.y);
@@ -1801,8 +1825,7 @@ export default class PlayerMachine {
         this.player.netherswapTarget.setPosition(player.x, player.y);
         this.player.netherswapTarget = undefined;
         this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
-        if (!this.player.isComputer) this.player.setTimeEvent('netherswapCooldown', PLAYER.COOLDOWNS.SHORT);  
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.NETHERSWAP);
+        this.player.checkTalentCost(States.NETHERSWAP, PLAYER.STAMINA.NETHERSWAP);
     };
 
     onRecallEnter = () => {
@@ -1817,20 +1840,23 @@ export default class PlayerMachine {
             };
             this.scene.hud.actionBar.setVisible(false);
         };
-        if (!this.player.isComputer) this.player.setTimeEvent('recallCooldown', PLAYER.COOLDOWNS.SHORT);  
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.RECALL);
     };
     onRecallUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onRecallExit = () => {
-        if (this.scene.hud.settings.desktop === false) {  
-            this.scene.hud.joystick.joystick.setVisible(true);
-            this.scene.hud.rightJoystick.joystick.setVisible(true);
+        if (!this.player.isComputer) {
+            if (this.scene.hud.settings.desktop === false) {  
+                this.scene.hud.joystick.joystick.setVisible(true);
+                this.scene.hud.rightJoystick.joystick.setVisible(true);
+            };
             this.scene.hud.actionBar.setVisible(true);
+            this.player.checkTalentCooldown(States.RECALL, PLAYER.COOLDOWNS.SHORT);
         };
         this.player.setPosition(this.player.mark.x, this.player.mark.y - 24);
         this.scene.sound.play('phenomena', { volume: this.scene.hud.settings.volume });
         this.player.animateMark();
         this.player.setStatic(false);
+        this.player.checkTalentCost(States.RECALL, PLAYER.STAMINA.RECALL);
+        if (this.player.checkTalentEnhanced(States.RECALL)) this.healCheck(25);
     };
 
     onParalyzeEnter = () => { 
@@ -1855,8 +1881,9 @@ export default class PlayerMachine {
     onParalyzeExit = () => {
         if (this.player.castingSuccess === true) {
             this.scene.combatManager.paralyze(this.player.spellTarget);
-            if (!this.player.isComputer) this.player.setTimeEvent('paralyzeCooldown', PLAYER.COOLDOWNS.MODERATE);  
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.PARALYZE);
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.PARALYZE, PLAYER.COOLDOWNS.MODERATE);
+            this.player.checkTalentCost(States.PARALYZE, PLAYER.STAMINA.PARALYZE);
+            if (this.player.checkTalentEnhanced(States.PARALYZE)) this.scene.combatManager.combatMachine.action({ type: 'Prayer', data: 'Debuff' });
             this.player.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });        
             EventBus.emit('special-combat-text', {
@@ -1893,12 +1920,12 @@ export default class PlayerMachine {
     };
     onPolymorphingExit = () => {
         if (this.player.castingSuccess === true) {
-            this.scene.combatManager.polymorph(this.player.spellTarget);
+            this.scene.combatManager.polymorph(this.player.spellTarget, this.player.checkTalentEnhanced(States.POLYMORPH));
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You ensorcel ${this.player.spellName}, polymorphing them!`
             });
-            if (!this.player.isComputer) this.player.setTimeEvent('polymorphCooldown', PLAYER.COOLDOWNS.SHORT);  
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.POLYMORPH);
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.POLYMORPH, PLAYER.COOLDOWNS.SHORT);
+            this.player.checkTalentCost(States.POLYMORPH, PLAYER.STAMINA.POLYMORPH);
             this.player.castingSuccess = false;
             this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });        
             screenShake(this.scene);
@@ -1921,10 +1948,15 @@ export default class PlayerMachine {
                 this.player.setPosition(this.player.currentTarget.x - 16, this.player.currentTarget.y);
             };
         };
-
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.PURSUIT);
-        const pursuitCooldown = this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
-        if (!this.player.isComputer) this.player.setTimeEvent('pursuitCooldown', pursuitCooldown);
+        this.player.checkTalentCost(States.POLYMORPH, PLAYER.STAMINA.PURSUIT);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.PURSUIT, PLAYER.COOLDOWNS.SHORT);
+        if (this.player.checkTalentEnhanced(States.PURSUIT)) {
+                this.player.adjustSpeed(PLAYER.SPEED.SPRINT);
+                this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT / 2, () => {
+                this.player.isSprinting = false;
+                this.player.adjustSpeed(-PLAYER.SPEED.SPRINT);
+            }, undefined, this);
+        };
         this.player.flickerCarenic(750);
         screenShake(this.scene, 96);
         this.scene.tweens.add({
@@ -1965,10 +1997,10 @@ export default class PlayerMachine {
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `Your Achre is imbued with instantiation, its Quor auguring it through the ${this.scene.state.weapons[0]?.name}.`
             });
-            if (!this.player.isComputer) this.player.setTimeEvent('quorCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : 2000);
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.QUOR, PLAYER.COOLDOWNS.SHORT);
+            this.player.checkTalentCost(States.QUOR, PLAYER.STAMINA.QUOR);
             this.player.castingSuccess = false;
             this.scene.sound.play('freeze', { volume: this.scene.hud.settings.volume });
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.QUOR);    
             screenShake(this.scene, 180, 0.006);
         };
         this.player.isCasting = false;
@@ -1980,20 +2012,21 @@ export default class PlayerMachine {
     onReconstituteEnter = () => {
         if (this.player.moving() === true) return;
         this.player.isCasting = true;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.RECONSTITUTE);
-        this.player.specialCombatText = this.scene.showCombatText('Reconstitute', PLAYER.DURATIONS.RECONSTITUTE / 2, 'heal', false, true, () => this.player.specialCombatText = undefined);
-        this.player.castbar.setTotal(PLAYER.DURATIONS.RECONSTITUTE);
-        this.player.castbar.setTime(PLAYER.DURATIONS.RECONSTITUTE);
-        this.player.beam.startEmitter(this, PLAYER.DURATIONS.RECONSTITUTE);
+        this.player.checkTalentCost(States.RECONSTITUTE, PLAYER.STAMINA.RECONSTITUTE);
+        const duration = this.player.checkTalentEnhanced(States.RECONSTITUTE) ? PLAYER.DURATIONS.RECONSTITUTE / 2 : PLAYER.DURATIONS.RECONSTITUTE;
+        this.player.specialCombatText = this.scene.showCombatText('Reconstitute', duration / 2, 'heal', false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setTotal(duration);
+        this.player.castbar.setTime(duration);
+        this.player.beam.startEmitter(this, duration);
         this.player.reconTimer = this.scene.time.addEvent({
-            delay: 1000,
+            delay: this.player.checkTalentEnhanced(States.RECONSTITUTE) ? 500 : 1000,
             callback: () => this.reconstitute(),
             callbackScope: this,
             repeat: 5,
         });
-        if (!this.player.isComputer) this.player.setTimeEvent('reconstituteCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.LONG : PLAYER.COOLDOWNS.SHORT);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.RECONSTITUTE, PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.addEvent({
-            delay: 5000,
+            delay: this.player.checkTalentEnhanced(States.RECONSTITUTE) ? 2500 : 5000,
             callback: () => this.player.isCasting = false,
             callbackScope: this,
             loop: false,
@@ -2052,8 +2085,9 @@ export default class PlayerMachine {
         if (this.player.castingSuccess === true) {
             this.player.castingSuccess = false;
             this.scene.combatManager.root(this.player.spellTarget);
-            if (!this.player.isComputer) this.player.setTimeEvent('rootCooldown', PLAYER.COOLDOWNS.SHORT); 
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.ROOT);
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.ROOT, PLAYER.COOLDOWNS.SHORT);
+            this.player.checkTalentCost(States.ROOT, PLAYER.STAMINA.ROOT);
+            if (this.player.checkTalentEnhanced(States.ROOT)) this.scene.combatManager.combatMachine.action({ type: 'Prayer', data: 'Silence' });
             EventBus.emit('special-combat-text', {
                 playerSpecialDescription: `You ensorcel ${this.player.spellName}, rooting them!`
             });
@@ -2075,9 +2109,9 @@ export default class PlayerMachine {
     };
     onRushExit = () => {
         this.player.rushedEnemies = [];
-        const rushCooldown = this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3;
-        if (!this.player.isComputer) this.player.setTimeEvent('rushCooldown', rushCooldown);
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.RUSH);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.RUSH, PLAYER.COOLDOWNS.SHORT);
+        
+        this.player.checkTalentCost(States.RUSH, PLAYER.STAMINA.RUSH);
     };
 
     onSlowEnter = () => {
@@ -2086,9 +2120,13 @@ export default class PlayerMachine {
         this.player.isSlowing = true;
         this.player.specialCombatText = this.scene.showCombatText('Slow', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
-        this.scene.combatManager.slow(this.player.spellTarget, 3000);
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.SLOW);
-        if (!this.player.isComputer) this.player.setTimeEvent('slowCooldown', PLAYER.COOLDOWNS.SHORT); 
+        if (this.player.checkTalentEnhanced(States.SLOW)) {
+            this.scene.combatManager.snare(this.player.spellTarget);
+        } else {
+            this.scene.combatManager.slow(this.player.spellTarget, 3000);
+        };
+        this.player.checkTalentCost(States.SLOW, PLAYER.STAMINA.SLOW);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.SLOW, PLAYER.COOLDOWNS.SHORT);
         this.player.flickerCarenic(500); 
         this.scene.time.delayedCall(500, () => this.player.isSlowing = false, undefined, this);
         EventBus.emit('special-combat-text', {
@@ -2105,9 +2143,10 @@ export default class PlayerMachine {
         this.player.isSacrificing = true;
         this.player.specialCombatText = this.scene.showCombatText('Sacrifice', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.SACRIFICE);
+        this.player.checkTalentCost(States.SACRIFICE, PLAYER.STAMINA.SACRIFICE);
         this.sacrifice(this.player.spellTarget, 10);
-        if (!this.player.isComputer) this.player.setTimeEvent('sacrificeCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.SACRIFICE, PLAYER.COOLDOWNS.MODERATE);
+        if (this.player.checkTalentEnhanced(States.SACRIFICE)) this.scene.combatManager.combatMachine.action({ type: 'Prayer', data: 'Damage' });
         this.player.flickerCarenic(500);  
         this.scene.time.delayedCall(500, () => this.player.isSacrificing = false, undefined, this);
     };
@@ -2136,9 +2175,16 @@ export default class PlayerMachine {
     };
     onSnaringExit = () => {
         if (this.player.castingSuccess === true) {
-            if (!this.player.isComputer) this.player.setTimeEvent('snareCooldown', PLAYER.COOLDOWNS.SHORT);
-            this.scene.combatManager.useGrace(PLAYER.STAMINA.SNARE);
+            this.player.checkTalentCost(States.SNARE, PLAYER.STAMINA.SNARE);
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.SNARE, PLAYER.COOLDOWNS.SHORT);
             this.scene.combatManager.snare(this.player.spellTarget);
+            if (this.player.checkTalentEnhanced(States.SNARE)) {
+                this.player.adjustSpeed(PLAYER.SPEED.SPRINT);    
+                this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT / 2, () => {
+                    this.player.isSprinting = false;
+                    this.player.adjustSpeed(-PLAYER.SPEED.SPRINT);    
+                }, undefined, this);
+            };
             this.player.castingSuccess = false;
             this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
             screenShake(this.scene);
@@ -2155,9 +2201,7 @@ export default class PlayerMachine {
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
     };
 
-    onStormEnter = () => {
-        this.player.storm();
-    };
+    onStormEnter = () => this.player.storm();
     onStormUpdate = (_dt: number) => this.player.combatChecker(this.player.isStorming);
     onStormExit = () => {if (!this.player.isComputer) this.player.setTimeEvent('stormCooldown', this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3)};
 
@@ -2167,9 +2211,10 @@ export default class PlayerMachine {
         this.player.isSuturing = true;
         this.player.specialCombatText = this.scene.showCombatText('Suture', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.SUTURE);
-        this.suture(this.player.spellTarget, 10);
-        if (!this.player.isComputer) this.player.setTimeEvent('sutureCooldown', PLAYER.COOLDOWNS.MODERATE);
+        this.player.checkTalentCost(States.SUTURE, PLAYER.STAMINA.SUTURE);
+        this.suture(this.player.spellTarget, 20);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.SUTURE, PLAYER.COOLDOWNS.MODERATE);
+        if (this.player.checkTalentEnhanced(States.SUTURE)) this.scene.combatManager.combatMachine.action({ type: 'Prayer', data: 'Buff' });
         this.player.flickerCarenic(500); 
         this.scene.time.delayedCall(500, () => {
             this.player.isSuturing = false;
@@ -2189,11 +2234,11 @@ export default class PlayerMachine {
         };
         this.player.isAbsorbing = true;
         this.player.negationName = States.ABSORB;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.ABSORB);    
+        this.player.checkTalentCost(States.ABSORB, PLAYER.STAMINA.ABSORB);
         this.scene.sound.play(States.ABSORB, { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Absorbing', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'aqua', PLAYER.DURATIONS.ABSORB);
-        if (!this.player.isComputer) this.player.setTimeEvent('absorbCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.ABSORB, PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.ABSORB, () => {
             this.player.isAbsorbing = false;    
             if (this.player.negationBubble) {
@@ -2219,19 +2264,21 @@ export default class PlayerMachine {
         };
         this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Absorbed', 500, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        if (this.player.grace - 25 <= 0) {
+        const cost = this.player.checkTalentEnhanced(States.ABSORB) ? 15 : 25;
+        if (this.player.grace - cost <= 0) {
             this.player.isAbsorbing = false;
         };
-        this.scene.combatManager.useGrace(25);
+        this.scene.combatManager.useGrace(cost);
     };
 
     onChiomicEnter = () => {
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.CHIOMIC);    
+        this.player.checkTalentCost(States.CHIOMIC, PLAYER.STAMINA.CHIOMIC);
         this.player.aoe = new AoE(this.scene, 'chiomic', 1);    
         this.scene.sound.play('death', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Hah! Hah!', PLAYER.DURATIONS.CHIOMIC, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.isChiomic = true;
-        if (!this.player.isComputer) this.player.setTimeEvent('chiomicCooldown', PLAYER.COOLDOWNS.SHORT);  
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.CHIOMIC, PLAYER.COOLDOWNS.MODERATE);
+        
         this.scene.time.delayedCall(PLAYER.DURATIONS.CHIOMIC, () => {
             this.player.isChiomic = false;
         }, undefined, this);
@@ -2243,11 +2290,12 @@ export default class PlayerMachine {
 
     onDiseaseEnter = () => {
         this.player.isDiseasing = true;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.DISEASE);    
         this.player.aoe = new AoE(this.scene, 'tendril', 6);    
         this.scene.sound.play('dungeon', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Tendrils Swirl', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
-        if (!this.player.isComputer) this.player.setTimeEvent('diseaseCooldown', PLAYER.COOLDOWNS.MODERATE);  
+        this.player.checkTalentCost(States.DISEASE, PLAYER.STAMINA.DISEASE);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.DISEASE, PLAYER.COOLDOWNS.MODERATE);
+        
         this.scene.time.delayedCall(PLAYER.DURATIONS.DISEASE, () => {
             this.player.isDiseasing = false;
         }, undefined, this);
@@ -2259,12 +2307,13 @@ export default class PlayerMachine {
     onDiseaseExit = () => this.player.aoe.cleanAnimation(this.scene);
 
     onHowlEnter = () => {
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.HOWL);    
-        this.player.aoe = new AoE(this.scene, 'howl', 1);    
+        this.player.checkTalentCost(States.HOWL, PLAYER.STAMINA.HOWL);
+        this.player.aoe = new AoE(this.scene, 'howl', 1);
         this.scene.sound.play('howl', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Howling', PLAYER.DURATIONS.HOWL, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.player.isHowling = true;
-        if (!this.player.isComputer) this.player.setTimeEvent('howlCooldown', PLAYER.COOLDOWNS.SHORT);  
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.HOWL, PLAYER.COOLDOWNS.MODERATE);
+        
         this.scene.time.delayedCall(PLAYER.DURATIONS.HOWL, () => {
             this.player.isHowling = false;
         }, undefined, this);
@@ -2281,12 +2330,13 @@ export default class PlayerMachine {
             this.player.reactiveBubble = undefined;
         };
         this.player.isEnveloping = true;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.ENVELOP);    
+        this.player.checkTalentCost(States.ENVELOP, PLAYER.STAMINA.ENVELOP);
         this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Enveloping', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'blue', PLAYER.DURATIONS.ENVELOP);
         this.player.reactiveName = States.ENVELOP;
-        if (!this.player.isComputer) this.player.setTimeEvent('envelopCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.ENVELOP, PLAYER.COOLDOWNS.MODERATE);
+        
         this.scene.time.delayedCall(PLAYER.DURATIONS.ENVELOP, () => {
             this.player.isEnveloping = false;    
             if (this.player.reactiveBubble !== undefined && this.player.reactiveName === States.ENVELOP) {
@@ -2312,16 +2362,17 @@ export default class PlayerMachine {
         };
         this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Enveloped', 500, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        if (this.player.stamina - 25 <= 0) {
+        const cost = this.player.checkTalentEnhanced(States.ENVELOP) ? 15 : 25;
+        if (this.player.stamina - cost <= 0) {
             this.player.isEnveloping = false;
         };
-        this.scene.combatManager.useStamina(25);
+        this.scene.combatManager.useStamina(cost);
     };
 
     onFreezeEnter = () => {
         this.player.aoe = new AoE(this.scene, 'freeze', 1);
         this.scene.sound.play('freeze', { volume: this.scene.hud.settings.volume });
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.FREEZE);
+        this.player.checkTalentCost(States.FREEZE, PLAYER.STAMINA.FREEZE);
         this.player.specialCombatText = this.scene.showCombatText('Freezing', PLAYER.DURATIONS.FREEZE, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.isFreezing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.FREEZE, () => {
@@ -2332,7 +2383,9 @@ export default class PlayerMachine {
         });
     };
     onFreezeUpdate = (_dt: number) => {if (!this.player.isFreezing) this.positiveMachine.setState(States.CLEAN);};
-    onFreezeExit = () => {if (!this.player.isComputer) this.player.setTimeEvent('freezeCooldown', PLAYER.COOLDOWNS.SHORT)};
+    onFreezeExit = () => {
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.FREEZE, PLAYER.COOLDOWNS.SHORT);
+    };
 
     onMaliceEnter = () => {
         if (this.player.reactiveBubble) {
@@ -2340,12 +2393,12 @@ export default class PlayerMachine {
             this.player.reactiveBubble = undefined;
         };
         this.player.reactiveName = States.MALICE;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.MALICE);    
+        this.player.checkTalentCost(States.MALICE, PLAYER.STAMINA.MALICE);
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.player.isMalicing = true;
         this.player.specialCombatText = this.scene.showCombatText('Malice', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'purple', PLAYER.DURATIONS.MALICE);
-        if (!this.player.isComputer) this.player.setTimeEvent('maliceCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.MALICE, PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MALICE, () => {
             this.player.isMalicing = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MALICE) {
@@ -2371,54 +2424,11 @@ export default class PlayerMachine {
         };
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Malicing', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
-        this.chiomism(id, 10);
+        const power = this.player.checkTalentEnhanced(States.MALICE) ? 60 : 20;
+        this.chiomism(id, power);
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
         if (this.player.reactiveBubble.charges <= 0) {
             this.player.isMalicing = false;
-        };
-    };
-
-    onMendEnter = () => {
-        if (this.player.reactiveBubble) {
-            this.player.reactiveBubble.cleanUp();
-            this.player.reactiveBubble = undefined;
-        };
-        this.player.reactiveName = States.MEND;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.MEND);    
-        this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
-        this.player.isMending = true;
-        this.player.specialCombatText = this.scene.showCombatText('Mending', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'purple', PLAYER.DURATIONS.MEND);
-        if (!this.player.isComputer) this.player.setTimeEvent('mendCooldown', PLAYER.COOLDOWNS.LONG);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.MEND, () => {
-            this.player.isMending = false;    
-            if (this.player.reactiveBubble && this.player.reactiveName === States.MEND) {
-                this.player.reactiveBubble.destroy();
-                this.player.reactiveBubble = undefined;
-                this.player.reactiveName = '';
-            };
-        }, undefined, this);
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You seek to mend oncoming attacks.`
-        });
-    };
-    onMendUpdate = (_dt: number) => {if (!this.player.isMending) this.positiveMachine.setState(States.CLEAN);};
-
-    mend = () => {
-        if (this.player.reactiveBubble === undefined || this.player.isMending === false) {
-            if (this.player.reactiveBubble) {
-                this.player.reactiveBubble.destroy();
-                this.player.reactiveBubble = undefined;
-            };
-            this.player.isMending = false;
-            return;
-        };
-        this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
-        this.player.specialCombatText = this.scene.showCombatText('Mending', 500, 'tendril', false, true, () => this.player.specialCombatText = undefined);
-        this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: 15, id: this.player.playerID }, type: 'Health' });
-        this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
-        if (this.player.reactiveBubble.charges <= 0) {
-            this.player.isMending = false;
         };
     };
 
@@ -2428,13 +2438,14 @@ export default class PlayerMachine {
             this.player.reactiveBubble = undefined;
         };
         this.player.reactiveName = States.MENACE;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.MENACE);    
+        this.player.checkTalentCost(States.MENACE, PLAYER.STAMINA.MENACE);
         this.scene.sound.play('scream', { volume: this.scene.hud.settings.volume });
         this.player.isMenacing = true;
         this.player.specialCombatText = this.scene.showCombatText('Menacing', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'dread', PLAYER.DURATIONS.MENACE);
-        if (!this.player.isComputer) this.player.setTimeEvent('menaceCooldown', PLAYER.COOLDOWNS.LONG);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.MENACE, () => {
+        const duration = this.player.checkTalentEnhanced(States.MENACE) ? PLAYER.DURATIONS.MENACE * 1.5 : PLAYER.DURATIONS.MENACE;
+        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'dread', duration);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.MENACE, PLAYER.COOLDOWNS.LONG);
+        this.scene.time.delayedCall(duration, () => {
             this.player.isMenacing = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MENACE) {
                 this.player.reactiveBubble.cleanUp();
@@ -2462,10 +2473,56 @@ export default class PlayerMachine {
         this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Menacing', 500, 'tendril', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
-        if (this.player.reactiveBubble.charges <= 3) {
+        if (this.player.reactiveBubble.charges <= 0) {
             this.player.isMenacing = false;
         };
     };
+
+    onMendEnter = () => {
+        if (this.player.reactiveBubble) {
+            this.player.reactiveBubble.cleanUp();
+            this.player.reactiveBubble = undefined;
+        };
+        this.player.reactiveName = States.MEND;
+        this.player.checkTalentCost(States.MEND, PLAYER.STAMINA.MEND);
+        this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
+        this.player.isMending = true;
+        this.player.specialCombatText = this.scene.showCombatText('Mending', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
+        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'purple', PLAYER.DURATIONS.MEND);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.MEND, PLAYER.COOLDOWNS.LONG);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.MEND, () => {
+            this.player.isMending = false;    
+            if (this.player.reactiveBubble && this.player.reactiveName === States.MEND) {
+                this.player.reactiveBubble.destroy();
+                this.player.reactiveBubble = undefined;
+                this.player.reactiveName = '';
+            };
+        }, undefined, this);
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You seek to mend oncoming attacks.`
+        });
+    };
+    onMendUpdate = (_dt: number) => {if (!this.player.isMending) this.positiveMachine.setState(States.CLEAN);};
+
+    mend = () => {
+        if (this.player.reactiveBubble === undefined || this.player.isMending === false) {
+            if (this.player.reactiveBubble) {
+                this.player.reactiveBubble.destroy();
+                this.player.reactiveBubble = undefined;
+            };
+            this.player.isMending = false;
+            return;
+        };
+        this.scene.sound.play('caerenic', { volume: this.scene.hud.settings.volume });
+        this.player.specialCombatText = this.scene.showCombatText('Mending', 500, 'tendril', false, true, () => this.player.specialCombatText = undefined);
+        const power = this.player.checkTalentEnhanced(States.MEND) ? 25 : 12.5;
+        this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: power, id: this.player.playerID }, type: 'Health' });
+        this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
+        if (this.player.reactiveBubble.charges <= 0) {
+            this.player.isMending = false;
+        };
+    };
+
 
     onModerateEnter = () => {
         if (this.player.reactiveBubble) {
@@ -2473,12 +2530,12 @@ export default class PlayerMachine {
             this.player.reactiveBubble = undefined;
         };
         this.player.reactiveName = States.MODERATE;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.MODERATE);    
+        this.player.checkTalentCost(States.MODERATE, PLAYER.STAMINA.MODERATE);
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.player.isModerating = true;
         this.player.specialCombatText = this.scene.showCombatText('Moderate', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'sapphire', PLAYER.DURATIONS.MODERATE);
-        if (!this.player.isComputer) this.player.setTimeEvent('moderateCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.MODERATE, PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MODERATE, () => {
             this.player.isModerating = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MODERATE) {
@@ -2503,9 +2560,13 @@ export default class PlayerMachine {
             this.player.isModerating = false;
             return;
         };
-        this.scene.combatManager.slow(id);
+        if (this.player.checkTalentEnhanced(States.MODERATE)) {
+            this.scene.combatManager.snare(id);
+        } else {
+            this.scene.combatManager.slow(id);
+        };
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
-        this.player.specialCombatText = this.scene.showCombatText('Moderating', 500, 'tendril', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Moderating', 500, 'sapphire', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
         if (this.player.reactiveBubble.charges <= 0) {
             this.player.isModerating = false;
@@ -2518,13 +2579,14 @@ export default class PlayerMachine {
             this.player.reactiveBubble = undefined;
         };
         this.player.reactiveName = States.MULTIFARIOUS;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.MULTIFARIOUS);    
+        this.player.checkTalentCost(States.MULTIFARIOUS, PLAYER.STAMINA.MULTIFARIOUS);
         this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
         this.player.isMultifaring = true;
+        const duration = this.player.checkTalentEnhanced(States.MULTIFARIOUS) ? PLAYER.DURATIONS.MULTIFARIOUS * 1.5 : PLAYER.DURATIONS.MULTIFARIOUS;
         this.player.specialCombatText = this.scene.showCombatText('Multifarious', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'ultramarine', PLAYER.DURATIONS.MULTIFARIOUS);
-        if (!this.player.isComputer) this.player.setTimeEvent('multifariousCooldown', PLAYER.COOLDOWNS.LONG);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.MULTIFARIOUS, () => {
+        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'ultramarine', duration);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.MULTIFARIOUS, PLAYER.COOLDOWNS.LONG);
+        this.scene.time.delayedCall(duration, () => {
             this.player.isMultifaring = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MULTIFARIOUS) {
                 this.player.reactiveBubble.cleanUp();
@@ -2548,11 +2610,11 @@ export default class PlayerMachine {
             this.player.isMultifaring = false;
             return;
         };
-        this.scene.combatManager.polymorph(id);
+        this.scene.combatManager.polymorph(id, this.player.checkTalentEnhanced(States.POLYMORPH));
         this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
-        this.player.specialCombatText = this.scene.showCombatText('Multifaring', 500, 'cast', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Multifaring', 500, 'ultramarine', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
-        if (this.player.reactiveBubble.charges <= 3) {
+        if (this.player.reactiveBubble.charges <= 0) {
             this.player.isMultifaring = false;
         };
     };
@@ -2563,13 +2625,14 @@ export default class PlayerMachine {
             this.player.reactiveBubble = undefined;
         };
         this.player.reactiveName = States.MYSTIFY;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.MYSTIFY);    
+        this.player.checkTalentCost(States.MYSTIFY, PLAYER.STAMINA.MYSTIFY);
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.player.isMystifying = true;
         this.player.specialCombatText = this.scene.showCombatText('Mystify', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'chartreuse', PLAYER.DURATIONS.MYSTIFY);
-        if (!this.player.isComputer) this.player.setTimeEvent('mystifyCooldown', PLAYER.COOLDOWNS.LONG);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.MYSTIFY, () => {
+        const duration = this.player.checkTalentEnhanced(States.MYSTIFY) ? PLAYER.DURATIONS.MYSTIFY * 1.5 : PLAYER.DURATIONS.MYSTIFY;
+        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'chartreuse', duration);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.MYSTIFY, PLAYER.COOLDOWNS.LONG);
+        this.scene.time.delayedCall(duration, () => {
             this.player.isMystifying = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MYSTIFY) {
                 this.player.reactiveBubble.cleanUp();
@@ -2593,11 +2656,11 @@ export default class PlayerMachine {
             this.player.isMystifying = false;
             return;
         };
-        this.scene.combatManager.confuse(id);
+        this.scene.combatManager.confuse(id, this.player.checkTalentEnhanced(States.CONFUSE));
         this.scene.sound.play('death', { volume: this.scene.hud.settings.volume });
-        this.player.specialCombatText = this.scene.showCombatText('Mystifying', 500, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Mystifying', 500, 'chartreuse', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
-        if (this.player.reactiveBubble.charges <= 3) {
+        if (this.player.reactiveBubble.charges <= 0) {
             this.player.isMystifying = false;
         };
     };
@@ -2608,12 +2671,13 @@ export default class PlayerMachine {
             this.player.negationBubble = undefined;
         };
         this.player.isProtecting = true;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.PROTECT);    
+        this.player.checkTalentCost(States.PROTECT, PLAYER.STAMINA.PROTECT);
         this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Protecting', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'gold', PLAYER.DURATIONS.PROTECT);
+        const duration = this.player.checkTalentEnhanced(States.PROTECT) ? PLAYER.DURATIONS.PROTECT * 1.5 : PLAYER.DURATIONS.PROTECT;
+        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'gold', duration);
         if (!this.player.isComputer) this.player.setTimeEvent('protectCooldown', PLAYER.COOLDOWNS.LONG);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.PROTECT, () => {
+        this.scene.time.delayedCall(duration, () => {
             this.player.isProtecting = false;    
             if (this.player.negationBubble) {
                 this.player.negationBubble.cleanUp();
@@ -2632,11 +2696,11 @@ export default class PlayerMachine {
             this.player.reactiveBubble = undefined;
         };
         this.player.isRecovering = true;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.RECOVER);    
+        this.player.checkTalentCost(States.RECOVER, PLAYER.STAMINA.RECOVER);
         this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Recovering', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'green', PLAYER.DURATIONS.RECOVER);
-        if (!this.player.isComputer) this.player.setTimeEvent('recoverCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.RECOVER, PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.RECOVER, () => {
             this.player.isRecovering = false;    
             if (this.player.reactiveBubble) {
@@ -2653,7 +2717,8 @@ export default class PlayerMachine {
     recover = () => {
         this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Recovered', 500, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.scene.combatManager.useStamina(-25);
+        const stamina = this.player.checkTalentEnhanced(States.RECOVER) ? -30 : -15;
+        this.scene.combatManager.useStamina(stamina);
     };
 
     onReinEnter = () => {
@@ -2663,11 +2728,11 @@ export default class PlayerMachine {
         };
         this.player.isReining = true;
         this.player.reactiveName = States.REIN;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.REIN);    
+        this.player.checkTalentCost(States.REIN, PLAYER.STAMINA.REIN);
         this.scene.sound.play(States.ABSORB, { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Rein', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'fuchsia', PLAYER.DURATIONS.REIN);
-        if (!this.player.isComputer) this.player.setTimeEvent('reinCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.REIN, PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.REIN, () => {
             this.player.isReining = false;    
             if (this.player.reactiveBubble) {
@@ -2685,16 +2750,17 @@ export default class PlayerMachine {
     rein = () => {
         this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Reining', 500, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.scene.combatManager.useGrace(-25);
+        const grace = this.player.checkTalentEnhanced(States.REIN) ? -30 : -15;
+        this.scene.combatManager.useGrace(grace);
     };
 
     onRenewalEnter = () => {
         this.player.isRenewing = true;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.RENEWAL);    
+        this.player.checkTalentCost(States.RENEWAL, PLAYER.STAMINA.RENEWAL);
         this.player.aoe = new AoE(this.scene, 'renewal', 6, true);    
         this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Hush Tears', 750, 'bone', false, true, () => this.player.specialCombatText = undefined);
-        if (!this.player.isComputer) this.player.setTimeEvent('renewalCooldown', PLAYER.COOLDOWNS.MODERATE);  
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.RENEWAL, PLAYER.COOLDOWNS.MODERATE);  
         this.scene.time.delayedCall(PLAYER.DURATIONS.RENEWAL, () => {
             this.player.isRenewing = false;
         }, undefined, this);
@@ -2705,8 +2771,8 @@ export default class PlayerMachine {
     onRenewalUpdate = (_dt: number) => {if (!this.player.isRenewing) this.positiveMachine.setState(States.CLEAN);};
 
     onScreamEnter = () => {
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.SCREAM);    
-        this.player.aoe = new AoE(this.scene, 'scream', 1);    
+        this.player.checkTalentCost(States.SCREAM, PLAYER.STAMINA.SCREAM);
+        this.player.aoe = new AoE(this.scene, 'scream', 1);
         this.scene.sound.play('scream', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Screaming', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
         this.player.isScreaming = true;
@@ -2718,21 +2784,22 @@ export default class PlayerMachine {
         });
     };
     onScreamUpdate = (_dt: number) => {if (!this.player.isScreaming) this.positiveMachine.setState(States.CLEAN);};
-    onScreamExit = () => {if (!this.player.isComputer) this.player.setTimeEvent('screamCooldown', PLAYER.COOLDOWNS.SHORT)};
+    onScreamExit = () => {if (!this.player.isComputer) this.player.checkTalentCooldown(States.SCREAM, PLAYER.COOLDOWNS.SHORT)};
 
     onShieldEnter = () => {
         if (this.player.negationBubble) {
             this.player.negationBubble.cleanUp();
             this.player.negationBubble = undefined;
         };
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.SHIELD);    
+        this.player.checkTalentCost(States.SHIELD, PLAYER.STAMINA.SHIELD);
         this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
         this.player.isShielding = true;
         this.player.specialCombatText = this.scene.showCombatText('Shielding', 750, 'bone', false, true, () => this.player.specialCombatText = undefined);
-        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'bone', PLAYER.DURATIONS.SHIELD);
+        const duration = this.player.checkTalentEnhanced(States.SHIELD) ? PLAYER.DURATIONS.SHIELD * 1.5 : PLAYER.DURATIONS.SHIELD;
+        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'bone', duration);
         this.player.negationName = States.SHIELD;
-        if (!this.player.isComputer) this.player.setTimeEvent('shieldCooldown', PLAYER.COOLDOWNS.LONG);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.SHIELD, () => {
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.SHIELD, PLAYER.COOLDOWNS.LONG);
+        this.scene.time.delayedCall(duration, () => {
             this.player.isShielding = false;    
             if (this.player.negationBubble && this.player.negationName === States.SHIELD) {
                 this.player.negationBubble.cleanUp();
@@ -2756,7 +2823,7 @@ export default class PlayerMachine {
             return;
         };
         this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
-        this.player.specialCombatText = this.scene.showCombatText('Shield Hit', 500, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText('Shield Hit', 500, 'bone', false, true, () => this.player.specialCombatText = undefined);
         this.player.negationBubble.setCharges(this.player.negationBubble.charges - 1);
         if (this.player.negationBubble.charges <= 0) {
             this.player.specialCombatText = this.scene.showCombatText('Shield Broken', 500, 'damage', false, true, () => this.player.specialCombatText = undefined);
@@ -2765,26 +2832,31 @@ export default class PlayerMachine {
     };
 
     onShimmerEnter = () => {
-        this.player.isShimmering = true; 
-        this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.SHIMMER);
-        if (!this.player.isComputer) this.player.setTimeEvent('shimmerCooldown', PLAYER.COOLDOWNS.MODERATE);
-        this.player.adjustSpeed(PLAYER.SPEED.STEALTH);
-        if (!this.player.isStealthing) this.stealthEffect(true);    
-        this.scene.time.delayedCall(PLAYER.DURATIONS.SHIMMER, () => {
-            this.player.isShimmering = false;
-            this.stealthEffect(false);
-            this.player.adjustSpeed(-PLAYER.SPEED.STEALTH);
-        }, undefined, this);
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You shimmer, fading in and out of this world.`
-        });
         this.scene.tweens.add({
             targets: this.scene.cameras.main,
             zoom: this.scene.cameras.main.zoom * 1.5,
             ease: Phaser.Math.Easing.Quintic.InOut,
             duration: 750,
             yoyo: true
+        });
+        this.player.isShimmering = true; 
+        this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });
+        this.player.checkTalentCost(States.SHIMMER, PLAYER.STAMINA.SHIMMER);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.SHIMMER, PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isStealthing) this.stealthEffect(true);
+        if (this.player.checkTalentEnhanced(States.SHIMMER)) {
+            this.player.adjustSpeed(PLAYER.SPEED.SPRINT);    
+            this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT / 2, () => {
+                this.player.isSprinting = false;
+                this.player.adjustSpeed(-PLAYER.SPEED.SPRINT);    
+            }, undefined, this);
+        };
+        this.scene.time.delayedCall(PLAYER.DURATIONS.SHIMMER, () => {
+            this.player.isShimmering = false;
+            this.stealthEffect(false);
+        }, undefined, this);
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You shimmer, fading in and out of this world.`
         });
     };
     onShimmerUpdate = (_dt: number) => {if (!this.player.isShimmering) this.positiveMachine.setState(States.CLEAN);};
@@ -2798,25 +2870,26 @@ export default class PlayerMachine {
 
     onSprintEnter = () => {
         this.player.isSprinting = true;
-        this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume / 3 });
-        this.player.adjustSpeed(PLAYER.SPEED.SPRINT);
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.SPRINT);
-        if (!this.player.isComputer) this.player.setTimeEvent('sprintCooldown', PLAYER.COOLDOWNS.MODERATE);
-        this.player.flickerCarenic(PLAYER.DURATIONS.SPRINT);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT, () => {
-            this.player.isSprinting = false;
-            this.player.adjustSpeed(-PLAYER.SPEED.SPRINT);    
-        }, undefined, this);
-        EventBus.emit('special-combat-text', {
-            playerSpecialDescription: `You tap into your caeren, bursting into an otherworldly sprint.`
-        });
-        screenShake(this.scene);
         this.scene.tweens.add({
             targets: this.scene.cameras.main,
             zoom: this.scene.cameras.main.zoom * 1.5,
             ease: Phaser.Math.Easing.Elastic.InOut,
             duration: 750,
             yoyo: true
+        });
+        screenShake(this.scene);
+        this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume / 3 });
+        const speed = this.player.checkTalentEnhanced(States.SPRINTING) ? PLAYER.SPEED.SPRINT + 0.75 : PLAYER.SPEED.SPRINT;
+        this.player.adjustSpeed(speed);
+        this.player.checkTalentCost(States.SPRINTING, PLAYER.STAMINA.SPRINT);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.SPRINTING, PLAYER.COOLDOWNS.MODERATE);
+        this.player.flickerCarenic(PLAYER.DURATIONS.SPRINT);
+        this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT, () => {
+            this.player.isSprinting = false;
+            this.player.adjustSpeed(-speed);    
+        }, undefined, this);
+        EventBus.emit('special-combat-text', {
+            playerSpecialDescription: `You tap into your caeren, bursting into an otherworldly sprint.`
         });
     };
     onSprintUpdate = (_dt: number) => {if (!this.player.isSprinting) this.positiveMachine.setState(States.CLEAN);};
@@ -2877,13 +2950,14 @@ export default class PlayerMachine {
             this.player.negationBubble = undefined;
         };
         this.player.isWarding = true;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.WARD);    
+        this.player.checkTalentCost(States.WARD, PLAYER.STAMINA.WARD);
         this.scene.sound.play('combat-round', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Warding', 750, 'damage', false, true, () => this.player.specialCombatText = undefined);
-        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'red', PLAYER.DURATIONS.WARD);
+        const duration = this.player.checkTalentEnhanced(States.WARD) ? PLAYER.DURATIONS.WARD * 1.5 : PLAYER.DURATIONS.WARD;
+        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'red', duration);
         this.player.negationName = States.WARD;
-        if (!this.player.isComputer) this.player.setTimeEvent('wardCooldown', PLAYER.COOLDOWNS.LONG);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.WARD, () => {
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.WARD, PLAYER.COOLDOWNS.LONG);
+        this.scene.time.delayedCall(duration, () => {
             this.player.isWarding = false;    
             if (this.player.negationBubble && this.player.negationName === States.WARD) {
                 this.player.negationBubble.cleanUp();
@@ -2918,8 +2992,8 @@ export default class PlayerMachine {
     };
 
     onWritheEnter = () => {
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.WRITHE);    
-        this.player.aoe = new AoE(this.scene, 'writhe', 1);    
+        this.player.checkTalentCost(States.WRITHE, PLAYER.STAMINA.WRITHE);
+        this.player.aoe = new AoE(this.scene, 'writhe', 1);
         this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Writhing', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
         this.player.isWrithing = true;
@@ -2933,20 +3007,21 @@ export default class PlayerMachine {
     onWritheUpdate = (_dt: number) => {if (!this.player.isWrithing) this.positiveMachine.setState(States.CLEAN);};
     onWritheExit = () => {
         this.player.aoe.cleanAnimation(this.scene);
-        if (!this.player.isComputer) this.player.setTimeEvent('writheCooldown', PLAYER.COOLDOWNS.SHORT);  
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.WRITHE, PLAYER.COOLDOWNS.SHORT);  
     };
 
     // ==================== TRAITS ==================== \\
     onAstricationEnter = () => {
         if (this.player.isAstrifying === true) return;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.ASTRICATION);    
-        if (!this.player.isComputer) this.player.setTimeEvent('astricationCooldown', PLAYER.COOLDOWNS.LONG);
+        this.player.checkTalentCost(States.ASTRICATION, PLAYER.STAMINA.ASTRICATION);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.ASTRICATION, PLAYER.COOLDOWNS.LONG);
         this.scene.combatManager.combatMachine.input('astrication', {active:true,charges:0});
         this.scene.sound.play('lightning', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Astrication', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.isAstrifying = true;
-        this.player.flickerCarenic(PLAYER.DURATIONS.ASTRICATION); 
-        this.scene.time.delayedCall(PLAYER.DURATIONS.ASTRICATION, () => {
+        const duration = this.player.checkTalentEnhanced(States.ASTRICATION) ? PLAYER.DURATIONS.ASTRICATION * 1.5 : PLAYER.DURATIONS.ASTRICATION;
+        this.player.flickerCarenic(duration); 
+        this.scene.time.delayedCall(duration, () => {
             this.scene.combatManager.combatMachine.input('astrication', {active:false,charges:0});
             this.player.isAstrifying = false;
         }, undefined, this);
@@ -2958,14 +3033,14 @@ export default class PlayerMachine {
 
     onBerserkEnter = () => {
         if (this.player.isBerserking === true) return;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.BERSERK);    
-        if (!this.player.isComputer) this.player.setTimeEvent('berserkCooldown', PLAYER.COOLDOWNS.LONG);  
+        this.player.checkTalentCost(States.BERSERK, PLAYER.STAMINA.BERSERK);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.BERSERK, PLAYER.COOLDOWNS.LONG);  
         this.scene.sound.play('howl', { volume: this.scene.hud.settings.volume });
-        this.scene.combatManager.combatMachine.input('berserk', {active:true,charges:1});
+        this.scene.combatManager.combatMachine.input('berserk', {active:true,charges:1,talent:this.player.checkTalentEnhanced(States.BERSERK)});
         this.player.specialCombatText = this.scene.showCombatText('Berserking', 750, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.player.isBerserking = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.BERSERK, () => {
-            this.scene.combatManager.combatMachine.input('berserk', {active:false,charges:0});
+            this.scene.combatManager.combatMachine.input('berserk', {active:false,charges:0,talent:this.player.checkTalentEnhanced(States.BERSERK)});
             this.player.isBerserking = false;
         }, undefined, this);
         EventBus.emit('special-combat-text', {
@@ -2975,7 +3050,7 @@ export default class PlayerMachine {
     onBerserkUpdate = (_dt: number) => {if (!this.player.isBerserking) this.positiveMachine.setState(States.CLEAN);};
 
     onBlindEnter = () => {
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.BLIND);    
+        this.player.checkTalentCost(States.BLIND, PLAYER.STAMINA.BLIND);
         this.player.aoe = new AoE(this.scene, 'blind', 1);
         this.scene.sound.play('righteous', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Brilliance', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
@@ -2988,16 +3063,17 @@ export default class PlayerMachine {
         });
     };
     onBlindUpdate = (_dt: number) => {if (!this.player.isBlinding) this.positiveMachine.setState(States.CLEAN);};
-    onBlindExit = () => {if (!this.player.isComputer) this.player.setTimeEvent('blindCooldown', PLAYER.COOLDOWNS.SHORT)};
+    onBlindExit = () => {if (!this.player.isComputer) this.player.checkTalentCooldown(States.BLIND, PLAYER.COOLDOWNS.SHORT)};
 
     onCaerenesisEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.CAERENESIS);    
-        this.player.aoe = new AoE(this.scene, 'caerenesis', 1, false, undefined, false, this.player.currentTarget);    
+        this.player.checkTalentCost(States.CAERENESIS, PLAYER.STAMINA.CAERENESIS);
+        const count = this.player.checkTalentEnhanced(States.CAERENESIS) ? 3 : 1;
+        this.player.aoe = new AoE(this.scene, 'caerenesis', count, false, undefined, false, this.player.currentTarget);    
         this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Caerenesis', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
         this.player.isCaerenesis = true;
-        if (!this.player.isComputer) this.player.setTimeEvent('caerenesisCooldown', PLAYER.COOLDOWNS.SHORT);  
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.CAERENESIS, PLAYER.COOLDOWNS.SHORT);  
         this.scene.time.delayedCall(PLAYER.DURATIONS.CAERENESIS, () => {
             this.player.isCaerenesis = false;
         }, undefined, this);
@@ -3009,14 +3085,14 @@ export default class PlayerMachine {
 
     onConvictionEnter = () => {
         if (this.player.isConvicted === true) return;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.CONVICTION);    
-        if (!this.player.isComputer) this.player.setTimeEvent('convictionCooldown', PLAYER.COOLDOWNS.LONG);  
-        this.scene.combatManager.combatMachine.input('conviction', {active:true,charges:0});
+        this.player.checkTalentCost(States.CONVICTION, PLAYER.STAMINA.CONVICTION);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.CONVICTION, PLAYER.COOLDOWNS.LONG);  
+        this.scene.combatManager.combatMachine.input('conviction', {active:true,charges:1,talent:this.player.checkTalentEnhanced(States.CONVICTION)});
         this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Conviction', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
         this.player.isConvicted = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.CONVICTION, () => {
-            this.scene.combatManager.combatMachine.input('conviction', {active:false,charges:0});
+            this.scene.combatManager.combatMachine.input('conviction', {active:false,charges:0,talent:this.player.checkTalentEnhanced(States.CONVICTION)});
             this.player.isConvicted = false;
         }, undefined, this);
         EventBus.emit('special-combat-text', {
@@ -3027,14 +3103,15 @@ export default class PlayerMachine {
 
     onEnduranceEnter = () => {
         if (this.player.isEnduring === true) return;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.ENDURANCE);    
+        this.player.checkTalentCost(States.ENDURANCE, PLAYER.STAMINA.ENDURANCE);
         this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Endurance', 750, 'heal', false, true, () => this.player.specialCombatText = undefined);
         this.player.isEnduring = true;
         this.player.flickerCarenic(PLAYER.DURATIONS.ENDURANCE); 
+        const stamina = this.player.checkTalentEnhanced(States.ENDURANCE) ? -40 : -20;
         this.scene.time.addEvent({
             delay: 1000,
-            callback: () => this.scene.combatManager.useStamina(-20),
+            callback: () => this.scene.combatManager.useStamina(stamina),
             repeat: 5,
             callbackScope: this
         });
@@ -3046,17 +3123,18 @@ export default class PlayerMachine {
         });
     };
     onEnduranceUpdate = (_dt: number) => {if (!this.player.isEnduring) this.positiveMachine.setState(States.CLEAN);};
-    onEnduranceExit = () => {if (!this.player.isComputer) this.player.setTimeEvent('enduranceCooldown', PLAYER.COOLDOWNS.LONG)};  
+    onEnduranceExit = () => {if (!this.player.isComputer) this.player.checkTalentCooldown(States.ENDURANCE, PLAYER.COOLDOWNS.LONG)};  
 
     onImpermanenceEnter = () => {
         if (this.player.isImpermanent === true) return;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.IMPERMANENCE);    
+        this.player.checkTalentCost(States.IMPERMANENCE, PLAYER.STAMINA.IMPERMANENCE);
         this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Impermanence', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
         this.player.isImpermanent = true;
         this.player.flickerCarenic(1500); 
-        if (!this.player.isComputer) this.player.setTimeEvent('impermanenceCooldown', PLAYER.COOLDOWNS.MODERATE);  
-        this.scene.time.delayedCall(PLAYER.DURATIONS.IMPERMANENCE, () => {
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.IMPERMANENCE, PLAYER.COOLDOWNS.MODERATE);  
+        const duration = this.player.checkTalentEnhanced(States.IMPERMANENCE) ? PLAYER.DURATIONS.IMPERMANENCE * 1.5 : PLAYER.DURATIONS.IMPERMANENCE;
+        this.scene.time.delayedCall(duration, () => {
             this.player.isImpermanent = false;
         }, undefined, this);
         EventBus.emit('special-combat-text', {
@@ -3067,14 +3145,15 @@ export default class PlayerMachine {
 
     onSeerEnter = () => {
         if (this.player.isSeering === true) return;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.SEER);    
+        this.player.checkTalentCost(States.SEER, PLAYER.STAMINA.SEER);
         this.scene.sound.play('fire', { volume: this.scene.hud.settings.volume });
         this.scene.combatManager.combatMachine.input('isSeering', true);
         this.player.specialCombatText = this.scene.showCombatText('Seer', 750, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.player.isSeering = true;
-        if (!this.player.isComputer) this.player.setTimeEvent('seerCooldown', PLAYER.COOLDOWNS.MODERATE);
-        this.player.flickerCarenic(1500); 
-        this.scene.time.delayedCall(PLAYER.DURATIONS.SEER, () => {
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.SEER, PLAYER.COOLDOWNS.MODERATE);
+        this.player.flickerCarenic(1500);
+        const duration = this.player.checkTalentEnhanced(States.SEER) ? PLAYER.DURATIONS.SEER * 1.5 : 1;
+        this.scene.time.delayedCall(duration, () => {
             this.player.isSeering = false;
             if (this.scene.state.isSeering === true) {
                 this.scene.combatManager.combatMachine.input('isSeering', false);
@@ -3088,19 +3167,35 @@ export default class PlayerMachine {
 
     onDispelEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
+        this.player.checkTalentCost(States.SEER, PLAYER.STAMINA.SEER);
         this.scene.combatManager.useGrace(PLAYER.STAMINA.KYRNAICISM);
-        if (!this.player.isComputer) this.player.setTimeEvent('dispelCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.DISPEL, PLAYER.COOLDOWNS.MODERATE);
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Dispelling', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.player.flickerCarenic(1000); 
+        this.player.flickerCarenic(1000);
+        const bubbles = [];
+        if (this.player.currentTarget.isMalicing) bubbles.push(States.MALICE);
+        if (this.player.currentTarget.isMending) bubbles.push(States.MEND);
+        if (this.player.currentTarget.isMystifying) bubbles.push(States.MYSTIFY);
+        if (this.player.currentTarget.isMenacing) bubbles.push(States.MENACE);
+        if (this.player.currentTarget.isModerating) bubbles.push(States.MODERATE);
+        if (this.player.currentTarget.isMultifaring) bubbles.push(States.MULTIFARIOUS);
+        if (this.player.currentTarget.isShielding) bubbles.push(States.SHIELD);
+        if (this.player.currentTarget.isProtecting) bubbles.push(States.PROTECT);
+        if (this.player.currentTarget.isAbsorbing) bubbles.push(States.ABSORB);
+        if (this.player.currentTarget.isEnveloping) bubbles.push(States.ENVELOP);
+        if (bubbles.length > 0) {
+            this.positiveMachine.setState(bubbles[Math.floor(Math.random() * bubbles.length)]);
+        };
         this.player.currentTarget.clearBubbles();
     };
     onDispelExit = () => {};
 
     onShirkEnter = () => {
         this.player.isShirking = true;
+        this.player.checkTalentCost(States.SEER, PLAYER.STAMINA.SEER);
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SHIRK);    
-        if (!this.player.isComputer) this.player.setTimeEvent('shirkCooldown', PLAYER.COOLDOWNS.MODERATE);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.SHIRK, PLAYER.COOLDOWNS.MODERATE);
         this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Shirking', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.isConfused = false;
@@ -3112,12 +3207,13 @@ export default class PlayerMachine {
         this.player.isSnared = false;
         this.player.isFrozen = false;
         this.player.isRooted = false;
-
         this.stateMachine.setState(States.COMBAT);
         this.negativeMachine.setState(States.CLEAN);
-
-        this.player.flickerCarenic(6000);
-        this.scene.time.delayedCall(6000, () => {
+        if (this.player.checkTalentEnhanced(States.SHIRK)) {
+            this.positiveMachine.setState(States.IMPERMANENCE);
+        };
+        this.player.flickerCarenic(1500);
+        this.scene.time.delayedCall(1500, () => {
             this.player.isShirking = false;
         }, undefined, this); 
         EventBus.emit('special-combat-text', {
@@ -3126,11 +3222,11 @@ export default class PlayerMachine {
     };
     onShirkExit = () => {};
 
-
     onShadowEnter = () => {
         this.player.isShadowing = true;
-        if (!this.player.isComputer) this.player.setTimeEvent('shadowCooldown', PLAYER.COOLDOWNS.MODERATE);
+        this.player.checkTalentCost(States.SEER, PLAYER.STAMINA.SEER);
         this.scene.combatManager.useGrace(PLAYER.STAMINA.SHADOW);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.SHADOW, PLAYER.COOLDOWNS.MODERATE);
         this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Shadowing', DURATION.TEXT, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.player.flickerCarenic(6000);
@@ -3143,6 +3239,13 @@ export default class PlayerMachine {
     pursue = (id: string) => {
         const enemy = this.scene.enemies.find(e => e.enemyID === id);
         if (!enemy) return;
+        if (this.player.checkTalentEnhanced(States.SHADOW)) {
+            const speed = this.player.checkTalentEnhanced(States.SPRINTING) ? PLAYER.SPEED.SPRINT + 0.75 : PLAYER.SPEED.SPRINT;
+            this.player.adjustSpeed(speed);
+            this.scene.time.delayedCall(2000, () => {
+                this.player.adjustSpeed(-speed);    
+            }, undefined, this);
+        };
         this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
         if (enemy.flipX) {
             this.player.setPosition(enemy.x + 16, enemy.y);
@@ -3153,8 +3256,8 @@ export default class PlayerMachine {
     
     onTetherEnter = () => {
         this.player.isTethering = true;
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.TETHER);
-        if (!this.player.isComputer) this.player.setTimeEvent('tetherCooldown', PLAYER.COOLDOWNS.MODERATE);
+        this.player.checkTalentCost(States.TETHER, PLAYER.STAMINA.TETHER);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.TETHER, PLAYER.COOLDOWNS.MODERATE);
         this.scene.sound.play('dungeon', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Tethering', DURATION.TEXT, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.player.flickerCarenic(6000);
@@ -3168,11 +3271,12 @@ export default class PlayerMachine {
         const enemy = this.scene.enemies.find(e => e.enemyID === id);
         if (!enemy) return;
         this.scene.sound.play('dungeon', { volume: this.scene.hud.settings.volume });
+        this.player.damageDistance(enemy);
         this.player.hook(enemy, 1000);
     };
 
     onStimulateEnter = () => {
-        this.scene.combatManager.useGrace(PLAYER.STAMINA.STIMULATE);    
+        this.player.checkTalentCost(States.STIMULATE, PLAYER.STAMINA.STIMULATE);
         this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Stimulate', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.isStimulating = true;
@@ -3180,7 +3284,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(PLAYER.DURATIONS.STIMULATE, () => {
             this.player.isStimulating = false;
         }, undefined, this);
-        if (!this.player.isComputer) this.player.setTimeEvent('stimulateCooldown', PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.STIMULATE, PLAYER.COOLDOWNS.LONG);
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `Your caeren's hush grants reprieve, refreshing you.`
         });
@@ -3188,8 +3292,9 @@ export default class PlayerMachine {
             const name = this.scene.hud.settings.specials[i].toLowerCase();
             if (name === "stimulate") continue;
             this.scene.hud.logger.log(`Resetting the cooldown on ${name}`);
-            if (!this.player.isComputer) this.player.setTimeEvent(`${name}Cooldown`, 20);
+            if (!this.player.isComputer) this.player.setTimeEvent(`${name}Cooldown`, 0);
         };
+        if (this.player.checkTalentEnhanced(States.STIMULATE)) this.scene.combatManager.combatMachine.action({ type: 'Prayer', data: 'Insight' });
     };
     onStimulateUpdate = (_dt: number) => {if (!this.player.isStimulating) this.positiveMachine.setState(States.CLEAN);};
 

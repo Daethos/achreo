@@ -9,7 +9,6 @@ import { Game } from '../scenes/Game';
 import Party from '../entities/PartyComputer';
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
-
 const COLORS = {
     'astrave': 0xFFFF00,
     'blind': 0xCC5500,
@@ -35,6 +34,7 @@ const COLORS = {
     'wild': 0x50C878,
     'wind': 0x00FFFF
 };
+const SCALE = 0.01875;
 type Player_Scene = Arena | Underground | Game | Tutorial; 
 export default class AoE extends Phaser.Physics.Matter.Sprite {
     count: number;
@@ -164,7 +164,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             });
         };
     };
-
     setPartyCount = (scene: Play, type: string, positive: boolean, origin: Party) => {
         if (type === 'fyerus') {
             if ((scene as Player_Scene).player.isMoving) {
@@ -409,7 +408,8 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         });
     };
     setTimer = (scene: Play, manual: boolean, target: Player | Enemy) => {
-        let scale = 0.01875;
+        const multiplier = scene.hud.talents.talents[this.name as keyof typeof scene.hud.talents.talents].enhanced ? 1.5 : 1;
+        let scale = SCALE * multiplier;
         this.setScale(scale);
         let count = 0;
         let targ = target !== undefined ? target : manual === true ? scene.getWorldPointer() : (scene as Player_Scene).player;
@@ -431,7 +431,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             callback: () => {
                 if (count >= 20) return;
                 if (this && this.timer && targ) {
-                    scale += 0.01875;
+                    scale += SCALE * multiplier;
                     this.setScale(scale);
                     this.setPosition(targ.x, y);
                 };

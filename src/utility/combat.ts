@@ -1318,11 +1318,12 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: nu
         combat.astrication.charges += 1;
     };
     if (combat.conviction.active === true) {
-        combat.realizedPlayerDamage *= (1 + combat.conviction.charges * DAMAGE.CUMULATIVE);
-
+        const conviction = combat.conviction.talent ? DAMAGE.CUMULATIVE_TALENTED : DAMAGE.CUMULATIVE;
+        combat.realizedPlayerDamage *= (1 + combat.conviction.charges * conviction);
     };
     if (combat.berserk.active === true) {
-        combat.realizedPlayerDamage *= (1 + combat.berserk.charges * DAMAGE.CUMULATIVE);
+        const berserk = combat.berserk.talent ? DAMAGE.CUMULATIVE_TALENTED : DAMAGE.CUMULATIVE;
+        combat.realizedPlayerDamage *= (1 + combat.berserk.charges * berserk);
     };
     if (combat.conviction.active === true) {
         combat.conviction.charges += 1;
@@ -1525,10 +1526,12 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
         combat.astrication.charges += 1;
     };
     if (combat.conviction.active === true) {
-        combat.realizedPlayerDamage *= (1 + combat.conviction.charges * DAMAGE.CUMULATIVE);
+        const conviction = combat.conviction.talent ? DAMAGE.CUMULATIVE_TALENTED : DAMAGE.CUMULATIVE;
+        combat.realizedPlayerDamage *= (1 + combat.conviction.charges * conviction);
     };
     if (combat.berserk.active === true) {
-        combat.realizedPlayerDamage *= (1 + combat.berserk.charges * DAMAGE.CUMULATIVE);
+        const berserk = combat.berserk.talent ? DAMAGE.CUMULATIVE_TALENTED : DAMAGE.CUMULATIVE;
+        combat.realizedPlayerDamage *= (1 + combat.berserk.charges * berserk);
     };
     if (combat.conviction.active === true) {
         combat.conviction.charges += 1;
@@ -2043,6 +2046,36 @@ function instantDamageSplitter(combat: Combat, mastery: string): Combat {
     return combat;
 };
 
+function talentPrayer(combat: Combat, prayer: string) {
+    prayerSplitter(combat, prayer);
+    if (combat.playerWin) statusEffectCheck(combat);
+    const changes = {
+        'actionData': combat.actionData,
+        'deityData': combat.deityData,
+        'prayerData': combat.prayerData,
+        'skillData': combat.skillData,
+
+        'weapons': combat.weapons,
+        'computerWeapons': combat.computerWeapons,
+        'playerEffects': combat.playerEffects,
+        'computerEffects': combat.computerEffects,
+        'playerDefense': combat.playerDefense,
+        'computerDefense': combat.computerDefense,
+
+        'newPlayerHealth': combat.newPlayerHealth,
+        'newComputerHealth': combat.newComputerHealth,
+        
+        'realizedPlayerDamage': combat.realizedPlayerDamage,
+        'computerDamaged': combat.computerDamaged,
+        'playerWin': combat.playerWin,
+        'playerActionDescription': combat.playerActionDescription,
+        'playerInfluenceDescription': combat.playerInfluenceDescription,
+
+        'isInsight': combat.isInsight,
+    };
+    return changes;
+};
+
 function instantActionSplitter(combat: Combat): any {
     switch (combat.player?.mastery) {
         case MASTERY.CONSTITUTION:
@@ -2315,6 +2348,16 @@ function instantActionCompiler(combat: Combat): Combat | undefined {
     };
 };
 
+function talentPrayerCompiler(combat: Combat, prayer: string) {
+    try {
+        if (validate(combat) === false) return combat;
+        const res = talentPrayer(combat, prayer);
+        return res;
+    } catch (err) {
+        console.warn(err, "Error in Talent Prayer Compiler");
+    };
+};
+
 function consumePrayer(combat: Combat): Combat | undefined {
     try {
         if (validate(combat) === false) return combat;
@@ -2362,5 +2405,6 @@ export {
     consumePrayer,
     weaponActionCompiler,
     prayerEffectTick,
-    prayerRemoveTick
+    prayerRemoveTick,
+    talentPrayerCompiler
 };

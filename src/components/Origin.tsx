@@ -4,7 +4,7 @@ import { CharacterSheet } from '../utility/ascean';
 
 const ORIGINS = [{
     name: "Ashtre",
-    bio: `A hard people from an inhospitable land to the East in the Astralands, many are ashen from tempest weather. Martial and religious--monotheistic in nature to Astra, the Lightning Ancient, 
+    bio: `A hardened people from an inhospitable land to the East in the Astralands, many are ashen from tempest weather. Martial and religious--monotheistic in nature to Astra, the Lightning Ancient, 
         their governance forms of their leaders in a tetrarchy shored by commerce and law. Laconic and mistrusting, few outsiders get to know these folk, 
         drawing further tension from being the only civilization not to collapse during the Shattering in the War of the Ancients a millenia prior.`,
     index: 'ashtre',
@@ -112,7 +112,7 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
                 width: dimensions().ORIENTATION === 'landscape' ? '85%' : '', 
                 left: dimensions().ORIENTATION === 'landscape' ? '7.5%' : '', 
             }}>
-                <div class="border creature-heading" style={{ height: '100%', 'text-wrap': 'balance' }}><br />
+                <div class="creature-heading" style={{ height: '100%', 'text-wrap': 'balance' }}><br />
                     <p class='super wrap'>
                         {origin.bio}<br /><br />{origin.bioTwo}
                     </p>

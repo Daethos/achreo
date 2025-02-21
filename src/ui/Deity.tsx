@@ -9,6 +9,7 @@ import { NPC } from '../utility/npc';
 import { DialogTree } from './Dialog';
 import { evaluateDeity } from '../utility/deities';
 import Statistics from '../utility/statistics';
+import { Reputation } from '../utility/player';
 
 const colors = {
     constitution: '#fdf6d8',
@@ -57,10 +58,11 @@ interface DeityProps {
     ascean: Accessor<Ascean>;
     combat: Accessor<Combat>;
     game: Accessor<GameState>;
+    reputation: Accessor<Reputation>;
     statistics: Accessor<Statistics>;
 };
 
-export default function Deity({ ascean, combat, game, statistics }: DeityProps) {
+export default function Deity({ ascean, combat, game, reputation, statistics }: DeityProps) {
     const [playerResponses, setPlayerResponses] = createSignal<string[]>([]);
     const [keywordResponses, setKeywordResponses] = createSignal<string[]>([]);
     const [dialogNodes, setDialogNodes] = createSignal<DialogNode[]>([]);
@@ -137,7 +139,7 @@ export default function Deity({ ascean, combat, game, statistics }: DeityProps) 
             <div class='wrap' style={{ width: '100%' }}>
             <br />
             {dialogNodes().length > 0 && (
-                <DialogTree combat={combat} game={game} ascean={ascean()} enemy={deity() as Ascean | NPC} dialogNodes={dialogNodes()} actions={actions} setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} />
+                <DialogTree combat={combat} game={game} ascean={ascean()} enemy={deity() as Ascean | NPC} dialogNodes={dialogNodes()} actions={actions} reputation={reputation} setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} />
             )}
             </div>
         </div>

@@ -16,7 +16,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
     const [attrShow, setAttrShow] = createSignal(false);
     const [attributeDisplay, setAttributeDisplay] = createSignal<{ attribute: any; show: boolean; total: number, equip: number, base: number }>({ attribute: undefined, show: false, base: 0, equip: 0, total: 0 });
     const dimensions = useResizeListener();
-    const viewMargin = { margin: '4%' };
+    const viewMargin = { margin: '3%' };
 
     return <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
         <div class='border superCenter center' style={{ height: '100', width: '85%', overflow: 'scroll', 'scrollbar-width': 'none' }}>
@@ -50,7 +50,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
         </div>
         </div>
     }>
-        <div class='stat-block superCenter' style={{ width: '90%', overflow: 'scroll', 'scrollbar-width': 'none', animation: 'fadein 1.5s ease' }}>
+        <div class='stat-block superCenter' style={{ width: '92%', overflow: 'scroll', 'scrollbar-width': 'none', animation: 'fadein 1.5s ease' }}>
             <div class='border left center' style={{ height: '80vh', width: '48%', top: '10%' }}>
                 <div class='creature-heading superCenter' style={{ width: '100%' }}>
                     <h1>{ascean().name}</h1>
@@ -62,7 +62,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                 </div>
             </div>
             <div class='border right center' style={{ height: '80vh', width: '48%', top: '10%' }}>
-                <div class='superCenter'>
+                <div class='attributes' style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)' }}>
                 <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                 <Suspense fallback={<Puff color="gold" />}>
                     <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />

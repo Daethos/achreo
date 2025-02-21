@@ -508,7 +508,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         </Show>
         <Show when={showDeity()}>
             <Suspense fallback={<Puff color="gold" />}>
-                <Deity ascean={ascean} combat={combat} game={game} statistics={statistics} />
+                <Deity ascean={ascean} combat={combat} game={game} reputation={reputation} statistics={statistics} />
             </Suspense>
         </Show>    
         <Suspense fallback={<Puff color="gold" />}>

@@ -1,31 +1,79 @@
 body {margin:0; padding:0; width: 100%; height: 100vh; color: rgba(253, 246, 216, 0.87); background-color: #000;  font-family: "Cinzel Regular", 'Cinzel', 'Cinzel Bold', 'Cinzel-Regular', Arial, Helvetica, sans-serif; scrollbar-width: none;overflow: hidden; }
-#app {display: fixed; width: 100%; height: 100vh; overflow: hidden; justify-content: center; align-items: center;}
+#app {display: flex; width: 100%; height: 100vh; overflow: hidden; justify-content: center; align-items: center;}
 #overlay {display: flex; position: absolute; justify-content: center; align-items: center; width: 100%; height: 100vh; z-index: 1;}
-.button {font-family: "Cinzel Regular"; width: 10em; margin: 0.5em; padding: 0.5em; background-color: #000; border-radius: 5; color: rgba(253, 246, 216, 0.87); border: 0.15em solid rgba(253, 246, 216, 0.87); cursor: pointer; transition: all 0.3s;
-    &:hover {border: 0.15em solid gold; color: gold;}
-    &:active {border: 0.15em solid gold; color: gold;}
-    &:disabled {cursor: not-allowed; border: 0.15em solid rgba(253, 246, 216, 0.3); color: rgba(253, 246, 216, 0.3);}
+.button {font-family: "Cinzel Regular"; width: 10em; margin: 0.5rem; padding: 0.5rem; background-color: #000; border-radius: 5; color: rgba(253, 246, 216, 0.87); border: 0.15rem solid rgba(253, 246, 216, 0.87); cursor: pointer; transition: all 0.3s;
+    &:hover {border: 0.15rem solid gold; color: gold;}
+    &:active {border: 0.15rem solid gold; color: gold;}
+    &:disabled {cursor: not-allowed; border: 0.15rem solid rgba(253, 246, 216, 0.3); color: rgba(253, 246, 216, 0.3);}
 }
 .cornerBR {position: absolute; bottom: 0; right: 0; font-size: 0.8em; border-radius: 5%;}
 .cornerTR {position: absolute; top: 0; right: 0; font-size: 0.8em; border-radius: 5%;}
 .cornerBL {position: absolute; bottom: 0; left: 0; font-size: 0.8em; border-radius: 5%;}
 .cornerTL {position: absolute; top: 0; left: 0; font-size: 0.8em; border-radius: 5%;}
 .superCenter {position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);}
-.super {font-size: 0.5em;}
+.super {font-size: 0.5rem;}
 .highlight {color: #fdf6d8; background: #000; border-radius: 0.25rem; padding: 0.25rem 1rem; margin: 0.5rem;}
 .highlight:focus {color: gold;}
 .highlight:hover {color: gold;}
 .cinzel {font-family: 'Cinzel Regular'}
-.title {font-size: 7.5em; margin-bottom: 0.25em; margin-top: -0.5em; color:#fdf6d8; text-shadow: 0em 0em 0.1em #ffd700;}
+.title {font-size: 7.5rem; margin-bottom: 0.25em; margin-top: -0.5rem; color:#fdf6d8; text-shadow: 0em 0em 0.1rem #ffd700;}
 .animate {animation: gradient 1s ease infinite;}
 .long-animate {animation: power 10s ease infinite;}
 @keyframes gradient {
-    0% { color:#fdf6d8; text-shadow: 0.025em 0.025em 0.05em #ffd700, -0.025em -0.025em 0.05em #ffd700 }
-    50% { color:#ffd700; text-shadow: 0.025em 0.025em 0.1em #800080, -0.025em -0.025em 0.1em #800080 }
-    100% { color: #fdf6d8; text-shadow: 0.025em 0.025em 0.05em #ffd700, -0.025em -0.025em 0.05em #ffd700 }
+    0% { color:#fdf6d8; text-shadow: 0.025em 0.025em 0.05rem #ffd700, -0.025em -0.025em 0.05rem #ffd700 }
+    50% { color:#ffd700; text-shadow: 0.025em 0.025em 0.1rem #800080, -0.025em -0.025em 0.1rem #800080 }
+    100% { color: #fdf6d8; text-shadow: 0.025em 0.025em 0.05rem #ffd700, -0.025em -0.025em 0.05rem #ffd700 }
 }
 @keyframes power {
-    0% { color:#fdf6d8; text-shadow: 0.025em 0.025em 0.075em #ffd700, -0.025em -0.025em 0.075em #ffd700 }
-    50% { color:#ffd700; text-shadow: 0.025em 0.025em 0.125em #800080, -0.025em -0.025em 0.125em #800080 }
-    100% { color: #fdf6d8; text-shadow: 0.025em 0.025em 0.075em #ffd700, -0.025em -0.025em 0.075em #ffd700 }
+    0% { color:#fdf6d8; text-shadow: 0.025em 0.025em 0.075rem #ffd700, -0.025em -0.025em 0.075rem #ffd700 }
+    50% { color:#ffd700; text-shadow: 0.025em 0.025em 0.125rem #800080, -0.025em -0.025em 0.125rem #800080 }
+    100% { color: #fdf6d8; text-shadow: 0.025em 0.025em 0.075rem #ffd700, -0.025em -0.025em 0.075rem #ffd700 }
+}
+
+/* Desktop-specific styles */
+@media (min-width: 1024px) {
+    body {
+        font-size: 1.2rem; /* Increase base font size for desktop */
+    }
+  
+    .button, .highlight {
+        width: 12rem; /* Larger buttons for desktop */
+        padding: 0.75em;
+        font-size: 1.1rem;
+    }
+  
+    .title {
+        font-size: 10em; /* Larger title for desktop */
+    }
+  
+    .cornerBR,
+    .cornerTR,
+    .cornerBL,
+    .cornerTL {
+        font-size: 1rem; /* Increase corner element font size */
+    }
+  }
+  
+  /* 4K-specific styles */
+@media (min-width: 3840px) {
+    body {
+        font-size: 1.5rem; /* Even larger base font size for 4K */
+    }
+  
+    .button, .highlight {
+        width: 15rem; /* Even larger buttons for 4K */
+        padding: 1rem;
+        font-size: 1.3rem;
+    }
+  
+    .title {
+        font-size: 15rem; /* Even larger title for 4K */
+    }
+  
+    .cornerBR,
+    .cornerTR,
+    .cornerBL,
+    .cornerTL {
+        font-size: 1.2rem; /* Increase corner element font size for 4K */
+    }
 }

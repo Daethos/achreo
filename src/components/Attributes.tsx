@@ -8,12 +8,13 @@ const font = { 'font-size': '1em', margin: '0' };
 
 export default function AttributeModal({ attribute }: { attribute: any }) {
     const dimensions = useResizeListener();
+    const poly = dimensions().WIDTH * 0.55;
     return <div class="border superCenter" style={dimensions()?.ORIENTATION === 'landscape' ? { width: '60%', padding: '1%' } : { width: '75%' }}>
         <div class="creature-heading wrap" style={{ 'text-wrap': 'balance', 'white-space': 'pre-wrap' }}>
             <h1>{attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)}</h1>
             <br />
-            <svg height="5" width="100%" class="tapered-rule mt-2">
-                <polyline points="0,0 400,2.5 0,5"></polyline>
+            <svg height="5" width="100%" class="tapered-rule mt-2 center">
+                <polyline class='center' points={`0,0 ${poly},2.5 0,5`}></polyline>
             </svg>
             <div>
                 <h2 style={{ color: 'gold' }}>{attribute.title}</h2>
@@ -28,11 +29,12 @@ export default function AttributeModal({ attribute }: { attribute: any }) {
 
 export function AttributeNumberModal({ attribute }: { attribute: Accessor<any>; }) {
     const dimensions = useResizeListener();
+    const poly = dimensions().WIDTH * 0.55;
     return <div class="border superCenter" style={dimensions()?.ORIENTATION === 'landscape' ? { width: '50%', padding: '1%', 'z-index': 9 } : { width: '75%' }}>
         <div class="creature-heading wrap" style={{ 'text-wrap': 'balance', 'white-space': 'pre-wrap' }}>
             <h1 style={{ margin: '5% auto' }}>{attribute().attribute}</h1>
             <svg height="5" width="100%" class="tapered-rule">
-                <polyline points="0,0 400,2.5 0,5"></polyline>
+                <polyline points={`0,0 ${poly},2.5 0,5`}></polyline>
             </svg>
             <div>
                 <h2 style={{ color: 'gold' }}>{attribute().base} (Raw)</h2>
@@ -85,7 +87,7 @@ export function AttributeCompiler({ ascean, setAttribute, show, setShow, setDisp
     };
     createEffect(() => compiler());
     const inline = { width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block' };
-    return <div class='creature-heading' style={{ width: '100%', display: 'inline-flex' }}>
+    return <div class='creature-heading attributes' style={{ width: '100%', display: 'inline-flex' }}>
         <div style={inline}>
             <button class='buttonBorderless' onClick={() => toggle('constitution')} style={font}>Con</button>
             <p class='gold' style={font} onClick={() => highlightAttribute('Constitution')}>{abilities()?.totalConstitution}</p>

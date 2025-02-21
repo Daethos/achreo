@@ -1,22 +1,23 @@
 #base-ui {z-index: 99;}
-#deity-pic {max-height: 37.5%; max-width: 37.5%; border-radius: 50%; border: 0.15em solid #fdf6d8; margin: 0 auto; cursor: pointer;}
-#origin-pic {display: block; max-height: 25%; max-width: 25%; border-radius: 50%; border: 0.1em solid #fdf6d8; margin: 0 auto; cursor: pointer;}
-#origin-pic:hover, #deity-pic:hover {border: 0.1em solid gold;}
+#deity-pic {max-height: 37.5%; max-width: 37.5%; border-radius: 50%; border: 0.15rem solid #fdf6d8; margin: 0 auto; cursor: pointer;}
+#origin-pic {display: block; max-height: 25%; max-width: 25%; border-radius: 50%; border: 0.1rem solid #fdf6d8; margin: 0 auto; cursor: pointer;}
+#origin-pic:hover, #deity-pic:hover {border: 0.1rem solid gold;}
 #origin-bonus {color: gold; font-weight: 500;}
 #popover-image {right: 0;}
 #typewriter {width: 100%;}
-.border {border: 0.1em solid #fdf6d8; border-radius: 0.25rem; margin: 0.5rem; background-color: black; z-index: 0;
+.border {border: 0.1rem solid #fdf6d8; border-radius: 0.25rem; margin: 0.5rem; background-color: black; z-index: 0;
     box-shadow:
-    inset #000 0 0 0 0.2em, 
-    inset #fdf6d8 0 0 0 0.3em; 
+    inset #000 0 0 0 0.2rem, 
+    inset #fdf6d8 0 0 0 0.3rem; 
 }
-.compare-border {border: 0.1em solid #fdf6d8;border-left: 0.1em solid #fdf6d8;border-right: 0.1em solid #fdf6d8;padding:0.5%;}
+.character-name {font-size:1em}
+.compare-border {border: 0.1rem solid #fdf6d8;border-left: 0.1rem solid #fdf6d8;border-right: 0.1rem solid #fdf6d8;padding:0.5%;}
 .borderless {border: none;}
 .borderCircle {border-radius: 50%;}
-.buttonBorderless {font-family: "Cinzel Regular";padding: 0.5em;background-color: #000;color: rgba(253, 246, 216, 0.87);border: none;cursor: pointer;transition: all 0.3s;
-    &:hover {border: 0.15em solid gold;color: gold;}
-    &:active {border: 0.15em solid gold;color: gold;}
-    &:disabled {cursor: not-allowed;border: 0.15em solid rgba(253, 246, 216, 0.3);color: rgba(253, 246, 216, 0.3);}
+.buttonBorderless {font-family: "Cinzel Regular";padding: 0.5rem;background-color: #000;color: rgba(253, 246, 216, 0.87);border: none;cursor: pointer;transition: all 0.3s;
+    &:hover {color: gold;}
+    &:active {color: gold;}
+    &:disabled {cursor: not-allowed;color: rgba(253, 246, 216, 0.3);}
 }
 .middleLeft {position: absolute; top: 50%; left: 0; transform: translateY(-50%); font-size: 0.8em;}
 .middleRight {position: absolute; top: 50%; right: 0; transform: translateY(-50%); font-size: 0.8em;}
@@ -37,7 +38,7 @@
     background: #27001d;
     transform: scale(1.1); /* Focused/hovered element grows */
     border-color: gold;
-    box-shadow: inset #000 0 0 0 0.2em, inset gold 0 0 0 0.3em; 
+    box-shadow: inset #000 0 0 0 0.2rem, inset gold 0 0 0 0.3rem; 
     transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease;
 }
 .juice:not(:hover):not(:focus) {
@@ -96,7 +97,7 @@
 .combatUiAnimation {animation: 3s 1 form;}
 @keyframes form {0% {filter: invert(0%);}50% {filter: invert(100%);}100% {filter: invert(0%);}}
 @keyframes invert {0% {filter: invert(0%);transform: scale(1);}50% {filter: invert(100%);transform: scale(1.1);}100% {filter: invert(0%);transform: scale(1);}}
-.shadow {text-shadow: 0 0 0.5em rgba(0, 0, 0, 1);}
+.shadow {text-shadow: 0 0 0.5rem rgba(0, 0, 0, 1);}
 .small {font-size: 0.875em;}
 .logout {position: absolute; top: -0.5%; right: -0.5%; margin: 1rem; color: #fdf6d8; font-size: 0.75rem; background: transparent; border: none;}
 .basic-text {color: #fdf6d8; font-size: 0.75rem; margin: 1rem;}
@@ -112,11 +113,11 @@
 .drop-25 {position: absolute; top: 15%;}
 .left {position: absolute; left: 1%;}
 .default {color: #000; background: #fdf6d8; border-radius: 0.25rem; padding: 0.25rem 1rem; margin: 0.5rem;}
-.dialog-window {position:absolute;height:70%;width:60%;left:20%;background:#000;top:20%;overflow:scroll;scrollbar-width:none;border:0.1em solid gold;border-radius:0.25em;box-shadow:0 0 0.5em #ffc700;display:inline-flex}
+.dialog-window {position:absolute;height:70%;width:60%;left:20%;background:#000;top:20%;overflow:scroll;scrollbar-width:none;border:0.1rem solid gold;border-radius:0.25em;box-shadow:0 0 0.5rem #ffc700;display:inline-flex}
 .playerCombatUi {position: fixed;top: 0;left: 0;width: 50%;}
 .combatUiShield {position: absolute;top: 2.5vh;left: 42.25vw; align-items: center;justify-content: center;background-color: #000;max-height: 10vh;border-radius: 50% 50% 50% 50% / 12% 12% 88% 88%;transform: scale(1.2);}
 .combatUiWeapon {position: absolute;top: 2.5vh;left: 37vw;align-items: center;justify-content: center;border-radius: 50%;transform: scale(1.2);max-height: 10vh;}
-.healthbar {display: flex;position: absolute;margin-left: 12.5%;width: 75%;overflow: hidden;border: 0.1em solid #fdf6d8;border-radius: 1em;}
+.healthbar {display: flex;position: absolute;margin-left: 12.5%;width: 75%;overflow: hidden;border: 0.1rem solid #fdf6d8;border-radius: 1rem;}
 .healthbar > div {
     transition: width 0.5 ease;
 }
@@ -124,44 +125,44 @@
 .playerInventoryBag {height: 100%;width: 100%;z-index: 1;background-color: #000;display: grid;grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(7, 1fr);}
 .playerName {left: 4.5%;font-family: 'Cinzel Regular';font-weight: 600;}
 .playerPortrait {font-family: 'Cinzel Regular';font-weight: 700;text-align: center;z-index: 1;justify-content: center;align-items: center;}
-.playerHealthBar {position: absolute;top: 7.5vh;left: 2vw;width: 20.5vw;height: 5vh;overflow: hidden;border: 0.1em solid purple;}
+.playerHealthBar {position: absolute;top: 7.5vh;left: 2vw;width: 20.5vw;height: 5vh;overflow: hidden;border: 0.1rem solid purple;}
 #playerHealthbarBorder {position: absolute;top: 4vh;left: 0;height: 12.5vh;width: 25vw;z-index: 0;}
 .combatEffects {display: grid;position: fixed;grid-template-columns: repeat(5, 1fr);width: 100%;transform: scale(1);z-index: 1;}
 .combatSettings {position: fixed;background-color: transparent;}
 .disengage {position: absolute;left: 10vw;top: 5vh;}
 .menuButton {font-family: 'Cinzel-Regular';font-size:0.85em;}
-.lootDropWindow {position: absolute;font-family: 'Cinzel-Regular';background-color: #000;height: 35%;width: 35%;top: 55%;left: 50%;transform: translateX(-50%);padding: 0.5em;border: 0.15em solid gold;border-radius: 0.25em;box-shadow: 0 0 0.5em rgba(255, 215, 0, 1);overflow-y: scroll;z-index: 2;scrollbar-width: none;}
-.playerMenuHeading {font-family: 'Cinzel-Regular';font-size: 1em; text-align: center;color: #fdf6d8;background-color: black;padding: 0;} 
-.playerWindow {position: absolute;top: 10vh;color: #fdf6d8;text-align: center;height: 80vh;width: 32.5vw;border: 0.15em solid gold;background-color: #000;overflow: scroll; scrollbar-width: none;}
+.lootDropWindow {position: absolute;font-family: 'Cinzel-Regular';background-color: #000;height: 35%;width: 35%;top: 55%;left: 50%;transform: translateX(-50%);padding: 0.5rem;border: 0.15rem solid gold;border-radius: 0.25em;box-shadow: 0 0 0.5rem rgba(255, 215, 0, 1);overflow-y: scroll;z-index: 2;scrollbar-width: none;}
+.playerMenuHeading {font-family: 'Cinzel-Regular';font-size: 1rem; text-align: center;color: #fdf6d8;background-color: black;padding: 0;} 
+.playerWindow {position: absolute;top: 10vh;color: #fdf6d8;text-align: center;height: 80vh;width: 32.5vw;border: 0.15rem solid gold;background-color: #000;overflow: scroll; scrollbar-width: none;}
 .playerSaveInventoryOuter {position: fixed;background-color: #000;top: -0.5vh;right: 0.5vw;border-radius: 5%;}
-.stamina { text-align: center;color: #fdf6d8;font-family: 'Cinzel Regular';font-size: 1em;z-index: 3; }
-.grace { text-align: center;color: #fdf6d8;font-family: 'Cinzel Regular';font-size: 1em;z-index: 3; }
-.staminaBubble {position: absolute;top: 2vh;left: 24.5vw; width: 5vw; height: 10vh; max-height: 44px; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2em solid purple;box-shadow: 0 0 0.5em rgba(183, 0, 255, 0.5);}
-.graceBubble {position: absolute;top: 2vh;left: 30.5vw; width: 5vw; height: 10vh; max-height: 44px; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2em solid purple;box-shadow: 0 0 0.5em rgba(183, 0, 255, 0.5);}
+.stamina { text-align: center;color: #fdf6d8;font-family: 'Cinzel Regular';font-size: 1rem;z-index: 3; }
+.grace { text-align: center;color: #fdf6d8;font-family: 'Cinzel Regular';font-size: 1rem;z-index: 3; }
+.staminaBubble {position: absolute;top: 2vh;left: 24.5vw; width: 5vw; height: 10vh; max-height: 44px; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2rem solid purple;box-shadow: 0 0 0.5rem rgba(183, 0, 255, 0.5);}
+.graceBubble {position: absolute;top: 2vh;left: 30.5vw; width: 5vw; height: 10vh; max-height: 44px; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2rem solid purple;box-shadow: 0 0 0.5rem rgba(183, 0, 255, 0.5);}
 #staminaPortrait {position: absolute;top: 2vh;left: 35vw;z-index: 1;border-radius: 50%;overflow: hidden;height: auto;width: auto;}
 .enemyCombatUi {position: fixed;top: 0;right: 0;width: 50vw;}
 .enemyUiWeapon {position: absolute;top: 2.5vh;right: 25vw;align-items: center;justify-content: center;border-radius: 50%;transform: scale(1.05);}
-.enemyHealthbar {display: flex;position: absolute;margin-left: 15%;width: 70%;overflow: hidden;border: 0.1em solid #fdf6d8;border-radius: 0.5em;}
-.enemyName {position: absolute;right: 5vw;font-family: 'Cinzel Regular';font-size: 1em;color: red;font-weight: 600;text-shadow: 0 0 0.5em rgba(0, 0, 0, 1);}
-.enemyPortrait {font-family: 'Cinzel Regular';font-weight: 600;text-align: center;text-shadow: 0 0 0.5em rgba(0, 0, 0, 1);z-index: 1;}
-.enemyHealthBar {position: fixed;top: 7.5vh;right: 2vw;width: 20.5vw;height: 5vh;overflow: hidden;border: 0.1em solid red;}
+.enemyHealthbar {display: flex;position: absolute;margin-left: 15%;width: 70%;overflow: hidden;border: 0.1rem solid #fdf6d8;border-radius: 0.5rem;}
+.enemyName {position: absolute;right: 5vw;font-family: 'Cinzel Regular';font-size: 1rem;color: red;font-weight: 600;text-shadow: 0 0 0.5rem rgba(0, 0, 0, 1);}
+.enemyPortrait {font-family: 'Cinzel Regular';font-weight: 600;text-align: center;text-shadow: 0 0 0.5rem rgba(0, 0, 0, 1);z-index: 1;}
+.enemyHealthBar {position: fixed;top: 7.5vh;right: 2vw;width: 20.5vw;height: 5vh;overflow: hidden;border: 0.1rem solid red;}
 #enemyHealthbarBorder {position: fixed;top: 4vh;right: 0;height: 12.5vh;width: 25vw;z-index: 1;}
 .enemyPreview {position: absolute;color: #fdf6d8; border-color: #fdf6d8; text-align: center; width: 25vw;border-radius: 25%;top: 10vh;right: 5vw;}
 .smallHudButtons {position: fixed;bottom: 1%;background-color: black;}
-.cell {padding: 0.5em;border: 0.1em solid #fdf6d8;height: 100%;max-width: 50%;font-family: 'Cinzel Regular';align-items: center;justify-content: center;text-align: center;font-size: 1em;font-weight: 600;color: #fdf6d8;}
+.cell {padding: 0.5rem;border: 0.1rem solid #fdf6d8;height: 100%;max-width: 50%;font-family: 'Cinzel Regular';align-items: center;justify-content: center;text-align: center;font-size: 1rem;font-weight: 600;color: #fdf6d8;}
 .row {display: flex;flex-direction: row;align-items: center;justify-content: center;}
 .table {display: flex;}
 .ascean-builder {border: 0.25em solid #fdf6d8;width: 90%;margin: 0 auto;}
 .ascean-name {display: flex;justify-content: center;align-items: center;margin: 0 auto;width: 10%;height: 100%;}
 .imageCardGrid {display: grid;grid-template-columns: repeat(3, 1fr);grid-gap: 1rem;padding: 1rem;}
-.imageCardLeft {display: flex;justify-content: center;align-items: center;flex-direction: column;border-left: 0.2em solid #fdf6d8;border-right: 0.2em solid #fdf6d8;background-color: #000;}
-.imageCardMiddle {display: flex;justify-content: center;align-items: center;flex-direction: column;border-left: 0.2em solid #fdf6d8;border-right: 0.2em solid #fdf6d8;background-color: #000;}
-.imageCardRight {display: flex;justify-content: center;align-items: center;flex-direction: column;border-left: 0.2em solid #fdf6d8;border-right: 0.2em solid #fdf6d8;background-color: #000;}
+.imageCardLeft {display: flex;justify-content: center;align-items: center;flex-direction: column;border-left: 0.2rem solid #fdf6d8;border-right: 0.2rem solid #fdf6d8;background-color: #000;}
+.imageCardMiddle {display: flex;justify-content: center;align-items: center;flex-direction: column;border-left: 0.2rem solid #fdf6d8;border-right: 0.2rem solid #fdf6d8;background-color: #000;}
+.imageCardRight {display: flex;justify-content: center;align-items: center;flex-direction: column;border-left: 0.2rem solid #fdf6d8;border-right: 0.2rem solid #fdf6d8;background-color: #000;}
 .modal {position: fixed;z-index: 1;left: 0;top: 0;width: 100%;height: 100%;max-height: 100%;overflow: auto;background-color: rgba(0, 0, 0, 0.75);}
 .realize {animation: 1.5s 1 visible;}
 .dialog-buttons {color: green;font-variant: small-caps;font-weight: 550;font-size: 0.65em;}
 .spritePosition {margin: 10px 0 0 10px;font-size: 0.8em;}
-.stat-block {width: 100%;height: 95%;padding-top: 0.5em;padding-bottom: 0.5em;}
+.stat-block {width: 100%;height: 95%;padding-top: 0.5rem;padding-bottom: 0.5rem;}
 .stat-block.wide {text-align: center; }
 .stat-block.wide .section-left,
 .stat-block.wide .section-right {display: inline-block; vertical-align: top; width: 48%; text-align: left; }
@@ -169,35 +170,35 @@
 .stat-block.wide .section-right {margin-left: 1.5%; }
 .orange-border.bottom {width: 95%; border-radius: 25%;}
 .tapered-rule{display: block;width: 100%;height: 5px;border: none;color: #5a0043;fill: #5a0043;stroke: #5a0043;}
-.creature-heading h1{font-family: 'Cinzel Regular', 'Libre Baskerville', 'Lora', 'Calisto MT', 'Bookman Old Style', Bookman, 'Goudy Old Style', Garamond, 'Hoefler Text', 'Bitstream Charter', Georgia, serif;font-size: 1.5em;color: gold;margin: 10px 0 0;letter-spacing: 1px;font-variant: small-caps;font-weight: bold;text-wrap: calc(100% - 2rem);}
-.creature-heading h2{font-family: "Cinzel Regular";font-weight: normal;color: #fdf6d8;font-style: oblique;font-size: 1em;}
-.creature-heading p{font-family: "Cinzel Regular";font-size: 1em;}
+.creature-heading h1{font-family: 'Cinzel Regular', 'Libre Baskerville', 'Lora', 'Calisto MT', 'Bookman Old Style', Bookman, 'Goudy Old Style', Garamond, 'Hoefler Text', 'Bitstream Charter', Georgia, serif;font-size: 1.5rem;color: gold;margin: 10px 0 0;letter-spacing: 1px;font-variant: small-caps;font-weight: bold;text-wrap: calc(100% - 2rem);}
+.creature-heading h2{font-family: "Cinzel Regular";font-weight: normal;color: #fdf6d8;font-style: oblique;font-size: 1rem;}
+.creature-heading p{font-family: "Cinzel Regular";font-size: 1rem;}
 .property-line h4,
-.property-line p{display: inline;margin: 0;color: #fdf6d8;font-size: 1em;}
+.property-line p{display: inline;margin: 0;color: #fdf6d8;font-size: 1rem;}
 .property-line h4 {color: #5a0043;font-weight: 700;}
-.property-line {text-indent: -1em;padding-left: 1.1em;}
+.property-line {text-indent: -1rem;padding-left: 1.1rem;}
 .property-line.first {margin: 8px 0 0}
 .property-line.last {margin: 0 0 10px;}
 .abilities {text-align: center;color: #5a0043;}
 .abilities > div {display: inline-block;vertical-align: middle;width: 15.5%;font-size: 0.9em;}
-.abilities h4 {margin: 10px 0 2px;font-size: 1em;text-transform: uppercase;color: #fdf6d8;}
+.abilities h4 {margin: 10px 0 2px;font-size: 1rem;text-transform: uppercase;color: #fdf6d8;}
 .abilities p{margin: 0 0 10px;}
 .property-block h4,
-.property-block p {font-size: 1em;display: inline;margin: 0;}
+.property-block p {font-size: 1rem;display: inline;margin: 0;}
 .property-block  {font-style: italic;font-weight: 700;}
 .property-block {padding: 10px 2px 0;}
-.actions h3 {border-bottom: 1px solid #5a0043;color: #5a0043;font-size: 1.5em;font-variant: small-caps;font-weight: normal;letter-spacing: 1px;margin: 20px 0 0;padding: 0 0 10px;text-indent: 5px;}
+.actions h3 {border-bottom: 1px solid #5a0043;color: #5a0043;font-size: 1.5rem;font-variant: small-caps;font-weight: normal;letter-spacing: 1px;margin: 20px 0 0;padding: 0 0 10px;text-indent: 5px;}
 .actions {margin: 0 0 20px;}
 .actions:last-child{margin: 0;} 
-.skill-bar {align-items:center;border: 0.1em solid gold;border-radius:0.25em;justify-content:center;margin-bottom:3%;text-align:center;}
-.skill-bar-text {color:#fdf6d8;font-weight: 700;margin:0 auto;position:absolute;text-shadow:#000 0.1em 0 0.5em;width:90%;z-index:1;}
+.skill-bar {align-items:center;border: 0.1rem solid gold;border-radius:0.25em;justify-content:center;margin-bottom:3%;text-align:center;}
+.skill-bar-text {color:#fdf6d8;font-weight: 700;margin:0 auto;position:absolute;text-shadow:#000 0.1rem 0 0.5rem;width:90%;z-index:1;}
 .skill-bar-fill {background-color:blue;height:4vh;overflow:hidden}
-.combatText {position:absolute;left:25vw;height:30vh;width:50vw;top:60vh;margin:auto 0;overflow:scroll;scrollbar-width:none;background-color:#000;border:0.15em solid #ffc700;border-radius:0.25em;box-shadow:0 0 0.25em #ffc700;white-space:pre;}
-.toast {background-color: #000; padding: 0.5em; margin: 0.5em; border: 0.1em solid #ffc700; border-radius: 0.5em; box-shadow: 0 0 1em #ffc700;}
+.combatText {position:absolute;left:25vw;height:30vh;width:50vw;top:60vh;margin:auto 0;overflow:scroll;scrollbar-width:none;background-color:#000;border:0.15rem solid #ffc700;border-radius:0.25em;box-shadow:0 0 0.25em #ffc700;white-space:pre;}
+.toast {background-color: #000; padding: 0.5rem; margin: 0.5rem; border: 0.1rem solid #ffc700; border-radius: 0.5rem; box-shadow: 0 0 1rem #ffc700;}
 .toastBody {color:#fdf6d8; font-size:0.75em; font-weight:500; margin: 0.75em;}
 .toastButton {font-size: 0.75em; margin-left: 50%; transform: translateX(-50%)}
 .toastHeader {color:gold; font-size:0.875em; font-weight:600; margin: 0.25em;}
-.deity-box {position:absolute;height:40%;width:60%;left:20%;background:rgba(0,0,0,0.95);top:50%;border:0.1em solid gold;border-radius:0.25em;box-shadow:0 0 0.5em #ffc700;display:inline-flex;overflow:scroll;scrollbar-width:none;}
+.deity-box {position:absolute;height:40%;width:60%;left:20%;background:rgba(0,0,0,0.95);top:50%;border:0.1rem solid gold;border-radius:0.25em;box-shadow:0 0 0.5rem #ffc700;display:inline-flex;overflow:scroll;scrollbar-width:none;}
 .my-transition {
     transition: height 750ms cubic-bezier(0.65, 0, 0.35, 1);
 }
@@ -212,7 +213,7 @@
         border: 0.25em solid #fdf6d8; 
         border-radius: 0.25rem;
         margin: 0.5rem;
-        box-shadow: inset #000 0 0 0 0.5em, inset #fdf6d8 0 0 0 0.75em; 
+        box-shadow: inset #000 0 0 0 0.5rem, inset #fdf6d8 0 0 0 0.75em; 
     }
     .creature-heading h1{
         font-size: 1.75em;
@@ -226,11 +227,11 @@
         margin: 0;
         font-size: 1.25em;
     }
-    .property-line {text-indent: -1em;padding-left: 1.1em;}
+    .property-line {text-indent: -1rem;padding-left: 1.1rem;}
     .property-line.first {margin: 12px 0 0}
     .property-line.last {margin: 0 0 14px;}
     .abilities > div {
-        font-size: 1em;
+        font-size: 1rem;
     }
     .abilities h4 {
         margin: 12px 0 4px;font-size: 1.25em;
@@ -249,97 +250,279 @@
         margin: 24px 0 0;padding: 0 0 12px;
         text-indent: 6px;
     }
-    .imageCardGrid {
+    /* .attributes {
         transform: scale(1.5);
     }
+    .imageCardGrid {
+        transform: scale(1.5);
+    } */
 }
 @media screen and (min-width: 1200px) {
     .border {border: 0.4em solid #fdf6d8; border-radius: 0.25rem; margin: 0.5rem;
         box-shadow:
         inset #000 0 0 0 0.8em, 
-        inset #fdf6d8 0 0 0 1.2em; 
+        inset #fdf6d8 0 0 0 1.2rem; 
     }
     .creature-heading h1{
-        font-size: 2em;
+        font-size: 2rem;
         margin: 14px 0 0;
         letter-spacing: 1px;
     }
-    .creature-heading h2{font-size: 1.5em;}
-    .creature-heading p{font-size: 1.5em;}
+    .creature-heading h2{font-size: 1.5rem;}
+    .creature-heading p{font-size: 1.5rem;}
     .property-line h4,
     .property-line p{
         margin: 0;
-        font-size: 1.5em;
+        font-size: 1.5rem;
     }
-    .property-line {text-indent: -1em;padding-left: 1.1em;}
+    .property-line {text-indent: -1rem;padding-left: 1.1rem;}
     .property-line.first {margin: 14px 0 0}
     .property-line.last {margin: 0 0 16px;}
     .abilities > div {
-        font-size: 1.1em;
+        font-size: 1.1rem;
     }
     .abilities h4 {
-        margin: 14px 0 6px;font-size: 1.5em;
+        margin: 14px 0 6px;font-size: 1.5rem;
     }
     .abilities p{
         margin: 0 0 14px;
     }
     .property-block h4,
     .property-block p {
-        font-size: 1.5em;
+        font-size: 1.5rem;
     }
     .property-block {padding: 14px 6px 0;}
     .actions h3 {
         border-bottom: 3px solid #5a0043;
-        font-size: 2em;letter-spacing: 1px;
+        font-size: 2rem;letter-spacing: 1px;
         margin: 28px 0 0;padding: 0 0 14px;
         text-indent: 6px;
     }
-    .imageCardGrid {
+    /* .imageCardGrid {
         transform: scale(2);
-    }
+    } */
 }
 @media screen and (min-width: 1800px) {
     .border {border: 0.55em solid #fdf6d8; border-radius: 0.25rem; margin: 0.5rem;
         box-shadow:
-        inset #000 0 0 0 1.1em, 
+        inset #000 0 0 0 1.1rem, 
         inset #fdf6d8 0 0 0 1.65em; 
     }
     .creature-heading h1{
-        font-size: 3em;
+        font-size: 3rem;
         margin: 18px 0 0;
         letter-spacing: 1px;
     }
-    .creature-heading h2{font-size: 2em;}
-    .creature-heading p{font-size: 2em;}
+    .creature-heading h2{font-size: 2rem;}
+    .creature-heading p{font-size: 2rem;}
     .property-line h4,
     .property-line p{
         margin: 0;
-        font-size: 2em;
+        font-size: 2rem;
     }
-    .property-line {text-indent: -1em;padding-left: 1.1em;}
+    .property-line {text-indent: -1rem;padding-left: 1.1rem;}
     .property-line.first {margin: 14px 0 0}
     .property-line.last {margin: 0 0 16px;}
     .abilities > div {
-        font-size: 1.5em;
+        font-size: 1.5rem;
     }
     .abilities h4 {
-        margin: 20px 0 10px;font-size: 2em;
+        margin: 20px 0 10px;font-size: 2rem;
     }
     .abilities p{
         margin: 0 0 20px;
     }
     .property-block h4,
     .property-block p {
-        font-size: 2em;
+        font-size: 2rem;
     }
     .property-block {padding: 20px 10px 0;}
     .actions h3 {
         border-bottom: 5px solid #5a0043;
-        font-size: 2.5em;letter-spacing: 1px;
+        font-size: 2.5rem;letter-spacing: 1px;
         margin: 32px 0 0;padding: 0 0 16px;
         text-indent: 8px;
     }
-    .imageCardGrid {
+    /* .imageCardGrid {
         transform: scale(2.5);
-    }
+    } */
 }
+/* Desktop-specific styles */
+@media (min-width: 1024px) {
+    .border {
+      margin: 1rem; 
+      padding: 1rem; 
+    }
+  
+    .character-name {
+      font-size: 1.2rem; 
+    }
+  
+    .dialog-window {
+      width: 50%; 
+      left: 25%; 
+      height: 80%; 
+    }
+  
+    .combatUiShield {
+      top: 5vh; 
+      left: 45vw;
+      max-height: 15vh; 
+    }
+  
+    .combatUiWeapon {
+      top: 5vh; 
+      left: 40vw;
+      max-height: 15vh; 
+    }
+  
+    .healthbar {
+      width: 50%; 
+      margin-left: 25%; 
+    }
+    .dialog-window {
+      width: 50%; 
+      left: 25%; 
+      height: 80%; 
+    }
+  
+    .playerCombatUi {
+      width: 40%; 
+    }
+  
+    .combatUiShield {
+      top: 5vh; 
+      left: 45vw;
+      max-height: 15vh; 
+    }
+  
+    .combatUiWeapon {
+      top: 5vh; 
+      left: 40vw;
+      max-height: 15vh; 
+    }
+  
+    .playerHealthBar {
+      width: 30vw; 
+      left: 5vw; 
+    }
+  
+    .enemyCombatUi {
+      width: 40%; 
+    }
+  
+    .enemyUiWeapon {
+      top: 5vh; 
+      right: 20vw;
+    }
+  
+    .enemyHealthBar {
+      width: 30vw; 
+      right: 5vw; 
+    }
+  
+    .lootDropWindow {
+      width: 25%; 
+      height: 50%;
+    }
+  
+    .playerWindow {
+      width: 25vw; 
+    }
+  
+    .staminaBubble,
+    .graceBubble {
+      width: 6vw; 
+      height: 12vh;
+    }
+  }
+  
+  /* 4K-specific styles */
+  @media (min-width: 3840px) {
+    .border {
+      margin: 2rem; 
+      padding: 2rem; 
+    }
+  
+    .character-name {
+      font-size: 1.5rem; 
+    }
+  
+    .dialog-window {
+      width: 40%; 
+      left: 30%; 
+      height: 90%; 
+    }
+  
+    .combatUiShield {
+      top: 10vh; 
+      left: 47vw;
+      max-height: 20vh; 
+    }
+  
+    .combatUiWeapon {
+      top: 10vh; 
+      left: 42vw;
+      max-height: 20vh; 
+    }
+  
+    .healthbar {
+      width: 40%; 
+      margin-left: 30%; 
+    }
+    .dialog-window {
+      width: 40%; 
+      left: 30%; 
+      height: 90%; 
+    }
+  
+    .playerCombatUi {
+      width: 30%; 
+    }
+  
+    .combatUiShield {
+      top: 10vh; 
+      left: 47vw;
+      max-height: 20vh; 
+    }
+  
+    .combatUiWeapon {
+      top: 10vh; 
+      left: 42vw;
+      max-height: 20vh; 
+    }
+  
+    .playerHealthBar {
+      width: 25vw; 
+      left: 10vw; 
+    }
+  
+    .enemyCombatUi {
+      width: 30%; 
+    }
+  
+    .enemyUiWeapon {
+      top: 10vh; 
+      right: 15vw;
+    }
+  
+    .enemyHealthBar {
+      width: 25vw; 
+      right: 10vw; 
+    }
+  
+    .lootDropWindow {
+      width: 20%; 
+      height: 60%; 
+    }
+  
+    .playerWindow {
+      width: 20vw; 
+    }
+  
+    .staminaBubble,
+    .graceBubble {
+      width: 8vw; 
+      height: 15vh;
+    }
+  }

@@ -43,6 +43,7 @@ export class Quest {
         items: Equipment[] | string[] | undefined
     };
     public special: string;
+
     constructor(quest: any) {
         this.title = quest.title;    
         this.description = this.getDescription(quest);
@@ -53,6 +54,7 @@ export class Quest {
         this.reward = this.getReward(quest);
         this.special = quest.reward[Math.floor(Math.random() * quest.reward.length)];    
     };
+    [key: string]: any;
 
     private getCurrency(level: number) {
         let currency = { silver: 0, gold: 0 };
@@ -161,11 +163,11 @@ export const QUEST_TEMPLATES = [
         description: "Explore the ruins of an ancient city and discover its treasures",
         requirements: {
             description: `Explore the depths of the sunken city.`,
-            technical: ``
+            technical: initSolve
         },
         reward: [MARK, RECALL],
     }, {
-        name: [FANG_DUELIST, SHRYGEIAN_BARD, CHIOMIC_JESTER],
+        name: [FANG_DUELIST, SHRYGEIAN_BARD, CHIOMIC_JESTER, RAHVREHCUR],
         title: "The Murder of a Merchant",
         description: "Aid in the investigation of a murder that occured recently",
         requirements: {
@@ -341,6 +343,7 @@ export const getQuest = (title: string, enemy: Ascean, reputation: Reputation, a
                 level: enemy.level,
                 reputation: rep + (enemy.level * 2),
                 description: quest.requirements.description,
+                technical: quest.requirements.technical
             },
             rewards    
         };

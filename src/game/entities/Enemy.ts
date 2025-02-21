@@ -3817,7 +3817,7 @@ export default class Enemy extends Entity {
     };
     onHurtUpdate = (dt: number) => {
         this.hurtTime += dt;
-        if (this.hurtTime >= 320) this.isHurt = false;
+        if (this.hurtTime >= 500) this.isHurt = false;
         this.anims.play('player_hurt', true);
         if (!this.isHurt) {
             if ((this.inCombat === true || this.inComputerCombat === true) && this.health > 0) {

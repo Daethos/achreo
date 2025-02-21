@@ -995,8 +995,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 padding: { left: PADDING, right: PADDING, top: PADDING / 2, bottom: PADDING /2 },
                 wordWrap: { useAdvancedWrap: true, width: WIDTH - PADDING * 2 },
             });
-            const efficient = (this.scene.talents.talents[button.name.toLowerCase() as keyof typeof this.scene.talents.talents]).efficient;
-            const enhanced = (this.scene.talents.talents[button.name.toLowerCase() as keyof typeof this.scene.talents.talents]).enhanced;
+            const efficient = (this.scene.talents.talents?.[button.name.toLowerCase() as keyof typeof this.scene.talents.talents])?.efficient;
+            const enhanced = (this.scene.talents.talents?.[button.name.toLowerCase() as keyof typeof this.scene.talents.talents])?.enhanced;
             const cost = efficient ? COST[action.cost.split(" Grace")[0] as keyof typeof COST] : action.cost;
             const cooldown = efficient ? COOLDOWN[action.cooldown as keyof typeof COOLDOWN] : action.cooldown;
             const textSuper = this.scene.add.text(0, textTitle?.height + textDescription?.height, `${cost} \n ${action.time} ${action.special} \n ${cooldown} Cooldown ${enhanced ? `\n ${action.talent.split(".")[1]}` : ``}`, {

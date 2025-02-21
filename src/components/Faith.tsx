@@ -48,7 +48,7 @@ const FaithCard = ({ faith, newAscean, setNewAscean }: { faith: any; newAscean: 
     return <Show when={show()} fallback={<button onClick={handleFaith} class='highlight' style={{ color: faith.worshipers === newAscean().faith ? 'gold' : '#fdf6d8' }}>{faith.name}</button>}>
         <div class='modal' onClick={handleShow}>
         <div class="border verticalCenter" style={dimensions()?.ORIENTATION === 'landscape' ?{ position: 'absolute', left: '15%', width: '70%' } : { }}>
-        <div class="creature-heading border" style={{ 'white-space': 'pre-wrap' }}> 
+        <div class="creature-heading" style={{ 'white-space': 'pre-wrap' }}> 
             <img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === 'landscape' ? '15%' : '', 'margin-top': '3%' }} />
             <p class='gold small' style={{ margin: '3%' }}>{faith.origin}</p>
             <h2 class='gold wrap' style={{ margin: '3%' }}>{faith.character}</h2>

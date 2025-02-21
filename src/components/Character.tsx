@@ -5,7 +5,7 @@ import { Accessor, Setter } from "solid-js";
 
 export default function Character({ newAscean, setNewAscean }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet> }) {
     return <div class='center creature-heading fadeIn' style={{ 'margin': '10% auto 5%' }}>
-        <h1 style={{ 'font-size': '1em' }}>
+        <h1>
             Name <Form.Control style={font('1em', 'black')} type="text" placeholder="Enter Name Here" id="ascean" name="ascean" value={newAscean()?.name} oninput={(e) => setNewAscean({ ...newAscean(), name: e.currentTarget.value })} /><br />
         </h1>
         <h2>

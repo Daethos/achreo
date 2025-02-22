@@ -1,10 +1,6 @@
 import { EventBus } from "../EventBus";
 import { Play } from "../main";
-import { Arena } from "../scenes/Arena";
-import { Game } from "../scenes/Game";
 import { Hud } from "../scenes/Hud";
-import { Tutorial } from "../scenes/Tutorial";
-import { Underground } from "../scenes/Underground";
 
 const MOBILE = ['cursor-reset', 'minimap', 'pause'];
 
@@ -287,13 +283,8 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         const button = this.getButton(type);
         if (!button) return;
         this.switches[type as keyof typeof this.switches] = false;
-        // if (this.switches[type as keyof typeof this.switches] === true) {
-            // button.setBlendMode(Phaser.BlendModes.SCREEN);
-            // button.setAlpha(0.25);
-        // } else {
-            button.setBlendMode(Phaser.BlendModes.NORMAL);    
-            button.setAlpha(1);
-        // };
+        button.setBlendMode(Phaser.BlendModes.NORMAL);    
+        button.setAlpha(1);
         button?.setVisible(false);
         this.draw();
     };

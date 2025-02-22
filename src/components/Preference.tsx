@@ -20,7 +20,7 @@ export default function Sex({ newAscean, setNewAscean }: { newAscean: Accessor<C
         { name: 'Leather-Mail', description: 'Light armor allowing for unrestricted movement at the cost of exposure.' },
         { name: 'Leather-Cloth', description: 'Little physical value translates into greater mobility.' },
     ];
-
+    const poly = window.innerWidth * 0.55;
     return <div class='center creature-heading fadeIn' style={{ 'margin-bottom': '3%' }}>
         <h1 class='gold'>Armor</h1> 
         <For each={preferenceState}>
@@ -33,7 +33,7 @@ export default function Sex({ newAscean, setNewAscean }: { newAscean: Accessor<C
             <div class='border superCenter' style={{ 'text-wrap': 'balance', width: '60%' }}>
             <div class='creature-heading wrap'>
                 <h1 style={{ 'margin': '5%' }}>{armor().name}</h1>
-                <svg height="5" width="100%" class="tapered-rule" style={{ transform: 'translateX(10%)' }}><polyline points="0,0 400,2.5 0,5"></polyline></svg>
+                <svg height="5" width="100%" class="tapered-rule" style={{ transform: 'translateX(10%)' }}><polyline points={`0,0 ${poly},2.5 0,5`}></polyline></svg>
                 <h2 style={{ 'margin': '5%' }}>{armor().description}</h2>
                 <p class='gold small'>Note: This is starter equipment--you may wear anything in this game. Also, magic damage is a quality that carries its own concerns.</p>
             </div>

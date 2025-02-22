@@ -449,6 +449,7 @@ export const PersuasionModal = ({ traits, callback, name, influence, show, setSh
 };
 
 export const QuestModal = ({ quests, show, setShow, enemy }: { quests: Accessor<Quest[]>, show: Accessor<boolean>, setShow: Setter<boolean>; enemy: Ascean }) => {
+    const poly = window.innerWidth * 0.55;
     return ( // onClick={() => setShow(!show())}
         <>
         <Show when={show()}>
@@ -457,7 +458,7 @@ export const QuestModal = ({ quests, show, setShow, enemy }: { quests: Accessor<
             <div class='creature-heading wrap'>
                 <h1 style={{ margin: '3%' }}>Quests</h1>
                 <svg height="5" width="100%" class="tapered-rule mt-2">
-                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                    <polyline points={`0,0 ${poly},2.5 0,5`}></polyline>
                 </svg>
                 <h2>These are the quests you have available to you. Each quest has its own requirements and rewards. 
                 Quests may be shared between multiple enemies, but the player may only choose one quest giver.</h2>

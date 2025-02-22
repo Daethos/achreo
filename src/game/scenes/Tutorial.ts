@@ -256,6 +256,7 @@ export class Tutorial extends Phaser.Scene {
             this.player.playerMachine.positiveMachine.setState(States.STEALTH);
             this.stealthEngaged(true);
         };
+        this.matter.resume();
         this.scene.wake();
         EventBus.emit('current-scene-ready', this);
     };
@@ -265,6 +266,7 @@ export class Tutorial extends Phaser.Scene {
             this.registry.set("ascean", this.state.player);
             this.player.disengage();
             this.pauseMusic();
+            this.matter.pause();
             this.scene.sleep(current);
         });
     };

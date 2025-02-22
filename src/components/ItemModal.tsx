@@ -35,7 +35,7 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                 </Show>
                 </h1>
             </div>
-            <Show when={!empty}> 
+            <Show when={!empty}>
             <svg height="5" width="100%" class="tapered-rule mt-2">
                 <polyline points={`0,0 ${poly},2.5 0,5`}></polyline>
             </svg>

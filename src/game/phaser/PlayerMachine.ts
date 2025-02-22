@@ -1,6 +1,6 @@
 import Player from '../entities/Player';
 import StateMachine, { specialStateMachines, States } from "./StateMachine";
-import { BALANCED, BALANCED_INSTINCTS, DEFENSIVE, DEFENSIVE_INSTINCTS, OFFENSIVE, OFFENSIVE_INSTINCTS, PLAYER, PLAYER_INSTINCTS, staminaCheck, TALENT_COOLDOWN, TALENT_COST } from "../../utility/player";
+import { BALANCED, BALANCED_INSTINCTS, DEFENSIVE, DEFENSIVE_INSTINCTS, OFFENSIVE, OFFENSIVE_INSTINCTS, PLAYER, PLAYER_INSTINCTS, staminaCheck } from "../../utility/player";
 import { FRAME_COUNT } from '../entities/Entity';
 import AoE from './AoE';
 import { EventBus } from "../EventBus";

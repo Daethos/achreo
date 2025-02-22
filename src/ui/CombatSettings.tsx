@@ -34,6 +34,8 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
         height: settings()?.combatSettings?.height || '50%',
         width: settings()?.combatSettings?.width || '50%',
     });
+    const poly = window.innerWidth * Number(`0.${settings()?.combatSettings?.width.split("%")[0]}`) * 0.9;
+    console.log(poly, 'poly')
     createEffect(() => {
         if (!settings().combatSettings) return;
         setEdit({...settings().combatSettings});
@@ -108,6 +110,9 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
                 </button>;
             })}</For>
             </div>
+            <svg height="5" width="100%" class="tapered-rule mt-2" style={{ 'margin-left': '5%' }}>
+                <polyline points={`0,0 ${poly},2.5 0,5`}></polyline>
+            </svg>
             <Show when={game().scrollEnabled}>
                 <Switch>
                 <Match when={game().selectedHighlight === 'Weapon'}>

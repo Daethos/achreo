@@ -1,5 +1,5 @@
 import Entity, { assetSprite, Player_Scene, SWING_TIME } from "./Entity";  
-import { screenShake, sprint, vibrate, walk } from "../phaser/ScreenShake";
+import { screenShake, sprint, vibrate } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
 import PlayerMachine from '../phaser/PlayerMachine';
@@ -145,7 +145,7 @@ export default class Player extends Entity {
         this.deceleration = PLAYER.SPEED.DECELERATION;
         this.dt = this.scene.sys.game.loop.delta;
         this.playerMachine = new PlayerMachine(scene, this);
-        this.setScale(PLAYER.SCALE.SELF);   
+        this.setScale(PLAYER.SCALE.SELF);
         let playerCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { isSensor: false, label: 'playerCollider' }); // Y + 10 For Platformer
         let playerSensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: 'playerSensor' }); // Y + 2 For Platformer
         const compoundBody = Body.create({
@@ -1542,7 +1542,7 @@ export default class Player extends Entity {
             this.handleMovementAnimations();
             this.isMoving = true;
         } else if (this.isCasting) {
-            walk(this.scene);
+            // walk(this.scene);
             this.anims.play('player_health', true);
         } else if (this.isPraying) {
             this.anims.play('player_pray', true).on('animationcomplete', () => this.isPraying = false);

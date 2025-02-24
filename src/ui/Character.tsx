@@ -272,7 +272,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     <For each={quests().quests}>{(quest, _index) => {
                         return <div class='border juice wrap' onClick={() => setShowQuest({show:true,quest})} style={{ 'min-height': '100%', margin: '5% auto', 'text-align': 'center', 'border-color': masteryColor(quest.mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em` }}>
                             <h2 style={{ color: 'gold' }}>{quest.title}</h2>
-                            <p class='' style={{'margin-left': '10%', width: '80%' }}>{quest.description}</p>    
+                            <p style={{'margin-left': '10%', width: '80%' }}>{quest.description}</p>    
                         </div>
                     }}</For>
                 </div>;
@@ -645,7 +645,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             <Switch>
                 <Match when={settings().asceanViews === VIEWS.SETTINGS}>
                 <div class='playerWindow' style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: '0.25vw', overflow: 'hidden' }}>
-                    <div class='' style={{ 'justify-content': 'center', 'align-items': 'center', 'text-align': 'center' }}>
+                    <div style={{ 'justify-content': 'center', 'align-items': 'center', 'text-align': 'center' }}>
                         <p style={{ color: 'gold', 'font-size': '1.25em' }}>Feedback</p>
                         <Form class='verticalCenter' style={{ 'text-wrap': 'balance' }}>
                             <Form.Text class="text-muted">
@@ -736,7 +736,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             <div class='creature-heading' style={{ 'margin-top': '-5%' }}>
                                 <h1>Blessings</h1>
                             </div>
-                            <div class='' style={{ width: '70%', margin: 'auto', padding: '1em', display: 'grid' }}>
+                            <div style={{ width: '70%', margin: 'auto', padding: '1em', display: 'grid' }}>
                             <div class='imageCardMiddle' style={{ 'left': '50%' }}>
                                 <div onClick={() =>info(ascean().weaponOne)} style={item(ascean().weaponOne.rarity as string)}>
                                     <img alt='item' style={{ height: '100%', width: '100%' }} src={ascean().weaponOne.imgUrl} />
@@ -900,7 +900,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         <Show when={removeModalShow()}>
             <div class='modal'>
             <div class='button superCenter' style={{ 'background-color': 'black', width: '25%' }}>
-                <div class=''>
+                <div>
                 <div class='center' style={font('1.5em')}>Do You Wish To Remove and Destroy Your <span style={{ color: 'gold' }}>{highlighted()?.item?.name}?</span> <br /><br /><div>
                     <img style={{ transform: 'scale(1.25)' }} src={highlighted()?.item?.imgUrl} alt={highlighted()?.item?.name} onClick={() => removeItem(highlighted()?.item?._id as string)} />
                 </div>
@@ -914,16 +914,15 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             </div>
         </Show>
         <Show when={showTutorial()}>
-        <Suspense fallback={<Puff color="gold"/>}>
-            <TutorialOverlay ascean={ascean} settings={settings} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} /> 
-        </Suspense>
+            <Suspense fallback={<Puff color="gold"/>}>
+                <TutorialOverlay ascean={ascean} settings={settings} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} /> 
+            </Suspense>
         </Show>
         <Show when={showInventory()}>
-        <Suspense fallback={<Puff color="gold"/>}>
-            <TutorialOverlay ascean={ascean} settings={settings} tutorial={tutorial} show={showInventory} setShow={setShowInventory} /> 
-        </Suspense>
+            <Suspense fallback={<Puff color="gold"/>}>
+                <TutorialOverlay ascean={ascean} settings={settings} tutorial={tutorial} show={showInventory} setShow={setShowInventory} /> 
+            </Suspense>
         </Show>
-        {/* setShowQuest */}
         <Show when={showQuest().show}>
             <div class='modal'>
                 <div class='superCenter' style={{ width:'50%' }}>
@@ -939,10 +938,10 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         {showQuest()?.quest.description}
                     </p>
                     <div class='row' style={{ display: 'block' }}>
-                    <h4 class='' style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '7.5%'}}>
+                    <h4 style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '7.5%'}}>
                         Requirements
                     </h4>
-                    <h4 class='' style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '7.5%'}}>
+                    <h4 style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '7.5%'}}>
                         Rewards
                     </h4>
                     <br />
@@ -955,7 +954,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         Experience: {showQuest()?.quest?.reward?.experience}<br />
                         Items: <For each={showQuest()?.quest?.reward?.items}>{(item, index) => {
                             const length = showQuest()?.quest?.reward?.items.length;
-                            return <div class='' style={{ display: 'inline-block' }}>
+                            return <div style={{ display: 'inline-block' }}>
                                 {item}{length === 0 || length - 1 === index() ? '' : `,\xa0`}{' '}
                             </div>
                         }}</For>

@@ -1,4 +1,4 @@
-import { Accessor, createSignal, Show, lazy, Suspense } from 'solid-js';
+import { Accessor, createSignal, Show, lazy, Suspense, createEffect } from 'solid-js';
 import { AttributeCompiler, AttributeNumberModal } from './Attributes';
 import { Attributes } from '../utility/attributes';
 import { useResizeListener } from '../utility/dimensions';
@@ -10,14 +10,24 @@ const ItemModal = lazy(async () => await import('./ItemModal'));
 const AttributeModal = lazy(async () => await import('./Attributes'));
 
 export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
+    const dimensions = useResizeListener();
     const [show, setShow] = createSignal(false);
     const [equipment, setEquipment] = createSignal<Equipment | undefined>(undefined);
     const [attribute, setAttribute] = createSignal(Attributes[0]);
     const [attrShow, setAttrShow] = createSignal(false);
     const [attributeDisplay, setAttributeDisplay] = createSignal<{ attribute: any; show: boolean; total: number, equip: number, base: number }>({ attribute: undefined, show: false, base: 0, equip: 0, total: 0 });
-    const dimensions = useResizeListener();
     const viewMargin = { margin: '3%' };
-
+    const [positioning, setPositioning] = createSignal({
+        top: dimensions().WIDTH > 1200 ? '37.5%' : '50%',
+        left: dimensions().WIDTH > 1200 ? '37.5%' : '50%',
+    });
+    createEffect(() => {
+        setPositioning({
+            top: dimensions().WIDTH > 1800 ? '33%' : dimensions().WIDTH > 1200 ? '30%' : '50%',
+            left: dimensions().WIDTH > 1800 ? '33%' : dimensions().WIDTH > 1200 ? '30%' : '50%',
+        });
+        console.log(dimensions().WIDTH, 'width');
+    });
     return <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
         <div class='border superCenter center' style={{ height: '100', width: '85%', overflow: 'scroll', 'scrollbar-width': 'none' }}>
         <div class='creature-heading' style={{ width: '100%', height: '100%' }}>
@@ -62,7 +72,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                 </div>
             </div>
             <div class='border right center' style={{ height: '80vh', width: '48%', top: '10%' }}>
-                <div class='attributes' style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)' }}>
+                <div class='superCenter view' style={{ position: 'absolute', ...positioning() }}>
                 <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                 <Suspense fallback={<Puff color="gold" />}>
                     <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />

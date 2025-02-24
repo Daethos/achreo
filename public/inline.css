@@ -5,7 +5,12 @@
 #origin-bonus {color: gold; font-weight: 500;}
 #popover-image {right: 0;}
 #typewriter {width: 100%;}
-.border {border: 0.1rem solid #fdf6d8; border-radius: 0.25rem; margin: 0.5rem; background-color: black; z-index: 0;
+.border {
+    border: 0.1rem solid #fdf6d8; 
+    border-radius: 0.25rem; 
+    margin: 0.5rem; 
+    background-color: black; 
+    z-index: 0;
     box-shadow:
     inset #000 0 0 0 0.2rem, 
     inset #fdf6d8 0 0 0 0.3rem; 
@@ -32,29 +37,29 @@
 .moisten {animation: moist 0.5s ease;}
 .juice {
     animation: juicy 0.75s ease;
-    transition: transform 0.75s ease; /* Ensure smooth transitions */
+    transition: transform 0.75s ease;
 }
 .juice:hover, .juice:focus {
     background: #27001d;
     transform: scale(1.1); /* Focused/hovered element grows */
     border-color: gold;
-    box-shadow: inset #000 0 0 0 0.2rem, inset gold 0 0 0 0.3rem; 
+    box-shadow: inset #000 0 0 0 0.2rem, inset gold 0 0 0 0.3rem;
     transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease;
 }
 .juice:not(:hover):not(:focus) {
-    transform: scale(1); /* Shrink all non-hovered/non-focused elements */
+    transform: scale(1);
     transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease;
     border-color: #fdf6d8;
 }
 .menu:hover .juice:not(:hover),
 .menu:focus-within .juice:not(:focus) {
-    transform: scale(0.85); /* Shrink all non-hovered/non-focused elements */
-    transition: transform 0.5s ease; /* Smooth transition */
+    transform: scale(0.85);
+    transition: transform 0.5s ease;
 }
 
 .juiceNB {
     animation: juicy 0.75s ease;
-    transition: transform 0.75s ease; /* Ensure smooth transitions */
+    transition: transform 0.75s ease;
 }
 .juiceNB:hover, .juiceNB:focus {
     transform: scale(1.25); /* Focused/hovered element grows */
@@ -62,13 +67,13 @@
     filter: drop-shadow(0 0 2px #fdf6d8);
 }
 .juiceNB:not(:hover):not(:focus) {
-    transform: scale(1); /* Shrink all non-hovered/non-focused elements */
+    transform: scale(1);
     transition: transform 0.75s ease, background-color 0.75s ease;
 }
 .menu:hover .juiceNB:not(:hover),
 .menu:focus-within .juiceNB:not(:focus) {
-    transform: scale(0.8); /* Shrink all non-hovered/non-focused elements */
-    transition: transform 0.5s ease; /* Smooth transition */
+    transform: scale(0.8);
+    transition: transform 0.5s ease;
 }
 @keyframes moist {
     0% { transform: scale(0.9); }
@@ -123,10 +128,10 @@
 }
 .healthbarPosition {position: absolute; bottom: 0; left: 0; top: 0; z-index: -1;}
 .playerInventoryBag {height: 100%;width: 100%;z-index: 1;background-color: #000;display: grid;grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(7, 1fr);}
-.playerName {left: 4.5%;font-family: 'Cinzel Regular';font-weight: 600;}
-.playerPortrait {font-family: 'Cinzel Regular';font-weight: 700;text-align: center;z-index: 1;justify-content: center;align-items: center;}
-.playerHealthBar {position: absolute;top: 7.5vh;left: 2vw;width: 20.5vw;height: 5vh;overflow: hidden;border: 0.1rem solid purple;}
-#playerHealthbarBorder {position: absolute;top: 4vh;left: 0;height: 12.5vh;width: 25vw;z-index: 0;}
+.playerName {position:absolute;left: 4.5vh;font-family: 'Cinzel Regular';font-weight: 600;margin:auto;max-height:40px;z-index:1;}
+.playerPortrait {font-family: 'Cinzel Regular';font-size:1.15em;font-weight: 700;margin:auto;text-align: center;z-index: 1;justify-content: center;align-items: center;z-index:1;}
+.playerHealthBar {position: absolute;top: 7.5vh;left: 4%;width: 20.75vw;height: 5vh;max-height:24px;overflow: hidden;border: 0.1rem solid purple;z-index:0;}
+#playerHealthbarBorder {position: absolute;top: 4vh;left: 0;height: 12.5vh;width: 25vw;max-height:74px;z-index: 0;}
 .combatEffects {display: grid;position: fixed;grid-template-columns: repeat(5, 1fr);width: 100%;transform: scale(1);z-index: 1;}
 .combatSettings {position: fixed;background-color: transparent;}
 .disengage {position: absolute;left: 10vw;top: 5vh;}
@@ -137,8 +142,8 @@
 .playerSaveInventoryOuter {position: fixed;background-color: #000;top: -0.5vh;right: 0.5vw;border-radius: 5%;}
 .stamina { text-align: center;color: #fdf6d8;font-family: 'Cinzel Regular';font-size: 1rem;z-index: 3; }
 .grace { text-align: center;color: #fdf6d8;font-family: 'Cinzel Regular';font-size: 1rem;z-index: 3; }
-.staminaBubble {position: absolute;top: 2vh;left: 24.5vw; width: 5vw; height: 10vh; max-height: 44px; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2rem solid purple;box-shadow: 0 0 0.5rem rgba(183, 0, 255, 0.5);}
-.graceBubble {position: absolute;top: 2vh;left: 30.5vw; width: 5vw; height: 10vh; max-height: 44px; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2rem solid purple;box-shadow: 0 0 0.5rem rgba(183, 0, 255, 0.5);}
+.staminaBubble {position: absolute;top: 2vh;left: 24.5vw; width: 5vw; height: 10vh; max-height: 44px; max-width: 44px; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2rem solid purple;box-shadow: 0 0 0.5rem rgba(183, 0, 255, 0.5);}
+.graceBubble {position: absolute;top: 2vh;left: 30.5vw; width: 5vw; height: 10vh; max-height: 44px; max-width: 44px; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2rem solid purple;box-shadow: 0 0 0.5rem rgba(183, 0, 255, 0.5);}
 #staminaPortrait {position: absolute;top: 2vh;left: 35vw;z-index: 1;border-radius: 50%;overflow: hidden;height: auto;width: auto;}
 .enemyCombatUi {position: fixed;top: 0;right: 0;width: 50vw;}
 .enemyUiWeapon {position: absolute;top: 2.5vh;right: 25vw;align-items: center;justify-content: center;border-radius: 50%;transform: scale(1.05);}
@@ -209,12 +214,6 @@
     .stat-block.wide .section-right {margin: 0;}
 }
 @media screen and (min-width: 900px) {
-    .border {
-        border: 0.25em solid #fdf6d8; 
-        border-radius: 0.25rem;
-        margin: 0.5rem;
-        box-shadow: inset #000 0 0 0 0.5rem, inset #fdf6d8 0 0 0 0.75em; 
-    }
     .creature-heading h1{
         font-size: 1.75em;
         margin: 12px 0 0;
@@ -250,18 +249,13 @@
         margin: 24px 0 0;padding: 0 0 12px;
         text-indent: 6px;
     }
-    /* .attributes {
-        transform: scale(1.5);
-    }
-    .imageCardGrid {
-        transform: scale(1.5);
-    } */
 }
 @media screen and (min-width: 1200px) {
-    .border {border: 0.4em solid #fdf6d8; border-radius: 0.25rem; margin: 0.5rem;
+    .border {
+        border: 0.2em solid #fdf6d8; 
         box-shadow:
-        inset #000 0 0 0 0.8em, 
-        inset #fdf6d8 0 0 0 1.2rem; 
+        inset #000 0 0 0 0.4rem, 
+        inset #fdf6d8 0 0 0 0.6rem; 
     }
     .creature-heading h1{
         font-size: 2rem;
@@ -271,42 +265,48 @@
     .creature-heading h2{font-size: 1.5rem;}
     .creature-heading p{font-size: 1.5rem;}
     .property-line h4,
-    .property-line p{
-        margin: 0;
-        font-size: 1.5rem;
-    }
+    .property-line p{margin: 0;font-size: 1.5rem;}
     .property-line {text-indent: -1rem;padding-left: 1.1rem;}
     .property-line.first {margin: 14px 0 0}
     .property-line.last {margin: 0 0 16px;}
-    .abilities > div {
-        font-size: 1.1rem;
-    }
-    .abilities h4 {
-        margin: 14px 0 6px;font-size: 1.5rem;
-    }
-    .abilities p{
-        margin: 0 0 14px;
-    }
+    .abilities > div {font-size: 1.1rem;}
+    .abilities h4 {margin: 14px 0 6px;font-size: 1.5rem;}
+    .abilities p{margin: 0 0 14px;}
     .property-block h4,
-    .property-block p {
-        font-size: 1.5rem;
-    }
+    .property-block p {font-size: 1.5rem;}
     .property-block {padding: 14px 6px 0;}
     .actions h3 {
         border-bottom: 3px solid #5a0043;
         font-size: 2rem;letter-spacing: 1px;
         margin: 28px 0 0;padding: 0 0 14px;
         text-indent: 6px;
+    }       
+    .juice:hover, .juice:focus {
+        transform: scale(1.15);
+        box-shadow: inset #000 0 0 0 0.4rem, inset gold 0 0 0 0.6rem;
     }
-    /* .imageCardGrid {
-        transform: scale(2);
-    } */
+    .view {
+        transform: scale(1.5);
+    }
+    .combatUiWeapon, .combatUiShield, .enemyUiWeapon {top:4vh; transform: scale(2);}
+    .combatUiWeapon {left: 38vw;}
+    .combatUiShield {left: 44vw;}
+    .enemyUiWeapon {right: 26.5vw;}
+    .playerHealthBar {left: 2vw;top: 6.5vh;border: 0.175rem solid purple;}
+    .enemyHealthBar {right: 5vw; top: 6.5vh;border: 0.175rem solid red;}
+    .staminaBubble,
+    .graceBubble {
+        border: 0.25em solid purple;
+        max-width: 66px; 
+        max-height: 66px;
+    }
 }
 @media screen and (min-width: 1800px) {
-    .border {border: 0.55em solid #fdf6d8; border-radius: 0.25rem; margin: 0.5rem;
+    .border {
+        border: 0.3em solid #fdf6d8; 
         box-shadow:
-        inset #000 0 0 0 1.1rem, 
-        inset #fdf6d8 0 0 0 1.65em; 
+            inset #000 0 0 0 0.6rem,
+            inset #fdf6d8 0 0 0 0.9em;
     }
     .creature-heading h1{
         font-size: 3rem;
@@ -316,26 +316,15 @@
     .creature-heading h2{font-size: 2rem;}
     .creature-heading p{font-size: 2rem;}
     .property-line h4,
-    .property-line p{
-        margin: 0;
-        font-size: 2rem;
-    }
+    .property-line p{margin: 0;font-size: 2rem;}
     .property-line {text-indent: -1rem;padding-left: 1.1rem;}
     .property-line.first {margin: 14px 0 0}
     .property-line.last {margin: 0 0 16px;}
-    .abilities > div {
-        font-size: 1.5rem;
-    }
-    .abilities h4 {
-        margin: 20px 0 10px;font-size: 2rem;
-    }
-    .abilities p{
-        margin: 0 0 20px;
-    }
+    .abilities > div {font-size: 1.5rem;}
+    .abilities h4 {margin: 20px 0 10px;font-size: 2rem;}
+    .abilities p{margin: 0 0 20px;}
     .property-block h4,
-    .property-block p {
-        font-size: 2rem;
-    }
+    .property-block p {font-size: 2rem;}
     .property-block {padding: 20px 10px 0;}
     .actions h3 {
         border-bottom: 5px solid #5a0043;
@@ -343,186 +332,28 @@
         margin: 32px 0 0;padding: 0 0 16px;
         text-indent: 8px;
     }
-    /* .imageCardGrid {
-        transform: scale(2.5);
-    } */
+    .juice:hover, .juice:focus {
+        transform: scale(1.2);
+        box-shadow: inset #000 0 0 0 0.6rem, inset gold 0 0 0 0.9rem;
+    }
+    .character-name {
+        font-size: 1.2rem; 
+    }
+    .healthbar {
+        width: 50%; 
+        margin-left: 25%; 
+    }
+    .combatUiWeapon, .combatUiShield, .enemyUiWeapon {top:5vh; transform: scale(2.5);}
+    .playerHealthBar {left: 2vw;top: 6vh;border: 0.2rem solid purple;}
+    .enemyHealthBar {right: 5vw; top: 6vh;border: 0.2rem solid red;}
+    /* .playerWindow {width: 25vw; } */
+    .staminaBubble,
+    .graceBubble {
+        border: 0.25em solid purple;
+        max-width: 88px; 
+        max-height: 88px;
+    }
+    .view {
+        transform: scale(2);
+    }
 }
-/* Desktop-specific styles */
-@media (min-width: 1024px) {
-    .border {
-      margin: 1rem; 
-      padding: 1rem; 
-    }
-  
-    .character-name {
-      font-size: 1.2rem; 
-    }
-  
-    .dialog-window {
-      width: 50%; 
-      left: 25%; 
-      height: 80%; 
-    }
-  
-    .combatUiShield {
-      top: 5vh; 
-      left: 45vw;
-      max-height: 15vh; 
-    }
-  
-    .combatUiWeapon {
-      top: 5vh; 
-      left: 40vw;
-      max-height: 15vh; 
-    }
-  
-    .healthbar {
-      width: 50%; 
-      margin-left: 25%; 
-    }
-    .dialog-window {
-      width: 50%; 
-      left: 25%; 
-      height: 80%; 
-    }
-  
-    .playerCombatUi {
-      width: 40%; 
-    }
-  
-    .combatUiShield {
-      top: 5vh; 
-      left: 45vw;
-      max-height: 15vh; 
-    }
-  
-    .combatUiWeapon {
-      top: 5vh; 
-      left: 40vw;
-      max-height: 15vh; 
-    }
-  
-    .playerHealthBar {
-      width: 30vw; 
-      left: 5vw; 
-    }
-  
-    .enemyCombatUi {
-      width: 40%; 
-    }
-  
-    .enemyUiWeapon {
-      top: 5vh; 
-      right: 20vw;
-    }
-  
-    .enemyHealthBar {
-      width: 30vw; 
-      right: 5vw; 
-    }
-  
-    .lootDropWindow {
-      width: 25%; 
-      height: 50%;
-    }
-  
-    .playerWindow {
-      width: 25vw; 
-    }
-  
-    .staminaBubble,
-    .graceBubble {
-      width: 6vw; 
-      height: 12vh;
-    }
-  }
-  
-  /* 4K-specific styles */
-  @media (min-width: 3840px) {
-    .border {
-      margin: 2rem; 
-      padding: 2rem; 
-    }
-  
-    .character-name {
-      font-size: 1.5rem; 
-    }
-  
-    .dialog-window {
-      width: 40%; 
-      left: 30%; 
-      height: 90%; 
-    }
-  
-    .combatUiShield {
-      top: 10vh; 
-      left: 47vw;
-      max-height: 20vh; 
-    }
-  
-    .combatUiWeapon {
-      top: 10vh; 
-      left: 42vw;
-      max-height: 20vh; 
-    }
-  
-    .healthbar {
-      width: 40%; 
-      margin-left: 30%; 
-    }
-    .dialog-window {
-      width: 40%; 
-      left: 30%; 
-      height: 90%; 
-    }
-  
-    .playerCombatUi {
-      width: 30%; 
-    }
-  
-    .combatUiShield {
-      top: 10vh; 
-      left: 47vw;
-      max-height: 20vh; 
-    }
-  
-    .combatUiWeapon {
-      top: 10vh; 
-      left: 42vw;
-      max-height: 20vh; 
-    }
-  
-    .playerHealthBar {
-      width: 25vw; 
-      left: 10vw; 
-    }
-  
-    .enemyCombatUi {
-      width: 30%; 
-    }
-  
-    .enemyUiWeapon {
-      top: 10vh; 
-      right: 15vw;
-    }
-  
-    .enemyHealthBar {
-      width: 25vw; 
-      right: 10vw; 
-    }
-  
-    .lootDropWindow {
-      width: 20%; 
-      height: 60%; 
-    }
-  
-    .playerWindow {
-      width: 20vw; 
-    }
-  
-    .staminaBubble,
-    .graceBubble {
-      width: 8vw; 
-      height: 15vh;
-    }
-  }

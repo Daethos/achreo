@@ -20,6 +20,8 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
     const attribute = item?.constitution + item?.strength + item?.agility + item?.achre + item?.caeren + item?.kyosir;
     const dimensions = useResizeListener();
     const poly = dimensions().WIDTH * 0.45;
+    const scale = dimensions().WIDTH / 800;
+    console.log(scale, 'scale')
     const empty = item.name.includes('Empty');
     const name = item.name.includes('Starter') ? ( item.name.split(' ')[0] + ' ' + item.name.split(' ')[1] ) : ( item.name );
     const centerImage = dimensions()?.ORIENTATION === 'landscape' ? (name.length > 18 ? '45%' : name.length > 10 ? '7.5%' : '15%') : (name.length > 13 ? '40%' : name.length > 10 ? '5%' : '10%');
@@ -29,7 +31,7 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
             <div class='creature-heading' style={{ width: '100%'}}>
                 <h1 style={ empty ? { 'text-align': 'center', margin: '24px 0' } : { 'justify-content': 'space-evenly', margin: '24px 0 16px' }}>{name} 
                 <Show when={!empty}>
-                <span style={{ transform: 'scale(1.2)', float: 'right', 'margin-right': centerImage }}>
+                <span style={{ transform: `scale(${scale})`, float: 'right', 'margin-right': centerImage }}>
                     <img src={item.imgUrl} alt={item.name} />
                 </span>
                 </Show>

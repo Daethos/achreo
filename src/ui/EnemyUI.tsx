@@ -40,9 +40,18 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
         EventBus.emit('remove-party', state().computer);
         setShow(!show());
     };
-    
+    function transformScale() {
+        const width = dimensions().WIDTH;
+        if (width > 1800) { // FHD
+            return 1.25;
+        } else if (width > 1200) { // Mid
+            return 1;
+        } else { // Mobile
+            return 0.8;
+        };
+    };
     return <div class='modal'>
-        <div class='border center' style={{ 'max-height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%', 'width': dimensions().ORIENTATION === 'landscape' ? '50%' : '70%', 'margin-top': '2%' }}>
+        <div class='border center' style={{ 'min-height': dimensions().ORIENTATION === 'landscape' ? '60%' : '50%', 'max-height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%', 'width': dimensions().ORIENTATION === 'landscape' ? '50%' : '70%', 'margin-top': '2%' }}>
             <button class='highlight cornerBL' onClick={clearEnemy}>
                 <p>Clear UI</p>
             </button>
@@ -70,13 +79,13 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
                     <HealthBar combat={state} enemy={true} game={game} />
                 </div>
                 </Suspense>
-                <div style={{ color: '#fdf6d8', 'margin-top': '9.5%', 'font-size': '0.875em' }}>
+                <div style={{ color: '#fdf6d8', 'margin-top': '9.5%', 'font-size': '0.875em', 'margin-bottom': dimensions().WIDTH > 1200 ? '3%' : '0%' }}>
                     Level <span class='gold'>{state().computer?.level}</span> | Mastery <span class='gold'>{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
                 </div>
-                <div style={{ transform: 'scale(0.875)', 'margin-top': '0%', 'z-index': 1 }}>
+                <div class='view' style={{ transform: 'scale(0.875)', 'margin-top': '0%', 'z-index': 1, 'margin-bottom': dimensions().WIDTH > 1200 ? '7.5%' : '0%' }}>
                     <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} setDisplay={setAttributeDisplay} />
                 </div>
-                <div style={{ 'margin-left': '0', 'margin-top': '-7.5%', transform: 'scale(0.8)', 'z-index': 1 }}>
+                <div style={{ 'margin-left': '0', 'margin-top': '-7.5%', transform: `${transformScale()}`, 'z-index': 1 }}>
                     <AsceanImageCard ascean={enemy as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
                 </div>
                 <Show when={itemShow()}>
